@@ -3,12 +3,13 @@ import os
 
 from datetime import datetime
 
-from airgun.browser import browser
+from base.browser import browser
 from widgetastic.browser import Browser
 
-from airgun.entities.login import Login
+from base.entities.login import Login
+from base.entities.architecture import Architecture
 
-from airgun.settings import Settings
+from base.settings import Settings
 
 
 LOGGER = logging.getLogger(__name__)
@@ -29,6 +30,7 @@ class Session(object):
 
         # Library methods
         self.login = Login(self.browser)
+        self.architecture = Architecture(self.browser)
 
         self.login.login({'username': self._user, 'password': self._password})
         return self

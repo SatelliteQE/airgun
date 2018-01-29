@@ -2,7 +2,7 @@
 # fixme: 99% of copypasted from robottelo code
 import logging
 
-from airgun.settings import Settings
+from base.settings import Settings
 from selenium import webdriver
 
 try:
@@ -108,10 +108,7 @@ def browser(browser_name=None, webdriver_name=None):
 
     if browser_name == 'selenium':
         if webdriver_name == 'firefox':
-            return Firefox(
-                firefox_binary=webdriver.firefox.firefox_binary.FirefoxBinary(
-                    Settings.webdriver_binary)
-            )
+            return Firefox()
         elif webdriver_name == 'chrome':
             return (
                 Chrome() if Settings.webdriver_binary is None

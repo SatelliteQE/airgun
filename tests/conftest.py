@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from airgun.session import Session
+from base.session import Session
 
 
 @pytest.fixture(autouse=True)
