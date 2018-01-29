@@ -1,5 +1,7 @@
 from fauxfactory import gen_string
 
+from base.decorators import parametrize
+
 
 def valid_data_list():
     """Generates a list of valid input values."""
@@ -9,7 +11,7 @@ def valid_data_list():
     ]
 
 
-def test_positive_create(session):
+@parametrize('name', valid_data_list())
+def test_positive_create(session, name):
     with session:
-        for name in valid_data_list():
-            session.architecture.create_architecture({'name': name})
+        session.architecture.create_architecture({'name': name})

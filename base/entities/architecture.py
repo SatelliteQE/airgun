@@ -17,7 +17,8 @@ class Architecture(View):
     #     name = TextInput('#architecture_name')
 
     def navigate(self):
-        self.navigator.menu_click(["//a[@id='hosts_menu']", self.navigate_locator])
+        self.navigator.menu_click([
+            "//a[@id='hosts_menu']", self.navigate_locator])
 
     def create_architecture(self, values):
         self.navigate()

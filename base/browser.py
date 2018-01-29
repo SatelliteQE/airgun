@@ -2,8 +2,9 @@
 # fixme: 99% of copypasted from robottelo code
 import logging
 
-from base.settings import Settings
 from selenium import webdriver
+
+from base import settings
 
 try:
     import docker
@@ -42,7 +43,7 @@ class DriverLoggerMixin(object):
                                                           params)
 
         # skip messages for commands not in settings
-        if driver_command not in Settings.log_driver_commands:
+        if driver_command not in settings.selenium.log_driver_commands:
             return response
 
         if params:
@@ -101,24 +102,22 @@ def browser(browser_name=None, webdriver_name=None):
     If any of the params are None then will be read from properties file.
     """
 
-    webdriver_name = webdriver_name or Settings.webdriver
-    browser_name = browser_name or Settings.browser
-    webdriver_name = webdriver_name.lower()
-    browser_name = browser_name.lower()
+    webdriver_name = (webdriver_name or settings.selenium.webdriver).lower()
+    browser_name = (browser_name or settings.selenium.browser).lower()
 
     if browser_name == 'selenium':
         if webdriver_name == 'firefox':
             return Firefox()
         elif webdriver_name == 'chrome':
             return (
-                Chrome() if Settings.webdriver_binary is None
+                Chrome() if settings.selenium.webdriver_binary is None
                 else Chrome(
-                    executable_path=Settings.webdriver_binary)
+                    executable_path=settings.selenium.webdriver_binary)
             )
         elif webdriver_name == 'ie':
             return (
-                Ie() if Settings.webdriver_binary is None
-                else Ie(executable_path=Settings.webdriver_binary)
+                Ie() if settings.selenium.webdriver_binary is None
+                else Ie(executable_path=settings.selenium.webdriver_binary)
             )
         elif webdriver_name == 'edge':
             capabilities = webdriver.DesiredCapabilities.EDGE.copy()
@@ -126,10 +125,10 @@ def browser(browser_name=None, webdriver_name=None):
             capabilities['javascriptEnabled'] = True
             return (
                 Edge(capabilities=capabilities)
-                if Settings.webdriver_binary is None
+                if settings.selenium.webdriver_binary is None
                 else Edge(
                     capabilities=capabilities,
-                    executable_path=Settings.webdriver_binary,
+                    executable_path=settings.selenium.webdriver_binary,
                 )
             )
         elif webdriver_name == 'phantomjs':

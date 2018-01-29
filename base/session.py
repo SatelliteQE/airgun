@@ -9,7 +9,7 @@ from widgetastic.browser import Browser
 from base.entities.login import Login
 from base.entities.architecture import Architecture
 
-from base.settings import Settings
+from base import settings
 
 
 LOGGER = logging.getLogger(__name__)
@@ -20,13 +20,13 @@ class Session(object):
 
     def __init__(self, test, user=None, password=None):
         self.test = test
-        self._user = user or Settings.admin_username
-        self._password = password or Settings.admin_password
+        self._user = user or settings.satellite.username
+        self._password = password or settings.satellite.password
 
     def __enter__(self):
         self.browser = Browser(browser())
 
-        self.browser.url = 'https://' + Settings.hostname
+        self.browser.url = 'https://' + settings.satellite.hostname
 
         # Library methods
         self.login = Login(self.browser)
@@ -62,7 +62,7 @@ class Session(object):
         # not in the skipped tests.
         now = datetime.now()
         path = os.path.join(
-            Settings.screenshots_path,
+            settings.selenium.screenshots_path,
             now.strftime('%Y-%m-%d'),
         )
         if not os.path.exists(path):
