@@ -1,3 +1,6 @@
+[airgun]
+verbosity=INFO
+
 [satellite]
 hostname=example.com
 username=admin
