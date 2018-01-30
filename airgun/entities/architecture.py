@@ -1,7 +1,8 @@
-from airgun.navigation import BaseNavigator, navigator
+import time
+
 from widgetastic.widget import View, Text, TextInput
 
-import time
+from airgun.navigation import BaseNavigator, navigator
 
 
 class Architecture(View):
@@ -29,8 +30,8 @@ class Architecture(View):
     MENU_CONTAINER_PATH = NAVBAR_PATH + '//ul[@id="menu"]'
 
     def menu_click(self, tree):
-        for i, el in enumerate(tree, start=1):
-            locator = self.MENU_CONTAINER_PATH + el
+        for i, element in enumerate(tree, start=1):
+            locator = self.MENU_CONTAINER_PATH + element
             self.browser.wait_for_element(locator)
             self.browser.move_to_element(locator)
             time.sleep(0.5)
@@ -53,6 +54,6 @@ class ShowAllArchitectures(BaseNavigator):
 
     # prerequisite = NavigateToSibling('Dashboard')
 
-    def step(self):
+    def step(self, *args, **kwargs):
         self.obj.menu_click(
             ["//a[@id='hosts_menu']", self.obj.navigate_locator])

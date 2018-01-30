@@ -5,12 +5,6 @@ from selenium import webdriver
 
 from airgun import settings
 
-try:
-    import docker
-except ImportError:
-    # Let if fail later if not installed
-    docker = None
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -43,7 +37,7 @@ def browser(browser_name=None, webdriver_name=None):
         elif webdriver_name == 'chrome':
             return (
                 webdriver.Chrome() if (
-                        settings.selenium.webdriver_binary is None)
+                    settings.selenium.webdriver_binary is None)
                 else webdriver.Chrome(
                     executable_path=settings.selenium.webdriver_binary)
             )

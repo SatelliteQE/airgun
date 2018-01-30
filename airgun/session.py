@@ -3,13 +3,12 @@ import os
 
 from datetime import datetime
 
-from airgun.browser import browser
 from widgetastic.browser import Browser
 
+from airgun import settings
+from airgun.browser import browser
 from airgun.entities.login import Login
 from airgun.entities.architecture import Architecture
-
-from airgun import settings
 
 
 LOGGER = logging.getLogger(__name__)
@@ -22,6 +21,7 @@ class Session(object):
         self.test = test
         self._user = user or settings.satellite.username
         self._password = password or settings.satellite.password
+        self.browser = None
 
     def __enter__(self):
         self.browser = Browser(browser())
