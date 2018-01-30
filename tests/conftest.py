@@ -1,8 +1,7 @@
-import logging
 import pytest
 
-from base import settings
-from base.session import Session
+from airgun import settings
+from airgun.session import Session
 
 
 @pytest.fixture(autouse=True)

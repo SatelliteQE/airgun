@@ -7,7 +7,7 @@ class BaseNavigator(NavigateStep):
 
     VIEW = None
 
-    def am_i_here(self):
+    def am_i_here(self, *args, **kwargs):
         try:
             return self.obj.is_displayed
         except (AttributeError, NoSuchElementException):
