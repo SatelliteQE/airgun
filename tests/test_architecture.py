@@ -1,6 +1,6 @@
 from fauxfactory import gen_string
 
-from base.decorators import parametrize
+from airgun.decorators import parametrize
 
 
 def valid_data_list():

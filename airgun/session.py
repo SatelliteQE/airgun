@@ -3,13 +3,13 @@ import os
 
 from datetime import datetime
 
-from base.browser import browser
+from airgun.browser import browser
 from widgetastic.browser import Browser
 
-from base.entities.login import Login
-from base.entities.architecture import Architecture
+from airgun.entities.login import Login
+from airgun.entities.architecture import Architecture
 
-from base import settings
+from airgun import settings
 
 
 LOGGER = logging.getLogger(__name__)

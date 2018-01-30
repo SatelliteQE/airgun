@@ -4,7 +4,7 @@ import logging
 
 from selenium import webdriver
 
-from base import settings
+from airgun import settings
 
 try:
     import docker

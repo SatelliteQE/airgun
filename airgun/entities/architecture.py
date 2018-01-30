@@ -1,4 +1,4 @@
-from base.navigation import BaseNavigator, navigator
+from airgun.navigation import BaseNavigator, navigator
 from widgetastic.widget import View, Text, TextInput
 
 import time
