@@ -38,7 +38,6 @@ class SeleniumSettings(object):
         self.webdriver = None
         self.webdriver_binary = None
         self.screenshots_path = None
-        self.log_driver_commands = None
 
 
 class Settings(object):
@@ -50,7 +49,7 @@ class Settings(object):
         self.selenium = SeleniumSettings()
 
     def _configure_logging(self):
-        logging.captureWarnings(True)
+        logging.captureWarnings(False)
         logging.basicConfig(
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S',

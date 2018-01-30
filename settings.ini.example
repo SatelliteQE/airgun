@@ -11,4 +11,3 @@ browser=selenium
 webdriver=chrome
 webdriver_binary=/home/user/path/to/chromedriver
 screenshots_path=/home/user/path/to/screenshots
-log_driver_commands=newSession,windowMaximize,get,findElement,sendKeysToElement,clickElement,mouseMoveTo
