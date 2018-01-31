@@ -9,7 +9,7 @@ def session(request):
     return Session(request.module.__name__)
 
 
-def pytest_collection_modifyitems(items, config):
+def pytest_collection_modifyitems():
     """ called after collection has been performed, may filter or re-order
     the items in-place.
     """
