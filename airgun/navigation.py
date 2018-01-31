@@ -7,9 +7,17 @@ class BaseNavigator(NavigateStep):
 
     VIEW = None
 
+    @property
+    def view(self):
+        if self.VIEW is None:
+            raise AttributeError(
+                '{} does not have VIEW specified'.format(type(self).__name__)
+            )
+        return self.obj
+
     def am_i_here(self, *args, **kwargs):
         try:
-            return self.obj.is_displayed
+            return self.view.is_displayed
         except (AttributeError, NoSuchElementException):
             return False
 

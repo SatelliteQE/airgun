@@ -1,49 +1,36 @@
-import time
-
-from widgetastic.widget import View, Text, TextInput
-
+from airgun.base import menu_click
 from airgun.navigation import BaseNavigator, navigator
+from navmazing import NavigateToSibling
+from widgetastic.widget import View, Text, TextInput
 
 
 class Architecture(View):
-
     title = Text("//h1[text()='Architectures']")
     new = Text("//a[contains(@href, '/architectures/new')]")
     search = Text("//a[contains(., '{}')]")
     navigate_locator = "//a[@id='menu_item_architectures']"
-
-    name = TextInput(locator="//input[@id='architecture_name']")
-    submit = Text('//input[@name="commit"]')
 
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.title, exception=False) is not None
 
-    # @View.nested
-    # class General(View):
-    #     name = TextInput('#architecture_name')
-
-    NAVBAR_PATH = (
-        '//div[contains(@class,"navbar-inner") and '
-        'not(contains(@style, "display"))]')
-    MENU_CONTAINER_PATH = NAVBAR_PATH + '//ul[@id="menu"]'
-
-    def menu_click(self, tree):
-        for i, element in enumerate(tree, start=1):
-            locator = self.MENU_CONTAINER_PATH + element
-            self.browser.wait_for_element(locator)
-            self.browser.move_to_element(locator)
-            time.sleep(0.5)
-            if len(tree) == i:
-                self.browser.wait_for_element(locator)
-                self.browser.click(locator)
-                time.sleep(1)
-
     def create_architecture(self, values):
-        navigator.navigate(self, 'All')
-        self.browser.wait_for_element(self.new)
-        self.browser.click(self.new)
+        navigator.navigate(self, 'New')
+        new_view = ArchitectureDetails(self.browser)
+        new_view.change_values(values)
+
+
+class ArchitectureDetails(View):
+    name = TextInput(locator="//input[@id='architecture_name']")
+    submit = Text('//input[@name="commit"]')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.name, exception=False) is not None
+
+    def change_values(self, values):
         self.fill(values)
         self.browser.click(self.submit)
 
@@ -55,5 +42,19 @@ class ShowAllArchitectures(BaseNavigator):
     # prerequisite = NavigateToSibling('Dashboard')
 
     def step(self, *args, **kwargs):
-        self.obj.menu_click(
-            ["//a[@id='hosts_menu']", self.obj.navigate_locator])
+        menu_click(
+            ["//a[@id='hosts_menu']", self.view.navigate_locator],
+            self.view.browser
+        )
+
+
+@navigator.register(Architecture, 'New')
+class AddNewArchitecture(BaseNavigator):
+    VIEW = ArchitectureDetails
+
+    prerequisite = NavigateToSibling('All')
+
+    def step(self, *args, **kwargs):
+        self.view.browser.wait_for_element(
+            self.view.new, ensure_page_safe=True)
+        self.view.browser.click(self.view.new)
