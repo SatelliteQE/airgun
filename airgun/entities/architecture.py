@@ -1,7 +1,8 @@
-from airgun.base import menu_click
-from airgun.navigation import BaseNavigator, navigator
 from navmazing import NavigateToSibling
 from widgetastic.widget import View, Text, TextInput
+
+from airgun.base import menu_click
+from airgun.navigation import BaseNavigator, navigator
 
 
 class Architecture(View):

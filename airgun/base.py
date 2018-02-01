@@ -1,4 +1,3 @@
-import time
 
 NAVBAR_PATH = (
     '//div[contains(@class,"navbar-inner") and '
@@ -11,8 +10,8 @@ def menu_click(tree, browser):
         locator = MENU_CONTAINER_PATH + element
         browser.wait_for_element(locator, ensure_page_safe=True)
         browser.move_to_element(locator)
-        time.sleep(1)
+        browser.plugin.ensure_page_safe()
         if len(tree) == i:
             browser.wait_for_element(locator, ensure_page_safe=True)
             browser.click(locator)
-            time.sleep(1)
+            browser.plugin.ensure_page_safe()

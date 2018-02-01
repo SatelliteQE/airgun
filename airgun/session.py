@@ -6,7 +6,7 @@ from datetime import datetime
 from widgetastic.browser import Browser
 
 from airgun import settings
-from airgun.browser import browser
+from airgun.browser import browser, BrowserPlugin
 from airgun.entities.login import Login
 from airgun.entities.architecture import Architecture
 
@@ -24,7 +24,9 @@ class Session(object):
         self.browser = None
 
     def __enter__(self):
-        self.browser = Browser(browser())
+        selenium_browser = browser()
+        selenium_browser.maximize_window()
+        self.browser = Browser(selenium_browser, BrowserPlugin)
 
         self.browser.url = 'https://' + settings.satellite.hostname
 
