@@ -16,6 +16,8 @@ def get_project_root():
         os.pardir,
     ))
 
+# todo: probably should use properties instead of class attributes
+# and use setters for validation
 
 class AirgunSettings(object):
 
@@ -66,17 +68,24 @@ class Settings(object):
             logging.getLogger(logger).setLevel(self.airgun.verbosity)
 
     def configure(self, settings=None):
-        if settings is None:
+        """Parses arg `settings` or settings file if None passed and sets class
+        attributes accordingly
+        """
+        config = configparser.ConfigParser()
+        if settings is not None:
+            for section in settings:
+                config.add_section(section)
+                for key, value in settings[section].items():
+                    config.set(section, key, str(value))
+        else:
             settings_path = os.path.join(
                 get_project_root(), SETTINGS_FILE_NAME)
-            settings = configparser.ConfigParser()
-            settings.read(settings_path)
+            config.read(settings_path)
 
-        for section in settings.sections():
-            for key, value in settings[section].items():
+        for section in config.sections():
+            for key, value in config[section].items():
                 setattr(getattr(self, section), key, value)
 
-        # fixme: bugged ATM, prints twice
         self._configure_logging()
         self._configure_thirdparty_logging()
 
