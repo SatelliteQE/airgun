@@ -2,6 +2,7 @@
 import logging
 
 from selenium import webdriver
+from widgetastic.browser import DefaultPlugin
 
 from airgun import settings
 
@@ -17,6 +18,34 @@ def _sauce_ondemand_url(saucelabs_user, saucelabs_key):
     """Get sauce ondemand URL for a given user and key."""
     return 'http://{0}:{1}@ondemand.saucelabs.com:80/wd/hub'.format(
         saucelabs_user, saucelabs_key)
+
+
+class BrowserPlugin(DefaultPlugin):
+    ENSURE_PAGE_SAFE = '''
+        function jqueryInactive() {
+         return (typeof jQuery === "undefined") ? true : jQuery.active < 1
+        }
+        function ajaxInactive() {
+         return (typeof Ajax === "undefined") ? true :
+            Ajax.activeRequestCount < 1
+        }
+        function angularNoRequests() {
+         return (typeof angular === "undefined") ? true :
+          angular.element(document).injector().get(
+           "$http").pendingRequests.length < 1
+        }
+        function spinnerInvisible() {
+         spinner = document.getElementById("turbolinks-progress")
+         return (spinner === null) ? true : spinner.style["display"] == "none"
+        }
+        return {
+            jquery: jqueryInactive(),
+            ajax: ajaxInactive(),
+            angular: angularNoRequests(),
+            spinner: spinnerInvisible(),
+            document: document.readyState == "complete",
+        }
+        '''
 
 
 def browser(browser_name=None, webdriver_name=None):

@@ -19,6 +19,7 @@ def get_project_root():
 # todo: probably should use properties instead of class attributes
 # and use setters for validation
 
+
 class AirgunSettings(object):
 
     def __init__(self):
