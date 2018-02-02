@@ -1,5 +1,5 @@
 from airgun import settings
-
+from airgun.fixtures import session
 
 # todo: make sure this hook is needed - for unit tests configuring may be
 # redundant
