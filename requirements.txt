@@ -4,5 +4,4 @@ navmazing==1.1.4
 fauxfactory
 pytest==3.3.2
 
-# fixme: implement setup.py and uncomment
-# --editable .
+--editable .

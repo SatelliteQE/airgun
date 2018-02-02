@@ -1,6 +1,11 @@
+# Distribution / packaging
+/airgun.egg-info
+
+# Byte-compiled / optimized / DLL files
 __pycache__/
 .cache/
 *.py[cod]
 *$py.class
 
+# User's configuration
 settings.ini
