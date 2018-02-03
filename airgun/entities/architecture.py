@@ -1,8 +1,9 @@
 from navmazing import NavigateToSibling
-from widgetastic.widget import View, Text, TextInput
+from widgetastic.widget import ParametrizedView, View, Text, TextInput
 
 from airgun.base import menu_click
 from airgun.navigation import BaseNavigator, navigator
+from airgun.sat_widgets import ResourceList
 
 
 class Architecture(View):
@@ -19,20 +20,27 @@ class Architecture(View):
     def create_architecture(self, values):
         navigator.navigate(self, 'New')
         new_view = ArchitectureDetails(self.browser)
-        new_view.change_values(values)
+        new_view.change_values(values['name'])
+        if 'os_dict_values' in values and values['os_dict_values']:
+            new_view.os_element.manage_resource(values['os_dict_values'])
+        new_view.submit_os()
 
 
-class ArchitectureDetails(View):
+class ArchitectureDetails(ParametrizedView):
     name = TextInput(locator="//input[@id='architecture_name']")
     submit = Text('//input[@name="commit"]')
+    os_element = ResourceList(
+        parent_entity='Architect', affected_entity='OperatingSystem')
 
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.name, exception=False) is not None
 
-    def change_values(self, values):
-        self.fill(values)
+    def change_values(self, name):
+        self.name.fill(name)
+
+    def submit_os(self):
         self.browser.click(self.submit)
 
 
