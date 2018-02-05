@@ -2,7 +2,7 @@ from navmazing import NavigateToSibling
 from widgetastic.widget import ParametrizedView, View, Text, TextInput
 
 from airgun.navigation import BaseNavigator, menu_click, navigator
-from airgun.widgets import ResourceList
+from airgun.widgets import ResourceList, Search
 
 
 class ArchitectureView(View):
@@ -10,6 +10,7 @@ class ArchitectureView(View):
     new = Text("//a[contains(@href, '/architectures/new')]")
     search = Text("//a[contains(., '{}')]")
     navigate_locator = "//a[@id='menu_item_architectures']"
+    search_element = Search()
 
     @property
     def is_displayed(self):

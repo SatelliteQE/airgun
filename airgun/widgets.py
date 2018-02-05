@@ -1,5 +1,5 @@
 from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import do_not_read_this_widget, TextInput, Widget
+from widgetastic.widget import do_not_read_this_widget, Text, TextInput, Widget
 
 
 class ResourceList(Widget):
@@ -46,3 +46,22 @@ class ResourceList(Widget):
 
     def read(self):
         do_not_read_this_widget()
+
+
+class Search(Widget):
+    search_field = TextInput(id='search')
+    search_button = Text("//button[contains(@type,'submit')]")
+    default_result_locator = Text("//a[contains(., '%s')]")
+
+    def fill(self, value):
+        self.search_field.fill(value)
+
+    def read(self, value, result_locator=None):
+        if result_locator is None:
+            result_locator = self.default_result_locator
+        return self.browser.element(result_locator.locator % value).text
+
+    def search(self, value, result_locator=None):
+        self.fill(value)
+        self.search_button.click()
+        return self.read(value, result_locator)

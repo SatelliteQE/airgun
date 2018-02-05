@@ -8,3 +8,7 @@ class ArchitectureEntity(BaseEntity):
         view = self.navigate_to(ArchitectureView, 'New')
         view.fill(values)
         view.submit_data()
+
+    def search(self, value):
+        view = self.navigate_to(ArchitectureView, 'All')
+        return view.search_element.search(value)
