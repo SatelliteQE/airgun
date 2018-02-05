@@ -3,12 +3,12 @@ import os
 
 from datetime import datetime
 
-from widgetastic.browser import Browser
-
 from airgun import settings
-from airgun.browser import browser, BrowserPlugin
-from airgun.entities.login import Login
-from airgun.entities.architecture import Architecture
+from airgun.browser import browser, AirgunBrowser
+from airgun.entities.login import LoginEntity
+from airgun.entities.architecture import ArchitectureEntity
+
+from airgun.navigation import navigator
 
 
 LOGGER = logging.getLogger(__name__)
@@ -26,13 +26,18 @@ class Session(object):
     def __enter__(self):
         selenium_browser = browser()
         selenium_browser.maximize_window()
-        self.browser = Browser(selenium_browser, BrowserPlugin)
+        self.browser = AirgunBrowser(selenium_browser, self)
 
         self.browser.url = 'https://' + settings.satellite.hostname
 
-        # Library methods
-        self.login = Login(self.browser)
-        self.architecture = Architecture(self.browser)
+        # Navigator
+        self.navigator = navigator
+        self.navigator.browser = self.browser
+
+        # Entities
+
+        self.architecture = ArchitectureEntity(self.browser)
+        self.login = LoginEntity(self.browser)
 
         self.login.login({'username': self._user, 'password': self._password})
         return self

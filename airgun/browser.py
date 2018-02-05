@@ -1,8 +1,9 @@
 """Tools to help getting a browser instance to run UI tests."""
 import logging
+from copy import copy
 
 from selenium import webdriver
-from widgetastic.browser import DefaultPlugin
+from widgetastic.browser import Browser, DefaultPlugin
 
 from airgun import settings
 
@@ -101,3 +102,27 @@ def browser(browser_name=None, webdriver_name=None):
         raise NotImplementedError(
             "Supported browsers are: selenium, saucelabs, docker"
         )
+
+
+class AirgunBrowser(Browser):
+
+    def __init__(self, selenium, session, extra_objects=None):
+        extra_objects = extra_objects or {}
+        extra_objects.update({
+            'session': session,
+        })
+        super(AirgunBrowser, self).__init__(
+            selenium,
+            plugin_class=BrowserPlugin,
+            extra_objects=extra_objects)
+        self.window_handle = selenium.current_window_handle
+
+    def create_view(self, view_class, o=None, override=None,
+                    additional_context=None):
+        o = o or self
+        if override is not None:
+            new_obj = copy(o)
+            new_obj.__dict__.update(override)
+        else:
+            new_obj = o
+        return view_class(self.browser, additional_context={'object': new_obj})
