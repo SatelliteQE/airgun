@@ -2,7 +2,7 @@ from navmazing import NavigateToSibling
 from widgetastic.widget import ParametrizedView, View, Text, TextInput
 
 from airgun.navigation import BaseNavigator, menu_click, navigator
-from airgun.sat_widgets import ResourceList
+from airgun.widgets import ResourceList
 
 
 class ArchitectureView(View):
