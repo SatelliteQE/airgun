@@ -20,10 +20,8 @@ class Architecture(View):
     def create_architecture(self, values):
         navigator.navigate(self, 'New')
         new_view = ArchitectureDetails(self.browser)
-        new_view.change_values(values['name'])
-        if 'os_dict_values' in values and values['os_dict_values']:
-            new_view.os_element.manage_resource(values['os_dict_values'])
-        new_view.submit_os()
+        new_view.fill(values)
+        new_view.submit_data()
 
 
 class ArchitectureDetails(ParametrizedView):
@@ -37,10 +35,13 @@ class ArchitectureDetails(ParametrizedView):
         return self.browser.wait_for_element(
             self.name, exception=False) is not None
 
-    def change_values(self, name):
-        self.name.fill(name)
+    def fill(self, values):
+        if 'name' in values and values['name']:
+            self.name.fill(values['name'])
+        if 'os_names' in values and values['os_names']:
+            self.os_element.manage_resource(values['os_names'])
 
-    def submit_os(self):
+    def submit_data(self):
         self.browser.click(self.submit)
 
 
