@@ -18,7 +18,6 @@ class LoginView(View, ClickableMixin):
 class NavigateToLogin(BaseNavigator):
     VIEW = LoginView
 
-
     def step(self, *args, **kwargs):
         # fixme: logout() if logged_in
         pass
