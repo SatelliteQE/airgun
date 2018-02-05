@@ -106,10 +106,10 @@ def browser(browser_name=None, webdriver_name=None):
 
 class AirgunBrowser(Browser):
 
-    def __init__(self, selenium, endpoint, extra_objects=None):
+    def __init__(self, selenium, session, extra_objects=None):
         extra_objects = extra_objects or {}
         extra_objects.update({
-            'endpoint': endpoint,
+            'session': session,
         })
         super(AirgunBrowser, self).__init__(
             selenium,
@@ -117,7 +117,8 @@ class AirgunBrowser(Browser):
             extra_objects=extra_objects)
         self.window_handle = selenium.current_window_handle
 
-    def create_view(self, view_class, o=None, override=None, additional_context=None):
+    def create_view(self, view_class, o=None, override=None,
+                    additional_context=None):
         o = o or self
         if override is not None:
             new_obj = copy(o)

@@ -36,8 +36,8 @@ class Session(object):
 
         # Entities
 
-        self.architecture = ArchitectureEntity(self.browser, self)
-        self.login = LoginEntity(self.browser, self)
+        self.architecture = ArchitectureEntity(self.browser)
+        self.login = LoginEntity(self.browser)
 
         self.login.login({'username': self._user, 'password': self._password})
         return self
