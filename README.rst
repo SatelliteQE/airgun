@@ -24,7 +24,7 @@ reuse already existing properties file since no changes were introduced there)
 
 .. code-block:: bash
 
-    cp robottelo.properties.example robottelo.properties
+    cp robottelo.properties.sample robottelo.properties
     vim robottelo.properties
 
 4. Run airgun tests from robottelo's ``tests/foreman/ui_airgun/`` folder
