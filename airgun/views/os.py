@@ -1,12 +1,13 @@
+
 from widgetastic.widget import View, Text, TextInput
 
 from airgun.widgets import ResourceList, Search
 
 
-class ArchitectureView(View):
-    title = Text("//h1[text()='Architectures']")
-    new = Text("//a[contains(@href, '/architectures/new')]")
-    navigate_locator = "//a[@id='menu_item_architectures']"
+class OperatingSystemView(View):
+    title = Text("//h1[text()='Operating systems']")
+    new = Text("//a[contains(@href, '/operatingsystems/new')]")
+    navigate_locator = "//a[@id='menu_item_operatingsystems']"
     search_element = Search()
 
     @property
@@ -15,11 +16,12 @@ class ArchitectureView(View):
             self.title, exception=False) is not None
 
 
-class ArchitectureDetailsView(View):
-    name = TextInput(locator="//input[@id='architecture_name']")
+class OperatingSystemDetailsView(View):
+    name = TextInput(locator="//input[@id='operatingsystem_name']")
+    major = TextInput(locator="//input[@id='operatingsystem_major']")
     submit = Text('//input[@name="commit"]')
-    os_element = ResourceList(
-        parent_entity='Architect', affected_entity='OperatingSystem')
+    arch_element = ResourceList(
+        parent_entity='OperatingSystem', affected_entity='Architect')
 
     @property
     def is_displayed(self):

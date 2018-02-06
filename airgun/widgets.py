@@ -38,7 +38,7 @@ class ResourceList(Widget):
             self.browser.click(
                 self.browser.element(self.LIST_TO.locator % value))
 
-    def manage_resource(self, dict_values):
+    def fill(self, dict_values):
         if dict_values['operation'] == 'Add':
             self.assign_resource(dict_values['values'])
         if dict_values['operation'] == 'Remove':
