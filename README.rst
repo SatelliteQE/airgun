@@ -1,3 +1,10 @@
+.. image:: https://travis-ci.org/abalakh/airgun.svg
+   :scale: 50 %
+   :alt: Build Status
+   :align: left
+   :target: https://travis-ci.org/abalakh/airgun
+
+
 Airgun
 ======
 
