@@ -1,7 +1,2 @@
 
-widgetastic.core==0.20.3
-navmazing==1.1.4
-fauxfactory
-pytest==3.3.2
-
 --editable .
