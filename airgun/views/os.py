@@ -30,3 +30,13 @@ class OperatingSystemDetailsView(View):
 
     def submit_data(self):
         self.browser.click(self.submit)
+
+    @View.nested
+    class ptable(View):
+        view_tab = Text("//a[@href='#ptable']")
+        ptable_element = ResourceList(
+            parent_entity='OperatingSystem', affected_entity='Ptable')
+
+        def fill(self, values):
+            self.browser.click(self.view_tab)
+            self.ptable_element.fill(values)
