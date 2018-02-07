@@ -11,3 +11,6 @@ browser=selenium
 webdriver=chrome
 webdriver_binary=/home/user/path/to/chromedriver
 screenshots_path=/home/user/path/to/screenshots
+# webdriver_desired_capabilities=platform=macOS 10.12,version=64.0,maxDuration=5400,idleTimeout=1000,seleniumVersion=3.8.1,build=example,screenResolution=1600x1200,tunnelIdentifier=example,tags=[example]
+# saucelabs_user=user
+# saucelabs_key=key

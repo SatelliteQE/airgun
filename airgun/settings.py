@@ -38,9 +38,12 @@ class SeleniumSettings(object):
 
     def __init__(self):
         self.browser = None
+        self.saucelabs_user = None
+        self.saucelabs_password = None
+        self.screenshots_path = None
         self.webdriver = None
         self.webdriver_binary = None
-        self.screenshots_path = None
+        self.webdriver_desired_capabilities = None
 
 
 class Settings(object):
