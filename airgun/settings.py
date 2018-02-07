@@ -52,6 +52,20 @@ class SeleniumSettings(object):
         self.webdriver_desired_capabilities = None
 
 
+class WebdriverCapabilitiesSettings(object):
+
+    def __init__(self):
+        self.platform = None
+        self.version = None
+        self.maxDuration = None
+        self.idleTimeout = None
+        self.seleniumVersion = None
+        self.build = None
+        self.screenResolution = None
+        self.tunnelIdentifier = None
+        self.tags = None
+
+
 class Settings(object):
 
     def __init__(self):
@@ -59,6 +73,7 @@ class Settings(object):
         self.airgun = AirgunSettings()
         self.satellite = SatelliteSettings()
         self.selenium = SeleniumSettings()
+        self.webdriver_desired_capabilities = WebdriverCapabilitiesSettings()
 
     def _configure_logging(self):
         logging.captureWarnings(False)
@@ -82,6 +97,8 @@ class Settings(object):
         attributes accordingly
         """
         config = ConfigParser()
+        # using str instead of optionxform not to .lower() options
+        config.optionxform = str
         if settings is not None:
             for section in settings:
                 config.add_section(section)

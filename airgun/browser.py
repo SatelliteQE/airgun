@@ -170,27 +170,27 @@ class SeleniumBrowserFactory(object):
     def get_saucelabs_browser(self):
         if self.webdriver == 'chrome':
             desired_capabilities = webdriver.DesiredCapabilities.CHROME.copy()
-            if settings.selenium.webdriver_desired_capabilities:
+            if settings.webdriver_desired_capabilities:
                 desired_capabilities.update(
-                    settings.selenium.webdriver_desired_capabilities)
+                    vars(settings.webdriver_desired_capabilities))
         elif self.webdriver == 'firefox':
             desired_capabilities = webdriver.DesiredCapabilities.FIREFOX.copy()
-            if settings.selenium.webdriver_desired_capabilities:
+            if settings.webdriver_desired_capabilities:
                 desired_capabilities.update(
-                    settings.selenium.webdriver_desired_capabilities)
+                    vars(settings.webdriver_desired_capabilities))
         elif self.webdriver == 'ie':
             desired_capabilities = (
                 webdriver.DesiredCapabilities.INTERNETEXPLORER.copy())
-            if settings.selenium.webdriver_desired_capabilities:
+            if settings.webdriver_desired_capabilities:
                 desired_capabilities.update(
-                    settings.selenium.webdriver_desired_capabilities)
+                    vars(settings.webdriver_desired_capabilities))
         elif self.webdriver == 'edge':
             desired_capabilities = webdriver.DesiredCapabilities.EDGE.copy()
             desired_capabilities['acceptSslCerts'] = True
             desired_capabilities['javascriptEnabled'] = True
-            if settings.selenium.webdriver_desired_capabilities:
+            if settings.webdriver_desired_capabilities:
                 desired_capabilities.update(
-                    settings.selenium.webdriver_desired_capabilities)
+                    vars(settings.webdriver_desired_capabilities))
         else:
             raise ValueError(
                 '"{}" webdriver on saucelabs is currently not supported. '
