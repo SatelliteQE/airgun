@@ -16,6 +16,12 @@ class ArchitectureEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search_element.search(value)
 
+    def view_architecture(self, name):
+        view = self.navigate_to(self, 'All')
+        view.search_element.search(name)
+        view = self.navigate_to(self, 'Edit')
+        return view.read()
+
 
 @navigator.register(ArchitectureEntity, 'All')
 class ShowAllArchitectures(BaseNavigator):
@@ -23,7 +29,7 @@ class ShowAllArchitectures(BaseNavigator):
 
     def step(self, *args, **kwargs):
         menu_click(
-            ["//a[@id='hosts_menu']", self.view.navigate_locator],
+            ["//a[@id='hosts_menu']", self.view.page_navigate_locator],
             self.view.browser
         )
 
@@ -38,3 +44,15 @@ class AddNewArchitecture(BaseNavigator):
         self.view.browser.wait_for_element(
             self.parent.new, ensure_page_safe=True)
         self.parent.browser.click(self.parent.new)
+
+
+@navigator.register(ArchitectureEntity, 'Edit')
+class EditExistingArchitecture(BaseNavigator):
+    VIEW = ArchitectureDetailsView
+
+    prerequisite = NavigateToSibling('All')
+
+    def step(self, *args, **kwargs):
+        self.view.browser.wait_for_element(
+            self.parent.entity_navigate_locator, ensure_page_safe=True)
+        self.parent.browser.click(self.parent.entity_navigate_locator)

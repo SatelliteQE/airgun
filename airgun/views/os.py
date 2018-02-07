@@ -23,6 +23,16 @@ class OperatingSystemDetailsView(View):
     arch_element = ResourceList(
         parent_entity='OperatingSystem', affected_entity='Architect')
 
+    @View.nested
+    class ptable(View):
+        view_tab = Text("//a[@href='#ptable']")
+        ptable_element = ResourceList(
+            parent_entity='OperatingSystem', affected_entity='Ptable')
+
+        def fill(self, values):
+            self.browser.click(self.view_tab)
+            self.ptable_element.fill(values)
+
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(

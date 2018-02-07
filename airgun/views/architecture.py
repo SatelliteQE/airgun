@@ -6,7 +6,9 @@ from airgun.widgets import ResourceList, Search
 class ArchitectureView(View):
     title = Text("//h1[text()='Architectures']")
     new = Text("//a[contains(@href, '/architectures/new')]")
-    navigate_locator = "//a[@id='menu_item_architectures']"
+    page_navigate_locator = "//a[@id='menu_item_architectures']"
+    entity_navigate_locator = (
+        "//a[contains(@href, 'edit') and contains(@href, 'arch')]")
     search_element = Search()
 
     @property
