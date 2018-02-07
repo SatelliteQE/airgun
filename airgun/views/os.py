@@ -23,14 +23,6 @@ class OperatingSystemDetailsView(View):
     arch_element = ResourceList(
         parent_entity='OperatingSystem', affected_entity='Architect')
 
-    @property
-    def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.name, exception=False) is not None
-
-    def submit_data(self):
-        self.browser.click(self.submit)
-
     @View.nested
     class ptable(View):
         view_tab = Text("//a[@href='#ptable']")
@@ -40,3 +32,11 @@ class OperatingSystemDetailsView(View):
         def fill(self, values):
             self.browser.click(self.view_tab)
             self.ptable_element.fill(values)
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.name, exception=False) is not None
+
+    def submit_data(self):
+        self.browser.click(self.submit)

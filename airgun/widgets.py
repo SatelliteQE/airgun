@@ -1,5 +1,5 @@
 from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import do_not_read_this_widget, Text, TextInput, Widget
+from widgetastic.widget import Text, TextInput, Widget
 
 
 class ResourceList(Widget):
@@ -7,15 +7,25 @@ class ResourceList(Widget):
         "//div[contains(@id, ms-{@parent_entity}) and "
         "contains(@id, {@affected_entity}_ids)]/input[@class='ms-filter']"
     ))
-    LIST_FROM = ParametrizedLocator(
+    ITEM_FROM = ParametrizedLocator(
         "//div[contains(@id, ms-{@parent_entity}) and "
         "contains(@id, {@affected_entity}_ids)]/div[@class='ms-selectable']"
         "//li[not(contains(@style, 'display: none'))]/span[contains(.,'%s')]"
     )
-    LIST_TO = ParametrizedLocator(
+    ITEM_TO = ParametrizedLocator(
         "//div[contains(@id, ms-{@parent_entity}) and "
         "contains(@id, {@affected_entity}_ids)]/div[@class='ms-selection']"
         "//li[not(contains(@style, 'display: none'))]/span[contains(.,'%s')]"
+    )
+    LIST_FROM = ParametrizedLocator(
+        "//div[contains(@id, ms-{@parent_entity}) and "
+        "contains(@id, {@affected_entity}_ids)]/div[@class='ms-selectable']"
+        "//li[not(contains(@style, 'display: none'))]"
+    )
+    LIST_TO = ParametrizedLocator(
+        "//div[contains(@id, ms-{@parent_entity}) and "
+        "contains(@id, {@affected_entity}_ids)]/div[@class='ms-selection']"
+        "//li[not(contains(@style, 'display: none'))]"
     )
 
     def __init__(self, parent, parent_entity, affected_entity, logger=None):
@@ -30,22 +40,27 @@ class ResourceList(Widget):
         for value in values:
             self._filter_value(value)
             self.browser.click(
-                self.browser.element(self.LIST_FROM.locator % value))
+                self.browser.element(self.ITEM_FROM.locator % value))
 
     def unassign_resource(self, values):
         for value in values:
             self._filter_value(value)
             self.browser.click(
-                self.browser.element(self.LIST_TO.locator % value))
+                self.browser.element(self.ITEM_TO.locator % value))
 
-    def fill(self, dict_values):
-        if dict_values['operation'] == 'Add':
-            self.assign_resource(dict_values['values'])
-        if dict_values['operation'] == 'Remove':
-            self.unassign_resource(dict_values['values'])
+    def fill(self, values):
+        if values['operation'] == 'Add':
+            self.assign_resource(values['values'])
+        if values['operation'] == 'Remove':
+            self.unassign_resource(values['values'])
 
     def read(self):
-        do_not_read_this_widget()
+            return {
+                'free': [
+                    el.text for el in self.browser.elements(self.LIST_FROM)],
+                'assigned': [
+                    el.text for el in self.browser.elements(self.LIST_TO)]
+            }
 
 
 class Search(Widget):
