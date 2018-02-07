@@ -1,6 +1,12 @@
-import configparser
 import logging
 import os
+import six
+
+if six.PY2:
+    from ConfigParser import RawConfigParser as ConfigParser  # noqa
+else:
+    from configparser import ConfigParser
+
 
 SETTINGS_FILE_NAME = 'settings.ini'
 
@@ -38,8 +44,8 @@ class SeleniumSettings(object):
 
     def __init__(self):
         self.browser = None
+        self.saucelabs_key = None
         self.saucelabs_user = None
-        self.saucelabs_password = None
         self.screenshots_path = None
         self.webdriver = None
         self.webdriver_binary = None
@@ -75,7 +81,7 @@ class Settings(object):
         """Parses arg `settings` or settings file if None passed and sets class
         attributes accordingly
         """
-        config = configparser.ConfigParser()
+        config = ConfigParser()
         if settings is not None:
             for section in settings:
                 config.add_section(section)
@@ -87,8 +93,11 @@ class Settings(object):
             config.read(settings_path)
 
         for section in config.sections():
-            for key, value in config[section].items():
-                setattr(getattr(self, section), key, value)
+            # legacy format. use following after dropping py2 support:
+            # for key, value in config[section].items():
+            #     setattr(getattr(self, section), key, value)
+            for key in config.options(section):
+                setattr(getattr(self, section), key, config.get(section, key))
 
         self._configure_logging()
         self._configure_thirdparty_logging()
