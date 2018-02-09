@@ -6,27 +6,22 @@ from widgetastic.xpath import quote
 
 class ResourceList(Widget):
     filter = TextInput(locator=ParametrizedLocator(
-        "//div[contains(@id, ms-{@parent_entity}) and "
-        "contains(@id, {@affected_entity}_ids)]/input[@class='ms-filter']"
-    ))
+        "{@parent_locator}//input[@class='ms-filter']"))
+
     ITEM_FROM = ParametrizedLocator(
-        "//div[contains(@id, ms-{@parent_entity}) and "
-        "contains(@id, {@affected_entity}_ids)]/div[@class='ms-selectable']"
+        "{@parent_locator}/div[@class='ms-selectable']"
         "//li[not(contains(@style, 'display: none'))]/span[contains(.,'%s')]"
     )
     ITEM_TO = ParametrizedLocator(
-        "//div[contains(@id, ms-{@parent_entity}) and "
-        "contains(@id, {@affected_entity}_ids)]/div[@class='ms-selection']"
+        "{@parent_locator}/div[@class='ms-selection']"
         "//li[not(contains(@style, 'display: none'))]/span[contains(.,'%s')]"
     )
     LIST_FROM = ParametrizedLocator(
-        "//div[contains(@id, ms-{@parent_entity}) and "
-        "contains(@id, {@affected_entity}_ids)]/div[@class='ms-selectable']"
+        "{@parent_locator}/div[@class='ms-selectable']"
         "//li[not(contains(@style, 'display: none'))]"
     )
     LIST_TO = ParametrizedLocator(
-        "//div[contains(@id, ms-{@parent_entity}) and "
-        "contains(@id, {@affected_entity}_ids)]/div[@class='ms-selection']"
+        "{@parent_locator}/div[@class='ms-selection']"
         "//li[not(contains(@style, 'display: none'))]"
     )
 
@@ -34,6 +29,11 @@ class ResourceList(Widget):
         Widget.__init__(self, parent, logger=logger)
         self.parent_entity = parent_entity.lower()
         self.affected_entity = affected_entity.lower()
+        self.parent_locator = (
+            "//div[contains(@id, 'ms-{}') and "
+            "contains(@id, '{}_ids')]".format(
+                self.parent_entity, self.affected_entity)
+        )
 
     def _filter_value(self, value):
         self.filter.fill(value)

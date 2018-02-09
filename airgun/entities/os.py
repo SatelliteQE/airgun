@@ -23,7 +23,7 @@ class ShowAllOperatingSystems(BaseNavigator):
 
     def step(self, *args, **kwargs):
         # TODO: No prereq yet
-        self.view.navigation.select('Hosts', 'Operating Systems')
+        self.view.navigation.select('Hosts', 'Operating systems')
 
 
 @navigator.register(OperatingSystemEntity, 'New')

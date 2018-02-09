@@ -23,7 +23,7 @@ class OperatingSystemDetailsView(BaseLoggedInView):
     major = TextInput(locator="//input[@id='operatingsystem_major']")
     submit = Text('//input[@name="commit"]')
     arch_element = ResourceList(
-        parent_entity='OperatingSystem', affected_entity='Architect')
+        parent_entity='OperatingSystem', affected_entity='Architecture')
 
     @View.nested
     class ptable(View):
