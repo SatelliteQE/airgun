@@ -3,8 +3,10 @@ from widgetastic.widget import View, Text, TextInput
 
 from airgun.widgets import ResourceList, Search
 
+from .common import BaseLoggedInView
 
-class OperatingSystemView(View):
+
+class OperatingSystemView(BaseLoggedInView):
     title = Text("//h1[text()='Operating systems']")
     new = Text("//a[contains(@href, '/operatingsystems/new')]")
     navigate_locator = "//a[@id='menu_item_operatingsystems']"
@@ -16,7 +18,7 @@ class OperatingSystemView(View):
             self.title, exception=False) is not None
 
 
-class OperatingSystemDetailsView(View):
+class OperatingSystemDetailsView(BaseLoggedInView):
     name = TextInput(locator="//input[@id='operatingsystem_name']")
     major = TextInput(locator="//input[@id='operatingsystem_major']")
     submit = Text('//input[@name="commit"]')

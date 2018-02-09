@@ -1,9 +1,11 @@
-from widgetastic.widget import View, Text, TextInput
+from widgetastic.widget import Text, TextInput
 
 from airgun.widgets import ResourceList, Search
 
+from .common import BaseLoggedInView
 
-class ArchitectureView(View):
+
+class ArchitectureView(BaseLoggedInView):
     title = Text("//h1[text()='Architectures']")
     new = Text("//a[contains(@href, '/architectures/new')]")
     page_navigate_locator = "//a[@id='menu_item_architectures']"
@@ -17,7 +19,7 @@ class ArchitectureView(View):
             self.title, exception=False) is not None
 
 
-class ArchitectureDetailsView(View):
+class ArchitectureDetailsView(BaseLoggedInView):
     name = TextInput(locator="//input[@id='architecture_name']")
     submit = Text('//input[@name="commit"]')
     os_element = ResourceList(

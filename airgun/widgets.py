@@ -1,5 +1,7 @@
+from widgetastic.exceptions import NoSuchElementException
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Text, TextInput, Widget
+from widgetastic.xpath import quote
 
 
 class ResourceList(Widget):
@@ -80,3 +82,40 @@ class Search(Widget):
         self.fill(value)
         self.search_button.click()
         return self.read(value, result_locator)
+
+
+class HorizontalNavigation(Widget):
+    """The Patternfly style horizontal top menu.
+
+    Use :py:meth:`select` to select the menu items. This takes IDs.
+    """
+    LEVEL_1 = (
+        '//ul[contains(@class, "navbar-menu")]/li/a[normalize-space(.)={}]')
+    LEVEL_2 = (
+        '//ul[contains(@class, "navbar-menu")]/li[./a[normalize-space(.)={}]'
+        ' and contains(@class, "open")]/ul/li/a[normalize-space(.)={}]')
+    ACTIVE = (
+        '//ul[contains(@class, "navbar-menu")]/li[contains(@class, "active")]'
+        '/a')
+
+    def select(self, level1, level2=None):
+        l1e = self.browser.element(self.LEVEL_1.format(quote(level1)))
+        if not level2:
+            # Clicking only the main menu item
+            self.browser.click(l1e)
+            return
+
+        # Hover on the menu on the right spot
+        self.browser.move_to_element(l1e)
+        l2e = self.browser.wait_for_element(
+            self.LEVEL_2.format(quote(level1), quote(level2)))
+        self.browser.click(l2e)
+
+    @property
+    def currently_selected(self):
+        try:
+            # Currently we cannot figure out the submenu selection as it is not
+            # marked in the UI
+            return [self.browser.text(self.ACTIVE)]
+        except NoSuchElementException:
+            return []

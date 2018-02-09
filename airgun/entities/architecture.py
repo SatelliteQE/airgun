@@ -1,7 +1,7 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import BaseNavigator, menu_click, navigator
+from airgun.navigation import BaseNavigator, navigator
 from airgun.views.architecture import ArchitectureView, ArchitectureDetailsView
 
 
@@ -28,10 +28,8 @@ class ShowAllArchitectures(BaseNavigator):
     VIEW = ArchitectureView
 
     def step(self, *args, **kwargs):
-        menu_click(
-            ["//a[@id='hosts_menu']", self.view.page_navigate_locator],
-            self.view.browser
-        )
+        # TODO: No prereq yet
+        self.view.navigation.select('Hosts', 'Architectures')
 
 
 @navigator.register(ArchitectureEntity, 'New')
