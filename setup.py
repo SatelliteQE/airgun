@@ -15,6 +15,7 @@ setup(
         'fauxfactory',
         'navmazing==1.1.4',
         'pytest==3.3.2',
+        'six==1.11.0',
         'widgetastic.core==0.20.3',
     ],
     packages=find_packages(exclude=['tests*']),

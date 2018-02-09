@@ -14,10 +14,15 @@ class BaseNavigator(navmazing.NavigateStep):
             raise AttributeError(
                 '{} does not have VIEW specified'.format(type(self).__name__))
         return self.create_view(self.VIEW,
-                                additional_context={'object': self.obj})
+                                additional_context={'entity': self.obj})
 
-    def create_view(self, *args, **kwargs):
-        return self.navigate_obj.browser.create_view(*args, **kwargs)
+    def create_view(self, view_class, additional_context=None):
+        if additional_context is None:
+            additional_context = {}
+        if not additional_context.get('entity'):
+            additional_context['entity'] = self.obj
+        return view_class(
+            self.navigate_obj.browser, additional_context=additional_context)
 
     def am_i_here(self, *args, **kwargs):
         try:

@@ -1,5 +1,7 @@
 from airgun import settings
-from airgun.fixtures import session  # noqa
+
+
+pytest_plugins = ["airgun.fixtures"]
 
 
 # todo: make sure this hook is needed - for unit tests configuring may be
