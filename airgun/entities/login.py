@@ -1,5 +1,5 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import BaseNavigator, navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.views.login import LoginView
 
 
@@ -16,7 +16,7 @@ class LoginEntity(BaseEntity):
 
 
 @navigator.register(LoginEntity)
-class NavigateToLogin(BaseNavigator):
+class NavigateToLogin(NavigateStep):
     VIEW = LoginView
 
     def step(self, *args, **kwargs):

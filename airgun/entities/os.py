@@ -1,7 +1,7 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import BaseNavigator, navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.views.os import OperatingSystemView, OperatingSystemDetailsView
 
 
@@ -18,7 +18,7 @@ class OperatingSystemEntity(BaseEntity):
 
 
 @navigator.register(OperatingSystemEntity, 'All')
-class ShowAllOperatingSystems(BaseNavigator):
+class ShowAllOperatingSystems(NavigateStep):
     VIEW = OperatingSystemView
 
     def step(self, *args, **kwargs):
@@ -27,7 +27,7 @@ class ShowAllOperatingSystems(BaseNavigator):
 
 
 @navigator.register(OperatingSystemEntity, 'New')
-class AddNewOperatingSystem(BaseNavigator):
+class AddNewOperatingSystem(NavigateStep):
     VIEW = OperatingSystemDetailsView
 
     prerequisite = NavigateToSibling('All')
