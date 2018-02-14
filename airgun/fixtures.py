@@ -15,6 +15,7 @@ def session(request):
     """Session fixture which automatically initializes (but does not start!)
     airgun UI session and correctly passes current test name to it.
 
+
     Usage::
 
         def test_foo(session):
@@ -23,7 +24,8 @@ def session(request):
                 session.architecture.create({'name': 'bar'})
 
     """
-    return Session(request.module.__name__)
+    test_name = '{}.{}'.format(request.module.__name__, request.node.name)
+    return Session(test_name)
 
 
 @pytest.fixture()
@@ -41,5 +43,6 @@ def autosession(request):
             autosession.architecture.create({'name': 'bar'})
 
     """
-    with Session(request.module.__name__) as started_session:
+    test_name = '{}.{}'.format(request.module.__name__, request.node.name)
+    with Session(test_name) as started_session:
         yield started_session

@@ -1,4 +1,4 @@
-from widgetastic.exceptions import NoSuchElementException
+from widgetastic.exceptions import NoSuchElementException, DoNotReadThisWidget
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Text, TextInput, Widget
 from widgetastic.xpath import quote
@@ -79,6 +79,16 @@ class Search(Widget):
         return self.browser.element(result_locator.locator % value).text
 
     def search(self, value, result_locator=None):
+        # Entity lists with 20+ elements may scroll page a bit and search field
+        # will appear out of screen. For some reason, clicking search button
+        # will have no effect in such case. Scrolling to search field just in
+        # case
+        # fixme: needs further investigation and implementation on different
+        # layer, maybe in self.browser.element
+        self.browser.selenium.execute_script(
+            'arguments[0].scrollIntoView(false);',
+            self.browser.element(self.search_field.locator),
+        )
         self.fill(value)
         self.search_button.click()
         return self.read(value, result_locator)
@@ -119,6 +129,12 @@ class HorizontalNavigation(Widget):
             return [self.browser.text(self.ACTIVE)]
         except NoSuchElementException:
             return []
+
+    def read(self):
+        """There's nothing to read in navigation menu at this moment, raising
+        appropriate exception to avoid errors and warnings in logs.
+        """
+        raise DoNotReadThisWidget
 
 
 class ContextSelector(Widget):
