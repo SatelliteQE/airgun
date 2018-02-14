@@ -119,3 +119,64 @@ class HorizontalNavigation(Widget):
             return [self.browser.text(self.ACTIVE)]
         except NoSuchElementException:
             return []
+
+
+class ContextSelector(Widget):
+    TOP_SWITCHER = (
+        '//ul[contains(@class, "navbar-menu")]/'
+        'li[contains(@class,"org-switcher")]/a'
+    )
+    ORG_LOCATOR = '//ul[contains(@class, "org-submenu")]/li/a[contains(.,{})]'
+    LOC_LOCATOR = '//ul[contains(@class, "loc-submenu")]/li/a[contains(.,{})]'
+    SELECT_CURRENT_ORG = (
+        '(//li[contains(@class,"org-switcher")]//li'
+        '/a[@data-toggle="dropdown"])[1]'
+    )
+    SELECT_CURRENT_LOC = (
+        '(//li[contains(@class,"org-switcher")]//li'
+        '/a[@data-toggle="dropdown"])[2]'
+    )
+    FETCH_CURRENT_ORG = '//li[contains(@class, "org-menu")]/a'
+    FETCH_CURRENT_LOC = '//li[contains(@class, "loc-menu")]/a'
+
+    def select_org(self, org_name):
+        l1e = self.browser.element(self.TOP_SWITCHER)
+        self.browser.move_to_element(l1e)
+        self.browser.click(l1e)
+        l2e = self.browser.element(self.SELECT_CURRENT_ORG)
+        self.browser.move_to_element(l2e)
+        l3e = self.browser.element(self.ORG_LOCATOR.format(quote(org_name)))
+        self.browser.execute_script(
+            "arguments[0].click();",
+            l3e,
+        )
+        self.browser.plugin.ensure_page_safe()
+
+    def current_org(self):
+        l1e = self.browser.element(self.TOP_SWITCHER)
+        self.browser.move_to_element(l1e)
+        current_org = self.browser.text(self.FETCH_CURRENT_ORG)
+        self.browser.click(l1e)
+        self.browser.move_by_offset(-150, -150)
+        return current_org
+
+    def select_loc(self, loc_name):
+        l1e = self.browser.element(self.TOP_SWITCHER)
+        self.browser.move_to_element(l1e)
+        self.browser.click(l1e)
+        l2e = self.browser.element(self.SELECT_CURRENT_LOC)
+        self.browser.move_to_element(l2e)
+        l3e = self.browser.element(self.LOC_LOCATOR.format(quote(loc_name)))
+        self.browser.execute_script(
+            "arguments[0].click();",
+            l3e,
+        )
+        self.browser.plugin.ensure_page_safe()
+
+    def current_loc(self):
+        l1e = self.browser.element(self.TOP_SWITCHER)
+        self.browser.move_to_element(l1e)
+        current_loc = self.browser.text(self.FETCH_CURRENT_LOC)
+        self.browser.click(l1e)
+        self.browser.move_by_offset(-150, -150)
+        return current_loc

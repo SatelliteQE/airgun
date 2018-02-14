@@ -10,7 +10,10 @@ from airgun import settings
 from airgun.browser import AirgunBrowser, SeleniumBrowserFactory
 from airgun.entities.login import LoginEntity
 from airgun.entities.architecture import ArchitectureEntity
+from airgun.entities.location import LocationEntity
 from airgun.entities.os import OperatingSystemEntity
+from airgun.entities.organization import OrganizationEntity
+
 
 from airgun.navigation import navigator
 
@@ -127,6 +130,8 @@ class Session(object):
         # Entities
         self.architecture = ArchitectureEntity(self.browser)
         self.os = OperatingSystemEntity(self.browser)
+        self.organization = OrganizationEntity(self.browser)
+        self.location = LocationEntity(self.browser)
         self.login = LoginEntity(self.browser)
 
         self.login.login({'username': self._user, 'password': self._password})
