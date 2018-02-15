@@ -14,7 +14,7 @@ class OperatingSystemEntity(BaseEntity):
 
     def delete(self, value):
         view = self.navigate_to(self, 'All')
-        view.search_element.search(value)
+        view.searchbox.search(value)
         view.delete.click(handle_alert=True)
 
     def search(self, value):
