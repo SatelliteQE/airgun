@@ -12,6 +12,11 @@ class OperatingSystemEntity(BaseEntity):
         view.fill(values)
         view.submit.click()
 
+    def delete(self, value):
+        view = self.navigate_to(self, 'All')
+        view.search_element.search(value)
+        view.delete.click(handle_alert=True)
+
     def search(self, value):
         view = self.navigate_to(self, 'All')
         return view.searchbox.search(value)

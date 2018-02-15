@@ -1,5 +1,5 @@
 
-from widgetastic.widget import View, Text, TextInput
+from widgetastic.widget import View, Text, TextInput, GenericLocatorWidget
 
 from airgun.widgets import ResourceList, Search
 
@@ -9,6 +9,8 @@ from .common import BaseLoggedInView
 class OperatingSystemView(BaseLoggedInView):
     title = Text("//h1[text()='Operating systems']")
     new = Text("//a[contains(@href, '/operatingsystems/new')]")
+    delete = GenericLocatorWidget(
+        "//span[contains(@class, 'btn')]/a[@data-method='delete']")
     searchbox = Search()
 
     @property
