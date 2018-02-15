@@ -129,10 +129,10 @@ class Session(object):
 
         # Entities
         self.architecture = ArchitectureEntity(self.browser)
-        self.os = OperatingSystemEntity(self.browser)
-        self.organization = OrganizationEntity(self.browser)
         self.location = LocationEntity(self.browser)
         self.login = LoginEntity(self.browser)
+        self.operatingsystem = OperatingSystemEntity(self.browser)
+        self.organization = OrganizationEntity(self.browser)
 
         self.login.login({'username': self._user, 'password': self._password})
         return self

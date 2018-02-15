@@ -7,18 +7,18 @@ from airgun.views.architecture import ArchitectureView, ArchitectureDetailsView
 
 class ArchitectureEntity(BaseEntity):
 
-    def create_architecture(self, values):
+    def create(self, values):
         view = self.navigate_to(self, 'New')
         view.fill(values)
-        view.submit_data()
+        view.submit.click()
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
-        return view.search_element.search(value)
+        return view.searchbox.search(value)
 
-    def view_architecture(self, name):
+    def read(self, name):
         view = self.navigate_to(self, 'All')
-        view.search_element.search(name)
+        view.searchbox.search(name)
         view = self.navigate_to(self, 'Edit')
         return view.read()
 
@@ -29,7 +29,7 @@ class ShowAllArchitectures(NavigateStep):
 
     def step(self, *args, **kwargs):
         # TODO: No prereq yet
-        self.view.navigation.select('Hosts', 'Architectures')
+        self.view.menu.select('Hosts', 'Architectures')
 
 
 @navigator.register(ArchitectureEntity, 'New')
@@ -45,12 +45,12 @@ class AddNewArchitecture(NavigateStep):
 
 
 @navigator.register(ArchitectureEntity, 'Edit')
-class EditExistingArchitecture(NavigateStep):
+class EditArchitecture(NavigateStep):
     VIEW = ArchitectureDetailsView
 
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
         self.view.browser.wait_for_element(
-            self.parent.entity_navigate_locator, ensure_page_safe=True)
-        self.parent.browser.click(self.parent.entity_navigate_locator)
+            self.parent.edit, ensure_page_safe=True)
+        self.parent.edit.click()

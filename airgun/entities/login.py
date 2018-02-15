@@ -8,7 +8,7 @@ class LoginEntity(BaseEntity):
     def login(self, values):
         view = self.navigate_to(self, 'NavigateToLogin')
         view.fill(values)
-        self.browser.click(view.submit)
+        view.submit.click()
 
     def logout(self):
         # fixme: not implemented

@@ -71,7 +71,7 @@ class Search(Widget):
     default_result_locator = Text("//a[contains(., '%s')]")
 
     def fill(self, value):
-        self.search_field.fill(value)
+        return self.search_field.fill(value)
 
     def read(self, value, result_locator=None):
         if result_locator is None:
@@ -196,3 +196,14 @@ class ContextSelector(Widget):
         self.browser.click(l1e)
         self.browser.move_by_offset(-150, -150)
         return current_loc
+
+    def read(self):
+        """As reading organization and location is not atomic operation: needs
+        mouse moves, clicks, etc, and this widget is included in every view -
+        calling meth:`airgun.views.common.BaseLoggedInView.read` for any view
+        will trigger reading values of :class:`ContextSelector`. Thus, to avoid
+        significant performance degradation it should not be readable.
+
+        Use :meth:`current_org` and :meth:`current_loc` instead.
+        """
+        raise DoNotReadThisWidget

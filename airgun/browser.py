@@ -479,6 +479,18 @@ class AirgunBrowserPlugin(DefaultPlugin):
         }
         '''
 
+    def before_click(self, element):
+        """Invoked before clicking on an element. Ensure page is fully loaded
+        before clicking.
+        """
+        self.ensure_page_safe()
+
+    def after_click(self, element):
+        """Invoked after clicking on an element. Ensure page is fully loaded
+        before proceeding further.
+        """
+        self.ensure_page_safe()
+
 
 class AirgunBrowser(Browser):
     """A wrapper around :class:`widgetastic.browser.Browser` which injects

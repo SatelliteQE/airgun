@@ -4,5 +4,5 @@ from ..widgets import HorizontalNavigation, ContextSelector
 
 
 class BaseLoggedInView(View):
-    navigation = HorizontalNavigation()
-    context_widget = ContextSelector()
+    menu = HorizontalNavigation()
+    taxonomies = ContextSelector()

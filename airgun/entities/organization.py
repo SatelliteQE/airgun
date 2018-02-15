@@ -13,14 +13,14 @@ class SelectOrganizationContext(NavigateStep):
     VIEW = BaseLoggedInView
 
     def am_i_here(self, *args, **kwargs):
-        org_name = kwargs.pop('org_name')
-        current_org = self.view.context_widget.current_org()
+        org_name = kwargs.get('org_name')
+        current_org = self.view.taxonomies.current_org()
         if len(org_name) > 30:
             org_name = org_name[:27] + '...'
         return current_org == org_name
 
     def step(self, *args, **kwargs):
-        org_name = kwargs.pop('org_name')
+        org_name = kwargs.get('org_name')
         if not org_name:
             raise ValueError('Specify proper value for org_name parameter')
-        self.view.context_widget.select_org(org_name)
+        self.view.taxonomies.select_org(org_name)

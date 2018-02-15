@@ -7,14 +7,14 @@ from airgun.views.os import OperatingSystemView, OperatingSystemDetailsView
 
 class OperatingSystemEntity(BaseEntity):
 
-    def create_operating_system(self, values):
+    def create(self, values):
         view = self.navigate_to(self, 'New')
         view.fill(values)
-        view.submit_data()
+        view.submit.click()
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
-        return view.search_element.search(value)
+        return view.searchbox.search(value)
 
 
 @navigator.register(OperatingSystemEntity, 'All')
@@ -23,7 +23,7 @@ class ShowAllOperatingSystems(NavigateStep):
 
     def step(self, *args, **kwargs):
         # TODO: No prereq yet
-        self.view.navigation.select('Hosts', 'Operating systems')
+        self.view.menu.select('Hosts', 'Operating systems')
 
 
 @navigator.register(OperatingSystemEntity, 'New')
