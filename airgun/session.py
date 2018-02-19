@@ -1,4 +1,5 @@
 """Session controller which manages UI session"""
+import copy
 import logging
 import os
 
@@ -124,7 +125,7 @@ class Session(object):
         self._factory.post_init()
 
         # Navigator
-        self.navigator = navigator
+        self.navigator = copy.deepcopy(navigator)
         self.navigator.browser = self.browser
 
         # Entities
