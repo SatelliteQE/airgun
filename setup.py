@@ -7,10 +7,12 @@ with open('README.rst', 'r') as f:
 setup(
     name='airgun',
     version='0.0.1',
-    description='TBD',
+    description=(
+        'A library which is build over Widgetastic and navmazing to make '
+        'Satellite 6 UI testing easier.'),
     long_description=README,
     author=u'RedHat QE Team',
-    url='https://github.com/abalakh/airgun',
+    url='https://github.com/SatelliteQE/airgun',
     install_requires=[
         'fauxfactory',
         'navmazing==1.1.4',
@@ -30,6 +32,7 @@ setup(
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux'
         'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
     ),
 )
