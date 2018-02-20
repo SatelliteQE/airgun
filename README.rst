@@ -1,8 +1,8 @@
-.. image:: https://travis-ci.org/abalakh/airgun.svg
+.. image:: https://travis-ci.org/SatelliteQE/airgun.svg
    :scale: 50 %
    :alt: Build Status
    :align: left
-   :target: https://travis-ci.org/abalakh/airgun
+   :target: https://travis-ci.org/SatelliteQE/airgun
 
 
 Airgun
