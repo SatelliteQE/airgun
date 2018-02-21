@@ -1,15 +1,13 @@
 from widgetastic.widget import Text, TextInput
 
-from airgun.widgets import ResourceList, Search
+from airgun.views.common import BaseLoggedInView, SearchableView
+from airgun.widgets import ResourceList
 
-from .common import BaseLoggedInView
 
-
-class ArchitectureView(BaseLoggedInView):
+class ArchitectureView(BaseLoggedInView, SearchableView):
     title = Text("//h1[text()='Architectures']")
     new = Text("//a[contains(@href, '/architectures/new')]")
     edit = Text("//a[contains(@href, 'edit') and contains(@href, 'arch')]")
-    searchbox = Search()
 
     @property
     def is_displayed(self):

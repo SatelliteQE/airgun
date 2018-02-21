@@ -1,28 +1,19 @@
+from widgetastic.widget import GenericLocatorWidget, Text, TextInput, View
 
-from widgetastic.widget import View, Text, TextInput, GenericLocatorWidget
-
-from airgun.widgets import ResourceList, Search
-
-from .common import BaseLoggedInView
+from airgun.views.common import BaseLoggedInView, SearchableView
+from airgun.widgets import ResourceList
 
 
-class OperatingSystemView(BaseLoggedInView):
+class OperatingSystemView(BaseLoggedInView, SearchableView):
     title = Text("//h1[text()='Operating systems']")
     new = Text("//a[contains(@href, '/operatingsystems/new')]")
     delete = GenericLocatorWidget(
         "//span[contains(@class, 'btn')]/a[@data-method='delete']")
-    searchbox = Search()
-    search_result_locator = "//a[contains(., '%s')]"
 
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.title, exception=False) is not None
-
-    def search(self, query, expected_result=None):
-        self.searchbox.search(query)
-        return self.browser.element(
-            self.search_result_locator % (expected_result or query)).text
 
 
 class OperatingSystemDetailsView(BaseLoggedInView):
