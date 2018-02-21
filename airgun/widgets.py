@@ -73,12 +73,10 @@ class Search(Widget):
     def fill(self, value):
         return self.search_field.fill(value)
 
-    def read(self, value, result_locator=None):
-        if result_locator is None:
-            result_locator = self.default_result_locator
-        return self.browser.element(result_locator.locator % value).text
+    def read(self):
+        return self.search_field.read()
 
-    def search(self, value, result_locator=None):
+    def search(self, value):
         # Entity lists with 20+ elements may scroll page a bit and search field
         # will appear out of screen. For some reason, clicking search button
         # will have no effect in such case. Scrolling to search field just in
@@ -91,7 +89,6 @@ class Search(Widget):
         )
         self.fill(value)
         self.search_button.click()
-        return self.read(value, result_locator)
 
 
 class HorizontalNavigation(Widget):

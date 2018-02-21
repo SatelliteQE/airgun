@@ -12,11 +12,17 @@ class OperatingSystemView(BaseLoggedInView):
     delete = GenericLocatorWidget(
         "//span[contains(@class, 'btn')]/a[@data-method='delete']")
     searchbox = Search()
+    search_result_locator = "//a[contains(., '%s')]"
 
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.title, exception=False) is not None
+
+    def search(self, query, expected_result=None):
+        self.searchbox.search(query)
+        return self.browser.element(
+            self.search_result_locator % (expected_result or query)).text
 
 
 class OperatingSystemDetailsView(BaseLoggedInView):
