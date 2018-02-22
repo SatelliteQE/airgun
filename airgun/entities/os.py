@@ -19,7 +19,7 @@ class OperatingSystemEntity(BaseEntity):
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
-        return view.searchbox.search(value)
+        return view.search(value)
 
 
 @navigator.register(OperatingSystemEntity, 'All')

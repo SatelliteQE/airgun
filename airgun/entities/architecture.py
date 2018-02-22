@@ -14,7 +14,7 @@ class ArchitectureEntity(BaseEntity):
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
-        return view.searchbox.search(value)
+        return view.search(value)
 
     def read(self, name):
         view = self.navigate_to(self, 'All')
