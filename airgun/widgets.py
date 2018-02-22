@@ -68,7 +68,6 @@ class ResourceList(Widget):
 class Search(Widget):
     search_field = TextInput(id='search')
     search_button = Text("//button[contains(@type,'submit')]")
-    default_result_locator = Text("//a[contains(., '%s')]")
 
     def fill(self, value):
         return self.search_field.fill(value)
