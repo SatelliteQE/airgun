@@ -1,7 +1,7 @@
-from selenium.common.exceptions import NoSuchElementException
-from widgetastic.widget import View
+import six
+from widgetastic.widget import NoSuchElementException, View, WidgetMetaclass
 
-from airgun.widgets import HorizontalNavigation, ContextSelector, Search
+from airgun.widgets import ContextSelector, HorizontalNavigation, Search
 
 
 class BaseLoggedInView(View):
@@ -9,8 +9,14 @@ class BaseLoggedInView(View):
     taxonomies = ContextSelector()
 
 
-class SearchableView(View):
-    """"Mixin" view which adds :class:`airgun.widgets.Search` widget and
+class WidgetMixin(six.with_metaclass(WidgetMetaclass, object)):
+    """Base class for all View and Widget mixins"""
+    # todo: remove it and use widgetastic native one, once it's introduced
+    pass
+
+
+class SearchableViewMixin(WidgetMixin):
+    """Mixin which adds :class:`airgun.widgets.Search` widget and
     :meth:`search` to your view. It's useful for _most_ entities list views
     where searchbox is present.
 
@@ -36,7 +42,7 @@ class SearchableView(View):
         self.searchbox.search(query)
         try:
             result = self.browser.element(
-            self.search_result_locator % (expected_result or query)).text
+                self.search_result_locator % (expected_result or query)).text
         except NoSuchElementException:
             result = None
         return result

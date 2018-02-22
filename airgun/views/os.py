@@ -1,10 +1,10 @@
 from widgetastic.widget import GenericLocatorWidget, Text, TextInput, View
 
-from airgun.views.common import BaseLoggedInView, SearchableView
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 from airgun.widgets import ResourceList
 
 
-class OperatingSystemView(BaseLoggedInView, SearchableView):
+class OperatingSystemView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Operating systems']")
     new = Text("//a[contains(@href, '/operatingsystems/new')]")
     delete = GenericLocatorWidget(

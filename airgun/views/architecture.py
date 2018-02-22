@@ -1,10 +1,10 @@
 from widgetastic.widget import Text, TextInput
 
-from airgun.views.common import BaseLoggedInView, SearchableView
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 from airgun.widgets import ResourceList
 
 
-class ArchitectureView(BaseLoggedInView, SearchableView):
+class ArchitectureView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Architectures']")
     new = Text("//a[contains(@href, '/architectures/new')]")
     edit = Text("//a[contains(@href, 'edit') and contains(@href, 'arch')]")
