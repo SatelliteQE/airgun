@@ -1,11 +1,4 @@
-.. image:: https://travis-ci.org/SatelliteQE/airgun.svg
-   :scale: 50 %
-   :alt: Build Status
-   :align: left
-   :target: https://travis-ci.org/SatelliteQE/airgun
-
-
-Airgun
+AirGun
 ======
 
 Airgun is a Python library which is build over `Widgetastic`_ and `navmazing`_
@@ -42,9 +35,3 @@ reuse already existing properties file since no changes were introduced there)
 
 .. _Widgetastic: https://github.com/RedHatQE/widgetastic.core
 .. _navmazing: https://github.com/RedhatQE/navmazing/
-
-5. Build documentation
-
-.. code-block:: bash
-
-    make docs

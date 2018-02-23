@@ -9,3 +9,6 @@ __pycache__/
 
 # User's configuration
 settings.ini
+
+# Generated documentation
+/docs/_build/
