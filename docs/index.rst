@@ -13,8 +13,7 @@ More in-depth coverage is provided in other sections.
 .. toctree::
     :maxdepth: 1
 
-    entities
-    views
+    api/index
     examples
 
 Quick start guide

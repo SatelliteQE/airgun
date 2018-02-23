@@ -34,3 +34,23 @@ source_suffix = '.rst'
 master_doc = 'index'
 exclude_patterns = ['_build']
 nitpicky = True
+nitpick_ignore = [
+    ('py:class', 'widgetastic.browser.Browser'),
+    ('py:class', 'widgetastic.widget.View'),
+    ('py:class', 'navmazing.Navigate'),
+    ('py:class', 'navmazing.NavigateStep'),
+    ('py:meth', 'navmazing.NavigateStep.go'),
+    ('py:meth', 'current_org'),
+    ('py:meth', 'current_loc'),
+    ('py:meth', 'select'),
+    ('py:meth', 'fill_with'),
+    ('py:class', 'bool'),
+    ('py:class', 'dict'),
+    ('py:class', 'str'),
+]
+# FIXME: No idea why I need these in the ignore list above (looks good to
+# my eyes in the code):
+#    ('py:meth', 'current_org'),
+#    ('py:meth', 'current_loc'),
+#    ('py:meth', 'select'),
+#    ('py:meth', 'fill_with'),
