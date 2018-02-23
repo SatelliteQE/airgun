@@ -47,4 +47,4 @@ reuse already existing properties file since no changes were introduced there)
 
 .. code-block:: bash
 
-    make docs
+    make docs-html
