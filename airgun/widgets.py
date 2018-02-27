@@ -4,21 +4,20 @@ from widgetastic.xpath import quote
 
 
 class ItemsList(GenericLocatorWidget):
-    """List with clickable elements. Part of :class:`MultiSelect`
+    """List with clickable elements. Part of :class:`MultiSelect` or jQuery
+    dropdown.
 
     Example html representation::
 
-        <div class="ms-selection">
+        <ul class="ms-list" tabindex="-1">
 
     Locator example::
 
-        //div[@class='ms-selection']
+        //ul[@class='ms-list']
 
     """
-    ITEM = (
-        "./ul/li[not(contains(@style, 'display: none'))]"
-        "/span[contains(.,'%s')]")
-    ITEMS = "./ul/li[not(contains(@style, 'display: none'))]"
+    ITEM = "./li[not(contains(@style, 'display: none'))][contains(.,'%s')]"
+    ITEMS = "./li[not(contains(@style, 'display: none'))]"
 
     def read(self):
         """Return a list of strings representing elements in the
@@ -26,39 +25,13 @@ class ItemsList(GenericLocatorWidget):
         return [
             el.text for el in self.browser.elements(self.ITEMS, parent=self)]
 
-    def fill(self, values):
-        """Clicks on every element in passed list.
+    def fill(self, value):
+        """Clicks on element inside the list.
 
-        :param values: list of strings with element names
+        :param value: string with element name
         """
-        for value in values:
-            self.browser.click(
-                self.browser.element(self.ITEM % value, parent=self))
-
-
-class FilterableItemsList(ItemsList):
-    """A variant of :class:`ItemsList` with filtering support.
-
-        Example html representation::
-
-            <div class="ms-selectable">
-
-        Locator example::
-
-            /div[@class='ms-selectable']
-
-    """
-    filter = TextInput(locator=".//input[@class='ms-filter']")
-
-    def fill(self, values):
-        """Types element name before clicking on it.
-
-        :param values: list of strings with element names
-        """
-        for value in values:
-            self.filter.fill(value)
-            self.browser.click(
-                self.browser.element(self.ITEM % value, parent=self))
+        self.browser.click(
+            self.browser.element(self.ITEM % value, parent=self))
 
 
 class MultiSelect(GenericLocatorWidget):
@@ -80,9 +53,9 @@ class MultiSelect(GenericLocatorWidget):
         id='ms-operatingsystem_architecture_ids'
 
     """
-
-    free = FilterableItemsList("./div[@class='ms-selectable']")
-    assigned = ItemsList("./div[@class='ms-selection']")
+    filter = TextInput(locator=".//input[@class='ms-filter']")
+    free = ItemsList("./div[@class='ms-selectable']/ul")
+    assigned = ItemsList("./div[@class='ms-selection']/ul")
 
     def __init__(self, parent, locator=None, id=None, logger=None):
         """Supports initialization via ``locator=`` or ``id=``"""
@@ -93,7 +66,7 @@ class MultiSelect(GenericLocatorWidget):
 
     def fill(self, values):
         """Read current values, find the difference between current and passed
-        ones and fill the widget accordingly.
+        ones and fills the widget accordingly.
 
         :param values: dict with keys ``assigned`` and/or ``free``, containing
             list of strings, representing item names
@@ -104,9 +77,12 @@ class MultiSelect(GenericLocatorWidget):
         if not to_add and not to_remove:
             return False
         if to_add:
-            self.free.fill(to_add)
+            for value in to_add:
+                self.filter.fill(value)
+                self.free.fill(value)
         if to_remove:
-            self.assigned.fill(to_remove)
+            for value in to_remove:
+                self.assigned.fill(value)
         return True
 
     def read(self):
