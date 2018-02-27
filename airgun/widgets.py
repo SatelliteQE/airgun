@@ -1,68 +1,120 @@
 from widgetastic.exceptions import NoSuchElementException, DoNotReadThisWidget
-from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import Text, TextInput, Widget
+from widgetastic.widget import GenericLocatorWidget, Text, TextInput, Widget
 from widgetastic.xpath import quote
 
 
-class ResourceList(Widget):
-    filter = TextInput(locator=ParametrizedLocator(
-        "{@parent_locator}//input[@class='ms-filter']"))
+class ItemsList(GenericLocatorWidget):
+    """List with clickable elements. Part of :class:`MultiSelect`
 
-    ITEM_FROM = ParametrizedLocator(
-        "{@parent_locator}/div[@class='ms-selectable']"
-        "//li[not(contains(@style, 'display: none'))]/span[contains(.,'%s')]"
-    )
-    ITEM_TO = ParametrizedLocator(
-        "{@parent_locator}/div[@class='ms-selection']"
-        "//li[not(contains(@style, 'display: none'))]/span[contains(.,'%s')]"
-    )
-    LIST_FROM = ParametrizedLocator(
-        "{@parent_locator}/div[@class='ms-selectable']"
-        "//li[not(contains(@style, 'display: none'))]"
-    )
-    LIST_TO = ParametrizedLocator(
-        "{@parent_locator}/div[@class='ms-selection']"
-        "//li[not(contains(@style, 'display: none'))]"
-    )
+    Example html representation::
 
-    def __init__(self, parent, parent_entity, affected_entity, logger=None):
-        Widget.__init__(self, parent, logger=logger)
-        self.parent_entity = parent_entity.lower()
-        self.affected_entity = affected_entity.lower()
-        self.parent_locator = (
-            "//div[contains(@id, 'ms-{}') and "
-            "contains(@id, '{}_ids')]".format(
-                self.parent_entity, self.affected_entity)
-        )
+        <div class="ms-selection">
 
-    def _filter_value(self, value):
-        self.filter.fill(value)
+    Locator example::
 
-    def assign_resource(self, values):
-        for value in values:
-            self._filter_value(value)
-            self.browser.click(
-                self.browser.element(self.ITEM_FROM.locator % value))
+        //div[@class='ms-selection']
 
-    def unassign_resource(self, values):
-        for value in values:
-            self._filter_value(value)
-            self.browser.click(
-                self.browser.element(self.ITEM_TO.locator % value))
-
-    def fill(self, values):
-        if values['operation'] == 'Add':
-            self.assign_resource(values['values'])
-        if values['operation'] == 'Remove':
-            self.unassign_resource(values['values'])
+    """
+    ITEM = (
+        "./ul/li[not(contains(@style, 'display: none'))]"
+        "/span[contains(.,'%s')]")
+    ITEMS = "./ul/li[not(contains(@style, 'display: none'))]"
 
     def read(self):
-            return {
-                'free': [
-                    el.text for el in self.browser.elements(self.LIST_FROM)],
-                'assigned': [
-                    el.text for el in self.browser.elements(self.LIST_TO)]
-            }
+        """Return a list of strings representing elements in the
+        :class:`ItemsList`."""
+        return [
+            el.text for el in self.browser.elements(self.ITEMS, parent=self)]
+
+    def fill(self, values):
+        """Clicks on every element in passed list.
+
+        :param values: list of strings with element names
+        """
+        for value in values:
+            self.browser.click(
+                self.browser.element(self.ITEM % value, parent=self))
+
+
+class FilterableItemsList(ItemsList):
+    """A variant of :class:`ItemsList` with filtering support.
+
+        Example html representation::
+
+            <div class="ms-selectable">
+
+        Locator example::
+
+            /div[@class='ms-selectable']
+
+    """
+    filter = TextInput(locator=".//input[@class='ms-filter']")
+
+    def fill(self, values):
+        """Types element name before clicking on it.
+
+        :param values: list of strings with element names
+        """
+        for value in values:
+            self.filter.fill(value)
+            self.browser.click(
+                self.browser.element(self.ITEM % value, parent=self))
+
+
+class MultiSelect(GenericLocatorWidget):
+    """Typical two-pane multiselect jQuery widget. Allows to move items from
+    list of ``free`` entities to list of ``assigned`` ones and vice versa.
+
+    Examples on UI::
+
+        Hosts -> Architectures -> any -> Operating Systems
+        Hosts -> Operating Systems -> any -> Architectures
+
+    Example html representation::
+
+        <div class="ms-container" id="ms-operatingsystem_architecture_ids">
+
+    Locator examples::
+
+        //div[@id='ms-operatingsystem_architecture_ids']
+        id='ms-operatingsystem_architecture_ids'
+
+    """
+
+    free = FilterableItemsList("./div[@class='ms-selectable']")
+    assigned = ItemsList("./div[@class='ms-selection']")
+
+    def __init__(self, parent, locator=None, id=None, logger=None):
+        """Supports initialization via ``locator=`` or ``id=``"""
+        if locator and id or not locator and not id:
+            raise TypeError('Please specify either locator or id')
+        locator = locator or ".//div[@id='{}']".format(id)
+        super(MultiSelect, self).__init__(parent, locator, logger)
+
+    def fill(self, values):
+        """Read current values, find the difference between current and passed
+        ones and fill the widget accordingly.
+
+        :param values: dict with keys ``assigned`` and/or ``free``, containing
+            list of strings, representing item names
+        """
+        current = self.read()
+        to_add = set(values.get('assigned', ())) - set(current['assigned'])
+        to_remove = set(values.get('free', ())) - set(current['free'])
+        if not to_add and not to_remove:
+            return False
+        if to_add:
+            self.free.fill(to_add)
+        if to_remove:
+            self.assigned.fill(to_remove)
+        return True
+
+    def read(self):
+        """Returns a dict with current lists values."""
+        return {
+            'free': self.free.read(),
+            'assigned': self.assigned.read(),
+        }
 
 
 class Search(Widget):
