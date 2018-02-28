@@ -1,6 +1,7 @@
-from widgetastic.exceptions import NoSuchElementException, DoNotReadThisWidget
+from widgetastic.exceptions import DoNotReadThisWidget
 from widgetastic.widget import GenericLocatorWidget, Text, TextInput, Widget
 from widgetastic.xpath import quote
+from widgetastic_patternfly import VerticalNavigation
 
 
 class ItemsList(GenericLocatorWidget):
@@ -120,108 +121,44 @@ class Search(Widget):
         self.search_button.click()
 
 
-class HorizontalNavigation(Widget):
-    """The Patternfly style horizontal top menu.
-
-    Use :py:meth:`select` to select the menu items. This takes IDs.
-    """
-    LEVEL_1 = (
-        '//ul[contains(@class, "navbar-menu")]/li/a[normalize-space(.)={}]')
-    LEVEL_2 = (
-        '//ul[contains(@class, "navbar-menu")]/li[./a[normalize-space(.)={}]'
-        ' and contains(@class, "open")]/ul/li/a[normalize-space(.)={}]')
-    ACTIVE = (
-        '//ul[contains(@class, "navbar-menu")]/li[contains(@class, "active")]'
-        '/a')
-
-    def select(self, level1, level2=None):
-        l1e = self.browser.element(self.LEVEL_1.format(quote(level1)))
-        if not level2:
-            # Clicking only the main menu item
-            self.browser.click(l1e)
-            return
-
-        # Hover on the menu on the right spot
-        self.browser.move_to_element(l1e)
-        l2e = self.browser.wait_for_element(
-            self.LEVEL_2.format(quote(level1), quote(level2)))
-        self.browser.click(l2e)
-
-    @property
-    def currently_selected(self):
-        try:
-            # Currently we cannot figure out the submenu selection as it is not
-            # marked in the UI
-            return [self.browser.text(self.ACTIVE)]
-        except NoSuchElementException:
-            return []
-
-    def read(self):
-        """There's nothing to read in navigation menu at this moment, raising
-        appropriate exception to avoid errors and warnings in logs.
-        """
-        raise DoNotReadThisWidget
+class SatVerticalNavigation(VerticalNavigation):
+    """The Patternfly Vertical navigation."""
+    CURRENTLY_SELECTED = './/li[contains(@class, "active")]/a/span'
 
 
 class ContextSelector(Widget):
-    TOP_SWITCHER = (
-        '//ul[contains(@class, "navbar-menu")]/'
-        'li[contains(@class,"org-switcher")]/a'
-    )
-    ORG_LOCATOR = '//ul[contains(@class, "org-submenu")]/li/a[contains(.,{})]'
-    LOC_LOCATOR = '//ul[contains(@class, "loc-submenu")]/li/a[contains(.,{})]'
-    SELECT_CURRENT_ORG = (
-        '(//li[contains(@class,"org-switcher")]//li'
-        '/a[@data-toggle="dropdown"])[1]'
-    )
-    SELECT_CURRENT_LOC = (
-        '(//li[contains(@class,"org-switcher")]//li'
-        '/a[@data-toggle="dropdown"])[2]'
-    )
-    FETCH_CURRENT_ORG = '//li[contains(@class, "org-menu")]/a'
-    FETCH_CURRENT_LOC = '//li[contains(@class, "loc-menu")]/a'
+    CURRENT_ORG = '//li[@id="organization-dropdown"]/a'
+    CURRENT_LOC = '//li[@id="location-dropdown"]/a'
+    ORG_LOCATOR = '//li[@id="organization-dropdown"]/ul/li/a[contains(.,{})]'
+    LOC_LOCATOR = '//li[@id="location-dropdown"]/ul/li/a[contains(.,{})]'
 
     def select_org(self, org_name):
-        l1e = self.browser.element(self.TOP_SWITCHER)
+        l1e = self.browser.element(self.CURRENT_ORG)
         self.browser.move_to_element(l1e)
         self.browser.click(l1e)
-        l2e = self.browser.element(self.SELECT_CURRENT_ORG)
-        self.browser.move_to_element(l2e)
-        l3e = self.browser.element(self.ORG_LOCATOR.format(quote(org_name)))
+        l2e = self.browser.element(self.ORG_LOCATOR.format(quote(org_name)))
         self.browser.execute_script(
             "arguments[0].click();",
-            l3e,
+            l2e,
         )
         self.browser.plugin.ensure_page_safe()
 
     def current_org(self):
-        l1e = self.browser.element(self.TOP_SWITCHER)
-        self.browser.move_to_element(l1e)
-        current_org = self.browser.text(self.FETCH_CURRENT_ORG)
-        self.browser.click(l1e)
-        self.browser.move_by_offset(-150, -150)
-        return current_org
+        return self.browser.text(self.CURRENT_ORG)
 
     def select_loc(self, loc_name):
-        l1e = self.browser.element(self.TOP_SWITCHER)
+        l1e = self.browser.element(self.CURRENT_LOC)
         self.browser.move_to_element(l1e)
         self.browser.click(l1e)
-        l2e = self.browser.element(self.SELECT_CURRENT_LOC)
-        self.browser.move_to_element(l2e)
-        l3e = self.browser.element(self.LOC_LOCATOR.format(quote(loc_name)))
+        l2e = self.browser.element(self.LOC_LOCATOR.format(quote(loc_name)))
         self.browser.execute_script(
             "arguments[0].click();",
-            l3e,
+            l2e,
         )
         self.browser.plugin.ensure_page_safe()
 
     def current_loc(self):
-        l1e = self.browser.element(self.TOP_SWITCHER)
-        self.browser.move_to_element(l1e)
-        current_loc = self.browser.text(self.FETCH_CURRENT_LOC)
-        self.browser.click(l1e)
-        self.browser.move_by_offset(-150, -150)
-        return current_loc
+        return self.browser.text(self.CURRENT_LOC)
 
     def read(self):
         """As reading organization and location is not atomic operation: needs

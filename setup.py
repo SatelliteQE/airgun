@@ -19,6 +19,7 @@ setup(
         'pytest==3.3.2',
         'six==1.11.0',
         'widgetastic.core==0.20.3',
+        'widgetastic.patternfly==0.0.29'
     ],
     packages=find_packages(exclude=['tests*']),
     package_data={'': ['LICENSE']},

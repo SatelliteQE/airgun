@@ -1,11 +1,11 @@
 import six
 from widgetastic.widget import NoSuchElementException, View, WidgetMetaclass
 
-from airgun.widgets import ContextSelector, HorizontalNavigation, Search
+from airgun.widgets import ContextSelector, SatVerticalNavigation, Search
 
 
 class BaseLoggedInView(View):
-    menu = HorizontalNavigation()
+    menu = SatVerticalNavigation('.//div[@id="vertical-nav"]/ul')
     taxonomies = ContextSelector()
 
 
