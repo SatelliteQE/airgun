@@ -4,7 +4,7 @@ AirGun
 Airgun is a Python library which is build over `Widgetastic`_ and `navmazing`_
 to make Satellite 6 UI testing easier.
 
-This page provides a summary of information about NailGun.
+This page provides a summary of information about AirGun.
 
 .. contents::
 
