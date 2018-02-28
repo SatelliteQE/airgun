@@ -5,5 +5,5 @@ To build documentation locally, use:
 
 .. code-block:: bash
 
-    pip install Sphinx
-    make docs-clean docs-html
+    pip install -r requirements-optional.txt
+    make docs-html

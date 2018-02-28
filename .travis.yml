@@ -2,9 +2,8 @@ language: python
 python:
   - "3.6"
 install:
-  - "pip install flake8"
-  - "pip install Sphinx"
   - "pip install -r requirements.txt"
+  - "pip install -r requirements-optional.txt"
 script:
   - "flake8 ."
   - "make docs-html"
