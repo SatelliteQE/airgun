@@ -226,7 +226,7 @@ class ContextSelector(Widget):
     def read(self):
         """As reading organization and location is not atomic operation: needs
         mouse moves, clicks, etc, and this widget is included in every view -
-        calling meth:`airgun.views.common.BaseLoggedInView.read` for any view
+        calling :meth:`airgun.views.common.BaseLoggedInView.read` for any view
         will trigger reading values of :class:`ContextSelector`. Thus, to avoid
         significant performance degradation it should not be readable.
 

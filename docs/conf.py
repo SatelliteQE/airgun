@@ -41,6 +41,7 @@ nitpick_ignore = [
     ('py:class', 'navmazing.Navigate'),
     ('py:class', 'navmazing.NavigateStep'),
     ('py:class', 'airgun.views.common.BaseLoggedInView'),
+    ('py:meth', 'airgun.views.common.BaseLoggedInView.read'),
     ('py:meth', 'navmazing.NavigateStep.go'),
     ('py:meth', 'current_org'),
     ('py:meth', 'current_loc'),
