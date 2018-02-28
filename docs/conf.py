@@ -57,6 +57,7 @@ nitpick_ignore = [
 #    ('py:meth', 'fill_with'),
 intersphinx_mapping = {
     'python': ('http://docs.python.org/3.6', None),
-    #'widgetastic': ('http://widgetasticcore.readthedocs.io/en/latest/', None),
-    #'navmazing': ('http://navmazing.readthedocs.io/en/latest/', None),
+    # 'widgetastic':
+    #   ('http://widgetasticcore.readthedocs.io/en/latest/', None),
+    # 'navmazing': ('http://navmazing.readthedocs.io/en/latest/', None),
 }
