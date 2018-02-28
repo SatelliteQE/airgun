@@ -13,6 +13,7 @@ More in-depth coverage is provided in other sections.
 .. toctree::
     :maxdepth: 1
 
+    build-docs
     api/index
     examples
 
@@ -47,9 +48,3 @@ reuse already existing properties file since no changes were introduced there)
 
 .. _Widgetastic: https://github.com/RedHatQE/widgetastic.core
 .. _navmazing: https://github.com/RedhatQE/navmazing/
-
-5. Build documentation
-
-.. code-block:: bash
-
-    make docs-html
