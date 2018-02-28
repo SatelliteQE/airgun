@@ -3,5 +3,7 @@ python:
   - "3.6"
 install:
   - "pip install flake8"
+  - "pip install Sphinx"
 script:
   - "flake8 ."
+  - "make docs-html"
