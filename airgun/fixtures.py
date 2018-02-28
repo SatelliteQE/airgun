@@ -1,6 +1,6 @@
 """Handy fixtures which you may want to use in your tests.
 
-Just add the following line into your ``conftest.py`::
+Just add the following line into your `conftest.py`::
 
     pytest_plugins = ["airgun.fixtures"]
 

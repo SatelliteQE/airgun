@@ -494,7 +494,7 @@ class AirgunBrowserPlugin(DefaultPlugin):
 
 class AirgunBrowser(Browser):
     """A wrapper around :class:`widgetastic.browser.Browser` which injects
-    :class:`airgun.Session` and :class:`AirgunBrowserPlugin`.
+    :class:`airgun.session.Session` and :class:`AirgunBrowserPlugin`.
     """
 
     def __init__(self, selenium, session, extra_objects=None):
@@ -502,7 +502,7 @@ class AirgunBrowser(Browser):
 
         :param selenium: :class:`selenium.webdriver.remote.webdriver.WebDriver`
             instance.
-        :param session: :class:`airgun.Session` instance.
+        :param session: :class:`airgun.session.Session` instance.
         :param extra_objects: any extra objects you want to include.
         """
         extra_objects = extra_objects or {}

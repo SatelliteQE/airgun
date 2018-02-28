@@ -80,7 +80,7 @@ class Navigate(navmazing.Navigate):
     class attribute.
 
     For more information about :class:`Navigate` please refer to
-    `navmazing docs<https://github.com/RedHatQE/navmazing>`_.
+    `navmazing docs <https://github.com/RedHatQE/navmazing>`_.
     """
 
     def __init__(self, browser=None):

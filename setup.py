@@ -6,7 +6,7 @@ with open('README.rst', 'r') as f:
 
 setup(
     name='airgun',
-    version='0.0.1',
+    version='0.0.1',   # Should be identical to the version in docs/conf.py!
     description=(
         'A library which is build over Widgetastic and navmazing to make '
         'Satellite 6 UI testing easier.'),
