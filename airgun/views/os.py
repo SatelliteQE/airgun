@@ -1,7 +1,7 @@
 from widgetastic.widget import GenericLocatorWidget, Text, TextInput, View
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import ResourceList
+from airgun.widgets import MultiSelect
 
 
 class OperatingSystemView(BaseLoggedInView, SearchableViewMixin):
@@ -20,14 +20,12 @@ class OperatingSystemDetailsView(BaseLoggedInView):
     name = TextInput(locator="//input[@id='operatingsystem_name']")
     major = TextInput(locator="//input[@id='operatingsystem_major']")
     submit = Text('//input[@name="commit"]')
-    architectures = ResourceList(
-        parent_entity='OperatingSystem', affected_entity='Architecture')
+    architectures = MultiSelect(id='ms-operatingsystem_architecture_ids')
 
     @View.nested
     class ptables(View):
         view_tab = Text("//a[@href='#ptable']")
-        ptables = ResourceList(
-            parent_entity='OperatingSystem', affected_entity='Ptable')
+        ptables = MultiSelect(id='ms-operatingsystem_ptable_ids')
 
         def fill(self, values):
             self.browser.click(self.view_tab)

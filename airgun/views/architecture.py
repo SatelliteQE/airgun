@@ -1,7 +1,7 @@
 from widgetastic.widget import Text, TextInput
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import ResourceList
+from airgun.widgets import MultiSelect
 
 
 class ArchitectureView(BaseLoggedInView, SearchableViewMixin):
@@ -18,8 +18,7 @@ class ArchitectureView(BaseLoggedInView, SearchableViewMixin):
 class ArchitectureDetailsView(BaseLoggedInView):
     name = TextInput(locator="//input[@id='architecture_name']")
     submit = Text('//input[@name="commit"]')
-    operatingsystems = ResourceList(
-        parent_entity='Architect', affected_entity='OperatingSystem')
+    operatingsystems = MultiSelect(id='ms-architecture_operatingsystem_ids')
 
     @property
     def is_displayed(self):
