@@ -36,7 +36,8 @@ class ItemsList(GenericLocatorWidget):
 
 class MultiSelect(GenericLocatorWidget):
     """Typical two-pane multiselect jQuery widget. Allows to move items from
-    list of ``free`` entities to list of ``assigned`` ones and vice versa.
+    list of ``unassigned`` entities to list of ``assigned`` ones and vice
+    versa.
 
     Examples on UI::
 
@@ -54,7 +55,7 @@ class MultiSelect(GenericLocatorWidget):
 
     """
     filter = TextInput(locator=".//input[@class='ms-filter']")
-    free = ItemsList("./div[@class='ms-selectable']/ul")
+    unassigned = ItemsList("./div[@class='ms-selectable']/ul")
     assigned = ItemsList("./div[@class='ms-selection']/ul")
 
     def __init__(self, parent, locator=None, id=None, logger=None):
@@ -68,18 +69,19 @@ class MultiSelect(GenericLocatorWidget):
         """Read current values, find the difference between current and passed
         ones and fills the widget accordingly.
 
-        :param values: dict with keys ``assigned`` and/or ``free``, containing
-            list of strings, representing item names
+        :param values: dict with keys ``assigned`` and/or ``unassigned``,
+            containing list of strings, representing item names
         """
         current = self.read()
         to_add = set(values.get('assigned', ())) - set(current['assigned'])
-        to_remove = set(values.get('free', ())) - set(current['free'])
+        to_remove = set(
+            values.get('unassigned', ())) - set(current['unassigned'])
         if not to_add and not to_remove:
             return False
         if to_add:
             for value in to_add:
                 self.filter.fill(value)
-                self.free.fill(value)
+                self.unassigned.fill(value)
         if to_remove:
             for value in to_remove:
                 self.assigned.fill(value)
@@ -88,7 +90,7 @@ class MultiSelect(GenericLocatorWidget):
     def read(self):
         """Returns a dict with current lists values."""
         return {
-            'free': self.free.read(),
+            'unassigned': self.unassigned.read(),
             'assigned': self.assigned.read(),
         }
 
