@@ -29,6 +29,7 @@ release = version
 
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.intersphinx',
 ]
 source_suffix = '.rst'
 master_doc = 'index'
@@ -46,9 +47,6 @@ nitpick_ignore = [
     ('py:meth', 'select'),
     ('py:meth', 'fill_with'),
     ('py:meth', 'Widget.is_displayed'),
-    ('py:class', 'bool'),
-    ('py:class', 'dict'),
-    ('py:class', 'str'),
 ]
 # FIXME: No idea why I need these in the ignore list above (looks good to
 # my eyes in the code):
@@ -56,3 +54,8 @@ nitpick_ignore = [
 #    ('py:meth', 'current_loc'),
 #    ('py:meth', 'select'),
 #    ('py:meth', 'fill_with'),
+intersphinx_mapping = {
+    'python': ('http://docs.python.org/3.6', None),
+    #'widgetastic': ('http://widgetasticcore.readthedocs.io/en/latest/', None),
+    #'navmazing': ('http://navmazing.readthedocs.io/en/latest/', None),
+}
