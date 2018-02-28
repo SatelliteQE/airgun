@@ -21,7 +21,7 @@ sys.path.insert(
 # Project Information ---------------------------------------------------------
 
 project = 'AirGun'
-copyright = '2018, Andriy Balakhtar'
+copyright = '2018, Andrii Balakhtar'
 version = '0.0.1'
 release = version
 
