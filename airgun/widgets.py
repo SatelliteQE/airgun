@@ -197,7 +197,7 @@ class FilteredDropdown(GenericLocatorWidget):
         """Supports initialization via ``id=`` only"""
         if not id:
             raise TypeError('Please specify id of select list element')
-        locator = "//div[contains(@id, '{}')]".format(id)
+        locator = ".//div[contains(@id, '{}')]".format(id)
         super(FilteredDropdown, self).__init__(parent, locator, logger)
 
     def read(self):
@@ -209,6 +209,6 @@ class FilteredDropdown(GenericLocatorWidget):
 
         :param value: string with item value
         """
-        self.browser.click(self.open_filter)
+        self.open_filter.click()
         self.filter_criteria.fill(value)
         self.filter_content.fill(value)
