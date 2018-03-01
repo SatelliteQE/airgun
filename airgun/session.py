@@ -14,6 +14,7 @@ from airgun.entities.architecture import ArchitectureEntity
 from airgun.entities.location import LocationEntity
 from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.organization import OrganizationEntity
+from airgun.entities.subnet import SubnetEntity
 
 
 from airgun.navigation import navigator
@@ -134,6 +135,7 @@ class Session(object):
         self.login = LoginEntity(self.browser)
         self.operatingsystem = OperatingSystemEntity(self.browser)
         self.organization = OrganizationEntity(self.browser)
+        self.subnet = SubnetEntity(self.browser)
 
         self.login.login({'username': self._user, 'password': self._password})
         return self
