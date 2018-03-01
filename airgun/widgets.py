@@ -170,3 +170,45 @@ class ContextSelector(Widget):
         Use :meth:`current_org` and :meth:`current_loc` instead.
         """
         raise DoNotReadThisWidget
+
+
+class FilteredDropdown(GenericLocatorWidget):
+    """Dropdown element with filtered functionality
+
+    Example html representation::
+
+        <div class="select2-container form-control" id="s2id_subnet_boot_mode">
+
+    Locator example::
+
+        id=subnet_boot_mode
+        id=s2id_subnet_ipam
+
+    """
+    selected_value = Text("./a/span[contains(@class, 'chosen')]")
+    open_filter = Text("./a/span[contains(@class, 'arrow')]")
+    filter_criteria = TextInput(locator="//div[@id='select2-drop']//input")
+    filter_content = ItemsList(
+        "//div[not(contains(@style, 'display: none')) and "
+        "@id='select2-drop']/ul"
+    )
+
+    def __init__(self, parent, id=None, logger=None):
+        """Supports initialization via ``id=`` only"""
+        if not id:
+            raise TypeError('Please specify id of select list element')
+        locator = ".//div[contains(@id, '{}')]".format(id)
+        super(FilteredDropdown, self).__init__(parent, locator, logger)
+
+    def read(self):
+        """Return drop-down selected item value"""
+        return self.browser.text(self.selected_value)
+
+    def fill(self, value):
+        """Select specific item from the drop-down
+
+        :param value: string with item value
+        """
+        self.open_filter.click()
+        self.filter_criteria.fill(value)
+        self.filter_content.fill(value)
