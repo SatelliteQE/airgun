@@ -1,7 +1,7 @@
 from widgetastic.widget import GenericLocatorWidget, Text, TextInput, View
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import MultiSelect
+from airgun.widgets import CustomParameter, MultiSelect
 
 
 class OperatingSystemView(BaseLoggedInView, SearchableViewMixin):
@@ -9,6 +9,8 @@ class OperatingSystemView(BaseLoggedInView, SearchableViewMixin):
     new = Text("//a[contains(@href, '/operatingsystems/new')]")
     delete = GenericLocatorWidget(
         "//span[contains(@class, 'btn')]/a[@data-method='delete']")
+    edit = Text(
+        "//a[contains(@href, 'edit') and contains(@href, 'operatingsystems')]")
 
     @property
     def is_displayed(self):
@@ -34,6 +36,19 @@ class OperatingSystemDetailsView(BaseLoggedInView):
         def read(self):
             self.browser.click(self.view_tab)
             return self.ptables.read()
+
+    @View.nested
+    class parameters(View):
+        view_tab = Text("//a[@href='#params']")
+        params = CustomParameter()
+
+        def fill(self, values):
+            self.browser.click(self.view_tab)
+            self.params.fill(values)
+
+        def read(self):
+            self.browser.click(self.view_tab)
+            return self.params.read()
 
     @property
     def is_displayed(self):

@@ -212,3 +212,54 @@ class FilteredDropdown(GenericLocatorWidget):
         self.open_filter.click()
         self.filter_criteria.fill(value)
         self.filter_content.fill(value)
+
+
+class CustomParameter(Widget):
+    """Name-Value paired input elements which can be added, edited or removed.
+
+    Example html representation::
+
+        <table class="table" id="global_parameters_table">
+            <tr class="fields " id="new_os_parameter_row">
+                <input placeholder="Name" type="text" ... id="..._name">
+                <textarea id="new_os_parameter_value" placeholder="Value" ...>
+
+    Locator example::
+
+        //input[@placeholder='Name']
+        //textarea[@placeholder='Value']
+
+    """
+    add_new_value = Text(".//a[contains(text(),'+ Add Parameter')]")
+    new_parameter_name = TextInput(
+        locator=".//input[@placeholder='Name' and not(@value)]")
+    new_parameter_value = TextInput(
+        locator=".//textarea[@placeholder='Value' and not(text())]")
+    NAMES = (
+        ".//tr[contains(@id, 'os_parameter')]/td/input[@placeholder='Name']")
+    VALUE = (
+        ".//table[contains(@id, 'parameters')]//tr"
+        "/td[input[contains(@id, 'name')][contains(@value, '{}')]]"
+        "/following-sibling::td//textarea"
+    )
+
+    def read(self):
+        """Return a list of dictionaries. Each dictionary consists of name and
+        value parameters
+        """
+        parameters = []
+        for item in self.browser.elements(self.NAMES):
+            name = self.browser.get_attribute('value', item)
+            value = self.browser.text(self.VALUE.format(name))
+            parameters.append({'name': name, 'value': value})
+        return parameters
+
+    def fill(self, values):
+        """Create new parameter entity
+
+        :param values: dictionary of name and value that should be assigned to
+            new entity
+        """
+        self.add_new_value.click()
+        self.new_parameter_name.fill(values['name'])
+        self.new_parameter_value.fill(values['value'])
