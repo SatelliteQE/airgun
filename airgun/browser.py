@@ -447,7 +447,7 @@ class DockerBrowser(object):
 
 
 class AirgunBrowserPlugin(DefaultPlugin):
-    """Plugin for :class:`AirgunBrowser` which adds satellite-specific
+    """Plug-in for :class:`AirgunBrowser` which adds satellite-specific
     JavaScript to make sure page is loaded completely. Checks for absence of
     jQuery, AJAX, Angular requests, absence of spinner indicating loading
     progress and ensures ``document.readyState`` is "complete".
