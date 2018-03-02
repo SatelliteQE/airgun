@@ -230,21 +230,22 @@ class CustomParameter(Widget):
         //textarea[@placeholder='Value']
 
     """
-    add_new_value = Text("//a[contains(text(),'+ Add Parameter')]")
+    add_new_value = Text(".//a[contains(text(),'+ Add Parameter')]")
     new_parameter_name = TextInput(
-        locator="//input[@placeholder='Name' and not(@value)]")
+        locator=".//input[@placeholder='Name' and not(@value)]")
     new_parameter_value = TextInput(
-        locator="//textarea[@placeholder='Value' and not(text())]")
-    NAMES = "//tr[contains(@id, 'os_parameter')]/td/input[@placeholder='Name']"
+        locator=".//textarea[@placeholder='Value' and not(text())]")
+    NAMES = (
+        ".//tr[contains(@id, 'os_parameter')]/td/input[@placeholder='Name']")
     VALUE = (
-        "//table[contains(@id, 'parameters')]//tr"
+        ".//table[contains(@id, 'parameters')]//tr"
         "/td[input[contains(@id, 'name')][contains(@value, '{}')]]"
         "/following-sibling::td//textarea"
     )
 
     def read(self):
-        """Return a list of dictionaries. Each dictionary contains from name
-        and value parameters
+        """Return a list of dictionaries. Each dictionary consists of name and
+        value parameters
         """
         parameters = []
         for item in self.browser.elements(self.NAMES):

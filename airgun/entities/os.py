@@ -56,6 +56,4 @@ class EditExistingOperatingSystem(NavigateStep):
 
     def step(self, *args, **kwargs):
         self.parent.search(kwargs.get('entity_name'))
-        self.parent.browser.wait_for_element(
-            self.parent.edit, ensure_page_safe=True)
         self.parent.edit.click()
