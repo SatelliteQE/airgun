@@ -6,7 +6,7 @@ from widgetastic_patternfly import VerticalNavigation
 
 class ItemsList(GenericLocatorWidget):
     """List with clickable elements. Part of :class:`MultiSelect` or jQuery
-    dropdown.
+    drop-down.
 
     Example html representation::
 
@@ -173,7 +173,7 @@ class ContextSelector(Widget):
 
 
 class FilteredDropdown(GenericLocatorWidget):
-    """Dropdown element with filtered functionality
+    """Drop-down element with filtered functionality
 
     Example html representation::
 

@@ -1,4 +1,4 @@
-"""Airgun's implementation of base navigation and navigate steps."""
+"""AirGun's implementation of base navigation and navigate steps."""
 import navmazing
 
 from cached_property import cached_property
@@ -6,7 +6,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 
 class NavigateStep(navmazing.NavigateStep):
-    """Airgun's version of :class:`navmazing.NavigateStep` with custom
+    """AirGun's version of :class:`navmazing.NavigateStep` with custom
     implementations of :meth:`am_i_here`, :meth:`go` and ability to work with
     views.
     """

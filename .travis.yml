@@ -7,3 +7,4 @@ install:
 script:
   - "flake8 ."
   - "make docs-html"
+  - "make docs-spelling"
