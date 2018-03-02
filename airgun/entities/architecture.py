@@ -16,10 +16,8 @@ class ArchitectureEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def read(self, name):
-        view = self.navigate_to(self, 'All')
-        view.searchbox.search(name)
-        view = self.navigate_to(self, 'Edit')
+    def read(self, entity_name):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
 
 
@@ -48,9 +46,11 @@ class AddNewArchitecture(NavigateStep):
 class EditArchitecture(NavigateStep):
     VIEW = ArchitectureDetailsView
 
-    prerequisite = NavigateToSibling('All')
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.view.browser.wait_for_element(
+        self.parent.search(kwargs.get('entity_name'))
+        self.parent.browser.wait_for_element(
             self.parent.edit, ensure_page_safe=True)
         self.parent.edit.click()
