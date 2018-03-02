@@ -134,8 +134,8 @@ class SeleniumBrowserFactory(object):
         """Finalize browser - close browser window, report results to saucelabs
         or close docker container if needed.
 
-        :param bool passed: Boolean value indicating whether test passed or not.
-            Is only used for ``saucelabs`` provider.
+        :param bool passed: Boolean value indicating whether test passed
+            or not. Is only used for ``saucelabs`` provider.
         :return: None
         """
         if self.provider == 'selenium':
