@@ -10,6 +10,7 @@ from fauxfactory import gen_string
 from airgun import settings
 from airgun.browser import AirgunBrowser, SeleniumBrowserFactory
 from airgun.entities.login import LoginEntity
+from airgun.entities.activationkey import ActivationKeyEntity
 from airgun.entities.architecture import ArchitectureEntity
 from airgun.entities.location import LocationEntity
 from airgun.entities.os import OperatingSystemEntity
@@ -130,6 +131,7 @@ class Session(object):
         self.navigator.browser = self.browser
 
         # Entities
+        self.activationkey = ActivationKeyEntity(self.browser)
         self.architecture = ArchitectureEntity(self.browser)
         self.location = LocationEntity(self.browser)
         self.login = LoginEntity(self.browser)
