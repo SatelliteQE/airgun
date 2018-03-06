@@ -1,5 +1,12 @@
-from widgetastic.exceptions import DoNotReadThisWidget
-from widgetastic.widget import GenericLocatorWidget, Text, TextInput, Widget
+from widgetastic.exceptions import WidgetOperationFailed
+
+from widgetastic.widget import (
+    do_not_read_this_widget,
+    GenericLocatorWidget,
+    Text,
+    TextInput,
+    Widget
+)
 from widgetastic.xpath import quote
 from widgetastic_patternfly import VerticalNavigation
 
@@ -173,7 +180,7 @@ class ContextSelector(Widget):
 
         Use :meth:`current_org` and :meth:`current_loc` instead.
         """
-        raise DoNotReadThisWidget
+        do_not_read_this_widget()
 
 
 class FilteredDropdown(GenericLocatorWidget):
@@ -267,3 +274,136 @@ class CustomParameter(Widget):
         self.add_new_value.click()
         self.new_parameter_name.fill(values['name'])
         self.new_parameter_value.fill(values['value'])
+
+
+class SelectActionList(Widget):
+    """Refer to 'Select Action' control which has simple list of actions to be
+     selected from, once user click on the arrow button.
+
+    Example html representation::
+
+        <div data-block="item-actions" bst-feature-flag="custom_products"...>
+            <button type="button" .... ng-click="toggleDropdown($event)">
+                <ul>
+                    <li role="menuitem" ng-hide="denied(...)" class="">
+
+    Locator example::
+
+        //div[@data-block='item-actions']
+
+    """
+    ROOT = "//div[@data-block='item-actions']"
+    open_dropdown = Text(".//button[contains(@ng-click, 'toggleDropdown')]")
+    ITEM = ".//li[not(contains(@style, 'display: none'))][contains(.,'%s')]"
+
+    def fill(self, value):
+        """Clicks on 'Select Action' control and choose necessary action
+
+        :param value: string with name of action to be performed
+        """
+        self.open_dropdown.click()
+        self.browser.click(
+            self.browser.element(self.ITEM % value, parent=self))
+
+    def read(self):
+        do_not_read_this_widget()
+
+
+class ConfirmationDialog(Widget):
+    """Usual confirmation dialog with two buttons and close 'x' button in the
+    right corner. Has nothing in common with javascript alert, confirm or
+    prompt pop-ups.
+
+    Example html representation::
+
+        <div class="modal-content">
+            <button type="button" class="close" ... ng-click="cancel()">
+            <div class="modal-footer ng-scope">
+                <button class="btn btn-danger" ng-click="ok()">
+                <button class="btn ..." ng-click="cancel()"...>
+
+    Locator example::
+
+        //div[@class='modal-content']
+
+    """
+    ROOT = "//div[@class='modal-content']"
+    confirm_dialog = Text(".//button[contains(@ng-click, 'ok')]")
+    cancel_dialog = Text(
+        ".//button[contains(@ng-click, 'cancel') and contains(@class, 'btn')]")
+    discard_dialog = Text(
+        ".//button[contains(@ng-click, 'cancel') and @class='close']")
+
+    def confirm(self):
+        """Clicks on the positive outcome button like 'Remove', 'Ok', 'Yes'"""
+        self.confirm_dialog.click()
+
+    def cancel(self):
+        """Clicks on the negative outcome button like 'Cancel' or 'No'"""
+        self.cancel_dialog.click()
+
+    def read(self):
+        do_not_read_this_widget()
+
+
+class CheckboxGroup(Widget):
+    """Group of checkboxes that goes in a line one after another. Usually used
+    to specify lifecycle environment
+
+    Example html representation::
+
+        <//ul[@class='path-list']>
+            <li class="path-list-item ng-scope"...>
+                <label class="path-list-item-label...>
+                    <input type="checkbox"...>
+            <li class="path-list-item ng-scope"...>
+                <label class="path-list-item-label...>
+                    <input type="checkbox"...>
+
+    Locator example::
+
+        //ul[@class='path-list']
+
+    """
+    ROOT = "//ul[@class='path-list']"
+    LABELS = "./li/label[contains(@class, path-list-item-label)]"
+    CHECKBOX = (
+        ".//input[@ng-model='item.selected'][parent::label[contains(., '{}')]]"
+    )
+
+    def cb_selected(self, locator):
+        """Identify whether specific checkbox is selected or not"""
+        return 'ng-not-empty' in self.browser.get_attribute('class', locator)
+
+    def select(self, locator, value):
+        """Select or deselect checkbox depends on the value passed"""
+        value = bool(value)
+        current_value = self.cb_selected(locator)
+        if value == current_value:
+            return False
+        else:
+            self.browser.element(locator).click()
+            if self.cb_selected(locator) != value:
+                raise WidgetOperationFailed(
+                    'Failed to set the checkbox to requested value.')
+            return True
+
+    def read(self):
+        """Return a list of dictionaries. Each dictionary consists of name and
+        value for each checkbox from the group
+        """
+        checkboxes = []
+        for item in self.browser.elements(self.LABELS):
+            name = self.browser.text(item)
+            value = self.cb_selected(self.CHECKBOX.format(name))
+            checkboxes.append({'name': name, 'value': value})
+        return checkboxes
+
+    def fill(self, values):
+        """Assign value for specific checkbox from group
+
+        :param values: dictionary that consist of checkbox name and value
+            that should be assigned to that checkbox
+        """
+        checkbox_locator = self.CHECKBOX.format(values.get('entity_name'))
+        return self.select(checkbox_locator, values.get('select'))
