@@ -1,7 +1,7 @@
 from widgetastic.widget import Checkbox, Select, Text, TextInput
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import CheckboxGroup, ConfirmationDialog, SelectActionList
+from airgun.widgets import ConfirmationDialog, LCESelector, SelectActionList
 
 
 class ActivationKeyView(BaseLoggedInView, SearchableViewMixin):
@@ -25,7 +25,7 @@ class ActivationKeyDetailsView(BaseLoggedInView):
     unlimited_hosts = Checkbox(name='limit')
     max_hosts = TextInput(id='max_hosts')
     submit = Text("//button[contains(@ng-click, 'handleSave')]")
-    lce = CheckboxGroup()
+    lce = LCESelector()
     content_view = Select(id='content_view_id')
 
     @property
@@ -38,7 +38,7 @@ class ActivationKeyEditView(BaseLoggedInView):
     return_to_all = Text("//a[text()='Activation Keys']")
     action_list = SelectActionList()
     dialog = ConfirmationDialog()
-    lce = CheckboxGroup()
+    lce = LCESelector()
 
     @property
     def is_displayed(self):

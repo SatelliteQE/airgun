@@ -306,6 +306,7 @@ class SelectActionList(Widget):
             self.browser.element(self.ITEM % value, parent=self))
 
     def read(self):
+        """There is no need to read values for this widget"""
         do_not_read_this_widget()
 
 
@@ -327,7 +328,7 @@ class ConfirmationDialog(Widget):
         //div[@class='modal-content']
 
     """
-    ROOT = "//div[@class='modal-content']"
+    ROOT = ".//div[@class='modal-content']"
     confirm_dialog = Text(".//button[contains(@ng-click, 'ok')]")
     cancel_dialog = Text(
         ".//button[contains(@ng-click, 'cancel') and contains(@class, 'btn')]")
@@ -343,10 +344,11 @@ class ConfirmationDialog(Widget):
         self.cancel_dialog.click()
 
     def read(self):
+        """Widgets has no fields to read"""
         do_not_read_this_widget()
 
 
-class CheckboxGroup(Widget):
+class LCESelector(Widget):
     """Group of checkboxes that goes in a line one after another. Usually used
     to specify lifecycle environment
 
@@ -365,28 +367,27 @@ class CheckboxGroup(Widget):
         //ul[@class='path-list']
 
     """
-    ROOT = "//ul[@class='path-list']"
+    ROOT = ".//ul[@class='path-list']"
     LABELS = "./li/label[contains(@class, path-list-item-label)]"
     CHECKBOX = (
         ".//input[@ng-model='item.selected'][parent::label[contains(., '{}')]]"
     )
 
-    def cb_selected(self, locator):
+    def checkbox_selected(self, locator):
         """Identify whether specific checkbox is selected or not"""
         return 'ng-not-empty' in self.browser.get_attribute('class', locator)
 
     def select(self, locator, value):
         """Select or deselect checkbox depends on the value passed"""
         value = bool(value)
-        current_value = self.cb_selected(locator)
+        current_value = self.checkbox_selected(locator)
         if value == current_value:
             return False
-        else:
-            self.browser.element(locator).click()
-            if self.cb_selected(locator) != value:
-                raise WidgetOperationFailed(
-                    'Failed to set the checkbox to requested value.')
-            return True
+        self.browser.element(locator).click()
+        if self.checkbox_selected(locator) != value:
+            raise WidgetOperationFailed(
+                'Failed to set the checkbox to requested value.')
+        return True
 
     def read(self):
         """Return a list of dictionaries. Each dictionary consists of name and
@@ -395,15 +396,17 @@ class CheckboxGroup(Widget):
         checkboxes = []
         for item in self.browser.elements(self.LABELS):
             name = self.browser.text(item)
-            value = self.cb_selected(self.CHECKBOX.format(name))
+            value = self.checkbox_selected(self.CHECKBOX.format(name))
             checkboxes.append({'name': name, 'value': value})
         return checkboxes
 
-    def fill(self, values):
+    def fill(self, value):
         """Assign value for specific checkbox from group
 
-        :param values: dictionary that consist of checkbox name and value
-            that should be assigned to that checkbox
+        :param value: dictionary that consist of single checkbox name and
+            value that should be assigned to that checkbox
         """
-        checkbox_locator = self.CHECKBOX.format(values.get('entity_name'))
-        return self.select(checkbox_locator, values.get('select'))
+        checkbox_name = value.keys()[0]
+        checkbox_value = value[checkbox_name]
+        checkbox_locator = self.CHECKBOX.format(checkbox_name)
+        return self.select(checkbox_locator, checkbox_value)
