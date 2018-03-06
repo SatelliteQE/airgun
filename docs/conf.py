@@ -48,6 +48,7 @@ nitpick_ignore = [
     ('py:meth', 'select'),
     ('py:meth', 'fill_with'),
     ('py:meth', 'Widget.is_displayed'),
+    ('py:obj', 'widgetastic.widget.View')
 ]
 # FIXME: No idea why I need these in the ignore list above (looks good to
 # my eyes in the code):

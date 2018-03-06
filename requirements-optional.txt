@@ -1,2 +1,2 @@
 flake8
-sphinx
+sphinx==1.6.7
