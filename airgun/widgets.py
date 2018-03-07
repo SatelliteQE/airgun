@@ -406,7 +406,7 @@ class LCESelector(Widget):
         :param value: dictionary that consist of single checkbox name and
             value that should be assigned to that checkbox
         """
-        checkbox_name = value.keys()[0]
+        checkbox_name = list(value.keys())[0]
         checkbox_value = value[checkbox_name]
         checkbox_locator = self.CHECKBOX.format(checkbox_name)
         return self.select(checkbox_locator, checkbox_value)
