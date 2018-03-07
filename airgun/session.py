@@ -2,9 +2,11 @@
 import copy
 import logging
 import os
+import sys
 
 from datetime import datetime
 
+from cached_property import cached_property
 from fauxfactory import gen_string
 
 from airgun import settings
@@ -119,27 +121,23 @@ class Session(object):
         LOGGER.info(
             u'Starting UI session %r for user %r', self.name, self._user)
         self._factory = SeleniumBrowserFactory(test_name=self.name)
-        selenium_browser = self._factory.get_browser()
-        selenium_browser.maximize_window()
-        self.browser = AirgunBrowser(selenium_browser, self)
+        try:
+            selenium_browser = self._factory.get_browser()
+            selenium_browser.maximize_window()
+            self.browser = AirgunBrowser(selenium_browser, self)
 
-        self.browser.url = 'https://' + settings.satellite.hostname
-        self._factory.post_init()
+            self.browser.url = 'https://' + settings.satellite.hostname
+            self._factory.post_init()
 
-        # Navigator
-        self.navigator = copy.deepcopy(navigator)
-        self.navigator.browser = self.browser
+            # Navigator
+            self.navigator = copy.deepcopy(navigator)
+            self.navigator.browser = self.browser
 
-        # Entities
-        self.activationkey = ActivationKeyEntity(self.browser)
-        self.architecture = ArchitectureEntity(self.browser)
-        self.location = LocationEntity(self.browser)
-        self.login = LoginEntity(self.browser)
-        self.operatingsystem = OperatingSystemEntity(self.browser)
-        self.organization = OrganizationEntity(self.browser)
-        self.subnet = SubnetEntity(self.browser)
-
-        self.login.login({'username': self._user, 'password': self._password})
+            self.login.login({
+                'username': self._user, 'password': self._password})
+        except Exception as exception:
+            self.__exit__(*sys.exc_info())
+            raise exception
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -190,3 +188,38 @@ class Session(object):
         path = os.path.join(path, filename)
         LOGGER.debug('Saving screenshot %s', path)
         self.browser.selenium.save_screenshot(path)
+
+    @cached_property
+    def activationkey(self):
+        """Instance of Activation Key entity."""
+        return ActivationKeyEntity(self.browser)
+
+    @cached_property
+    def architecture(self):
+        """Instance of Architecture entity."""
+        return ArchitectureEntity(self.browser)
+
+    @cached_property
+    def location(self):
+        """Instance of Location entity."""
+        return LocationEntity(self.browser)
+
+    @cached_property
+    def login(self):
+        """Instance of Login entity."""
+        return LoginEntity(self.browser)
+
+    @cached_property
+    def operatingsystem(self):
+        """Instance of Operating System entity."""
+        return OperatingSystemEntity(self.browser)
+
+    @cached_property
+    def organization(self):
+        """Instance of Organization entity."""
+        return OrganizationEntity(self.browser)
+
+    @cached_property
+    def subnet(self):
+        """Instance of Subnet entity."""
+        return SubnetEntity(self.browser)
