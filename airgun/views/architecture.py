@@ -8,6 +8,7 @@ class ArchitectureView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Architectures']")
     new = Text("//a[contains(@href, '/architectures/new')]")
     edit = Text("//a[contains(@href, 'edit') and contains(@href, 'arch')]")
+    delete = Text("//a[contains(@href, '/architectures/') and @data-method='delete']")
 
     @property
     def is_displayed(self):
