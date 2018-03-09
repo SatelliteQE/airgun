@@ -30,6 +30,7 @@ release = version
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
+    'sphinxcontrib.spelling',
 ]
 source_suffix = '.rst'
 master_doc = 'index'
@@ -62,3 +63,5 @@ intersphinx_mapping = {
     #   ('http://widgetasticcore.readthedocs.io/en/latest/', None),
     # 'navmazing': ('http://navmazing.readthedocs.io/en/latest/', None),
 }
+spelling_word_list_filename = 'spelling_wordlist.txt'
+spelling_show_suggestions = True

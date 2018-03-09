@@ -168,7 +168,7 @@ class Session(object):
         ``settings.screenshots_path/YYYY-mm-dd/ClassName/method_name/``.
 
         All directories will be created if they don't exist. Make sure that the
-        user running robottelo have the right permissions to create files and
+        user running Robottelo have the right permissions to create files and
         directories matching the complete.
 
         This method is called automatically in case any exception during UI

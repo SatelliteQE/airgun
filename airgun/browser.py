@@ -134,8 +134,8 @@ class SeleniumBrowserFactory(object):
         """Finalize browser - close browser window, report results to saucelabs
         or close docker container if needed.
 
-        :param bool passed: Bool value indicating whether test passed or not.
-            Is only used for ``saucelabs`` provider.
+        :param bool passed: Boolean value indicating whether test passed
+            or not. Is only used for ``saucelabs`` provider.
         :return: None
         """
         if self.provider == 'selenium':
@@ -444,8 +444,8 @@ class DockerBrowser(object):
 
 
 class AirgunBrowserPlugin(DefaultPlugin):
-    """Plugin for :class:`AirgunBrowser` which adds satellite-specific
-    javascript to make sure page is loaded completely. Checks for absence of
+    """Plug-in for :class:`AirgunBrowser` which adds satellite-specific
+    JavaScript to make sure page is loaded completely. Checks for absence of
     jQuery, AJAX, Angular requests, absence of spinner indicating loading
     progress and ensures ``document.readyState`` is "complete".
     """

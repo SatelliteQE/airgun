@@ -1,7 +1,7 @@
 AirGun
 ======
 
-Airgun is a Python library which is build over `Widgetastic`_ and `navmazing`_
+AirGun is a Python library which is build over `Widgetastic`_ and `navmazing`_
 to make Satellite 6 UI testing easier.
 
 This page provides a summary of information about AirGun.
@@ -20,7 +20,7 @@ More in-depth coverage is provided in other sections.
 Quick start guide
 -----------------
 
-1. Clone robottelo branch which supports airgun:
+1. Clone Robottelo branch which supports airgun:
 
 .. code-block:: bash
 
@@ -32,7 +32,7 @@ Quick start guide
 
     cd robottelo && pip install -r requirements.txt
 
-3. Create robottelo.properties file and fill it with your values (your may
+3. Create `robottelo.properties` file and fill it with your values (your may
 reuse already existing properties file since no changes were introduced there)
 
 .. code-block:: bash
@@ -40,7 +40,7 @@ reuse already existing properties file since no changes were introduced there)
     cp robottelo.properties.sample robottelo.properties
     vim robottelo.properties
 
-4. Run airgun tests from robottelo's ``tests/foreman/ui_airgun/`` folder
+4. Run airgun tests from Robottelo's ``tests/foreman/ui_airgun/`` folder
 
 .. code-block:: bash
 

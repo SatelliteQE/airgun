@@ -20,3 +20,6 @@ docs-html:
 
 docs-clean:
 	@cd docs; $(MAKE) clean
+
+docs-spelling:
+	@cd docs; $(MAKE) spelling
