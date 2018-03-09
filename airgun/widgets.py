@@ -1,5 +1,12 @@
-from widgetastic.exceptions import DoNotReadThisWidget
-from widgetastic.widget import GenericLocatorWidget, Text, TextInput, Widget
+from widgetastic.exceptions import WidgetOperationFailed
+
+from widgetastic.widget import (
+    do_not_read_this_widget,
+    GenericLocatorWidget,
+    Text,
+    TextInput,
+    Widget
+)
 from widgetastic.xpath import quote
 from widgetastic_patternfly import VerticalNavigation
 
@@ -97,8 +104,12 @@ class MultiSelect(GenericLocatorWidget):
 
 
 class Search(Widget):
-    search_field = TextInput(id='search')
-    search_button = Text("//button[contains(@type,'submit')]")
+    search_field = TextInput(
+        locator="//input[@id='search' or @ng-model='table.searchTerm']")
+    search_button = Text(
+        "//button[contains(@type,'submit') or "
+        "@ng-click='table.search(table.searchTerm)']"
+    )
 
     def fill(self, value):
         return self.search_field.fill(value)
@@ -169,7 +180,7 @@ class ContextSelector(Widget):
 
         Use :meth:`current_org` and :meth:`current_loc` instead.
         """
-        raise DoNotReadThisWidget
+        do_not_read_this_widget()
 
 
 class FilteredDropdown(GenericLocatorWidget):
@@ -212,3 +223,190 @@ class FilteredDropdown(GenericLocatorWidget):
         self.open_filter.click()
         self.filter_criteria.fill(value)
         self.filter_content.fill(value)
+
+
+class CustomParameter(Widget):
+    """Name-Value paired input elements which can be added, edited or removed.
+
+    Example html representation::
+
+        <table class="table" id="global_parameters_table">
+            <tr class="fields " id="new_os_parameter_row">
+                <input placeholder="Name" type="text" ... id="..._name">
+                <textarea id="new_os_parameter_value" placeholder="Value" ...>
+
+    Locator example::
+
+        //input[@placeholder='Name']
+        //textarea[@placeholder='Value']
+
+    """
+    add_new_value = Text(".//a[contains(text(),'+ Add Parameter')]")
+    new_parameter_name = TextInput(
+        locator=".//input[@placeholder='Name' and not(@value)]")
+    new_parameter_value = TextInput(
+        locator=".//textarea[@placeholder='Value' and not(text())]")
+    NAMES = (
+        ".//tr[contains(@id, 'os_parameter')]/td/input[@placeholder='Name']")
+    VALUE = (
+        ".//table[contains(@id, 'parameters')]//tr"
+        "/td[input[contains(@id, 'name')][contains(@value, '{}')]]"
+        "/following-sibling::td//textarea"
+    )
+
+    def read(self):
+        """Return a list of dictionaries. Each dictionary consists of name and
+        value parameters
+        """
+        parameters = []
+        for item in self.browser.elements(self.NAMES):
+            name = self.browser.get_attribute('value', item)
+            value = self.browser.text(self.VALUE.format(name))
+            parameters.append({'name': name, 'value': value})
+        return parameters
+
+    def fill(self, values):
+        """Create new parameter entity
+
+        :param values: dictionary of name and value that should be assigned to
+            new entity
+        """
+        self.add_new_value.click()
+        self.new_parameter_name.fill(values['name'])
+        self.new_parameter_value.fill(values['value'])
+
+
+class SelectActionList(Widget):
+    """Refer to 'Select Action' control which has simple list of actions to be
+     selected from, once user click on the arrow button.
+
+    Example html representation::
+
+        <div data-block="item-actions" bst-feature-flag="custom_products"...>
+            <button type="button" .... ng-click="toggleDropdown($event)">
+                <ul>
+                    <li role="menuitem" ng-hide="denied(...)" class="">
+
+    Locator example::
+
+        //div[@data-block='item-actions']
+
+    """
+    ROOT = "//div[@data-block='item-actions']"
+    open_dropdown = Text(".//button[contains(@ng-click, 'toggleDropdown')]")
+    ITEM = ".//li[not(contains(@style, 'display: none'))][contains(.,'%s')]"
+
+    def fill(self, value):
+        """Clicks on 'Select Action' control and choose necessary action
+
+        :param value: string with name of action to be performed
+        """
+        self.open_dropdown.click()
+        self.browser.click(
+            self.browser.element(self.ITEM % value, parent=self))
+
+    def read(self):
+        """There is no need to read values for this widget"""
+        do_not_read_this_widget()
+
+
+class ConfirmationDialog(Widget):
+    """Usual confirmation dialog with two buttons and close 'x' button in the
+    right corner. Has nothing in common with javascript alert, confirm or
+    prompt pop-ups.
+
+    Example html representation::
+
+        <div class="modal-content">
+            <button type="button" class="close" ... ng-click="cancel()">
+            <div class="modal-footer ng-scope">
+                <button class="btn btn-danger" ng-click="ok()">
+                <button class="btn ..." ng-click="cancel()"...>
+
+    Locator example::
+
+        //div[@class='modal-content']
+
+    """
+    ROOT = ".//div[@class='modal-content']"
+    confirm_dialog = Text(".//button[contains(@ng-click, 'ok')]")
+    cancel_dialog = Text(
+        ".//button[contains(@ng-click, 'cancel') and contains(@class, 'btn')]")
+    discard_dialog = Text(
+        ".//button[contains(@ng-click, 'cancel') and @class='close']")
+
+    def confirm(self):
+        """Clicks on the positive outcome button like 'Remove', 'Ok', 'Yes'"""
+        self.confirm_dialog.click()
+
+    def cancel(self):
+        """Clicks on the negative outcome button like 'Cancel' or 'No'"""
+        self.cancel_dialog.click()
+
+    def read(self):
+        """Widgets has no fields to read"""
+        do_not_read_this_widget()
+
+
+class LCESelector(Widget):
+    """Group of checkboxes that goes in a line one after another. Usually used
+    to specify lifecycle environment
+
+    Example html representation::
+
+        <//ul[@class='path-list']>
+            <li class="path-list-item ng-scope"...>
+                <label class="path-list-item-label...>
+                    <input type="checkbox"...>
+            <li class="path-list-item ng-scope"...>
+                <label class="path-list-item-label...>
+                    <input type="checkbox"...>
+
+    Locator example::
+
+        //ul[@class='path-list']
+
+    """
+    ROOT = ".//ul[@class='path-list']"
+    LABELS = "./li/label[contains(@class, path-list-item-label)]"
+    CHECKBOX = (
+        ".//input[@ng-model='item.selected'][parent::label[contains(., '{}')]]"
+    )
+
+    def checkbox_selected(self, locator):
+        """Identify whether specific checkbox is selected or not"""
+        return 'ng-not-empty' in self.browser.get_attribute('class', locator)
+
+    def select(self, locator, value):
+        """Select or deselect checkbox depends on the value passed"""
+        value = bool(value)
+        current_value = self.checkbox_selected(locator)
+        if value == current_value:
+            return False
+        self.browser.element(locator).click()
+        if self.checkbox_selected(locator) != value:
+            raise WidgetOperationFailed(
+                'Failed to set the checkbox to requested value.')
+        return True
+
+    def read(self):
+        """Return a list of dictionaries. Each dictionary consists of name and
+        value for each checkbox from the group
+        """
+        checkboxes = []
+        for item in self.browser.elements(self.LABELS):
+            name = self.browser.text(item)
+            value = self.checkbox_selected(self.CHECKBOX.format(name))
+            checkboxes.append({'name': name, 'value': value})
+        return checkboxes
+
+    def fill(self, value):
+        """Assign value for specific checkbox from group
+
+        :param value: dictionary that consist of single checkbox name and
+            value that should be assigned to that checkbox
+        """
+        checkbox_name = list(value.keys())[0]
+        checkbox_value = value[checkbox_name]
+        checkbox_locator = self.CHECKBOX.format(checkbox_name)
+        return self.select(checkbox_locator, checkbox_value)

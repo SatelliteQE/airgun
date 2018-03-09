@@ -1,7 +1,8 @@
 from widgetastic.widget import GenericLocatorWidget, Text, TextInput, View
+from widgetastic_patternfly import Tab
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import MultiSelect
+from airgun.widgets import CustomParameter, MultiSelect
 
 
 class OperatingSystemView(BaseLoggedInView, SearchableViewMixin):
@@ -9,6 +10,8 @@ class OperatingSystemView(BaseLoggedInView, SearchableViewMixin):
     new = Text("//a[contains(@href, '/operatingsystems/new')]")
     delete = GenericLocatorWidget(
         "//span[contains(@class, 'btn')]/a[@data-method='delete']")
+    edit = Text(
+        "//a[contains(@href, 'edit') and contains(@href, 'operatingsystems')]")
 
     @property
     def is_displayed(self):
@@ -23,17 +26,26 @@ class OperatingSystemDetailsView(BaseLoggedInView):
     architectures = MultiSelect(id='ms-operatingsystem_architecture_ids')
 
     @View.nested
-    class ptables(View):
-        view_tab = Text("//a[@href='#ptable']")
+    class ptables(Tab):
+        TAB_NAME = 'Partition Table'
         ptables = MultiSelect(id='ms-operatingsystem_ptable_ids')
 
         def fill(self, values):
-            self.browser.click(self.view_tab)
             self.ptables.fill(values)
 
         def read(self):
-            self.browser.click(self.view_tab)
             return self.ptables.read()
+
+    @View.nested
+    class parameters(Tab):
+        TAB_NAME = 'Parameters'
+        params = CustomParameter()
+
+        def fill(self, values):
+            self.params.fill(values)
+
+        def read(self):
+            return self.params.read()
 
     @property
     def is_displayed(self):

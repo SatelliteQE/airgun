@@ -163,10 +163,7 @@ class SeleniumBrowserFactory(object):
             self._webdriver = webdriver.Chrome(**kwargs)
         elif self.browser == 'firefox':
             if binary:
-                kwargs.update({
-                    'firefox_binary': (
-                        webdriver.firefox.firefox_binary.FirefoxBinary(binary))
-                })
+                kwargs.update({'executable_path': binary})
             self._webdriver = webdriver.Firefox(**kwargs)
         elif self.browser == 'ie':
             if binary:
