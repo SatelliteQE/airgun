@@ -20,6 +20,11 @@ class ArchitectureEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
 
+    def delete(self, entity_name):
+        view = self.navigate_to(self, 'All')
+        view.searchbox.search(entity_name)
+        view.delete.click(handle_alert=True)
+
 
 @navigator.register(ArchitectureEntity, 'All')
 class ShowAllArchitectures(NavigateStep):
