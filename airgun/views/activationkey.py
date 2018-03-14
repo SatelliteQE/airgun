@@ -1,7 +1,13 @@
 from widgetastic.widget import Checkbox, Select, Text, TextInput
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import ConfirmationDialog, LCESelector, SelectActionList
+from airgun.widgets import (
+    ConfirmationDialog,
+    EditableEntry,
+    EditableEntrySelect,
+    LCESelector,
+    SelectActionList,
+)
 
 
 class ActivationKeyView(BaseLoggedInView, SearchableViewMixin):
@@ -36,6 +42,10 @@ class ActivationKeyDetailsView(BaseLoggedInView):
 
 class ActivationKeyEditView(BaseLoggedInView):
     return_to_all = Text("//a[text()='Activation Keys']")
+    name = EditableEntry(name='Name')
+    description = EditableEntry(name='Description')
+    host_limit = EditableEntry(name='Host Limit')
+    service_level = EditableEntrySelect(name='Service Level')
     action_list = SelectActionList()
     dialog = ConfirmationDialog()
     lce = LCESelector()
