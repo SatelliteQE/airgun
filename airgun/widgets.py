@@ -3,9 +3,10 @@ from widgetastic.exceptions import WidgetOperationFailed
 from widgetastic.widget import (
     do_not_read_this_widget,
     GenericLocatorWidget,
+    Select,
     Text,
     TextInput,
-    Widget
+    Widget,
 )
 from widgetastic.xpath import quote
 from widgetastic_patternfly import VerticalNavigation
@@ -354,7 +355,7 @@ class LCESelector(Widget):
 
     Example html representation::
 
-        <//ul[@class='path-list']>
+        <ul[@class='path-list']>
             <li class="path-list-item ng-scope"...>
                 <label class="path-list-item-label...>
                     <input type="checkbox"...>
@@ -410,3 +411,64 @@ class LCESelector(Widget):
         checkbox_value = value[checkbox_name]
         checkbox_locator = self.CHECKBOX.format(checkbox_name)
         return self.select(checkbox_locator, checkbox_value)
+
+
+class EditableEntry(GenericLocatorWidget):
+    """Usually represented by static field and edit button that transform
+    field into control to change field content to specific value. That control
+    can have different appearances like textarea, input, select and etc. That
+    widget is specific for entity edit pages.
+
+    Example html representation::
+
+        <dl>
+            <dt>
+            <dd>
+                <form>
+                ...
+                    <span class="fr" ng-hide="editMode || readonly"...>
+                    <span class="editable-value ng-binding">
+
+    Locator example::
+
+        //dt[contains(., 'test')]/following-sibling::dd/span
+        //dt[contains(., 'test')]/following-sibling::dd/input
+
+    """
+    edit_button = Text(".//span[contains(@ng-hide, 'editMode')]")
+    edit_field = TextInput(locator=".//*[self::input or self::textarea]")
+    save_button = Text(".//button[span[text()='Save']]")
+    cancel_button = Text(".//button[span[text()='Cancel']]")
+    entry_value = Text(".//span[contains(@class, 'editable-value')]")
+
+    def __init__(self, parent, locator=None, name=None, logger=None):
+        """Supports initialization via ``locator=`` or ``name=``"""
+        if locator and name or not locator and not name:
+            raise TypeError('Please specify either locator or name')
+        locator = (
+                locator or
+                ".//dt[contains(., '{}')]"
+                "/following-sibling::dd[1]".format(name)
+        )
+        super(EditableEntry, self).__init__(parent, locator, logger)
+
+    def fill(self, value):
+        """Fill widget with necessary value
+
+        :param value: string with value that should be used for field update
+            procedure
+        """
+        self.edit_button.click()
+        self.edit_field.fill(value)
+        self.save_button.click()
+
+    def read(self):
+        """Returns string with current widget value"""
+        return self.entry_value.read()
+
+
+class EditableEntrySelect(EditableEntry):
+    """Should be used in case EditableEntry widget represented not by a field,
+    but by select list
+    """
+    edit_field = Select(locator=".//select")
