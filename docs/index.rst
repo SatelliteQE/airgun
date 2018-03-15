@@ -38,6 +38,10 @@ are too fragile.
 case) for some object in it. It defines actions you can do with the object.
 This is the API that end tests uses.
 
+AirGun adds bunch of **widgets** (which are specific to Satellite / Foreman
+web UI) to these defined by Widgetastic (like generic `Text`). Widgets allows
+you to interact with various UI elements and are used in views.
+
 And finally tests. Tests are not part of AirGun repository. You can
 contribute tests to the Robottelo (currently only in abalakh's fork, `branch
 airgun_poc`_ (see "Quick start guide" below).
