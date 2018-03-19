@@ -29,14 +29,22 @@ Besides code which implements Widgetastic and navmazing functionality, two
 basic concepts used to abstract Satellite/Foreman UI functionality are Views
 and Entities.
 
-**View** is part of page containing widgets, it describes appearance of the
-page. Here all the nasty XPaths goes, but please create Foreman or Katello
-pull requests for `id=...` additions where reasonable, as generally XPaths
-are too fragile.
+**View** is fundamental basic concept that describes appearance of the page.
+Here we store all information about controls (widgets) on the page,
+specifically locators to them or when control is basic one that has common
+locator we just define widget without any further details. Of course, we
+try to address locators using `id=` or `name=` as first priority, but if we
+can't - we go with XPath. If you see situation like this - create Foreman or
+Katello pull request to assign unique id attribute for necessary element
+where it is reasonable, as XPaths are more fragile and has worse performance
+to interact with.
 
-**Entity** is a functional side of application (Satellite or Foreman in our
-case) for some object in it. It defines actions you can do with the object.
-This is the API that end tests uses.
+**Entity** is fundamental basic concept that is responsible for functional
+side of application (Satellite in our case). It defines actions you can do
+with objects like CRUD (create, remove, update, delete) for example. That
+is only API that is visible for end user on test side. Also, we put all
+details about navigation here, so framework knows how to get to necessary
+page when you need to create specific object in the application.
 
 AirGun adds bunch of **widgets** (which are specific to Satellite / Foreman
 web UI) to these defined by Widgetastic (like generic `Text`). Widgets allows
