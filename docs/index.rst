@@ -94,19 +94,23 @@ If you are about to start contributing, please follow `GitHub flow`_.
 For a new-comer, we have issues tagged with "`good first issue`_" so that
 might be place where you can start?
 
-When testing your AirGun code using Robottelo tests, I have used following
-ugly trick to have mine current development version of AirGun available in
-Robottelo virtual environment:
+When testing your AirGun code using Robottelo tests, you can make sure your
+development checkout of Airgun is used (instead the one installed in your
+Robottelo virtual environment) by setting `PYTHONPATH` properly (you can
+add that line at the end of your virtual environment activation script
+`venv/bin/activate` so it is set automatically next time you source it):
 
 .. code-block:: bash
 
-    mv venv/lib/python3.6/site-packages/airgun{,ORIG}
-    ln -s ../airgun/airgun/ venv/lib/python3.6/site-packages/airgun   # depends where you have airgun checked out
+    export PYTHONPATH="/home/pok/Checkouts/airgun/airgun/:$PYTHONPATH"
 
-When you are running your tests locally, you (currently) need Chrome browser
-installed and `chromedriver`_ binary available somewhere in your PATH (in
-your robottelo checkout): download it, unzip it and put e.g. into (if you
-are using virtual environments) `venv/bin/`.
+When you are running your tests locally, you will need Chrome browser
+installed and `chromedriver`_ (download and unzip it) binary location
+set in `webdriver_binary=` configuration option in your
+`robottelo.properties` (or make it available somewhere in your PATH,
+e.g. in Robottelo `venv/bin/`).
+
+As of now, `only chromedriver`_ is supported.
 
 
 .. _Widgetastic: https://github.com/RedHatQE/widgetastic.core
@@ -115,3 +119,4 @@ are using virtual environments) `venv/bin/`.
 .. _GitHub flow: https://help.github.com/articles/github-flow/
 .. _good first issue: https://github.com/SatelliteQE/airgun/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
 .. _chromedriver: https://sites.google.com/a/chromium.org/chromedriver/downloads
+.. _only chromedriver: https://github.com/SatelliteQE/airgun/issues/1

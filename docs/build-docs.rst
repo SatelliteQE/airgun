@@ -12,5 +12,5 @@ You might also try to run spell check:
 
 .. code-block:: bash
 
-    pip install sphinxcontrib-spelling
+    pip install -r requirements-optional.txt
     make docs-spelling
