@@ -1,4 +1,6 @@
-from widgetastic.exceptions import WidgetOperationFailed
+from widgetastic.exceptions import (
+    NoSuchElementException, WidgetOperationFailed)
+
 
 from widgetastic.widget import (
     do_not_read_this_widget,
@@ -10,6 +12,88 @@ from widgetastic.widget import (
 )
 from widgetastic.xpath import quote
 from widgetastic_patternfly import VerticalNavigation
+
+
+class RadioGroup(Widget):
+    """Classical radio buttons group widget
+
+    Example html representation::
+
+        <div class="form-group ">
+            <label>Protocol *</label>
+        <div class="col-md-4">
+            <label class="radio-inline">
+                <input type="radio" checked="checked" name="subnet[type]">IPv4
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="subnet[type]">IPv6
+            </label>
+
+    Locator example::
+
+        //div/label[input[@type='radio']][contains(., 'IPv4')]
+
+    """
+    LABELS = './/label[input[@type="radio"]]'
+    BUTTON = './/input[@type="radio"]'
+
+    def __init__(self, parent, locator, logger=None):
+        Widget.__init__(self, parent=parent, logger=logger)
+        self.locator = locator
+
+    def __locator__(self):
+        return self.locator
+
+    @property
+    def button_names(self):
+        """Return all radio group labels"""
+        return [
+            self.browser.text(btn)
+            for btn
+            in self.browser.elements(self.LABELS)
+        ]
+
+    def _get_parent_label(self, name):
+        """Get radio group label for specific button"""
+        br = self.browser
+        try:
+            return next(
+                btn for btn in br.elements(self.LABELS) if br.text(btn) == name
+            )
+        except StopIteration:
+            raise NoSuchElementException(
+                "RadioButton {name} is absent on page".format(name=name))
+
+    @property
+    def selected(self):
+        """Return name of a button that is currently selected in the group"""
+        names = self.button_names
+        for name in names:
+            btn = self.browser.element(
+                self.BUTTON, parent=self._get_parent_label(name))
+            if btn.get_attribute('checked') is not None:
+                return name
+        else:
+            raise ValueError(
+                "Whether no radio button is selected or proper attribute "
+                "should be added to framework"
+            )
+
+    def select(self, name):
+        """Select specific radio button in the group"""
+        if self.selected != name:
+            self.browser.element(
+                self.BUTTON, parent=self._get_parent_label(name)).click()
+            return True
+        return False
+
+    def read(self):
+        """Wrap method according to architecture"""
+        return self.selected
+
+    def fill(self, name):
+        """Wrap method according to architecture"""
+        return self.select(name)
 
 
 class ItemsList(GenericLocatorWidget):

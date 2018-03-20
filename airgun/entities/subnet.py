@@ -16,6 +16,10 @@ class SubnetEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
+    def read(self, entity_name):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        return view.read()
+
 
 @navigator.register(SubnetEntity, 'All')
 class ShowAllSubnets(NavigateStep):
@@ -36,3 +40,15 @@ class AddNewSubnet(NavigateStep):
         self.view.browser.wait_for_element(
             self.parent.new, ensure_page_safe=True)
         self.parent.browser.click(self.parent.new)
+
+
+@navigator.register(SubnetEntity, 'Edit')
+class EditExistingSubnet(NavigateStep):
+    VIEW = SubnetDetailsView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        self.parent.search(kwargs.get('entity_name'))
+        self.parent.edit.click()
