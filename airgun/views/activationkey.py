@@ -1,6 +1,10 @@
-from widgetastic.widget import Checkbox, Select, Text, TextInput
+from widgetastic.widget import Checkbox, Select, Text, TextInput, View
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixin
+from airgun.views.common import (
+    AddRemoveResourcesTab,
+    BaseLoggedInView,
+    SearchableViewMixin,
+)
 from airgun.widgets import (
     ConfirmationDialog,
     EditableEntry,
@@ -54,3 +58,9 @@ class ActivationKeyEditView(BaseLoggedInView):
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.return_to_all, exception=False) is not None
+
+    @View.nested
+    class subscriptions(AddRemoveResourcesTab):
+        checkbox_locator = (
+            './/table//tr[td[normalize-space(.)="%s"]]/following-sibling::tr'
+            '//input[@type="checkbox"]')

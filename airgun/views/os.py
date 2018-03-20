@@ -1,7 +1,6 @@
 from widgetastic.widget import GenericLocatorWidget, Text, TextInput, View
-from widgetastic_patternfly import Tab
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixin
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import CustomParameter, MultiSelect
 
 
@@ -26,7 +25,7 @@ class OperatingSystemDetailsView(BaseLoggedInView):
     architectures = MultiSelect(id='ms-operatingsystem_architecture_ids')
 
     @View.nested
-    class ptables(Tab):
+    class ptables(SatTab):
         TAB_NAME = 'Partition Table'
         ptables = MultiSelect(id='ms-operatingsystem_ptable_ids')
 
@@ -37,7 +36,7 @@ class OperatingSystemDetailsView(BaseLoggedInView):
             return self.ptables.read()
 
     @View.nested
-    class parameters(Tab):
+    class parameters(SatTab):
         TAB_NAME = 'Parameters'
         params = CustomParameter()
 
