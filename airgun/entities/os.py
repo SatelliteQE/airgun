@@ -48,7 +48,7 @@ class AddNewOperatingSystem(NavigateStep):
 
 
 @navigator.register(OperatingSystemEntity, 'Edit')
-class EditExistingOperatingSystem(NavigateStep):
+class EditOperatingSystem(NavigateStep):
     VIEW = OperatingSystemDetailsView
 
     def prerequisite(self, *args, **kwargs):

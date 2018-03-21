@@ -1,12 +1,14 @@
 from widgetastic.widget import Text, TextInput
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import FilteredDropdown
+from airgun.widgets import FilteredDropdown, RadioGroup
 
 
 class SubnetView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Subnets']")
     new = Text("//a[contains(@href, '/subnets/new')]")
+    edit = Text(
+        "//a[contains(@href, 'edit') and contains(@href, 'subnets')]")
 
     @property
     def is_displayed(self):
@@ -16,6 +18,7 @@ class SubnetView(BaseLoggedInView, SearchableViewMixin):
 
 class SubnetDetailsView(BaseLoggedInView):
     name = TextInput(id='subnet_name')
+    protocol = RadioGroup(locator="//div[label[contains(., 'Protocol')]]")
     network_address = TextInput(id='subnet_network')
     network_prefix = TextInput(id='subnet_cidr')
     network_mask = TextInput(id='subnet_mask')
