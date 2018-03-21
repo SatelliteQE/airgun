@@ -14,7 +14,7 @@ from widgetastic.xpath import quote
 from widgetastic_patternfly import VerticalNavigation
 
 
-class RadioGroup(Widget):
+class RadioGroup(GenericLocatorWidget):
     """Classical radio buttons group widget
 
     Example html representation::
@@ -37,13 +37,6 @@ class RadioGroup(Widget):
     LABELS = './/label[input[@type="radio"]]'
     BUTTON = './/input[@type="radio"]'
 
-    def __init__(self, parent, locator, logger=None):
-        Widget.__init__(self, parent=parent, logger=logger)
-        self.locator = locator
-
-    def __locator__(self):
-        return self.locator
-
     @property
     def button_names(self):
         """Return all radio group labels"""
@@ -55,10 +48,10 @@ class RadioGroup(Widget):
 
     def _get_parent_label(self, name):
         """Get radio group label for specific button"""
-        br = self.browser
         try:
             return next(
-                btn for btn in br.elements(self.LABELS) if br.text(btn) == name
+                btn for btn in self.browser.elements(self.LABELS)
+                if self.browser.text(btn) == name
             )
         except StopIteration:
             raise NoSuchElementException(
@@ -67,8 +60,7 @@ class RadioGroup(Widget):
     @property
     def selected(self):
         """Return name of a button that is currently selected in the group"""
-        names = self.button_names
-        for name in names:
+        for name in self.button_names:
             btn = self.browser.element(
                 self.BUTTON, parent=self._get_parent_label(name))
             if btn.get_attribute('checked') is not None:

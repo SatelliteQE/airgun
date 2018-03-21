@@ -43,7 +43,7 @@ class AddNewSubnet(NavigateStep):
 
 
 @navigator.register(SubnetEntity, 'Edit')
-class EditExistingSubnet(NavigateStep):
+class EditSubnet(NavigateStep):
     VIEW = SubnetDetailsView
 
     def prerequisite(self, *args, **kwargs):
