@@ -206,7 +206,8 @@ class Search(Widget):
             self.browser.element(self.search_field.locator),
         )
         self.fill(value)
-        self.search_button.click()
+        if self.search_button.is_displayed:
+            self.search_button.click()
 
 
 class SatVerticalNavigation(VerticalNavigation):
@@ -261,7 +262,7 @@ class ContextSelector(Widget):
 
 
 class FilteredDropdown(GenericLocatorWidget):
-    """Drop-down element with filtered functionality
+    """Drop-down element with filtering functionality
 
     Example html representation::
 
