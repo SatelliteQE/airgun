@@ -25,7 +25,9 @@ class SatTab(Tab):
         class mytab(SatTab):
             TAB_NAME = 'My Tab'
     """
-    ROOT = ParametrizedLocator('.//div[contains(@class, "page-content")]')
+    ROOT = ParametrizedLocator(
+        './/div[contains(@class, "page-content") or '
+        'contains(@class, "tab-content")]')
 
 
 class SatSecondaryTab(Tab):

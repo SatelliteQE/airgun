@@ -19,10 +19,10 @@ class OperatingSystemView(BaseLoggedInView, SearchableViewMixin):
 
 
 class OperatingSystemDetailsView(BaseLoggedInView):
-    name = TextInput(locator="//input[@id='operatingsystem_name']")
-    major = TextInput(locator="//input[@id='operatingsystem_major']")
-    submit = Text('//input[@name="commit"]')
+    name = TextInput(locator=".//input[@id='operatingsystem_name']")
+    major = TextInput(locator=".//input[@id='operatingsystem_major']")
     architectures = MultiSelect(id='ms-operatingsystem_architecture_ids')
+    submit = Text('//input[@name="commit"]')
 
     @View.nested
     class ptables(SatTab):
