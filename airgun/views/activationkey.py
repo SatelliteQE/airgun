@@ -1,8 +1,9 @@
 from widgetastic.widget import Checkbox, Select, Text, TextInput, View
 
 from airgun.views.common import (
-    AddRemoveResourcesTab,
+    AddRemoveResourcesView,
     BaseLoggedInView,
+    SatTab,
     SearchableViewMixin,
 )
 from airgun.widgets import (
@@ -60,7 +61,10 @@ class ActivationKeyEditView(BaseLoggedInView):
             self.return_to_all, exception=False) is not None
 
     @View.nested
-    class subscriptions(AddRemoveResourcesTab):
-        checkbox_locator = (
-            './/table//tr[td[normalize-space(.)="%s"]]/following-sibling::tr'
-            '//input[@type="checkbox"]')
+    class subscriptions(SatTab):
+
+        @View.nested
+        class resources(AddRemoveResourcesView):
+            checkbox_locator = (
+                './/table//tr[td[normalize-space(.)="%s"]]'
+                '/following-sibling::tr//input[@type="checkbox"]')

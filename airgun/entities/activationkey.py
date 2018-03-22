@@ -36,7 +36,7 @@ class ActivationKeyEntity(BaseEntity):
 
     def associate_product(self, entity_name, product_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.subscriptions.add.fill(product_name)
+        view.subscriptions.resources.add(product_name)
 
 
 @navigator.register(ActivationKeyEntity, 'All')

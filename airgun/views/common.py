@@ -42,34 +42,32 @@ class SatSecondaryTab(Tab):
         './/nav[@class="ng-scope"]/following-sibling::div')
 
 
-class AddRemoveResourcesTab(SatTab):
-    """Tab which allows assigning/unassigning some resources to entity.
+class AddRemoveResourcesView(View):
+    """View which allows assigning/unassigning some resources to entity.
     Contains two secondary level tabs 'List/Remove' and 'Add' with tables
     allowing managing resources for entity.
 
     Usage::
 
         @View.nested
-        class reposets(AddRemoveResourcesTab):
-            TAB_NAME = 'Repository Sets'
+        class resources(AddRemoveResourcesView): pass
 
     Note that locator for checkboxes of resources in tables can be overwritten
     for rare cases like Subscriptions where every table entry may take more
     than one line::
 
         @View.nested
-        class subscriptions(AddRemoveResourcesTab):
+        class resources(AddRemoveResourcesView):
             checkbox_locator = (
                 './/table//tr[td[normalize-space(.)="%s"]]/'
                 'following-sibling::tr//input[@type="checkbox"]')
     """
-    TAB_NAME = None
     checkbox_locator = (
         './/tr[td[normalize-space(.)="%s"]]/td[@class="row-select"]'
         '/input[@type="checkbox"]')
 
     @View.nested
-    class listremove(SatSecondaryTab):
+    class ListRemoveTab(SatSecondaryTab):
         TAB_NAME = 'List/Remove'
         searchbox = Search()
         remove_button = Text('.//button[@ng-click="removeSelected()"]')
@@ -91,7 +89,7 @@ class AddRemoveResourcesTab(SatTab):
                 self.remove(value)
 
     @View.nested
-    class add(SatSecondaryTab):
+    class AddTab(SatSecondaryTab):
         TAB_NAME = 'Add'
         searchbox = Search()
         add_button = Text('.//button[@ng-click="addSelected()"]')
@@ -111,6 +109,22 @@ class AddRemoveResourcesTab(SatTab):
                 values = list((values,))
             for value in values:
                 self.add(value)
+
+    def add(self, values):
+        """Assign some resource(s).
+
+        :param str or list values: string containing resource name or a list of
+            such strings.
+        """
+        return self.AddTab.fill(values)
+
+    def remove(self, values):
+        """Unassign some resource(s).
+
+        :param str or list values: string containing resource name or a list of
+            such strings.
+        """
+        return self.ListRemoveTab.fill(values)
 
 
 class WidgetMixin(six.with_metaclass(WidgetMetaclass, object)):
