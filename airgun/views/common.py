@@ -2,6 +2,7 @@ import six
 from widgetastic.widget import (
     NoSuchElementException,
     ParametrizedLocator,
+    Table,
     Text,
     View,
     WidgetMetaclass,
@@ -73,6 +74,11 @@ class AddRemoveResourcesView(View):
         TAB_NAME = 'List/Remove'
         searchbox = Search()
         remove_button = Text('.//button[@ng-click="removeSelected()"]')
+        table = Table(locator=".//table")
+        no_rows = Text(
+            ".//table//span[@data-block='no-rows-message' or "
+            "@data-block='no-search-results-message']"
+        )
 
         def search(self, value):
             self.searchbox.search(value)
@@ -90,11 +96,21 @@ class AddRemoveResourcesView(View):
             for value in values:
                 self.remove(value)
 
+        def read(self):
+            if self.no_rows.is_displayed:
+                return []
+            return [row.name.text for row in self.table.rows()]
+
     @View.nested
     class AddTab(SatSecondaryTab):
         TAB_NAME = 'Add'
         searchbox = Search()
         add_button = Text('.//button[@ng-click="addSelected()"]')
+        table = Table(locator=".//table")
+        no_rows = Text(
+            ".//table//span[@data-block='no-rows-message' or "
+            "@data-block='no-search-results-message']"
+        )
 
         def search(self, value):
             self.searchbox.search(value)
@@ -112,6 +128,11 @@ class AddRemoveResourcesView(View):
             for value in values:
                 self.add(value)
 
+        def read(self):
+            if self.no_rows.is_displayed:
+                return []
+            return [row.name.text for row in self.table.rows()]
+
     def add(self, values):
         """Assign some resource(s).
 
@@ -127,6 +148,13 @@ class AddRemoveResourcesView(View):
             such strings.
         """
         return self.ListRemoveTab.fill(values)
+
+    def read(self):
+        """Read all table values from both resource tables"""
+        return {
+            'assigned': self.ListRemoveTab.read(),
+            'unassigned': self.AddTab.read(),
+        }
 
 
 class WidgetMixin(six.with_metaclass(WidgetMetaclass, object)):
