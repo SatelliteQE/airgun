@@ -3,6 +3,7 @@ from widgetastic.exceptions import (
 
 
 from widgetastic.widget import (
+    Checkbox,
     do_not_read_this_widget,
     GenericLocatorWidget,
     Select,
@@ -549,3 +550,26 @@ class EditableEntrySelect(EditableEntry):
     but by select list
     """
     edit_field = Select(locator=".//select")
+
+
+class EditableLimitableEntry(EditableEntry):
+    """Variant of :class:`EditableEntry` which has input shown only in case
+    'Unlimited' checkbox unchecked.
+    """
+    unlimited = Checkbox(locator=".//input[@type='checkbox']")
+    edit_field = TextInput(
+        locator=".//*[self::input or self::textarea][not(@type='checkbox')]")
+
+    def fill(self, value):
+        """Handle 'Unlimited' checkbox before trying to fill input.
+
+        :param value: either 'Unlimited' (case insensitive) to check off
+            corresponding checkbox or value to fill input with.
+        """
+        self.edit_button.click()
+        if value.lower() == 'unlimited':
+            self.unlimited.fill(True)
+        else:
+            self.unlimited.fill(False)
+            self.edit_field.fill(value)
+        self.save_button.click()

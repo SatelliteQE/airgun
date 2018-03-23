@@ -10,6 +10,7 @@ from airgun.widgets import (
     ConfirmationDialog,
     EditableEntry,
     EditableEntrySelect,
+    EditableLimitableEntry,
     LCESelector,
     SelectActionList,
 )
@@ -49,7 +50,7 @@ class ActivationKeyEditView(BaseLoggedInView):
     return_to_all = Text("//a[text()='Activation Keys']")
     name = EditableEntry(name='Name')
     description = EditableEntry(name='Description')
-    host_limit = EditableEntry(name='Host Limit')
+    host_limit = EditableLimitableEntry(name='Host Limit')
     service_level = EditableEntrySelect(name='Service Level')
     action_list = SelectActionList()
     dialog = ConfirmationDialog()

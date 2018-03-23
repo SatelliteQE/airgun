@@ -24,6 +24,17 @@ class SatTab(Tab):
         @View.nested
         class mytab(SatTab):
             TAB_NAME = 'My Tab'
+
+    Note that ``TAB_NAME`` is optional and if it's absent - capitalized class
+    name is used instead, which is useful for simple tab names like
+    'Subscriptions'::
+
+        @View.nested
+        class subscriptions(SatTab):
+            # no need to specify 'TAB_NAME', it will be set to 'Subscriptions'
+            # automatically
+            pass
+
     """
     ROOT = ParametrizedLocator(
         './/div[contains(@class, "page-content") or '
@@ -55,8 +66,8 @@ class AddRemoveResourcesView(View):
         class resources(AddRemoveResourcesView): pass
 
     Note that locator for checkboxes of resources in tables can be overwritten
-    for rare cases like Subscriptions where every table entry may take more
-    than one line::
+    for rare cases like Subscriptions where every entry consists of multiple
+    table rows::
 
         @View.nested
         class resources(AddRemoveResourcesView):
