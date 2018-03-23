@@ -6,7 +6,6 @@ from airgun.views.hostcollection import (
     HostCollectionDetailsView,
     HostCollectionEditView,
     HostCollectionView,
-
 )
 
 

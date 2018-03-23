@@ -74,9 +74,9 @@ class AddRemoveResourcesView(View):
         TAB_NAME = 'List/Remove'
         searchbox = Search()
         remove_button = Text('.//button[@ng-click="removeSelected()"]')
-        table = Table(locator="//table")
+        table = Table(locator=".//table")
         no_rows = Text(
-            "//table//span[@data-block='no-rows-message' or "
+            ".//table//span[@data-block='no-rows-message' or "
             "@data-block='no-search-results-message']"
         )
 
@@ -106,9 +106,9 @@ class AddRemoveResourcesView(View):
         TAB_NAME = 'Add'
         searchbox = Search()
         add_button = Text('.//button[@ng-click="addSelected()"]')
-        table = Table(locator="//table")
+        table = Table(locator=".//table")
         no_rows = Text(
-            "//table//span[@data-block='no-rows-message' or "
+            ".//table//span[@data-block='no-rows-message' or "
             "@data-block='no-search-results-message']"
         )
 
