@@ -518,7 +518,7 @@ class LimitInput(Widget):
     def fill(self, value):
         """Handle 'Unlimited' checkbox before trying to fill text input.
 
-        :param value: either 'Unlimited' (case insensitive) to check off
+        :param value: either 'Unlimited' (case insensitive) to select
             corresponding checkbox or value to fill text input with.
         """
         if self.read().lower() == str(value).lower():
@@ -531,7 +531,7 @@ class LimitInput(Widget):
         return True
 
     def read(self):
-        """Return either 'Unlimited' if corresponding checkbox is checked off
+        """Return either 'Unlimited' if corresponding checkbox is selected
         or text input value otherwise.
         """
         if self.unlimited.read():
@@ -594,12 +594,13 @@ class EditableEntry(GenericLocatorWidget):
 
 
 class EditableEntrySelect(EditableEntry):
-    """Should be used in case EditableEntry widget represented not by a field,
-    but by select list
+    """Should be used in case :class:`EditableEntry` widget represented not by
+    a field, but by select list.
     """
     edit_field = Select(locator=".//select")
 
 
 class EditableLimitEntry(EditableEntry):
-    """:class:`EditableEntry` which contains :class:`LimitInput` inside."""
+    """Should be used in case :class:`EditableEntry` widget represented not by
+    a field, but by :class:`LimitInput` widget."""
     edit_field = LimitInput()
