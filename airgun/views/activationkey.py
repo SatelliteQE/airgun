@@ -1,4 +1,4 @@
-from widgetastic.widget import Checkbox, Select, Text, TextInput, View
+from widgetastic.widget import Select, Text, TextInput, View
 
 from airgun.views.common import (
     AddRemoveResourcesView,
