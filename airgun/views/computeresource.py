@@ -1,13 +1,18 @@
 from widgetastic.widget import Checkbox, Select, Text, TextInput
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import FilteredDropdown, ActionsDropdown
+from airgun.widgets import FilteredDropdown, ActionsDropdown, SatTable
 
 
 class ComputeResourcesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Compute Resources']")
     new = Text("//a[contains(@href, '/compute_resources/new')]")
-    edit = Text(".//span[contains(@class, 'btn')][a/text()='Edit']")
-    action_list = ActionsDropdown("//td/div[contains(@class, 'btn-group')]")
+    table = SatTable(
+        './/table',
+        column_widgets={
+            'Name': Text('./a'),
+            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+        }
+    )
 
     @property
     def is_displayed(self):

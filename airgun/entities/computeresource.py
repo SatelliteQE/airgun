@@ -12,8 +12,8 @@ class ComputeResourceEntity(BaseEntity):
     def create(self, values):
         view = self.navigate_to(self, 'New')
         view.fill(values)
-        if 'provider' in values.keys() and values['provider']=='oVirt' \
-            and 'certification_authorities' not in values.keys():
+        if 'provider' in values.keys() and values['provider'] == 'oVirt' \
+                and 'certification_authorities' not in values.keys():
             view.test_connection.click()
         view.submit.click()
 
@@ -33,7 +33,7 @@ class ComputeResourceEntity(BaseEntity):
     def delete(self, value):
         view = self.navigate_to(self, 'All')
         view.search(value)
-        view.action_list.fill('Delete')
+        view.table.row(name=value)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
 
 
@@ -63,5 +63,7 @@ class EditExistingComputeResource(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
-        self.parent.browser.click(self.parent.edit)
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(
+            name=entity_name)['Actions'].widget.fill('Edit')
