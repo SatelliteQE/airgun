@@ -3,7 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.activationkey import (
-    ActivationKeyDetailsView,
+    ActivationKeyCreateView,
     ActivationKeyEditView,
     ActivationKeyView,
 
@@ -49,7 +49,7 @@ class ShowAllActivationKeys(NavigateStep):
 
 @navigator.register(ActivationKeyEntity, 'New')
 class AddNewActivationKey(NavigateStep):
-    VIEW = ActivationKeyDetailsView
+    VIEW = ActivationKeyCreateView
 
     prerequisite = NavigateToSibling('All')
 

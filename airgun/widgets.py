@@ -491,6 +491,54 @@ class LCESelector(Widget):
         return self.select(checkbox_locator, checkbox_value)
 
 
+class LimitInput(Widget):
+    """Input for managing limits (e.g. Hosts limit). Consists of 'Unlimited'
+    checkbox and text input for specifying the limit, which is only visible if
+    checkbox is unchecked.
+
+    Example html representation::
+
+        <input type="checkbox" name="limit"
+         ng-model="activationKey.unlimited_hosts"...>
+
+        <input id="max_hosts" name="max_hosts"
+         ng-model="activationKey.max_hosts"
+         ng-required="!activationKey.unlimited_hosts" type="number" min="1"
+         max="2147483648"...>
+
+    """
+    unlimited = Checkbox(
+        locator=(
+            ".//input[@type='checkbox'][contains(@ng-required, 'unlimited') "
+            "or contains(@ng-model, 'unlimited')]"))
+    limit = TextInput(
+        locator=(
+            ".//input[@type='number'][contains(@ng-required, 'unlimited')]"))
+
+    def fill(self, value):
+        """Handle 'Unlimited' checkbox before trying to fill text input.
+
+        :param value: either 'Unlimited' (case insensitive) to check off
+            corresponding checkbox or value to fill text input with.
+        """
+        if self.read().lower() == str(value).lower():
+            return False
+        if str(value).lower() == 'unlimited':
+            self.unlimited.fill(True)
+        else:
+            self.unlimited.fill(False)
+            self.limit.fill(value)
+        return True
+
+    def read(self):
+        """Return either 'Unlimited' if corresponding checkbox is checked off
+        or text input value otherwise.
+        """
+        if self.unlimited.read():
+            return 'Unlimited'
+        return self.limit.read()
+
+
 class EditableEntry(GenericLocatorWidget):
     """Usually represented by static field and edit button that transform
     field into control to change field content to specific value. That control
@@ -552,24 +600,6 @@ class EditableEntrySelect(EditableEntry):
     edit_field = Select(locator=".//select")
 
 
-class EditableLimitableEntry(EditableEntry):
-    """Variant of :class:`EditableEntry` which has input shown only in case
-    'Unlimited' checkbox unchecked.
-    """
-    unlimited = Checkbox(locator=".//input[@type='checkbox']")
-    edit_field = TextInput(
-        locator=".//*[self::input or self::textarea][not(@type='checkbox')]")
-
-    def fill(self, value):
-        """Handle 'Unlimited' checkbox before trying to fill input.
-
-        :param value: either 'Unlimited' (case insensitive) to check off
-            corresponding checkbox or value to fill input with.
-        """
-        self.edit_button.click()
-        if value.lower() == 'unlimited':
-            self.unlimited.fill(True)
-        else:
-            self.unlimited.fill(False)
-            self.edit_field.fill(value)
-        self.save_button.click()
+class EditableLimitEntry(EditableEntry):
+    """:class:`EditableEntry` which contains :class:`LimitInput` inside."""
+    edit_field = LimitInput()
