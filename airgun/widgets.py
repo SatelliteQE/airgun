@@ -506,6 +506,12 @@ class LimitInput(Widget):
          ng-required="!activationKey.unlimited_hosts" type="number" min="1"
          max="2147483648"...>
 
+    Locator example::
+
+        No locator accepted as widget consists of multiple other widgets in
+        different parts of DOM. Please use View's ``ROOT`` for proper isolation
+        if needed.
+
     """
     unlimited = Checkbox(
         locator=(
