@@ -3,6 +3,7 @@ from widgetastic.exceptions import (
 
 
 from widgetastic.widget import (
+    Checkbox,
     do_not_read_this_widget,
     GenericLocatorWidget,
     Select,
@@ -490,6 +491,60 @@ class LCESelector(Widget):
         return self.select(checkbox_locator, checkbox_value)
 
 
+class LimitInput(Widget):
+    """Input for managing limits (e.g. Hosts limit). Consists of 'Unlimited'
+    checkbox and text input for specifying the limit, which is only visible if
+    checkbox is unchecked.
+
+    Example html representation::
+
+        <input type="checkbox" name="limit"
+         ng-model="activationKey.unlimited_hosts"...>
+
+        <input id="max_hosts" name="max_hosts"
+         ng-model="activationKey.max_hosts"
+         ng-required="!activationKey.unlimited_hosts" type="number" min="1"
+         max="2147483648"...>
+
+    Locator example::
+
+        No locator accepted as widget consists of multiple other widgets in
+        different parts of DOM. Please use View's ``ROOT`` for proper isolation
+        if needed.
+
+    """
+    unlimited = Checkbox(
+        locator=(
+            ".//input[@type='checkbox'][contains(@ng-required, 'unlimited') "
+            "or contains(@ng-model, 'unlimited')]"))
+    limit = TextInput(
+        locator=(
+            ".//input[@type='number'][contains(@ng-required, 'unlimited')]"))
+
+    def fill(self, value):
+        """Handle 'Unlimited' checkbox before trying to fill text input.
+
+        :param value: either 'Unlimited' (case insensitive) to select
+            corresponding checkbox or value to fill text input with.
+        """
+        if self.read().lower() == str(value).lower():
+            return False
+        if str(value).lower() == 'unlimited':
+            self.unlimited.fill(True)
+        else:
+            self.unlimited.fill(False)
+            self.limit.fill(value)
+        return True
+
+    def read(self):
+        """Return either 'Unlimited' if corresponding checkbox is selected
+        or text input value otherwise.
+        """
+        if self.unlimited.read():
+            return 'Unlimited'
+        return self.limit.read()
+
+
 class EditableEntry(GenericLocatorWidget):
     """Usually represented by static field and edit button that transform
     field into control to change field content to specific value. That control
@@ -545,7 +600,13 @@ class EditableEntry(GenericLocatorWidget):
 
 
 class EditableEntrySelect(EditableEntry):
-    """Should be used in case EditableEntry widget represented not by a field,
-    but by select list
+    """Should be used in case :class:`EditableEntry` widget represented not by
+    a field, but by select list.
     """
     edit_field = Select(locator=".//select")
+
+
+class EditableLimitEntry(EditableEntry):
+    """Should be used in case :class:`EditableEntry` widget represented not by
+    a field, but by :class:`LimitInput` widget."""
+    edit_field = LimitInput()

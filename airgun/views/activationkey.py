@@ -1,4 +1,4 @@
-from widgetastic.widget import Checkbox, Select, Text, TextInput, View
+from widgetastic.widget import Select, Text, TextInput, View
 
 from airgun.views.common import (
     AddRemoveResourcesView,
@@ -10,7 +10,9 @@ from airgun.widgets import (
     ConfirmationDialog,
     EditableEntry,
     EditableEntrySelect,
+    EditableLimitEntry,
     LCESelector,
+    LimitInput,
     SelectActionList,
 )
 
@@ -29,15 +31,14 @@ class ActivationKeyView(BaseLoggedInView, SearchableViewMixin):
             self.title, exception=False) is not None
 
 
-class ActivationKeyDetailsView(BaseLoggedInView):
+class ActivationKeyCreateView(BaseLoggedInView):
 
     name = TextInput(id='name')
+    hosts_limit = LimitInput()
     description = TextInput(id='description')
-    unlimited_hosts = Checkbox(name='limit')
-    max_hosts = TextInput(id='max_hosts')
-    submit = Text("//button[contains(@ng-click, 'handleSave')]")
     lce = LCESelector()
     content_view = Select(id='content_view_id')
+    submit = Text("//button[contains(@ng-click, 'handleSave')]")
 
     @property
     def is_displayed(self):
@@ -49,7 +50,7 @@ class ActivationKeyEditView(BaseLoggedInView):
     return_to_all = Text("//a[text()='Activation Keys']")
     name = EditableEntry(name='Name')
     description = EditableEntry(name='Description')
-    host_limit = EditableEntry(name='Host Limit')
+    hosts_limit = EditableLimitEntry(name='Host Limit')
     service_level = EditableEntrySelect(name='Service Level')
     action_list = SelectActionList()
     dialog = ConfirmationDialog()
