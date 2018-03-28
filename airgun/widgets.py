@@ -606,7 +606,53 @@ class EditableEntrySelect(EditableEntry):
     edit_field = Select(locator=".//select")
 
 
+class EditableEntryCheckbox(EditableEntry):
+    """Should be used in case :class:`EditableEntry` widget represented not by
+    a field, but by checkbox.
+    """
+    edit_field = Checkbox(locator=".//input[@type='checkbox']")
+
+
 class EditableLimitEntry(EditableEntry):
     """Should be used in case :class:`EditableEntry` widget represented not by
     a field, but by :class:`LimitInput` widget."""
     edit_field = LimitInput()
+
+
+class ReadOnlyEntry(GenericLocatorWidget):
+    """Similar to EditableEntry and specific for the same page types, but cannot
+    be modified.
+
+    Example html representation::
+
+        <dl>
+            <dt>
+            <dd>
+                <form>
+                ...
+                    <span class="ng-scope">No</span>
+
+    Locator example::
+
+        //dt[contains(., 'test')]/following-sibling::dd
+        //dt[contains(., 'test')]/following-sibling::dd/span
+
+
+    """
+    entry_value = Text(".")
+
+    def __init__(self, parent, locator=None, name=None, logger=None):
+        """Supports initialization via ``locator=`` or ``name=``"""
+        if locator and name or not locator and not name:
+            raise TypeError('Please specify either locator or name')
+        locator = (
+                locator or
+                ".//dt[contains(., '{}')]"
+                "/following-sibling::dd[not(contains(@class, 'ng-hide'))]"
+                "[1]".format(name)
+        )
+        super(ReadOnlyEntry, self).__init__(parent, locator, logger)
+
+    def read(self):
+        """Returns string with current widget value"""
+        return self.entry_value.read().strip()

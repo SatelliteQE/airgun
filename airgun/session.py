@@ -14,6 +14,7 @@ from airgun.browser import AirgunBrowser, SeleniumBrowserFactory
 from airgun.entities.login import LoginEntity
 from airgun.entities.activationkey import ActivationKeyEntity
 from airgun.entities.architecture import ArchitectureEntity
+from airgun.entities.contentview import ContentViewEntity
 from airgun.entities.hostcollection import HostCollectionEntity
 from airgun.entities.location import LocationEntity
 from airgun.entities.os import OperatingSystemEntity
@@ -199,6 +200,11 @@ class Session(object):
     def architecture(self):
         """Instance of Architecture entity."""
         return ArchitectureEntity(self.browser)
+
+    @cached_property
+    def contentview(self):
+        """Instance of Content View entity."""
+        return ContentViewEntity(self.browser)
 
     @cached_property
     def hostcollection(self):
