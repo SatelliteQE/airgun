@@ -7,7 +7,7 @@ from widgetastic.widget import (
     View,
     WidgetMetaclass,
 )
-from widgetastic_patternfly import Tab
+from widgetastic_patternfly import Tab, TabWithDropdown
 
 from airgun.widgets import ContextSelector, SatVerticalNavigation, Search
 
@@ -36,6 +36,21 @@ class SatTab(Tab):
             # automatically
             pass
 
+    """
+    ROOT = ParametrizedLocator(
+        './/div[contains(@class, "page-content") or '
+        'contains(@class, "tab-content")]')
+
+
+class SatTabWithDropdown(TabWithDropdown):
+    """Regular primary level ``Tab`` with dropdown.
+
+    Usage::
+
+        @View.nested
+        class mytab(SatTabWithDropdown):
+            TAB_NAME = 'My Tab'
+            SUB_ITEM = 'My Tab Dropdown Item'
     """
     ROOT = ParametrizedLocator(
         './/div[contains(@class, "page-content") or '
@@ -84,12 +99,13 @@ class AddRemoveResourcesView(View):
     class ListRemoveTab(SatSecondaryTab):
         TAB_NAME = 'List/Remove'
         searchbox = Search()
-        remove_button = Text('.//button[@ng-click="removeSelected()"]')
-        table = Table(locator=".//table")
-        no_rows = Text(
-            ".//table//span[@data-block='no-rows-message' or "
-            "@data-block='no-search-results-message']"
+        remove_button = Text(
+            './/div[@data-block="list-actions"]'
+            '//button[contains(@ng-click, "remove")]'
         )
+        table = Table(locator=".//table")
+        columns_exists = Text(
+            ".//table//*[contains(name(), 'body')]/tr[1]/td[2]")
 
         def search(self, value):
             self.searchbox.search(value)
@@ -108,20 +124,21 @@ class AddRemoveResourcesView(View):
                 self.remove(value)
 
         def read(self):
-            if self.no_rows.is_displayed:
-                return []
-            return [row.name.text for row in self.table.rows()]
+            if self.columns_exists.is_displayed:
+                return [row.name.text for row in self.table.rows()]
+            return []
 
     @View.nested
     class AddTab(SatSecondaryTab):
         TAB_NAME = 'Add'
         searchbox = Search()
-        add_button = Text('.//button[@ng-click="addSelected()"]')
-        table = Table(locator=".//table")
-        no_rows = Text(
-            ".//table//span[@data-block='no-rows-message' or "
-            "@data-block='no-search-results-message']"
+        add_button = Text(
+            './/div[@data-block="list-actions"]'
+            '//button[contains(@ng-click, "add")]'
         )
+        table = Table(locator=".//table")
+        columns_exists = Text(
+            ".//table//*[contains(name(), 'body')]/tr[1]/td[2]")
 
         def search(self, value):
             self.searchbox.search(value)
@@ -140,9 +157,9 @@ class AddRemoveResourcesView(View):
                 self.add(value)
 
         def read(self):
-            if self.no_rows.is_displayed:
-                return []
-            return [row.name.text for row in self.table.rows()]
+            if self.columns_exists.is_displayed:
+                return [row.name.text for row in self.table.rows()]
+            return []
 
     def add(self, values):
         """Assign some resource(s).

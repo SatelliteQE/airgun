@@ -1,8 +1,10 @@
 from widgetastic.widget import Checkbox, Text, TextInput, View
 
 from airgun.views.common import (
+    AddRemoveResourcesView,
     BaseLoggedInView,
     SatTab,
+    SatTabWithDropdown,
     SearchableViewMixin,
 )
 from airgun.widgets import (
@@ -60,3 +62,12 @@ class ContentViewEditView(BaseLoggedInView):
         description = EditableEntry(name='Description')
         composite = ReadOnlyEntry(name='Composite?')
         force_puppet = EditableEntryCheckbox(name='Force Puppet')
+
+    @View.nested
+    class yumrepo(SatTabWithDropdown):
+        TAB_NAME = 'Yum Content'
+        SUB_ITEM = 'Repositories'
+
+        @View.nested
+        class repos(AddRemoveResourcesView):
+            pass
