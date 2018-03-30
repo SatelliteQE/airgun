@@ -2,6 +2,7 @@ import six
 from widgetastic.widget import (
     NoSuchElementException,
     ParametrizedLocator,
+    ParametrizedView,
     Table,
     Text,
     View,
@@ -9,7 +10,12 @@ from widgetastic.widget import (
 )
 from widgetastic_patternfly import Tab
 
-from airgun.widgets import ContextSelector, SatVerticalNavigation, Search
+from airgun.widgets import (
+    ContextSelector,
+    LCESelector,
+    SatVerticalNavigation,
+    Search,
+)
 
 
 class BaseLoggedInView(View):
@@ -54,6 +60,33 @@ class SatSecondaryTab(Tab):
     """
     ROOT = ParametrizedLocator(
         './/nav[@class="ng-scope"]/following-sibling::div')
+
+
+class LCESelectorGroup(ParametrizedView):
+    ROOT = ".//div[@path-selector='environments']"
+
+    PARAMETERS = ('lce_name',)
+
+    LAST_ENV = ".//div[contains(@class, 'path-selector')]/ul/li[last()]"
+    lce = LCESelector(
+        locator=ParametrizedLocator(
+            "./div[contains(@class, 'path-selector')]/ul"
+            "[li[normalize-space(.)='{lce_name}']]")
+    )
+
+    @classmethod
+    def all(cls, browser):
+        return [(element.text,) for element in browser.elements(cls.LAST_ENV)]
+
+    def fill(self, values=None):
+        if values in (True, False):
+            values = {self.context['lce_name']: values}
+        else:
+            values = {values: True}
+        return self.lce.fill(values)
+
+    def read(self):
+        return self.lce.read()
 
 
 class AddRemoveResourcesView(View):

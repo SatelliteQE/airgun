@@ -6,6 +6,7 @@ from widgetastic.widget import (
     Checkbox,
     do_not_read_this_widget,
     GenericLocatorWidget,
+    ParametrizedLocator,
     Select,
     Text,
     TextInput,
@@ -223,6 +224,7 @@ class ContextSelector(Widget):
     LOC_LOCATOR = '//li[@id="location-dropdown"]/ul/li/a[contains(.,{})]'
 
     def select_org(self, org_name):
+        self.logger.info('Selecting Organization %r' % org_name)
         l1e = self.browser.element(self.CURRENT_ORG)
         self.browser.move_to_element(l1e)
         self.browser.click(l1e)
@@ -237,6 +239,7 @@ class ContextSelector(Widget):
         return self.browser.text(self.CURRENT_ORG)
 
     def select_loc(self, loc_name):
+        self.logger.info('Selecting Location %r' % loc_name)
         l1e = self.browser.element(self.CURRENT_LOC)
         self.browser.move_to_element(l1e)
         self.browser.click(l1e)
@@ -427,7 +430,7 @@ class ConfirmationDialog(Widget):
         do_not_read_this_widget()
 
 
-class LCESelector(Widget):
+class LCESelector(GenericLocatorWidget):
     """Group of checkboxes that goes in a line one after another. Usually used
     to specify lifecycle environment
 
@@ -446,11 +449,18 @@ class LCESelector(Widget):
         //ul[@class='path-list']
 
     """
-    ROOT = ".//ul[@class='path-list']"
+    ROOT = ParametrizedLocator("{@locator}")
     LABELS = "./li/label[contains(@class, path-list-item-label)]"
     CHECKBOX = (
         ".//input[@ng-model='item.selected'][parent::label[contains(., '{}')]]"
     )
+
+    def __init__(self, parent, locator=None, logger=None):
+        if locator is None:
+            locator = (
+                ".//div[contains(@class, 'path-selector')]"
+                "//ul[@class='path-list']")
+        super(LCESelector, self).__init__(parent, locator, logger=logger)
 
     def checkbox_selected(self, locator):
         """Identify whether specific checkbox is selected or not"""
@@ -472,11 +482,11 @@ class LCESelector(Widget):
         """Return a list of dictionaries. Each dictionary consists of name and
         value for each checkbox from the group
         """
-        checkboxes = []
+        checkboxes = {}
         for item in self.browser.elements(self.LABELS):
             name = self.browser.text(item)
             value = self.checkbox_selected(self.CHECKBOX.format(name))
-            checkboxes.append({'name': name, 'value': value})
+            checkboxes[name] = value
         return checkboxes
 
     def fill(self, value):
