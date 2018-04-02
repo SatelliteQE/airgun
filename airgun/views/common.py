@@ -63,6 +63,19 @@ class SatSecondaryTab(Tab):
 
 
 class LCESelectorGroup(ParametrizedView):
+    """Group of :class:`airgun.widgets.LCESelector`, typically present on page
+    for selecting desired lifecycle environment.
+
+    Usage::
+
+        lce = View.nested(LCESelectorGroup)
+
+        #or
+
+        @View.nested
+        class lce(LCESelectorGroup):
+            pass
+    """
     ROOT = ".//div[@path-selector='environments']"
 
     PARAMETERS = ('lce_name',)
@@ -76,9 +89,31 @@ class LCESelectorGroup(ParametrizedView):
 
     @classmethod
     def all(cls, browser):
+        """Helper method which returns list of tuples with all LCESelector
+        names (last available environment is used as a name). It's required for
+        :meth:`read` to work properly.
+        """
         return [(element.text,) for element in browser.elements(cls.LAST_ENV)]
 
     def fill(self, values=None):
+        """Shortcut to pass the value to included ``lce``
+        :class:`airgun.widgets.LCESelector` widget. Usage remains the same as
+        :class:`airgun.widgets.LCESelector` and
+        :class:`widgetastic.widget.ParametrizedView` required param is filled
+        automatically from passed lifecycle environment's name.
+
+        Example::
+
+            my_view.lce.fill({'PROD': True})
+
+        Value ``True`` or ``False`` means to set corresponding checkbox value
+        to the last checkbox available in widget (last lifecycle environment).
+        If you want to select different lifecycle environment within the same
+        route - pass its name as a value instead::
+
+            my_view.lce.fill({'PROD': 'Library'})
+
+        """
         if values in (True, False):
             values = {self.context['lce_name']: values}
         else:
@@ -86,6 +121,19 @@ class LCESelectorGroup(ParametrizedView):
         return self.lce.fill(values)
 
     def read(self):
+        """Shortcut which returns value of included ``lce``
+        :class:`LCESelector` widget.
+
+        Note that returned result will be wrapped in extra dict due to
+        :class:`widgetastic.widget.ParametrizedView` nature::
+
+            {
+                'DEV': {'Library': False, 'DEV': True},
+                'QA': {'Library': False, 'IT': True},
+                'PROD': {'Library': False, 'PROD': True},
+            }
+
+        """
         return self.lce.read()
 
 

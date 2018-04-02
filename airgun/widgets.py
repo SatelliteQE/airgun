@@ -456,6 +456,10 @@ class LCESelector(GenericLocatorWidget):
     )
 
     def __init__(self, parent, locator=None, logger=None):
+        """Allow to specify ``locator`` if needed or use default one otherwise.
+        Locator is needed when multiple :class:`LCESelector` are present,
+        typically as a part of :class:`airgun.views.common.LCESelectorGroup`.
+        """
         if locator is None:
             locator = (
                 ".//div[contains(@class, 'path-selector')]"
@@ -479,8 +483,8 @@ class LCESelector(GenericLocatorWidget):
         return True
 
     def read(self):
-        """Return a list of dictionaries. Each dictionary consists of name and
-        value for each checkbox from the group
+        """Return a dictionary where keys are lifecycle environment names and
+        values are booleans whether they're selected or not.
         """
         checkboxes = {}
         for item in self.browser.elements(self.LABELS):
