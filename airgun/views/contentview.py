@@ -68,6 +68,4 @@ class ContentViewEditView(BaseLoggedInView):
         TAB_NAME = 'Yum Content'
         SUB_ITEM = 'Repositories'
 
-        @View.nested
-        class repos(AddRemoveResourcesView):
-            pass
+        repos = View.nested(AddRemoveResourcesView)
