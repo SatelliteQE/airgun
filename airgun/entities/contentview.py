@@ -33,6 +33,10 @@ class ContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.fill(values)
 
+    def add_yum_repo(self, entity_name, repo_name):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.yumrepo.repos.add(repo_name)
+
 
 @navigator.register(ContentViewEntity, 'All')
 class ShowAllContentViews(NavigateStep):
