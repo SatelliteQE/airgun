@@ -1,8 +1,9 @@
-from widgetastic.widget import Select, Text, TextInput, View
+from widgetastic.widget import ParametrizedView, Select, Text, TextInput, View
 
 from airgun.views.common import (
     AddRemoveResourcesView,
     BaseLoggedInView,
+    LCESelectorGroup,
     SatTab,
     SearchableViewMixin,
 )
@@ -11,7 +12,6 @@ from airgun.widgets import (
     EditableEntry,
     EditableEntrySelect,
     EditableLimitEntry,
-    LCESelector,
     LimitInput,
     SelectActionList,
 )
@@ -36,7 +36,7 @@ class ActivationKeyCreateView(BaseLoggedInView):
     name = TextInput(id='name')
     hosts_limit = LimitInput()
     description = TextInput(id='description')
-    lce = LCESelector()
+    lce = ParametrizedView.nested(LCESelectorGroup)
     content_view = Select(id='content_view_id')
     submit = Text("//button[contains(@ng-click, 'handleSave')]")
 
@@ -52,9 +52,9 @@ class ActivationKeyEditView(BaseLoggedInView):
     description = EditableEntry(name='Description')
     hosts_limit = EditableLimitEntry(name='Host Limit')
     service_level = EditableEntrySelect(name='Service Level')
+    lce = ParametrizedView.nested(LCESelectorGroup)
     action_list = SelectActionList()
     dialog = ConfirmationDialog()
-    lce = LCESelector()
 
     @property
     def is_displayed(self):
