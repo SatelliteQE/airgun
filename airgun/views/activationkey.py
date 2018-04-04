@@ -1,7 +1,7 @@
 from widgetastic.widget import ParametrizedView, Select, Text, TextInput, View
 
 from airgun.views.common import (
-    AddRemoveResourcesView,
+    AddRemoveSubscriptionsView,
     BaseLoggedInView,
     LCESelectorGroup,
     SatTab,
@@ -63,9 +63,4 @@ class ActivationKeyEditView(BaseLoggedInView):
 
     @View.nested
     class subscriptions(SatTab):
-
-        @View.nested
-        class resources(AddRemoveResourcesView):
-            checkbox_locator = (
-                './/table//tr[td[normalize-space(.)="%s"]]'
-                '/following-sibling::tr//input[@type="checkbox"]')
+        resources = View.nested(AddRemoveSubscriptionsView)
