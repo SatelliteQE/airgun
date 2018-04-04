@@ -162,19 +162,19 @@ class AddRemoveResourcesView(View):
         @View.nested
         class resources(AddRemoveResourcesView): pass
 
-    Note that locator for checkboxes of resources in tables can be overwritten
-    for rare cases like Subscriptions where every entry consists of multiple
-    table rows::
-
-        @View.nested
-        class resources(AddRemoveResourcesView):
-            checkbox_locator = (
-                './/table//tr[td[normalize-space(.)="%s"]]/'
-                'following-sibling::tr//input[@type="checkbox"]')
+    Note that locator for checkboxes of resources in tables and labels getter
+    method can be overwritten if needed.
     """
     checkbox_locator = (
         './/tr[td[normalize-space(.)="%s"]]/td[@class="row-select"]'
         '/input[@type="checkbox"]')
+
+    @classmethod
+    def table_labels(cls, table):
+        """Returns a list of labels (entity names) in tables. Can be
+        overwritten for tables with different column names or labels placement.
+        """
+        return [row.name.text for row in table.rows()]
 
     @View.nested
     class ListRemoveTab(SatSecondaryTab):
@@ -206,7 +206,7 @@ class AddRemoveResourcesView(View):
 
         def read(self):
             if self.columns_exists.is_displayed:
-                return [row.name.text for row in self.table.rows()]
+                return self.parent_view.table_labels(self.table)
             return []
 
     @View.nested
@@ -239,7 +239,7 @@ class AddRemoveResourcesView(View):
 
         def read(self):
             if self.columns_exists.is_displayed:
-                return [row.name.text for row in self.table.rows()]
+                return self.parent_view.table_labels(self.table)
             return []
 
     def add(self, values):
@@ -264,6 +264,24 @@ class AddRemoveResourcesView(View):
             'assigned': self.ListRemoveTab.read(),
             'unassigned': self.AddTab.read(),
         }
+
+
+class AddRemoveSubscriptionsView(AddRemoveResourcesView):
+    """A variant of :class:`AddRemoveResourcesView` for managing subscriptions.
+    Subscriptions table has different structure - entity label is located in
+    separate row apart from checkbox and other cells.
+    """
+    checkbox_locator = (
+        './/table//tr[td[normalize-space(.)="%s"]]'
+        '/following-sibling::tr//input[@type="checkbox"]')
+
+    @classmethod
+    def table_labels(cls, table):
+        return [
+            row.quantity.text for row
+            in table.rows(
+                _row__attr_contains=('class', 'row-selector-label'))
+        ]
 
 
 class WidgetMixin(six.with_metaclass(WidgetMetaclass, object)):
