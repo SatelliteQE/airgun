@@ -90,6 +90,57 @@ class RadioGroup(GenericLocatorWidget):
         return self.select(name)
 
 
+class DateTime(Widget):
+    """Classical collection of paternfly data picker and two inputs for
+    hours and minutes
+
+    Example html representation::
+
+        <div name="syncPlanForm">
+            <div ... label="Start Date">
+                <label for="startDate" class="ng-binding">Start Date</label>
+                <input type="text" uib-datepicker-popup="" id="startDate" ...>
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default"...>
+                        <i class="fa fa-calendar"></i>
+            <div ...label="Start Time">
+                <label for="" class="ng-binding">Start Time</label>
+                    <div show-meridian="false" id="startTime" ...>
+                        <table...>
+        ...
+
+    Locator example::
+
+        We don't need to pass locator here as widget seems has one structure
+        across all applications that use paternfly pattern
+    """
+    start_date = TextInput(id='startDate')
+    hours = TextInput(locator="//input[@ng-model='hours']")
+    minutes = TextInput(locator="//input[@ng-model='minutes']")
+
+    def fill(self, values):
+        """Fills the widget accordingly to provided values.
+
+        :param values: dict with keys ``start_date`` and/or ``hours``,
+            and/or ``minutes`` containing values that should be present in
+            the fields
+        """
+        for name in ['start_date', 'hours', 'minutes']:
+            value = values.get(name, None)
+            if value:
+                getattr(self, name).fill(value)
+
+    def read(self):
+        """Read current widget values and put them into the dict
+
+        :param values: dict with key/value pairs for all widget fields
+        """
+        values = {}
+        for name in ['start_date', 'hours', 'minutes']:
+            values[name] = getattr(self, name).read()
+        return values
+
+
 class ItemsList(GenericLocatorWidget):
     """List with click-able elements. Part of :class:`MultiSelect` or jQuery
     drop-down.
@@ -631,6 +682,12 @@ class EditableLimitEntry(EditableEntry):
     """Should be used in case :class:`EditableEntry` widget represented not by
     a field, but by :class:`LimitInput` widget."""
     edit_field = LimitInput()
+
+
+class EditableDateTime(EditableEntry):
+    """Should be used in case :class:`EditableEntry` widget represented not by
+    a field, but by :class:`DateTime` widget."""
+    edit_field = DateTime()
 
 
 class ReadOnlyEntry(GenericLocatorWidget):
