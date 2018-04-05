@@ -50,19 +50,19 @@ AirGun adds bunch of **widgets** (which are specific to Satellite / Foreman
 web UI) to these defined by Widgetastic (like generic `Text`). Widgets allows
 you to interact with various UI elements and are used in views.
 
-And finally tests. Tests are not part of AirGun repository. You can
-contribute tests to the Robottelo (currently only in abalakh's fork, `branch
-airgun_poc`_ (see "Quick start guide" below).
+And finally tests. Tests are not part of AirGun repository. You can contribute
+tests to the Robottelo, ``tests/foreman/`` `ui_airgun`_ folder (see "Quick
+start guide" below).
 
 
 Quick start guide
 -----------------
 
-1. Clone Robottelo branch which supports airgun:
+1. Clone Robottelo:
 
 .. code-block:: bash
 
-    git clone -b airgun_poc --single-branch https://github.com/abalakh/robottelo.git
+    git clone https://github.com/SatelliteQE/robottelo.git
 
 2. Install requirements
 
@@ -110,7 +110,7 @@ add that line at the end of your virtual environment activation script
 
 .. code-block:: bash
 
-    export PYTHONPATH="/home/pok/Checkouts/airgun/airgun/:$PYTHONPATH"
+    export PYTHONPATH="/home/username/workspace/airgun/:$PYTHONPATH"
 
 When you are running your tests locally, you will need Chrome browser
 installed and `chromedriver`_ (download and unzip it) binary location
@@ -123,7 +123,7 @@ As of now, `only chromedriver`_ is supported.
 
 .. _Widgetastic: https://github.com/RedHatQE/widgetastic.core
 .. _navmazing: https://github.com/RedhatQE/navmazing/
-.. _branch airgun_poc: https://github.com/abalakh/robottelo/tree/airgun_poc/tests/foreman/ui_airgun
+.. _ui_airgun: https://github.com/SatelliteQE/robottelo/tree/master/tests/foreman/ui_airgun
 .. _GitHub flow: https://help.github.com/articles/github-flow/
 .. _good first issue: https://github.com/SatelliteQE/airgun/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
 .. _chromedriver: https://sites.google.com/a/chromium.org/chromedriver/downloads
