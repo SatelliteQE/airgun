@@ -6,6 +6,7 @@ import time
 
 import six
 
+from datetime import datetime
 from fauxfactory import gen_string
 from selenium import webdriver
 from widgetastic.browser import Browser, DefaultPlugin
@@ -509,3 +510,27 @@ class AirgunBrowser(Browser):
             plugin_class=AirgunBrowserPlugin,
             extra_objects=extra_objects)
         self.window_handle = selenium.current_window_handle
+
+    def get_client_datetime(self):
+        """Make Javascript call inside of browser session to get exact current
+        date and time. In that way, we will be isolated from any issue that can
+        happen due different environments where test automation code is
+        executing and where browser session is opened. That should help us to
+        have successful run for docker containers or separated virtual machines
+        When calling .getMonth() you need to add +1 to display the correct
+        month. Javascript count always starts at 0, so calling .getMonth() in
+        May will return 4 and not 5.
+
+        :return: Datetime object that contains data for current date and time
+            on a client
+        """
+        script = ('var currentdate = new Date(); return ({0} + "-" + {1} + '
+                  '"-" + {2} + " : " + {3} + ":" + {4});').format(
+            'currentdate.getFullYear()',
+            '(currentdate.getMonth()+1)',
+            'currentdate.getDate()',
+            'currentdate.getHours()',
+            'currentdate.getMinutes()',
+        )
+        client_datetime = self.execute_script(script)
+        return datetime.strptime(client_datetime, '%Y-%m-%d : %H:%M')

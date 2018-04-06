@@ -91,8 +91,7 @@ class RadioGroup(GenericLocatorWidget):
 
 
 class DateTime(Widget):
-    """Classical collection of paternfly data picker and two inputs for
-    hours and minutes
+    """Collection of date picker and two inputs for hours and minutes
 
     Example html representation::
 
@@ -115,8 +114,8 @@ class DateTime(Widget):
         across all applications that use paternfly pattern
     """
     start_date = TextInput(id='startDate')
-    hours = TextInput(locator="//input[@ng-model='hours']")
-    minutes = TextInput(locator="//input[@ng-model='minutes']")
+    hours = TextInput(locator=".//input[@ng-model='hours']")
+    minutes = TextInput(locator=".//input[@ng-model='minutes']")
 
     def fill(self, values):
         """Fills the widget accordingly to provided values.

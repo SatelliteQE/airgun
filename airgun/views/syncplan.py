@@ -46,6 +46,7 @@ class SyncPlanCreateView(BaseLoggedInView):
 
 
 class SyncPlanEditView(BaseLoggedInView):
+    # fixme: change all return_to_all instances to use Breadcrumb widget
     return_to_all = Text("//a[text()='Sync Plans']")
     action_list = SelectActionList()
     dialog = ConfirmationDialog()
@@ -56,7 +57,7 @@ class SyncPlanEditView(BaseLoggedInView):
             self.return_to_all, exception=False) is not None
 
     @View.nested
-    class Details(SatTab):
+    class details(SatTab):
         name = EditableEntry(name='Name')
         description = EditableEntry(name='Description')
         date_time = EditableDateTime(name='Start Date')
@@ -66,5 +67,5 @@ class SyncPlanEditView(BaseLoggedInView):
         products_count = ReadOnlyEntry(name='Products')
 
     @View.nested
-    class Products(SatTab):
+    class products(SatTab):
         resources = View.nested(AddRemoveResourcesView)
