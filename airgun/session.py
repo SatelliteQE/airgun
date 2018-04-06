@@ -20,6 +20,7 @@ from airgun.entities.location import LocationEntity
 from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.organization import OrganizationEntity
 from airgun.entities.subnet import SubnetEntity
+from airgun.entities.syncplan import SyncPlanEntity
 
 
 from airgun.navigation import navigator
@@ -235,3 +236,8 @@ class Session(object):
     def subnet(self):
         """Instance of Subnet entity."""
         return SubnetEntity(self.browser)
+
+    @cached_property
+    def syncplan(self):
+        """Instance of Sync Plan entity."""
+        return SyncPlanEntity(self.browser)
