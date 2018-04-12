@@ -14,19 +14,22 @@ from airgun.widgets import EditableEntry, ReadOnlyEntry
 class LCEView(BaseLoggedInView, ParametrizedView):
     title = Text("//h2[contains(., 'Lifecycle Environment Paths')]")
     new_path = Text(
-        "(//a[contains(@href, '/lifecycle_environments') "
-        "and contains(@href, 'new')])[1]"
+        "//a[contains(@href, '/lifecycle_environments') "
+        "and contains(@href, 'new') and contains(@class, 'btn-primary')]"
     )
     edit_parent_env = Text(
-        "(//a[contains(@href, '/lifecycle_environments') "
-        "and contains(@ui-sref, 'environment.details')])[1]"
+        "//table[contains(@class, 'info-blocks')]"
+        "//a[contains(@ui-sref, 'environment.details')]"
     )
     parent_env_cvs_count = Text(
-        "//table[1]//td[span[contains(., 'Content Views')]]/div")
+        "//table[contains(@class, 'info-blocks')]"
+        "//td[span[contains(., 'Content Views')]]/div")
     parent_env_products_count = Text(
-        "//table[1]//td[span[contains(., 'Products')]]/div")
+        "//table[contains(@class, 'info-blocks')]"
+        "//td[span[contains(., 'Products')]]/div")
     parent_env_products_errata = Text(
-        "//table[1]//td[span[contains(., 'Errata')]]/div")
+        "//table[contains(@class, 'info-blocks')]"
+        "//td[span[contains(., 'Errata')]]/div")
 
     @property
     def is_displayed(self):
@@ -34,7 +37,7 @@ class LCEView(BaseLoggedInView, ParametrizedView):
             self.title, exception=False) is not None
 
     @View.nested
-    class LCE(ParametrizedView):
+    class lce(ParametrizedView):
         ROOT = ParametrizedLocator(
             ".//div[@ng-repeat='path in paths']"
             "[table//th/a[normalize-space(.)='{lce_name}']]"

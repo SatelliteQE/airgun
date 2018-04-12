@@ -214,7 +214,7 @@ class Session(object):
         return HostCollectionEntity(self.browser)
 
     @cached_property
-    def lce(self):
+    def lifecycleenvironment(self):
         """Instance of LCE entity."""
         return LCEEntity(self.browser)
 
