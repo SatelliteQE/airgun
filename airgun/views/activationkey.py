@@ -1,6 +1,7 @@
 from widgetastic.widget import ParametrizedView, Select, Text, TextInput, View
 
 from airgun.views.common import (
+    AddRemoveResourcesView,
     AddRemoveSubscriptionsView,
     BaseLoggedInView,
     LCESelectorGroup,
@@ -48,11 +49,6 @@ class ActivationKeyCreateView(BaseLoggedInView):
 
 class ActivationKeyEditView(BaseLoggedInView):
     return_to_all = Text("//a[text()='Activation Keys']")
-    name = EditableEntry(name='Name')
-    description = EditableEntry(name='Description')
-    hosts_limit = EditableLimitEntry(name='Host Limit')
-    service_level = EditableEntrySelect(name='Service Level')
-    lce = ParametrizedView.nested(LCESelectorGroup)
     action_list = SelectActionList()
     dialog = ConfirmationDialog()
 
@@ -62,5 +58,19 @@ class ActivationKeyEditView(BaseLoggedInView):
             self.return_to_all, exception=False) is not None
 
     @View.nested
+    class details(SatTab):
+        name = EditableEntry(name='Name')
+        description = EditableEntry(name='Description')
+        hosts_limit = EditableLimitEntry(name='Host Limit')
+        service_level = EditableEntrySelect(name='Service Level')
+        lce = ParametrizedView.nested(LCESelectorGroup)
+        content_view = EditableEntrySelect(name='Content View')
+
+    @View.nested
     class subscriptions(SatTab):
         resources = View.nested(AddRemoveSubscriptionsView)
+
+    @View.nested
+    class host_collections(SatTab):
+        TAB_NAME = 'Host Collections'
+        resources = View.nested(AddRemoveResourcesView)

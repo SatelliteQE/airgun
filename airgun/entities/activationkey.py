@@ -22,9 +22,9 @@ class ActivationKeyEntity(BaseEntity):
         view.action_list.fill('Remove')
         view.dialog.confirm()
 
-    def search(self, value):
+    def search(self, value, expected_result=None):
         view = self.navigate_to(self, 'All')
-        return view.search(value)
+        return view.search(value, expected_result)
 
     def read(self, entity_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
@@ -34,9 +34,15 @@ class ActivationKeyEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.fill(values)
 
-    def associate_product(self, entity_name, product_name):
+    def add_subscription(self, entity_name, subscription_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.subscriptions.resources.add(product_name)
+        view.subscriptions.resources.add(subscription_name)
+
+    def add_host_collection(self, entity_name, hc_name):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.host_collections.resources.add(hc_name)
+        assert view.flash.is_displayed
+        view.flash.assert_no_error()
 
 
 @navigator.register(ActivationKeyEntity, 'All')

@@ -13,6 +13,7 @@ from widgetastic_patternfly import Tab, TabWithDropdown
 from airgun.widgets import (
     ContextSelector,
     LCESelector,
+    SatFlashMessages,
     SatVerticalNavigation,
     Search,
 )
@@ -21,6 +22,8 @@ from airgun.widgets import (
 class BaseLoggedInView(View):
     menu = SatVerticalNavigation('.//div[@id="vertical-nav"]/ul')
     taxonomies = ContextSelector()
+    flash = SatFlashMessages(
+        locator='//div[@class="toast-notifications-list-pf"]')
 
 
 class SatTab(Tab):

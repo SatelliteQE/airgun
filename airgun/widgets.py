@@ -13,7 +13,11 @@ from widgetastic.widget import (
     Widget,
 )
 from widgetastic.xpath import quote
-from widgetastic_patternfly import VerticalNavigation
+from widgetastic_patternfly import (
+    FlashMessage,
+    FlashMessages,
+    VerticalNavigation,
+)
 
 
 class RadioGroup(GenericLocatorWidget):
@@ -233,8 +237,9 @@ class MultiSelect(GenericLocatorWidget):
 
 
 class Search(Widget):
-    search_field = TextInput(
-        locator="//input[@id='search' or @ng-model='table.searchTerm']")
+    search_field = TextInput(locator=(
+        "//input[@id='search' or @ng-model='table.searchTerm' or "
+        "contains(@ng-model, 'Filter')]"))
     search_button = Text(
         "//button[contains(@type,'submit') or "
         "@ng-click='table.search(table.searchTerm)']"
@@ -265,6 +270,63 @@ class Search(Widget):
 class SatVerticalNavigation(VerticalNavigation):
     """The Patternfly Vertical navigation."""
     CURRENTLY_SELECTED = './/li[contains(@class, "active")]/a/span'
+
+
+class SatFlashMessages(FlashMessages):
+    """Satellite version of Patternfly's alerts section. The only difference is
+    overridden ``messages`` property which returns :class:`SatFlashMessage`.
+
+    Example html representation::
+
+        <div class="toast-notifications-list-pf">
+            <div class="alert toast-pf alert-success alert-dismissable">
+                <button ... type="button" class="close close-default">
+                    <span ... class="pficon pficon-close"></span></button>
+                <span aria-hidden="true" class="pficon pficon-ok"></span>
+                <span><span>Sample message</span></span></div>
+            </div>
+        </div>
+
+    Locator example::
+
+        //div[@class="toast-notifications-list-pf"]
+
+    """
+
+    @property
+    def messages(self):
+        result = []
+        try:
+            for flash_div in self.browser.elements(
+                    './div[contains(@class, "alert")]', parent=self,
+                    check_visibility=True):
+                result.append(
+                    SatFlashMessage(self, flash_div, logger=self.logger))
+        except NoSuchElementException:
+            pass
+        return result
+
+
+class SatFlashMessage(FlashMessage):
+    """Satellite version of Patternfly alert. It doesn't contain ``<strong>``
+    tag and all the text is inside 2 ``<span>``.
+
+    Should not be used directly, only via class:`SatFlashMessages`.
+
+    Example html representation::
+
+        <div class="alert toast-pf alert-success alert-dismissable">
+                <button ... type="button" class="close close-default">
+                    <span ... class="pficon pficon-close"></span></button>
+                <span aria-hidden="true" class="pficon pficon-ok"></span>
+                <span><span>Sample message</span></span></div>
+        </div>
+
+    """
+
+    @property
+    def text(self):
+        return self.browser.text('./span/span', parent=self)
 
 
 class ContextSelector(Widget):
