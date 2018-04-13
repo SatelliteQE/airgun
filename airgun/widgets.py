@@ -310,6 +310,9 @@ class SatFlashMessages(FlashMessages):
 class SatFlashMessage(FlashMessage):
     """Satellite version of Patternfly alert. It doesn't contain ``<strong>``
     tag and all the text is inside 2 ``<span>``.
+    
+    For more details, see `Bugzilla #1566565
+    <https://bugzilla.redhat.com/show_bug.cgi?id=1566565>`_.
 
     Should not be used directly, only via class:`SatFlashMessages`.
 
