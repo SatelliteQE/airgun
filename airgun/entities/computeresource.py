@@ -1,15 +1,9 @@
 from navmazing import NavigateToSibling
-
-#constructor
 from airgun.entities.base import BaseEntity
-#navigator is for registering navigation steps, NavigateStep is from navmazing
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.computeresource import (
     ComputeResourcesView,
-    ResourceProviderDocker,
-    ResourceProviderLibvirt,
-    ResourceProviderOpenStack
-    #ComputeResourcesEditView
+    ResourceProviderDetailsView,
 )
 
 
@@ -24,13 +18,24 @@ class ComputeResourceEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
+    def edit(self, name, values):
+        view = self.navigate_to(self, 'Edit', entity_name=name)
+        view.fill(values)
+        view.submit.click()
+
     def read(self, entity_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
 
+    def delete(self, value):
+        view = self.navigate_to(self, 'All')
+        view.search(value)
+        view.action_list.fill('Delete')
+        self.browser.handle_alert()
+
 
 @navigator.register(ComputeResourceEntity, 'All')
-class ShowAllActivationComputeResources(NavigateStep):
+class ShowAllComputeResources(NavigateStep):
     VIEW = ComputeResourcesView
 
     def step(self, *args, **kwargs):
@@ -38,41 +43,22 @@ class ShowAllActivationComputeResources(NavigateStep):
 
 
 @navigator.register(ComputeResourceEntity, 'New')
-class AddNewComputeResourceDocker(NavigateStep):
-    VIEW = ResourceProviderDocker
+class AddNewComputeResource(NavigateStep):
+    VIEW = ResourceProviderDetailsView
 
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
         self.parent.browser.click(self.parent.new)
 
-@navigator.register(ComputeResourceEntity, 'New')
-class AddNewComputeResourceLibvirt(NavigateStep):
-    VIEW = ResourceProviderLibvirt
 
-    prerequisite = NavigateToSibling('All')
-
-    def step(self, *args, **kwargs):
-        self.parent.browser.click(self.parent.new)
-
-@navigator.register(ComputeResourceEntity, 'New')
-class AddNewComputeResourceOpenStack(NavigateStep):
-    VIEW = ResourceProviderOpenStack
-
-    prerequisite = NavigateToSibling('All')
-
-    def step(self, *args, **kwargs):
-        self.parent.browser.click(self.parent.new)
-
-"""
 @navigator.register(ComputeResourceEntity, 'Edit')
 class EditExistingComputeResource(NavigateStep):
-    VIEW = ComputeResourcesEditView
+    VIEW = ResourceProviderDetailsView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
         self.parent.search(kwargs.get('entity_name'))
-        self.parent.edit.click()
-"""
+        self.parent.browser.click(self.parent.edit)

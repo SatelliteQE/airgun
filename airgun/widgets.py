@@ -620,7 +620,6 @@ class ActionsDropdown(GenericLocatorWidget):
         """Returns a list of available actions."""
         return self.items
 
-
 class ConfirmationDialog(Widget):
     """Usual confirmation dialog with two buttons and close 'x' button in the
     right corner. Has nothing in common with javascript alert, confirm or

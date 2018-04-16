@@ -17,6 +17,7 @@ from airgun.entities.architecture import ArchitectureEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.contentcredential import ContentCredentialEntity
 from airgun.entities.contentview import ContentViewEntity
+from airgun.entities.computeresource import ComputeResourceEntity
 from airgun.entities.hostcollection import HostCollectionEntity
 from airgun.entities.lifecycleenvironment import LCEEntity
 from airgun.entities.location import LocationEntity
@@ -219,6 +220,10 @@ class Session(object):
         """Instance of Content Credential entity."""
         return ContentCredentialEntity(self.browser)
 
+    def computeresource(self):
+        """Instance of ComputeResource entity."""
+        return ComputeResourceEntity(self.browser)
+
     @cached_property
     def contentview(self):
         """Instance of Content View entity."""
@@ -279,7 +284,10 @@ class Session(object):
         """Instance of Sync Plan entity."""
         return SyncPlanEntity(self.browser)
 
+<<<<<<< HEAD
     @cached_property
     def user(self):
         """Instance of User entity."""
         return UserEntity(self.browser)
+=======
+>>>>>>> My work so far requesting feedback
