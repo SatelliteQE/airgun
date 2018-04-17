@@ -11,11 +11,14 @@ from widgetastic.widget import (
 from widgetastic_patternfly import Tab, TabWithDropdown
 
 from airgun.widgets import (
+    ACEEditor,
     ContextSelector,
     LCESelector,
     SatFlashMessages,
     SatVerticalNavigation,
     Search,
+    Select,
+    ToggleRadioGroup,
 )
 
 
@@ -285,6 +288,26 @@ class AddRemoveSubscriptionsView(AddRemoveResourcesView):
             in table.rows(
                 _row__attr_contains=('class', 'row-selector-label'))
         ]
+
+
+class TemplateEditor(View):
+    """Default view for template entity editor that can be present for example
+    on provisioning template of partition table pages. It contains from
+    different options of content rendering and ace editor where you can
+    actually provide your inputs
+
+    Usage::
+
+        editor = View.nested(TemplateEditor)
+
+    """
+    ROOT = ".//div[@class='editor-container']"
+    rendering_options = ToggleRadioGroup(".//div[@class='btn-group']")
+    import_template = Text(".//a[normalize-space(.)='Import']")
+    fullscreen = Text(".//a[normalize-space(.)='Fullscreen']")
+    syntax_type = Select(id='mode')
+    key_binding = Select(id='keybinding')
+    editor = ACEEditor()
 
 
 class WidgetMixin(six.with_metaclass(WidgetMetaclass, object)):

@@ -94,6 +94,49 @@ class RadioGroup(GenericLocatorWidget):
         return self.select(name)
 
 
+class ToggleRadioGroup(RadioGroup):
+    """Toggle buttons group widget when each button represented by radio
+    element
+
+    Example html representation::
+
+        <div class="form-group ">
+            <div>
+                <label>Template *</label>
+            <div class="btn-group">
+                <label class="btn btn-default btn-sm active">
+                   <input type="radio" name="options">Input
+                </label>
+                <label class="btn btn-default btn-sm">
+                   <input type="radio" name="options">Diff
+                </label>
+
+    Locator example::
+
+        //div[@class='btn-group']
+
+    """
+    @property
+    def selected(self):
+        """Return name of a button that is currently selected in the group"""
+        for name in self.button_names:
+            btn = self.browser.element(self._get_parent_label(name))
+            if 'active' in btn.get_attribute('class'):
+                return name
+        else:
+            raise ValueError(
+                "Whether no radio button is selected or proper attribute "
+                "should be added to framework"
+            )
+
+    def select(self, name):
+        """Select specific radio button in the group"""
+        if self.selected != name:
+            self.browser.element(self._get_parent_label(name)).click()
+            return True
+        return False
+
+
 class DateTime(Widget):
     """Collection of date picker and two inputs for hours and minutes
 
@@ -473,6 +516,58 @@ class CustomParameter(Widget):
         self.new_parameter_value.fill(values['value'])
 
 
+class TableActionList(Widget):
+    """Refer to actions list that usually located in the end of table rows. It
+    contains default action that represented by button and additional actions
+    that can be selected from drop down
+
+    Example html representation::
+
+        <div class="btn-group">
+            <span class="btn btn-sm btn-default">
+                <a>Default_action</a>
+            </span>
+            <a class="dropdown-toggle" data-toggle="dropdown">
+            <ul class="dropdown-menu pull-right">
+                <li>
+                    <a>Action_1</a>
+                </li>
+                <li>
+                    <a>Action_2</a>
+                </li>
+
+    Locator example::
+
+        No locator accepted as usually we perform search for entity that give
+        us in result only one possible row
+
+    """
+    ROOT = "//td[div[@class='btn-group']]"
+    default_action = ".//span[contains(@class, 'default')]/a[text()='{}']"
+    open_dropdown = Text(".//a[contains(@data-toggle, 'dropdown')]")
+    dropdown_action = (
+        ".//ul[contains(@class, 'dropdown-menu')]/li/a[text()='{}']")
+
+    def fill(self, value, dropdown=False):
+        """Select necessary action from the list or default one
+
+        :param value: string with name of action to be performed
+        :param dropdown: specify whether action should be selected from drop
+            down
+        """
+        if dropdown:
+            self.open_dropdown.click()
+            self.browser.click(
+                self.browser.element(self.dropdown_action.format(value)))
+        else:
+            self.browser.click(
+                self.browser.element(self.default_action.format(value)))
+
+    def read(self):
+        """There is no need to read values for this widget"""
+        do_not_read_this_widget()
+
+
 class SelectActionList(Widget):
     """Refer to 'Select Action' control which has simple list of actions to be
      selected from, once user click on the arrow button.
@@ -791,3 +886,43 @@ class ReadOnlyEntry(GenericLocatorWidget):
     def read(self):
         """Returns string with current widget value"""
         return self.entry_value.read().strip()
+
+
+class ACEEditor(Widget):
+    """Default ace editor
+
+    Example html representation::
+
+        <div id="editor-000" class="editor ace_editor ace-twilight ace_dark">
+            <textarea class="ace_text-input"
+            <div class="ace_gutter" style="display: none;">
+                <div class="ace_layer ace_gutter-layer ace_folding-enabled">
+            <div class="ace_scroller">
+            <div class="ace_content">
+                ...
+
+    Locator example::
+
+        There is no need to provide any locators to that widget
+
+    """
+    ROOT = "//div[contains(@class, 'ace_editor')]"
+
+    def __init__(self, parent, logger=None):
+        """Getting id for specific ace editor element"""
+        Widget.__init__(self, parent, logger=logger)
+        self.ace_edit_id = self.browser.element(self.ROOT).get_attribute("id")
+
+    def fill(self, value):
+        """Fill widget with necessary value
+
+        :param value: string with value that should be used for field update
+            procedure
+        """
+        self.browser.execute_script(
+            "ace.edit('{0}').setValue('{1}');".format(self.ace_edit_id, value))
+
+    def read(self):
+        """Returns string with current widget value"""
+        return self.browser.execute_script(
+            "ace.edit('{0}').getValue();".format(self.ace_edit_id))
