@@ -719,7 +719,11 @@ class EditableEntry(GenericLocatorWidget):
         :param value: string with value that should be used for field update
             procedure
         """
-        self.edit_button.click()
+        # in some cases editing fields automatically triggers editing others,
+        # so the field may be opened for editing and clicking "edit" button is
+        # not required for it
+        if self.edit_button.is_displayed:
+            self.edit_button.click()
         self.edit_field.fill(value)
         self.save_button.click()
 

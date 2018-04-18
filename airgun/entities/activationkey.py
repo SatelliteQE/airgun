@@ -44,6 +44,12 @@ class ActivationKeyEntity(BaseEntity):
         assert view.flash.is_displayed
         view.flash.assert_no_error()
 
+    def remove_host_collection(self, entity_name, hc_name):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.host_collections.resources.remove(hc_name)
+        assert view.flash.is_displayed
+        view.flash.assert_no_error()
+
 
 @navigator.register(ActivationKeyEntity, 'All')
 class ShowAllActivationKeys(NavigateStep):
