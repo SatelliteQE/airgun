@@ -14,6 +14,7 @@ setup(
     author=u'RedHat QE Team',
     url='https://github.com/SatelliteQE/airgun',
     install_requires=[
+        'attr',
         'fauxfactory',
         'navmazing==1.1.4',
         'pytest==3.3.2',

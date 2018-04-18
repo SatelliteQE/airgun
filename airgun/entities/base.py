@@ -1,8 +1,14 @@
+import attr
 
 
+@attr.s
 class BaseEntity(object):
+    browser = attr.ib()
 
-    def __init__(self, browser):
-        self.browser = browser
-        self.session = browser.extra_objects['session']
-        self.navigate_to = self.session.navigator.navigate
+    @property
+    def session(self):
+        return self.browser.extra_objects['session']
+
+    @property  # could be cached
+    def navigate_to(self):
+            return self.session.navigator.navigate
