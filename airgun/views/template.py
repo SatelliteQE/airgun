@@ -6,7 +6,7 @@ from airgun.views.common import (
     SearchableViewMixin,
     TemplateEditor,
 )
-from airgun.widgets import FilteredDropdown, MultiSelect, TableActionList
+from airgun.widgets import FilteredDropdown, MultiSelect
 
 
 class ProvisioningTemplateView(BaseLoggedInView, SearchableViewMixin):
@@ -14,7 +14,10 @@ class ProvisioningTemplateView(BaseLoggedInView, SearchableViewMixin):
     new = Text("//a[contains(@href, '/templates/provisioning_templates/new')]")
     edit = Text(
         "//a[contains(@href, 'edit') and contains(@href, 'templates')]")
-    action_list = TableActionList()
+    clone = Text(
+        "//td[div[@class='btn-group']]"
+        "//span[contains(@class, 'default')]/a[text()='Clone']"
+    )
 
     @property
     def is_displayed(self):

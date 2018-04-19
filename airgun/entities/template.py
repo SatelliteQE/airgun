@@ -68,4 +68,4 @@ class CloneTemplate(NavigateStep):
 
     def step(self, *args, **kwargs):
         self.parent.search(kwargs.get('entity_name'))
-        self.parent.action_list.fill('Clone')
+        self.parent.clone.click()

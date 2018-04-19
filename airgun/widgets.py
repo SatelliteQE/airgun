@@ -516,58 +516,6 @@ class CustomParameter(Widget):
         self.new_parameter_value.fill(values['value'])
 
 
-class TableActionList(Widget):
-    """Refer to actions list that usually located in the end of table rows. It
-    contains default action that represented by button and additional actions
-    that can be selected from drop down
-
-    Example html representation::
-
-        <div class="btn-group">
-            <span class="btn btn-sm btn-default">
-                <a>Default_action</a>
-            </span>
-            <a class="dropdown-toggle" data-toggle="dropdown">
-            <ul class="dropdown-menu pull-right">
-                <li>
-                    <a>Action_1</a>
-                </li>
-                <li>
-                    <a>Action_2</a>
-                </li>
-
-    Locator example::
-
-        No locator accepted as usually we perform search for entity that give
-        us in result only one possible row
-
-    """
-    ROOT = "//td[div[@class='btn-group']]"
-    default_action = ".//span[contains(@class, 'default')]/a[text()='{}']"
-    open_dropdown = Text(".//a[contains(@data-toggle, 'dropdown')]")
-    dropdown_action = (
-        ".//ul[contains(@class, 'dropdown-menu')]/li/a[text()='{}']")
-
-    def fill(self, value, dropdown=False):
-        """Select necessary action from the list or default one
-
-        :param value: string with name of action to be performed
-        :param dropdown: specify whether action should be selected from drop
-            down
-        """
-        if dropdown:
-            self.open_dropdown.click()
-            self.browser.click(
-                self.browser.element(self.dropdown_action.format(value)))
-        else:
-            self.browser.click(
-                self.browser.element(self.default_action.format(value)))
-
-    def read(self):
-        """There is no need to read values for this widget"""
-        do_not_read_this_widget()
-
-
 class SelectActionList(Widget):
     """Refer to 'Select Action' control which has simple list of actions to be
      selected from, once user click on the arrow button.
