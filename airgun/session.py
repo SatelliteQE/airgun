@@ -20,6 +20,7 @@ from airgun.entities.lifecycleenvironment import LCEEntity
 from airgun.entities.location import LocationEntity
 from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.organization import OrganizationEntity
+from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.subnet import SubnetEntity
 from airgun.entities.syncplan import SyncPlanEntity
 
@@ -237,6 +238,11 @@ class Session(object):
     def organization(self):
         """Instance of Organization entity."""
         return OrganizationEntity(self.browser)
+
+    @cached_property
+    def provisioningtemplate(self):
+        """Instance of Provisioning Template entity."""
+        return ProvisioningTemplateEntity(self.browser)
 
     @cached_property
     def subnet(self):

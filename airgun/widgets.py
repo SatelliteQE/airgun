@@ -94,6 +94,49 @@ class RadioGroup(GenericLocatorWidget):
         return self.select(name)
 
 
+class ToggleRadioGroup(RadioGroup):
+    """Toggle buttons group widget when each button represented by radio
+    element
+
+    Example html representation::
+
+        <div class="form-group ">
+            <div>
+                <label>Template *</label>
+            <div class="btn-group">
+                <label class="btn btn-default btn-sm active">
+                   <input type="radio" name="options">Input
+                </label>
+                <label class="btn btn-default btn-sm">
+                   <input type="radio" name="options">Diff
+                </label>
+
+    Locator example::
+
+        //div[@class='btn-group']
+
+    """
+    @property
+    def selected(self):
+        """Return name of a button that is currently selected in the group"""
+        for name in self.button_names:
+            btn = self.browser.element(self._get_parent_label(name))
+            if 'active' in btn.get_attribute('class'):
+                return name
+        else:
+            raise ValueError(
+                "Whether no radio button is selected or proper attribute "
+                "should be added to framework"
+            )
+
+    def select(self, name):
+        """Select specific radio button in the group"""
+        if self.selected != name:
+            self.browser.element(self._get_parent_label(name)).click()
+            return True
+        return False
+
+
 class DateTime(Widget):
     """Collection of date picker and two inputs for hours and minutes
 
@@ -795,3 +838,43 @@ class ReadOnlyEntry(GenericLocatorWidget):
     def read(self):
         """Returns string with current widget value"""
         return self.entry_value.read().strip()
+
+
+class ACEEditor(Widget):
+    """Default ace editor
+
+    Example html representation::
+
+        <div id="editor-000" class="editor ace_editor ace-twilight ace_dark">
+            <textarea class="ace_text-input"
+            <div class="ace_gutter" style="display: none;">
+                <div class="ace_layer ace_gutter-layer ace_folding-enabled">
+            <div class="ace_scroller">
+            <div class="ace_content">
+                ...
+
+    Locator example::
+
+        There is no need to provide any locators to that widget
+
+    """
+    ROOT = "//div[contains(@class, 'ace_editor')]"
+
+    def __init__(self, parent, logger=None):
+        """Getting id for specific ace editor element"""
+        Widget.__init__(self, parent, logger=logger)
+        self.ace_edit_id = self.browser.element(self.ROOT).get_attribute("id")
+
+    def fill(self, value):
+        """Fill widget with necessary value
+
+        :param value: string with value that should be used for field update
+            procedure
+        """
+        self.browser.execute_script(
+            "ace.edit('{0}').setValue('{1}');".format(self.ace_edit_id, value))
+
+    def read(self):
+        """Returns string with current widget value"""
+        return self.browser.execute_script(
+            "ace.edit('{0}').getValue();".format(self.ace_edit_id))
