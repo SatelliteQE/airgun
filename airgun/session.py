@@ -14,6 +14,7 @@ from airgun.browser import AirgunBrowser, SeleniumBrowserFactory
 from airgun.entities.login import LoginEntity
 from airgun.entities.activationkey import ActivationKeyEntity
 from airgun.entities.architecture import ArchitectureEntity
+from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.contentcredential import ContentCredentialEntity
 from airgun.entities.contentview import ContentViewEntity
 from airgun.entities.hostcollection import HostCollectionEntity
@@ -207,6 +208,11 @@ class Session(object):
         return ArchitectureEntity(self.browser)
 
     @cached_property
+    def computeprofile(self):
+        """Instance of ComputeProfileEntity entity."""
+        return ComputeProfileEntity(self.browser)
+
+    @cached_property
     def contentcredential(self):
         """Instance of Content Credential entity."""
         return ContentCredentialEntity(self.browser)
@@ -265,3 +271,4 @@ class Session(object):
     def user(self):
         """Instance of User entity."""
         return UserEntity(self.browser)
+
