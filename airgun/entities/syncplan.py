@@ -18,7 +18,7 @@ class SyncPlanEntity(BaseEntity):
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.action_list.fill('Remove')
+        view.actions.fill('Remove')
         view.dialog.confirm()
 
     def search(self, value):

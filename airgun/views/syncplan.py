@@ -7,6 +7,7 @@ from airgun.views.common import (
     SearchableViewMixin,
 )
 from airgun.widgets import (
+    ActionsDropdown,
     ConfirmationDialog,
     DateTime,
     EditableEntry,
@@ -14,7 +15,6 @@ from airgun.widgets import (
     EditableDateTime,
     EditableEntrySelect,
     ReadOnlyEntry,
-    SelectActionList,
 )
 
 
@@ -48,7 +48,7 @@ class SyncPlanCreateView(BaseLoggedInView):
 class SyncPlanEditView(BaseLoggedInView):
     # fixme: change all return_to_all instances to use Breadcrumb widget
     return_to_all = Text("//a[text()='Sync Plans']")
-    action_list = SelectActionList()
+    actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
 
     @property

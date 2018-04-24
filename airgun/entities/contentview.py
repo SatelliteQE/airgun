@@ -18,7 +18,7 @@ class ContentViewEntity(BaseEntity):
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.action_list.fill('Remove Content View')
+        view.actions.fill('Remove Content View')
         view.dialog.confirm()
 
     def search(self, value):

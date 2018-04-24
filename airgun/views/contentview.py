@@ -8,11 +8,11 @@ from airgun.views.common import (
     SearchableViewMixin,
 )
 from airgun.widgets import (
+    ActionsDropdown,
     ConfirmationDialog,
     EditableEntry,
     EditableEntryCheckbox,
     ReadOnlyEntry,
-    SelectActionList,
 )
 
 
@@ -47,7 +47,7 @@ class ContentViewCreateView(BaseLoggedInView):
 class ContentViewEditView(BaseLoggedInView):
     return_to_all = Text("//a[text()='Content Views']")
     publish = Text("//button[contains(., 'Publish New Version')]")
-    action_list = SelectActionList()
+    actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
 
     @property

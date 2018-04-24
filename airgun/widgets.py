@@ -516,38 +516,83 @@ class CustomParameter(Widget):
         self.new_parameter_value.fill(values['value'])
 
 
-class SelectActionList(Widget):
-    """Refer to 'Select Action' control which has simple list of actions to be
-     selected from, once user click on the arrow button.
+class ActionsDropdown(GenericLocatorWidget):
+    """List of actions, expandable via button with caret. Usually comes with
+    button attached on left side, representing either most common action or
+    hint like 'Select Action'.
 
     Example html representation::
 
-        <div data-block="item-actions" bst-feature-flag="custom_products"...>
-            <button type="button" .... ng-click="toggleDropdown($event)">
-                <ul>
-                    <li role="menuitem" ng-hide="denied(...)" class="">
+        <div class="btn-group dropdown" is-open="status.isOpen">
+          <button type="button" class="btn btn-default" ...>
+            <span><span >Select Action</span></span>
+          </button>
+          <button type="button" class="btn btn-default" ...>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right ng-scope" role="menu">
+            <li role="menuitem"><a><span><span>Action1</span></span></a></li>
+            <li role="menuitem"><a><span><span>Action2</span></span></a></li>
+          </ul>
+        </div>
 
     Locator example::
 
-        //div[@data-block='item-actions']
+        //span[@class='input-group-btn']
+        //div[contains(@class, 'dropdown')]
+        //div[contains(@class, 'btn-group')]
 
     """
-    ROOT = "//div[@data-block='item-actions']"
-    open_dropdown = Text(".//button[contains(@ng-click, 'toggleDropdown')]")
-    ITEM = ".//li[not(contains(@style, 'display: none'))][contains(.,'%s')]"
+    dropdown = Text(
+        ".//*[self::a or self::button][contains(@class, 'dropdown-toggle') or "
+        "contains(@ng-click, 'toggleDropdown')][contains(@class, 'btn')]"
+        "[*[self::span or self::i][contains(@class, 'caret')]]")
+    button = Text(
+        ".//*[self::button or self::span][contains(@class, 'btn')]"
+        "[not(*[self::span or self::i][contains(@class, 'caret')])]")
+    ITEMS_LOCATOR = './ul/li/a'
+    ITEM_LOCATOR = './ul/li/a[normalize-space(.)="{}"]'
 
-    def fill(self, value):
-        """Clicks on 'Select Action' control and choose necessary action
+    @property
+    def is_open(self):
+        """Checks whether dropdown list is open."""
+        return 'open' in self.browser.classes(self)
 
-        :param value: string with name of action to be performed
-        """
-        self.open_dropdown.click()
-        self.browser.click(
-            self.browser.element(self.ITEM % value, parent=self))
+    def open(self):
+        """Opens dropdown list"""
+        if not self.is_open:
+            self.dropdown.click()
+
+    @property
+    def items(self):
+        """Returns a list of all dropdown items as strings."""
+        return [
+            self.browser.text(el) for el in
+            self.browser.elements(self.ITEMS_LOCATOR, parent=self)]
+
+    def select(self, item):
+        """Selects item from dropdown."""
+        if item in self.items:
+            self.open()
+            self.browser.element(
+                self.ITEM_LOCATOR.format(item), parent=self).click()
+        else:
+            raise ValueError(
+                'Specified {} not found in items lists. Available items are {}'
+                .format(item, self.items)
+            )
+
+    def fill(self, item):
+        """Selects action. Apart from dropdown also checks attached button
+        label if present"""
+        if self.button.is_displayed and self.button.text == item:
+            self.button.click()
+        else:
+            self.select(item)
 
     def read(self):
-        """There is no need to read values for this widget"""
-        do_not_read_this_widget()
+        """Returns a list of available actions."""
+        return self.items
 
 
 class ConfirmationDialog(Widget):
