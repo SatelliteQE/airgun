@@ -79,6 +79,18 @@ class ActivationKeyEditView(BaseLoggedInView):
         resources = View.nested(AddRemoveSubscriptionsView)
 
     @View.nested
+    class repository_sets(SatTab):
+        TAB_NAME = 'Repository Sets'
+        table = Table(locator=".//table")
+        no_rows_message = Text(
+            ".//table//td/span[contains(@data-block, 'no-rows-message')]")
+
+        def read(self):
+            if not self.no_rows_message.is_displayed:
+                return self.table.read()
+            return []
+
+    @View.nested
     class host_collections(SatTab):
         TAB_NAME = 'Host Collections'
         resources = View.nested(AddRemoveResourcesView)
