@@ -17,12 +17,12 @@ from airgun.views.common import (
     SearchableViewMixin,
 )
 from airgun.widgets import (
+    ActionsDropdown,
     ConfirmationDialog,
     EditableEntry,
     EditableEntrySelect,
     EditableLimitEntry,
     LimitInput,
-    SelectActionList,
 )
 
 
@@ -57,7 +57,7 @@ class ActivationKeyCreateView(BaseLoggedInView):
 
 class ActivationKeyEditView(BaseLoggedInView):
     return_to_all = Text("//a[text()='Activation Keys']")
-    action_list = SelectActionList()
+    actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
 
     @property
