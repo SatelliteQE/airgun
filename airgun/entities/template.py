@@ -28,6 +28,17 @@ class ProvisioningTemplateEntity(BaseEntity):
         view.fill(values)
         view.submit.click()
 
+    def lock(self, entity_name):
+        view = self.navigate_to(self, 'All')
+        view.search(entity_name)
+        view.actions.fill('Lock')
+
+    def unlock(self, entity_name):
+        view = self.navigate_to(self, 'All')
+        view.search(entity_name)
+        view.actions.fill('Unlock')
+        self.browser.handle_alert()
+
 
 @navigator.register(ProvisioningTemplateEntity, 'All')
 class ShowAllTemplates(NavigateStep):
