@@ -14,7 +14,7 @@ class ProvisioningTemplateView(BaseLoggedInView, SearchableViewMixin):
     new = Text("//a[contains(@href, '/templates/provisioning_templates/new')]")
     edit = Text(
         "//a[contains(@href, 'edit') and contains(@href, 'templates')]")
-    actions = ActionsDropdown("//div[@class='btn-group']")
+    actions = ActionsDropdown("//td/div[contains(@class, 'btn-group')]")
 
     @property
     def is_displayed(self):

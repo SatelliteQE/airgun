@@ -538,7 +538,6 @@ class ActionsDropdown(GenericLocatorWidget):
 
     Locator example::
 
-        //span[@class='input-group-btn']
         //div[contains(@class, 'dropdown')]
         //div[contains(@class, 'btn-group')]
 
@@ -578,7 +577,8 @@ class ActionsDropdown(GenericLocatorWidget):
                 self.ITEM_LOCATOR.format(item), parent=self).click()
         else:
             raise ValueError(
-                'Specified {} not found in items lists. Available items are {}'
+                'Specified action "{}" not found in actions list. Available'
+                ' actions are {}'
                 .format(item, self.items)
             )
 
