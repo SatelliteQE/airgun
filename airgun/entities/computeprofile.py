@@ -26,7 +26,8 @@ class ComputeProfileEntity(BaseEntity):
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'Delete', entity_name=entity_name)
-        view.action_list.fill('Delete')
+        view.actions.fill('Delete')
+        self.browser.handle_alert()
 
 
 @navigator.register(ComputeProfileEntity, 'All')

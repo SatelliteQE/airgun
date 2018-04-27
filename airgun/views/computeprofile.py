@@ -1,18 +1,6 @@
-from widgetastic.widget import Text, TextInput, Widget
+from widgetastic.widget import Text, TextInput
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-
-
-class ClickOnArrowButton(Widget):
-
-    # TODO use the generic dropdown
-    ROOT = ".//table//div[contains(@class, 'btn-group')]"
-    open_dropdown = Text(".//a[contains(@data-toggle, 'dropdown')]")
-    delete = Text(".//a[contains(@data-method, 'delete') and "
-                  "contains(@href, '/compute_profiles/')]")
-
-    def fill(self, value):
-        self.open_dropdown.click()
-        self.delete.click(handle_alert=True)
+from airgun.widgets import ActionsDropdown
 
 
 class ComputeProfileView(BaseLoggedInView, SearchableViewMixin):
@@ -20,7 +8,7 @@ class ComputeProfileView(BaseLoggedInView, SearchableViewMixin):
     new = Text("//a[contains(@href, '/compute_profiles/new')]")
     rename = Text("//a[contains(@href, '/compute_profiles/') and "
                   "contains(@href, 'edit')]")
-    action_list = ClickOnArrowButton()
+    actions = ActionsDropdown("//td//div[contains(@class, 'btn-group')]")
 
     @property
     def is_displayed(self):
