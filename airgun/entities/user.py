@@ -2,7 +2,7 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.user import UserDetailsView, UserView
+from airgun.views.user import UserDetailsView, UsersView
 
 
 class UserEntity(BaseEntity):
@@ -33,7 +33,7 @@ class UserEntity(BaseEntity):
 
 @navigator.register(UserEntity, 'All')
 class ShowAllUsers(NavigateStep):
-    VIEW = UserView
+    VIEW = UsersView
 
     def step(self, *args, **kwargs):
         self.view.menu.select('Administer', 'Users')

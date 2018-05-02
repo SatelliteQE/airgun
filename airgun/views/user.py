@@ -4,7 +4,7 @@ from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
 from airgun.widgets import FilteredDropdown, MultiSelect
 
 
-class UserView(BaseLoggedInView, SearchableViewMixin):
+class UsersView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Users']")
     new = Text("//a[contains(@href, '/users/new')]")
     edit = Text("//a[contains(@href, 'edit') and contains(@href, 'users')]")
@@ -17,13 +17,12 @@ class UserView(BaseLoggedInView, SearchableViewMixin):
 
 
 class UserDetailsView(BaseLoggedInView):
-    form = Text("//form[@id='new_user' or contains(@id, 'edit_user')]")
     submit = Text('//input[@name="commit"]')
 
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(
-            self.form, exception=False) is not None
+            self.submit, exception=False) is not None
 
     @View.nested
     class user(SatTab):
