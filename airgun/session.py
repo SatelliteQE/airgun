@@ -23,6 +23,7 @@ from airgun.entities.organization import OrganizationEntity
 from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.subnet import SubnetEntity
 from airgun.entities.syncplan import SyncPlanEntity
+from airgun.entities.user import UserEntity
 
 
 from airgun.navigation import navigator
@@ -253,3 +254,8 @@ class Session(object):
     def syncplan(self):
         """Instance of Sync Plan entity."""
         return SyncPlanEntity(self.browser)
+
+    @cached_property
+    def user(self):
+        """Instance of User entity."""
+        return UserEntity(self.browser)

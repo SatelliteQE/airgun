@@ -257,9 +257,16 @@ class MultiSelect(GenericLocatorWidget):
             containing list of strings, representing item names
         """
         current = self.read()
-        to_add = set(values.get('assigned', ())) - set(current['assigned'])
-        to_remove = set(
-            values.get('unassigned', ())) - set(current['unassigned'])
+        to_add = [
+            res
+            for res in values.get('assigned', ())
+            if res not in current['assigned']
+        ]
+        to_remove = [
+            res
+            for res in values.get('unassigned', ())
+            if res not in current['unassigned']
+        ]
         if not to_add and not to_remove:
             return False
         if to_add:
