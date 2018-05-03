@@ -477,6 +477,9 @@ class AirgunBrowserPlugin(DefaultPlugin):
         }
         '''
 
+    def ensure_page_safe(self, timeout='30s'):
+        super().ensure_page_safe(timeout)
+
     def before_click(self, element):
         """Invoked before clicking on an element. Ensure page is fully loaded
         before clicking.
