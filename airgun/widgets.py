@@ -1032,15 +1032,19 @@ class SatSubscriptionsTable(SatTable):
         """Split list of all the rows into 'content' rows and 'title' rows.
         Return content rows only.
         """
-        rows = list(
-            super(SatSubscriptionsTable, self).rows(*extra_filters, **filters))
-        self.title_rows = rows[0:][::2]
-        return iter(rows[1:][::2])
+        rows = super(
+            SatSubscriptionsTable, self).rows(*extra_filters, **filters)
+        if self.has_rows:
+            rows = list(rows)
+            self.title_rows = rows[0:][::2]
+            return iter(rows[1:][::2])
+        return rows
 
     def read(self):
         """Return content rows with 1 extra column 'Repository Name' in it."""
         read_rows = super(SatSubscriptionsTable, self).read()
-        titles = iter(column[1].read() for column in self.title_rows)
-        for row in read_rows:
-            row['Repository Name'] = next(titles)
+        if self.has_rows:
+            titles = iter(column[1].read() for column in self.title_rows)
+            for row in read_rows:
+                row['Repository Name'] = next(titles)
         return read_rows
