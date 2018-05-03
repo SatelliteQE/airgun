@@ -992,6 +992,23 @@ class SatSubscriptionsTable(SatTable):
     """Subscriptions table, which has extra preceding row for 'Repository Name'
     column. It's equal to satellite table in all other respects.
 
+    Example:
+
+        Following table cells:
+
+        TestSubscriptionName
+        1|0 out of Unlimited|Physical|Start_Date|End_Date|Support_Level
+        TestSubscriptionName2
+        1|0 out of Unlimited|Physical|Start_Date|End_Date|Support_Level
+
+        Will be transformed into:
+
+        TestSubscriptionName|1|0 out of Unlimited|Physical|Start_Date|...
+        TestSubscriptionName2|1|0 out of Unlimited|Physical|Start_Date|...
+
+        So, title rows will be removed in favor of extra column 'Repository
+        Name'.
+
     Example html representation:
 
         <table bst-table="table" ...>
@@ -1013,7 +1030,8 @@ class SatSubscriptionsTable(SatTable):
 
     def rows(self, *extra_filters, **filters):
         """Split list of all the rows into 'content' rows and 'title' rows.
-        Return content rows only"""
+        Return content rows only.
+        """
         rows = list(
             super(SatSubscriptionsTable, self).rows(*extra_filters, **filters))
         self.title_rows = rows[0:][::2]
