@@ -12,7 +12,8 @@ class ComputeResourceEntity(BaseEntity):
     def create(self, values):
         view = self.navigate_to(self, 'New')
         view.fill(values)
-        if 'provider' in values.keys() and values['provider']=='oVirt':
+        if 'provider' in values.keys() and values['provider']=='oVirt' \
+            and 'certification_authorities' not in values.keys():
             view.test_connection.click()
         view.submit.click()
 
