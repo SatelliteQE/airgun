@@ -3,8 +3,8 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.computeprofile import (
+    ComputeProfileCreateView,
     ComputeProfileView,
-    ComputeProfileDetailsView,
 )
 
 
@@ -25,7 +25,8 @@ class ComputeProfileEntity(BaseEntity):
         view.submit.click()
 
     def delete(self, entity_name):
-        view = self.navigate_to(self, 'Delete', entity_name=entity_name)
+        view = self.navigate_to(self, 'All')
+        view.searchbox.search(entity_name)
         view.actions.fill('Delete')
         self.browser.handle_alert()
 
@@ -41,7 +42,7 @@ class ShowAllComputeProfile(NavigateStep):
 
 @navigator.register(ComputeProfileEntity, 'New')
 class AddNewComputeProfile(NavigateStep):
-    VIEW = ComputeProfileDetailsView
+    VIEW = ComputeProfileCreateView
 
     prerequisite = NavigateToSibling('All')
 
@@ -53,22 +54,11 @@ class AddNewComputeProfile(NavigateStep):
 
 @navigator.register(ComputeProfileEntity, 'Rename')
 class RenameComputeProfile(NavigateStep):
-    VIEW = ComputeProfileDetailsView
+    VIEW = ComputeProfileCreateView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
         self.parent.search(kwargs.get('entity_name'))
-        self.parent.browser.click(self.parent.rename)
-
-
-@navigator.register(ComputeProfileEntity, 'Delete')
-class DeleteComputeProfile(NavigateStep):
-    VIEW = ComputeProfileView
-
-    def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
-
-    def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
+        self.parent.browser.click(self.parent.actions)
