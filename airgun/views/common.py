@@ -3,7 +3,6 @@ from widgetastic.widget import (
     NoSuchElementException,
     ParametrizedLocator,
     ParametrizedView,
-    Table,
     Text,
     View,
     WidgetMetaclass,
@@ -15,6 +14,8 @@ from airgun.widgets import (
     ContextSelector,
     LCESelector,
     SatFlashMessages,
+    SatSubscriptionsTable,
+    SatTable,
     SatVerticalNavigation,
     Search,
     Select,
@@ -174,13 +175,7 @@ class AddRemoveResourcesView(View):
     checkbox_locator = (
         './/tr[td[normalize-space(.)="%s"]]/td[@class="row-select"]'
         '/input[@type="checkbox"]')
-
-    @classmethod
-    def table_labels(cls, table):
-        """Returns a list of labels (entity names) in tables. Can be
-        overwritten for tables with different column names or labels placement.
-        """
-        return [row.name.text for row in table.rows()]
+    table = SatTable(locator=".//table")
 
     @View.nested
     class ListRemoveTab(SatSecondaryTab):
@@ -190,9 +185,6 @@ class AddRemoveResourcesView(View):
             './/div[@data-block="list-actions"]'
             '//button[contains(@ng-click, "remove")]'
         )
-        table = Table(locator=".//table")
-        columns_exists = Text(
-            ".//table//*[contains(name(), 'body')]/tr[1]/td[2]")
 
         def search(self, value):
             self.searchbox.search(value)
@@ -211,9 +203,7 @@ class AddRemoveResourcesView(View):
                 self.remove(value)
 
         def read(self):
-            if self.columns_exists.is_displayed:
-                return self.parent_view.table_labels(self.table)
-            return []
+            return self.parent_view.table.read()
 
     @View.nested
     class AddTab(SatSecondaryTab):
@@ -223,9 +213,6 @@ class AddRemoveResourcesView(View):
             './/div[@data-block="list-actions"]'
             '//button[contains(@ng-click, "add")]'
         )
-        table = Table(locator=".//table")
-        columns_exists = Text(
-            ".//table//*[contains(name(), 'body')]/tr[1]/td[2]")
 
         def search(self, value):
             self.searchbox.search(value)
@@ -244,9 +231,7 @@ class AddRemoveResourcesView(View):
                 self.add(value)
 
         def read(self):
-            if self.columns_exists.is_displayed:
-                return self.parent_view.table_labels(self.table)
-            return []
+            return self.parent_view.table.read()
 
     def add(self, values):
         """Assign some resource(s).
@@ -280,14 +265,7 @@ class AddRemoveSubscriptionsView(AddRemoveResourcesView):
     checkbox_locator = (
         './/table//tr[td[normalize-space(.)="%s"]]'
         '/following-sibling::tr//input[@type="checkbox"]')
-
-    @classmethod
-    def table_labels(cls, table):
-        return [
-            row.quantity.text for row
-            in table.rows(
-                _row__attr_contains=('class', 'row-selector-label'))
-        ]
+    table = SatSubscriptionsTable(locator=".//table")
 
 
 class TemplateEditor(View):
