@@ -8,6 +8,7 @@ from widgetastic.widget import (
     GenericLocatorWidget,
     ParametrizedLocator,
     Select,
+    Table,
     Text,
     TextInput,
     Widget,
@@ -930,3 +931,98 @@ class ACEEditor(Widget):
         """Returns string with current widget value"""
         return self.browser.execute_script(
             "ace.edit('{0}').getValue();".format(self.ace_edit_id))
+
+
+class SatTable(Table):
+    """Satellite version of table. Main difference - in case it's empty, there
+    might be just 1 column with appropriate message in table body or no columns
+    and rows at all.
+
+    Example html representation::
+
+        <table bst-table="table" ...>
+           <thead>
+             <tr class="ng-scope">
+               <th class="row-select"><input type="checkbox" ...></th>
+               <th ng-click="table.sortBy(column)" ...>
+                <span ...><span ...>Column Name</span></span><i ...></i></th>
+               <th ng-click="table.sortBy(column)" ...>
+                <span ...><span ...>Column Name</span></span><i ...></i></th>
+             </tr>
+           </thead>
+           <tbody>
+            <tr id="noRowsTr"><td colspan="9">
+                 <span data-block="no-rows-message" ...>
+                    <span class="ng-scope">Table is empty</span></span>
+            </td></tr>
+           </tbody>
+         </table>
+
+    Locator example::
+
+        .//table
+
+    """
+    no_rows_message = ".//td/span[contains(@data-block, 'no-rows-message')]"
+    tbody_row = Text('./tbody/tr')
+
+    @property
+    def has_rows(self):
+        """Boolean value whether table contains some elements (rows) or is
+        empty.
+        """
+        try:
+            no_rows = self.browser.element(self.no_rows_message)
+        except NoSuchElementException:
+            no_rows = False
+        if no_rows or not self.tbody_row.is_displayed:
+            return False
+        return True
+
+    def read(self):
+        """Return empty list in case table is empty"""
+        if not self.has_rows:
+            self.logger.debug('Table {} is empty'.format(self.locator))
+            return []
+
+        return super(SatTable, self).read()
+
+
+class SatSubscriptionsTable(SatTable):
+    """Subscriptions table, which has extra preceding row for 'Repository Name'
+    column. It's equal to satellite table in all other respects.
+
+    Example html representation:
+
+        <table bst-table="table" ...>
+         ...
+         <tbody>
+            <!-- ngRepeat: (name, subscriptions) in groupedSubscriptions -->
+            ...
+         </tbody>
+        </table>
+
+
+    Locator example::
+
+        .//table
+
+    """
+
+    title_rows = None  # container for 'Repository Name' rows
+
+    def rows(self, *extra_filters, **filters):
+        """Split list of all the rows into 'content' rows and 'title' rows.
+        Return content rows only"""
+        rows = list(
+            super(SatSubscriptionsTable, self).rows(*extra_filters, **filters))
+        self.title_rows = rows[0:][::2]
+        return iter(rows[1:][::2])
+
+    def read(self):
+        """Return content rows with 1 extra column 'Repository Name' in it."""
+        read_rows = super(SatSubscriptionsTable, self).read()
+        titles = iter(column[1].read() for column in self.title_rows)
+        for row in read_rows:
+            row['Repository Name'] = next(titles)
+        return read_rows

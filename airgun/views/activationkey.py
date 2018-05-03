@@ -1,7 +1,6 @@
 from widgetastic.widget import (
     ParametrizedView,
     Select,
-    Table,
     Text,
     TextInput,
     View,
@@ -23,6 +22,7 @@ from airgun.widgets import (
     EditableEntrySelect,
     EditableLimitEntry,
     LimitInput,
+    SatTable,
 )
 
 
@@ -81,14 +81,7 @@ class ActivationKeyEditView(BaseLoggedInView):
     @View.nested
     class repository_sets(SatTab):
         TAB_NAME = 'Repository Sets'
-        table = Table(locator=".//table")
-        no_rows_message = Text(
-            ".//table//td/span[contains(@data-block, 'no-rows-message')]")
-
-        def read(self):
-            if not self.no_rows_message.is_displayed:
-                return self.table.read()
-            return []
+        resources = SatTable(locator=".//table")
 
     @View.nested
     class host_collections(SatTab):
@@ -99,11 +92,4 @@ class ActivationKeyEditView(BaseLoggedInView):
     class content_hosts(SatTabWithDropdown):
         TAB_NAME = 'Associations'
         SUB_ITEM = 'Content Hosts'
-        table = Table(locator=".//table")
-        no_rows_message = Text(
-            ".//table//td/span[contains(@data-block, 'no-rows-message')]")
-
-        def read(self):
-            if not self.no_rows_message.is_displayed:
-                return self.table.read()
-            return []
+        resources = SatTable(locator=".//table")

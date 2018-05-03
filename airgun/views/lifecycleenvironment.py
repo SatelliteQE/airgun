@@ -1,14 +1,13 @@
 from widgetastic.widget import (
     ParametrizedView,
     ParametrizedLocator,
-    Table,
     Text,
     TextInput,
     View,
 )
 
 from airgun.views.common import BaseLoggedInView, SatTab
-from airgun.widgets import EditableEntry, ReadOnlyEntry
+from airgun.widgets import EditableEntry, ReadOnlyEntry, SatTable
 
 
 class LCEView(BaseLoggedInView, ParametrizedView):
@@ -46,7 +45,7 @@ class LCEView(BaseLoggedInView, ParametrizedView):
         LAST_ENV = "//div[@ng-repeat='path in paths']//table//th[last()]"
         current_env = Text(ParametrizedLocator(
             ".//a[normalize-space(.)='{lce_name}']"))
-        envs_table = Table(locator=".//table")
+        envs_table = SatTable(locator=".//table")
         new_child = Text(".//a[contains(@href, '/lifecycle_environments/')]")
 
         @classmethod
