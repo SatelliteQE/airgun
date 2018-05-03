@@ -12,6 +12,8 @@ class ComputeResourceEntity(BaseEntity):
     def create(self, values):
         view = self.navigate_to(self, 'New')
         view.fill(values)
+        if 'provider' in values.keys() and values['provider']=='oVirt':
+            view.test_connection.click()
         view.submit.click()
 
     def search(self, value):

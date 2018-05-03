@@ -31,6 +31,7 @@ class ResourceProviderDetailsView(BaseLoggedInView):
         id='compute_resource_set_console_password')
     enable_caching = Checkbox(id='compute_resource_caching_enabled')
     certification_authorities = TextInput(id='compute_resource_public_key')
+    test_connection = Text('//a[@id="test_connection_button"]')
     submit = Text('//input[@name="commit"]')
 
     @property
