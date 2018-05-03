@@ -992,7 +992,7 @@ class SatSubscriptionsTable(SatTable):
     """Subscriptions table, which has extra preceding row for 'Repository Name'
     column. It's equal to satellite table in all other respects.
 
-    Example:
+    Example::
 
         Following table cells:
 
@@ -1009,7 +1009,7 @@ class SatSubscriptionsTable(SatTable):
         So, title rows will be removed in favor of extra column 'Repository
         Name'.
 
-    Example html representation:
+    Example html representation::
 
         <table bst-table="table" ...>
          ...
