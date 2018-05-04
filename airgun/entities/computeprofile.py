@@ -21,6 +21,7 @@ class ComputeProfileEntity(BaseEntity):
 
     def rename(self, old_name, new_name):
         view = self.navigate_to(self, 'Rename', entity_name=old_name)
+        view.actions.fill('Rename')
         view.fill(new_name)
         view.submit.click()
 
@@ -61,4 +62,3 @@ class RenameComputeProfile(NavigateStep):
 
     def step(self, *args, **kwargs):
         self.parent.search(kwargs.get('entity_name'))
-        self.parent.browser.click(self.parent.actions)
