@@ -18,7 +18,6 @@ class ComputeProfileView(BaseLoggedInView, SearchableViewMixin):
 class ComputeProfileCreateView(BaseLoggedInView):
     name = TextInput(locator=".//input[@id='compute_profile_name']")
     submit = Text('//input[@name="commit"]')
-    actions = ActionsDropdown("//td//div[contains(@class, 'btn-group')]")
 
     @property
     def is_displayed(self):

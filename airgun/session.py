@@ -209,7 +209,7 @@ class Session(object):
 
     @cached_property
     def computeprofile(self):
-        """Instance of ComputeProfileEntity entity."""
+        """Instance of Compute Profile entity."""
         return ComputeProfileEntity(self.browser)
 
     @cached_property
