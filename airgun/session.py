@@ -271,4 +271,3 @@ class Session(object):
     def user(self):
         """Instance of User entity."""
         return UserEntity(self.browser)
-
