@@ -22,7 +22,7 @@ class ProductsTableView(BaseLoggedInView, SearchableViewMixin):
         "contains(@href, 'products')]"
     )
     repo_discovery = Text("//button[contains(.,'Repo Discovery')]")
-    actions = ActionsDropdown("//td//div[contains(@class, 'btn-group')]")
+    actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
 
     @property
@@ -59,7 +59,7 @@ class ProductEditView(BaseLoggedInView):
             self.return_to_all, exception=False) is not None
 
     @View.nested
-    class Details(SatTab):
+    class details(SatTab):
         name = EditableEntry(name='Name')
         label = ReadOnlyEntry(name='Label')
         gpg_key = EditableEntrySelect(name='GPG Key')
