@@ -98,7 +98,8 @@ class LCESelectorGroup(ParametrizedView):
         class lce(LCESelectorGroup):
             pass
     """
-    ROOT = ".//div[@path-selector='environments']"
+    ROOT = (".//div[@path-selector='environments' or "
+            "@path-selector='availableEnvironments']")
 
     PARAMETERS = ('lce_name',)
 

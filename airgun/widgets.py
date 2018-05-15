@@ -1,3 +1,4 @@
+from wait_for import wait_for
 from widgetastic.exceptions import (
     NoSuchElementException, WidgetOperationFailed)
 
@@ -1048,3 +1049,119 @@ class SatSubscriptionsTable(SatTable):
             for row in read_rows:
                 row['Repository Name'] = next(titles)
         return read_rows
+
+
+class ProgressBar(GenericLocatorWidget):
+    """Generic progress bar widget.
+
+    Example html representation::
+
+        <div class="progress ng-isolate-scope" type="success" ...>
+          <div class="progress-bar progress-bar-success" aria-valuenow="0"
+           aria-valuemin="0" aria-valuemax="100" aria-valuetext="0%" ...></div>
+        </div>
+
+    Locator example::
+
+        .//div[contains(@class, "progress progress-striped")]
+
+    """
+    PROGRESSBAR = './/div[contains(@class,"progress-bar")]'
+
+    def __init__(self, parent, locator=None, logger=None):
+        """Provide common progress bar locator if it wasn't specified."""
+        Widget.__init__(self, parent, logger=logger)
+        if not locator:
+            locator = './/div[contains(@class, "progress progress-striped")]'
+        self.locator = locator
+
+    @property
+    def is_active(self):
+        """Boolean value whether progress bar is active or not (stopped,
+        pending or any other state).
+        """
+        if 'active' in self.browser.classes(self):
+            return True
+        return False
+
+    @property
+    def progress(self):
+        """String value with current flow rate in percent."""
+        return self.browser.get_attribute('aria-valuetext', self.PROGRESSBAR)
+
+    @property
+    def is_completed(self):
+        """Boolean value whether progress bar is finished or not"""
+        if not self.is_active and self.progress == '100%':
+            return True
+        return False
+
+    def wait_for_result(self, timeout=600, delay=1):
+        """Waits for progress bar to finish. By default checks whether progress
+        bar is completed every second for 10 minutes.
+
+        :param timeout: integer value for timeout in seconds
+        :param delay: float value for delay between attempts in seconds
+        """
+        wait_for(
+            lambda: self.is_completed is True,
+            timeout=timeout,
+            delay=delay,
+            logger=self.logger
+        )
+
+    def read(self):
+        """Returns current progress."""
+        return self.progress
+
+
+class PublishPromoteProgressBar(ProgressBar):
+    """Progress bar for Publish and Promote procedures. They contain status
+    message and link to associated task. Also the progress is displayed
+    slightly differently.
+
+    Example html representation::
+
+        <a ng-href="/foreman_tasks/tasks/71196" ng-hide="hideProgress(version)"
+         href="/foreman_tasks/tasks/...71196">
+
+          <div ng-class="{ active: taskInProgress(version) }"
+           class="progress progress-striped">
+            <div class="progress ng-isolate-scope" animate="false" ...>
+            <div class="progress-bar" aria-valuenow="" aria-valuemin="0"
+             aria-valuemax="100" aria-valuetext="%" ...></div></div>
+          </div>
+          Publishing and promoting to 1 environment.
+        </a>
+        <span ng-show="hideProgress(version)" ...>
+          Published
+          (2018-05-07 18:10:14 +0300)
+        </span>
+
+    Locator example::
+
+        .//div[contains(@class, "progress progress-striped")]
+
+    """
+    ROOT = '.'
+    TASK = Text('.//a[contains(@ng-href, "/foreman_tasks/")]')
+    MESSAGE = Text('.//span[@ng-show="hideProgress(version)"]')
+
+    @property
+    def is_completed(self):
+        """Boolean value whether progress bar is finished or not"""
+        # Value is empty before and after publish, the only way to figure out
+        # whether progress completed or not even started - to check result
+        # message presence
+        # Promoting finishes with `100%`
+        if self.MESSAGE.is_displayed and self.progress in ('100%', '%'):
+            return True
+        return False
+
+    def read(self):
+        """Returns message with either progress or result, depending on its
+        status.
+        """
+        if self.is_completed:
+            return self.MESSAGE.read()
+        return self.TASK.read()
