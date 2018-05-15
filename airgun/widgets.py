@@ -8,7 +8,6 @@ from widgetastic.widget import (
     do_not_read_this_widget,
     GenericLocatorWidget,
     ParametrizedLocator,
-    ParametrizedString,
     Select,
     Table,
     Text,
