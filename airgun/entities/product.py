@@ -5,6 +5,7 @@ from airgun.navigation import NavigateStep, navigator
 from airgun.views.product import (
     ProductCreateView,
     ProductEditView,
+    ProductRepoDiscoveryView,
     ProductsTableView,
 )
 
@@ -37,6 +38,12 @@ class ProductEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.yumrepo.repos.add(repo_name)
 
+    def discover_repo(self, values):
+        view = self.navigate_to(self, 'Discovery')
+        view.fill(values)
+        view.create_repo.run_procedure.click()
+        view.create_repo.wait_repo_created()
+
 
 @navigator.register(ProductEntity, 'All')
 class ShowAllProducts(NavigateStep):
@@ -57,7 +64,7 @@ class AddNewProduct(NavigateStep):
 
 
 @navigator.register(ProductEntity, 'Edit')
-class EditContentView(NavigateStep):
+class EditProduct(NavigateStep):
     VIEW = ProductEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -66,3 +73,14 @@ class EditContentView(NavigateStep):
     def step(self, *args, **kwargs):
         self.parent.search(kwargs.get('entity_name'))
         self.parent.edit.click()
+
+
+@navigator.register(ProductEntity, 'Discovery')
+class ProductRepoDiscovery(NavigateStep):
+    VIEW = ProductRepoDiscoveryView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        self.parent.repo_discovery.click()
