@@ -1,3 +1,4 @@
+from jsmin import jsmin
 from wait_for import wait_for
 from widgetastic.exceptions import (
     NoSuchElementException, WidgetOperationFailed)
@@ -20,6 +21,22 @@ from widgetastic_patternfly import (
     FlashMessages,
     VerticalNavigation,
 )
+
+
+class SatSelect(Select):
+    """Represent basic select element except our custom implementation remove
+    html tags from select option values
+    """
+    SELECTED_OPTIONS_TEXT = jsmin('''\
+            var result_arr = [];
+            var opt_elements = arguments[0].selectedOptions;
+            for(var i = 0; i < opt_elements.length; i++){
+                value = opt_elements[i].innerHTML;
+                parsed_value = value.replace(/<[^>]+>/gm, '');
+                result_arr.push(parsed_value);
+            }
+            return result_arr;
+        ''')
 
 
 class RadioGroup(GenericLocatorWidget):
