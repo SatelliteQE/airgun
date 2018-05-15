@@ -26,7 +26,7 @@ from airgun.widgets import (
 )
 
 
-class CreateDiscoveredRepos(View):
+class CreateDiscoveredReposView(View):
     """View which represent Discovered Repository section in Repository
     Discovery procedure.
     """
@@ -38,10 +38,9 @@ class CreateDiscoveredRepos(View):
     )
     create_action = Text("//button[contains(., 'Create Selected')]")
 
-    def search(self, value):
-        self.searchbox.search(value)
-
     def fill(self, values):
+        """Select necessary repo/repos to be added to new or existing product
+        """
         if not isinstance(values, list):
             values = list((values,))
         for value in values:
@@ -123,9 +122,14 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
     class discovered_repos(View):
         discover_action = Text("//button[@type='submit']")
         cancel_discovery = Text("//button[@ng-click='cancelDiscovery()']")
-        repos = CreateDiscoveredRepos()
+        repos = CreateDiscoveredReposView()
 
         def before_fill(self, values=None):
+            """After we filled 'repository type' and 'url' fields, we need to
+            push 'Discover' button to get table populated with values. Using
+            before_fill to not define any method explicitly which need to be
+            called and break view.fill() procedure flow
+            """
             self.discover_action.click()
             wait_for(
                 lambda: self.cancel_discovery.is_displayed is False,
@@ -136,6 +140,10 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
 
     @View.nested
     class create_repo(View):
+        """Represent Create Repository page. Depends whether we like create new
+        product or use existing one we use different sets of fields that need
+        to be filled
+        """
         product_type = SatSelect(
             locator="//select[@ng-model='createRepoChoices.newProduct']")
         product_content = ConditionalSwitchableView(reference='product_type')
