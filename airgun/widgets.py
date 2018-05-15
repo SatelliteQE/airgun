@@ -297,6 +297,27 @@ class MultiSelect(GenericLocatorWidget):
                 self.assigned.fill(value)
         return True
 
+    def set_assigned(self, desired_values):
+        """Sets the assigned items to exactly match 'desired_values'.
+
+        If any undesired values are present in the 'assigned' list, they
+        are removed.
+
+        :param values: list of strings representing item names
+        """
+        current_values = self.assigned.read()
+        if current_values != desired_values:
+            self.fill(
+                {
+                    'assigned': desired_values,
+                    'unassigned': [
+                        val for val in current_values
+                        if val not in desired_values
+                    ]
+                }
+            )
+        return True
+
     def read(self):
         """Returns a dict with current lists values."""
         return {
@@ -491,8 +512,11 @@ class FilteredDropdown(GenericLocatorWidget):
         self.filter_content.fill(value)
 
 
-class CustomParameter(Widget):
+class CustomParameter(Table):
     """Name-Value paired input elements which can be added, edited or removed.
+
+    It is essentially a table with text input widgets on each row, with an
+    "Add New Parameter" button on the same page.
 
     Example html representation::
 
@@ -507,39 +531,58 @@ class CustomParameter(Widget):
         //textarea[@placeholder='Value']
 
     """
-    add_new_value = Text(".//a[contains(text(),'+ Add Parameter')]")
-    new_parameter_name = TextInput(
-        locator=".//input[@placeholder='Name' and not(@value)]")
-    new_parameter_value = TextInput(
-        locator=".//textarea[@placeholder='Value' and not(text())]")
-    NAMES = (
-        ".//tr[contains(@id, 'os_parameter')]/td/input[@placeholder='Name']")
-    VALUE = (
-        ".//table[contains(@id, 'parameters')]//tr"
-        "/td[input[contains(@id, 'name')][contains(@value, '{}')]]"
-        "/following-sibling::td//textarea"
-    )
+    add_new_value = Text("..//a[contains(text(),'+ Add Parameter')]")
+
+    def __init__(self, *args, **kwargs):
+        """Supports initialization via ``locator=`` or ``id=``"""
+        locator = kwargs.get('locator')
+        id = kwargs.pop('id')
+        if locator and id or not locator and not id:
+            raise ValueError('Please specify either locator or id')
+        kwargs['locator'] = locator or ".//table[@id='{}']".format(id)
+
+        column_widgets = {
+            'Name': TextInput(locator=".//input[@placeholder='Name']"),
+            'Value': TextInput(locator=".//textarea[@placeholder='Value']"),
+            'Actions': Text(locator=".//a[@title='Remove Parameter']")
+        }
+        super(CustomParameter, self).__init__(
+            *args, **kwargs, column_widgets=column_widgets)
 
     def read(self):
         """Return a list of dictionaries. Each dictionary consists of name and
         value parameters
         """
         parameters = []
-        for item in self.browser.elements(self.NAMES):
-            name = self.browser.get_attribute('value', item)
-            value = self.browser.text(self.VALUE.format(name))
+        for row in self.rows():
+            name = row['Name'].widget.read()
+            value = row['Value'].widget.read()
             parameters.append({'name': name, 'value': value})
         return parameters
 
-    def fill(self, values):
-        """Create new parameter entity
-
-        :param values: dictionary of name and value that should be assigned to
-            new entity
+    def add(self, value):
+        """Add single name/value parameter entry to the table.
+        
+        :param value: dict with format {'name': str, 'value': str}
         """
         self.add_new_value.click()
-        self.new_parameter_name.fill(values['name'])
-        self.new_parameter_value.fill(values['value'])
+        new_row = self.__getitem__(-1)
+        new_row['Name'].widget.fill(value['name'])
+        new_row['Value'].widget.fill(value['value'])
+
+    def fill(self, values):
+        """Fill parameter entries. Existing values will be overwritten.
+
+        :param values: either single dictionary of name and value, or list
+            of name/value dictionaries
+        """
+        if isinstance(values, dict):
+            values = [values]
+        # Remove old params
+        for row in self.rows():
+            row['Actions'].widget.click()  # click 'Remove' icon
+        for value in values:
+            self.add(value)
 
 
 class ActionsDropdown(GenericLocatorWidget):
@@ -931,7 +974,6 @@ class ACEEditor(Widget):
 
     """
     ROOT = "//div[contains(@class, 'ace_editor')]"
-
     def __init__(self, parent, logger=None):
         """Getting id for specific ace editor element"""
         Widget.__init__(self, parent, logger=logger)
