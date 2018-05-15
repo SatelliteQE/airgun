@@ -974,6 +974,7 @@ class ACEEditor(Widget):
 
     """
     ROOT = "//div[contains(@class, 'ace_editor')]"
+
     def __init__(self, parent, logger=None):
         """Getting id for specific ace editor element"""
         Widget.__init__(self, parent, logger=logger)

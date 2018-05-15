@@ -31,6 +31,7 @@ from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.subnet import SubnetEntity
 from airgun.entities.syncplan import SyncPlanEntity
 from airgun.entities.user import UserEntity
+from airgun.entities.domain import DomainEntity
 
 
 from airgun.navigation import navigator
@@ -230,6 +231,11 @@ class Session(object):
     def contentview(self):
         """Instance of Content View entity."""
         return ContentViewEntity(self.browser)
+
+    @cached_property
+    def domain(self):
+        """Instance of domain entity."""
+        return DomainEntity(self.browser)
 
     @cached_property
     def filter(self):
