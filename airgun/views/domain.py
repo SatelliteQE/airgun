@@ -17,7 +17,7 @@ class DomainListView(BaseLoggedInView, SearchableViewMixin):
             'Actions': Text(".//a[@data-method='delete']")  # delete button
         }
     )
-    create_button = Button(href='/domains/new')
+    create_button = Text(".//a[@href='/domains/new']")
 
     @property
     def is_displayed(self):
@@ -26,10 +26,8 @@ class DomainListView(BaseLoggedInView, SearchableViewMixin):
 
 
 class DomainCreateView(BaseLoggedInView):
-    form = GenericLocatorWidget('form#new_domain')
-
-    submit_button = Button(name='commit')
-    cancel_button = Button(href='/domains')
+    submit_button = TextInput(name='commit')
+    cancel_button = Text(".//a[@href='/domains']")
 
     @View.nested
     class domain(SatTab):  # noqa
@@ -51,9 +49,14 @@ class DomainCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
+        locator = 'form#new_domain'
         return self.browser.wait_for_element(
-            self.form, exception=False) is not None
+            locator, exception=False) is not None
 
 
 class DomainEditView(DomainCreateView):
-    form = GenericLocatorWidget("//form[contains(@id, 'edit_domain_')]")
+    @property
+    def is_displayed(self):
+        locator = "//form[contains(@id, 'edit_domain_')]"
+        return self.browser.wait_for_element(
+            locator, exception=False) is not None

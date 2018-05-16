@@ -97,16 +97,7 @@ class DomainEntity(BaseEntity):
     def read(self, domain_name):
         """Return dict with properties of domain."""
         view = self.navigate_to(self, 'Edit', entity_name=domain_name)
-        properties = dict(
-            dns_domain=view.domain.dns_domain.read(),
-            full_name=view.domain.full_name.read(),
-            dns_capsule=view.domain.dns_capsule.read(),
-            parameters=view.parameters.params.read(),
-            locations=view.locations.multiselect.read()['assigned'],
-            organizations=view.organizations.multiselect.read()['assigned']
-        )
-        # Return only non-null entries
-        return {key: val for key, val in properties.items() if val}
+        return view.read()
 
     def update(self, domain_name, **kwargs):
         """
