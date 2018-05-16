@@ -547,7 +547,7 @@ class CustomParameter(Table):
             'Actions': Text(locator=".//a[@title='Remove Parameter']")
         }
         super(CustomParameter, self).__init__(
-            *args, **kwargs, column_widgets=column_widgets)
+            *args, column_widgets=column_widgets, **kwargs)
 
     def read(self):
         """Return a list of dictionaries. Each dictionary consists of name and
@@ -562,7 +562,7 @@ class CustomParameter(Table):
 
     def add(self, value):
         """Add single name/value parameter entry to the table.
-        
+
         :param value: dict with format {'name': str, 'value': str}
         """
         self.add_new_value.click()
@@ -865,9 +865,9 @@ class EditableEntry(GenericLocatorWidget):
         if locator and name or not locator and not name:
             raise TypeError('Please specify either locator or name')
         locator = (
-                locator or
-                ".//dt[contains(., '{}')]"
-                "/following-sibling::dd[1]".format(name)
+            locator or
+            ".//dt[contains(., '{}')]"
+            "/following-sibling::dd[1]".format(name)
         )
         super(EditableEntry, self).__init__(parent, locator, logger)
 
@@ -943,10 +943,10 @@ class ReadOnlyEntry(GenericLocatorWidget):
         if locator and name or not locator and not name:
             raise TypeError('Please specify either locator or name')
         locator = (
-                locator or
-                ".//dt[contains(., '{}')]"
-                "/following-sibling::dd[not(contains(@class, 'ng-hide'))]"
-                "[1]".format(name)
+            locator or
+            ".//dt[contains(., '{}')]"
+            "/following-sibling::dd[not(contains(@class, 'ng-hide'))]"
+            "[1]".format(name)
         )
         super(ReadOnlyEntry, self).__init__(parent, locator, logger)
 

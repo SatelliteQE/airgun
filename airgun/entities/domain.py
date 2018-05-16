@@ -90,7 +90,7 @@ class DomainEntity(BaseEntity):
 
     def search(self, value=None):
         """Search for 'value' and return domain names that match.
-        
+
         :param value: text to filter (default: no filter)
         """
         view = self.navigate_to(self, 'All')
@@ -132,7 +132,7 @@ class DomainEntity(BaseEntity):
         """
         if not kwargs:
             raise ValueError('no kwargs given for edit()')
-        
+
         view = self.navigate_to(self, 'Edit', entity_name=domain_name)
         self._submit_domain_form(view, **kwargs)
         wait_for(

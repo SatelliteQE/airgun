@@ -44,7 +44,7 @@ class DomainCreateView(BaseLoggedInView):
     @View.nested
     class locations(SatTab):  # noqa
         multiselect = MultiSelect(id='ms-domain_location_ids')
-     
+
     @View.nested
     class organizations(SatTab):  # noqa
         multiselect = MultiSelect(id='ms-domain_organization_ids')
