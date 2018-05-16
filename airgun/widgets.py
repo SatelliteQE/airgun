@@ -533,21 +533,21 @@ class CustomParameter(Table):
     """
     add_new_value = Text("..//a[contains(text(),'+ Add Parameter')]")
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, parent, locator=None, id=None, logger=None):
         """Supports initialization via ``locator=`` or ``id=``"""
-        locator = kwargs.get('locator')
-        id = kwargs.pop('id')
         if locator and id or not locator and not id:
             raise ValueError('Please specify either locator or id')
-        kwargs['locator'] = locator or ".//table[@id='{}']".format(id)
+        locator = locator or ".//table[@id='{}']".format(id)
 
         column_widgets = {
             'Name': TextInput(locator=".//input[@placeholder='Name']"),
             'Value': TextInput(locator=".//textarea[@placeholder='Value']"),
             'Actions': Text(locator=".//a[@title='Remove Parameter']")
         }
-        super(CustomParameter, self).__init__(
-            *args, column_widgets=column_widgets, **kwargs)
+        super(CustomParameter, self).__init__(parent,
+                                              locator=locator,
+                                              logger=logger,
+                                              column_widgets=column_widgets)
 
     def read(self):
         """Return a list of dictionaries. Each dictionary consists of name and
