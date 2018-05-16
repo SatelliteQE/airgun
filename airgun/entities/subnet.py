@@ -37,9 +37,7 @@ class AddNewSubnet(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.view.browser.wait_for_element(
-            self.parent.new, ensure_page_safe=True)
-        self.parent.browser.click(self.parent.new)
+        self.parent.new.click()
 
 
 @navigator.register(SubnetEntity, 'Edit')
@@ -50,5 +48,6 @@ class EditSubnet(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
-        self.parent.edit.click()
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Name'].widget.click()

@@ -53,7 +53,7 @@ class AddNewHostCollections(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.parent.browser.click(self.parent.new)
+        self.parent.new.click()
 
 
 @navigator.register(HostCollectionEntity, 'Edit')
@@ -64,5 +64,6 @@ class EditHostCollections(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
-        self.parent.edit.click()
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Name'].widget.click()

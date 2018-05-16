@@ -5,7 +5,7 @@ from airgun.navigation import NavigateStep, navigator
 from airgun.views.syncplan import (
     SyncPlanCreateView,
     SyncPlanEditView,
-    SyncPlanView,
+    SyncPlansView,
 )
 
 
@@ -36,7 +36,7 @@ class SyncPlanEntity(BaseEntity):
 
 @navigator.register(SyncPlanEntity, 'All')
 class ShowAllSyncPlans(NavigateStep):
-    VIEW = SyncPlanView
+    VIEW = SyncPlansView
 
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Sync Plans')
@@ -49,7 +49,7 @@ class AddNewSyncPlan(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.parent.browser.click(self.parent.new)
+        self.parent.new.click()
 
 
 @navigator.register(SyncPlanEntity, 'Edit')
@@ -60,5 +60,6 @@ class EditSyncPlan(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
-        self.parent.edit.click()
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Name'].widget.click()

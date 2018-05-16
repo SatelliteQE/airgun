@@ -26,13 +26,10 @@ from airgun.widgets import (
 )
 
 
-class ActivationKeyView(BaseLoggedInView, SearchableViewMixin):
+class ActivationKeysView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Activation Keys')]")
     new = Text("//button[contains(@href, '/activation_keys/new')]")
-    edit = Text(
-        "//td/a[contains(@ui-sref, 'info') and "
-        "contains(@href, 'activation_keys')]"
-    )
+    table = SatTable('.//table', column_widgets={'Name': Text('./a')})
 
     @property
     def is_displayed(self):
@@ -81,7 +78,7 @@ class ActivationKeyEditView(BaseLoggedInView):
     @View.nested
     class repository_sets(SatTab):
         TAB_NAME = 'Repository Sets'
-        resources = SatTable(locator=".//table")
+        table = SatTable(locator=".//table")
 
     @View.nested
     class host_collections(SatTab):
@@ -92,4 +89,4 @@ class ActivationKeyEditView(BaseLoggedInView):
     class content_hosts(SatTabWithDropdown):
         TAB_NAME = 'Associations'
         SUB_ITEM = 'Content Hosts'
-        resources = SatTable(locator=".//table")
+        table = SatTable(locator=".//table")

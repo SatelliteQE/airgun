@@ -681,7 +681,7 @@ class LCESelector(GenericLocatorWidget):
     ROOT = ParametrizedLocator("{@locator}")
     LABELS = "./li/label[contains(@class, path-list-item-label)]"
     CHECKBOX = (
-        ".//input[@ng-model='item.selected'][parent::label[contains(., '{}')]]"
+        './/input[@ng-model="item.selected"][parent::label[contains(., "{}")]]'
     )
 
     def __init__(self, parent, locator=None, logger=None):
@@ -697,7 +697,8 @@ class LCESelector(GenericLocatorWidget):
 
     def checkbox_selected(self, locator):
         """Identify whether specific checkbox is selected or not"""
-        return 'ng-not-empty' in self.browser.get_attribute('class', locator)
+        return 'ng-not-empty' in self.browser.get_attribute(
+            'class', locator, parent=self)
 
     def select(self, locator, value):
         """Select or deselect checkbox depends on the value passed"""
@@ -705,7 +706,7 @@ class LCESelector(GenericLocatorWidget):
         current_value = self.checkbox_selected(locator)
         if value == current_value:
             return False
-        self.browser.element(locator).click()
+        self.browser.click(locator, parent=self)
         if self.checkbox_selected(locator) != value:
             raise WidgetOperationFailed(
                 'Failed to set the checkbox to requested value.')
@@ -716,8 +717,8 @@ class LCESelector(GenericLocatorWidget):
         values are booleans whether they're selected or not.
         """
         checkboxes = {}
-        for item in self.browser.elements(self.LABELS):
-            name = self.browser.text(item)
+        for item in self.browser.elements(self.LABELS, parent=self):
+            name = self.browser.text(item, parent=self)
             value = self.checkbox_selected(self.CHECKBOX.format(name))
             checkboxes[name] = value
         return checkboxes
@@ -981,7 +982,9 @@ class SatTable(Table):
         .//table
 
     """
-    no_rows_message = ".//td/span[contains(@data-block, 'no-rows-message')]"
+    no_rows_message = (
+        ".//td/span[contains(@data-block, 'no-rows-message') or "
+        "contains(@data-block, 'no-search-results-message')]")
     tbody_row = Text('./tbody/tr')
 
     @property

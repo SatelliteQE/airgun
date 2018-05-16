@@ -1,16 +1,19 @@
-from widgetastic.widget import GenericLocatorWidget, Text, TextInput, View
+from widgetastic.widget import Text, TextInput, View
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
-from airgun.widgets import CustomParameter, MultiSelect
+from airgun.widgets import CustomParameter, MultiSelect, SatTable
 
 
 class OperatingSystemView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Operating systems']")
     new = Text("//a[contains(@href, '/operatingsystems/new')]")
-    delete = GenericLocatorWidget(
-        "//span[contains(@class, 'btn')]/a[@data-method='delete']")
-    edit = Text(
-        "//a[contains(@href, 'edit') and contains(@href, 'operatingsystems')]")
+    table = SatTable(
+        './/table',
+        column_widgets={
+            'Title': Text('./a'),
+            'Actions': Text('.//a[@data-method="delete"]'),
+        }
+    )
 
     @property
     def is_displayed(self):

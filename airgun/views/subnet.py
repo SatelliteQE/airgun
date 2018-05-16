@@ -1,12 +1,20 @@
 from widgetastic.widget import Text, TextInput
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import FilteredDropdown, RadioGroup
+from airgun.widgets import FilteredDropdown, RadioGroup, SatTable
 
 
 class SubnetView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Subnets']")
     new = Text("//a[contains(@href, '/subnets/new')]")
+    table = SatTable(
+        './/table',
+        column_widgets={
+            'Name': Text('./a'),
+            'Hosts': Text('./a'),
+            'Actions': Text('.//a[@data-method="delete"]'),
+        }
+    )
     edit = Text(
         "//a[contains(@href, 'edit') and contains(@href, 'subnets')]")
 

@@ -5,7 +5,7 @@ from airgun.navigation import NavigateStep, navigator
 from airgun.views.activationkey import (
     ActivationKeyCreateView,
     ActivationKeyEditView,
-    ActivationKeyView,
+    ActivationKeysView,
 
 )
 
@@ -22,9 +22,9 @@ class ActivationKeyEntity(BaseEntity):
         view.actions.fill('Remove')
         view.dialog.confirm()
 
-    def search(self, value, expected_result=None):
+    def search(self, value):
         view = self.navigate_to(self, 'All')
-        return view.search(value, expected_result)
+        return view.search(value)
 
     def read(self, entity_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
@@ -53,7 +53,7 @@ class ActivationKeyEntity(BaseEntity):
 
 @navigator.register(ActivationKeyEntity, 'All')
 class ShowAllActivationKeys(NavigateStep):
-    VIEW = ActivationKeyView
+    VIEW = ActivationKeysView
 
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Activation Keys')
@@ -77,5 +77,6 @@ class EditExistingActivationKey(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
-        self.parent.edit.click()
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Name'].widget.click()

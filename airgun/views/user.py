@@ -1,14 +1,19 @@
 from widgetastic.widget import Checkbox, Text, TextInput, View
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
-from airgun.widgets import FilteredDropdown, MultiSelect
+from airgun.widgets import FilteredDropdown, MultiSelect, SatTable
 
 
 class UsersView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Users']")
     new = Text("//a[contains(@href, '/users/new')]")
-    edit = Text("//a[contains(@href, 'edit') and contains(@href, 'users')]")
-    delete = Text("//a[contains(@href, '/users/') and @data-method='delete']")
+    table = SatTable(
+        './/table',
+        column_widgets={
+            'Username': Text('./a'),
+            'Actions': Text('.//a[@data-method="delete"]'),
+        }
+    )
 
     @property
     def is_displayed(self):

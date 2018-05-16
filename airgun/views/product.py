@@ -60,6 +60,7 @@ class ProductsTableView(BaseLoggedInView, SearchableViewMixin):
     )
     repo_discovery = Text("//button[contains(.,'Repo Discovery')]")
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
+    table = SatTable('.//table', column_widgets={'Name': Text('./a')})
     dialog = ConfirmationDialog()
 
     @property
