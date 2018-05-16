@@ -3,7 +3,6 @@ import copy
 import logging
 import os
 import sys
-
 from datetime import datetime
 
 from cached_property import cached_property
@@ -11,17 +10,18 @@ from fauxfactory import gen_string
 
 from airgun import settings
 from airgun.browser import AirgunBrowser, SeleniumBrowserFactory
-from airgun.entities.login import LoginEntity
 from airgun.entities.activationkey import ActivationKeyEntity
 from airgun.entities.architecture import ArchitectureEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.contentcredential import ContentCredentialEntity
 from airgun.entities.contentview import ContentViewEntity
 from airgun.entities.computeresource import ComputeResourceEntity
+from airgun.entities.domain import DomainEntity
 from airgun.entities.hostcollection import HostCollectionEntity
 from airgun.entities.filter import FilterEntity
 from airgun.entities.lifecycleenvironment import LCEEntity
 from airgun.entities.location import LocationEntity
+from airgun.entities.login import LoginEntity
 from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.organization import OrganizationEntity
 from airgun.entities.partitiontable import PartitionTableEntity
@@ -30,12 +30,9 @@ from airgun.entities.role import RoleEntity
 from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.subnet import SubnetEntity
 from airgun.entities.syncplan import SyncPlanEntity
+from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.user import UserEntity
-from airgun.entities.domain import DomainEntity
-
-
 from airgun.navigation import navigator
-
 
 LOGGER = logging.getLogger(__name__)
 
