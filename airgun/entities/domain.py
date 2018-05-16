@@ -3,11 +3,8 @@ from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.domain import (
-    DomainCreateView,
-    DomainListView,
-    DomainEditView
-)
+from airgun.views.domain import (DomainCreateView, DomainEditView,
+                                 DomainListView)
 
 
 class DomainEntity(BaseEntity):
@@ -111,9 +108,9 @@ class DomainEntity(BaseEntity):
         # Return only non-null entries
         return {key: val for key, val in properties.items() if val}
 
-    def edit(self, domain_name, **kwargs):
+    def update(self, domain_name, **kwargs):
         """
-        Edit an existing domain.
+        Update an existing domain.
 
         Only the kwargs which are passed in will be modified. You must modify
         at least one value.
@@ -173,8 +170,6 @@ class AddNewDomain(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.view.browser.wait_for_element(
-            self.parent.create_button, ensure_page_safe=True)
         self.parent.create_button.click()
 
 
