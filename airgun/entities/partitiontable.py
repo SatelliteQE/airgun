@@ -10,13 +10,9 @@ from airgun.views.partitiontable import (
 
 class PartitionTableEntity(BaseEntity):
 
-    def create(self, values, template):
+    def create(self, values,):
         view = self.navigate_to(self, 'New')
-        if 'snippet' in values:
-            if values['snippet'] and 'os_family' in values:
-                del values['os_family']
         view.fill(values)
-        view.template.fill(template)
         view.submit.click()
 
     def read(self, entity_name):
@@ -27,14 +23,21 @@ class PartitionTableEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def clone(self, values, template, entity_name):
+    def clone(self, values, entity_name):
         view = self.navigate_to(self, 'Clone', entity_name=entity_name)
-        if 'snippet' in values:
-            if values['snippet'] and 'os_family' in values:
-                del values['os_family']
         view.fill(values)
-        view.template.fill(template)
         view.submit.click()
+
+    def lock(self, entity_name):
+        view = self.navigate_to(self, 'All')
+        view.searchbox.search(entity_name)
+        view.actions.fill('Lock')
+
+    def unlock(self, entity_name):
+        view = self.navigate_to(self, 'All')
+        view.searchbox.search(entity_name)
+        view.actions.fill('Unlock')
+        self.browser.handle_alert()
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'All')
@@ -44,7 +47,7 @@ class PartitionTableEntity(BaseEntity):
 
 
 @navigator.register(PartitionTableEntity, 'All')
-class ShowAllComputeProfile(NavigateStep):
+class ShowAllPartitionTables(NavigateStep):
     VIEW = PartitionTableView
 
     def step(self, *args, **kwargs):
@@ -59,8 +62,6 @@ class AddNewPartitionTable(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.view.browser.wait_for_element(
-            self.parent.new, ensure_page_safe=True)
         self.parent.browser.click(self.parent.new)
 
 

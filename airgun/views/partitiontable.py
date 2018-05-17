@@ -1,5 +1,6 @@
 from widgetastic.widget import (
     Checkbox,
+    ConditionalSwitchableView,
     Text,
     TextInput,
     View,
@@ -14,7 +15,7 @@ from airgun.widgets import (
     ACEEditor,
     ActionsDropdown,
     FilteredDropdown,
-    MultiSelect
+    MultiSelect,
 )
 
 
@@ -34,15 +35,23 @@ class PartitionTableView(BaseLoggedInView, SearchableViewMixin):
 class PartitionTableEditView(BaseLoggedInView):
     name = TextInput(locator="//input[@id='ptable_name']")
     default = Checkbox(id='ptable_default')
-    snippet = Checkbox(id='ptable_snippet')
-    os_family = FilteredDropdown(id='s2id_ptable_os_family')
     template = ACEEditor()
     audit_comment = TextInput(id="ptable_audit_comment")
     submit = Text('//input[@name="commit"]')
 
+    snippet = Checkbox(locator="//input[@id='ptable_snippet']")
+    os_family_selection = ConditionalSwitchableView(reference='snippet')
+
+    @os_family_selection.register(True)
+    class SnippetOption(View):
+        pass
+
+    @os_family_selection.register(False)
+    class OSFamilyOption(View):
+        os_family = FilteredDropdown(id='s2id_ptable_os_family')
+
     @View.nested
     class locations(SatTab):
-        TAB_NAME = 'Locations'
         locations = MultiSelect(id='ms-ptable_location_ids')
 
         def fill(self, values):
@@ -53,7 +62,6 @@ class PartitionTableEditView(BaseLoggedInView):
 
     @View.nested
     class organizations(SatTab):
-        TAB_NAME = 'Organizations'
         organizations = MultiSelect(id='ms-ptable_organization_ids')
 
         def fill(self, values):
@@ -61,10 +69,6 @@ class PartitionTableEditView(BaseLoggedInView):
 
         def read(self):
             return self.organizations.read()
-
-    @View.nested
-    class help(SatTab):
-        TAB_NAME = 'Help'
 
     @property
     def is_displayed(self):
