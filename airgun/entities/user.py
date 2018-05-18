@@ -27,8 +27,9 @@ class UserEntity(BaseEntity):
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'All')
-        view.searchbox.search(entity_name)
-        view.delete.click(handle_alert=True)
+        view.search(entity_name)
+        view.table.row(username=entity_name)['Actions'].widget.click(
+            handle_alert=True)
 
 
 @navigator.register(UserEntity, 'All')
@@ -46,9 +47,7 @@ class AddNewUser(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.view.browser.wait_for_element(
-            self.parent.new, ensure_page_safe=True)
-        self.parent.browser.click(self.parent.new)
+        self.parent.new.click()
 
 
 @navigator.register(UserEntity, 'Edit')
@@ -59,7 +58,6 @@ class EditUser(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
-        self.parent.browser.wait_for_element(
-            self.parent.edit, ensure_page_safe=True)
-        self.parent.edit.click()
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(username=entity_name)['Username'].widget.click()

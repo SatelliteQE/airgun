@@ -4,7 +4,7 @@ from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.template import (
     ProvisioningTemplateDetailsView,
-    ProvisioningTemplateView,
+    ProvisioningTemplatesView,
 )
 
 
@@ -31,18 +31,18 @@ class ProvisioningTemplateEntity(BaseEntity):
     def lock(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.actions.fill('Lock')
+        view.table.row(name=entity_name)['Actions'].widget.fill('Lock')
 
     def unlock(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.actions.fill('Unlock')
+        view.table.row(name=entity_name)['Actions'].widget.fill('Unlock')
         self.browser.handle_alert()
 
 
 @navigator.register(ProvisioningTemplateEntity, 'All')
 class ShowAllTemplates(NavigateStep):
-    VIEW = ProvisioningTemplateView
+    VIEW = ProvisioningTemplatesView
 
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Provisioning Templates')
@@ -55,7 +55,7 @@ class AddNewTemplate(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.parent.browser.click(self.parent.new)
+        self.parent.new.click()
 
 
 @navigator.register(ProvisioningTemplateEntity, 'Edit')
@@ -66,8 +66,9 @@ class EditTemplate(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
-        self.parent.edit.click()
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Name'].widget.click()
 
 
 @navigator.register(ProvisioningTemplateEntity, 'Clone')
@@ -78,5 +79,6 @@ class CloneTemplate(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
-        self.parent.actions.fill('Clone')
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Actions'].widget.fill('Clone')

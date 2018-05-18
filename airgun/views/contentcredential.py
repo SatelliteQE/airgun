@@ -16,10 +16,7 @@ from airgun.widgets import (
 class ContentCredentialsTableView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Content Credentials')]")
     new = Text("//button[contains(@href, '/content_credentials/new')]")
-    edit = Text(
-        "//td/a[contains(@ui-sref, 'content-credential') and "
-        "contains(@href, 'content_credentials')]"
-    )
+    table = SatTable('.//table', column_widgets={'Name': Text('./a')})
 
     @property
     def is_displayed(self):
@@ -60,8 +57,8 @@ class ContentCredentialEditView(BaseLoggedInView):
 
     @View.nested
     class products(SatTab):
-        resources = SatTable(locator=".//table")
+        table = SatTable(locator=".//table")
 
     @View.nested
     class repositories(SatTab):
-        resources = SatTable(locator=".//table")
+        table = SatTable(locator=".//table")

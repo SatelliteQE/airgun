@@ -12,10 +12,11 @@ class OperatingSystemEntity(BaseEntity):
         view.fill(values)
         view.submit.click()
 
-    def delete(self, value):
+    def delete(self, entity_name):
         view = self.navigate_to(self, 'All')
-        view.searchbox.search(value)
-        view.delete.click(handle_alert=True)
+        view.search(entity_name)
+        view.table.row(
+            title=entity_name)['Actions'].widget.click(handle_alert=True)
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
@@ -42,9 +43,7 @@ class AddNewOperatingSystem(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.view.browser.wait_for_element(
-            self.parent.new, ensure_page_safe=True)
-        self.parent.browser.click(self.parent.new)
+        self.parent.new.click()
 
 
 @navigator.register(OperatingSystemEntity, 'Edit')
@@ -55,5 +54,6 @@ class EditOperatingSystem(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
-        self.parent.edit.click()
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(title=entity_name)['Title'].widget.click()

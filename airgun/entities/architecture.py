@@ -2,7 +2,10 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.architecture import ArchitectureView, ArchitectureDetailsView
+from airgun.views.architecture import (
+    ArchitecturesView,
+    ArchitectureDetailsView,
+)
 
 
 class ArchitectureEntity(BaseEntity):
@@ -11,6 +14,8 @@ class ArchitectureEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
@@ -23,12 +28,15 @@ class ArchitectureEntity(BaseEntity):
     def delete(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.searchbox.search(entity_name)
-        view.delete.click(handle_alert=True)
+        view.table.row(name=entity_name)['Actions'].widget.click(
+            handle_alert=True)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(ArchitectureEntity, 'All')
 class ShowAllArchitectures(NavigateStep):
-    VIEW = ArchitectureView
+    VIEW = ArchitecturesView
 
     def step(self, *args, **kwargs):
         # TODO: No prereq yet
@@ -42,9 +50,7 @@ class AddNewArchitecture(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.view.browser.wait_for_element(
-            self.parent.new, ensure_page_safe=True)
-        self.parent.browser.click(self.parent.new)
+        self.parent.new.click()
 
 
 @navigator.register(ArchitectureEntity, 'Edit')
@@ -55,7 +61,6 @@ class EditArchitecture(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
-        self.parent.browser.wait_for_element(
-            self.parent.edit, ensure_page_safe=True)
-        self.parent.edit.click()
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Name'].widget.click()

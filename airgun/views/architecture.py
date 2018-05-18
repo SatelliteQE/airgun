@@ -1,15 +1,19 @@
 from widgetastic.widget import Text, TextInput
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import MultiSelect
+from airgun.widgets import MultiSelect, SatTable
 
 
-class ArchitectureView(BaseLoggedInView, SearchableViewMixin):
+class ArchitecturesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Architectures']")
     new = Text("//a[contains(@href, '/architectures/new')]")
-    edit = Text("//a[contains(@href, 'edit') and contains(@href, 'arch')]")
-    delete = Text("//a[contains(@href, '/architectures/') and "
-                  "@data-method='delete']")
+    table = SatTable(
+        './/table',
+        column_widgets={
+            'Name': Text('./a'),
+            'Actions': Text('.//a[@data-method="delete"]'),
+        }
+    )
 
     @property
     def is_displayed(self):

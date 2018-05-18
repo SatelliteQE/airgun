@@ -3,11 +3,13 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.contentview import (
+    AddNewPuppetModuleView,
     ContentViewCreateView,
     ContentViewEditView,
     ContentViewTableView,
     ContentViewVersionPromoteView,
     ContentViewVersionPublishView,
+    SelectPuppetModuleVersionView,
 )
 
 
@@ -37,7 +39,37 @@ class ContentViewEntity(BaseEntity):
 
     def add_yum_repo(self, entity_name, repo_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.yumrepo.repos.add(repo_name)
+        view.repositories.resources.add(repo_name)
+
+    def add_cv(self, entity_name, cv_name):
+        """Add content view to selected composite content view."""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        assert view.content_views.is_displayed, (
+            'Could not find "Content Views" tab. '
+            'Make sure {} is composite content view'
+            .format(entity_name)
+        )
+        view.content_views.resources.add(cv_name)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def add_puppet_module(self, entity_name, module_name, filter_term=None):
+        """Add puppet module to selected view either by its author name or by
+        its version.
+
+        :param str optional filter_term: can be used to filter the module by
+            'author' or by 'version'.
+        """
+        view = self.navigate_to(
+            self, 'SelectPuppetModuleVersion',
+            entity_name=entity_name,
+            module_name=module_name
+        )
+        if filter_term:
+            view.search(filter_term)
+        view.table[0]['Actions'].widget.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def publish(self, entity_name, values=None):
         """Publishes to create new version of CV and promotes the contents to
@@ -51,10 +83,10 @@ class ContentViewEntity(BaseEntity):
             view.fill(values)
         view.save.click()
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.versions.resources[0]['Status'].widget.wait_for_result()
+        view.versions.table[0]['Status'].widget.wait_for_result()
         view.flash.assert_no_error()
         view.flash.dismiss()
-        return view.versions.resources[0].read()
+        return view.versions.table[0].read()
 
     def promote(self, entity_name, version_name, lce_name):
         """Promotes the selected version of content view to given environment.
@@ -70,10 +102,10 @@ class ContentViewEntity(BaseEntity):
         view.lce(lce_name).fill(True)
         view.promote.click()
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.versions.resources[0]['Status'].widget.wait_for_result()
+        view.versions.table[0]['Status'].widget.wait_for_result()
         view.flash.assert_no_error()
         view.flash.dismiss()
-        return view.versions.resources.row(version=version_name).read()
+        return view.versions.table.row(version=version_name).read()
 
 
 @navigator.register(ContentViewEntity, 'All')
@@ -91,7 +123,7 @@ class AddNewContentView(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.parent.browser.click(self.parent.new)
+        self.parent.new.click()
 
 
 @navigator.register(ContentViewEntity, 'Edit')
@@ -102,8 +134,46 @@ class EditContentView(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
-        self.parent.edit.click()
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+
+@navigator.register(ContentViewEntity, 'AddPuppetModule')
+class AddNewPuppetModule(NavigateStep):
+    """Navigate to Content View's "Add new Puppet Module" screen.
+
+    Args:
+        entity_name: name of content view
+    """
+    VIEW = AddNewPuppetModuleView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(
+            self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
+
+    def step(self, *args, **kwargs):
+        self.parent.puppet_modules.add_new_module.click()
+
+
+@navigator.register(ContentViewEntity, 'SelectPuppetModuleVersion')
+class SelectPuppetModuleVersion(NavigateStep):
+    """Navigate to new puppet module's "Select an Available Version" screen.
+
+    Args:
+        entity_name: name of content view
+        module_name: name of puppet module
+    """
+    VIEW = SelectPuppetModuleVersionView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(
+            self.obj, 'AddPuppetModule', entity_name=kwargs.get('entity_name'))
+
+    def step(self, *args, **kwargs):
+        module_name = kwargs.get('module_name')
+        self.parent.search(module_name)
+        self.parent.table.row(name=module_name)['Actions'].widget.click()
 
 
 @navigator.register(ContentViewEntity, 'Publish')
@@ -143,5 +213,7 @@ class PromoteContentViewVersion(NavigateStep):
             self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
 
     def step(self, *args, **kwargs):
-        self.parent.versions.search(kwargs.get('version_name'))
-        self.parent.versions.resources[0]['Actions'].fill('Promote')
+        version_name = kwargs.get('version_name')
+        self.parent.versions.search(version_name)
+        self.parent.versions.table.row(
+            version=version_name)['Actions'].fill('Promote')

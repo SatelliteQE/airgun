@@ -6,16 +6,13 @@ from airgun.views.common import (
     SatTab,
     SearchableViewMixin,
 )
-from airgun.widgets import EditableEntry
+from airgun.widgets import EditableEntry, SatTable
 
 
 class HostCollectionView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Host Collections')]")
     new = Text("//button[contains(@href, '/host_collections/new')]")
-    edit = Text(
-        "//td/a[contains(@ui-sref, 'info') and "
-        "contains(@href, 'host_collections')]"
-    )
+    table = SatTable('.//table', column_widgets={'Name': Text('./a')})
 
     @property
     def is_displayed(self):
@@ -50,6 +47,4 @@ class HostCollectionEditView(BaseLoggedInView):
     class hosts(SatTab):
         TAB_NAME = 'Hosts'
 
-        @View.nested
-        class resources(AddRemoveResourcesView):
-            pass
+        resources = View.nested(AddRemoveResourcesView)

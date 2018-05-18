@@ -29,10 +29,7 @@ from airgun.widgets import (
 class ContentViewTableView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Content Views')]")
     new = Text("//a[contains(@href, '/content_views/new')]")
-    edit = Text(
-        "//td/a[contains(@ui-sref, 'content-view') and "
-        "contains(@href, 'content_views')]"
-    )
+    table = SatTable('.//table', column_widgets={'Name': Text('./a')})
 
     @property
     def is_displayed(self):
@@ -76,7 +73,7 @@ class ContentViewEditView(BaseLoggedInView):
     @View.nested
     class versions(SatTab):
         searchbox = Search()
-        resources = SatTable(
+        table = SatTable(
             locator='//table',
             column_widgets={
                 'Version': Text('.//a'),
@@ -100,14 +97,58 @@ class ContentViewEditView(BaseLoggedInView):
                 search_phrase = 'version = {}'.format(
                     version_name.split()[1].split('.')[0])
             self.searchbox.search(search_phrase)
-            return self.resources.read()
+            return self.table.read()
 
     @View.nested
-    class yumrepo(SatTabWithDropdown):
+    class content_views(SatTab):
+        TAB_NAME = 'Content Views'
+
+        resources = View.nested(AddRemoveResourcesView)
+
+    @View.nested
+    class repositories(SatTabWithDropdown):
         TAB_NAME = 'Yum Content'
         SUB_ITEM = 'Repositories'
 
-        repos = View.nested(AddRemoveResourcesView)
+        resources = View.nested(AddRemoveResourcesView)
+
+    @View.nested
+    class puppet_modules(SatTab):
+        TAB_NAME = 'Puppet Modules'
+
+        add_new_module = Text(
+            './/button[@ui-sref="content-view.puppet-modules.names"]')
+        table = SatTable('.//table')
+
+
+class AddNewPuppetModuleView(BaseLoggedInView, SearchableViewMixin):
+    title = Text('//h3/span[text()="Select A New Puppet Module To Add"]')
+    table = SatTable(
+        locator='.//table',
+        column_widgets={
+            'Actions': Text('./button[@ng-click="selectVersion(item.name)"]')
+        }
+    )
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
+
+
+class SelectPuppetModuleVersionView(BaseLoggedInView, SearchableViewMixin):
+    title = Text('//h3/span[contains(., "Select an Available Version of")]')
+    table = SatTable(
+        locator='.//table',
+        column_widgets={
+            'Actions': Text('./button[@ng-click="selectVersion(item)"]')
+        }
+    )
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
 
 
 class ContentViewVersionPublishView(BaseLoggedInView):

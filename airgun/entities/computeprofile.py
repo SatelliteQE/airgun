@@ -26,8 +26,8 @@ class ComputeProfileEntity(BaseEntity):
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'All')
-        view.searchbox.search(entity_name)
-        view.actions.fill('Delete')
+        view.search(entity_name)
+        view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
 
 
@@ -47,9 +47,7 @@ class AddNewComputeProfile(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.view.browser.wait_for_element(
-            self.parent.new, ensure_page_safe=True)
-        self.parent.browser.click(self.parent.new)
+        self.parent.new.click()
 
 
 @navigator.register(ComputeProfileEntity, 'Rename')
@@ -60,5 +58,8 @@ class RenameComputeProfile(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(
+            name=entity_name)['Actions'].widget.fill('Rename')
         self.parent.actions.fill('Rename')

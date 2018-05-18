@@ -1,6 +1,5 @@
 import six
 from widgetastic.widget import (
-    NoSuchElementException,
     ParametrizedLocator,
     ParametrizedView,
     Text,
@@ -54,6 +53,10 @@ class SatTab(Tab):
         './/div[contains(@class, "page-content") or '
         'contains(@class, "tab-content")]')
 
+    @property
+    def is_displayed(self):
+        return 'ng-hide' not in self.parent_browser.classes(self.TAB_LOCATOR)
+
 
 class SatTabWithDropdown(TabWithDropdown):
     """Regular primary level ``Tab`` with dropdown.
@@ -81,7 +84,7 @@ class SatSecondaryTab(Tab):
             TAB_NAME = 'List/Remove'
     """
     ROOT = ParametrizedLocator(
-        './/nav[@class="ng-scope"]/following-sibling::div')
+        './/nav[@class="ng-scope" or not(@*)]/following-sibling::div')
 
 
 class LCESelectorGroup(ParametrizedView):
@@ -298,31 +301,27 @@ class WidgetMixin(six.with_metaclass(WidgetMetaclass, object)):
 class SearchableViewMixin(WidgetMixin):
     """Mixin which adds :class:`airgun.widgets.Search` widget and
     :meth:`search` to your view. It's useful for _most_ entities list views
-    where searchbox is present.
+    where searchbox and results table are present.
 
-    Note that you can override expected result locator for the element which is
-    returned by :meth:`search` by specifying custom ``search_result_locator``
-    string variable in your view class.
+    Note that class which uses this mixin should have :attr:`table` attribute.
     """
     searchbox = Search()
-    search_result_locator = "//a[contains(., '%s')]"
 
-    def search(self, query, expected_result=None):
-        """Perform search using searchbox on the page and return element text
-        if found.
+    def search(self, query):
+        """Perform search using searchbox on the page and return table
+        contents.
 
         :param str query: search query to type into search field. E.g. ``foo``
             or ``name = "bar"``.
-        :param str optional expected_result: expected resulting entity name.
-            Useful when you specify custom search query, not just entity name.
-            Defaults to ``query``.
-        :return: name of entity (if found) or None
-        :rtype: str or None
+        :return: list of dicts representing table rows
+        :rtype: list
         """
         self.searchbox.search(query)
-        try:
-            result = self.browser.element(
-                self.search_result_locator % (expected_result or query)).text
-        except NoSuchElementException:
-            result = None
-        return result
+        if not hasattr(self, 'table'):
+            raise AttributeError(
+                'Class {} does not have attribute "table". SearchableViewMixin'
+                ' only works with views, which have table for results. Please '
+                'define table or use custom search implementation instead'
+                .format(self.__class__.__name__)
+            )
+        return self.table.read()

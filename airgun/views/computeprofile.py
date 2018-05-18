@@ -1,13 +1,19 @@
 from widgetastic.widget import Text, TextInput
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import ActionsDropdown
+from airgun.widgets import ActionsDropdown, SatTable
 
 
 class ComputeProfileView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Compute Profiles']")
     new = Text("//a[contains(@href, '/compute_profiles/new')]")
-    actions = ActionsDropdown("//td//div[contains(@class, 'btn-group')]")
+    table = SatTable(
+        './/table',
+        column_widgets={
+            'Name': Text('./a'),
+            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+        }
+    )
 
     @property
     def is_displayed(self):

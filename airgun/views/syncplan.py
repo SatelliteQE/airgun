@@ -15,16 +15,14 @@ from airgun.widgets import (
     EditableDateTime,
     EditableEntrySelect,
     ReadOnlyEntry,
+    SatTable,
 )
 
 
-class SyncPlanView(BaseLoggedInView, SearchableViewMixin):
+class SyncPlansView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Sync Plans')]")
     new = Text("//button[contains(@href, '/sync_plans/new')]")
-    edit = Text(
-        "//td/a[contains(@ui-sref, 'sync-plan') and "
-        "contains(@href, 'sync_plans')]"
-    )
+    table = SatTable('.//table', column_widgets={'Name': Text('./a')})
 
     @property
     def is_displayed(self):

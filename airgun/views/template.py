@@ -3,18 +3,23 @@ from widgetastic.widget import Checkbox, Text, TextInput, View
 from airgun.views.common import (
     BaseLoggedInView,
     SatTab,
+    SatTable,
     SearchableViewMixin,
     TemplateEditor,
 )
 from airgun.widgets import ActionsDropdown, FilteredDropdown, MultiSelect
 
 
-class ProvisioningTemplateView(BaseLoggedInView, SearchableViewMixin):
+class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[contains(., 'Provisioning Templates')]")
     new = Text("//a[contains(@href, '/templates/provisioning_templates/new')]")
-    edit = Text(
-        "//a[contains(@href, 'edit') and contains(@href, 'templates')]")
-    actions = ActionsDropdown("//td/div[contains(@class, 'btn-group')]")
+    table = SatTable(
+        './/table',
+        column_widgets={
+            'Name': Text('./a'),
+            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+        }
+    )
 
     @property
     def is_displayed(self):
