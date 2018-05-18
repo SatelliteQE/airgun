@@ -52,23 +52,23 @@ class PartitionTableEditView(BaseLoggedInView):
 
     @View.nested
     class locations(SatTab):
-        locations = MultiSelect(id='ms-ptable_location_ids')
+        resources = MultiSelect(id='ms-ptable_location_ids')
 
         def fill(self, values):
-            self.locations.fill(values)
+            self.resources.fill(values)
 
         def read(self):
-            return self.locations.read()
+            return self.resources.read()
 
     @View.nested
     class organizations(SatTab):
-        organizations = MultiSelect(id='ms-ptable_organization_ids')
+        resources = MultiSelect(id='ms-ptable_organization_ids')
 
         def fill(self, values):
-            self.organizations.fill(values)
+            self.resources.fill(values)
 
         def read(self):
-            return self.organizations.read()
+            return self.resources.read()
 
     @property
     def is_displayed(self):
