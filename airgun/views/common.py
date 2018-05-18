@@ -84,8 +84,7 @@ class SatSecondaryTab(Tab):
             TAB_NAME = 'List/Remove'
     """
     ROOT = ParametrizedLocator(
-        './/nav[@class="ng-scope" or not(@class) and not(@data-block)]'
-        '/following-sibling::div')
+        './/nav[@class="ng-scope" or not(@*)]/following-sibling::div')
 
 
 class LCESelectorGroup(ParametrizedView):
@@ -309,8 +308,8 @@ class SearchableViewMixin(WidgetMixin):
     searchbox = Search()
 
     def search(self, query):
-        """Perform search using searchbox on the page and return element text
-        if found.
+        """Perform search using searchbox on the page and return table
+        contents.
 
         :param str query: search query to type into search field. E.g. ``foo``
             or ``name = "bar"``.
