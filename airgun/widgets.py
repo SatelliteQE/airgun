@@ -297,27 +297,6 @@ class MultiSelect(GenericLocatorWidget):
                 self.assigned.fill(value)
         return True
 
-    def set_assigned(self, desired_values):
-        """Sets the assigned items to exactly match 'desired_values'.
-
-        If any undesired values are present in the 'assigned' list, they
-        are removed.
-
-        :param values: list of strings representing item names
-        """
-        current_values = self.assigned.read()
-        if current_values != desired_values:
-            self.fill(
-                {
-                    'assigned': desired_values,
-                    'unassigned': [
-                        val for val in current_values
-                        if val not in desired_values
-                    ]
-                }
-            )
-        return True
-
     def read(self):
         """Returns a dict with current lists values."""
         return {
