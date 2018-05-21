@@ -220,6 +220,7 @@ class Session(object):
         """Instance of Content Credential entity."""
         return ContentCredentialEntity(self.browser)
 
+    @cached_property
     def computeresource(self):
         """Instance of ComputeResource entity."""
         return ComputeResourceEntity(self.browser)
