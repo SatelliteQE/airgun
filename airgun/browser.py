@@ -478,6 +478,9 @@ class AirgunBrowserPlugin(DefaultPlugin):
         '''
 
     def ensure_page_safe(self, timeout='30s'):
+        """Ensures page is fully loaded.
+        Default timeout was 10s, this changes it to 30s.
+        """
         super().ensure_page_safe(timeout)
 
     def before_click(self, element):
