@@ -22,6 +22,7 @@ from airgun.entities.lifecycleenvironment import LCEEntity
 from airgun.entities.location import LocationEntity
 from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.organization import OrganizationEntity
+from airgun.entities.partitiontable import PartitionTableEntity
 from airgun.entities.product import ProductEntity
 from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.subnet import SubnetEntity
@@ -252,6 +253,11 @@ class Session(object):
     def organization(self):
         """Instance of Organization entity."""
         return OrganizationEntity(self.browser)
+
+    @cached_property
+    def partitiontable(self):
+        """Instance of Partition Table entity."""
+        return PartitionTableEntity(self.browser)
 
     @cached_property
     def product(self):
