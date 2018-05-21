@@ -20,14 +20,13 @@ class DomainEntity(BaseEntity):
         view.submit_button.click()
         view.flash.assert_no_error()
 
-    def search(self, value=None):
+    def search(self, value):
         """Search for 'value' and return domain names that match.
 
         :param value: text to filter (default: no filter)
         """
         view = self.navigate_to(self, 'All')
-        view.search(value or '')
-        return [row['Description'].text for row in view.table.rows()]
+        return view.search(value)
 
     def read(self, entity_name):
         """Return dict with properties of domain."""
