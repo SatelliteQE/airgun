@@ -1,5 +1,4 @@
 from navmazing import NavigateToSibling
-from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator

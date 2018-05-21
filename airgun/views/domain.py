@@ -1,5 +1,4 @@
-from widgetastic.widget import Text, TextInput, View, GenericLocatorWidget
-from widgetastic_patternfly import Button
+from widgetastic.widget import Text, TextInput, View
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
 from airgun.widgets import CustomParameter, FilteredDropdown, MultiSelect, SatTable
