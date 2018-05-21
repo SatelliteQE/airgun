@@ -4,7 +4,7 @@ from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.partitiontable import (
     PartitionTableEditView,
-    PartitionTableView,
+    PartitionTablesView,
 )
 
 
@@ -30,25 +30,25 @@ class PartitionTableEntity(BaseEntity):
 
     def lock(self, entity_name):
         view = self.navigate_to(self, 'All')
-        view.searchbox.search(entity_name)
-        view.actions.fill('Lock')
+        view.search(entity_name)
+        view.table.row(name=entity_name)['Actions'].widget.fill('Lock')
 
     def unlock(self, entity_name):
         view = self.navigate_to(self, 'All')
-        view.searchbox.search(entity_name)
-        view.actions.fill('Unlock')
+        view.search(entity_name)
+        view.table.row(name=entity_name)['Actions'].widget.fill('Unlock')
         self.browser.handle_alert()
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'All')
-        view.searchbox.search(entity_name)
-        view.actions.fill('Delete')
+        view.search(entity_name)
+        view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
 
 
 @navigator.register(PartitionTableEntity, 'All')
 class ShowAllPartitionTables(NavigateStep):
-    VIEW = PartitionTableView
+    VIEW = PartitionTablesView
 
     def step(self, *args, **kwargs):
         # TODO: No prereq yet
@@ -62,7 +62,7 @@ class AddNewPartitionTable(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.parent.browser.click(self.parent.new)
+        self.parent.new.click()
 
 
 @navigator.register(PartitionTableEntity, 'Edit')
@@ -73,8 +73,9 @@ class EditPartitionTable(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
-        self.parent.edit.click()
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Name'].widget.click()
 
 
 @navigator.register(PartitionTableEntity, 'Clone')
@@ -85,5 +86,6 @@ class ClonePartitionTable(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search(kwargs.get('entity_name'))
-        self.parent.actions.fill('Clone')
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Actions'].widget.fill('Clone')

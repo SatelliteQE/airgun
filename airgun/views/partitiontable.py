@@ -16,15 +16,20 @@ from airgun.widgets import (
     ActionsDropdown,
     FilteredDropdown,
     MultiSelect,
+    SatTable
 )
 
 
-class PartitionTableView(BaseLoggedInView, SearchableViewMixin):
+class PartitionTablesView(BaseLoggedInView, SearchableViewMixin):
 
     title = Text("//h1[text()='Partition Tables']")
     new = Text("//a[contains(@href, '/ptables/new')]")
-    actions = ActionsDropdown("//td//div[contains(@class, 'btn-group')]")
-    edit = Text("//a[contains(@href, 'edit') and contains(@href, 'ptables')]")
+    table = SatTable(
+        './/table',
+        column_widgets={
+            'Name': Text('./a'),
+            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+        })
 
     @property
     def is_displayed(self):
