@@ -1,7 +1,12 @@
 from widgetastic.widget import Text, TextInput, View
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
-from airgun.widgets import CustomParameter, FilteredDropdown, MultiSelect, SatTable
+from airgun.widgets import (
+    CustomParameter,
+    FilteredDropdown,
+    MultiSelect,
+    SatTable,
+)
 
 
 class DomainListView(BaseLoggedInView, SearchableViewMixin):
