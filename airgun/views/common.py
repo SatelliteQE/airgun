@@ -58,6 +58,22 @@ class SatTab(Tab):
         return 'ng-hide' not in self.parent_browser.classes(self.TAB_LOCATOR)
 
 
+class SatVerticalTab(SatTab):
+    """Represent vertical tabs that usually used in location and organization
+    entities
+
+    Usage::
+
+        @View.nested
+        class mytab(SatVerticalTab):
+            TAB_NAME = 'My Tab'
+    """
+    TAB_LOCATOR = ParametrizedLocator(
+        ".//ul[@data-tabs='pills']"
+        "/li[./a[normalize-space(.)={@tab_name|quote}]]"
+    )
+
+
 class SatTabWithDropdown(TabWithDropdown):
     """Regular primary level ``Tab`` with dropdown.
 
