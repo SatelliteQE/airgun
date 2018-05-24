@@ -1,4 +1,5 @@
 from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
     BaseLoggedInView,
@@ -32,6 +33,7 @@ class OrganizationsView(BaseLoggedInView, SearchableViewMixin):
 
 
 class OrganizationCreateView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
     name = TextInput(id='organization_name')
     label = TextInput(id='organization_label')
     description = TextInput(id='organization_description')
@@ -39,29 +41,46 @@ class OrganizationCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.submit, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Organizations'
+                and self.breadcrumb.read() == 'New Organization'
+        )
 
 
 class OrganizationCreateSelectHostsView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
     assign_all = Text("//a[text()='Assign All']")
     assign_manually = Text("//a[text()='Manually Assign']")
     proceed = Text("//a[text()='Proceed to Edit']")
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.proceed, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Organizations'
+                and self.breadcrumb.read() == 'Assign Hosts to'
+        )
 
 
 class OrganizationEditView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
     submit = Text("//form[contains(@id, 'edit')]//input[@name='commit']")
     cancel = Text("//a[text()='Cancel']")
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.submit, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Organizations'
+                and self.breadcrumb.read().starts_with('Edit ')
+        )
 
     @View.nested
     class primary(SatVerticalTab):

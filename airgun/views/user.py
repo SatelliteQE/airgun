@@ -1,4 +1,5 @@
 from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
 from airgun.widgets import FilteredDropdown, MultiSelect, SatTable
@@ -22,12 +23,18 @@ class UsersView(BaseLoggedInView, SearchableViewMixin):
 
 
 class UserDetailsView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
     submit = Text('//input[@name="commit"]')
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.submit, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Users'
+                and self.breadcrumb.read().starts_with('Edit ')
+        )
 
     @View.nested
     class user(SatTab):
@@ -54,3 +61,16 @@ class UserDetailsView(BaseLoggedInView):
     class roles(SatTab):
         admin = Checkbox(id='user_admin')
         resources = MultiSelect(id='ms-user_role_ids')
+
+
+class UserCreateView(UserDetailsView):
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Users'
+                and self.breadcrumb.read() == 'Create User'
+        )

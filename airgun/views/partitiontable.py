@@ -5,6 +5,7 @@ from widgetastic.widget import (
     TextInput,
     View,
 )
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
     BaseLoggedInView,
@@ -38,6 +39,7 @@ class PartitionTablesView(BaseLoggedInView, SearchableViewMixin):
 
 
 class PartitionTableEditView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
     name = TextInput(locator="//input[@id='ptable_name']")
     default = Checkbox(id='ptable_default')
     template = ACEEditor()
@@ -77,5 +79,23 @@ class PartitionTableEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.submit, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Ptables'
+                and self.breadcrumb.read().startswith('Edit ')
+        )
+
+
+class PartitionTableCreateView(PartitionTableEditView):
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Ptables'
+            and self.breadcrumb.read() == 'Create Partition Table'
+        )

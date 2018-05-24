@@ -21,7 +21,7 @@ setup(
         'six==1.11.0',
         'wait_for',
         'widgetastic.core==0.21.2',
-        'widgetastic.patternfly==0.0.30'
+        'widgetastic.patternfly==0.0.33'
     ],
     packages=find_packages(exclude=['tests*']),
     package_data={'': ['LICENSE']},

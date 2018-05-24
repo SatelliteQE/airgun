@@ -1,4 +1,5 @@
 from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
     BaseLoggedInView,
@@ -7,7 +8,11 @@ from airgun.views.common import (
     SearchableViewMixin,
     TemplateEditor,
 )
-from airgun.widgets import ActionsDropdown, FilteredDropdown, MultiSelect
+from airgun.widgets import (
+    ActionsDropdown,
+    FilteredDropdown,
+    MultiSelect,
+)
 
 
 class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixin):
@@ -28,13 +33,19 @@ class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixin):
 
 
 class ProvisioningTemplateDetailsView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
     FORM = "//form[contains(@id, 'provisioning_template')]"
     submit = Text('//input[@name="commit"]')
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.FORM, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Provisioning templates'
+                and self.breadcrumb.read().startswith('Edit ')
+        )
 
     @View.nested
     class template(SatTab):
@@ -63,3 +74,16 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
     class organizations(SatTab):
         resources = MultiSelect(
             id='ms-provisioning_template_organization_ids')
+
+
+class ProvisioningTemplateCreateView(ProvisioningTemplateDetailsView):
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Provisioning templates'
+            and self.breadcrumb.read() == 'Create Template'
+        )

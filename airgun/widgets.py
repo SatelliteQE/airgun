@@ -1100,14 +1100,15 @@ class ProgressBar(GenericLocatorWidget):
         """Boolean value whether progress bar is active or not (stopped,
         pending or any other state).
         """
-        if 'active' in self.browser.classes(self):
+        if 'active' in self.browser.classes(self, check_safe=False):
             return True
         return False
 
     @property
     def progress(self):
         """String value with current flow rate in percent."""
-        return self.browser.get_attribute('aria-valuetext', self.PROGRESSBAR)
+        return self.browser.get_attribute(
+            'aria-valuetext', self.PROGRESSBAR, check_safe=False)
 
     @property
     def is_completed(self):

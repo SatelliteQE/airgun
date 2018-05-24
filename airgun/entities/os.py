@@ -50,6 +50,9 @@ class AddNewOperatingSystem(NavigateStep):
 class EditOperatingSystem(NavigateStep):
     VIEW = OperatingSystemDetailsView
 
+    def am_i_here(self, *args, **kwargs):
+        return self.view.is_displayed
+
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
 

@@ -5,6 +5,7 @@ from widgetastic.widget import (
     TextInput,
     View,
 )
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
     AddRemoveResourcesView,
@@ -38,6 +39,7 @@ class ContentViewTableView(BaseLoggedInView, SearchableViewMixin):
 
 
 class ContentViewCreateView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
     name = TextInput(id='name')
     label = TextInput(id='label')
     description = TextInput(id='description')
@@ -47,20 +49,30 @@ class ContentViewCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.name, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Views'
+            and self.breadcrumb.read() == 'New Content View'
+        )
 
 
 class ContentViewEditView(BaseLoggedInView):
-    return_to_all = Text("//a[text()='Content Views']")
+    breadcrumb = BreadCrumb()
     publish = Text("//button[contains(., 'Publish New Version')]")
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.return_to_all, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Views'
+            and self.breadcrumb.read() != 'New Content View'
+        )
 
     @View.nested
     class details(SatTab):
@@ -122,7 +134,7 @@ class ContentViewEditView(BaseLoggedInView):
 
 
 class AddNewPuppetModuleView(BaseLoggedInView, SearchableViewMixin):
-    title = Text('//h3/span[text()="Select A New Puppet Module To Add"]')
+    breadcrumb = BreadCrumb()
     table = SatTable(
         locator='.//table',
         column_widgets={
@@ -132,12 +144,17 @@ class AddNewPuppetModuleView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Content Views'
+                and self.breadcrumb.read() == 'Add Puppet Module'
+        )
 
 
 class SelectPuppetModuleVersionView(BaseLoggedInView, SearchableViewMixin):
-    title = Text('//h3/span[contains(., "Select an Available Version of")]')
+    breadcrumb = BreadCrumb()
     table = SatTable(
         locator='.//table',
         column_widgets={
@@ -147,11 +164,17 @@ class SelectPuppetModuleVersionView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Content Views'
+                and self.breadcrumb.read() == 'Version for Module:'
+        )
 
 
 class ContentViewVersionPublishView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
     version = Text('//div[@label="Version"]/div/span')
     description = TextInput(id='description')
     force_metadata_regeneration = Checkbox(id='forceMetadataRegeneration')
@@ -160,11 +183,17 @@ class ContentViewVersionPublishView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.save, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Content Views'
+                and self.breadcrumb.read() == 'Publish'
+        )
 
 
 class ContentViewVersionPromoteView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
     lce = ParametrizedView.nested(LCESelectorGroup)
     description = TextInput(id='description')
     force_metadata_regeneration = Checkbox(id='forceMetadataRegeneration')
@@ -174,5 +203,10 @@ class ContentViewVersionPromoteView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.save, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Content Views'
+                and self.breadcrumb.read() == 'Promotion'
+        )

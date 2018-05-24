@@ -2,7 +2,7 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.user import UserDetailsView, UsersView
+from airgun.views.user import UserCreateView, UserDetailsView, UsersView
 
 
 class UserEntity(BaseEntity):
@@ -42,7 +42,7 @@ class ShowAllUsers(NavigateStep):
 
 @navigator.register(UserEntity, 'New')
 class AddNewUser(NavigateStep):
-    VIEW = UserDetailsView
+    VIEW = UserCreateView
 
     prerequisite = NavigateToSibling('All')
 

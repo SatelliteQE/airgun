@@ -8,6 +8,7 @@ from widgetastic.widget import (
     TextInput,
     View,
 )
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
     BaseLoggedInView,
@@ -70,6 +71,7 @@ class ProductsTableView(BaseLoggedInView, SearchableViewMixin):
 
 
 class ProductCreateView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
     name = TextInput(id='name')
     label = TextInput(id='label')
     gpg_key = Select(id='gpg_key_id')
@@ -82,19 +84,30 @@ class ProductCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.name, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Products'
+            and self.breadcrumb.read() == 'New Product'
+        )
 
 
 class ProductEditView(BaseLoggedInView):
-    return_to_all = Text("//a[text()='Products']")
+    breadcrumb = BreadCrumb()
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.return_to_all, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Products'
+                and self.breadcrumb.read() not in (
+                    'New Product', 'Discover Repositories')
+        )
 
     @View.nested
     class details(SatTab):
@@ -111,13 +124,19 @@ class ProductEditView(BaseLoggedInView):
 
 
 class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
+    breadcrumb = BreadCrumb()
     repo_type = Select(locator="//select[@ng-model='discovery.contentType']")
     url = TextInput(id='urlToDiscover')
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.url, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Products'
+                and self.breadcrumb.read() == 'Discover Repositories'
+        )
 
     @View.nested
     class discovered_repos(View):

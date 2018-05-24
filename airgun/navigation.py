@@ -58,14 +58,25 @@ class NavigateStep(navmazing.NavigateStep):
         """Describes if the navigation is already at the requested destination.
 
         By default, airgun relies on view's ``is_displayed`` property to
-        determine whether navigation succeeded. This method may be overridden
-        on specific entity's NavigateStep level for more complex logic if
-        needed.
+        determine whether navigation succeeded. If positional argument
+        ``entity_name`` was passed and view has ``BreadCrumb`` widget, it will
+        also ensure second location in breadcrumb is provided entity name.
+
+        This method may be overridden on specific entity's NavigateStep level
+        for more complex logic if needed.
 
         :return: whether navigator is at requested destination or not.
         :rtype: bool
         """
+        entity_name = kwargs.get('entity_name')
         try:
+            if entity_name and hasattr(self.view, 'breadcrumb'):
+                return (
+                    self.view.is_displayed
+                    and self.view.breadcrumb.locations[1] in (
+                        entity_name,
+                        'Edit {}'.format(entity_name))
+                )
             return self.view.is_displayed
         except (AttributeError, NoSuchElementException):
             return False

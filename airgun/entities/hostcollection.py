@@ -3,9 +3,9 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.hostcollection import (
-    HostCollectionDetailsView,
+    HostCollectionCreateView,
     HostCollectionEditView,
-    HostCollectionView,
+    HostCollectionsView,
 )
 
 
@@ -40,7 +40,7 @@ class HostCollectionEntity(BaseEntity):
 
 @navigator.register(HostCollectionEntity, 'All')
 class ShowAllHostCollections(NavigateStep):
-    VIEW = HostCollectionView
+    VIEW = HostCollectionsView
 
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Host Collections')
@@ -48,7 +48,7 @@ class ShowAllHostCollections(NavigateStep):
 
 @navigator.register(HostCollectionEntity, 'New')
 class AddNewHostCollections(NavigateStep):
-    VIEW = HostCollectionDetailsView
+    VIEW = HostCollectionCreateView
 
     prerequisite = NavigateToSibling('All')
 
