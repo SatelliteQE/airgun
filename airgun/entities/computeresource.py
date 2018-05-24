@@ -13,8 +13,13 @@ class ComputeResourceEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         if 'provider' in values.keys() and values['provider'] == 'oVirt' \
-                and 'certification_authorities' not in values.keys():
-            view.test_connection.click()
+                and 'provider_content.certification_authorities' not in \
+                values.keys():
+            view.provider_content.load_datacenters.click()
+        if 'provider' in values.keys() and values['provider'] == 'EC2':
+            view.provider_content.load_regions.click()
+        if 'provider' in values.keys() and values['provider'] == 'VMware':
+            view.provider_content.load_datacenters.click()
         view.submit.click()
 
     def search(self, value):

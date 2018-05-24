@@ -620,6 +620,7 @@ class ActionsDropdown(GenericLocatorWidget):
         """Returns a list of available actions."""
         return self.items
 
+
 class ConfirmationDialog(Widget):
     """Usual confirmation dialog with two buttons and close 'x' button in the
     right corner. Has nothing in common with javascript alert, confirm or
@@ -821,9 +822,9 @@ class EditableEntry(GenericLocatorWidget):
         if locator and name or not locator and not name:
             raise TypeError('Please specify either locator or name')
         locator = (
-            locator or
-            ".//dt[contains(., '{}')]"
-            "/following-sibling::dd[1]".format(name)
+                locator or
+                ".//dt[contains(., '{}')]"
+                "/following-sibling::dd[1]".format(name)
         )
         super(EditableEntry, self).__init__(parent, locator, logger)
 
@@ -899,10 +900,10 @@ class ReadOnlyEntry(GenericLocatorWidget):
         if locator and name or not locator and not name:
             raise TypeError('Please specify either locator or name')
         locator = (
-            locator or
-            ".//dt[contains(., '{}')]"
-            "/following-sibling::dd[not(contains(@class, 'ng-hide'))]"
-            "[1]".format(name)
+                locator or
+                ".//dt[contains(., '{}')]"
+                "/following-sibling::dd[not(contains(@class, 'ng-hide'))]"
+                "[1]".format(name)
         )
         super(ReadOnlyEntry, self).__init__(parent, locator, logger)
 

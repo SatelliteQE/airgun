@@ -285,10 +285,7 @@ class Session(object):
         """Instance of Sync Plan entity."""
         return SyncPlanEntity(self.browser)
 
-<<<<<<< HEAD
     @cached_property
     def user(self):
         """Instance of User entity."""
         return UserEntity(self.browser)
-=======
->>>>>>> My work so far requesting feedback
