@@ -255,6 +255,7 @@ class SeleniumBrowserFactory(object):
             self._docker.image = 'selenium/standalone-chrome'
             self._docker.capabilities = \
                 webdriver.DesiredCapabilities.CHROME.copy()
+            self._docker.capabilities.update({'args': 'start-maximized'})
         else:
             self._docker.image = 'selenium/standalone-firefox'
             self._docker.capabilities = \

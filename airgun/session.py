@@ -133,7 +133,9 @@ class Session(object):
         self._factory = SeleniumBrowserFactory(test_name=self.name)
         try:
             selenium_browser = self._factory.get_browser()
-            selenium_browser.maximize_window()
+            if not (self._factory.provider == 'docker' and
+                    self._factory.browser == 'chrome'):
+                selenium_browser.maximize_window()
             self.browser = AirgunBrowser(selenium_browser, self)
 
             self.browser.url = 'https://' + settings.satellite.hostname
