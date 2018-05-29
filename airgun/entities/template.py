@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.template import (
+    ProvisioningTemplateCreateView,
     ProvisioningTemplateDetailsView,
     ProvisioningTemplatesView,
 )
@@ -50,7 +51,7 @@ class ShowAllTemplates(NavigateStep):
 
 @navigator.register(ProvisioningTemplateEntity, 'New')
 class AddNewTemplate(NavigateStep):
-    VIEW = ProvisioningTemplateDetailsView
+    VIEW = ProvisioningTemplateCreateView
 
     prerequisite = NavigateToSibling('All')
 
@@ -73,7 +74,7 @@ class EditTemplate(NavigateStep):
 
 @navigator.register(ProvisioningTemplateEntity, 'Clone')
 class CloneTemplate(NavigateStep):
-    VIEW = ProvisioningTemplateDetailsView
+    VIEW = ProvisioningTemplateCreateView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')

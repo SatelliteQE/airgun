@@ -1,4 +1,5 @@
 from widgetastic.widget import Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import CustomParameter, MultiSelect, SatTable
@@ -22,6 +23,7 @@ class OperatingSystemView(BaseLoggedInView, SearchableViewMixin):
 
 
 class OperatingSystemDetailsView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
     name = TextInput(locator=".//input[@id='operatingsystem_name']")
     major = TextInput(locator=".//input[@id='operatingsystem_major']")
     architectures = MultiSelect(id='ms-operatingsystem_architecture_ids')
@@ -51,5 +53,10 @@ class OperatingSystemDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.name, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Operatingsystems'
+                and self.breadcrumb.read() == 'Edit Operating System'
+        )

@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.partitiontable import (
+    PartitionTableCreateView,
     PartitionTableEditView,
     PartitionTablesView,
 )
@@ -62,7 +63,7 @@ class ShowAllPartitionTables(NavigateStep):
 
 @navigator.register(PartitionTableEntity, 'New')
 class AddNewPartitionTable(NavigateStep):
-    VIEW = PartitionTableEditView
+    VIEW = PartitionTableCreateView
 
     prerequisite = NavigateToSibling('All')
 
@@ -85,7 +86,7 @@ class EditPartitionTable(NavigateStep):
 
 @navigator.register(PartitionTableEntity, 'Clone')
 class ClonePartitionTable(NavigateStep):
-    VIEW = PartitionTableEditView
+    VIEW = PartitionTableCreateView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')

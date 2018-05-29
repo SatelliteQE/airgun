@@ -5,6 +5,7 @@ from widgetastic.widget import (
     TextInput,
     View,
 )
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
     AddRemoveResourcesView,
@@ -38,7 +39,7 @@ class ActivationKeysView(BaseLoggedInView, SearchableViewMixin):
 
 
 class ActivationKeyCreateView(BaseLoggedInView):
-
+    breadcrumb = BreadCrumb()
     name = TextInput(id='name')
     hosts_limit = LimitInput()
     description = TextInput(id='description')
@@ -48,19 +49,29 @@ class ActivationKeyCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.name, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Activation Keys'
+                and self.breadcrumb.read() == 'New Activation Key'
+        )
 
 
 class ActivationKeyEditView(BaseLoggedInView):
-    return_to_all = Text("//a[text()='Activation Keys']")
+    breadcrumb = BreadCrumb()
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.return_to_all, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Activation Keys'
+            and self.breadcrumb.read() != 'New Activation Key'
+        )
 
     @View.nested
     class details(SatTab):

@@ -2,7 +2,11 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.subnet import SubnetView, SubnetDetailsView
+from airgun.views.subnet import (
+    SubnetCreateView,
+    SubnetDetailsView,
+    SubnetsView,
+)
 
 
 class SubnetEntity(BaseEntity):
@@ -23,7 +27,7 @@ class SubnetEntity(BaseEntity):
 
 @navigator.register(SubnetEntity, 'All')
 class ShowAllSubnets(NavigateStep):
-    VIEW = SubnetView
+    VIEW = SubnetsView
 
     def step(self, *args, **kwargs):
         # TODO: No prereq yet
@@ -32,7 +36,7 @@ class ShowAllSubnets(NavigateStep):
 
 @navigator.register(SubnetEntity, 'New')
 class AddNewSubnet(NavigateStep):
-    VIEW = SubnetDetailsView
+    VIEW = SubnetCreateView
 
     prerequisite = NavigateToSibling('All')
 

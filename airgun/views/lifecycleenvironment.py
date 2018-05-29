@@ -5,6 +5,7 @@ from widgetastic.widget import (
     TextInput,
     View,
 )
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SatTab
 from airgun.widgets import EditableEntry, ReadOnlyEntry, SatTable
@@ -81,6 +82,7 @@ class LCEView(BaseLoggedInView, ParametrizedView):
 
 
 class LCECreateView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
     name = TextInput(id='name')
     label = TextInput(id='label')
     description = TextInput(id='description')
@@ -88,17 +90,27 @@ class LCECreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.name, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Environments List'
+                and self.breadcrumb.read() == 'New Environment'
+        )
 
 
 class LCEEditView(BaseLoggedInView):
-    return_to_all = Text("//a[text()='Environments']")
+    breadcrumb = BreadCrumb()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.return_to_all, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Environments'
+                and self.breadcrumb.read() != 'New Environment'
+        )
 
     @View.nested
     class details(SatTab):

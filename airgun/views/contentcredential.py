@@ -1,4 +1,5 @@
 from widgetastic.widget import FileInput, Select, Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
     BaseLoggedInView,
@@ -25,6 +26,7 @@ class ContentCredentialsTableView(BaseLoggedInView, SearchableViewMixin):
 
 
 class ContentCredentialCreateView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
     name = TextInput(id='name')
     content_type = Select(id='content_type')
     content = TextInput(name='content')
@@ -33,19 +35,29 @@ class ContentCredentialCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.name, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Content Credential'
+                and self.breadcrumb.read() == 'New Content Credential'
+        )
 
 
 class ContentCredentialEditView(BaseLoggedInView):
-    return_to_all = Text("//a[text()='Content Credential']")
+    breadcrumb = BreadCrumb()
     remove = Text("//button[contains(., 'Remove Content Credential')]")
     dialog = ConfirmationDialog()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.return_to_all, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Content Credential'
+                and self.breadcrumb.read() != 'New Content Credential'
+        )
 
     @View.nested
     class details(SatTab):

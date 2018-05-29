@@ -1,4 +1,5 @@
 from widgetastic.widget import Select, Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
     AddRemoveResourcesView,
@@ -31,6 +32,7 @@ class SyncPlansView(BaseLoggedInView, SearchableViewMixin):
 
 
 class SyncPlanCreateView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
     name = TextInput(id='name')
     description = TextInput(id='description')
     interval = Select(id='interval')
@@ -39,20 +41,29 @@ class SyncPlanCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.name, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Sync Plans'
+                and self.breadcrumb.read() == 'New Sync Plan'
+        )
 
 
 class SyncPlanEditView(BaseLoggedInView):
-    # fixme: change all return_to_all instances to use Breadcrumb widget
-    return_to_all = Text("//a[text()='Sync Plans']")
+    breadcrumb = BreadCrumb()
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.return_to_all, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Sync Plans'
+                and self.breadcrumb.read() != 'New Sync Plan'
+        )
 
     @View.nested
     class details(SatTab):

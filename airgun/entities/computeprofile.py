@@ -4,7 +4,8 @@ from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.computeprofile import (
     ComputeProfileCreateView,
-    ComputeProfileView,
+    ComputeProfileRenameView,
+    ComputeProfilesView,
 )
 
 
@@ -32,8 +33,8 @@ class ComputeProfileEntity(BaseEntity):
 
 
 @navigator.register(ComputeProfileEntity, 'All')
-class ShowAllComputeProfile(NavigateStep):
-    VIEW = ComputeProfileView
+class ShowAllComputeProfiles(NavigateStep):
+    VIEW = ComputeProfilesView
 
     def step(self, *args, **kwargs):
         # TODO: No prereq yet
@@ -52,7 +53,10 @@ class AddNewComputeProfile(NavigateStep):
 
 @navigator.register(ComputeProfileEntity, 'Rename')
 class RenameComputeProfile(NavigateStep):
-    VIEW = ComputeProfileCreateView
+    VIEW = ComputeProfileRenameView
+
+    def am_i_here(self, *args, **kwargs):
+        return self.view.is_displayed
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')

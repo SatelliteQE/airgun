@@ -3,8 +3,9 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.architecture import (
-    ArchitecturesView,
+    ArchitectureCreateView,
     ArchitectureDetailsView,
+    ArchitecturesView,
 )
 
 
@@ -45,7 +46,7 @@ class ShowAllArchitectures(NavigateStep):
 
 @navigator.register(ArchitectureEntity, 'New')
 class AddNewArchitecture(NavigateStep):
-    VIEW = ArchitectureDetailsView
+    VIEW = ArchitectureCreateView
 
     prerequisite = NavigateToSibling('All')
 
