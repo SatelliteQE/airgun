@@ -8,6 +8,7 @@ import six
 
 from datetime import datetime
 from fauxfactory import gen_string
+import selenium
 from selenium import webdriver
 from widgetastic.browser import Browser, DefaultPlugin
 
@@ -242,7 +243,7 @@ class SeleniumBrowserFactory(object):
 
     def _get_docker_browser(self):
         """Returns webdriver running in docker container. Currently only
-        firefox is supported.
+        firefox(default) and chrome are supported.
 
         Note: should not be called directly, use :meth:`get_browser` instead.
         """
@@ -250,6 +251,17 @@ class SeleniumBrowserFactory(object):
         if self.test_name:
             kwargs.update({'name': self.test_name})
         self._docker = DockerBrowser(**kwargs)
+        if self.browser == 'chrome':
+            self._docker.image = 'selenium/standalone-chrome'
+            self._docker.capabilities = \
+                webdriver.DesiredCapabilities.CHROME.copy()
+        else:
+            self._docker.image = 'selenium/standalone-firefox'
+            self._docker.capabilities = \
+                webdriver.DesiredCapabilities.FIREFOX.copy()
+        if settings.webdriver_desired_capabilities:
+            self._docker.capabilities.update(
+                vars(settings.webdriver_desired_capabilities))
         self._docker.start()
         self._webdriver = self._docker.webdriver
         return self._webdriver
@@ -314,6 +326,8 @@ class DockerBrowser(object):
                 'use DockerBrowser.'
             )
         self.webdriver = None
+        self.capabilities = webdriver.DesiredCapabilities.FIREFOX.copy()
+        self.image = 'selenium/standalone-firefox'
         self.container = None
         self._client = None
         self._name = name or gen_string('alphanumeric')
@@ -353,7 +367,7 @@ class DockerBrowser(object):
                 self.webdriver = webdriver.Remote(
                     command_executor='http://127.0.0.1:{0}/wd/hub'.format(
                         self.container['HostPort']),
-                    desired_capabilities=webdriver.DesiredCapabilities.FIREFOX
+                    desired_capabilities=self.capabilities
                 )
             except Exception as err:  # pylint: disable=broad-except
                 # Capture the raised exception for later usage and wait
@@ -400,13 +414,28 @@ class DockerBrowser(object):
         self._client.close()
 
     def _create_container(self):
-        """Create a docker container running a ``standalone-firefox`` selenium.
+        """Create a docker container running a ``standalone-firefox`` or
+        ``standalone-chrome`` selenium.
 
-        Make sure to have the image ``selenium/standalone-firefox`` already
-        pulled.
+        Make sure to have the image ``selenium/standalone-firefox`` or
+        ``selenium/standalone-chrome`` already pulled, preferably in the
+        same version as the selenium-module.
         """
         if self.container:
             return
+        image_version = selenium.__version__
+        if not self._client.images(
+                name=self._get_image_name(image_version)):
+            LOGGER.warning('Could not find docker-image for your'
+                           'selium-version "%s"; trying with "latest"',
+                           self._get_image_name(image_version))
+            image_version = 'latest'
+            if not self._client.images(
+                    name=self._get_image_name(image_version)):
+                raise DockerBrowserError('Could not find docker-image "%s";'
+                                         ' please pull it' %
+                                         self._get_image_name(image_version))
+
         self.container = self._client.create_container(
             detach=True,
             environment={
@@ -415,7 +444,7 @@ class DockerBrowser(object):
             },
             host_config=self._client.create_host_config(
                 publish_all_ports=True),
-            image='selenium/standalone-firefox',
+            image=self._get_image_name(image_version),
             name=self._name.split('.')[-1] + '_{0}'.format(
                 gen_string('alphanumeric', 3)),
             ports=[4444],
@@ -442,6 +471,9 @@ class DockerBrowser(object):
     def __exit__(self, *exc):
         """Perform all cleanups when used as context manager."""
         self.stop()
+
+    def _get_image_name(self, version):
+        return '%s:%s' % (self.image, version)
 
 
 class AirgunBrowserPlugin(DefaultPlugin):
