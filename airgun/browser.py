@@ -447,7 +447,12 @@ class DockerBrowser(object):
                     'Could not find docker-image "%s"; please pull it' %
                     self._get_image_name(image_version)
                 )
-
+        # Grab only the test name, get rid of square brackets from parametrize
+        # and add some random chars. E.g. 'test_positive_create_0_abc'
+        container_name = '{}_{}'.format(
+            self._name.split('.')[-1].replace('[', '_').strip(']'),
+            gen_string('alphanumeric', 3)
+        )
         self.container = self._client.create_container(
             detach=True,
             environment={
@@ -457,8 +462,7 @@ class DockerBrowser(object):
             host_config=self._client.create_host_config(
                 publish_all_ports=True),
             image=self._get_image_name(image_version),
-            name=self._name.split('.')[-1] + '_{0}'.format(
-                gen_string('alphanumeric', 3)),
+            name=container_name,
             ports=[4444],
         )
         LOGGER.debug('Starting container with ID "%s"', self.container['Id'])
