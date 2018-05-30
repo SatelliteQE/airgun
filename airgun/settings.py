@@ -1,11 +1,7 @@
 import logging
 import os
-import six
 
-if six.PY2:
-    from ConfigParser import RawConfigParser as ConfigParser  # noqa
-else:
-    from configparser import ConfigParser
+from configparser import ConfigParser
 
 
 SETTINGS_FILE_NAME = 'settings.ini'
@@ -110,11 +106,8 @@ class Settings(object):
             config.read(settings_path)
 
         for section in config.sections():
-            # legacy format. use following after dropping py2 support:
-            # for key, value in config[section].items():
-            #     setattr(getattr(self, section), key, value)
-            for key in config.options(section):
-                setattr(getattr(self, section), key, config.get(section, key))
+            for key, value in config[section].items():
+                setattr(getattr(self, section), key, value)
 
         self._configure_logging()
         self._configure_thirdparty_logging()
