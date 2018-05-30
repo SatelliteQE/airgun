@@ -243,7 +243,7 @@ class SeleniumBrowserFactory(object):
 
     def _get_docker_browser(self):
         """Returns webdriver running in docker container. Currently only
-        firefox(default) and chrome are supported.
+        firefox and chrome are supported.
 
         Note: should not be called directly, use :meth:`get_browser` instead.
         """
@@ -252,16 +252,22 @@ class SeleniumBrowserFactory(object):
             kwargs.update({'name': self.test_name})
         self._docker = DockerBrowser(**kwargs)
         if self.browser == 'chrome':
-            self._docker.image = 'selenium/standalone-chrome'
-            self._docker.capabilities = \
+            self._docker._image = 'selenium/standalone-chrome'
+            self._docker._capabilities = \
                 webdriver.DesiredCapabilities.CHROME.copy()
-            self._docker.capabilities.update({'args': 'start-maximized'})
-        else:
-            self._docker.image = 'selenium/standalone-firefox'
-            self._docker.capabilities = \
+            self._docker._capabilities.update({'args': 'start-maximized'})
+        elif self.browser == 'firefox':
+            self._docker._image = 'selenium/standalone-firefox'
+            self._docker._capabilities = \
                 webdriver.DesiredCapabilities.FIREFOX.copy()
+        else:
+            raise ValueError(
+                '"{}" webdriver in docker container is currently not'
+                'supported. Please use one of {}'
+                .format(self.provider, ('chrome', 'firefox'))
+            )
         if settings.webdriver_desired_capabilities:
-            self._docker.capabilities.update(
+            self._docker._capabilities.update(
                 vars(settings.webdriver_desired_capabilities))
         self._docker.start()
         self._webdriver = self._docker.webdriver
@@ -314,7 +320,7 @@ class DockerBrowser(object):
 
     """
 
-    def __init__(self, name=None):
+    def __init__(self, name=None, image=None, capabilities=None):
         """Ensure ``docker-py`` package is installed.
 
         :param str optional name: name for docker container.
@@ -327,8 +333,8 @@ class DockerBrowser(object):
                 'use DockerBrowser.'
             )
         self.webdriver = None
-        self.capabilities = webdriver.DesiredCapabilities.FIREFOX.copy()
-        self.image = 'selenium/standalone-firefox'
+        self._capabilities = capabilities
+        self._image = image
         self.container = None
         self._client = None
         self._name = name or gen_string('alphanumeric')
@@ -368,7 +374,7 @@ class DockerBrowser(object):
                 self.webdriver = webdriver.Remote(
                     command_executor='http://127.0.0.1:{0}/wd/hub'.format(
                         self.container['HostPort']),
-                    desired_capabilities=self.capabilities
+                    desired_capabilities=self._capabilities
                 )
             except Exception as err:  # pylint: disable=broad-except
                 # Capture the raised exception for later usage and wait
@@ -433,9 +439,10 @@ class DockerBrowser(object):
             image_version = 'latest'
             if not self._client.images(
                     name=self._get_image_name(image_version)):
-                raise DockerBrowserError('Could not find docker-image "%s";'
-                                         ' please pull it' %
-                                         self._get_image_name(image_version))
+                raise DockerBrowserError(
+                    'Could not find docker-image "%s"; please pull it' %
+                    self._get_image_name(image_version)
+                )
 
         self.container = self._client.create_container(
             detach=True,
@@ -474,7 +481,8 @@ class DockerBrowser(object):
         self.stop()
 
     def _get_image_name(self, version):
-        return '%s:%s' % (self.image, version)
+        """Returns docker-image's name and version (aka tag)"""
+        return '%s:%s' % (self._image, version)
 
 
 class AirgunBrowserPlugin(DefaultPlugin):
