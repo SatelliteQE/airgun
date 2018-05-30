@@ -8,6 +8,7 @@ import six
 
 from datetime import datetime
 from fauxfactory import gen_string
+import selenium
 from selenium import webdriver
 from widgetastic.browser import Browser, DefaultPlugin
 
@@ -130,6 +131,10 @@ class SeleniumBrowserFactory(object):
                 "javascript:document.getElementById('invalidcert_continue')"
                 ".click()"
             )
+        # Workaround maximize_window() not working with chrome in docker
+        if not (self.provider == 'docker' and
+                self.browser == 'chrome'):
+            self._webdriver.maximize_window()
 
     def finalize(self, passed=True):
         """Finalize browser - close browser window, report results to saucelabs
@@ -242,7 +247,7 @@ class SeleniumBrowserFactory(object):
 
     def _get_docker_browser(self):
         """Returns webdriver running in docker container. Currently only
-        firefox is supported.
+        firefox and chrome are supported.
 
         Note: should not be called directly, use :meth:`get_browser` instead.
         """
@@ -250,6 +255,24 @@ class SeleniumBrowserFactory(object):
         if self.test_name:
             kwargs.update({'name': self.test_name})
         self._docker = DockerBrowser(**kwargs)
+        if self.browser == 'chrome':
+            self._docker._image = 'selenium/standalone-chrome'
+            self._docker._capabilities = \
+                webdriver.DesiredCapabilities.CHROME.copy()
+            self._docker._capabilities.update({'args': 'start-maximized'})
+        elif self.browser == 'firefox':
+            self._docker._image = 'selenium/standalone-firefox'
+            self._docker._capabilities = \
+                webdriver.DesiredCapabilities.FIREFOX.copy()
+        else:
+            raise ValueError(
+                '"{}" webdriver in docker container is currently not'
+                'supported. Please use one of {}'
+                .format(self.provider, ('chrome', 'firefox'))
+            )
+        if settings.webdriver_desired_capabilities:
+            self._docker._capabilities.update(
+                vars(settings.webdriver_desired_capabilities))
         self._docker.start()
         self._webdriver = self._docker.webdriver
         return self._webdriver
@@ -301,7 +324,7 @@ class DockerBrowser(object):
 
     """
 
-    def __init__(self, name=None):
+    def __init__(self, name=None, image=None, capabilities=None):
         """Ensure ``docker-py`` package is installed.
 
         :param str optional name: name for docker container.
@@ -314,6 +337,8 @@ class DockerBrowser(object):
                 'use DockerBrowser.'
             )
         self.webdriver = None
+        self._capabilities = capabilities
+        self._image = image
         self.container = None
         self._client = None
         self._name = name or gen_string('alphanumeric')
@@ -353,7 +378,7 @@ class DockerBrowser(object):
                 self.webdriver = webdriver.Remote(
                     command_executor='http://127.0.0.1:{0}/wd/hub'.format(
                         self.container['HostPort']),
-                    desired_capabilities=webdriver.DesiredCapabilities.FIREFOX
+                    desired_capabilities=self._capabilities
                 )
             except Exception as err:  # pylint: disable=broad-except
                 # Capture the raised exception for later usage and wait
@@ -400,13 +425,29 @@ class DockerBrowser(object):
         self._client.close()
 
     def _create_container(self):
-        """Create a docker container running a ``standalone-firefox`` selenium.
+        """Create a docker container running a ``standalone-firefox`` or
+        ``standalone-chrome`` selenium.
 
-        Make sure to have the image ``selenium/standalone-firefox`` already
-        pulled.
+        Make sure to have the image ``selenium/standalone-firefox`` or
+        ``selenium/standalone-chrome`` already pulled, preferably in the
+        same version as the selenium-module.
         """
         if self.container:
             return
+        image_version = selenium.__version__
+        if not self._client.images(
+                name=self._get_image_name(image_version)):
+            LOGGER.warning('Could not find docker-image for your'
+                           'selium-version "%s"; trying with "latest"',
+                           self._get_image_name(image_version))
+            image_version = 'latest'
+            if not self._client.images(
+                    name=self._get_image_name(image_version)):
+                raise DockerBrowserError(
+                    'Could not find docker-image "%s"; please pull it' %
+                    self._get_image_name(image_version)
+                )
+
         self.container = self._client.create_container(
             detach=True,
             environment={
@@ -415,7 +456,7 @@ class DockerBrowser(object):
             },
             host_config=self._client.create_host_config(
                 publish_all_ports=True),
-            image='selenium/standalone-firefox',
+            image=self._get_image_name(image_version),
             name=self._name.split('.')[-1] + '_{0}'.format(
                 gen_string('alphanumeric', 3)),
             ports=[4444],
@@ -442,6 +483,10 @@ class DockerBrowser(object):
     def __exit__(self, *exc):
         """Perform all cleanups when used as context manager."""
         self.stop()
+
+    def _get_image_name(self, version):
+        """Returns docker-image's name and version (aka tag)"""
+        return '%s:%s' % (self._image, version)
 
 
 class AirgunBrowserPlugin(DefaultPlugin):
