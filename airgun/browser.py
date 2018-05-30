@@ -131,6 +131,10 @@ class SeleniumBrowserFactory(object):
                 "javascript:document.getElementById('invalidcert_continue')"
                 ".click()"
             )
+        # Workaround maximize_window() not working with chrome in docker
+        if not (self.provider == 'docker' and
+                self.browser == 'chrome'):
+            self._webdriver.maximize_window()
 
     def finalize(self, passed=True):
         """Finalize browser - close browser window, report results to saucelabs
