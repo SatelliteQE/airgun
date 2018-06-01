@@ -40,6 +40,7 @@ class RoleEditView(BaseLoggedInView):
                 and self.breadcrumb.read().starts_with('Edit ')
         )
 
+
 class RoleCreateView(RoleEditView):
 
     @property
