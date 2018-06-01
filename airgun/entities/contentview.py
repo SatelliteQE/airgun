@@ -113,6 +113,7 @@ class ContentViewEntity(BaseEntity):
 
 @navigator.register(ContentViewEntity, 'All')
 class ShowAllContentViews(NavigateStep):
+    """Navigate to All Content Views screen."""
     VIEW = ContentViewTableView
 
     def step(self, *args, **kwargs):
@@ -121,6 +122,7 @@ class ShowAllContentViews(NavigateStep):
 
 @navigator.register(ContentViewEntity, 'New')
 class AddNewContentView(NavigateStep):
+    """Navigate to New Content View screen."""
     VIEW = ContentViewCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -131,6 +133,11 @@ class AddNewContentView(NavigateStep):
 
 @navigator.register(ContentViewEntity, 'Edit')
 class EditContentView(NavigateStep):
+    """Navigate to Edit Content View screen.
+
+    Args:
+        entity_name: name of content view
+    """
     VIEW = ContentViewEditView
 
     def prerequisite(self, *args, **kwargs):
