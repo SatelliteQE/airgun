@@ -83,6 +83,7 @@ class ContentViewEntity(BaseEntity):
             view.fill(values)
         view.save.click()
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.versions.searchbox.clear()
         view.versions.table[0]['Status'].widget.wait_for_result()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -102,7 +103,9 @@ class ContentViewEntity(BaseEntity):
         view.lce(lce_name).fill(True)
         view.promote.click()
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.versions.table[0]['Status'].widget.wait_for_result()
+        view.versions.search(version_name)
+        view.versions.table.row(
+            version=version_name)['Status'].widget.wait_for_result()
         view.flash.assert_no_error()
         view.flash.dismiss()
         return view.versions.table.row(version=version_name).read()
