@@ -15,6 +15,8 @@ class SubnetEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+        if view.flash.is_displayed:
+            return view.flash.read()
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
