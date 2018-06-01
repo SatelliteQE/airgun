@@ -18,12 +18,14 @@ from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.contentcredential import ContentCredentialEntity
 from airgun.entities.contentview import ContentViewEntity
 from airgun.entities.hostcollection import HostCollectionEntity
+from airgun.entities.filter import FilterEntity
 from airgun.entities.lifecycleenvironment import LCEEntity
 from airgun.entities.location import LocationEntity
 from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.organization import OrganizationEntity
 from airgun.entities.partitiontable import PartitionTableEntity
 from airgun.entities.product import ProductEntity
+from airgun.entities.role import RoleEntity
 from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.subnet import SubnetEntity
 from airgun.entities.syncplan import SyncPlanEntity
@@ -224,6 +226,11 @@ class Session(object):
         return ContentViewEntity(self.browser)
 
     @cached_property
+    def filter(self):
+        """Instance of Filter entity."""
+        return FilterEntity(self.browser)
+
+    @cached_property
     def hostcollection(self):
         """Instance of Host Collection entity."""
         return HostCollectionEntity(self.browser)
@@ -267,6 +274,11 @@ class Session(object):
     def provisioningtemplate(self):
         """Instance of Provisioning Template entity."""
         return ProvisioningTemplateEntity(self.browser)
+
+    @cached_property
+    def role(self):
+        """Instance of Role entity."""
+        return RoleEntity(self.browser)
 
     @cached_property
     def subnet(self):

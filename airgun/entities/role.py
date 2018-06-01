@@ -2,56 +2,51 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.architecture import (
-    ArchitectureCreateView,
-    ArchitectureDetailsView,
-    ArchitecturesView,
-)
+from airgun.views.role import RoleDetailsView, RolesView
 
 
-class ArchitectureEntity(BaseEntity):
+class RoleEntity(BaseEntity):
 
     def create(self, values):
+        """Create new role"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
     def read(self, entity_name):
+        """Read role values"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
 
     def update(self, entity_name, values):
+        """Update role with provided values"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
 
     def delete(self, entity_name):
+        """Delete role from the system"""
         view = self.navigate_to(self, 'All')
-        view.searchbox.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.click(
-            handle_alert=True)
-        view.flash.assert_no_error()
-        view.flash.dismiss()
+        view.search(entity_name)
+        view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
+        self.browser.handle_alert()
 
 
-@navigator.register(ArchitectureEntity, 'All')
-class ShowAllArchitectures(NavigateStep):
-    VIEW = ArchitecturesView
+@navigator.register(RoleEntity, 'All')
+class ShowAllRoles(NavigateStep):
+    VIEW = RolesView
 
     def step(self, *args, **kwargs):
-        # TODO: No prereq yet
-        self.view.menu.select('Hosts', 'Architectures')
+        self.view.menu.select('Administer', 'Roles')
 
 
-@navigator.register(ArchitectureEntity, 'New')
-class AddNewArchitecture(NavigateStep):
-    VIEW = ArchitectureCreateView
+@navigator.register(RoleEntity, 'New')
+class AddNewRole(NavigateStep):
+    VIEW = RoleDetailsView
 
     prerequisite = NavigateToSibling('All')
 
@@ -59,9 +54,9 @@ class AddNewArchitecture(NavigateStep):
         self.parent.new.click()
 
 
-@navigator.register(ArchitectureEntity, 'Edit')
-class EditArchitecture(NavigateStep):
-    VIEW = ArchitectureDetailsView
+@navigator.register(RoleEntity, 'Edit')
+class EditRole(NavigateStep):
+    VIEW = RoleDetailsView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
