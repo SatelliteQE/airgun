@@ -8,6 +8,7 @@ from airgun.views.role import RoleDetailsView, RolesView
 class RoleEntity(BaseEntity):
 
     def create(self, values):
+        """Create new role"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
@@ -17,15 +18,18 @@ class RoleEntity(BaseEntity):
         return view.search(value)
 
     def read(self, entity_name):
+        """Read role values"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
 
     def update(self, entity_name, values):
+        """Update role with provided values"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
 
     def delete(self, entity_name):
+        """Delete role from the system"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')

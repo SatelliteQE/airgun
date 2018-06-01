@@ -11,26 +11,31 @@ from airgun.views.filter import (
 class FilterEntity(BaseEntity):
 
     def create(self, role_name, values):
+        """Create new filter for specific role"""
         view = self.navigate_to(self, 'New', role_name=role_name)
         view.fill(values)
         view.submit.click()
 
     def search(self, role_name, value):
+        """Search for filter assigned to the role"""
         view = self.navigate_to(self, 'All', role_name=role_name)
         return view.search(value)
 
     def read(self, role_name, entity_name):
+        """Read values for specific filter"""
         view = self.navigate_to(
             self, 'Edit', role_name=role_name, entity_name=entity_name)
         return view.read()
 
     def update(self, role_name, entity_name, values):
+        """Update filter values"""
         view = self.navigate_to(
             self, 'Edit', role_name=role_name, entity_name=entity_name)
         view.fill(values)
         view.submit.click()
 
     def delete(self, role_name, entity_name):
+        """Delete specific filter from role"""
         view = self.navigate_to(self, 'All', role_name=role_name)
         view.search(entity_name)
         view.table.row(resource=entity_name)['Actions'].widget.fill('Delete')
@@ -50,11 +55,13 @@ class ShowAllFilters(NavigateStep):
                 '{} filters'.format(role_name))
         )
 
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(RoleEntity, 'All', **kwargs)
+
     def step(self, *args, **kwargs):
         role_name = kwargs.get('role_name')
-        role_view = self.navigate_to(RoleEntity, 'All')
-        role_view.search(role_name)
-        role_view.table.row(name=role_name)['Actions'].widget.fill('Filters')
+        self.parent.search(role_name)
+        self.parent.table.row(name=role_name)['Actions'].widget.fill('Filters')
 
 
 @navigator.register(FilterEntity, 'New')
