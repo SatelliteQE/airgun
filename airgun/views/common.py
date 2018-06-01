@@ -61,7 +61,6 @@ class SatTab(Tab):
     def read(self):
         """Do not attempt to read hidden tab contents"""
         if not self.is_displayed:
-            # return {}
             do_not_read_this_widget()
         return super().read()
 
