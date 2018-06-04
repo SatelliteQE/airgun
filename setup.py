@@ -18,7 +18,6 @@ setup(
         'fauxfactory',
         'navmazing==1.1.4',
         'pytest==3.4.0',
-        'six==1.11.0',
         'wait_for',
         'widgetastic.core==0.21.2',
         'widgetastic.patternfly==0.0.33'

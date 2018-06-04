@@ -4,8 +4,6 @@ tests.
 import logging
 import time
 
-import six
-
 from datetime import datetime
 from fauxfactory import gen_string
 import selenium
@@ -390,13 +388,10 @@ class DockerBrowser(object):
                 break
         else:
             # Reraise the captured exception.
-            six.raise_from(
-                DockerBrowserError(
-                    'Failed to connect the webdriver to the containerized '
-                    'selenium.'
-                ),
-                exception
-            )
+            raise DockerBrowserError(
+                'Failed to connect the webdriver to the containerized '
+                'selenium.'
+            ) from exception
 
     def _quit_webdriver(self):
         """Quit the selenium remote webdriver."""

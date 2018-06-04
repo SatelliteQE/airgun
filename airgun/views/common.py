@@ -1,10 +1,9 @@
-import six
 from widgetastic.widget import (
     ParametrizedLocator,
     ParametrizedView,
     Text,
     View,
-    WidgetMetaclass,
+    WTMixin,
 )
 from widgetastic_patternfly import Tab, TabWithDropdown
 
@@ -308,13 +307,7 @@ class TemplateEditor(View):
     editor = ACEEditor()
 
 
-class WidgetMixin(six.with_metaclass(WidgetMetaclass, object)):
-    """Base class for all View and Widget mixins"""
-    # todo: remove it and use widgetastic native one, once it's introduced
-    pass
-
-
-class SearchableViewMixin(WidgetMixin):
+class SearchableViewMixin(WTMixin):
     """Mixin which adds :class:`airgun.widgets.Search` widget and
     :meth:`search` to your view. It's useful for _most_ entities list views
     where searchbox and results table are present.
