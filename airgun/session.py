@@ -17,6 +17,7 @@ from airgun.entities.architecture import ArchitectureEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.contentcredential import ContentCredentialEntity
 from airgun.entities.contentview import ContentViewEntity
+from airgun.entities.computeresource import ComputeResourceEntity
 from airgun.entities.hostcollection import HostCollectionEntity
 from airgun.entities.filter import FilterEntity
 from airgun.entities.lifecycleenvironment import LCEEntity
@@ -219,6 +220,11 @@ class Session(object):
     def contentcredential(self):
         """Instance of Content Credential entity."""
         return ContentCredentialEntity(self.browser)
+
+    @cached_property
+    def computeresource(self):
+        """Instance of ComputeResource entity."""
+        return ComputeResourceEntity(self.browser)
 
     @cached_property
     def contentview(self):
