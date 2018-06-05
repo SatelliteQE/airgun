@@ -10,14 +10,15 @@ from airgun.views.domain import (
 
 
 class DomainEntity(BaseEntity):
-    def create(self, values):
+    def create(self, values, assert_no_error=True):
         """
         Create a new domain.
         """
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit_button.click()
-        view.flash.assert_no_error()
+        if assert_no_error:
+            view.flash.assert_no_error()
 
     def search(self, value):
         """Search for 'value' and return domain names that match.
@@ -32,22 +33,41 @@ class DomainEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
 
-    def update(self, entity_name, values):
+    def update(self, entity_name, values, assert_no_error=True):
         """
         Update an existing domain.
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+
         view.fill(values)
         view.submit_button.click()
-        view.flash.assert_no_error()
+        if assert_no_error:
+            view.flash.assert_no_error()
 
-    def delete(self, name):
+    def add_parameter(self, entity_name, param_name, param_value,
+                      assert_no_error=True):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.parameters.params.add({'name': param_name, 'value': param_value})
+        view.submit_button.click()
+        if assert_no_error:
+            view.flash.assert_no_error()
+
+    def remove_parameter(self, entity_name, param_name, assert_no_error=True):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.parameters.params.remove(param_name)
+        view.submit_button.click()
+        if assert_no_error:
+            view.flash.assert_no_error()
+
+    def delete(self, name, assert_no_error=True):
         view = self.navigate_to(self, 'All')
         self.search(name)
-        row = view.table.row(('Description', name))
-        row['Actions'].widget.click()
+        if not view.table.row_count:
+            raise ValueError("Unable to find name '{}'".format(name))
+        view.table[0]['Actions'].widget.click()
         self.browser.handle_alert()
-        view.flash.assert_no_error()
+        if assert_no_error:
+            view.flash.assert_no_error()
 
 
 @navigator.register(DomainEntity, 'All')

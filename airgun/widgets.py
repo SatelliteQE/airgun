@@ -511,6 +511,7 @@ class CustomParameter(Table):
 
     """
     add_new_value = Text("..//a[contains(text(),'+ Add Parameter')]")
+    _table_error = Text(".//tr[contains(@class,'has-error')]/td/span")
 
     def __init__(self, parent, locator=None, id=None, logger=None):
         """Supports initialization via ``locator=`` or ``id=``"""
@@ -521,12 +522,18 @@ class CustomParameter(Table):
         column_widgets = {
             'Name': TextInput(locator=".//input[@placeholder='Name']"),
             'Value': TextInput(locator=".//textarea[@placeholder='Value']"),
-            'Actions': Text(locator=".//a[@title='Remove Parameter']")
+            'Actions': Text(
+                locator=".//a[@data-original-title='Remove Parameter']"
+            )
         }
         super(CustomParameter, self).__init__(parent,
                                               locator=locator,
                                               logger=logger,
                                               column_widgets=column_widgets)
+
+    @property
+    def param_error_present(self):
+        return self._table_error.is_displayed
 
     def read(self):
         """Return a list of dictionaries. Each dictionary consists of name and
@@ -549,20 +556,69 @@ class CustomParameter(Table):
         new_row['Name'].widget.fill(value['name'])
         new_row['Value'].widget.fill(value['value'])
 
+    def remove(self, name):
+        """Remove parameter entries from the table based on name.
+
+        :param value: dict with format {'name': str, 'value': str}
+        """
+        for row in self.rows():
+            if row['Name'].widget.read() == name:
+                row['Actions'].widget.click()  # click 'Remove'
+
     def fill(self, values):
         """Fill parameter entries. Existing values will be overwritten.
+
+        Updates name/value pairs if the name is already in the list.
+
+        If you desire to intentionally add a duplicate value, use self.add()
 
         :param values: either single dictionary of name and value, or list
             of name/value dictionaries
         """
         if isinstance(values, dict):
-            values = [values]
-        # Remove old params
-        for row in self.rows():
-            row['Actions'].widget.click()  # click 'Remove' icon
-        for value in values:
-            self.add(value)
+            params_to_fill = [values]
+        else:
+            params_to_fill = values
 
+        try:
+            names_to_fill = [param['name'] for param in params_to_fill]
+        except KeyError:
+            raise KeyError("parameter value is missing 'name' key")
+
+        # Check if duplicate names were passed in
+        if len(set(names_to_fill)) < len(names_to_fill):
+            raise ValueError(
+                "Cannot use fill() with duplicate parameter names. "
+                "If you wish to explicitly add a duplicate name, "
+                "use CustomParameter.add()"
+            )
+
+        # Check if we need to update or remove any rows
+        for row in self.rows():
+            this_name = row['Name'].widget.read()
+            this_value = row['Value'].widget.read()
+            if this_name not in names_to_fill:
+                # Delete row if its name/value is not in desired values
+                row['Actions'].widget.click()  # click 'Remove' icon
+            else:
+                # Check if value should be updated for this name
+                # First get the desired value for this param name
+                for param in params_to_fill:
+                    if param['name'] == this_name:
+                        desired_value = param['value']
+                        # Since we're editing this name now, don't add it later
+                        params_to_fill.pop(param)
+                        break
+                if this_value != desired_value:
+                    # Update row's value for this name
+                    row['Value'].widget.fill(desired_value)
+                else:
+                    # Desired parameter name/value is already filled
+                    continue
+
+        # Add the remaining values for names that were not already in the table
+        for param in params_to_fill:
+            self.add(param)
 
 class ActionsDropdown(GenericLocatorWidget):
     """List of actions, expandable via button with caret. Usually comes with
