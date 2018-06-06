@@ -26,6 +26,7 @@ from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.organization import OrganizationEntity
 from airgun.entities.partitiontable import PartitionTableEntity
 from airgun.entities.product import ProductEntity
+from airgun.entities.repository import RepositoryEntity
 from airgun.entities.role import RoleEntity
 from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.subnet import SubnetEntity
@@ -280,6 +281,11 @@ class Session(object):
     def provisioningtemplate(self):
         """Instance of Provisioning Template entity."""
         return ProvisioningTemplateEntity(self.browser)
+
+    @cached_property
+    def repository(self):
+        """Instance of Repository entity."""
+        return RepositoryEntity(self.browser)
 
     @cached_property
     def role(self):

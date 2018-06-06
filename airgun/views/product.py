@@ -122,6 +122,10 @@ class ProductEditView(BaseLoggedInView):
         tasks_count = ReadOnlyEntry(name='Active Tasks')
         sync_plan = EditableEntrySelect(name='Sync Plan')
 
+    @View.nested
+    class repositories(SatTab):
+        pass
+
 
 class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
     breadcrumb = BreadCrumb()
