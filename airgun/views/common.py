@@ -1,4 +1,5 @@
 from widgetastic.widget import (
+    do_not_read_this_widget,
     ParametrizedLocator,
     ParametrizedView,
     Text,
@@ -55,6 +56,12 @@ class SatTab(Tab):
     @property
     def is_displayed(self):
         return 'ng-hide' not in self.parent_browser.classes(self.TAB_LOCATOR)
+
+    def read(self):
+        """Do not attempt to read hidden tab contents"""
+        if not self.is_displayed:
+            do_not_read_this_widget()
+        return super().read()
 
 
 class SatVerticalTab(SatTab):

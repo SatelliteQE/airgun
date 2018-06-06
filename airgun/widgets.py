@@ -320,6 +320,14 @@ class Search(Widget):
     def read(self):
         return self.search_field.read()
 
+    def clear(self):
+        """Clears search field value and re-trigger search to remove all
+        filters.
+        """
+        self.browser.clear(self.search_field)
+        if self.search_button.is_displayed:
+            self.search_button.click()
+
     def search(self, value):
         # Entity lists with 20+ elements may scroll page a bit and search field
         # will appear out of screen. For some reason, clicking search button

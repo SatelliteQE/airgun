@@ -2,7 +2,7 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.role import RoleDetailsView, RolesView
+from airgun.views.role import RoleCreateView, RoleEditView, RolesView
 
 
 class RoleEntity(BaseEntity):
@@ -38,6 +38,7 @@ class RoleEntity(BaseEntity):
 
 @navigator.register(RoleEntity, 'All')
 class ShowAllRoles(NavigateStep):
+    """Navigate to All Roles page"""
     VIEW = RolesView
 
     def step(self, *args, **kwargs):
@@ -46,7 +47,8 @@ class ShowAllRoles(NavigateStep):
 
 @navigator.register(RoleEntity, 'New')
 class AddNewRole(NavigateStep):
-    VIEW = RoleDetailsView
+    """Navigate to Create New Role page"""
+    VIEW = RoleCreateView
 
     prerequisite = NavigateToSibling('All')
 
@@ -56,7 +58,12 @@ class AddNewRole(NavigateStep):
 
 @navigator.register(RoleEntity, 'Edit')
 class EditRole(NavigateStep):
-    VIEW = RoleDetailsView
+    """Navigate to Edit Role page
+
+    Args:
+        entity_name: name of role
+    """
+    VIEW = RoleEditView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')

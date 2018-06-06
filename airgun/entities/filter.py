@@ -44,6 +44,12 @@ class FilterEntity(BaseEntity):
 
 @navigator.register(FilterEntity, 'All')
 class ShowAllFilters(NavigateStep):
+    """Navigate to All Role Filters page by pressing 'Filters' button on Roles
+    List view.
+
+    Args:
+        role_name: name of role
+    """
     VIEW = FiltersView
 
     def am_i_here(self, *args, **kwargs):
@@ -66,6 +72,12 @@ class ShowAllFilters(NavigateStep):
 
 @navigator.register(FilterEntity, 'New')
 class AddNewFilter(NavigateStep):
+    """Navigate to role's Create Filter page
+
+    Args:
+        role_name: name of role
+        entity_name: name of filter
+    """
     VIEW = FilterCreateView
 
     def prerequisite(self, *args, **kwargs):
@@ -77,6 +89,12 @@ class AddNewFilter(NavigateStep):
 
 @navigator.register(FilterEntity, 'Edit')
 class EditFilter(NavigateStep):
+    """Navigate to role's Edit Filter page
+
+    Args:
+        role_name: name of role
+        entity_name: name of filter
+    """
     VIEW = FilterDetailsView
 
     def am_i_here(self, *args, **kwargs):
