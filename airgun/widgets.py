@@ -313,10 +313,6 @@ class Search(Widget):
         "//button[contains(@type,'submit') or "
         "@ng-click='table.search(table.searchTerm)']"
     )
-    clear_query = Text(
-        "//button[contains(@ng-click, 'table.search("") && "
-        "(table.searchCompleted = false)')]"
-    )
 
     def fill(self, value):
         return self.search_field.fill(value)
@@ -325,17 +321,12 @@ class Search(Widget):
         return self.search_field.read()
 
     def clear(self):
-        """Clears search field value if present.
-
-        Uses 'clear' button if available or manually clears text input and
-        pushes 'Search' button otherwise.
+        """Clears search field value and re-trigger search to remove all
+        filters.
         """
-        if self.clear_query.is_displayed:
-            self.clear_query.click()
-        elif self.search_field.value:
-            self.browser.clear(self.search_field)
-            if self.search_button.is_displayed:
-                self.search_button.click()
+        self.browser.clear(self.search_field)
+        if self.search_button.is_displayed:
+            self.search_button.click()
 
     def search(self, value):
         # Entity lists with 20+ elements may scroll page a bit and search field
