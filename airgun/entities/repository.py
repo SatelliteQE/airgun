@@ -37,6 +37,7 @@ class RepositoryEntity(BaseEntity):
         """Delete specific product repository"""
         view = self.navigate_to(self, 'All', product_name=product_name)
         view.search(entity_name)
+        view.table.row(name=entity_name)[0].fill(True)
         view.delete.click()
         view.dialog.confirm()
 
@@ -55,10 +56,7 @@ class ShowAllRepositories(NavigateStep):
         product_name = kwargs.get('product_name')
         return (
             self.view.is_displayed
-            and self.view.breadcrumb.locations[1] in (
-                product_name,
-                '{}'.format(product_name))
-        )
+            and self.view.breadcrumb.locations[1] == product_name)
 
     def prerequisite(self, *args, **kwargs):
         product_name = kwargs.get('product_name')
@@ -100,10 +98,8 @@ class EditRepository(NavigateStep):
         repo_name = kwargs.get('entity_name')
         return (
             self.view.is_displayed
-            and self.view.breadcrumb.locations[1] in (
-                prod_name, '{}'.format(prod_name))
-            and self.view.breadcrumb.locations[3] in (
-                repo_name, '{}'.format(repo_name))
+            and self.view.breadcrumb.locations[1] == prod_name
+            and self.view.breadcrumb.locations[3] == repo_name
         )
 
     def prerequisite(self, *args, **kwargs):

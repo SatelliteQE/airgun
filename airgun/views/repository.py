@@ -116,7 +116,7 @@ class RepositoryCreateView(BaseLoggedInView):
         return (
                 breadcrumb_loaded
                 and self.breadcrumb.locations[0] == 'Products'
-                and self.breadcrumb.read() == 'Repositories'
+                and self.breadcrumb.locations[2] == 'Repositories'
                 and self.breadcrumb.read() == 'New Repository'
         )
 
@@ -162,6 +162,6 @@ class RepositoryEditView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Products'
-            and self.breadcrumb.read() == 'Repositories'
+            and self.breadcrumb.locations[2] == 'Repositories'
             and self.breadcrumb.read() != 'New Repository'
         )
