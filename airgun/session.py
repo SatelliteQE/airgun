@@ -30,7 +30,6 @@ from airgun.entities.role import RoleEntity
 from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.subnet import SubnetEntity
 from airgun.entities.syncplan import SyncPlanEntity
-from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.user import UserEntity
 from airgun.navigation import navigator
 

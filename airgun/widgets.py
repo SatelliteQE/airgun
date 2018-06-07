@@ -618,6 +618,7 @@ class CustomParameter(Table):
         for param in params_to_fill:
             self.add(param)
 
+
 class ActionsDropdown(GenericLocatorWidget):
     """List of actions, expandable via button with caret. Usually comes with
     button attached on left side, representing either most common action or
