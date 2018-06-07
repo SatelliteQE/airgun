@@ -9,16 +9,44 @@ from airgun.views.domain import (
 )
 
 
+def assert_no_errors_in_view(view):
+    """
+    Check that there's no elements of class "has-error" in the view
+
+    There can be elements that have an error, and there can also be
+    error message blocks. If errors are found on the page, then
+    we will search for any displayed error messages and print
+    their text in the AssertionError
+
+    TODO: Move this somewhere for general use by other entities?
+    """
+    error_elements = view.browser.elements(
+        ".//*[contains(@class,'has-error') "
+        "and not(contains(@style,'display:none'))]"
+    )
+    if error_elements:
+        error_msgs = view.browser.elements(
+            ".//*[(contains(@class,'error-msg-block') "
+            "or contains(@class,'error-message')) "
+            "and not(contains(@style,'display:none'))]"
+        )
+        error_msgs = [view.browser.text(error_msg) for error_msg in error_msgs]
+        raise AssertionError(
+            "errors present on page, displayed messages: {}".format(error_msgs)
+        )
+
+
 class DomainEntity(BaseEntity):
-    def create(self, values, assert_no_error=True):
+    def create(self, values, assert_no_errors=True):
         """
         Create a new domain.
         """
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit_button.click()
-        if assert_no_error:
+        if assert_no_errors:
             view.flash.assert_no_error()
+            assert_no_errors_in_view(view)
 
     def search(self, value):
         """Search for 'value' and return domain names that match.
@@ -33,7 +61,7 @@ class DomainEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
 
-    def update(self, entity_name, values, assert_no_error=True):
+    def update(self, entity_name, values, assert_no_errors=True):
         """
         Update an existing domain.
         """
@@ -41,33 +69,37 @@ class DomainEntity(BaseEntity):
 
         view.fill(values)
         view.submit_button.click()
-        if assert_no_error:
+        if assert_no_errors:
             view.flash.assert_no_error()
+            assert_no_errors_in_view(view)
 
     def add_parameter(self, entity_name, param_name, param_value,
-                      assert_no_error=True):
+                      assert_no_errors=True):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.parameters.params.add({'name': param_name, 'value': param_value})
         view.submit_button.click()
-        if assert_no_error:
+        if assert_no_errors:
             view.flash.assert_no_error()
+            assert_no_errors_in_view(view)
 
-    def remove_parameter(self, entity_name, param_name, assert_no_error=True):
+    def remove_parameter(self, entity_name, param_name, assert_no_errors=True):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.parameters.params.remove(param_name)
         view.submit_button.click()
-        if assert_no_error:
+        if assert_no_errors:
             view.flash.assert_no_error()
+            assert_no_errors_in_view(view)
 
-    def delete(self, name, assert_no_error=True):
+    def delete(self, name, assert_no_errors=True):
         view = self.navigate_to(self, 'All')
         self.search(name)
         if not view.table.row_count:
             raise ValueError("Unable to find name '{}'".format(name))
         view.table[0]['Actions'].widget.click()
         self.browser.handle_alert()
-        if assert_no_error:
+        if assert_no_errors:
             view.flash.assert_no_error()
+            assert_no_errors_in_view(view)
 
 
 @navigator.register(DomainEntity, 'All')

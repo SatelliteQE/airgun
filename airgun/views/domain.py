@@ -33,12 +33,6 @@ class DomainCreateView(BaseLoggedInView):
     # Use 'Text' to make submit_button clickable
     submit_button = Text(".//input[@name='commit']")
     cancel_button = Text(".//a[@href='/domains']")
-    _name_error = Text(
-        ".//label[@for='name']/../../div[contains(@class,'has-error')]")
-
-    @property
-    def name_error_present(self):
-        return self._name_error.is_displayed
 
     @View.nested
     class domain(SatTab):  # noqa
@@ -49,10 +43,6 @@ class DomainCreateView(BaseLoggedInView):
     @View.nested
     class parameters(SatTab):  # noqa
         params = CustomParameter(id='global_parameters_table')
-        
-        @property
-        def param_error_present(self):
-            return params.param_error_present
 
     @View.nested
     class locations(SatTab):  # noqa

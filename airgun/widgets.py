@@ -331,9 +331,12 @@ class Search(Widget):
             'arguments[0].scrollIntoView(false);',
             self.browser.element(self.search_field.locator),
         )
+        if hasattr(self.parent, 'flash'):
+            # large flash messages may hide the search button
+            self.parent.flash.dismiss()
+        wait_for(lambda: self.search_button.is_displayed, timeout=5, delay=0.1)
         self.fill(value)
-        if self.search_button.is_displayed:
-            self.search_button.click()
+        self.search_button.click()
 
 
 class SatVerticalNavigation(VerticalNavigation):
@@ -511,7 +514,6 @@ class CustomParameter(Table):
 
     """
     add_new_value = Text("..//a[contains(text(),'+ Add Parameter')]")
-    _table_error = Text(".//tr[contains(@class,'has-error')]/td/span")
 
     def __init__(self, parent, locator=None, id=None, logger=None):
         """Supports initialization via ``locator=`` or ``id=``"""
@@ -530,10 +532,6 @@ class CustomParameter(Table):
                                               locator=locator,
                                               logger=logger,
                                               column_widgets=column_widgets)
-
-    @property
-    def param_error_present(self):
-        return self._table_error.is_displayed
 
     def read(self):
         """Return a list of dictionaries. Each dictionary consists of name and
