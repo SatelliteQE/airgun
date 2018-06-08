@@ -20,6 +20,7 @@ from airgun.widgets import (
     ConfirmationDialog,
     EditableEntry,
     EditableEntrySelect,
+    ProgressBar,
     ReadOnlyEntry,
     SatSelect,
     SatTable,
@@ -203,3 +204,27 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
                 delay=1,
                 logger=self.logger
             )
+
+
+class ProductTaskDetailsView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+    action_type = ReadOnlyEntry(name='Action Type')
+    user = ReadOnlyEntry(name='User')
+    started_at = ReadOnlyEntry(name='Started At')
+    finished_at = ReadOnlyEntry(name='Finished At')
+    parameters = ReadOnlyEntry(name='Parameters')
+    state = ReadOnlyEntry(name='State')
+    result = ReadOnlyEntry(name='Result')
+    progressbar = ProgressBar()
+    details = ReadOnlyEntry(name='Details')
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Products'
+                and self.breadcrumb.locations[2] == 'Tasks'
+                and len(self.breadcrumb.locations) > 3
+        )

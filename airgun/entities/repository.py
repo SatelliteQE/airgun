@@ -1,6 +1,7 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.entities.product import ProductEntity
+from airgun.views.product import ProductTaskDetailsView
 from airgun.views.repository import (
     RepositoryCreateView,
     RepositoryEditView,
@@ -40,6 +41,13 @@ class RepositoryEntity(BaseEntity):
         view.table.row(name=entity_name)[0].fill(True)
         view.delete.click()
         view.dialog.confirm()
+
+    def synchronize(self, product_name, entity_name):
+        """Synchronize repository"""
+        view = self.navigate_to(
+            self, 'Sync', product_name=product_name, entity_name=entity_name)
+        view.progressbar.wait_for_result()
+        return view.read()
 
 
 @navigator.register(RepositoryEntity, 'All')
@@ -109,3 +117,31 @@ class EditRepository(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+
+@navigator.register(RepositoryEntity, 'Sync')
+class SyncRepository(NavigateStep):
+    """Trigger repository synchronization and proceed to product task details
+    page
+
+    Args:
+        product_name: name of product
+        entity_name: name of repository
+    """
+    VIEW = ProductTaskDetailsView
+
+    def am_i_here(self, *args, **kwargs):
+        prod_name = kwargs.get('product_name')
+        return (
+            self.view.is_displayed
+            and self.view.breadcrumb.locations[1] == prod_name
+        )
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All', **kwargs)
+
+    def step(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)[0].fill(True)
+        self.parent.sync.click()
