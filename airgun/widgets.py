@@ -334,9 +334,9 @@ class Search(Widget):
         if hasattr(self.parent, 'flash'):
             # large flash messages may hide the search button
             self.parent.flash.dismiss()
-        wait_for(lambda: self.search_button.is_displayed, timeout=5, delay=0.1)
         self.fill(value)
-        self.search_button.click()
+        if self.search_button.is_displayed:
+            self.search_button.click()
 
 
 class SatVerticalNavigation(VerticalNavigation):

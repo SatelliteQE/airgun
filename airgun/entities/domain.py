@@ -44,9 +44,8 @@ class DomainEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit_button.click()
-        if assert_no_errors:
-            view.flash.assert_no_error()
-            assert_no_errors_in_view(view)
+        view.flash.assert_no_error()
+        assert_no_errors_in_view(view)
 
     def search(self, value):
         """Search for 'value' and return domain names that match.
@@ -61,7 +60,7 @@ class DomainEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
 
-    def update(self, entity_name, values, assert_no_errors=True):
+    def update(self, entity_name, values):
         """
         Update an existing domain.
         """
@@ -69,37 +68,32 @@ class DomainEntity(BaseEntity):
 
         view.fill(values)
         view.submit_button.click()
-        if assert_no_errors:
-            view.flash.assert_no_error()
-            assert_no_errors_in_view(view)
+        view.flash.assert_no_error()
+        assert_no_errors_in_view(view)
 
-    def add_parameter(self, entity_name, param_name, param_value,
-                      assert_no_errors=True):
+    def add_parameter(self, entity_name, param_name, param_value):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.parameters.params.add({'name': param_name, 'value': param_value})
         view.submit_button.click()
-        if assert_no_errors:
-            view.flash.assert_no_error()
-            assert_no_errors_in_view(view)
+        view.flash.assert_no_error()
+        assert_no_errors_in_view(view)
 
-    def remove_parameter(self, entity_name, param_name, assert_no_errors=True):
+    def remove_parameter(self, entity_name, param_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.parameters.params.remove(param_name)
         view.submit_button.click()
-        if assert_no_errors:
-            view.flash.assert_no_error()
-            assert_no_errors_in_view(view)
+        view.flash.assert_no_error()
+        assert_no_errors_in_view(view)
 
-    def delete(self, name, assert_no_errors=True):
+    def delete(self, name):
         view = self.navigate_to(self, 'All')
         self.search(name)
         if not view.table.row_count:
             raise ValueError("Unable to find name '{}'".format(name))
         view.table[0]['Actions'].widget.click()
         self.browser.handle_alert()
-        if assert_no_errors:
-            view.flash.assert_no_error()
-            assert_no_errors_in_view(view)
+        view.flash.assert_no_error()
+        assert_no_errors_in_view(view)
 
 
 @navigator.register(DomainEntity, 'All')
