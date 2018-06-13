@@ -108,6 +108,7 @@ class ProductEditView(BaseLoggedInView):
                 and self.breadcrumb.locations[0] == 'Products'
                 and self.breadcrumb.read() not in (
                     'New Product', 'Discover Repositories')
+                and len(self.breadcrumb.locations) <= 3
         )
 
     @View.nested
