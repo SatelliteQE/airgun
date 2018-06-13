@@ -43,7 +43,7 @@ class OperatingSystemDetailsView(BaseLoggedInView):
     @View.nested
     class parameters(SatTab):
         TAB_NAME = 'Parameters'
-        params = CustomParameter()
+        params = CustomParameter(id='global_parameters_table')
 
         def fill(self, values):
             self.params.fill(values)
