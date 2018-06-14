@@ -5,7 +5,7 @@ from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import CustomParameter, MultiSelect, SatTable
 
 
-class OperatingSystemView(BaseLoggedInView, SearchableViewMixin):
+class OperatingSystemsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Operating systems']")
     new = Text("//a[contains(@href, '/operatingsystems/new')]")
     table = SatTable(
@@ -22,7 +22,7 @@ class OperatingSystemView(BaseLoggedInView, SearchableViewMixin):
             self.title, exception=False) is not None
 
 
-class OperatingSystemDetailsView(BaseLoggedInView):
+class OperatingSystemEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     name = TextInput(locator=".//input[@id='operatingsystem_name']")
     major = TextInput(locator=".//input[@id='operatingsystem_major']")
@@ -59,4 +59,17 @@ class OperatingSystemDetailsView(BaseLoggedInView):
                 breadcrumb_loaded
                 and self.breadcrumb.locations[0] == 'Operatingsystems'
                 and self.breadcrumb.read() == 'Edit Operating System'
+        )
+
+
+class OperatingSystemCreateView(OperatingSystemEditView):
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Operatingsystems'
+            and self.breadcrumb.read() == 'Create Operating System'
         )

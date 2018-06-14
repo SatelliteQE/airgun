@@ -2,7 +2,11 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.os import OperatingSystemView, OperatingSystemDetailsView
+from airgun.views.os import (
+    OperatingSystemCreateView,
+    OperatingSystemEditView,
+    OperatingSystemsView,
+)
 
 
 class OperatingSystemEntity(BaseEntity):
@@ -26,19 +30,23 @@ class OperatingSystemEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
 
+    def update(self, entity_name, values):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.fill(values)
+        view.submit.click()
+
 
 @navigator.register(OperatingSystemEntity, 'All')
 class ShowAllOperatingSystems(NavigateStep):
-    VIEW = OperatingSystemView
+    VIEW = OperatingSystemsView
 
     def step(self, *args, **kwargs):
-        # TODO: No prereq yet
         self.view.menu.select('Hosts', 'Operating Systems')
 
 
 @navigator.register(OperatingSystemEntity, 'New')
 class AddNewOperatingSystem(NavigateStep):
-    VIEW = OperatingSystemDetailsView
+    VIEW = OperatingSystemCreateView
 
     prerequisite = NavigateToSibling('All')
 
@@ -48,10 +56,7 @@ class AddNewOperatingSystem(NavigateStep):
 
 @navigator.register(OperatingSystemEntity, 'Edit')
 class EditOperatingSystem(NavigateStep):
-    VIEW = OperatingSystemDetailsView
-
-    def am_i_here(self, *args, **kwargs):
-        return self.view.is_displayed
+    VIEW = OperatingSystemEditView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
