@@ -8,7 +8,9 @@ from datetime import datetime
 from fauxfactory import gen_string
 import selenium
 from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
 from widgetastic.browser import Browser, DefaultPlugin
+from widgetastic.exceptions import WebDriverException
 
 from airgun import settings
 
@@ -584,3 +586,49 @@ class AirgunBrowser(Browser):
         )
         client_datetime = self.execute_script(script)
         return datetime.strptime(client_datetime, '%Y-%m-%d : %H:%M')
+
+    def move_to_element(self, locator, *args, **kwargs):
+        """Overridden :meth:`widgetastic.browser.Browser.move_to_element` with
+        satellite-specific approach of scrolling to element.
+
+        Satellite's header menu is hovering from the top and it's not taken
+        into account when scrolling to element by either `scrollIntoView` JS or
+        ActionChains move, thus when scrolling bottom-up the element may appear
+        covered by top menu.
+        To prevent this, executing `scrollIntoView` script for element every
+        single time with `alignToTop` set to 'false' - this way the bottom of
+        the element will be aligned to the bottom of the visible area.
+        """
+        self.logger.debug('move_to_element: %r', locator)
+        el = self.element(locator, *args, **kwargs)
+        if el.tag_name == "option":
+            # Instead of option, let's move on its parent <select> if possible
+            parent = self.element("..", parent=el)
+            if parent.tag_name == "select":
+                self.move_to_element(parent)
+                return el
+        move_to = ActionChains(self.selenium).move_to_element(el)
+        try:
+            self.execute_script(
+                "arguments[0].scrollIntoView(false);", el, silent=True)
+            move_to.perform()
+        except WebDriverException as e:
+            # Handling Microsoft Edge
+            if (
+                    self.browser_type == 'MicrosoftEdge'
+                    and 'Invalid argument' in e.msg):
+                # Moving to invisible element triggers a WebDriverException
+                # instead of the former MoveTargetOutOfBoundsException
+                pass
+            # It seems Firefox 60 or geckodriver have an issue related to
+            # moving to hidden elements
+            # https://github.com/mozilla/geckodriver/issues/1269
+            if (
+                    self.browser_type == 'firefox'
+                    and self.browser_version >= 60
+                    and 'rect is undefined' in e.msg):
+                pass
+            else:
+                # Something else, never let it sink
+                raise
+        return el
