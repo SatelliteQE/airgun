@@ -37,14 +37,13 @@ def assert_no_errors_in_view(view):
 
 
 class DomainEntity(BaseEntity):
-    def create(self, values, assert_no_errors=True):
-        """
-        Create a new domain.
-        """
+    def create(self, values):
+        """Create a new domain."""
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit_button.click()
         view.flash.assert_no_error()
+        view.flash.dismiss()
         assert_no_errors_in_view(view)
 
     def search(self, value):
@@ -61,14 +60,13 @@ class DomainEntity(BaseEntity):
         return view.read()
 
     def update(self, entity_name, values):
-        """
-        Update an existing domain.
-        """
+        """Update an existing domain."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
 
         view.fill(values)
         view.submit_button.click()
         view.flash.assert_no_error()
+        view.flash.dismiss()
         assert_no_errors_in_view(view)
 
     def add_parameter(self, entity_name, param_name, param_value):
@@ -76,6 +74,7 @@ class DomainEntity(BaseEntity):
         view.parameters.params.add({'name': param_name, 'value': param_value})
         view.submit_button.click()
         view.flash.assert_no_error()
+        view.flash.dismiss()
         assert_no_errors_in_view(view)
 
     def remove_parameter(self, entity_name, param_name):
@@ -83,6 +82,7 @@ class DomainEntity(BaseEntity):
         view.parameters.params.remove(param_name)
         view.submit_button.click()
         view.flash.assert_no_error()
+        view.flash.dismiss()
         assert_no_errors_in_view(view)
 
     def delete(self, name):
@@ -93,6 +93,7 @@ class DomainEntity(BaseEntity):
         view.table[0]['Actions'].widget.click()
         self.browser.handle_alert()
         view.flash.assert_no_error()
+        view.flash.dismiss()
         assert_no_errors_in_view(view)
 
 
