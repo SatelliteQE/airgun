@@ -10,7 +10,6 @@ import selenium
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from widgetastic.browser import Browser, DefaultPlugin
-from widgetastic.exceptions import WebDriverException
 
 from airgun import settings
 
@@ -601,34 +600,7 @@ class AirgunBrowser(Browser):
         """
         self.logger.debug('move_to_element: %r', locator)
         el = self.element(locator, *args, **kwargs)
-        if el.tag_name == "option":
-            # Instead of option, let's move on its parent <select> if possible
-            parent = self.element("..", parent=el)
-            if parent.tag_name == "select":
-                self.move_to_element(parent)
-                return el
-        move_to = ActionChains(self.selenium).move_to_element(el)
-        try:
-            self.execute_script(
-                "arguments[0].scrollIntoView(false);", el, silent=True)
-            move_to.perform()
-        except WebDriverException as e:
-            # Handling Microsoft Edge
-            if (
-                    self.browser_type == 'MicrosoftEdge'
-                    and 'Invalid argument' in e.msg):
-                # Moving to invisible element triggers a WebDriverException
-                # instead of the former MoveTargetOutOfBoundsException
-                pass
-            # It seems Firefox 60 or geckodriver have an issue related to
-            # moving to hidden elements
-            # https://github.com/mozilla/geckodriver/issues/1269
-            if (
-                    self.browser_type == 'firefox'
-                    and self.browser_version >= 60
-                    and 'rect is undefined' in e.msg):
-                pass
-            else:
-                # Something else, never let it sink
-                raise
+        self.execute_script(
+            "arguments[0].scrollIntoView(false);", el, silent=True)
+        ActionChains(self.selenium).move_to_element(el).perform()
         return el

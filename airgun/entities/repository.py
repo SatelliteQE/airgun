@@ -53,7 +53,7 @@ class RepositoryEntity(BaseEntity):
         view.progressbar.wait_for_result()
         return view.read()
 
-    def remove_packages(self, product_name, entity_name):
+    def remove_all_packages(self, product_name, entity_name):
         """Remove all packages from repository"""
         view = self.navigate_to(
             self,
@@ -61,8 +61,10 @@ class RepositoryEntity(BaseEntity):
             product_name=product_name,
             entity_name=entity_name,
         )
-        view.items_per_page.fill('100')
-        for _ in range(int(view.total_packages.text) // 100 + 1):
+        max_per_page = max([
+            int(el.text) for el in view.items_per_page.all_options])
+        view.items_per_page.fill(str(max_per_page))
+        for _ in range(int(view.total_packages.text) // max_per_page + 1):
             view.select_all.fill(True)
             view.remove_packages.click()
             view.dialog.confirm()
@@ -72,7 +74,7 @@ class RepositoryEntity(BaseEntity):
             raise AssertionError(
                 'Unable to remove all packages from {}'.format(entity_name))
 
-    def remove_puppet_modules(self, product_name, entity_name):
+    def remove_all_puppet_modules(self, product_name, entity_name):
         """Remove all puppet modules from repository"""
         view = self.navigate_to(
             self,
@@ -80,8 +82,11 @@ class RepositoryEntity(BaseEntity):
             product_name=product_name,
             entity_name=entity_name,
         )
-        view.items_per_page.fill('100')
-        for _ in range(int(view.total_puppet_modules.text) // 100 + 1):
+        max_per_page = max([
+            int(el.text) for el in view.items_per_page.all_options])
+        view.items_per_page.fill(str(max_per_page))
+        for _ in range(
+                int(view.total_puppet_modules.text) // max_per_page + 1):
             view.select_all.fill(True)
             view.remove_packages.click()
             view.dialog.confirm()
