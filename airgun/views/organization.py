@@ -156,4 +156,4 @@ class OrganizationEditView(BaseLoggedInView):
 
     @View.nested
     class parameters(SatVerticalTab):
-        resources = CustomParameter()
+        resources = CustomParameter(id='global_parameters_table')
