@@ -329,16 +329,6 @@ class Search(Widget):
             self.search_button.click()
 
     def search(self, value):
-        # Entity lists with 20+ elements may scroll page a bit and search field
-        # will appear out of screen. For some reason, clicking search button
-        # will have no effect in such case. Scrolling to search field just in
-        # case
-        # fixme: needs further investigation and implementation on different
-        # layer, maybe in self.browser.element
-        self.browser.selenium.execute_script(
-            'arguments[0].scrollIntoView(false);',
-            self.browser.element(self.search_field.locator),
-        )
         if hasattr(self.parent, 'flash'):
             # large flash messages may hide the search button
             self.parent.flash.dismiss()
@@ -908,7 +898,7 @@ class EditableEntry(GenericLocatorWidget):
             raise TypeError('Please specify either locator or name')
         locator = (
             locator or
-            ".//dt[contains(., '{}')]"
+            ".//dt[normalize-space(.)='{}']"
             "/following-sibling::dd[1]".format(name)
         )
         super(EditableEntry, self).__init__(parent, locator, logger)
@@ -1154,6 +1144,91 @@ class SatSubscriptionsTable(SatTable):
             for row in read_rows:
                 row['Repository Name'] = next(titles)
         return read_rows
+
+
+class SatContentCountsTable(SatTable):
+    """'Content Counts' table present in every repository, containing amount of
+    packages/puppet modules/etc with links to corresponding details pages.
+
+    Key differences from regular table::
+        * unequal amount of headers and columns (1 header but 2 columns)
+        * all possible content rows are actually present in DOM, but some are
+          'hidden' using css class
+        * second row (counts) can contain either a link or just a text,
+          depending on whether repository has corresponding content or not
+
+    Example html representation::
+
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+              <th colspan="2" ...><span ...>Content Type</span></th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr ng-show="repository.content_type === 'yum'" class="ng-hide">
+              <td><span>Packages</span></td>
+              <td class="align-center">
+                <a ui-sref="product.repository.manage-content.packages(...)"
+                 href=".../repositories/151/content/packages">
+                  0
+                </a></td>
+            </tr>
+
+            ...
+
+            <tr ng-show="repository.content_type === 'puppet'" class="">
+              <td><span>Puppet Modules</span></td>
+              <td class="align-center">
+                <a ui-sref="product.repository.manage-content.puppet-module..."
+                 href=".../repositories/151/content/content/puppet_modules">
+                  2
+                </a></td>
+            </tr>
+            ...
+            </tbody>
+        </table>
+
+    Locator example::
+
+        .//table[//th[normalize-space(.)="Content Type"]]
+
+    """
+
+    def __init__(self, parent, locator=None, logger=None):
+        """Defining default locator and clickable second column"""
+        locator = (
+            locator or './/table[//th[normalize-space(.)="Content Type"]]')
+        # Second column is either link or plain text, defining Text widget to
+        # be able to click it
+        column_widgets = {
+            1: Text(locator="./*")
+        }
+        super().__init__(
+            parent,
+            locator=locator,
+            logger=logger,
+            column_widgets=column_widgets
+        )
+
+    def read(self):
+        """Returns a dict with {column1: column2} values, and only for rows
+        which aren't marked as hidden.
+
+        Example::
+
+            {
+                'Packages': '1',
+                'Package Groups': '0'
+            }
+
+        """
+        return {
+            row[0].read(): row[1].read()
+            for row in self.rows()
+            if 'ng-hide' not in self.browser.classes(row)
+        }
 
 
 class ProgressBar(GenericLocatorWidget):

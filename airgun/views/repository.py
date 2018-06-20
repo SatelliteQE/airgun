@@ -16,6 +16,7 @@ from airgun.widgets import (
     EditableEntryCheckbox,
     EditableEntrySelect,
     ReadOnlyEntry,
+    SatContentCountsTable,
     SatTable,
 )
 
@@ -129,6 +130,7 @@ class RepositoryEditView(BaseLoggedInView):
     label = ReadOnlyEntry(name='Label')
     repo_type = ReadOnlyEntry(name='Type')
     repo_content = ConditionalSwitchableView(reference='repo_type')
+    content_counts = SatContentCountsTable()
 
     @repo_content.register('docker')
     class DockerRepository(View):
@@ -138,22 +140,37 @@ class RepositoryEditView(BaseLoggedInView):
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
         upstream_username = EditableEntry(name='Upstream Username')
         upstream_password = EditableEntry(name='Upstream Password')
-        ignore_global_proxy = EditableEntryCheckbox(name='Ignore Global HTTP')
+        ignore_global_proxy = EditableEntryCheckbox(
+            name='Ignore Global HTTP Proxy')
         publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
 
     @repo_content.register('yum')
     class YumRepository(View):
         arch_restrict = EditableEntrySelect(name='Restrict to architecture')
-        upstream_repo_url = EditableEntry(name='Upstream URL')
+        upstream_url = EditableEntry(name='Upstream URL')
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
         upstream_username = EditableEntry(name='Upstream Username')
         upstream_password = EditableEntry(name='Upstream Password')
         metadata_type = EditableEntrySelect(name='Yum Metadata Checksum')
         mirror_on_sync = EditableEntryCheckbox(name='Mirror on Sync')
-        ignore_global_proxy = EditableEntryCheckbox(name='Ignore Global HTTP')
-        publish_via_http = EditableEntryCheckbox(name='Publish via HTTP:')
+        ignore_global_proxy = EditableEntryCheckbox(
+            name='Ignore Global HTTP Proxy')
+        publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
         gpg_key = EditableEntrySelect(name='GPG Key')
         download_policy = EditableEntrySelect(name='Download Policy')
+
+    @repo_content.register('puppet')
+    class PuppetRepository(View):
+        upstream_url = EditableEntry(name='Upstream URL')
+        verify_ssl = EditableEntryCheckbox(name='Verify SSL')
+        upstream_username = EditableEntry(name='Upstream Username')
+        upstream_password = EditableEntry(name='Upstream Password')
+        mirror_on_sync = EditableEntryCheckbox(name='Mirror on Sync')
+        ignore_global_proxy = EditableEntryCheckbox(
+            name='Ignore Global HTTP Proxy')
+        publish_via_https = ReadOnlyEntry(name='Publish via HTTPS')
+        publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
+        published_at = ReadOnlyEntry(name='Published At')
 
     @property
     def is_displayed(self):
@@ -162,6 +179,70 @@ class RepositoryEditView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Products'
-            and self.breadcrumb.locations[2] == 'Repositories'
+            # repositories do not have tabs, so if we are deep inside some
+            # specific repository (e.g. in repository packages) - there's no
+            # turn back, so we can't treat any level deeper than repository
+            # details like details' sub-tab
+            and self.breadcrumb.locations[-2] == 'Repositories'
             and self.breadcrumb.read() != 'New Repository'
+        )
+
+
+class RepositoryPackagesView(BaseLoggedInView, SearchableViewMixin):
+    breadcrumb = BreadCrumb()
+    dialog = ConfirmationDialog()
+    table = SatTable(
+        locator=".//table",
+        column_widgets={
+            0: Checkbox(
+                locator=".//input[@ng-change='itemSelected(package)']"),
+        }
+    )
+    select_all = Checkbox(
+        locator=".//input[@type='checkbox'][@ng-change='allSelected()']")
+    items_per_page = Select(
+        locator=".//select[@ng-model='table.params.per_page']")
+    total_packages = Text(
+        "//span[@class='pagination-pf-items-total ng-binding']")
+    remove_packages = Text(".//button[@ng-click='openModal()']")
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Products'
+                and self.breadcrumb.locations[2] == 'Repositories'
+                and self.breadcrumb.read() == 'Packages'
+        )
+
+
+class RepositoryPuppetModulesView(BaseLoggedInView, SearchableViewMixin):
+    breadcrumb = BreadCrumb()
+    dialog = ConfirmationDialog()
+    table = SatTable(
+        locator=".//table",
+        column_widgets={
+            0: Checkbox(
+                locator=".//input[@ng-change='itemSelected(item)']"),
+        }
+    )
+    select_all = Checkbox(
+        locator=".//input[@type='checkbox'][@ng-change='allSelected()']")
+    items_per_page = Select(
+        locator=".//select[@ng-model='table.params.per_page']")
+    total_puppet_modules = Text(
+        "//span[@class='pagination-pf-items-total ng-binding']")
+    remove_packages = Text(".//button[@ng-click='openModal()']")
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Products'
+                and self.breadcrumb.locations[2] == 'Repositories'
+                and self.breadcrumb.read() == 'Manage Puppet Modules'
         )

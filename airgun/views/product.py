@@ -126,7 +126,14 @@ class ProductEditView(BaseLoggedInView):
 
     @View.nested
     class repositories(SatTab):
-        pass
+        table = SatTable(
+            locator=".//table",
+            column_widgets={
+                0: Checkbox(
+                    locator="./input[@ng-change='itemSelected(repository)']"),
+                'Name': Text("./a"),
+            }
+        )
 
 
 class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):

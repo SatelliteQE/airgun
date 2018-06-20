@@ -45,7 +45,6 @@ class SeleniumSettings(object):
         self.screenshots_path = None
         self.webdriver = None
         self.webdriver_binary = None
-        self.webdriver_desired_capabilities = None
 
 
 class WebdriverCapabilitiesSettings(object):
@@ -81,12 +80,7 @@ class Settings(object):
         logging.getLogger('airgun').setLevel(self.airgun.verbosity)
 
     def _configure_thirdparty_logging(self):
-        loggers = (
-            'selenium.webdriver.remote.remote_connection',
-            'widgetastic_null'
-        )
-        for logger in loggers:
-            logging.getLogger(logger).setLevel(self.airgun.verbosity)
+        logging.getLogger('widgetastic_null').setLevel(self.airgun.verbosity)
 
     def configure(self, settings=None):
         """Parses arg `settings` or settings file if None passed and sets class

@@ -8,6 +8,7 @@ from datetime import datetime
 from fauxfactory import gen_string
 import selenium
 from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
 from widgetastic.browser import Browser, DefaultPlugin
 
 from airgun import settings
@@ -584,3 +585,22 @@ class AirgunBrowser(Browser):
         )
         client_datetime = self.execute_script(script)
         return datetime.strptime(client_datetime, '%Y-%m-%d : %H:%M')
+
+    def move_to_element(self, locator, *args, **kwargs):
+        """Overridden :meth:`widgetastic.browser.Browser.move_to_element` with
+        satellite-specific approach of scrolling to element.
+
+        Satellite's header menu is hovering from the top and it's not taken
+        into account when scrolling to element by either `scrollIntoView` JS or
+        ActionChains move, thus when scrolling bottom-up the element may appear
+        covered by top menu.
+        To prevent this, executing `scrollIntoView` script for element every
+        single time with `alignToTop` set to 'false' - this way the bottom of
+        the element will be aligned to the bottom of the visible area.
+        """
+        self.logger.debug('move_to_element: %r', locator)
+        el = self.element(locator, *args, **kwargs)
+        self.execute_script(
+            "arguments[0].scrollIntoView(false);", el, silent=True)
+        ActionChains(self.selenium).move_to_element(el).perform()
+        return el
