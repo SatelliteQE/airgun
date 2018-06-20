@@ -3,7 +3,8 @@ from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.computeresource import (
     ComputeResourcesView,
-    ResourceProviderDetailsView,
+    ResourceProviderEditView,
+    ResourceProviderDetailView,
 )
 
 
@@ -33,6 +34,13 @@ class ComputeResourceEntity(BaseEntity):
         view.table.row(name=value)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
 
+    def list_vms(self, rhev_name, expected_vm_name=None):
+        """Returns all the VMs on the CR or VM with specified name"""
+        view = self.navigate_to(self, 'Detail', rhev_name=rhev_name)
+        return view.virtual_machines.table.row(name=expected_vm_name) if \
+            expected_vm_name is not None else \
+            view.virtual_machines.table.rows()
+
 
 @navigator.register(ComputeResourceEntity, 'All')
 class ShowAllComputeResources(NavigateStep):
@@ -44,7 +52,7 @@ class ShowAllComputeResources(NavigateStep):
 
 @navigator.register(ComputeResourceEntity, 'New')
 class AddNewComputeResource(NavigateStep):
-    VIEW = ResourceProviderDetailsView
+    VIEW = ResourceProviderEditView
 
     prerequisite = NavigateToSibling('All')
 
@@ -54,7 +62,7 @@ class AddNewComputeResource(NavigateStep):
 
 @navigator.register(ComputeResourceEntity, 'Edit')
 class EditExistingComputeResource(NavigateStep):
-    VIEW = ResourceProviderDetailsView
+    VIEW = ResourceProviderEditView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
@@ -64,3 +72,16 @@ class EditExistingComputeResource(NavigateStep):
         self.parent.search(entity_name)
         self.parent.table.row(
             name=entity_name)['Actions'].widget.fill('Edit')
+
+
+@navigator.register(ComputeResourceEntity, 'Detail')
+class ComputeResourceDetail(NavigateStep):
+    VIEW = ResourceProviderDetailView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        entity_name = kwargs.get('rhev_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Name'].widget.click()
