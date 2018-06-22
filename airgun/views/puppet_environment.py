@@ -18,13 +18,11 @@ from airgun.widgets import (
 
 
 class PuppetEnvironmentsTableView(BaseLoggedInView, SearchableViewMixin):
-
     """
     Basic view after clicking Configure -> Environments.
     In basic view, there can be seen title Puppet Environments, button
     Create Puppet Environment (new) and table with existing Puppet Environments
     """
-
     title = Text("//h1[contains(., 'Puppet Environments')]")
     new = Text("//a[contains(@href, '/environments/new')]")
     table = SatTable(
@@ -43,13 +41,11 @@ class PuppetEnvironmentsTableView(BaseLoggedInView, SearchableViewMixin):
             self.title, exception=False) is not None
 
 
-class PuppetEnvironmentsCreateView(BaseLoggedInView):
-
+class PuppetEnvironmentCreateView(BaseLoggedInView):
     """
     Details view of the page with boxes that have to be filled in to
     create a new puppet environment
     """
-
     breadcrumb = BreadCrumb()
     submit = Text("//input[@name='commit']")
 
@@ -69,8 +65,8 @@ class PuppetEnvironmentsCreateView(BaseLoggedInView):
 
     @View.nested
     class locations(SatTab):
-        locations = MultiSelect(id='ms-environment_location_ids')
+        resources = MultiSelect(id='ms-environment_location_ids')
 
     @View.nested
     class organizations(SatTab):
-        organizations = MultiSelect(id='ms-environment_organization_ids')
+        resources = MultiSelect(id='ms-environment_organization_ids')
