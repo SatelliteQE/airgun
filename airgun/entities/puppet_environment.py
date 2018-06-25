@@ -3,7 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.puppet_environment import (
-    PuppetEnvironmentsTableView,
+    PuppetEnvironmentTableView,
     PuppetEnvironmentCreateView,
 )
 from airgun.views.hostgroup import (
@@ -46,7 +46,7 @@ class PuppetEnvironmentEntity(BaseEntity):
 @navigator.register(PuppetEnvironmentEntity, 'All')
 class ShowAllPuppetEnvironmentsView(NavigateStep):
 
-    VIEW = PuppetEnvironmentsTableView
+    VIEW = PuppetEnvironmentTableView
 
     def step(self, *args, **kwargs):
         self.view.menu.select('Configure', 'Environments')
