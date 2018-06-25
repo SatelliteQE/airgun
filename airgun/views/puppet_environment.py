@@ -17,14 +17,17 @@ from airgun.widgets import (
 )
 
 
-class PuppetEnvironmentsTableView(BaseLoggedInView, SearchableViewMixin):
+class PuppetEnvironmentTableView(BaseLoggedInView, SearchableViewMixin):
     """
     Basic view after clicking Configure -> Environments.
     In basic view, there can be seen title Puppet Environments, button
-    Create Puppet Environment (new) and table with existing Puppet Environments
+    Create Puppet Environment (new), button import environments
+    and table with existing Puppet Environments
     """
     title = Text("//h1[contains(., 'Puppet Environments')]")
     new = Text("//a[contains(@href, '/environments/new')]")
+    import_environments = Text(
+        "//a[@data-id='aid_environments_import_environments']")
     table = SatTable(
         locator='.//table',
         column_widgets={
@@ -39,6 +42,29 @@ class PuppetEnvironmentsTableView(BaseLoggedInView, SearchableViewMixin):
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.title, exception=False) is not None
+
+
+class ImportPuppetEnvironmentView(BaseLoggedInView, SearchableViewMixin):
+    """
+    View after clicking Configure -> Environments -> import environments with
+    toggles New, Updated, Obsolete. Button update and cancel
+    """
+    breadcrumb = BreadCrumb()
+    new = Text("//a[contains(@data-original-title,'new')]")
+    updated = Text("//a[contains(@data-original-title,'updated')]")
+    obsolete = Text("//a[contains(@data-original-title,'obsolete')]")
+    update = Text("//input[@name='commit']")
+    cancel = Text("//a[@data-id='aid_environments']")
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Environments'
+            and self.breadcrumb.read() == 'Changed Environments'
+        )
 
 
 class PuppetEnvironmentCreateView(BaseLoggedInView):
