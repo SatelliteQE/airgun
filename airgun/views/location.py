@@ -10,6 +10,7 @@ from airgun.views.common import (
 from airgun.widgets import (
     ActionsDropdown,
     CustomParameter,
+    FilteredDropdown,
     MultiSelect,
     SatTable,
 )
@@ -32,9 +33,9 @@ class LocationsView(BaseLoggedInView, SearchableViewMixin):
             self.title, exception=False) is not None
 
 
-# TODO add filtered dropdown to create and Edit
 class LocationCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    parent_id = FilteredDropdown(id='location_parent_id')
     name = TextInput(id='location_name')
     description = TextInput(id='location_description')
     submit = Text('//input[@name="commit"]')
@@ -67,6 +68,7 @@ class LocationsEditView(BaseLoggedInView):
 
     @View.nested
     class primary(SatVerticalTab):
+        parent_id = FilteredDropdown(id='location_parent_id')
         name = TextInput(id='location_name')
         description = TextInput(id='location_description')
 
@@ -138,4 +140,4 @@ class LocationsEditView(BaseLoggedInView):
 
     @View.nested
     class parameters(SatVerticalTab):
-        resources = CustomParameter()
+        resources = CustomParameter(id='global_parameters_table')
