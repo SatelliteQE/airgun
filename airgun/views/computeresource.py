@@ -6,8 +6,13 @@ from widgetastic.widget import (
     View,
     ConditionalSwitchableView,
 )
-from airgun.views.common import BaseLoggedInView, SearchableViewMixin
+from airgun.views.common import (
+        BaseLoggedInView,
+        SearchableViewMixin,
+        SatTab,
+)
 from airgun.widgets import FilteredDropdown, ActionsDropdown, SatTable
+from widgetastic_patternfly import BreadCrumb
 
 
 class ComputeResourcesView(BaseLoggedInView, SearchableViewMixin):
@@ -29,7 +34,7 @@ class ComputeResourcesView(BaseLoggedInView, SearchableViewMixin):
             self.title, exception=False) is not None
 
 
-class ResourceProviderDetailsView(BaseLoggedInView):
+class ResourceProviderEditView(BaseLoggedInView):
     name = TextInput(id='compute_resource_name')
     description = TextInput(id='compute_resource_description')
     submit = Text('//input[@name="commit"]')
@@ -112,3 +117,25 @@ class ResourceProviderDetailsView(BaseLoggedInView):
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.name, exception=False) is not None
+
+
+class ResourceProviderDetailView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+    compresource = Text("//a[text()='Compute profiles']")
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Compute resources'
+                and self.browser.wait_for_element(
+                    self.compprofiles, exception=False) is not None
+        )
+
+    @View.nested
+    class virtual_machines(SatTab):
+        TAB_NAME = 'Virtual Machines'
+
+        table = SatTable('.//table', column_widgets={'Name': Text('./a')})
