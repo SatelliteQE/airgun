@@ -121,7 +121,7 @@ class ResourceProviderEditView(BaseLoggedInView):
 
 class ResourceProviderDetailView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    compresource = Text("//a[text()='Compute profiles']")
+    compprofiles = Text("//a[text()='Compute profiles']")
 
     @property
     def is_displayed(self):
@@ -138,4 +138,11 @@ class ResourceProviderDetailView(BaseLoggedInView):
     class virtual_machines(SatTab):
         TAB_NAME = 'Virtual Machines'
 
-        table = SatTable('.//table', column_widgets={'Name': Text('./a')})
+        table = SatTable(
+                './/table',
+                column_widgets={
+                    'Name': Text('./a'),
+                    'Actions': Text('.//a[@data-method="put"]'),
+                    'Power': Text('.//span[contains(@class,"label")]'),
+                }
+        )

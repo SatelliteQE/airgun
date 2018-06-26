@@ -41,6 +41,24 @@ class ComputeResourceEntity(BaseEntity):
             expected_vm_name is not None else \
             view.virtual_machines.table.rows()
 
+    def vm_status(self, rhev_name, vm_name):
+        """Returns True if the machine is runing, False otherwise"""
+        self.navigate_to(self, 'All', rhev_name=rhev_name)  # refresh
+        vm = self.list_vms(rhev_name, vm_name)
+        return vm['Power'].widget.read() == 'On'
+
+    def vm_poweron(self, rhev_name, vm_name):
+        """Starts the specified VM"""
+        vm = self.list_vms(rhev_name, vm_name)
+        if vm['Power'].widget.read() != 'On':
+            vm['Actions'].widget.click(handle_alert=True)
+
+    def vm_poweroff(self, rhev_name, vm_name):
+        """Stops the specified VM"""
+        vm = self.list_vms(rhev_name, vm_name)
+        if vm['Power'].widget.read() == 'On':
+            vm['Actions'].widget.click(handle_alert=True)
+
 
 @navigator.register(ComputeResourceEntity, 'All')
 class ShowAllComputeResources(NavigateStep):
