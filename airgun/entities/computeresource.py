@@ -59,6 +59,22 @@ class ComputeResourceEntity(BaseEntity):
         if vm['Power'].widget.read() == 'On':
             vm['Actions'].widget.click(handle_alert=True)
 
+    def list_computeprofiles(self, ec2_name):
+        view = self.navigate_to(self, 'Detail', rhev_name=ec2_name)
+        view.compute_profiles.large.click()
+        view.submit.click()
+
+    def edit_computeprofiles(self, values, ec2_name):
+        view = self.navigate_to(self, 'Detail', rhev_name=ec2_name)
+        view.compute_profiles.large.click()
+        view.fill(values)
+        view.submit.click()
+
+    def read_computeprofile(self, ec2_name):
+        view = self.navigate_to(self, 'Detail', rhev_name=ec2_name)
+        view.compute_profiles.large.click()
+        return view.read()
+
 
 @navigator.register(ComputeResourceEntity, 'All')
 class ShowAllComputeResources(NavigateStep):

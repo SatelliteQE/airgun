@@ -7,11 +7,16 @@ from widgetastic.widget import (
     ConditionalSwitchableView,
 )
 from airgun.views.common import (
-        BaseLoggedInView,
-        SearchableViewMixin,
-        SatTab,
+    BaseLoggedInView,
+    SearchableViewMixin,
+    SatTab,
 )
-from airgun.widgets import FilteredDropdown, ActionsDropdown, SatTable
+from airgun.widgets import (
+    FilteredDropdown,
+    ActionsDropdown,
+    SatTable,
+    MultiSelect,
+)
 from widgetastic_patternfly import BreadCrumb
 
 
@@ -127,16 +132,25 @@ class ResourceProviderEditView(BaseLoggedInView):
 class ResourceProviderDetailView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     compprofiles = Text("//a[text()='Compute profiles']")
+    flavor = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_flavor_id')
+    availability_zone = FilteredDropdown(
+        id='s2id_compute_attribute_vm_attrs_availability_zone')
+    subnet = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_subnet_id')
+    security_groups = MultiSelect(
+        id='ms-compute_attribute_vm_attrs_security_group_ids')
+    managed_ip = FilteredDropdown(
+        id='s2id_compute_attribute_vm_attrs_managed_ip')
+    submit = Text('//input[@name="commit"]')
 
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Compute resources'
-                and self.browser.wait_for_element(
-                    self.compprofiles, exception=False) is not None
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Compute resources'
+            and self.browser.wait_for_element(
+                self.compprofiles, exception=False) is not None
         )
 
     @View.nested
@@ -144,10 +158,17 @@ class ResourceProviderDetailView(BaseLoggedInView):
         TAB_NAME = 'Virtual Machines'
 
         table = SatTable(
-                './/table',
-                column_widgets={
-                    'Name': Text('./a'),
-                    'Actions': Text('.//a[@data-method="put"]'),
-                    'Power': Text('.//span[contains(@class,"label")]'),
-                }
+            './/table',
+            column_widgets={
+                'Name': Text('./a'),
+                'Actions': Text('.//a[@data-method="put"]'),
+                'Power': Text('.//span[contains(@class,"label")]'),
+            }
         )
+
+    @View.nested
+    class compute_profiles(SatTab):
+        TAB_NAME = 'Compute profiles'
+        small = Text("//a[text()='1-Small']")
+        medium = Text("//a[text()='2-Medium']")
+        large = Text("//a[text()='3-Large']")
