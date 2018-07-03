@@ -39,6 +39,23 @@ class SatSelect(Select):
         ''')
 
 
+class CheckboxWithAlert(Checkbox):
+    """Represent basic checkbox element, but able to handle alert message
+    which can appear after you perform action for that widget
+    """
+    def fill(self, value):
+        value = bool(value)
+        current_value = self.selected
+        if value == current_value:
+            return False
+        else:
+            self.click(handle_alert=True)
+            if self.selected != value:
+                raise WidgetOperationFailed(
+                    'Failed to set the checkbox to requested value.')
+            return True
+
+
 class RadioGroup(GenericLocatorWidget):
     """Classical radio buttons group widget
 
@@ -1146,16 +1163,17 @@ class SatSubscriptionsTable(SatTable):
         return read_rows
 
 
-class SatContentCountsTable(SatTable):
-    """'Content Counts' table present in every repository, containing amount of
-    packages/puppet modules/etc with links to corresponding details pages.
+class SatTableWithUnevenStructure(SatTable):
+    """Applicable for every table in application that has uneven amount of
+    headers and columns(usually we talk about 1 header but 2 columns)
+    We taking into account that all possible content rows are actually present
+    in DOM, but some are 'hidden' using css class. Also we can specify what
+    widget we expect in a second column (e.g. link or text)
 
-    Key differences from regular table::
-        * unequal amount of headers and columns (1 header but 2 columns)
-        * all possible content rows are actually present in DOM, but some are
-          'hidden' using css class
-        * second row (counts) can contain either a link or just a text,
-          depending on whether repository has corresponding content or not
+    Some examples where we can use current class:
+    'Content Counts' table present in every repository, containing amount of
+    packages/puppet modules/etc with links to corresponding details pages.
+    'Properties' table present in every host details page
 
     Example html representation::
 
@@ -1193,17 +1211,17 @@ class SatContentCountsTable(SatTable):
     Locator example::
 
         .//table[//th[normalize-space(.)="Content Type"]]
+        //table[@id='properties_table']
+
 
     """
 
-    def __init__(self, parent, locator=None, logger=None):
-        """Defining default locator and clickable second column"""
-        locator = (
-            locator or './/table[//th[normalize-space(.)="Content Type"]]')
-        # Second column is either link or plain text, defining Text widget to
-        # be able to click it
+    def __init__(self, parent, locator, column_locator='.', logger=None):
+        """Defining locator to find a table on a page and widget that is going
+        to be used to work with data in a second column
+        """
         column_widgets = {
-            1: Text(locator="./*")
+            1: Text(locator=column_locator)
         }
         super().__init__(
             parent,
@@ -1221,6 +1239,8 @@ class SatContentCountsTable(SatTable):
             {
                 'Packages': '1',
                 'Package Groups': '0'
+                'Status': 'OK'
+                'Domain': 'domain_name'
             }
 
         """

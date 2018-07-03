@@ -17,6 +17,7 @@ from airgun.entities.contentcredential import ContentCredentialEntity
 from airgun.entities.contentview import ContentViewEntity
 from airgun.entities.computeresource import ComputeResourceEntity
 from airgun.entities.domain import DomainEntity
+from airgun.entities.host import HostEntity
 from airgun.entities.hostcollection import HostCollectionEntity
 from airgun.entities.filter import FilterEntity
 from airgun.entities.lifecycleenvironment import LCEEntity
@@ -238,6 +239,11 @@ class Session(object):
     def filter(self):
         """Instance of Filter entity."""
         return FilterEntity(self.browser)
+
+    @cached_property
+    def host(self):
+        """Instance of Host entity."""
+        return HostEntity(self.browser)
 
     @cached_property
     def hostcollection(self):
