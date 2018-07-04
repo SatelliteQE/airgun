@@ -35,7 +35,7 @@ class LocationsView(BaseLoggedInView, SearchableViewMixin):
 
 class LocationCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    parent_id = FilteredDropdown(id='location_parent_id')
+    parent_location = FilteredDropdown(id='location_parent_id')
     name = TextInput(id='location_name')
     description = TextInput(id='location_description')
     submit = Text('//input[@name="commit"]')
@@ -68,7 +68,7 @@ class LocationsEditView(BaseLoggedInView):
 
     @View.nested
     class primary(SatVerticalTab):
-        parent_id = FilteredDropdown(id='location_parent_id')
+        parent_location = FilteredDropdown(id='location_parent_id')
         name = TextInput(id='location_name')
         description = TextInput(id='location_description')
 
