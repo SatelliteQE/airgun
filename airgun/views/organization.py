@@ -119,7 +119,7 @@ class OrganizationEditView(BaseLoggedInView):
     @View.nested
     class provisioning_templates(SatVerticalTab):
         TAB_NAME = 'Provisioning Templates'
-        all_tamplates = Checkbox(
+        all_templates = Checkbox(
             id='organization_ignore_types_provisioningtemplate')
         resources = MultiSelect(id='ms-organization_provisioning_template_ids')
 
