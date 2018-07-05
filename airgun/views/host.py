@@ -268,7 +268,7 @@ class HostEditView(HostCreateView):
         )
 
 
-class HostsChangeGroup(View):
+class HostsChangeGroup(BaseLoggedInView):
     title = Text(
         "//h4[text()='Change Group - The"
         " following hosts are about to be changed']")
@@ -282,18 +282,8 @@ class HostsChangeGroup(View):
         return self.browser.wait_for_element(
             self.title, exception=False) is not None
 
-    def after_fill(self, was_change):
-        """Submit the dialog data once all necessary view widgets filled"""
-        self.submit.click()
-        wait_for(
-            lambda: self.submit.is_displayed is False,
-            timeout=300,
-            delay=1,
-            logger=self.logger
-        )
 
-
-class HostsChangeEnvironment(View):
+class HostsChangeEnvironment(BaseLoggedInView):
     title = Text(
         "//h4[text()='Change Environment - The"
         " following hosts are about to be changed']")
@@ -306,13 +296,3 @@ class HostsChangeEnvironment(View):
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.title, exception=False) is not None
-
-    def after_fill(self, was_change):
-        """Submit the dialog data once all necessary view widgets filled"""
-        self.submit.click()
-        wait_for(
-            lambda: self.submit.is_displayed is False,
-            timeout=300,
-            delay=1,
-            logger=self.logger
-        )

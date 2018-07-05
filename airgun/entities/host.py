@@ -49,12 +49,18 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(
             self, 'Change Group', entities_list=entities_list)
         view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def change_host_environment(self, entities_list, values):
         """Change assigned environment for host/hosts"""
         view = self.navigate_to(
             self, 'Change Environment', entities_list=entities_list)
         view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(HostEntity, 'All')

@@ -27,6 +27,8 @@ class BaseLoggedInView(View):
     taxonomies = ContextSelector()
     flash = SatFlashMessages(
         locator='//div[@class="toast-notifications-list-pf"]')
+    # TODO Defining current user procedure needs to be improved as it is not
+    # simple field, but a dropdown menu that contains more items/actions
     current_user = Text("//a[@id='account_menu']")
 
 
@@ -323,15 +325,17 @@ class SearchableViewMixin(WTMixin):
     Note that class which uses this mixin should have :attr:`table` attribute.
     """
     searchbox = Search()
+    welcome_message = Text("//div[@class='blank-slate-pf' or @id='welcome']")
 
     def is_searchable(self):
         """Verify that search procedure can be executed against specific page.
-        That means all necessary search controls are present on the page
+        That means that we have search field present on the page and that page
+        is not a welcome one
         """
-        if (self.searchbox.search_field.is_displayed and
-                self.searchbox.search_button.is_displayed):
-            return True
-        return False
+        if (not self.searchbox.search_field.is_displayed
+                and self.welcome_message.is_displayed):
+            return False
+        return True
 
     def search(self, query):
         """Perform search using searchbox on the page and return table
