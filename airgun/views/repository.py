@@ -16,7 +16,7 @@ from airgun.widgets import (
     EditableEntryCheckbox,
     EditableEntrySelect,
     ReadOnlyEntry,
-    SatContentCountsTable,
+    SatTableWithUnevenStructure,
     SatTable,
 )
 
@@ -130,7 +130,10 @@ class RepositoryEditView(BaseLoggedInView):
     label = ReadOnlyEntry(name='Label')
     repo_type = ReadOnlyEntry(name='Type')
     repo_content = ConditionalSwitchableView(reference='repo_type')
-    content_counts = SatContentCountsTable()
+    content_counts = SatTableWithUnevenStructure(
+        locator='.//table[//th[normalize-space(.)="Content Type"]]',
+        column_locator='./*'
+    )
 
     @repo_content.register('docker')
     class DockerRepository(View):

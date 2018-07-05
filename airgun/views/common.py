@@ -27,6 +27,9 @@ class BaseLoggedInView(View):
     taxonomies = ContextSelector()
     flash = SatFlashMessages(
         locator='//div[@class="toast-notifications-list-pf"]')
+    # TODO Defining current user procedure needs to be improved as it is not
+    # simple field, but a dropdown menu that contains more items/actions
+    current_user = Text("//a[@id='account_menu']")
 
 
 class SatTab(Tab):
@@ -322,6 +325,17 @@ class SearchableViewMixin(WTMixin):
     Note that class which uses this mixin should have :attr:`table` attribute.
     """
     searchbox = Search()
+    welcome_message = Text("//div[@class='blank-slate-pf' or @id='welcome']")
+
+    def is_searchable(self):
+        """Verify that search procedure can be executed against specific page.
+        That means that we have search field present on the page and that page
+        is not a welcome one
+        """
+        if (not self.searchbox.search_field.is_displayed
+                and self.welcome_message.is_displayed):
+            return False
+        return True
 
     def search(self, query):
         """Perform search using searchbox on the page and return table
@@ -332,7 +346,6 @@ class SearchableViewMixin(WTMixin):
         :return: list of dicts representing table rows
         :rtype: list
         """
-        self.searchbox.search(query)
         if not hasattr(self, 'table'):
             raise AttributeError(
                 'Class {} does not have attribute "table". SearchableViewMixin'
@@ -340,4 +353,8 @@ class SearchableViewMixin(WTMixin):
                 'define table or use custom search implementation instead'
                 .format(self.__class__.__name__)
             )
+        if not self.is_searchable():
+            return None
+        self.searchbox.search(query)
+
         return self.table.read()
