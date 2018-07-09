@@ -1,15 +1,11 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.entities.computeresource import ComputeResourceEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.computeprofile import (
     ComputeProfileCreateView,
     ComputeProfileRenameView,
     ComputeProfilesView,
-)
-from airgun.views.computeresource import (
-    ResourceProviderDetailView,
 )
 
 
@@ -34,16 +30,6 @@ class ComputeProfileEntity(BaseEntity):
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
-
-    def list_computeprofiles(self, name):
-        view = self.navigate_to(self, 'Edit', entity_name=name)
-        view.compute_profiles.large.click()
-        view.submit.click()
-
-    def read_computeprofile(self, name):
-        view = self.navigate_to(self, 'Edit', entity_name=name)
-        view.compute_profiles.large.click()
-        return view.read()
 
 
 @navigator.register(ComputeProfileEntity, 'All')
@@ -81,16 +67,3 @@ class RenameComputeProfile(NavigateStep):
         self.parent.table.row(
             name=entity_name)['Actions'].widget.fill('Rename')
         self.parent.actions.fill('Rename')
-
-
-@navigator.register(ComputeProfileEntity, 'Edit')
-class EditComputeProfile(NavigateStep):
-    VIEW = ResourceProviderDetailView
-
-    def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(ComputeResourceEntity, 'All', **kwargs)
-
-    def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
-        self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
