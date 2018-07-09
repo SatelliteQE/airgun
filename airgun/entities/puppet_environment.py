@@ -38,10 +38,6 @@ class PuppetEnvironmentEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def search_environment(self, value):
-        view = self.navigate_to(self, 'HostGroup')
-        view.fill(value)
-
 
 @navigator.register(PuppetEnvironmentEntity, 'All')
 class ShowAllPuppetEnvironmentsView(NavigateStep):
@@ -50,15 +46,6 @@ class ShowAllPuppetEnvironmentsView(NavigateStep):
 
     def step(self, *args, **kwargs):
         self.view.menu.select('Configure', 'Environments')
-
-
-@navigator.register(PuppetEnvironmentEntity, 'AllHostGroups')
-class ShowAllHostGroupsView(NavigateStep):
-
-    VIEW = HostGroupTableView
-
-    def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Host Groups')
 
 
 @navigator.register(PuppetEnvironmentEntity, 'New')
@@ -84,15 +71,3 @@ class EditPuppetEnvironmentView(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
-
-
-@navigator.register(PuppetEnvironmentEntity, 'HostGroup')
-class SearchHostGroupView(NavigateStep):
-
-    VIEW = HostGroupCreateView
-
-    def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'AllHostGroups')
-
-    def step(self, *args, **kwargs):
-        self.parent.new.click()
