@@ -2,7 +2,8 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.usergroup import UserGroupCreateView, UserGroupDetailsView, UserGroupsView
+from airgun.views.usergroup import (UserGroupCreateView,
+                                    UserGroupDetailsView, UserGroupsView)
 
 
 class UserGroupEntity(BaseEntity):
