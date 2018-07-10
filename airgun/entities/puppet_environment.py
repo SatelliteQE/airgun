@@ -6,10 +6,6 @@ from airgun.views.puppet_environment import (
     PuppetEnvironmentTableView,
     PuppetEnvironmentCreateView,
 )
-from airgun.views.hostgroup import (
-    HostGroupTableView,
-    HostGroupCreateView
-)
 
 
 class PuppetEnvironmentEntity(BaseEntity):
