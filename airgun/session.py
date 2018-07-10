@@ -32,6 +32,7 @@ from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.subnet import SubnetEntity
 from airgun.entities.syncplan import SyncPlanEntity
 from airgun.entities.user import UserEntity
+from airgun.entities.usergroup import UserGroupEntity
 from airgun.navigation import navigator
 
 LOGGER = logging.getLogger(__name__)
@@ -308,3 +309,8 @@ class Session(object):
     def user(self):
         """Instance of User entity."""
         return UserEntity(self.browser)
+
+    @cached_property
+    def usergroup(self):
+        """Instance of User Group entity."""
+        return UserGroupEntity(self.browser)
