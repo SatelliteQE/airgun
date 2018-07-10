@@ -11,7 +11,6 @@ class UserGroupEntity(BaseEntity):
     def create(self, values):
         view = self.navigate_to(self, 'New')
         view.fill(values)
-        self.browser.selenium.implicitly_wait(3)
         view.submit.click()
 
     def search(self, value):
