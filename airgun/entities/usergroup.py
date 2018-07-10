@@ -2,8 +2,11 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.usergroup import (UserGroupCreateView,
-                                    UserGroupDetailsView, UserGroupsView)
+from airgun.views.usergroup import (
+    UserGroupCreateView,
+    UserGroupDetailsView,
+    UserGroupsView
+)
 
 
 class UserGroupEntity(BaseEntity):
@@ -52,7 +55,7 @@ class AddNewUserGroup(NavigateStep):
 
 
 @navigator.register(UserGroupEntity, 'Edit')
-class EditUser(NavigateStep):
+class EditUserGroup(NavigateStep):
     VIEW = UserGroupDetailsView
 
     def prerequisite(self, *args, **kwargs):
@@ -61,4 +64,4 @@ class EditUser(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
-        self.parent.table.row(username=entity_name)['Username'].widget.click()
+        self.parent.table.row(name=entity_name)['Name'].widget.click()
