@@ -48,8 +48,7 @@ class SmartVariableContent(View):
 
         def __init__(self, parent, logger=None):
             View.__init__(self, parent, logger=logger)
-            if 'collapsed' in self.browser.element(
-                    self.expander).get_attribute('class'):
+            if 'collapsed' in self.browser.classes(self.expander):
                 self.expander.click()
                 self.browser.wait_for_element(
                     self.validator_type, visible=True)
@@ -78,23 +77,27 @@ class SmartVariableContent(View):
             ".//a[contains(@data-original-title, 'add a new matcher')]")
 
         def fill(self, values):
-            """Example
-            [
-                {
-                    'Attribute type': {
-                        'matcher_attribute_type': 'os',
-                        'matcher_attribute_value': 'x86'
+            """Add and fill all matchers provided
+            Example::
+
+                [
+                    {
+                        'Attribute type':
+                        {
+                            'matcher_attribute_type': 'os',
+                            'matcher_attribute_value': 'x86'
+                        },
+                        'Value': 'newvalue'
                     },
-                    'Value': 'newvalue'
-                },
-                {
-                    'Attribute type': {
-                        'matcher_attribute_type': 'fqdn',
-                        'matcher_attribute_value': 'myhost.com'
-                    },
-                    'Value': 'newvalue2'
-                }
-            ]
+                    {
+                        'Attribute type':
+                        {
+                            'matcher_attribute_type': 'fqdn',
+                            'matcher_attribute_value': 'myhost.com'
+                        },
+                        'Value': 'newvalue2'
+                    }
+                ]
 
             """
             for matcher_value in values:

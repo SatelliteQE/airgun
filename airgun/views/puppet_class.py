@@ -52,7 +52,7 @@ class PuppetClassDetailsView(BaseLoggedInView):
         pass
 
     @View.nested
-    class smart_class_variables(SatTab):
+    class smart_variables(SatTab):
         TAB_NAME = 'Smart Variables'
         variable = SmartVariableContent(
             locator="//div[@class='tab-pane fields active']")
