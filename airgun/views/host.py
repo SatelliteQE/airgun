@@ -244,6 +244,7 @@ class HostDetailsView(BaseLoggedInView):
     audits_details = Text("//a[text()='Audits']")
     facts_details = Text("//a[text()='Facts']")
     yaml_dump = Text("//a[text()='YAML']")
+    yaml_output = Text("//pre")
     content_details = Text("//a[text()='Content']")
 
     @View.nested
