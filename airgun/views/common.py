@@ -19,6 +19,7 @@ from airgun.widgets import (
     Search,
     Select,
     ToggleRadioGroup,
+    ValidationErrors,
 )
 
 
@@ -27,6 +28,7 @@ class BaseLoggedInView(View):
     taxonomies = ContextSelector()
     flash = SatFlashMessages(
         locator='//div[@class="toast-notifications-list-pf"]')
+    validations = ValidationErrors()
     # TODO Defining current user procedure needs to be improved as it is not
     # simple field, but a dropdown menu that contains more items/actions
     current_user = Text("//a[@id='account_menu']")

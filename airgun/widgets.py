@@ -419,6 +419,71 @@ class SatFlashMessage(FlashMessage):
         return self.browser.text('./span/span', parent=self)
 
 
+class ValidationErrors(Widget):
+    """Widget for tracking all improperly filled inputs inside view, which are
+    highlighted with red color and typically contain error message next to
+    them.
+
+    Example html representation::
+
+        <div class="form-group has-error">
+            <label class="..." for="name">DNS Domain *</label>
+            <div class="col-md-4">
+                <input ... type="text" name="domain[name]" id="domain_name">
+                <span class="help-block"></span>
+            </div>
+            <span class="help-block help-inline">
+                <span class="error-message">can't be blank</span>
+            </span>
+        </div>
+
+    Locator example::
+
+        No locator accepted as widget should look through entire view.
+
+    """
+    ERROR_ELEMENTS = (
+        ".//*[contains(@class,'has-error') and "
+        "not(contains(@style,'display:none'))]"
+    )
+    ERROR_MESSAGES = (
+        ".//*[(contains(@class,'error-msg-block') "
+        "or contains(@class,'error-message')) "
+        "and not(contains(@style,'display:none'))]"
+    )
+
+    @property
+    def has_errors(self):
+        """Returns boolean value whether view has fields with invalid data or
+        not.
+        """
+        return self.browser.elements(self.ERROR_ELEMENTS) != []
+
+    @property
+    def messages(self):
+        """Returns a list of all validation messages for improperly filled
+        fields. Example: ["can't be blank"]
+        """
+        error_msgs = self.browser.elements(self.ERROR_MESSAGES)
+        return [
+            self.browser.text(error_msg)
+            for error_msg in error_msgs
+        ]
+
+    def assert_no_errors(self):
+        """Assert current view has no validation messages, otherwise rise
+        ``AssertionError``.
+        """
+        if self.has_errors:
+            raise AssertionError(
+                "Validation errors present on page, displayed messages: {}"
+                .format(self.messages)
+            )
+
+    def read(self, *args, **kwargs):
+        do_not_read_this_widget()
+
+
 class ContextSelector(Widget):
     CURRENT_ORG = '//li[@id="organization-dropdown"]/a'
     CURRENT_LOC = '//li[@id="location-dropdown"]/a'
