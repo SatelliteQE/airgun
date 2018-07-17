@@ -62,6 +62,14 @@ class HostEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def read_yaml_output(self, entity_name):
+        """Get puppet external nodes YAML dump for specific host"""
+        view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        view.yaml_dump.click()
+        output = view.browser.element(view.yaml_output).text
+        view.browser.selenium.back()
+        return output
+
 
 @navigator.register(HostEntity, 'All')
 class ShowAllHosts(NavigateStep):

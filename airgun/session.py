@@ -26,11 +26,13 @@ from airgun.entities.login import LoginEntity
 from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.organization import OrganizationEntity
 from airgun.entities.partitiontable import PartitionTableEntity
+from airgun.entities.puppet_class import PuppetClassEntity
 from airgun.entities.puppet_environment import PuppetEnvironmentEntity
 from airgun.entities.product import ProductEntity
 from airgun.entities.repository import RepositoryEntity
 from airgun.entities.role import RoleEntity
 from airgun.entities.template import ProvisioningTemplateEntity
+from airgun.entities.smart_variable import SmartVariableEntity
 from airgun.entities.subnet import SubnetEntity
 from airgun.entities.syncplan import SyncPlanEntity
 from airgun.entities.user import UserEntity
@@ -283,6 +285,11 @@ class Session(object):
         return PartitionTableEntity(self.browser)
 
     @cached_property
+    def puppetclass(self):
+        """Instance of Puppet Class entity."""
+        return PuppetClassEntity(self.browser)
+
+    @cached_property
     def puppetenvironment(self):
         """Instance of Puppet Environment entity."""
         return PuppetEnvironmentEntity(self.browser)
@@ -306,6 +313,11 @@ class Session(object):
     def role(self):
         """Instance of Role entity."""
         return RoleEntity(self.browser)
+
+    @cached_property
+    def smartvariable(self):
+        """Instance of Smart Variable entity."""
+        return SmartVariableEntity(self.browser)
 
     @cached_property
     def subnet(self):
