@@ -21,6 +21,8 @@ class OperatingSystemEntity(BaseEntity):
         view.search(entity_name)
         view.table.row(
             title=entity_name)['Actions'].widget.click(handle_alert=True)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
@@ -34,6 +36,8 @@ class OperatingSystemEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(OperatingSystemEntity, 'All')
