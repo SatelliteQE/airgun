@@ -2,7 +2,12 @@ from widgetastic.widget import Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
-from airgun.widgets import CustomParameter, MultiSelect, SatTable
+from airgun.widgets import (
+    CustomParameter,
+    FilteredDropdown,
+    MultiSelect,
+    SatTable,
+)
 
 
 class OperatingSystemsView(BaseLoggedInView, SearchableViewMixin):
@@ -24,32 +29,7 @@ class OperatingSystemsView(BaseLoggedInView, SearchableViewMixin):
 
 class OperatingSystemEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    name = TextInput(locator=".//input[@id='operatingsystem_name']")
-    major = TextInput(locator=".//input[@id='operatingsystem_major']")
-    architectures = MultiSelect(id='ms-operatingsystem_architecture_ids')
     submit = Text('//input[@name="commit"]')
-
-    @View.nested
-    class ptables(SatTab):
-        TAB_NAME = 'Partition Table'
-        ptables = MultiSelect(id='ms-operatingsystem_ptable_ids')
-
-        def fill(self, values):
-            self.ptables.fill(values)
-
-        def read(self):
-            return self.ptables.read()
-
-    @View.nested
-    class parameters(SatTab):
-        TAB_NAME = 'Parameters'
-        params = CustomParameter(id='global_parameters_table')
-
-        def fill(self, values):
-            self.params.fill(values)
-
-        def read(self):
-            return self.params.read()
 
     @property
     def is_displayed(self):
@@ -60,6 +40,33 @@ class OperatingSystemEditView(BaseLoggedInView):
                 and self.breadcrumb.locations[0] == 'Operatingsystems'
                 and self.breadcrumb.read() == 'Edit Operating System'
         )
+
+    @View.nested
+    class operating_system(SatTab):
+        TAB_NAME = 'Operating System'
+        name = TextInput(locator=".//input[@id='operatingsystem_name']")
+        major = TextInput(locator=".//input[@id='operatingsystem_major']")
+        minor = TextInput(locator=".//input[@id='operatingsystem_minor']")
+        description = TextInput(
+            locator=".//input[@id='operatingsystem_description']")
+        family = FilteredDropdown(id='operatingsystem_family')
+        password_hash = FilteredDropdown(id='operatingsystem_password_hash')
+        architectures = MultiSelect(id='ms-operatingsystem_architecture_ids')
+
+    @View.nested
+    class partition_table(SatTab):
+        TAB_NAME = 'Partition Table'
+        resources = MultiSelect(id='ms-operatingsystem_ptable_ids')
+
+    @View.nested
+    class installation_media(SatTab):
+        TAB_NAME = 'Installation Media'
+        resources = MultiSelect(id='ms-operatingsystem_medium_ids')
+
+    @View.nested
+    class parameters(SatTab):
+        TAB_NAME = 'Parameters'
+        os_params = CustomParameter(id='global_parameters_table')
 
 
 class OperatingSystemCreateView(OperatingSystemEditView):
