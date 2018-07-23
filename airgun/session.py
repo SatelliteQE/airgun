@@ -20,6 +20,7 @@ from airgun.entities.domain import DomainEntity
 from airgun.entities.host import HostEntity
 from airgun.entities.hostcollection import HostCollectionEntity
 from airgun.entities.filter import FilterEntity
+from airgun.entities.ldap_authentication import LDAPAuthenticationEntity
 from airgun.entities.lifecycleenvironment import LCEEntity
 from airgun.entities.location import LocationEntity
 from airgun.entities.login import LoginEntity
@@ -253,6 +254,11 @@ class Session(object):
     def hostcollection(self):
         """Instance of Host Collection entity."""
         return HostCollectionEntity(self.browser)
+
+    @cached_property
+    def ldapauthentication(self):
+        """Instance of LDAP Authentication entity."""
+        return LDAPAuthenticationEntity(self.browser)
 
     @cached_property
     def lifecycleenvironment(self):
