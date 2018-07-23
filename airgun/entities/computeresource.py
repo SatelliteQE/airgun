@@ -1,10 +1,11 @@
+
 from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.computeresource import (
     ComputeResourcesView,
+    ResourceProviderCreateView,
     ResourceProviderEditView,
-    ResourceProviderDetailView,
 )
 
 
@@ -59,20 +60,23 @@ class ComputeResourceEntity(BaseEntity):
         if vm['Power'].widget.read() == 'On':
             vm['Actions'].widget.click(handle_alert=True)
 
-    def list_computeprofiles(self, ec2_name):
-        view = self.navigate_to(self, 'Detail', rhev_name=ec2_name)
-        view.compute_profiles.large.click()
+    def list_computeprofiles(self, entity_name, computeprofile_name):
+        view = self.navigate_to(self, 'Detail', rhev_name=entity_name)
+        view.compute_profiles.table.row(compute_profile=computeprofile_name)[
+            'Compute profile'].widget.click()
         view.submit.click()
 
-    def edit_computeprofiles(self, values, ec2_name):
-        view = self.navigate_to(self, 'Detail', rhev_name=ec2_name)
-        view.compute_profiles.large.click()
+    def edit_computeprofiles(self, values, entity_name, computeprofile_name):
+        view = self.navigate_to(self, 'Detail', rhev_name=entity_name)
+        view.compute_profiles.table.row(compute_profile=computeprofile_name)[
+            'Compute profile'].widget.click()
         view.fill(values)
         view.submit.click()
 
-    def read_computeprofile(self, ec2_name):
-        view = self.navigate_to(self, 'Detail', rhev_name=ec2_name)
-        view.compute_profiles.large.click()
+    def read_computeprofile(self, entity_name, computeprofile_name):
+        view = self.navigate_to(self, 'Detail', rhev_name=entity_name)
+        view.compute_profiles.table.row(compute_profile=computeprofile_name)[
+            'Compute profile'].widget.click()
         return view.read()
 
 
@@ -86,7 +90,7 @@ class ShowAllComputeResources(NavigateStep):
 
 @navigator.register(ComputeResourceEntity, 'New')
 class AddNewComputeResource(NavigateStep):
-    VIEW = ResourceProviderEditView
+    VIEW = ResourceProviderCreateView
 
     prerequisite = NavigateToSibling('All')
 
@@ -96,7 +100,7 @@ class AddNewComputeResource(NavigateStep):
 
 @navigator.register(ComputeResourceEntity, 'Edit')
 class EditExistingComputeResource(NavigateStep):
-    VIEW = ResourceProviderEditView
+    VIEW = ResourceProviderCreateView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
@@ -110,7 +114,7 @@ class EditExistingComputeResource(NavigateStep):
 
 @navigator.register(ComputeResourceEntity, 'Detail')
 class ComputeResourceDetail(NavigateStep):
-    VIEW = ResourceProviderDetailView
+    VIEW = ResourceProviderEditView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')

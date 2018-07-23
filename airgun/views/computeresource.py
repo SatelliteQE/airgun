@@ -39,7 +39,7 @@ class ComputeResourcesView(BaseLoggedInView, SearchableViewMixin):
             self.title, exception=False) is not None
 
 
-class ResourceProviderEditView(BaseLoggedInView):
+class ResourceProviderCreateView(BaseLoggedInView):
     name = TextInput(id='compute_resource_name')
     description = TextInput(id='compute_resource_description')
     submit = Text('//input[@name="commit"]')
@@ -129,9 +129,8 @@ class ResourceProviderEditView(BaseLoggedInView):
             self.name, exception=False) is not None
 
 
-class ResourceProviderDetailView(BaseLoggedInView):
+class ResourceProviderEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    compprofiles = Text("//a[text()='Compute profiles']")
     flavor = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_flavor_id')
     availability_zone = FilteredDropdown(
         id='s2id_compute_attribute_vm_attrs_availability_zone')
@@ -149,8 +148,7 @@ class ResourceProviderDetailView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Compute resources'
-            and self.browser.wait_for_element(
-                self.compprofiles, exception=False) is not None
+            and self.breadcrumb.read() != 'Create Compute Resource'
         )
 
     @View.nested
@@ -169,6 +167,10 @@ class ResourceProviderDetailView(BaseLoggedInView):
     @View.nested
     class compute_profiles(SatTab):
         TAB_NAME = 'Compute profiles'
-        small = Text("//a[text()='1-Small']")
-        medium = Text("//a[text()='2-Medium']")
-        large = Text("//a[text()='3-Large']")
+        table = SatTable(
+            './/table',
+            column_widgets={
+                'Compute profile': Text('./a'),
+                'VM Attributes': Text('//span[@class="gray"]'),
+            }
+        )

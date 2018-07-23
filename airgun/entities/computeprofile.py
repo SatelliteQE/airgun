@@ -9,7 +9,7 @@ from airgun.views.computeprofile import (
     ComputeProfilesView,
 )
 from airgun.views.computeresource import (
-    ResourceProviderDetailView,
+    ResourceProviderEditView,
 )
 
 
@@ -35,14 +35,16 @@ class ComputeProfileEntity(BaseEntity):
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
 
-    def list_computeprofiles(self, name):
-        view = self.navigate_to(self, 'Edit', entity_name=name)
-        view.compute_profiles.large.click()
+    def list_computeprofiles(self, entity_name, computeprofile_name):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.compute_profiles.table.row(compute_profile=computeprofile_name)[
+            'Compute profile'].widget.click()
         view.submit.click()
 
-    def read_computeprofile(self, name):
-        view = self.navigate_to(self, 'Edit', entity_name=name)
-        view.compute_profiles.large.click()
+    def read_computeprofile(self, entity_name, computeprofile_name):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.compute_profiles.table.row(compute_profile=computeprofile_name)[
+            'Compute profile'].widget.click()
         return view.read()
 
 
@@ -85,7 +87,7 @@ class RenameComputeProfile(NavigateStep):
 
 @navigator.register(ComputeProfileEntity, 'Edit')
 class EditComputeProfile(NavigateStep):
-    VIEW = ResourceProviderDetailView
+    VIEW = ResourceProviderEditView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(ComputeResourceEntity, 'All', **kwargs)
