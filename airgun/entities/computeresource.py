@@ -52,9 +52,10 @@ class ComputeResourceEntity(BaseEntity):
     def list_vms(self, rhev_name, expected_vm_name=None):
         """Returns all the VMs on the CR or VM with specified name"""
         view = self.navigate_to(self, 'Detail', rhev_name=rhev_name)
-        return view.virtual_machines.table.row(name=expected_vm_name) if \
-            expected_vm_name is not None else \
-            view.virtual_machines.table.rows()
+        if expected_vm_name:
+            view.virtual_machines.search(expected_vm_name)
+            return view.virtual_machines.table.row(name=expected_vm_name)
+        return view.virtual_machines.table.rows()
 
     def vm_status(self, rhev_name, vm_name):
         """Returns True if the machine is runing, False otherwise"""

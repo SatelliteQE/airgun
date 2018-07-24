@@ -163,7 +163,7 @@ class ResourceProviderDetailView(BaseLoggedInView):
         table = SatTable('.//table')
 
     @View.nested
-    class virtual_machines(SatTab):
+    class virtual_machines(SatTab, SearchableViewMixin):
         TAB_NAME = 'Virtual Machines'
 
         table = SatTable(
