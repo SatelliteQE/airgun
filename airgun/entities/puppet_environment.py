@@ -5,6 +5,7 @@ from airgun.navigation import NavigateStep, navigator
 from airgun.views.puppet_environment import (
     PuppetEnvironmentTableView,
     PuppetEnvironmentCreateView,
+    ImportPuppetEnvironmentView,
 )
 
 
@@ -33,6 +34,11 @@ class PuppetEnvironmentEntity(BaseEntity):
     def search(self, value):
         view = self.navigate_to(self, 'All')
         return view.search(value)
+
+    def import_environments(self, value):
+        view = self.navigate_to(self, 'Import')
+        view.table.row(environment=value)['Environment'].widget.click()
+        view.update.click()
 
 
 @navigator.register(PuppetEnvironmentEntity, 'All')
@@ -67,3 +73,14 @@ class EditPuppetEnvironmentView(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+
+@navigator.register(PuppetEnvironmentEntity, 'Import')
+class ImportPuppetEnvironmentView(NavigateStep):
+
+    VIEW = ImportPuppetEnvironmentView
+
+    prerequisite = NavigateToSibling('All')
+
+    def step(self, *args, **kwargs):
+        self.parent.import_environments.click()

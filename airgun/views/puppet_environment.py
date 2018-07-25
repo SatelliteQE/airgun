@@ -55,6 +55,14 @@ class ImportPuppetEnvironmentView(BaseLoggedInView, SearchableViewMixin):
     obsolete = Text("//a[contains(@data-original-title,'obsolete')]")
     update = Text("//input[@name='commit']")
     cancel = Text("//a[@data-id='aid_environments']")
+    table = SatTable(
+        locator='.//table',
+        column_widgets={
+            'Environment': Text('//a[starts-with(\
+                @data-original-title,"Check/Uncheck all")\
+                and contains(@data-original-title,"changes")]'),
+        }
+    )
 
     @property
     def is_displayed(self):
