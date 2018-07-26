@@ -6,12 +6,14 @@ from widgetastic.widget import (
     View,
     WTMixin,
 )
-from widgetastic_patternfly import Tab, TabWithDropdown
+from widgetastic_patternfly import BreadCrumb, Tab, TabWithDropdown
 
 from airgun.widgets import (
     ACEEditor,
     ContextSelector,
     LCESelector,
+    ProgressBar,
+    ReadOnlyEntry,
     SatFlashMessages,
     SatSubscriptionsTable,
     SatTable,
@@ -360,3 +362,19 @@ class SearchableViewMixin(WTMixin):
         self.searchbox.search(query)
 
         return self.table.read()
+
+
+class TaskDetailsView(BaseLoggedInView):
+    """Common view for task details screen. Can be found for most of tasks for
+    various entities like Products, Repositories, Errata etc.
+    """
+    breadcrumb = BreadCrumb()
+    action_type = ReadOnlyEntry(name='Action Type')
+    user = ReadOnlyEntry(name='User')
+    started_at = ReadOnlyEntry(name='Started At')
+    finished_at = ReadOnlyEntry(name='Finished At')
+    parameters = ReadOnlyEntry(name='Parameters')
+    state = ReadOnlyEntry(name='State')
+    result = ReadOnlyEntry(name='Result')
+    progressbar = ProgressBar()
+    details = ReadOnlyEntry(name='Details')

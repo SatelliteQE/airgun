@@ -1,0 +1,157 @@
+import re
+
+from airgun.entities.base import BaseEntity
+from airgun.navigation import NavigateStep, navigator
+from airgun.views.errata import (
+    ErratumView,
+    ErrataDetailsView,
+    ErrataTaskDetailsView,
+)
+
+
+class ErrataEntity(BaseEntity):
+
+    def search(self, value, applicable=True, installable=False, repo=None):
+        """Search for specific errata.
+
+        :param str value: search query to type into search field.
+        :param bool applicable: filter by only applicable errata
+        :param bool installable: filter by only installable errata
+        :param str optional repo: filter by repository name
+        :return: list of dicts representing table rows
+        :rtype: list
+        """
+        view = self.navigate_to(self, 'All')
+        return view.search(
+            value,
+            applicable=applicable,
+            installable=installable,
+            repo=repo
+        )
+
+    def read(self, entity_name, applicable=False, installable=False, repo=None,
+             environment=None):
+        """Read errata details.
+
+        :param str entity_name: errata id or title
+        :param bool applicable: filter by only applicable errata
+        :param bool installable: filter by only installable errata
+        :param str optional repo: filter by repository name
+        :param str optional environment: filter applicable hosts by environment
+            name
+        :return: dict representing tabs, with nested dicts representing fields
+            and values
+        :rtype: dict
+        """
+        view = self.navigate_to(
+            self,
+            'Details',
+            entity_name=entity_name,
+            applicable=applicable,
+            installable=installable,
+            repo=repo,
+        )
+        if environment:
+            view.content_hosts.environment_filter.fill(environment)
+        return view.read()
+
+    def install(self, entity_name, host_name):
+        """Install errata on content host.
+
+        :param str entity_name: errata id or title
+        :param str host_name: content host name to apply errata on
+        """
+        view = self.navigate_to(
+            self,
+            'Install',
+            entity_name=entity_name,
+            host_name=host_name,
+            applicable=False,
+            installable=False,
+            repo=None,
+        )
+        view.progressbar.wait_for_result()
+        return view.read()
+
+
+@navigator.register(ErrataEntity, 'All')
+class ShowAllErratum(NavigateStep):
+    """Navigate to All Erratum screen."""
+    VIEW = ErratumView
+
+    def step(self, *args, **kwargs):
+        self.view.menu.select('Content', 'Errata')
+
+
+@navigator.register(ErrataEntity, 'Details')
+class ErrataDetails(NavigateStep):
+    """Navigate to Errata details page.
+
+        Args:
+            entity_name: id or title of errata
+
+        Optional Args:
+            applicable: whether to filter errata by only applicable ones
+            installable: whether to filter errata by only installable ones
+            repo: name of repository to filter errata by
+    """
+    VIEW = ErrataDetailsView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        applicable = kwargs.get('applicable')
+        installable = kwargs.get('installable')
+        repo = kwargs.get('repo')
+        self.parent.search(
+            entity_name,
+            applicable=applicable,
+            installable=installable,
+            repo=repo
+        )
+        row_filter = {'title': entity_name}
+        if re.search(r'\w{4}-\d{4}:\d{4}', entity_name):
+            row_filter = {'errata_id': entity_name}
+        self.parent.table.row(**row_filter)['Errata ID'].widget.click()
+
+
+@navigator.register(ErrataEntity, 'Install')
+class InstallErrata(NavigateStep):
+    """Open errata, select host to install it on, proceed to errata
+    installation task screen.
+
+        Args:
+            entity_name: id or title of errata
+            host_name: name of host to install errata on
+
+        Optional Args:
+            environment: name of environment to filter content host by
+            applicable: whether to filter errata by only applicable ones
+            installable: whether to filter errata by only installable ones
+            repo: name of repository to filter errata by
+    """
+    VIEW = ErrataTaskDetailsView
+
+    def prerequisite(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        applicable = kwargs.get('applicable')
+        installable = kwargs.get('installable')
+        repo = kwargs.get('repo')
+        return self.navigate_to(
+            self.obj,
+            'Details',
+            entity_name=entity_name,
+            applicable=applicable,
+            installable=installable,
+            repo=repo,
+        )
+
+    def step(self, *args, **kwargs):
+        host_name = kwargs.get('host_name')
+        environment = kwargs.get('environment')
+        self.parent.content_hosts.search(host_name, environment=environment)
+        self.parent.content_hosts.table.row(name=host_name)[0].fill(True)
+        self.parent.content_hosts.apply.click()
+        self.parent.content_hosts.confirm.click()

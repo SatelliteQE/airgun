@@ -14,13 +14,13 @@ from airgun.views.common import (
     BaseLoggedInView,
     SatTab,
     SearchableViewMixin,
+    TaskDetailsView,
 )
 from airgun.widgets import (
     ActionsDropdown,
     ConfirmationDialog,
     EditableEntry,
     EditableEntrySelect,
-    ProgressBar,
     ReadOnlyEntry,
     SatSelect,
     SatTable,
@@ -214,17 +214,7 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
             )
 
 
-class ProductTaskDetailsView(BaseLoggedInView):
-    breadcrumb = BreadCrumb()
-    action_type = ReadOnlyEntry(name='Action Type')
-    user = ReadOnlyEntry(name='User')
-    started_at = ReadOnlyEntry(name='Started At')
-    finished_at = ReadOnlyEntry(name='Finished At')
-    parameters = ReadOnlyEntry(name='Parameters')
-    state = ReadOnlyEntry(name='State')
-    result = ReadOnlyEntry(name='Result')
-    progressbar = ProgressBar()
-    details = ReadOnlyEntry(name='Details')
+class ProductTaskDetailsView(TaskDetailsView):
 
     @property
     def is_displayed(self):
