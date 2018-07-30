@@ -24,14 +24,14 @@ class PuppetEnvironmentTableView(BaseLoggedInView, SearchableViewMixin):
     Create Puppet Environment (new), button import environments
     and table with existing Puppet Environments
     """
-    title = Text("//h1[contains(., 'Puppet Environments')]")
-    new = Text("//a[contains(@href, '/environments/new')]")
+    title = Text(".//h1[contains(., 'Puppet Environments')]")
+    new = Text(".//a[contains(@href, '/environments/new')]")
     import_environments = Text(
-        "//a[@data-id='aid_environments_import_environments']")
+        ".//a[@data-id='aid_environments_import_environments']")
     table = SatTable(
         locator='.//table',
         column_widgets={
-            'Name': Text("//a[starts-with(@href, '/environments/') and \
+            'Name': Text(".//a[starts-with(@href, '/environments/') and \
                 contains(@href,'/edit')]"),
             'Actions': ActionsDropdown(
                 './div[contains(@class, "btn-group")]')
@@ -50,11 +50,17 @@ class ImportPuppetEnvironmentView(BaseLoggedInView, SearchableViewMixin):
     toggles New, Updated, Obsolete. Button update and cancel
     """
     breadcrumb = BreadCrumb()
-    new = Text("//a[contains(@data-original-title,'new')]")
-    updated = Text("//a[contains(@data-original-title,'updated')]")
-    obsolete = Text("//a[contains(@data-original-title,'obsolete')]")
-    update = Text("//input[@name='commit']")
-    cancel = Text("//a[@data-id='aid_environments']")
+    new = Text(".//a[contains(@data-original-title,'new')]")
+    updated = Text(".//a[contains(@data-original-title,'updated')]")
+    obsolete = Text(".//a[contains(@data-original-title,'obsolete')]")
+    update = Text(".//input[@name='commit']")
+    cancel = Text(".//a[@data-id='aid_environments']")
+    table = SatTable(
+        locator='.//table',
+        column_widgets={
+            'Environment': Text('./a'),
+        }
+    )
 
     @property
     def is_displayed(self):
@@ -73,7 +79,7 @@ class PuppetEnvironmentCreateView(BaseLoggedInView):
     create a new puppet environment
     """
     breadcrumb = BreadCrumb()
-    submit = Text("//input[@name='commit']")
+    submit = Text(".//input[@name='commit']")
 
     @property
     def is_displayed(self):
