@@ -33,6 +33,7 @@ from airgun.entities.product import ProductEntity
 from airgun.entities.repository import RepositoryEntity
 from airgun.entities.role import RoleEntity
 from airgun.entities.template import ProvisioningTemplateEntity
+from airgun.entities.smart_class_parameter import SmartClassParameterEntity
 from airgun.entities.smart_variable import SmartVariableEntity
 from airgun.entities.subnet import SubnetEntity
 from airgun.entities.syncplan import SyncPlanEntity
@@ -319,6 +320,11 @@ class Session(object):
     def role(self):
         """Instance of Role entity."""
         return RoleEntity(self.browser)
+
+    @cached_property
+    def sc_parameter(self):
+        """Instance of Smart Class Parameter entity."""
+        return SmartClassParameterEntity(self.browser)
 
     @cached_property
     def smartvariable(self):
