@@ -1,9 +1,10 @@
 from widgetastic.widget import Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
+from airgun.views.smart_class_parameter import SmartClassParameterContent
 from airgun.views.smart_variable import SmartVariableContent
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
-from airgun.widgets import MultiSelect, SatTable
+from airgun.widgets import FilteredDropdown, ItemsList, MultiSelect, SatTable
 
 
 class PuppetClassesView(BaseLoggedInView, SearchableViewMixin):
@@ -49,10 +50,21 @@ class PuppetClassDetailsView(BaseLoggedInView):
     @View.nested
     class smart_class_parameter(SatTab):
         TAB_NAME = 'Smart Class Parameter'
-        pass
+        filter = TextInput(locator="//input[@placeholder='Filter by name']")
+        environment_filter = FilteredDropdown(id='environment_filter')
+        parameter_list = ItemsList(
+            "//div[@id='smart_class_param']"
+            "//ul[contains(@class, 'smart-var-tabs')]"
+        )
+        parameter = SmartClassParameterContent(
+            locator="//div[@id='smart_class_param']"
+                    "//div[@class='tab-pane fields active']"
+        )
 
     @View.nested
     class smart_variables(SatTab):
         TAB_NAME = 'Smart Variables'
         variable = SmartVariableContent(
-            locator="//div[@class='tab-pane fields active']")
+            locator="//div[@id='smart_vars']"
+                    "//div[@class='tab-pane fields active']"
+        )
