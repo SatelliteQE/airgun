@@ -5,6 +5,7 @@ from airgun.navigation import NavigateStep, navigator
 from airgun.views.errata import (
     ErratumView,
     ErrataDetailsView,
+    ErrataInstallationConfirmationView,
     ErrataTaskDetailsView,
 )
 
@@ -63,13 +64,18 @@ class ErrataEntity(BaseEntity):
         """
         view = self.navigate_to(
             self,
-            'Install',
+            'Details',
             entity_name=entity_name,
-            host_name=host_name,
             applicable=False,
             installable=False,
             repo=None,
         )
+        view.content_hosts.search(host_name)
+        view.content_hosts.table.row(name=host_name)[0].fill(True)
+        view.content_hosts.apply.click()
+        view = ErrataInstallationConfirmationView(view.browser)
+        view.confirm.click()
+        view = ErrataTaskDetailsView(view.browser)
         view.progressbar.wait_for_result()
         return view.read()
 
@@ -115,43 +121,3 @@ class ErrataDetails(NavigateStep):
         if re.search(r'\w{4}-\d{4}:\d{4}', entity_name):
             row_filter = {'errata_id': entity_name}
         self.parent.table.row(**row_filter)['Errata ID'].widget.click()
-
-
-@navigator.register(ErrataEntity, 'Install')
-class InstallErrata(NavigateStep):
-    """Open errata, select host to install it on, proceed to errata
-    installation task screen.
-
-        Args:
-            entity_name: id or title of errata
-            host_name: name of host to install errata on
-
-        Optional Args:
-            environment: name of environment to filter content host by
-            applicable: whether to filter errata by only applicable ones
-            installable: whether to filter errata by only installable ones
-            repo: name of repository to filter errata by
-    """
-    VIEW = ErrataTaskDetailsView
-
-    def prerequisite(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
-        applicable = kwargs.get('applicable')
-        installable = kwargs.get('installable')
-        repo = kwargs.get('repo')
-        return self.navigate_to(
-            self.obj,
-            'Details',
-            entity_name=entity_name,
-            applicable=applicable,
-            installable=installable,
-            repo=repo,
-        )
-
-    def step(self, *args, **kwargs):
-        host_name = kwargs.get('host_name')
-        environment = kwargs.get('environment')
-        self.parent.content_hosts.search(host_name, environment=environment)
-        self.parent.content_hosts.table.row(name=host_name)[0].fill(True)
-        self.parent.content_hosts.apply.click()
-        self.parent.content_hosts.confirm.click()

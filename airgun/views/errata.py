@@ -96,8 +96,6 @@ class ErrataDetailsView(BaseLoggedInView):
             ".//select[@ng-model='environmentFilter']")
         searchbox = Search()
         apply = Text(".//button[@ng-click='goToNextStep()']")
-        cancel = Text(".//button[@ng-click='transitionBack()']")
-        confirm = Text(".//button[@type='submit']")
         table = SatTable(
             locator=".//table",
             column_widgets={
@@ -195,6 +193,11 @@ class ApplyErrataView(BaseLoggedInView):
                 and self.breadcrumb.locations[0] == 'Errata'
                 and self.breadcrumb.read() == 'Select Content Host(s)'
         )
+
+
+class ErrataInstallationConfirmationView(BaseLoggedInView):
+    cancel = Text(".//button[@ng-click='transitionBack()']")
+    confirm = Text(".//button[@type='submit']")
 
 
 class ErrataTaskDetailsView(TaskDetailsView):
