@@ -15,6 +15,14 @@ class PuppetClassEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
 
+    def read_smart_class_parameter(self, entity_name, parameter_name):
+        """Read smart class parameter values for specific puppet class"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.smart_class_parameter.filter.fill(parameter_name)
+        view.smart_class_parameter.parameter_list.fill(
+            parameter_name.replace('_', ' '))
+        return view.smart_class_parameter.parameter.read()
+
     def update(self, entity_name, values):
         """Update puppet class values"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
