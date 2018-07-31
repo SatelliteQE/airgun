@@ -17,6 +17,7 @@ from airgun.entities.contentcredential import ContentCredentialEntity
 from airgun.entities.contentview import ContentViewEntity
 from airgun.entities.computeresource import ComputeResourceEntity
 from airgun.entities.domain import DomainEntity
+from airgun.entities.errata import ErrataEntity
 from airgun.entities.host import HostEntity
 from airgun.entities.hostcollection import HostCollectionEntity
 from airgun.entities.filter import FilterEntity
@@ -240,6 +241,11 @@ class Session(object):
     def domain(self):
         """Instance of domain entity."""
         return DomainEntity(self.browser)
+
+    @cached_property
+    def errata(self):
+        """Instance of Errata entity."""
+        return ErrataEntity(self.browser)
 
     @cached_property
     def filter(self):
