@@ -129,7 +129,20 @@ class ResourceProviderCreateView(BaseLoggedInView):
             self.name, exception=False) is not None
 
 
-class ResourceProviderEditView(BaseLoggedInView):
+class ResourceProviderEditView(ResourceProviderCreateView):
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Compute resources'
+            and self.breadcrumb.read().startswith('Edit ')
+        )
+
+
+class ResourceProviderDetailView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     flavor = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_flavor_id')
     availability_zone = FilteredDropdown(

@@ -6,6 +6,7 @@ from airgun.views.computeresource import (
     ComputeResourcesView,
     ResourceProviderCreateView,
     ResourceProviderEditView,
+    ResourceProviderDetailView,
 )
 
 
@@ -66,7 +67,7 @@ class ComputeResourceEntity(BaseEntity):
             'Compute profile'].widget.click()
         view.submit.click()
 
-    def edit_computeprofiles(self, values, entity_name, computeprofile_name):
+    def update_computeprofile(self, entity_name, computeprofile_name, values):
         view = self.navigate_to(self, 'Detail', rhev_name=entity_name)
         view.compute_profiles.table.row(compute_profile=computeprofile_name)[
             'Compute profile'].widget.click()
@@ -100,7 +101,7 @@ class AddNewComputeResource(NavigateStep):
 
 @navigator.register(ComputeResourceEntity, 'Edit')
 class EditExistingComputeResource(NavigateStep):
-    VIEW = ResourceProviderCreateView
+    VIEW = ResourceProviderEditView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
@@ -114,7 +115,7 @@ class EditExistingComputeResource(NavigateStep):
 
 @navigator.register(ComputeResourceEntity, 'Detail')
 class ComputeResourceDetail(NavigateStep):
-    VIEW = ResourceProviderEditView
+    VIEW = ResourceProviderDetailView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
