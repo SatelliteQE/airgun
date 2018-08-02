@@ -27,7 +27,9 @@ class PuppetEnvironmentTableView(BaseLoggedInView, SearchableViewMixin):
     title = Text(".//h1[contains(., 'Puppet Environments')]")
     new = Text(".//a[contains(@href, '/environments/new')]")
     import_environments = Text(
-        ".//a[@data-id='aid_environments_import_environments']")
+        ".//span[contains(@class, 'btn')]"
+        "/a[contains(@href, 'import_environments')]"
+    )
     table = SatTable(
         locator='.//table',
         column_widgets={
@@ -54,7 +56,7 @@ class ImportPuppetEnvironmentView(BaseLoggedInView, SearchableViewMixin):
     updated = Text(".//a[contains(@data-original-title,'updated')]")
     obsolete = Text(".//a[contains(@data-original-title,'obsolete')]")
     update = Text(".//input[@name='commit']")
-    cancel = Text(".//a[@data-id='aid_environments']")
+    cancel = Text(".//a[contains(@class, 'btn') and @href='/environments']")
     table = SatTable(
         locator='.//table',
         column_widgets={
