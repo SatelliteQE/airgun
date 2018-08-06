@@ -16,8 +16,8 @@ class DomainListView(BaseLoggedInView, SearchableViewMixin):
     table = SatTable(
         locator='table#domains_list',
         column_widgets={
-            'Description': Text(".//a[contains(@data-id, '_edit')]"),
-            'Hosts': Text(".//a[@data-id='aid_hosts']"),
+            'Description': Text("./a"),
+            'Hosts': Text("./a"),
             'Actions': Text(".//a[@data-method='delete']")  # delete button
         }
     )
