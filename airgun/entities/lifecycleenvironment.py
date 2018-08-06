@@ -15,12 +15,16 @@ class LCEEntity(BaseEntity):
         view = self.navigate_to(self, 'New Path')
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def create_environment(self, values, entity_name):
         view = self.navigate_to(
             self, 'New Environment', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def create(self, values, prior_entity_name=None,):
         """Create new lifecycle environment
@@ -40,6 +44,8 @@ class LCEEntity(BaseEntity):
 
     def update(self, values, entity_name='Library'):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
         return view.fill(values)
 
 

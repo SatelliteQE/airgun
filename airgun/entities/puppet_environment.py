@@ -16,6 +16,8 @@ class PuppetEnvironmentEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def read(self, entity_name):
         """Read puppet environment entity values"""
@@ -27,6 +29,8 @@ class PuppetEnvironmentEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, value):
         """Delete puppet environment entity"""

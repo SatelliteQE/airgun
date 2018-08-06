@@ -16,11 +16,15 @@ class ActivationKeyEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.actions.fill('Remove')
         view.dialog.confirm()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
@@ -32,23 +36,29 @@ class ActivationKeyEntity(BaseEntity):
 
     def update(self, entity_name, values):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
         return view.fill(values)
 
     def add_subscription(self, entity_name, subscription_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.subscriptions.resources.add(subscription_name)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def add_host_collection(self, entity_name, hc_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.host_collections.resources.add(hc_name)
         assert view.flash.is_displayed
         view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def remove_host_collection(self, entity_name, hc_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.host_collections.resources.remove(hc_name)
         assert view.flash.is_displayed
         view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(ActivationKeyEntity, 'All')

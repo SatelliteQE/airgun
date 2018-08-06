@@ -15,6 +15,8 @@ class FilterEntity(BaseEntity):
         view = self.navigate_to(self, 'New', role_name=role_name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, role_name, value):
         """Search for filter assigned to the role"""
@@ -33,6 +35,8 @@ class FilterEntity(BaseEntity):
             self, 'Edit', role_name=role_name, entity_name=entity_name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, role_name, entity_name):
         """Delete specific filter from role"""
@@ -40,6 +44,8 @@ class FilterEntity(BaseEntity):
         view.search(entity_name)
         view.table.row(resource=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(FilterEntity, 'All')

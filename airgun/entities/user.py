@@ -11,6 +11,8 @@ class UserEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
@@ -24,12 +26,16 @@ class UserEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(username=entity_name)['Actions'].widget.click(
             handle_alert=True)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(UserEntity, 'All')

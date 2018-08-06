@@ -19,11 +19,15 @@ class ContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.actions.fill('Remove Content View')
         view.dialog.confirm()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
@@ -35,11 +39,15 @@ class ContentViewEntity(BaseEntity):
 
     def update(self, entity_name, values):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
         return view.fill(values)
 
     def add_yum_repo(self, entity_name, repo_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.repositories.resources.add(repo_name)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def add_cv(self, entity_name, cv_name):
         """Add content view to selected composite content view."""

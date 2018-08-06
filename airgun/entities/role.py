@@ -12,6 +12,8 @@ class RoleEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
@@ -27,6 +29,8 @@ class RoleEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, entity_name):
         """Delete role from the system"""
@@ -34,6 +38,8 @@ class RoleEntity(BaseEntity):
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(RoleEntity, 'All')

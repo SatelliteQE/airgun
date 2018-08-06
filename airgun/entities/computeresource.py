@@ -14,6 +14,8 @@ class ComputeResourceEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
@@ -23,6 +25,8 @@ class ComputeResourceEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def read(self, entity_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
@@ -33,6 +37,8 @@ class ComputeResourceEntity(BaseEntity):
         view.search(value)
         view.table.row(name=value)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def list_vms(self, rhev_name, expected_vm_name=None):
         """Returns all the VMs on the CR or VM with specified name"""
