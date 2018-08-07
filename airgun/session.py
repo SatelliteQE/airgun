@@ -27,6 +27,7 @@ from airgun.entities.location import LocationEntity
 from airgun.entities.login import LoginEntity
 from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.organization import OrganizationEntity
+from airgun.entities.package import PackageEntity
 from airgun.entities.partitiontable import PartitionTableEntity
 from airgun.entities.puppet_class import PuppetClassEntity
 from airgun.entities.puppet_environment import PuppetEnvironmentEntity
@@ -291,6 +292,11 @@ class Session(object):
     def organization(self):
         """Instance of Organization entity."""
         return OrganizationEntity(self.browser)
+
+    @cached_property
+    def package(self):
+        """Instance of Packge entity."""
+        return PackageEntity(self.browser)
 
     @cached_property
     def partitiontable(self):
