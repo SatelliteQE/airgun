@@ -4,6 +4,7 @@ from widgetastic.widget import (
     TextInput,
     View,
 )
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
     BaseLoggedInView,
@@ -36,36 +37,29 @@ class DiscoveryRulesView(BaseLoggedInView, SearchableViewMixin):
 
 
 class DiscoveryRuleCreateView(BaseLoggedInView):
-    name = TextInput(locator="//input[@id='discovery_rule_name']")
-    search = TextInput(locator="//input[@id='search']")
-    host_group = FilteredDropdown(id='discovery_rule_hostgroup_id')
-    hostname = TextInput(id='discovery_rule_hostname')
-    hosts_limit = TextInput(id='discovery_rule_max_count')
-    priority = TextInput(id='discovery_rule_priority')
-    enabled = Checkbox(id='discovery_rule_enabled')
     submit = Text('//input[@name="commit"]')
-
-    @property
-    def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.name, exception=False) is not None
-
-
-class DiscoveryRuleEditView(BaseLoggedInView):
-    name = TextInput(locator="//input[@id='discovery_rule_name']")
-    search = TextInput(locator="//input[@id='search']")
-    host_group = FilteredDropdown(id='discovery_rule_hostgroup_id')
-    hostname = TextInput(id='discovery_rule_hostname')
-    hosts_limit = TextInput(id='discovery_rule_max_count')
-    priority = TextInput(id='discovery_rule_priority')
-    enabled = Checkbox(id='discovery_rule_enabled')
-    submit = Text("//input[@name='commit']")
     cancel = Text("//a[text()='Cancel']")
+    breadcrumb = BreadCrumb()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.name, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Discovery rules'
+                and self.breadcrumb.read() != 'New Discovery Rule'
+        )
+
+    @View.nested
+    class primary(SatTab):
+        name = TextInput(locator="//input[@id='discovery_rule_name']")
+        search = TextInput(locator="//input[@id='search']")
+        host_group = FilteredDropdown(id='discovery_rule_hostgroup_id')
+        hostname = TextInput(id='discovery_rule_hostname')
+        hosts_limit = TextInput(id='discovery_rule_max_count')
+        priority = TextInput(id='discovery_rule_priority')
+        enabled = Checkbox(id='discovery_rule_enabled')
 
     @View.nested
     class locations(SatTab):
@@ -74,3 +68,16 @@ class DiscoveryRuleEditView(BaseLoggedInView):
     @View.nested
     class organizations(SatTab):
         resources = MultiSelect(id='ms-discovery_rule_organization_ids')
+
+
+class DiscoveryRuleEditView(DiscoveryRuleCreateView):
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Discovery rules'
+            and self.breadcrumb.read().startswith('Edit ')
+        )
