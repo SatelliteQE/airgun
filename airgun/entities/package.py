@@ -14,7 +14,6 @@ class PackageEntity(BaseEntity):
 
         :param str query: search query to type into search field. E.g.
             ``name = "bar"``.
-
         :param str repository: repository name to select when searching for the
             package.
         :param bool applicable: To show only applicable packages.

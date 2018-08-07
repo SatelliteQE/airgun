@@ -22,6 +22,8 @@ from widgetastic_patternfly import (
     VerticalNavigation,
 )
 
+from airgun.exceptions import ReadOnlyWidgetError
+
 
 class SatSelect(Select):
     """Represent basic select element except our custom implementation remove
@@ -252,6 +254,12 @@ class ItemsList(GenericLocatorWidget):
         """
         self.browser.click(
             self.browser.element(self.ITEM % value, parent=self))
+
+
+class ItemsListReadOnly(ItemsList):
+
+    def fill(self, value):
+        raise ReadOnlyWidgetError('Widget is read only, fill is prohibited')
 
 
 class MultiSelect(GenericLocatorWidget):

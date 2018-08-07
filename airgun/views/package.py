@@ -7,16 +7,19 @@ from airgun.views.common import (
     ReadOnlyEntry,
     SatTab,
     SatTable,
-    SearchableViewMixin,
 )
-from airgun.widgets import ItemsList
+from airgun.widgets import ItemsListReadOnly, Search
 
 
-class SearchablePackageViewMixin(SearchableViewMixin):
-    """Packages search widget"""
+class PackagesView(BaseLoggedInView):
+    """Main Packages view"""
+    title = Text("//h2[contains(., 'Packages')]")
+    table = SatTable('.//table', column_widgets={'RPM': Text("./a")})
+
     repository = Select(locator=".//select[@ng-model='repository']")
     applicable = Checkbox(locator=".//input[@ng-model='showApplicable']")
     upgradable = Checkbox(locator=".//input[@ng-model='showUpgradable']")
+    search_box = Search()
 
     def search(self, query, repository='All Repositories', applicable=False,
                upgradable=False):
@@ -25,7 +28,6 @@ class SearchablePackageViewMixin(SearchableViewMixin):
 
         :param str query: search query to type into search field. E.g.
             ``name = "bar"``.
-
         :param str repository: repository name to select when searching for the
             package.
         :param bool applicable: To show only applicable packages
@@ -33,21 +35,14 @@ class SearchablePackageViewMixin(SearchableViewMixin):
         :return: list of dicts representing table rows
         :rtype: list
         """
-
         self.repository.fill(repository)
-        # set the upgradable first as if enabled applicable element will be
+        # set the upgradable first as if enabled, applicable element will be
         # disabled
         self.upgradable.fill(upgradable)
         if not upgradable:
             self.applicable.fill(applicable)
-
-        return super(SearchablePackageViewMixin, self).search(query)
-
-
-class PackagesView(BaseLoggedInView, SearchablePackageViewMixin):
-    """Main Packages view"""
-    title = Text("//h2[contains(., 'Packages')]")
-    table = SatTable('.//table', column_widgets={'RPM': Text("./a")})
+        self.search_box.search(query)
+        return self.table.read()
 
     @property
     def is_displayed(self):
@@ -71,22 +66,26 @@ class PackageDetailsView(BaseLoggedInView):
 
     @View.nested
     class details(SatTab):
+        # Package Information:
+        installed_on = ReadOnlyEntry(name='Installed On')
         applicable_to = ReadOnlyEntry(name='Applicable To')
-        build_host = ReadOnlyEntry(name='Build Host')
-        build_time = ReadOnlyEntry(name='Build Time')
+        upgradable_for = ReadOnlyEntry(name='Upgradable For')
         description = ReadOnlyEntry(name='Description')
+        summary = ReadOnlyEntry(name='Summary')
+        group = ReadOnlyEntry(name='Group')
+        license = ReadOnlyEntry(name='License')
+        url = ReadOnlyEntry(name='Url')
+        # File Information:
+        size = ReadOnlyEntry(name='Size')
+        filename = ReadOnlyEntry(name='Filename')
         checksum = ReadOnlyEntry(name='Checksum')
         checksum_type = ReadOnlyEntry(name='Checksum Type')
-        filename = ReadOnlyEntry(name='Filename')
-        group = ReadOnlyEntry(name='Group')
-        installed_on = ReadOnlyEntry(name='Installed On')
-        license = ReadOnlyEntry(name='License')
-        size = ReadOnlyEntry(name='Size')
+        # Build Information:
         source_rpm = ReadOnlyEntry(name='Source RPM')
-        summary = ReadOnlyEntry(name='Summary')
-        upgradable_for = ReadOnlyEntry(name='Upgradable For')
-        url = ReadOnlyEntry(name='Url')
+        build_host = ReadOnlyEntry(name='Build Host')
+        build_time = ReadOnlyEntry(name='Build Time')
 
     @View.nested
     class files(SatTab):
-        package_files = ItemsList(locator=".//div[@data-block='content']//ul")
+        package_files = ItemsListReadOnly(
+            locator=".//div[@data-block='content']//ul")
