@@ -35,9 +35,10 @@ class HostCollectionEntity(BaseEntity):
 
     def update(self, entity_name, values):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        filled_values = view.fill(values)
         view.flash.assert_no_error()
         view.flash.dismiss()
-        return view.fill(values)
+        return filled_values
 
     def associate_host(self, entity_name, host_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)

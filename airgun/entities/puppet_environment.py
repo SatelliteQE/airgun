@@ -38,6 +38,8 @@ class PuppetEnvironmentEntity(BaseEntity):
         view.search(value)
         view.table.row(name=value)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, value):
         """Search for puppet environment entity"""
