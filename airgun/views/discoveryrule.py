@@ -38,7 +38,7 @@ class DiscoveryRulesView(BaseLoggedInView, SearchableViewMixin):
 
 class DiscoveryRuleCreateView(BaseLoggedInView):
     submit = Text('//input[@name="commit"]')
-    cancel = Text("//a[text()='Cancel']")
+    cancel = Text('//a[text()="Cancel"]')
     breadcrumb = BreadCrumb()
 
     @property
@@ -48,13 +48,13 @@ class DiscoveryRuleCreateView(BaseLoggedInView):
         return (
                 breadcrumb_loaded
                 and self.breadcrumb.locations[0] == 'Discovery rules'
-                and self.breadcrumb.read() != 'New Discovery Rule'
+                and self.breadcrumb.read() == 'New Discovery Rule'
         )
 
     @View.nested
     class primary(SatTab):
-        name = TextInput(locator="//input[@id='discovery_rule_name']")
-        search = TextInput(locator="//input[@id='search']")
+        name = TextInput(id='discovery_rule_name')
+        search = TextInput(id='search')
         host_group = FilteredDropdown(id='discovery_rule_hostgroup_id')
         hostname = TextInput(id='discovery_rule_hostname')
         hosts_limit = TextInput(id='discovery_rule_max_count')

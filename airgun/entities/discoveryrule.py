@@ -7,7 +7,6 @@ from airgun.views.discoveryrule import (
     DiscoveryRuleEditView,
     DiscoveryRulesView,
 )
-from airgun.views.host import HostsView
 
 
 class DiscoveryRuleEntity(BaseEntity):
@@ -88,20 +87,6 @@ class DiscoveryRuleEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def associated_hosts(self, entity_name, host_name):
-        """Associate host to corresponding Discovery rule
-
-        :param str entity_name: name of the discovery rule
-        :param host_name: name of the host which is associated to disc. rule
-        :return: list of table rows of Host entity, each row is dict,
-            where attribute is key with correct value
-        """
-        view = self.navigate_to(self, 'All')
-        view.table.row(
-            name=entity_name)['Actions'].widget.fill('Associated Hosts')
-        view = self.navigate_to(self, 'Associate', host_name=host_name)
-        return view.table.read()
-
 
 @navigator.register(DiscoveryRuleEntity, 'All')
 class ShowAllDiscoveryRules(NavigateStep):
@@ -138,20 +123,3 @@ class EditDiscoveryRule(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.table.row(name=entity_name)['Name'].widget.click()
-
-
-@navigator.register(DiscoveryRuleEntity, 'Associate')
-class AssociateHosts(NavigateStep):
-    """Navigate to Associated hosts page.
-
-        Args:
-            host_name: name of the host, which is associated
-    """
-    VIEW = HostsView
-
-    def am_i_here(self, *args, **kwargs):
-        return self.view.is_displayed and self.view.title == 'Hosts'
-
-    def step(self, *args, **kwargs):
-        host_name = kwargs.get('host_name')
-        self.view.search(host_name)
