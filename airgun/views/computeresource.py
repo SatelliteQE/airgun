@@ -108,10 +108,30 @@ class ResourceProviderEditView(BaseLoggedInView):
         password = TextInput(id='compute_resource_password')
         api4 = Checkbox(id='compute_resource_use_v4')
         load_datacenters = Text("//*[contains(@id,'test_connection_button')]")
+        datacenter = FilteredDropdown(id='s2id_compute_resource_uuid')
         certification_authorities = TextInput(id='compute_resource_public_key')
+
+        # some of the widgets values need to be filled after the main values
+        # has been filled. This values will be saved in this dict when
+        # before_fill function is invoked, to be later restored in after_fill
+        # function.
+        _before_fill_backup_values = {}
+
+        def before_fill(self, values):
+            # data center should be filled after form fill and load_datacenters
+            # click.
+            # initialize backup values
+            self._before_fill_backup_values = {}
+            datacenter = values.get('datacenter')
+            if datacenter is not None:
+                self._before_fill_backup_values['datacenter'] = datacenter
+                del values['datacenter']
 
         def after_fill(self, was_change):
             self.load_datacenters.click()
+            datacenter = self._before_fill_backup_values.get('datacenter')
+            if datacenter is not None:
+                self.datacenter.fill(datacenter)
 
     @property
     def is_displayed(self):
