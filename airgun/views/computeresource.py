@@ -107,11 +107,16 @@ class ResourceProviderEditView(BaseLoggedInView):
         user = TextInput(id='compute_resource_user')
         password = TextInput(id='compute_resource_password')
         api4 = Checkbox(id='compute_resource_use_v4')
-        load_datacenters = Text("//*[contains(@id,'test_connection_button')]")
         certification_authorities = TextInput(id='compute_resource_public_key')
 
-        def after_fill(self, was_change):
-            self.load_datacenters.click()
+        @View.nested
+        class datacenter(View):
+            load_datacenters = Text(
+                "//a[contains(@id,'test_connection_button')]")
+            value = FilteredDropdown(id='s2id_compute_resource_uuid')
+
+            def before_fill(self, values=None):
+                self.load_datacenters.click()
 
     @property
     def is_displayed(self):
