@@ -112,7 +112,7 @@ class ResourceProviderEditView(BaseLoggedInView):
         @View.nested
         class datacenter(View):
             load_datacenters = Text(
-                "//*[contains(@id,'test_connection_button')]")
+                "//a[contains(@id,'test_connection_button')]")
             value = FilteredDropdown(id='s2id_compute_resource_uuid')
 
             def before_fill(self, values=None):
