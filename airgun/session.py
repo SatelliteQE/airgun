@@ -16,6 +16,7 @@ from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.contentcredential import ContentCredentialEntity
 from airgun.entities.contentview import ContentViewEntity
 from airgun.entities.computeresource import ComputeResourceEntity
+from airgun.entities.discoveryrule import DiscoveryRuleEntity
 from airgun.entities.domain import DomainEntity
 from airgun.entities.errata import ErrataEntity
 from airgun.entities.host import HostEntity
@@ -237,6 +238,11 @@ class Session(object):
     def contentview(self):
         """Instance of Content View entity."""
         return ContentViewEntity(self.browser)
+
+    @cached_property
+    def discoveryrule(self):
+        """Instance of Discovery Rule entity."""
+        return DiscoveryRuleEntity(self.browser)
 
     @cached_property
     def domain(self):
