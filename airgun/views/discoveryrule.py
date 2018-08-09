@@ -9,7 +9,6 @@ from widgetastic_patternfly import BreadCrumb
 from airgun.views.common import (
     BaseLoggedInView,
     SatTab,
-    SearchableViewMixin,
 )
 from airgun.widgets import (
     ActionsDropdown,
@@ -19,7 +18,7 @@ from airgun.widgets import (
 )
 
 
-class DiscoveryRulesView(BaseLoggedInView, SearchableViewMixin):
+class DiscoveryRulesView(BaseLoggedInView):
     title = Text("//h1[text()='Discovery Rules']")
     new = Text("//a[contains(@href, '/discovery_rules/new')]")
     table = SatTable(
