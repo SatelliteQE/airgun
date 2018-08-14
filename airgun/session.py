@@ -21,6 +21,7 @@ from airgun.entities.domain import DomainEntity
 from airgun.entities.errata import ErrataEntity
 from airgun.entities.host import HostEntity
 from airgun.entities.hostcollection import HostCollectionEntity
+from airgun.entities.job_template import JobTemplateEntity
 from airgun.entities.filter import FilterEntity
 from airgun.entities.ldap_authentication import LDAPAuthenticationEntity
 from airgun.entities.lifecycleenvironment import LCEEntity
@@ -268,6 +269,11 @@ class Session(object):
     def hostcollection(self):
         """Instance of Host Collection entity."""
         return HostCollectionEntity(self.browser)
+
+    @cached_property
+    def jobtemplate(self):
+        """Instance of Job Template entity."""
+        return JobTemplateEntity(self.browser)
 
     @cached_property
     def ldapauthentication(self):
