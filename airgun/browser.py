@@ -186,7 +186,10 @@ class SeleniumBrowserFactory(object):
             self._webdriver = webdriver.PhantomJS(
                 service_args=['--ignore-ssl-errors=true'])
         elif self.browser == 'remote':
-            self._webdriver = webdriver.Remote()
+            capabilities = vars(settings.webdriver_desired_capabilities)
+            self._webdriver = webdriver.Remote(
+                desired_capabilities=capabilities
+            )
         if self._webdriver is None:
             raise ValueError(
                 '"{}" webdriver is not supported. Please use one of {}'
@@ -505,7 +508,8 @@ class AirgunBrowserPlugin(DefaultPlugin):
             Ajax.activeRequestCount < 1
         }
         function angularNoRequests() {
-         return (typeof angular === "undefined") ? true :
+         return (typeof angular === "undefined" ||
+          typeof angular.element(document).injector() === "undefined") ? true :
           angular.element(document).injector().get(
            "$http").pendingRequests.length < 1
         }
