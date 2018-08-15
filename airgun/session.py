@@ -36,6 +36,7 @@ from airgun.entities.puppet_class import PuppetClassEntity
 from airgun.entities.puppet_environment import PuppetEnvironmentEntity
 from airgun.entities.product import ProductEntity
 from airgun.entities.repository import RepositoryEntity
+from airgun.entities.rhai.inventory import InventoryHostEntity
 from airgun.entities.role import RoleEntity
 from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.smart_class_parameter import SmartClassParameterEntity
@@ -275,6 +276,10 @@ class Session(object):
     def insightsrule(self):
         """Instance of RHAI Rule entity."""
         return RuleEntity(self.browser)
+
+    def insights_inventory(self):
+        """Instance of RHAI Inventory entity."""
+        return InventoryHostEntity(self.browser)
 
     @cached_property
     def jobtemplate(self):
