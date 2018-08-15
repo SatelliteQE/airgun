@@ -6,6 +6,9 @@ from airgun.views.host import (
     HostCreateView,
     HostDetailsView,
     HostEditView,
+    HostsAssignCompliancePolicy,
+    HostsAssignLocation,
+    HostsAssignOrganization,
     HostsChangeGroup,
     HostsChangeEnvironment,
     HostsView,
@@ -71,6 +74,30 @@ class HostEntity(BaseEntity):
         output = view.browser.element(view.yaml_output).text
         view.browser.selenium.back()
         return output
+
+    def assign_organization(self, entities_list, values):
+        view = self.navigate_to(
+            self, 'Assign Organization', entities_list=entities_list)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def assign_location(self, entities_list, values):
+        view = self.navigate_to(
+            self, 'Assign Location', entities_list=entities_list)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def assign_compliance_policy(self, entities_list, values):
+        view = self.navigate_to(
+            self, 'Assign Compliance Policy', entities_list=entities_list)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(HostEntity, 'All')
@@ -171,3 +198,66 @@ class AssignHostEnvironment(NavigateStep):
         for entity in entities_list:
             self.parent.table.row(name=entity)[0].widget.fill(True)
         self.parent.actions.fill('Change Environment')
+
+
+@navigator.register(HostEntity, 'Assign Organization')
+class AssignHostOrganization(NavigateStep):
+    """Navigate to Assign Organization page by selecting checkboxes for
+    necessary hosts and then clicking on 'Assign Organization' button in
+    'Select Action' dropdown.
+
+    Args:
+        entities_list: list of hosts that need to be modified
+    """
+    VIEW = HostsAssignOrganization
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        entities_list = kwargs.get('entities_list')
+        for entity in entities_list:
+            self.parent.table.row(name=entity)[0].widget.fill(True)
+        self.parent.actions.fill('Assign Organization')
+
+
+@navigator.register(HostEntity, 'Assign Location')
+class AssignHostLocation(NavigateStep):
+    """Navigate to Assign Location page by selecting checkboxes for
+    necessary hosts and then clicking on 'Assign Location' button in
+    'Select Action' dropdown.
+
+    Args:
+        entities_list: list of hosts that need to be modified
+    """
+    VIEW = HostsAssignLocation
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        entities_list = kwargs.get('entities_list')
+        for entity in entities_list:
+            self.parent.table.row(name=entity)[0].widget.fill(True)
+        self.parent.actions.fill('Assign Location')
+
+
+@navigator.register(HostEntity, 'Assign Compliance Policy')
+class AssignCompliancePolicy(NavigateStep):
+    """Navigate to Assign Location page by selecting checkboxes for
+    necessary hosts and then clicking on 'Assign Compliance Policy' button in
+    'Select Action' dropdown.
+
+    Args:
+        entities_list: list of hosts that need to be modified
+    """
+    VIEW = HostsAssignCompliancePolicy
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        entities_list = kwargs.get('entities_list')
+        for entity in entities_list:
+            self.parent.table.row(name=entity)[0].widget.fill(True)
+        self.parent.actions.fill('Assign Compliance Policy')

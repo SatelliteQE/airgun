@@ -132,6 +132,65 @@ class RadioGroup(GenericLocatorWidget):
         return self.select(name)
 
 
+class FormRadioGroup(RadioGroup):
+    """Form radio buttons group widget
+
+    Example html representation::
+
+        <form method="post">
+            <input type="radio" name="organization[optimistic_import]">
+             Fix Organization on Mismatch
+            <input type="radio" checked="checked"
+                name="organization[optimistic_import]">
+            Fail on Mismatch
+        </form>
+
+    Locator example::
+
+        //div[@id='content']/form/input[@type='radio']"
+    """
+    BUTTON = "./input[@type='radio']"
+    _LABEL_BUTTON = ("./text()[contains(., '%s')]"
+                     "/preceding-sibling::input[@type='radio'][1]")
+
+    def get_button_by_name(self, name):
+        return self.browser.wait_for_element(self._LABEL_BUTTON % name)
+
+    @property
+    def button_elements(self):
+        return self.browser.elements(self.BUTTON)
+
+    @property
+    def button_names(self):
+        """Return all radio group names"""
+        names = []
+        for button in self.button_elements:
+            name = self.browser.execute_script(
+                'return arguments[0].nextSibling.textContent.trim();', button)
+            names.append(name)
+        return names
+
+    @property
+    def selected(self):
+        """Return name of a button that is currently selected in the group"""
+        for name in self.button_names:
+            btn = self.get_button_by_name(name)
+            if btn.get_attribute('checked') is not None:
+                return name
+        else:
+            raise ValueError(
+                "Whether no radio button is selected or proper attribute "
+                "should be added to framework"
+            )
+
+    def select(self, name):
+        """Select specific radio button in the group"""
+        if self.selected != name:
+            self.get_button_by_name(name).click()
+            return True
+        return False
+
+
 class ToggleRadioGroup(RadioGroup):
     """Toggle buttons group widget when each button represented by radio
     element
@@ -690,13 +749,14 @@ class CustomParameter(Table):
             else:
                 # Check if value should be updated for this name
                 # First get the desired value for this param name
-                for param in params_to_fill:
+                desired_value = None
+                for index, param in enumerate(params_to_fill):
                     if param['name'] == this_name:
                         desired_value = param['value']
                         # Since we're editing this name now, don't add it later
-                        params_to_fill.pop(param)
+                        params_to_fill.pop(index)
                         break
-                if this_value != desired_value:
+                if desired_value is not None and this_value != desired_value:
                     # Update row's value for this name
                     row['Value'].widget.fill(desired_value)
                 else:
@@ -706,6 +766,81 @@ class CustomParameter(Table):
         # Add the remaining values for names that were not already in the table
         for param in params_to_fill:
             self.add(param)
+
+
+class InheritedGlobalParameter(Table):
+    """Name-Value paired input elements of inherited global parameters, which
+    can be overridden.
+
+    It is essentially a table with a text, read-only text input widget and an
+    "Override" button on each row.
+
+    Example html representation::
+
+        <table class="table" id="inherited_parameters">
+            <tr class="override-param">
+                <span id="name_enable-epel">enable-epel</span>
+                <textarea id="value_false" ...>
+                <a title="" data-original-title="Override this value" ...>
+
+    Locator example::
+
+        //span[starts-with(@id, 'name_')]
+        //textarea[@data-property='value']"
+        //a[@data-original-title='Override this value'
+    """
+
+    def __init__(self, parent, locator=None, id=None, logger=None):
+        """Supports initialization via ``locator=`` or ``id=``"""
+        if locator and id or not locator and not id:
+            raise ValueError('Please specify either locator or id')
+        locator = locator or ".//table[@id='{0}']".format(id)
+
+        column_widgets = {
+            'Name': Text(locator=".//span[starts-with(@id, 'name_')]"),
+            'Value': TextInput(locator=".//textarea[@data-property='value']"),
+            'Actions': Text(
+                locator=".//a[@data-original-title='Override this value']"
+            )
+        }
+        super(InheritedGlobalParameter, self).__init__(
+            parent,
+            locator=locator,
+            logger=logger,
+            column_widgets=column_widgets
+        )
+
+    def read(self):
+        """Return a list of dictionaries. Each dictionary consists of global
+        parameter name, value and whether overridden or not.
+        """
+        parameters = []
+        for row in self.rows():
+            name = row['Name'].widget.read()
+            value = row['Value'].widget.read()
+            overridden = not row['Actions'].widget.is_displayed
+            parameters.append(
+                {'name': name, 'value': value, 'overridden': overridden})
+        return parameters
+
+    def override(self, name):
+        """Override a single global parameter.
+
+        :param str name: The name of the global parameter to override.
+        """
+        for row in self.rows():
+            if (row['Name'].widget.read() == name
+                    and row['Actions'].widget.is_displayed):
+                row['Actions'].widget.click()  # click 'Override'
+                break
+
+    def fill(self, names):
+        """Override global parameter entries.
+
+        :param list[str] names: a list of global parameters to override.
+        """
+        for name in names:
+            self.override(name)
 
 
 class ActionsDropdown(GenericLocatorWidget):

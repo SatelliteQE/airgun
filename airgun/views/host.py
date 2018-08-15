@@ -20,6 +20,8 @@ from airgun.widgets import (
     RadioGroup,
     SatTableWithUnevenStructure,
     SatTable,
+    FormRadioGroup,
+    InheritedGlobalParameter,
 )
 
 
@@ -203,7 +205,25 @@ class HostCreateView(BaseLoggedInView):
 
     @View.nested
     class parameters(SatTab):
+        global_params = InheritedGlobalParameter(id='inherited_parameters')
         host_params = CustomParameter(id='global_parameters_table')
+
+        def fill(self, values):
+            host_params = values.get('host_params')
+            global_params = values.get('global_params')
+            if global_params:
+                new_global_params = []
+                if not host_params:
+                    host_params = []
+                    values['host_params'] = host_params
+                for global_param in global_params:
+                    if isinstance(global_param, dict):
+                        host_params.append(global_param)
+                        new_global_params.append(global_param['name'])
+                    else:
+                        new_global_params.append(global_param)
+                values['global_params'] = new_global_params
+            return SatTab.fill(self, values)
 
     @View.nested
     class additional_information(SatTab):
@@ -291,6 +311,55 @@ class HostsChangeEnvironment(BaseLoggedInView):
     table = SatTable("//div[@class='modal-body']//table")
     keep_selected = Checkbox(id='keep_selected')
     environment = Select(id='environment_id')
+    submit = Text('//button[@onclick="submit_modal_form()"]')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
+
+
+class HostsAssignOrganization(BaseLoggedInView):
+    title = Text(
+        "//h4[text()='Assign Organization"
+        " - The following hosts are about to be changed']")
+    table = SatTable("//div[@class='modal-body']//table")
+    keep_selected = Checkbox(id='keep_selected')
+    organization = Select(id='organization_id')
+    on_mismatch = FormRadioGroup(
+        locator="//div[@class='modal-body']//div[@id='content']/form")
+    submit = Text('//button[@onclick="submit_modal_form()"]')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
+
+
+class HostsAssignLocation(BaseLoggedInView):
+    title = Text(
+        "//h4[text()='Assign Location"
+        " - The following hosts are about to be changed']")
+    table = SatTable("//div[@class='modal-body']//table")
+    keep_selected = Checkbox(id='keep_selected')
+    location = Select(id='location_id')
+    on_mismatch = FormRadioGroup(
+        locator="//div[@class='modal-body']//div[@id='content']/form")
+    submit = Text('//button[@onclick="submit_modal_form()"]')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
+
+
+class HostsAssignCompliancePolicy(BaseLoggedInView):
+    title = Text(
+        "//h4[text()='Assign Compliance Policy"
+        " - The following hosts are about to be changed']")
+    table = SatTable("//div[@class='modal-body']//table")
+    keep_selected = Checkbox(id='keep_selected')
+    policy = Select(id='policy_id')
     submit = Text('//button[@onclick="submit_modal_form()"]')
 
     @property
