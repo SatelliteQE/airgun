@@ -561,11 +561,11 @@ class FilteredDropdown(GenericLocatorWidget):
         "@id='select2-drop']/ul"
     )
 
-    def __init__(self, parent, id=None, logger=None):
-        """Supports initialization via ``id=`` only"""
-        if not id:
-            raise TypeError('Please specify id of select list element')
-        locator = ".//div[contains(@id, '{}')]".format(id)
+    def __init__(self, parent, id=None, locator=None, logger=None):
+        """Supports initialization via ``id=`` or ``locator=``"""
+        if locator and id or not locator and not id:
+            raise ValueError('Please specify either locator or id')
+        locator = locator or ".//div[contains(@id, '{}')]".format(id)
         super(FilteredDropdown, self).__init__(parent, locator, logger)
 
     def read(self):
