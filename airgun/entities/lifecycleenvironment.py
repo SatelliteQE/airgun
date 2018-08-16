@@ -50,10 +50,11 @@ class LCEEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.fill(values)
 
-    def search_package(self, entity_name, package_name, cv_name=None):
+    def search_package(self, entity_name, package_name, cv_name=None,
+                       repo_name=None):
         """Search for specific package inside lifecycle environment"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.packages.search(package_name, cv=cv_name)
+        view.packages.search(package_name, cv=cv_name, repo=repo_name)
         return view.packages.table.read()
 
 
