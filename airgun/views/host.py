@@ -4,6 +4,7 @@ from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
     Select,
+    Table,
     Text,
     TextInput,
     View,
@@ -20,8 +21,6 @@ from airgun.widgets import (
     RadioGroup,
     SatTableWithUnevenStructure,
     SatTable,
-    FormRadioGroup,
-    InheritedGlobalParameter,
 )
 
 
@@ -205,7 +204,57 @@ class HostCreateView(BaseLoggedInView):
 
     @View.nested
     class parameters(SatTab):
-        global_params = InheritedGlobalParameter(id='inherited_parameters')
+        """Host parameters tab"""
+        @View.nested
+        class global_params(Table):
+
+            def __init__(self, parent, **kwargs):
+                locator = ".//table[@id='inherited_parameters']"
+                column_widgets = {
+                    'Name': Text(
+                        locator=".//span[starts-with(@id, 'name_')]"),
+                    'Value': TextInput(
+                        locator=".//textarea[@data-property='value']"),
+                    'Actions': Text(
+                        locator=(".//a[@data-original-title"
+                                 "='Override this value']")
+                    )
+                }
+                Table.__init__(self, parent, locator,
+                               column_widgets=column_widgets, **kwargs)
+
+            def read(self):
+                """Return a list of dictionaries. Each dictionary consists of
+                global parameter name, value and whether overridden or not.
+                """
+                parameters = []
+                for row in self.rows():
+                    parameters.append({
+                        'name': row['Name'].widget.read(),
+                        'value': row['Value'].widget.read(),
+                        'overridden': not row['Actions'].widget.is_displayed
+                    })
+                return parameters
+
+            def override(self, name):
+                """Override a single global parameter.
+
+                :param str name: The name of the global parameter to override.
+                """
+                for row in self.rows():
+                    if (row['Name'].widget.read() == name
+                            and row['Actions'].widget.is_displayed):
+                        row['Actions'].widget.click()  # click 'Override'
+                        break
+
+            def fill(self, names):
+                """Override global parameter entries.
+
+                :param list[str] names: global parameters names to override.
+                """
+                for name in names:
+                    self.override(name)
+
         host_params = CustomParameter(id='global_parameters_table')
 
         def fill(self, values):
@@ -319,6 +368,86 @@ class HostsChangeEnvironment(BaseLoggedInView):
             self.title, exception=False) is not None
 
 
+class OnTaxonomyMismatchCheckBoxGroup(RadioGroup):
+    """Handle an HTML non normalized Radio group according to the current
+    architecture.
+
+    Note: This is a temporary solution, a fix has been issued upstream,
+        when the fix will be available downstream we should replace the
+        implementation with RadioGroup.
+
+    Example html representation::
+
+        <form ...>
+            <div class="clearfix">
+                ...
+            </div>
+            <input type="radio" id="location_optimistic_import_yes" ...>
+             Fix Location on Mismatch
+            <input type="radio" id="location_optimistic_import_no" ...>
+             Fail on Mismatch
+        </form>
+    """
+    # a mapping between button name and the id, see the implementation in
+    # HostsAssignOrganization and HostsAssignLocation hereafter.
+    buttons_name_id_map = {
+            'Fix {taxonomy} on Mismatch': '{taxonomy}_optimistic_import_yes',
+            'Fail on Mismatch': '{taxonomy}_optimistic_import_no',
+        }
+
+    def __init__(self, *args, **kwargs):
+        taxonomy = kwargs.get('taxonomy')
+        if taxonomy:
+            # rebuild buttons_name_id_map
+            buttons_name_id_map = {}
+            for key, value in self.buttons_name_id_map.items():
+                new_key = key.replace('{taxonomy}', taxonomy)
+                new_value = value.replace('{taxonomy}', taxonomy.lower())
+                buttons_name_id_map[new_key] = new_value
+            self.buttons_name_id_map = buttons_name_id_map
+            del kwargs['taxonomy']
+        super(OnTaxonomyMismatchCheckBoxGroup, self).__init__(
+            *args, **kwargs)
+
+    def get_input_by_name(self, name):
+        input_id = self.buttons_name_id_map.get(name)
+        if input_id:
+            return self.browser.wait_for_element(
+                './/input[@id="{0}"]'.format(self.buttons_name_id_map[name])
+            )
+        return None
+
+    @property
+    def selected(self):
+        """Return the name of the button that is currently selected."""
+        for name in self.buttons_name_id_map.keys():
+            btn = self.get_input_by_name(name)
+            if btn and btn.get_attribute('checked') is not None:
+                return name
+        else:
+            raise ValueError(
+                "Whether no radio button is selected or proper attribute "
+                "should be added to framework"
+            )
+
+    def select(self, name):
+        """Select specific radio button in the group"""
+        if self.selected != name:
+            btn = self.get_input_by_name(name)
+            if btn:
+                btn.click()
+                return True
+        return False
+
+    def read(self):
+        """Wrap method according to architecture"""
+        return self.selected
+
+    def fill(self, name):
+        """Wrap method according to architecture"""
+        return self.select(name)
+
+
 class HostsAssignOrganization(BaseLoggedInView):
     title = Text(
         "//h4[text()='Assign Organization"
@@ -326,8 +455,9 @@ class HostsAssignOrganization(BaseLoggedInView):
     table = SatTable("//div[@class='modal-body']//table")
     keep_selected = Checkbox(id='keep_selected')
     organization = Select(id='organization_id')
-    on_mismatch = FormRadioGroup(
-        locator="//div[@class='modal-body']//div[@id='content']/form")
+    on_mismatch = OnTaxonomyMismatchCheckBoxGroup(
+        "//div[@class='modal-body']//div[@id='content']/form",
+        taxonomy='Organization')
     submit = Text('//button[@onclick="submit_modal_form()"]')
 
     @property
@@ -343,8 +473,9 @@ class HostsAssignLocation(BaseLoggedInView):
     table = SatTable("//div[@class='modal-body']//table")
     keep_selected = Checkbox(id='keep_selected')
     location = Select(id='location_id')
-    on_mismatch = FormRadioGroup(
-        locator="//div[@class='modal-body']//div[@id='content']/form")
+    on_mismatch = OnTaxonomyMismatchCheckBoxGroup(
+        "//div[@class='modal-body']//div[@id='content']/form",
+        taxonomy='Location')
     submit = Text('//button[@onclick="submit_modal_form()"]')
 
     @property
