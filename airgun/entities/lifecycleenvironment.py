@@ -34,13 +34,28 @@ class LCEEntity(BaseEntity):
         else:
             self.create_environment_path(values)
 
-    def read(self):
+    def read(self, entity_name):
+        """Read specific lifecycle environment details from its Edit page"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        return view.read()
+
+    def read_all(self):
+        """Read all available lifecycle environments details from generic
+        lifecycle environments page
+        """
         view = self.navigate_to(self, 'All')
         return view.read()
 
     def update(self, values, entity_name='Library'):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.fill(values)
+
+    def search_package(self, entity_name, package_name, cv_name=None,
+                       repo_name=None):
+        """Search for specific package inside lifecycle environment"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.packages.search(package_name, cv=cv_name, repo=repo_name)
+        return view.packages.table.read()
 
 
 @navigator.register(LCEEntity, 'All')
