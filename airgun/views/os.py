@@ -10,6 +10,59 @@ from airgun.widgets import (
 )
 
 
+class TemplatesList(View):
+    """List of templates for specific operating system. It can have dynamic
+    number of templates per different OS types
+
+    Example html representation::
+
+        <label ... for="provisioning_template_id">PXELinux template *</label>
+        <div...>
+            <div class="..." id="s2id_operatingsystem_os_default_templates...">
+                <a>
+                    <span>Kickstart default PXELinux</span>
+        ...
+        <label ... for="provisioning_template_id">PXEGrub template *</label>
+        <div...>
+            <div class="..." id="s2id_operatingsystem_os_default_templates...">
+                 <a>
+                     <span>Kickstart default PXEGrub2</span>
+
+    """
+    SELECT = "//label[@for='provisioning_template_id'][contains(.,'%s')]" \
+             "/following-sibling::div/div[contains(@id, 'default_templates')]"
+    TITLES = "//label[@for='provisioning_template_id']"
+
+    @property
+    def selects(self):
+        """Get dictionary of currently assigned templates for OS"""
+        selects = {}
+        for title in self.browser.elements(
+                self.TITLES, check_visibility=True):
+            selects[title.text] = FilteredDropdown(
+                self, locator=self.SELECT % title.text, logger=self.logger)
+        return selects
+
+    def read(self):
+        """Return dictionary of strings representing title-value pairs for all
+        templates assigned to specific operating system
+        """
+        result = self.selects
+        for title, select_value in result.items():
+            result[title] = select_value.read()
+        return result
+
+    def fill(self, value):
+        """Assign provided value for specific operating system template
+
+        :param value: dictionary with title-value pairs of templates to be
+            changed for OS (e.g. {'Provisioning template': 'test_template'})
+        """
+        result = self.selects
+        for title, select_value in value.items():
+            result[title].fill(select_value)
+
+
 class OperatingSystemsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Operating systems']")
     new = Text("//a[contains(@href, '/operatingsystems/new')]")
@@ -62,6 +115,10 @@ class OperatingSystemEditView(BaseLoggedInView):
     class installation_media(SatTab):
         TAB_NAME = 'Installation Media'
         resources = MultiSelect(id='ms-operatingsystem_medium_ids')
+
+    @View.nested
+    class templates(SatTab):
+        resources = TemplatesList()
 
     @View.nested
     class parameters(SatTab):
