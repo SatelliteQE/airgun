@@ -308,6 +308,67 @@ class SeleniumBrowserFactory(object):
         """
         self._docker.stop()
 
+    def _is_alive(self):
+        log.debug("alive check")
+        try:
+            self.browser.current_url
+        except UnexpectedAlertPresentException:
+            # We shouldn't think that an Unexpected alert means the browser is dead
+            return True
+        except Exception:
+            log.exception("browser in unknown state, considering dead")
+            return False
+        return True
+
+    def ensure_open(self, url_key=None):
+        if getattr(self.browser, 'url_key', None) != url_key:
+            return self.start(url_key=url_key)
+        if self._is_alive():
+            return self.browser
+        else:
+            return self.start(url_key=url_key)
+
+    def add_cleanup(self, callback):
+        assert self.browser is not None
+        try:
+            cl = self.browser.__cleanup
+        except AttributeError:
+            cl = self.browser.__cleanup = []
+        cl.append(callback)
+
+    def _consume_cleanups(self):
+        try:
+            cl = self.browser.__cleanup
+        except AttributeError:
+            pass
+        else:
+            while cl:
+                cl.pop()()
+
+    def quit(self):
+        # TODO: figure if we want to log the url key here
+        self._consume_cleanups()
+        try:
+            self.factory.close(self.browser)
+        except Exception as e:
+            log.error('An exception happened during browser shutdown:')
+            log.exception(e)
+        finally:
+            self.browser = None
+
+    def start(self, url_key=None):
+        log.info('starting browser')
+        if self.browser is not None:
+            self.quit()
+        return self.open_fresh(url_key=url_key)
+
+    def open_fresh(self, url_key=None):
+        log.info('starting browser for %r', url_key)
+        assert self.browser is None
+
+        self.browser = self.factory.create(url_key=url_key)
+        return self.browser
+
 
 class DockerBrowser(object):
     """Provide a browser instance running inside a docker container.
@@ -550,7 +611,8 @@ class AirgunBrowser(Browser):
     :class:`airgun.session.Session` and :class:`AirgunBrowserPlugin`.
     """
 
-    def __init__(self, selenium, session, extra_objects=None):
+    def __init__(self, selenium, endpoint=None, session=None,
+                 extra_objects=None):
         """Pass webdriver instance, session and other extra objects (if any).
 
         :param selenium: :class:`selenium.webdriver.remote.webdriver.WebDriver`
@@ -559,7 +621,11 @@ class AirgunBrowser(Browser):
         :param extra_objects: any extra objects you want to include.
         """
         extra_objects = extra_objects or {}
-        extra_objects.update({'session': session})
+        extra_objects.update({
+            'endpoint': endpoint,
+            'application': getattr(endpoint, 'owner', None),
+            'session': session
+        })
         super(AirgunBrowser, self).__init__(
             selenium,
             plugin_class=AirgunBrowserPlugin,
@@ -608,3 +674,49 @@ class AirgunBrowser(Browser):
             "arguments[0].scrollIntoView(false);", el, silent=True)
         ActionChains(self.selenium).move_to_element(el).perform()
         return el
+
+    @property
+    def application(self):
+        return self.extra_objects['application']
+
+    def create_view(self, *args, **kwargs):
+        return self.application.browser.create_view(*args, **kwargs)
+
+
+class BrowserManager(object):
+    def __init__(self, browser_factory):
+        self.factory = SeleniumBrowserFactory()
+        self.browser = None
+
+    @classmethod
+    def from_conf(cls, browser_conf):
+        webdriver_name = browser_conf.get('webdriver', 'Firefox')
+        webdriver_class = getattr(webdriver, webdriver_name)
+
+        browser_kwargs = browser_conf.get('webdriver_options', {})
+
+        if 'webdriver_wharf' in browser_conf:
+            wharf = Wharf(browser_conf['webdriver_wharf'])
+            atexit.register(wharf.checkin)
+            if browser_conf[
+                'webdriver_options'][
+                    'desired_capabilities']['browserName'].lower() == 'firefox':
+                browser_kwargs['desired_capabilities']['marionette'] = False
+            return cls(WharfFactory(webdriver_class, browser_kwargs, wharf))
+        else:
+            if webdriver_name == "Remote":
+                if browser_conf[
+                        'webdriver_options'][
+                            'desired_capabilities']['browserName'].lower() == 'chrome':
+                    browser_kwargs['desired_capabilities']['chromeOptions'] = {}
+                    browser_kwargs[
+                        'desired_capabilities']['chromeOptions']['args'] = ['--no-sandbox']
+                    browser_kwargs['desired_capabilities'].pop('marionette', None)
+                if browser_conf[
+                        'webdriver_options'][
+                            'desired_capabilities']['browserName'].lower() == 'firefox':
+                    browser_kwargs['desired_capabilities']['marionette'] = False
+
+            return cls(BrowserFactory(webdriver_class, browser_kwargs))
+
+
