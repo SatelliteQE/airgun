@@ -40,6 +40,7 @@ from airgun.entities.product import ProductEntity
 from airgun.entities.repository import RepositoryEntity
 from airgun.entities.rhai.action import ActionEntity
 from airgun.entities.rhai.inventory import InventoryHostEntity
+from airgun.entities.rhai.manage import ManageEntity
 from airgun.entities.rhai.rule import RuleEntity
 from airgun.entities.rhai.overview import OverviewEntity
 from airgun.entities.role import RoleEntity
@@ -301,6 +302,11 @@ class Session(object):
     def insightsaction(self):
         """Instance of RHAI Action entity."""
         return ActionEntity(self.browser)
+
+    @cached_property
+    def insightsmanage(self):
+        """Instance of RHAI Manage entity."""
+        return ManageEntity(self.browser)
 
     @cached_property
     def jobtemplate(self):

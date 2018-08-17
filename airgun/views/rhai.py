@@ -1,5 +1,5 @@
-from widgetastic.widget import Table, Text, TextInput
 from widgetastic_patternfly import Button
+from widgetastic.widget import Checkbox, Table, Text, TextInput
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import ActionsDropdown, SatTable
@@ -58,6 +58,15 @@ class ActionsDetailsView(BaseLoggedInView):
     export_csv = Button("Export CSV")
     stability_issues = Text(".//a[@class='stability']/span[@class='count']")
     security_issues = Text(".//a[@class='security']/span[@class='count']")
+
+
+class ManageDetailsView(BaseLoggedInView):
+    title = Text(".//h1[@class='page-title']")
+    enable_service = Checkbox(id="rha-insights-enabled")
+    status = Text(".//label[@for='connectionStatus']/parent::div//p")
+    account_number = Text(".//label[@for='account']/parent::div//p")
+    check_connection = Text(".//input[@value='Check Connection']")
+    save = Text(".//input[@value='Save']")
 
     @property
     def is_displayed(self):
