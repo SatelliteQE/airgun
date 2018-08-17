@@ -1,4 +1,4 @@
-from widgetastic.widget import Text, TextInput
+from widgetastic.widget import Table, Text, TextInput
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import ActionsDropdown, SatTable
@@ -33,3 +33,20 @@ class InventoryHostDetails(BaseLoggedInView):
     @property
     def is_displayed(self):
         return self.hostname.is_displayed and self.close.is_displayed
+
+
+class OverviewDetailsView(BaseLoggedInView):
+    title = Text(".//h1[normalize-space(.)='Overview']")
+    inventory = Table(".//section[contains(., 'Newest Systems')]//table")
+    security_issues = Text(".//div[@ng-if='securityErrors']/div")
+    stability_issues = Text(".//div[@ng-if='stabilityErrors']/div")
+    inventory_link = Text(".//span[normalize-space(.)='View inventory']")
+    actions_link = Text(".//span[normalize-space(.)='View actions']")
+
+    @property
+    def is_displayed(self):
+        return (
+            self.title.is_displayed and
+            self.inventory_link.is_displayed and
+            self.actions_link.is_displayed
+        )
