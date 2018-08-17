@@ -38,7 +38,7 @@ class TemplatesList(View):
         """Get dictionary of currently assigned templates for OS"""
         selects = {}
         for title in self.browser.elements(
-                self.TITLES, parent=View, check_visibility=True):
+                self.TITLES, check_visibility=True):
             selects[title.text] = FilteredDropdown(
                 self, locator=self.SELECT % title.text, logger=self.logger)
         return selects
