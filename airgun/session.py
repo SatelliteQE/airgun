@@ -42,8 +42,9 @@ from airgun.entities.repository import RepositoryEntity
 from airgun.entities.rhai.action import ActionEntity
 from airgun.entities.rhai.inventory import InventoryHostEntity
 from airgun.entities.rhai.manage import ManageEntity
-from airgun.entities.rhai.rule import RuleEntity
 from airgun.entities.rhai.overview import OverviewEntity
+from airgun.entities.rhai.plan import PlanEntity
+from airgun.entities.rhai.rule import RuleEntity
 from airgun.entities.role import RoleEntity
 from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.smart_class_parameter import SmartClassParameterEntity
@@ -285,9 +286,9 @@ class Session(object):
         return HostCollectionEntity(self.browser)
 
     @cached_property
-    def insightsrule(self):
-        """Instance of RHAI Rule entity."""
-        return RuleEntity(self.browser)
+    def insightsaction(self):
+        """Instance of RHAI Action entity."""
+        return ActionEntity(self.browser)
 
     @cached_property
     def insightsinventory(self):
@@ -295,19 +296,24 @@ class Session(object):
         return InventoryHostEntity(self.browser)
 
     @cached_property
-    def jobinvocation(self):
-        """Instance of Job Invocation entity."""
-        return JobInvocationEntity(self.browser)
-
-    @cached_property
     def insightsoverview(self):
         """Instance of RHAI Overview entity."""
         return OverviewEntity(self.browser)
 
     @cached_property
-    def insightsaction(self):
-        """Instance of RHAI Action entity."""
-        return ActionEntity(self.browser)
+    def insightsplan(self):
+        """Instance of RHAI Plan entity."""
+        return PlanEntity(self.browser)
+
+    @cached_property
+    def insightsrule(self):
+        """Instance of RHAI Rule entity."""
+        return RuleEntity(self.browser)
+
+    @cached_property
+    def jobinvocation(self):
+        """Instance of Job Invocation entity."""
+        return JobInvocationEntity(self.browser)
 
     @cached_property
     def insightsmanage(self):

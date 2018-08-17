@@ -1,5 +1,13 @@
 from widgetastic_patternfly import Button
-from widgetastic.widget import Checkbox, Table, Text, TextInput
+from widgetastic.utils import ParametrizedLocator
+from widgetastic.widget import (
+    Checkbox,
+    ParametrizedView,
+    Table,
+    Text,
+    TextInput,
+    View
+)
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import ActionsDropdown, SatTable
@@ -68,6 +76,56 @@ class ManageDetailsView(BaseLoggedInView):
     check_connection = Text(".//input[@value='Check Connection']")
     save = Text(".//input[@value='Save']")
 
+
+class AllPlansView(BaseLoggedInView):
+    title = Text(".//h1[normalize-space(.)='Planner']")
+    create_plan = Text(".//a[@class='create-plan']")
+
+    @ParametrizedView.nested
+    class plan(ParametrizedView):
+        PARAMETERS = ("plan_name", )
+        ROOT = ParametrizedLocator(
+            ".//h2[contains(normalize-space(.), {plan_name|quote})]/"
+            "ancestor::div[contains(@id, 'maintenance-plan')]")
+
+        title = Text(".")
+        delete = Text(".//i[@tooltip='Delete this plan']")
+        edit = Text(".//i[@tooltip='Click to edit this plan']")
+        run_playbook = Button("Run Playbook")
+        export_csv = Button("Export CSV")
+        add_actions = Button("Add actions")
+
     @property
     def is_displayed(self):
         return self.title.is_displayed
+
+
+class PlanEditView(View):
+    plan_name = TextInput(name="name")
+    date = TextInput(name="date")
+    start_time = TextInput(name="time")
+    duration = TextInput(name="duration")
+    cancel = Button("Cancel")
+    save = Button("Save")
+
+
+class AddPlanView(BaseLoggedInView):
+    title = Text(".//h2[normalize-space(.)='Plan / Playbook Builder']")
+    name = TextInput(name="name")
+    actions = SatTable(
+        ".//div[contains(@class, 'maintenance-plan')]//table",
+        column_widgets={0: Checkbox(locator=".//input")}
+    )
+    rules_filter = TextInput(
+        locator=".//input[@placeholder='Filter by rule name']")
+    cancel = Button("Cancel")
+    save = Button("Save")
+
+    @property
+    def is_displayed(self):
+        return self.title.is_displayed
+
+
+class PlanModalWindow(View):
+    yes = Text(".//button[contains(@class, 'swal2-confirm')]")
+    cancel = Text(".//button[contains(@class, 'swal2-cancel')]")
