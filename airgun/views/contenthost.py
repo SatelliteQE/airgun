@@ -157,7 +157,8 @@ class ContentHostDetailsView(BaseLoggedInView):
         TAB_NAME = 'Packages'
         SUB_ITEM = 'Applicable'
 
-        upgrade_selected = Button('Upgrade Selected')
+        upgrade_selected = ActionsDropdown(
+            ".//span[contains(@class, 'btn-group')]")
         update_all_packages = Button('Update All Packages')
         table = SatTable(
             './/table',
@@ -169,7 +170,8 @@ class ContentHostDetailsView(BaseLoggedInView):
         lce_filter = Select(
             locator='.//select[@ng-model="selectedErrataOption"]')
         searchbox = Search()
-        apply_selected = Button('Apply Selected')
+        apply_selected = ActionsDropdown(
+            ".//span[contains(@class, 'btn-group')]")
         recalculate = Button('Recalculate')
         table = SatTable(
             './/table',
@@ -218,6 +220,16 @@ class ContentHostDetailsView(BaseLoggedInView):
                 'Product Name': Text('./a'),
             }
         )
+
+        def read(self):
+            """Sometimes no checkboxes are checked off by default, selecting
+            "Show All" in such case.
+            """
+            if (
+                    self.show_all.read() is False
+                    and self.limit_to_lce.read() is False):
+                self.show_all.fill(True)
+            return super().read()
 
 
 class ContentHostTaskDetailsView(TaskDetailsView):

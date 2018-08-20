@@ -67,7 +67,7 @@ class ContentHostEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.errata.search(errata_id)
         view.errata.table.row(id=errata_id)[0].widget.fill(True)
-        view.errata.apply_selected.click()
+        view.errata.apply_selected.fill('Apply Selected')
         view.dialog.confirm()
         view = ContentHostTaskDetailsView(view.browser)
         view.progressbar.wait_for_result()
