@@ -22,8 +22,6 @@ from airgun.entities.errata import ErrataEntity
 from airgun.entities.host import HostEntity
 from airgun.entities.hostcollection import HostCollectionEntity
 from airgun.entities.job_template import JobTemplateEntity
-from airgun.entities.rhai.rule import RuleEntity
-from airgun.entities.rhai.overview import OverviewEntity
 from airgun.entities.filter import FilterEntity
 from airgun.entities.ldap_authentication import LDAPAuthenticationEntity
 from airgun.entities.lifecycleenvironment import LCEEntity
@@ -37,7 +35,10 @@ from airgun.entities.puppet_class import PuppetClassEntity
 from airgun.entities.puppet_environment import PuppetEnvironmentEntity
 from airgun.entities.product import ProductEntity
 from airgun.entities.repository import RepositoryEntity
+from airgun.entities.rhai.action import ActionEntity
 from airgun.entities.rhai.inventory import InventoryHostEntity
+from airgun.entities.rhai.rule import RuleEntity
+from airgun.entities.rhai.overview import OverviewEntity
 from airgun.entities.role import RoleEntity
 from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.smart_class_parameter import SmartClassParameterEntity
@@ -287,6 +288,11 @@ class Session(object):
     def insightsoverview(self):
         """Instance of RHAI Overview entity."""
         return OverviewEntity(self.browser)
+
+    @cached_property
+    def insightsaction(self):
+        """Instance of RHAI Action entity."""
+        return ActionEntity(self.browser)
 
     @cached_property
     def jobtemplate(self):
