@@ -4,7 +4,7 @@ from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.subnet import (
     SubnetCreateView,
-    SubnetDetailsView,
+    SubnetEditView,
     SubnetsView,
 )
 
@@ -26,13 +26,25 @@ class SubnetEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
 
+    def update(self, entity_name, values):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def delete(self, entity_name):
+        view = self.navigate_to(self, 'All')
+        view.search(entity_name)
+        view.table.row(name=entity_name)['Actions'].widget.click(
+            handle_alert=True)
+
 
 @navigator.register(SubnetEntity, 'All')
 class ShowAllSubnets(NavigateStep):
     VIEW = SubnetsView
 
     def step(self, *args, **kwargs):
-        # TODO: No prereq yet
         self.view.menu.select('Infrastructure', 'Subnets')
 
 
@@ -48,7 +60,7 @@ class AddNewSubnet(NavigateStep):
 
 @navigator.register(SubnetEntity, 'Edit')
 class EditSubnet(NavigateStep):
-    VIEW = SubnetDetailsView
+    VIEW = SubnetEditView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
