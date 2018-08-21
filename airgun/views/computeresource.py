@@ -60,6 +60,7 @@ class ResourceProviderCreateView(BaseLoggedInView):
         access_key = TextInput(id='compute_resource_user')
         secret_key = TextInput(id='compute_resource_password')
         load_regions = Text("//*[contains(@id,'test_connection_button')]")
+        region = FilteredDropdown(id='s2id_compute_resource_region')
 
         def after_fill(self, was_change):
             self.load_regions.click()

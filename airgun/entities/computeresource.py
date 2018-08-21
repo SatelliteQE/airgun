@@ -13,24 +13,30 @@ from airgun.views.computeresource import (
 class ComputeResourceEntity(BaseEntity):
 
     def create(self, values):
+        """Create new compute resource entity"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
 
     def search(self, value):
+        """Search for compute resource entity and return table row
+        that contains that entity"""
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
     def edit(self, name, values):
+        """Edit specific compute resource values"""
         view = self.navigate_to(self, 'Edit', entity_name=name)
         view.fill(values)
         view.submit.click()
 
     def read(self, entity_name):
+        """Read all values for existing compute resource entity"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
 
     def delete(self, value):
+        """Delete specific compute profile"""
         view = self.navigate_to(self, 'All')
         view.search(value)
         view.table.row(name=value)['Actions'].widget.fill('Delete')
@@ -61,24 +67,13 @@ class ComputeResourceEntity(BaseEntity):
         if vm['Power'].widget.read() == 'On':
             vm['Actions'].widget.click(handle_alert=True)
 
-    def list_computeprofiles(self, entity_name, computeprofile_name):
-        view = self.navigate_to(self, 'Detail', rhev_name=entity_name)
-        view.compute_profiles.table.row(compute_profile=computeprofile_name)[
-            'Compute profile'].widget.click()
-        view.submit.click()
-
     def update_computeprofile(self, entity_name, computeprofile_name, values):
+        """Update specific compute profile through CR detail view"""
         view = self.navigate_to(self, 'Detail', rhev_name=entity_name)
         view.compute_profiles.table.row(compute_profile=computeprofile_name)[
             'Compute profile'].widget.click()
         view.fill(values)
         view.submit.click()
-
-    def read_computeprofile(self, entity_name, computeprofile_name):
-        view = self.navigate_to(self, 'Detail', rhev_name=entity_name)
-        view.compute_profiles.table.row(compute_profile=computeprofile_name)[
-            'Compute profile'].widget.click()
-        return view.read()
 
 
 @navigator.register(ComputeResourceEntity, 'All')
