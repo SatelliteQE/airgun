@@ -121,6 +121,7 @@ class ContentHostDetailsView(BaseLoggedInView):
 
         status = ReadOnlyEntry(name='Status')
         auto_attach = EditableEntryCheckbox(name='Auto-Attach')
+        run_auto_attach = Text(".//a[@ng-click='autoAttachSubscriptions()']")
         service_level = EditableEntrySelect(name='Service Level')
 
         resources = View.nested(AddRemoveSubscriptionsView)
