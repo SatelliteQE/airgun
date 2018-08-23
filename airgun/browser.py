@@ -1,14 +1,18 @@
 """Tools to help getting selenium and widgetastic browser instance to run UI
 tests.
 """
+import base64
 import logging
+import os
 import time
+import urllib
 
 from datetime import datetime
 from fauxfactory import gen_string
 import selenium
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
+from wait_for import wait_for
 from widgetastic.browser import Browser, DefaultPlugin
 
 from airgun import settings
@@ -165,6 +169,11 @@ class SeleniumBrowserFactory(object):
         if self.browser == 'chrome':
             if binary:
                 kwargs.update({'executable_path': binary})
+            options = webdriver.ChromeOptions()
+            prefs = {'download.prompt_for_download': False}
+            options.add_experimental_option("prefs", prefs)
+            options.add_argument('disable-web-security')
+            kwargs.update({'chrome_options': options})
             self._webdriver = webdriver.Chrome(**kwargs)
         elif self.browser == 'firefox':
             if binary:
@@ -209,6 +218,13 @@ class SeleniumBrowserFactory(object):
         """
         if self.browser == 'chrome':
             desired_capabilities = webdriver.DesiredCapabilities.CHROME.copy()
+            enable_downloading = {
+                'chromeOptions': {
+                    'args': ['disable-web-security'],
+                    'prefs': {'download.prompt_for_download': False}
+                }
+            }
+            desired_capabilities.update(enable_downloading)
             if settings.webdriver_desired_capabilities:
                 desired_capabilities.update(
                     vars(settings.webdriver_desired_capabilities))
@@ -614,3 +630,82 @@ class AirgunBrowser(Browser):
             "arguments[0].scrollIntoView(false);", el, silent=True)
         ActionChains(self.selenium).move_to_element(el).perform()
         return el
+
+    def get_downloads_list(self):
+        """Open browser's downloads screen and return a list of downloaded
+        files.
+
+        :return: list of strings representing file URIs
+        """
+        if settings.selenium.webdriver != 'chrome':
+            raise NotImplementedError('Currently only chrome is supported')
+        downloads_uri = 'chrome://downloads'
+        if not self.url.startswith(downloads_uri):
+            self.url = downloads_uri
+        return self.execute_script("""
+            return downloads.Manager.get().items_
+              .filter(e => e.state === "COMPLETE")
+              .map(e => e.file_url);
+        """)
+
+    def get_file_content(self, uri):
+        """Get file content by its URI from browser's downloads page.
+
+        :return: bytearray representing file content
+        :raises Exception: when error code instead of file content received
+        """
+        if settings.selenium.webdriver != 'chrome':
+            raise NotImplementedError('Currently only chrome is supported')
+        result = self.selenium.execute_async_script("""
+            var uri = arguments[0];
+            var callback = arguments[1];
+            var xhr = new XMLHttpRequest();
+            xhr.responseType = 'arraybuffer';
+            xhr.onload = function(){ callback(btoa(xhr.response)) };
+            xhr.onerror = function(){ callback(xhr.status) };
+            xhr.open('GET', uri);
+            xhr.send();
+        """, uri)
+        if type(result) == int:
+            raise Exception(
+                'Failed to get file content. Status code {}'.format(result))
+        return base64.b64decode(result)
+
+    def save_downloaded_file(self, file_uri=None, save_path=None):
+        """Save local or remote browser's automatically downloaded file to
+        specified local path. Useful when you don't know exact file name or
+        path where file was downloaded or you're using remote driver with no
+        access to worker's filesystem (e.g. saucelabs).
+
+        Usage example::
+
+            view.widget_which_triggers_file_download.click()
+            path = self.browser.save_downloaded_file()
+            with open(file_path, newline='') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    # process file contents
+
+
+        :param str optional file_uri: URI of file. If not specified - browser's
+            latest downloaded file will be selected
+        :param str optional save_path: local path where the file should be
+            saved. If not specified - ``temp_dir`` from airgun settings will be
+            used.
+        """
+        files, _ = wait_for(
+            self.browser.get_downloads_list,
+            timeout=60,
+            delay=1,
+        )
+        if not file_uri:
+            file_uri = files[0]
+        content = self.get_file_content(file_uri)
+        filename = urllib.parse.unquote(os.path.basename(file_uri))
+        if not save_path:
+            save_path = settings.airgun.tmp_dir
+        with open(os.path.join(save_path, filename), 'wb') as f:
+            f.write(content)
+        self.selenium.back()
+        self.plugin.ensure_page_safe()
+        return os.path.join(save_path, filename)

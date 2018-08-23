@@ -26,6 +26,7 @@ class AirgunSettings(object):
 
     def __init__(self):
         self.verbosity = None
+        self.tmp_dir = None
 
 
 class SatelliteSettings(object):
