@@ -79,6 +79,15 @@ class ContentHostEntity(BaseEntity):
         view.errata.search(errata_id)
         return view.errata.table.read()
 
+    def export(self):
+        """Export content hosts list.
+
+        :return str: path to saved file
+        """
+        view = self.navigate_to(self, 'All')
+        view.export.click()
+        return self.browser.save_downloaded_file()
+
 
 @navigator.register(ContentHostEntity, 'All')
 class ShowAllContentHosts(NavigateStep):
