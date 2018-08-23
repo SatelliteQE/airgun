@@ -107,7 +107,6 @@ class RenameComputeProfile(NavigateStep):
         self.parent.search(entity_name)
         self.parent.table.row(
             name=entity_name)['Actions'].widget.fill('Rename')
-        self.parent.actions.fill('Rename')
 
 
 @navigator.register(ComputeProfileEntity, 'Edit')
