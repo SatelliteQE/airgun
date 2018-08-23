@@ -508,10 +508,16 @@ class AirgunBrowserPlugin(DefaultPlugin):
             Ajax.activeRequestCount < 1
         }
         function angularNoRequests() {
-         return (typeof angular === "undefined" ||
-          typeof angular.element(document).injector() === "undefined") ? true :
-          angular.element(document).injector().get(
-           "$http").pendingRequests.length < 1
+         if (typeof angular === "undefined") {
+           return true
+         } else if (typeof angular.element(
+             document).injector() === "undefined") {
+           injector = angular.injector(["ng"]);
+           return injector.get("$http").pendingRequests.length < 1
+         } else {
+           return angular.element(document).injector().get(
+             "$http").pendingRequests.length < 1
+         }
         }
         function spinnerInvisible() {
          spinner = document.getElementById("turbolinks-progress")
