@@ -3,10 +3,8 @@ from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 from airgun.widgets import (
-    FilteredDropdown,
     ActionsDropdown,
     SatTable,
-    MultiSelect,
 )
 
 
@@ -45,15 +43,6 @@ class ComputeProfileCreateView(BaseLoggedInView):
 
 class ComputeProfileDetailView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    flavor = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_flavor_id')
-    availability_zone = FilteredDropdown(
-        id='s2id_compute_attribute_vm_attrs_availability_zone')
-    subnet = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_subnet_id')
-    security_groups = MultiSelect(
-        id='ms-compute_attribute_vm_attrs_security_group_ids')
-    managed_ip = FilteredDropdown(
-        id='s2id_compute_attribute_vm_attrs_managed_ip')
-    submit = Text('//input[@name="commit"]')
     table = SatTable(
         './/table',
         column_widgets={
@@ -68,6 +57,8 @@ class ComputeProfileDetailView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Compute Profiles'
+            and self.breadcrumb.read() != 'Create Compute Profile'
+            and self.breadcrumb.read() != 'Edit Compute Profile'
         )
 
 

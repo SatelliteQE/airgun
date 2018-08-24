@@ -1,16 +1,12 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.entities.computeresource import ComputeResourceEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.computeprofile import (
     ComputeProfileCreateView,
     ComputeProfileRenameView,
     ComputeProfilesView,
     ComputeProfileDetailView,
-)
-from airgun.views.computeresource import (
-    ResourceProviderDetailView,
 )
 
 
@@ -34,29 +30,6 @@ class ComputeProfileEntity(BaseEntity):
         view.fill(new_name)
         view.submit.click()
 
-    def update(self, entity_name, compute_resource, values):
-        """Update specific compute profile values"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.table.row(compute_resource=compute_resource)[
-            'Compute Resource'].widget.click()
-        view.fill(values)
-        view.submit.click()
-
-    def update_through_CR(self, entity_name, compute_profile, values):
-        """Update specific compute profile values through CR detail view"""
-        view = self.navigate_to(self, 'Edit2', entity_name=entity_name)
-        view.compute_profiles.table.row(compute_profile=compute_profile)[
-            'Compute profile'].widget.click()
-        view.fill(values)
-        view.submit.click()
-
-    def read(self, entity_name, compute_resource):
-        """Read all values for existing compute profile entity"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.table.row(compute_resource=compute_resource)[
-            'Compute Resource'].widget.click()
-        return view.read()
-
     def delete(self, entity_name):
         """Delete specific compute profile"""
         view = self.navigate_to(self, 'All')
@@ -64,13 +37,11 @@ class ComputeProfileEntity(BaseEntity):
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
 
-    def select_profile(self, entity_name, compute_profile):
-        """Select specific compute profile on Compute profiles tab
-        in CR detail view"""
-        view = self.navigate_to(self, 'Edit2', entity_name=entity_name)
-        view.compute_profiles.table.row(compute_profile=compute_profile)[
-            'Compute profile'].widget.click()
-        view.submit.click()
+    def list_resources(self, entity_name):
+        """List of compute resources that applied to specific
+        compute profile"""
+        view = self.navigate_to(self, 'List', entity_name=entity_name)
+        return view.table.read()
 
 
 @navigator.register(ComputeProfileEntity, 'All')
@@ -109,25 +80,12 @@ class RenameComputeProfile(NavigateStep):
             name=entity_name)['Actions'].widget.fill('Rename')
 
 
-@navigator.register(ComputeProfileEntity, 'Edit')
-class EditComputeProfile(NavigateStep):
+@navigator.register(ComputeProfileEntity, 'List')
+class ListComputeResources(NavigateStep):
     VIEW = ComputeProfileDetailView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
-
-    def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
-        self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
-
-
-@navigator.register(ComputeProfileEntity, 'Edit2')
-class EditComputeProfile2(NavigateStep):
-    VIEW = ResourceProviderDetailView
-
-    def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(ComputeResourceEntity, 'All', **kwargs)
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')

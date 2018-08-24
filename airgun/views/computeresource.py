@@ -145,14 +145,6 @@ class ResourceProviderEditView(ResourceProviderCreateView):
 
 class ResourceProviderDetailView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    flavor = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_flavor_id')
-    availability_zone = FilteredDropdown(
-        id='s2id_compute_attribute_vm_attrs_availability_zone')
-    subnet = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_subnet_id')
-    security_groups = MultiSelect(
-        id='ms-compute_attribute_vm_attrs_security_group_ids')
-    managed_ip = FilteredDropdown(
-        id='s2id_compute_attribute_vm_attrs_managed_ip')
     submit = Text('//input[@name="commit"]')
 
     @property
@@ -164,6 +156,11 @@ class ResourceProviderDetailView(BaseLoggedInView):
             and self.breadcrumb.locations[0] == 'Compute resources'
             and self.breadcrumb.read() != 'Create Compute Resource'
         )
+
+    @View.nested
+    class compute_resource(SatTab):
+        TAB_NAME = 'Compute Resource'
+        table = SatTable('.//table')
 
     @View.nested
     class virtual_machines(SatTab):
@@ -185,6 +182,35 @@ class ResourceProviderDetailView(BaseLoggedInView):
             './/table',
             column_widgets={
                 'Compute profile': Text('./a'),
-                'VM Attributes': Text('//span[@class="gray"]'),
             }
+        )
+
+
+class ResourceProviderProfileView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+    compute_profile = FilteredDropdown(
+        id='s2id_compute_attribute_compute_profile_id')
+    compute_resource = FilteredDropdown(
+        id='s2id_compute_attribute_compute_resource_id')
+    flavor = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_flavor_id')
+    image = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_image_id')
+    availability_zone = FilteredDropdown(
+        id='s2id_compute_attribute_vm_attrs_availability_zone')
+    subnet = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_subnet_id')
+    security_groups = MultiSelect(
+        id='ms-compute_attribute_vm_attrs_security_group_ids')
+    managed_ip = FilteredDropdown(
+        id='s2id_compute_attribute_vm_attrs_managed_ip')
+
+    submit = Text('//input[@name="commit"]')
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Compute resources'
+            and self.breadcrumb.locations[2] == 'Compute profiles'
+            and self.breadcrumb.read().startswith('Edit ')
         )

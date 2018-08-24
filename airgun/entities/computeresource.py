@@ -7,6 +7,7 @@ from airgun.views.computeresource import (
     ResourceProviderCreateView,
     ResourceProviderEditView,
     ResourceProviderDetailView,
+    ResourceProviderProfileView,
 )
 
 
@@ -67,13 +68,26 @@ class ComputeResourceEntity(BaseEntity):
         if vm['Power'].widget.read() == 'On':
             vm['Actions'].widget.click(handle_alert=True)
 
-    def update_computeprofile(self, entity_name, computeprofile_name, values):
-        """Update specific compute profile through CR detail view"""
-        view = self.navigate_to(self, 'Detail', rhev_name=entity_name)
-        view.compute_profiles.table.row(compute_profile=computeprofile_name)[
-            'Compute profile'].widget.click()
+    def update_computeprofile(self, computeresource, computeprofile, values):
+        """Update specific compute profile attributes through CR detail view"""
+        view = self.navigate_to(
+            self,
+            'Profile',
+            rhev_name=computeresource,
+            entity_name=computeprofile
+        )
         view.fill(values)
         view.submit.click()
+
+    def read_computeprofile(self, computeresource, computeprofile):
+        """Read specific compute profile attributes through CR detail view"""
+        view = self.navigate_to(
+            self,
+            'Profile',
+            rhev_name=computeresource,
+            entity_name=computeprofile
+        )
+        return view.read()
 
 
 @navigator.register(ComputeResourceEntity, 'All')
@@ -119,3 +133,16 @@ class ComputeResourceDetail(NavigateStep):
         entity_name = kwargs.get('rhev_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+
+@navigator.register(ComputeResourceEntity, 'Profile')
+class ComputeResourceProfileDetail(NavigateStep):
+    VIEW = ResourceProviderProfileView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'Detail', **kwargs)
+
+    def step(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        self.parent.compute_profiles.table.row(compute_profile=entity_name)[
+            'Compute profile'].widget.click()
