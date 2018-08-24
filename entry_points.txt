@@ -1,0 +1,2 @@
+[airgun.application_collections]
+systems = iqe.base.modeling.system:SystemCollection
