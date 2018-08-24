@@ -1,22 +1,11 @@
-import os
-import time
-from copy import copy
-from inspect import isclass
-
 from cached_property import cached_property
-from jsmin import jsmin
-from selenium.common.exceptions import (
-    NoSuchElementException,
-    StaleElementReferenceException,
-)
+from selenium.common.exceptions import NoSuchElementException
 from taretto.navigate import Navigate, NavigateStep
 from taretto.ui import Browser, DefaultPlugin
-from taretto.ui.core import TextInput
-from taretto.ui.patternfly import Input
-from wait_for import wait_for, TimedOutError
 
-from iqe.base.browser import manager
+from airgun.base.browser_manager import BrowserManager
 from airgun.base.application.implementations import AirgunImplementationContext, Implementation
+from airgun.views.common import BaseLoggedInView, BasePage
 
 
 class AirgunBrowserPlugin(DefaultPlugin):
@@ -169,7 +158,7 @@ class WebUI(Implementation):
 
     def __init__(self, owner, browser_manager):
         super(WebUI, self).__init__(owner)
-        self.browser_manager = browser_manager
+        self.browser_manager = BrowserManager.instantiate()
 
     def create_view(self, view_class, additional_context=None):
         """Method that is used to instantiate a Widgetastic View.
@@ -187,7 +176,7 @@ class WebUI(Implementation):
             An instance of the ``view_class``
         """
         additional_context = additional_context or {}
-        view = view_class(self.widgetastic, additional_context=additional_context)
+        view = view_class(self.widgetastic_browser, additional_context=additional_context)
         return view
 
     def _reset_cache(self):
@@ -199,7 +188,40 @@ class WebUI(Implementation):
     @cached_property
     def widgetastic_browser(self):
         """This gives us a widgetastic browser."""
-        selenium_browser = self.browser_manager.open_browser(url_key=self.application.address)
-        wt = AirgunBrowser(selenium_browser, self)
+        selenium_browser = self.browser_manager.ensure_open(url_key=self.application.address)
         self.browser_manager.add_cleanup(self._reset_cache)
-        return wt
+        return AirgunBrowser(selenium_browser, self)
+
+    def open_login_page(self):
+        self.browser_manager.ensure_open(self.application.address)
+
+    def do_login(self):
+        view = navigate_to(self.application, "LoginScreen")
+        view.fill({
+            "username": credentials.main.username,
+            "password": credentials.main.password,
+        })
+        view.login_button.click()
+
+
+@WebUI.register_destination_for(WebUI)
+class LoginScreen(AirgunNavigateStep):
+    VIEW = BasePage
+
+    def am_i_here(self):
+        return False
+
+    def prerequisite(self):
+        pass
+
+    def step(self):
+        self.application.web_ui.open_login_page()
+
+
+@ViaUI.register_destination_for(WebUI)
+class LoggedIn(AirgunNavigateStep):
+    VIEW = BaseLoggedInView
+    prerequisite = NavigateToSibling("LoginScreen")
+
+    def step(self):
+        self.application.web_ui.do_login()

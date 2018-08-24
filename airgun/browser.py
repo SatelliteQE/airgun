@@ -308,66 +308,17 @@ class SeleniumBrowserFactory(object):
         """
         self._docker.stop()
 
-    def _is_alive(self):
-        log.debug("alive check")
-        try:
-            self.browser.current_url
-        except UnexpectedAlertPresentException:
-            # We shouldn't think that an Unexpected alert means the browser is dead
-            return True
-        except Exception:
-            log.exception("browser in unknown state, considering dead")
-            return False
-        return True
+    def create(self, url_key):
+        self.post_init()
+        browser = self.get_browser()
+        browser.maximize_window()
+        browser.get(url_key)
+        browser.url_key = url_key
+        return browser
 
-    def ensure_open(self, url_key=None):
-        if getattr(self.browser, 'url_key', None) != url_key:
-            return self.start(url_key=url_key)
-        if self._is_alive():
-            return self.browser
-        else:
-            return self.start(url_key=url_key)
-
-    def add_cleanup(self, callback):
-        assert self.browser is not None
-        try:
-            cl = self.browser.__cleanup
-        except AttributeError:
-            cl = self.browser.__cleanup = []
-        cl.append(callback)
-
-    def _consume_cleanups(self):
-        try:
-            cl = self.browser.__cleanup
-        except AttributeError:
-            pass
-        else:
-            while cl:
-                cl.pop()()
-
-    def quit(self):
-        # TODO: figure if we want to log the url key here
-        self._consume_cleanups()
-        try:
-            self.factory.close(self.browser)
-        except Exception as e:
-            log.error('An exception happened during browser shutdown:')
-            log.exception(e)
-        finally:
-            self.browser = None
-
-    def start(self, url_key=None):
-        log.info('starting browser')
-        if self.browser is not None:
-            self.quit()
-        return self.open_fresh(url_key=url_key)
-
-    def open_fresh(self, url_key=None):
-        log.info('starting browser for %r', url_key)
-        assert self.browser is None
-
-        self.browser = self.factory.create(url_key=url_key)
-        return self.browser
+    def close(self, browser):
+        if browser:
+            browser.quit()
 
 
 class DockerBrowser(object):

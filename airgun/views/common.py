@@ -3,6 +3,7 @@ from widgetastic.widget import (
     ParametrizedLocator,
     ParametrizedView,
     Text,
+    TextInput,
     View,
     WTMixin,
 )
@@ -25,6 +26,12 @@ from airgun.widgets import (
 )
 
 
+class BasePage(View):
+    username = TextInput(id="login_login")
+    password = TextInput(id="login_password")
+    login_button = Text(locator='.//input[@name="commit"]')
+
+
 class BaseLoggedInView(View):
     menu = SatVerticalNavigation('.//div[@id="vertical-nav"]/ul')
     taxonomies = ContextSelector()
@@ -34,6 +41,10 @@ class BaseLoggedInView(View):
     # TODO Defining current user procedure needs to be improved as it is not
     # simple field, but a dropdown menu that contains more items/actions
     current_user = Text("//a[@id='account_menu']")
+
+    @property
+    def is_displayed(self):
+        return self.menu.is_displayed
 
 
 class SatTab(Tab):

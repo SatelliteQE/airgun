@@ -1,7 +1,7 @@
 import importscan
 from pkg_resources import iter_entry_points
 
-from airgun.base.application.implementations.web_ui import WebUI
+from airgun.base.application.implementations.web_ui import WebUI, AirgunNavigateStep
 from airgun.base.application.implementations import AirgunImplementationContext
 from airgun.base.modeling import EntityCollections
 
@@ -12,7 +12,7 @@ class Application(object):
         self.hostname = hostname
         self.path = path
         self.scheme = scheme
-        self.web_ui = ViaUI(owner=self)
+        self.web_ui = WebUI(owner=self)
         self.context = AirgunImplementationContext.from_instances([self.browser])
         self.collections = EntityCollections.for_application(self)
 
