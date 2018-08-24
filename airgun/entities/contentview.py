@@ -19,15 +19,11 @@ class ContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.actions.fill('Remove Content View')
         view.dialog.confirm()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
