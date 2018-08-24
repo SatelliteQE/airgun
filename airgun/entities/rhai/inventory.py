@@ -15,6 +15,7 @@ class InventoryHostEntity(BaseEntity):
         """Search a certain host."""
         view = self.navigate_to(self, "All")
         view.search.fill(host_name)
+        return view.table
 
 
 @navigator.register(InventoryHostEntity, "All")
