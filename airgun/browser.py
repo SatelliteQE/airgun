@@ -309,10 +309,10 @@ class SeleniumBrowserFactory(object):
         self._docker.stop()
 
     def create(self, url_key):
-        self.post_init()
         browser = self.get_browser()
         browser.maximize_window()
         browser.get(url_key)
+        self.post_init()
         browser.url_key = url_key
         return browser
 
@@ -632,42 +632,3 @@ class AirgunBrowser(Browser):
 
     def create_view(self, *args, **kwargs):
         return self.application.browser.create_view(*args, **kwargs)
-
-
-class BrowserManager(object):
-    def __init__(self, browser_factory):
-        self.factory = SeleniumBrowserFactory()
-        self.browser = None
-
-    @classmethod
-    def from_conf(cls, browser_conf):
-        webdriver_name = browser_conf.get('webdriver', 'Firefox')
-        webdriver_class = getattr(webdriver, webdriver_name)
-
-        browser_kwargs = browser_conf.get('webdriver_options', {})
-
-        if 'webdriver_wharf' in browser_conf:
-            wharf = Wharf(browser_conf['webdriver_wharf'])
-            atexit.register(wharf.checkin)
-            if browser_conf[
-                'webdriver_options'][
-                    'desired_capabilities']['browserName'].lower() == 'firefox':
-                browser_kwargs['desired_capabilities']['marionette'] = False
-            return cls(WharfFactory(webdriver_class, browser_kwargs, wharf))
-        else:
-            if webdriver_name == "Remote":
-                if browser_conf[
-                        'webdriver_options'][
-                            'desired_capabilities']['browserName'].lower() == 'chrome':
-                    browser_kwargs['desired_capabilities']['chromeOptions'] = {}
-                    browser_kwargs[
-                        'desired_capabilities']['chromeOptions']['args'] = ['--no-sandbox']
-                    browser_kwargs['desired_capabilities'].pop('marionette', None)
-                if browser_conf[
-                        'webdriver_options'][
-                            'desired_capabilities']['browserName'].lower() == 'firefox':
-                    browser_kwargs['desired_capabilities']['marionette'] = False
-
-            return cls(BrowserFactory(webdriver_class, browser_kwargs))
-
-

@@ -1,8 +1,9 @@
 from cached_property import cached_property
 from selenium.common.exceptions import NoSuchElementException
-from taretto.navigate import Navigate, NavigateStep
+from taretto.navigate import Navigate, NavigateStep, NavigateToSibling
 from taretto.ui import Browser, DefaultPlugin
 
+from airgun import settings
 from airgun.base.browser_manager import BrowserManager
 from airgun.base.application.implementations import AirgunImplementationContext, Implementation
 from airgun.views.common import BaseLoggedInView, BasePage
@@ -74,7 +75,6 @@ class AirgunBrowser(Browser):
         super(AirgunBrowser, self).__init__(
             selenium_browser,
             plugin_class=AirgunBrowserPlugin,
-            logger=logger,
             extra_objects=extra_objects,
         )
         self.window_handle = selenium_browser.current_window_handle
@@ -89,8 +89,7 @@ class AirgunBrowser(Browser):
         return self.extra_objects["application"]
 
     def create_view(self, *args, **kwargs):
-        return self.application.ui.create_view(*args, **kwargs)
-
+        return self.application.web_ui.create_view(*args, **kwargs)
 
 
 class AirgunNavigateStep(NavigateStep):
@@ -109,7 +108,7 @@ class AirgunNavigateStep(NavigateStep):
         return self.obj.application
 
     def create_view(self, *args, **kwargs):
-        return self.application.browser.create_view(*args, **kwargs)
+        return self.application.web_ui.create_view(*args, **kwargs)
 
     def am_i_here(self):
         try:
@@ -132,14 +131,14 @@ class AirgunNavigateStep(NavigateStep):
             self.go(_tries, *args, **go_kwargs)
 
 
-    def go(self, _tries=0, *args, **kwargs):
+    def go(self, _tries=3, *args, **kwargs):
         """Wrapper around :meth:`navmazing.NavigateStep.go` which returns
         instance of view after successful navigation flow.
 
         :return: view instance if class attribute ``VIEW`` is set or ``None``
             otherwise
         """
-        super(NavigateStep, self).go(_tries=_tries, *args, **kwargs)
+        super(AirgunNavigateStep, self).go(_tries=_tries, *args, **kwargs)
         view = self.view if self.VIEW is not None else None
         return view
 
@@ -156,9 +155,9 @@ class WebUI(Implementation):
     register_method_for = AirgunImplementationContext.external_for
     name = "WebUI"
 
-    def __init__(self, owner, browser_manager):
+    def __init__(self, owner):
         super(WebUI, self).__init__(owner)
-        self.browser_manager = BrowserManager.instantiate()
+        self.browser_manager = BrowserManager()
 
     def create_view(self, view_class, additional_context=None):
         """Method that is used to instantiate a Widgetastic View.
@@ -196,10 +195,10 @@ class WebUI(Implementation):
         self.browser_manager.ensure_open(self.application.address)
 
     def do_login(self):
-        view = navigate_to(self.application, "LoginScreen")
+        view = navigate_to(self, "LoginScreen")
         view.fill({
-            "username": credentials.main.username,
-            "password": credentials.main.password,
+            "username": settings.satellite.username,
+            "password": settings.satellite.password,
         })
         view.login_button.click()
 
@@ -215,13 +214,13 @@ class LoginScreen(AirgunNavigateStep):
         pass
 
     def step(self):
-        self.application.web_ui.open_login_page()
+        self.obj.open_login_page()
 
 
-@ViaUI.register_destination_for(WebUI)
+@WebUI.register_destination_for(WebUI)
 class LoggedIn(AirgunNavigateStep):
     VIEW = BaseLoggedInView
     prerequisite = NavigateToSibling("LoginScreen")
 
     def step(self):
-        self.application.web_ui.do_login()
+        self.obj.do_login()

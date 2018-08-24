@@ -1,9 +1,4 @@
-from selenium import webdriver
-from selenium.common.exceptions import (
-    UnexpectedAlertPresentException,
-    WebDriverException,
-)
-from selenium.webdriver.common
+from selenium.common.exceptions import UnexpectedAlertPresentException
 
 from airgun.browser import SeleniumBrowserFactory
 

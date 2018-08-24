@@ -4,8 +4,6 @@ import attr
 from cached_property import cached_property
 from widgetastic.utils import VersionPick
 
-from airgun.base.application import load_application_collections
-
 
 @attr.s
 class EntityCollections(object):
@@ -25,6 +23,7 @@ class EntityCollections(object):
 
     @classmethod
     def for_application(cls, application):
+        from airgun.base.application import load_application_collections
         return cls(
             parent=application, availiable_collections=load_application_collections()
         )

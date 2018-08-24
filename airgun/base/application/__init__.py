@@ -1,19 +1,20 @@
 import importscan
 from pkg_resources import iter_entry_points
 
+from airgun import settings
 from airgun.base.application.implementations.web_ui import WebUI, AirgunNavigateStep
 from airgun.base.application.implementations import AirgunImplementationContext
 from airgun.base.modeling import EntityCollections
 
 
 class Application(object):
-    def __init__(self, hostname, path=None, scheme="https"):
+    def __init__(self, hostname=None, path="", scheme="https"):
         self.application = self
-        self.hostname = hostname
+        self.hostname = hostname or settings.satellite.hostname
         self.path = path
         self.scheme = scheme
         self.web_ui = WebUI(owner=self)
-        self.context = AirgunImplementationContext.from_instances([self.browser])
+        self.context = AirgunImplementationContext.from_instances([self.web_ui])
         self.collections = EntityCollections.for_application(self)
 
     @property
