@@ -143,14 +143,11 @@ class AirgunNavigateStep(NavigateStep):
         return view
 
 
-navigator = Navigate()
-navigate_to = navigator.navigate
-
-
 class WebUI(Implementation):
     """UI implementation using the normal ux"""
 
-    navigator = navigator
+    navigator = Navigate()
+    navigate_to = navigator.navigate
     register_destination_for = navigator.register
     register_method_for = AirgunImplementationContext.external_for
     name = "WebUI"
@@ -195,7 +192,7 @@ class WebUI(Implementation):
         self.browser_manager.ensure_open(self.application.address)
 
     def do_login(self):
-        view = navigate_to(self, "LoginScreen")
+        view = self.navigate_to(self, "LoginScreen")
         view.fill({
             "username": settings.satellite.username,
             "password": settings.satellite.password,

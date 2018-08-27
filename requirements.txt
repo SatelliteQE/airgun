@@ -1,13 +1,2 @@
--e .
-attrs
-cached_property
-diaper
-fauxfactory
-importscan
-ipython
-pyopenssl
-pytest
-requests
-selenium
-taretto>=0.5.3
-wait_for
+
+--editable .

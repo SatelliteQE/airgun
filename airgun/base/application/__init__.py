@@ -2,7 +2,8 @@ import importscan
 from pkg_resources import iter_entry_points
 
 from airgun import settings
-from airgun.base.application.implementations.web_ui import WebUI, AirgunNavigateStep
+from airgun.base.application.implementations.web_ui import WebUI
+from airgun.base.application.implementations.rest_api import RESTAPI
 from airgun.base.application.implementations import AirgunImplementationContext
 from airgun.base.modeling import EntityCollections
 
@@ -14,7 +15,8 @@ class Application(object):
         self.path = path
         self.scheme = scheme
         self.web_ui = WebUI(owner=self)
-        self.context = AirgunImplementationContext.from_instances([self.web_ui])
+        self.rest_api = RESTAPI(owner=self)
+        self.context = AirgunImplementationContext.from_instances([self.web_ui, self.rest_api])
         self.collections = EntityCollections.for_application(self)
 
     @property
