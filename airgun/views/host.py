@@ -107,6 +107,8 @@ class HostInterface(View):
 
 class HostsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Hosts']")
+    export = Text(
+        ".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text("//a[contains(@href, '/hosts/new')]")
     table = SatTable(
         './/table',
