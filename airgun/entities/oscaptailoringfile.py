@@ -12,7 +12,7 @@ from airgun.views.oscaptailoringfile import (
 class OSCAPTailoringFileEntity(BaseEntity):
 
     def create(self, values):
-        """Creates new SCAP
+        """Creates new SCAP Tailoring File
 
         :param values: Parameters to be assigned to new SCAP Tailoring File,
             mandatory values are Name and Scap file.

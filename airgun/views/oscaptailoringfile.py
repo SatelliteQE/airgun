@@ -66,6 +66,7 @@ class SCAPTailoringFileCreateView(BaseLoggedInView):
 
 
 class SCAPTailoringFileEditView(SCAPTailoringFileCreateView):
+    scap_file_name = Text("//b")
 
     @property
     def is_displayed(self):
@@ -74,5 +75,5 @@ class SCAPTailoringFileEditView(SCAPTailoringFileCreateView):
         return (
                 breadcrumb_loaded
                 and self.breadcrumb.locations[0] == 'Tailoring files'
-                and not self.breadcrumb.read().starts_with('Edit ')
+                and self.breadcrumb.read() != 'Upload new Tailoring File'
         )
