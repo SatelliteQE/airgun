@@ -60,6 +60,7 @@ class SCAPContentCreateView(BaseLoggedInView):
 
 
 class SCAPContentEditView(SCAPContentCreateView):
+    scap_file_name = Text("//b")
     breadcrumb = BreadCrumb()
 
     @property
