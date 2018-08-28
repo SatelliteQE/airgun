@@ -28,8 +28,9 @@ from airgun.entities.ldap_authentication import LDAPAuthenticationEntity
 from airgun.entities.lifecycleenvironment import LCEEntity
 from airgun.entities.location import LocationEntity
 from airgun.entities.login import LoginEntity
-from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.organization import OrganizationEntity
+from airgun.entities.os import OperatingSystemEntity
+from airgun.entities.oscapcontent import OSCAPContentEntity
 from airgun.entities.package import PackageEntity
 from airgun.entities.partitiontable import PartitionTableEntity
 from airgun.entities.puppet_class import PuppetClassEntity
@@ -315,6 +316,11 @@ class Session(object):
     def organization(self):
         """Instance of Organization entity."""
         return OrganizationEntity(self.browser)
+
+    @cached_property
+    def oscapcontent(self):
+        """Instance of OSCAP Content entity."""
+        return OSCAPContentEntity(self.browser)
 
     @cached_property
     def package(self):
