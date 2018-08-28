@@ -30,6 +30,8 @@ class ArchitectureEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'All')

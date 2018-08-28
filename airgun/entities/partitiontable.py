@@ -15,6 +15,8 @@ class PartitionTableEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def read(self, entity_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
@@ -28,28 +30,38 @@ class PartitionTableEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def clone(self, values, entity_name):
         view = self.navigate_to(self, 'Clone', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def lock(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Lock')
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def unlock(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Unlock')
         self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(PartitionTableEntity, 'All')

@@ -17,12 +17,16 @@ class OrganizationEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def read(self, entity_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
@@ -36,6 +40,8 @@ class OrganizationEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def select(self, org_name):
         self.navigate_to(self, 'Context', org_name=org_name)

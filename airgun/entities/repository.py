@@ -18,6 +18,8 @@ class RepositoryEntity(BaseEntity):
         view = self.navigate_to(self, 'New', product_name=product_name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, product_name, value):
         """Search for specific product repository"""
@@ -45,6 +47,8 @@ class RepositoryEntity(BaseEntity):
         view.table.row(name=entity_name)[0].fill(True)
         view.delete.click()
         view.dialog.confirm()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def synchronize(self, product_name, entity_name):
         """Synchronize repository"""

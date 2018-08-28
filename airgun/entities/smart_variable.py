@@ -16,6 +16,8 @@ class SmartVariableEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, value):
         """Search for smart variable entity and return table row that contains
@@ -34,6 +36,8 @@ class SmartVariableEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, entity_name):
         """Delete smart variable entity"""
@@ -41,6 +45,8 @@ class SmartVariableEntity(BaseEntity):
         view.search(entity_name)
         view.table.row(username=entity_name)['Actions'].widget.click(
             handle_alert=True)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(SmartVariableEntity, 'All')

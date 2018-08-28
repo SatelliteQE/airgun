@@ -48,7 +48,10 @@ class LCEEntity(BaseEntity):
 
     def update(self, values, entity_name='Library'):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.fill(values)
+        filled_values = view.fill(values)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+        return filled_values
 
     def search_package(self, entity_name, package_name, cv_name=None,
                        repo_name=None):

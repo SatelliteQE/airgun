@@ -35,11 +35,16 @@ class ContentViewEntity(BaseEntity):
 
     def update(self, entity_name, values):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.fill(values)
+        filled_values = view.fill(values)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+        return filled_values
 
     def add_yum_repo(self, entity_name, repo_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.repositories.resources.add(repo_name)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def add_cv(self, entity_name, cv_name):
         """Add content view to selected composite content view."""

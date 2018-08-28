@@ -15,6 +15,8 @@ class OperatingSystemEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'All')

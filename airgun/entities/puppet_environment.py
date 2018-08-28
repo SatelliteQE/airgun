@@ -16,6 +16,8 @@ class PuppetEnvironmentEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def read(self, entity_name):
         """Read puppet environment entity values"""
@@ -27,6 +29,8 @@ class PuppetEnvironmentEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, value):
         """Delete puppet environment entity"""
@@ -34,6 +38,8 @@ class PuppetEnvironmentEntity(BaseEntity):
         view.search(value)
         view.table.row(name=value)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, value):
         """Search for puppet environment entity"""

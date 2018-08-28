@@ -23,6 +23,8 @@ class ProductEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.actions.fill('Remove Product')
         view.dialog.confirm()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, value):
         """Search for specific product"""
@@ -37,12 +39,17 @@ class ProductEntity(BaseEntity):
     def update(self, entity_name, values):
         """Updates product from UI"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.fill(values)
+        filled_values = view.fill(values)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+        return filled_values
 
     def add_yum_repo(self, entity_name, repo_name):
         """Add yum repo to existing product"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.yumrepo.repos.add(repo_name)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def discover_repo(self, values):
         """Repo discovery procedure"""
@@ -50,6 +57,8 @@ class ProductEntity(BaseEntity):
         view.fill(values)
         view.create_repo.run_procedure.click()
         view.create_repo.wait_repo_created()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(ProductEntity, 'All')

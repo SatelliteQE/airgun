@@ -15,6 +15,8 @@ class ComputeProfileEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
@@ -24,12 +26,16 @@ class ComputeProfileEntity(BaseEntity):
         view = self.navigate_to(self, 'Rename', entity_name=old_name)
         view.fill(new_name)
         view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(ComputeProfileEntity, 'All')

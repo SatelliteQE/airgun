@@ -43,6 +43,8 @@ class HostEntity(BaseEntity):
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def change_host_group(self, entities_list, values):
         """Change assigned host group for host/hosts"""
