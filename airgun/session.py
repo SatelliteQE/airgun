@@ -23,6 +23,7 @@ from airgun.entities.host import HostEntity
 from airgun.entities.hostcollection import HostCollectionEntity
 from airgun.entities.job_template import JobTemplateEntity
 from airgun.entities.rhai.rule import RuleEntity
+from airgun.entities.rhai.overview import OverviewEntity
 from airgun.entities.filter import FilterEntity
 from airgun.entities.ldap_authentication import LDAPAuthenticationEntity
 from airgun.entities.lifecycleenvironment import LCEEntity
@@ -277,9 +278,15 @@ class Session(object):
         """Instance of RHAI Rule entity."""
         return RuleEntity(self.browser)
 
-    def insights_inventory(self):
+    @cached_property
+    def insightsinventory(self):
         """Instance of RHAI Inventory entity."""
         return InventoryHostEntity(self.browser)
+
+    @cached_property
+    def insightsoverview(self):
+        """Instance of RHAI Overview entity."""
+        return OverviewEntity(self.browser)
 
     @cached_property
     def jobtemplate(self):
