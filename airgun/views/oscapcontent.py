@@ -60,7 +60,7 @@ class SCAPContentCreateView(BaseLoggedInView):
 
 
 class SCAPContentEditView(SCAPContentCreateView):
-    scap_file_name = Text("//b")
+    scap_file_name = Text('//div[@class="col-md-4"]/b')
     breadcrumb = BreadCrumb()
 
     @property
