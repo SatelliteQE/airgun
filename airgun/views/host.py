@@ -4,7 +4,6 @@ from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
     Select,
-    Table,
     Text,
     TextInput,
     View,
@@ -206,7 +205,7 @@ class HostCreateView(BaseLoggedInView):
     class parameters(SatTab):
         """Host parameters tab"""
         @View.nested
-        class global_params(Table):
+        class global_params(SatTable):
 
             def __init__(self, parent, **kwargs):
                 locator = ".//table[@id='inherited_parameters']"
@@ -220,8 +219,8 @@ class HostCreateView(BaseLoggedInView):
                                  "='Override this value']")
                     )
                 }
-                Table.__init__(self, parent, locator,
-                               column_widgets=column_widgets, **kwargs)
+                SatTable.__init__(self, parent, locator,
+                                  column_widgets=column_widgets, **kwargs)
 
             def read(self):
                 """Return a list of dictionaries. Each dictionary consists of
@@ -338,162 +337,89 @@ class HostEditView(HostCreateView):
         )
 
 
-class HostsChangeGroup(BaseLoggedInView):
+class HostsActionCommonDialog(BaseLoggedInView):
+    """Common base class Dialog for Hosts Actions"""
+    title = None
+    table = SatTable("//div[@class='modal-body']//table")
+    keep_selected = Checkbox(id='keep_selected')
+    submit = Text('//button[@onclick="submit_modal_form()"]')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
+
+
+class HostsChangeGroup(HostsActionCommonDialog):
     title = Text(
         "//h4[text()='Change Group - The"
         " following hosts are about to be changed']")
-    table = SatTable("//div[@class='modal-body']//table")
-    keep_selected = Checkbox(id='keep_selected')
     host_group = Select(id='hostgroup_id')
-    submit = Text('//button[@onclick="submit_modal_form()"]')
-
-    @property
-    def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
 
 
-class HostsChangeEnvironment(BaseLoggedInView):
+class HostsChangeEnvironment(HostsActionCommonDialog):
     title = Text(
         "//h4[text()='Change Environment - The"
         " following hosts are about to be changed']")
-    table = SatTable("//div[@class='modal-body']//table")
-    keep_selected = Checkbox(id='keep_selected')
     environment = Select(id='environment_id')
-    submit = Text('//button[@onclick="submit_modal_form()"]')
+
+
+class HostsTaxonomyMismatchRadioGroup(View):
+    """Handle Taxonomy Mismatch Radio Group
+
+        Example html representation::
+
+            <form ...>
+                <div class="clearfix">
+                    ...
+                </div>
+                <input type="radio" id="location_optimistic_import_yes" ..>
+                 Fix Location on Mismatch
+                <input type="radio" id="location_optimistic_import_no" ..>
+                 Fail on Mismatch
+            </form>
+        """
+    fix_mismatch = Text("//input[contains(@id, 'optimistic_import_yes')]")
+    fail_on_mismatch = Text(
+        "//input[contains(@id, 'optimistic_import_no')]")
+
+    def is_checked(self, widget):
+        """Returns whether the widget is checked"""
+        return self.browser.get_attribute('checked', widget) is not None
+
+    def read(self):
+        return self.is_checked(self.fix_mismatch)
+
+    def fill(self, value):
+        if value and not self.is_checked(self.fix_mismatch):
+            self.fix_mismatch.click()
+        elif not self.is_checked(self.fail_on_mismatch):
+            self.fail_on_mismatch.click()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return (self.fix_mismatch.is_displayed
+                and self.fail_on_mismatch.is_displayed)
 
 
-class OnTaxonomyMismatchCheckBoxGroup(RadioGroup):
-    """Handle an HTML non normalized Radio group according to the current
-    architecture.
-
-    Note: This is a temporary solution, a fix has been issued upstream,
-        when the fix will be available downstream we should replace the
-        implementation with RadioGroup.
-
-    Example html representation::
-
-        <form ...>
-            <div class="clearfix">
-                ...
-            </div>
-            <input type="radio" id="location_optimistic_import_yes" ...>
-             Fix Location on Mismatch
-            <input type="radio" id="location_optimistic_import_no" ...>
-             Fail on Mismatch
-        </form>
-    """
-    # a mapping between button name and the id, see the implementation in
-    # HostsAssignOrganization and HostsAssignLocation hereafter.
-    buttons_name_id_map = {
-            'Fix {taxonomy} on Mismatch': '{taxonomy}_optimistic_import_yes',
-            'Fail on Mismatch': '{taxonomy}_optimistic_import_no',
-        }
-
-    def __init__(self, *args, **kwargs):
-        taxonomy = kwargs.get('taxonomy')
-        if taxonomy:
-            # rebuild buttons_name_id_map
-            buttons_name_id_map = {}
-            for key, value in self.buttons_name_id_map.items():
-                new_key = key.replace('{taxonomy}', taxonomy)
-                new_value = value.replace('{taxonomy}', taxonomy.lower())
-                buttons_name_id_map[new_key] = new_value
-            self.buttons_name_id_map = buttons_name_id_map
-            del kwargs['taxonomy']
-        super(OnTaxonomyMismatchCheckBoxGroup, self).__init__(
-            *args, **kwargs)
-
-    def get_input_by_name(self, name):
-        input_id = self.buttons_name_id_map.get(name)
-        if input_id:
-            return self.browser.wait_for_element(
-                './/input[@id="{0}"]'.format(self.buttons_name_id_map[name])
-            )
-        return None
-
-    @property
-    def selected(self):
-        """Return the name of the button that is currently selected."""
-        for name in self.buttons_name_id_map.keys():
-            btn = self.get_input_by_name(name)
-            if btn and btn.get_attribute('checked') is not None:
-                return name
-        else:
-            raise ValueError(
-                "Whether no radio button is selected or proper attribute "
-                "should be added to framework"
-            )
-
-    def select(self, name):
-        """Select specific radio button in the group"""
-        if self.selected != name:
-            btn = self.get_input_by_name(name)
-            if btn:
-                btn.click()
-                return True
-        return False
-
-    def read(self):
-        """Wrap method according to architecture"""
-        return self.selected
-
-    def fill(self, name):
-        """Wrap method according to architecture"""
-        return self.select(name)
-
-
-class HostsAssignOrganization(BaseLoggedInView):
+class HostsAssignOrganization(HostsActionCommonDialog):
     title = Text(
         "//h4[text()='Assign Organization"
         " - The following hosts are about to be changed']")
-    table = SatTable("//div[@class='modal-body']//table")
-    keep_selected = Checkbox(id='keep_selected')
     organization = Select(id='organization_id')
-    on_mismatch = OnTaxonomyMismatchCheckBoxGroup(
-        "//div[@class='modal-body']//div[@id='content']/form",
-        taxonomy='Organization')
-    submit = Text('//button[@onclick="submit_modal_form()"]')
-
-    @property
-    def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+    fix_mismatch = HostsTaxonomyMismatchRadioGroup()
 
 
-class HostsAssignLocation(BaseLoggedInView):
+class HostsAssignLocation(HostsActionCommonDialog):
     title = Text(
         "//h4[text()='Assign Location"
         " - The following hosts are about to be changed']")
-    table = SatTable("//div[@class='modal-body']//table")
-    keep_selected = Checkbox(id='keep_selected')
     location = Select(id='location_id')
-    on_mismatch = OnTaxonomyMismatchCheckBoxGroup(
-        "//div[@class='modal-body']//div[@id='content']/form",
-        taxonomy='Location')
-    submit = Text('//button[@onclick="submit_modal_form()"]')
-
-    @property
-    def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+    fix_mismatch = HostsTaxonomyMismatchRadioGroup()
 
 
-class HostsAssignCompliancePolicy(BaseLoggedInView):
+class HostsAssignCompliancePolicy(HostsActionCommonDialog):
     title = Text(
         "//h4[text()='Assign Compliance Policy"
         " - The following hosts are about to be changed']")
-    table = SatTable("//div[@class='modal-body']//table")
-    keep_selected = Checkbox(id='keep_selected')
     policy = Select(id='policy_id')
-    submit = Text('//button[@onclick="submit_modal_form()"]')
-
-    @property
-    def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None

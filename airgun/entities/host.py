@@ -49,24 +49,6 @@ class HostEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def change_host_group(self, entities_list, values):
-        """Change assigned host group for host/hosts"""
-        view = self.navigate_to(
-            self, 'Change Group', entities_list=entities_list)
-        view.fill(values)
-        view.submit.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
-
-    def change_host_environment(self, entities_list, values):
-        """Change assigned environment for host/hosts"""
-        view = self.navigate_to(
-            self, 'Change Environment', entities_list=entities_list)
-        view.fill(values)
-        view.submit.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
-
     def read_yaml_output(self, entity_name):
         """Get puppet external nodes YAML dump for specific host"""
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
@@ -75,25 +57,22 @@ class HostEntity(BaseEntity):
         view.browser.selenium.back()
         return output
 
-    def assign_organization(self, entities_list, values):
-        view = self.navigate_to(
-            self, 'Assign Organization', entities_list=entities_list)
-        view.fill(values)
-        view.submit.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
+    def _select_action(self, action_name, entities_list):
+        """Navigate to all entities, select the entities, and returns the view
+        of the selected action name from main entity select action dropdown.
+        """
+        return self.navigate_to(
+            self,
+            'Select Action',
+            action_name=action_name,
+            entities_list=entities_list
+        )
 
-    def assign_location(self, entities_list, values):
-        view = self.navigate_to(
-            self, 'Assign Location', entities_list=entities_list)
-        view.fill(values)
-        view.submit.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
-
-    def assign_compliance_policy(self, entities_list, values):
-        view = self.navigate_to(
-            self, 'Assign Compliance Policy', entities_list=entities_list)
+    def apply_action(self, action_name, entities_list, values=None):
+        """Apply action name for host/hosts"""
+        if values is None:
+            values = {}
+        view = self._select_action(action_name, entities_list)
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
@@ -158,106 +137,30 @@ class EditHost(NavigateStep):
         self.parent.table.row(name=entity_name)['Actions'].widget.fill('Edit')
 
 
-@navigator.register(HostEntity, 'Change Group')
-class AssignHostGroup(NavigateStep):
-    """Navigate to Change Host Group page by selecting checkboxes for necessary
-    hosts and then clicking on 'Change Group' button in 'Select Action'
-    dropdown
+@navigator.register(HostEntity, 'Select Action')
+class HostsSelectAction(NavigateStep):
+    """Navigate to Action page by selecting checkboxes for necessary hosts and
+     then clicking on the action name button in 'Select Action' dropdown.
 
     Args:
+        action_name: the action name to select from dropdown button
         entities_list: list of hosts that need to be modified
     """
-    VIEW = HostsChangeGroup
+    ACTIONS_VIEWS = {
+        'Change Environment': HostsChangeEnvironment,
+        'Change Group': HostsChangeGroup,
+        'Assign Compliance Policy': HostsAssignCompliancePolicy,
+        'Assign Location': HostsAssignLocation,
+        'Assign Organization': HostsAssignOrganization,
+    }
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
+        action_name = kwargs.get('action_name')
+        self.VIEW = self.ACTIONS_VIEWS.get(action_name)
         entities_list = kwargs.get('entities_list')
         for entity in entities_list:
             self.parent.table.row(name=entity)[0].widget.fill(True)
-        self.parent.actions.fill('Change Group')
-
-
-@navigator.register(HostEntity, 'Change Environment')
-class AssignHostEnvironment(NavigateStep):
-    """Navigate to Change Puppet Environment page by selecting checkboxes for
-    necessary hosts and then clicking on 'Change Environment' button in 'Select
-    Action' dropdown
-
-    Args:
-        entities_list: list of hosts that need to be modified
-    """
-    VIEW = HostsChangeEnvironment
-
-    def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
-
-    def step(self, *args, **kwargs):
-        entities_list = kwargs.get('entities_list')
-        for entity in entities_list:
-            self.parent.table.row(name=entity)[0].widget.fill(True)
-        self.parent.actions.fill('Change Environment')
-
-
-@navigator.register(HostEntity, 'Assign Organization')
-class AssignHostOrganization(NavigateStep):
-    """Navigate to Assign Organization page by selecting checkboxes for
-    necessary hosts and then clicking on 'Assign Organization' button in
-    'Select Action' dropdown.
-
-    Args:
-        entities_list: list of hosts that need to be modified
-    """
-    VIEW = HostsAssignOrganization
-
-    def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
-
-    def step(self, *args, **kwargs):
-        entities_list = kwargs.get('entities_list')
-        for entity in entities_list:
-            self.parent.table.row(name=entity)[0].widget.fill(True)
-        self.parent.actions.fill('Assign Organization')
-
-
-@navigator.register(HostEntity, 'Assign Location')
-class AssignHostLocation(NavigateStep):
-    """Navigate to Assign Location page by selecting checkboxes for
-    necessary hosts and then clicking on 'Assign Location' button in
-    'Select Action' dropdown.
-
-    Args:
-        entities_list: list of hosts that need to be modified
-    """
-    VIEW = HostsAssignLocation
-
-    def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
-
-    def step(self, *args, **kwargs):
-        entities_list = kwargs.get('entities_list')
-        for entity in entities_list:
-            self.parent.table.row(name=entity)[0].widget.fill(True)
-        self.parent.actions.fill('Assign Location')
-
-
-@navigator.register(HostEntity, 'Assign Compliance Policy')
-class AssignCompliancePolicy(NavigateStep):
-    """Navigate to Assign Location page by selecting checkboxes for
-    necessary hosts and then clicking on 'Assign Compliance Policy' button in
-    'Select Action' dropdown.
-
-    Args:
-        entities_list: list of hosts that need to be modified
-    """
-    VIEW = HostsAssignCompliancePolicy
-
-    def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
-
-    def step(self, *args, **kwargs):
-        entities_list = kwargs.get('entities_list')
-        for entity in entities_list:
-            self.parent.table.row(name=entity)[0].widget.fill(True)
-        self.parent.actions.fill('Assign Compliance Policy')
+        self.parent.actions.fill(action_name)
