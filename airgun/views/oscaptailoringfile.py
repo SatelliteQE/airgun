@@ -66,7 +66,8 @@ class SCAPTailoringFileCreateView(BaseLoggedInView):
 
 
 class SCAPTailoringFileEditView(SCAPTailoringFileCreateView):
-    scap_file_name = Text('//div[@class="col-md-4"]/b')
+    scap_file_name = Text(
+        '//label[contains(., "Scap File")]/following-sibling::div/b')
 
     @property
     def is_displayed(self):
