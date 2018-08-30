@@ -32,6 +32,7 @@ from airgun.entities.login import LoginEntity
 from airgun.entities.organization import OrganizationEntity
 from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.oscapcontent import OSCAPContentEntity
+from airgun.entities.oscaptailoringfile import OSCAPTailoringFileEntity
 from airgun.entities.package import PackageEntity
 from airgun.entities.partitiontable import PartitionTableEntity
 from airgun.entities.puppet_class import PuppetClassEntity
@@ -328,6 +329,11 @@ class Session(object):
     def oscapcontent(self):
         """Instance of OSCAP Content entity."""
         return OSCAPContentEntity(self.browser)
+
+    @cached_property
+    def oscaptailoringfile(self):
+        """Instance of OSCAP Tailoring File entity."""
+        return OSCAPTailoringFileEntity(self.browser)
 
     @cached_property
     def package(self):
