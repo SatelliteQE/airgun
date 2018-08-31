@@ -81,6 +81,9 @@ class JobInvocationCreateView(BaseLoggedInView):
             locator="//div[label[contains(., 'Type of query')]]")
 
         def __init__(self, parent, logger=None):
+            """Expand advanced options section once we get to run job page.
+            That is need to be able to read or change values there
+            """
             View.__init__(self, parent, logger=logger)
             if self.expander.is_displayed:
                 self.expander.click()
