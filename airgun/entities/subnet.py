@@ -12,6 +12,7 @@ from airgun.views.subnet import (
 class SubnetEntity(BaseEntity):
 
     def create(self, values):
+        """Create new subnet"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
@@ -19,14 +20,17 @@ class SubnetEntity(BaseEntity):
         view.flash.dismiss()
 
     def search(self, value):
+        """Search for specific subnet"""
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
     def read(self, entity_name):
+        """Read values for existing subnet"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
 
     def update(self, entity_name, values):
+        """Update subnet values"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
@@ -34,6 +38,7 @@ class SubnetEntity(BaseEntity):
         view.flash.dismiss()
 
     def delete(self, entity_name):
+        """Delete subnet"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.click(
@@ -42,6 +47,7 @@ class SubnetEntity(BaseEntity):
 
 @navigator.register(SubnetEntity, 'All')
 class ShowAllSubnets(NavigateStep):
+    """Navigate to All Subnets screen."""
     VIEW = SubnetsView
 
     def step(self, *args, **kwargs):
@@ -50,6 +56,7 @@ class ShowAllSubnets(NavigateStep):
 
 @navigator.register(SubnetEntity, 'New')
 class AddNewSubnet(NavigateStep):
+    """Navigate to Create new Subnet screen."""
     VIEW = SubnetCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -60,6 +67,11 @@ class AddNewSubnet(NavigateStep):
 
 @navigator.register(SubnetEntity, 'Edit')
 class EditSubnet(NavigateStep):
+    """Navigate to Edit Subnet screen.
+
+         Args:
+            entity_name: name of subnet
+    """
     VIEW = SubnetEditView
 
     def prerequisite(self, *args, **kwargs):
