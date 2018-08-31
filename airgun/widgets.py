@@ -238,7 +238,8 @@ class ItemsList(GenericLocatorWidget):
         //ul[@class='ms-list']
 
     """
-    ITEM = "./li[not(contains(@style, 'display: none'))][contains(.,'%s')]"
+    ITEM = ("./li[not(contains(@style, 'display: none'))]"
+            "[normalize-space(.)='%s']")
     ITEMS = "./li[not(contains(@style, 'display: none'))]"
 
     def read(self):

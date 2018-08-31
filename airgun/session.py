@@ -21,6 +21,7 @@ from airgun.entities.domain import DomainEntity
 from airgun.entities.errata import ErrataEntity
 from airgun.entities.host import HostEntity
 from airgun.entities.hostcollection import HostCollectionEntity
+from airgun.entities.job_invocation import JobInvocationEntity
 from airgun.entities.job_template import JobTemplateEntity
 from airgun.entities.rhai.rule import RuleEntity
 from airgun.entities.rhai.overview import OverviewEntity
@@ -284,6 +285,11 @@ class Session(object):
     def insightsinventory(self):
         """Instance of RHAI Inventory entity."""
         return InventoryHostEntity(self.browser)
+
+    @cached_property
+    def jobinvocation(self):
+        """Instance of Job Invocation entity."""
+        return JobInvocationEntity(self.browser)
 
     @cached_property
     def insightsoverview(self):
