@@ -7,11 +7,16 @@ from widgetastic.widget import (
     ConditionalSwitchableView,
 )
 from airgun.views.common import (
-        BaseLoggedInView,
-        SearchableViewMixin,
-        SatTab,
+    BaseLoggedInView,
+    SearchableViewMixin,
+    SatTab,
 )
-from airgun.widgets import FilteredDropdown, ActionsDropdown, SatTable
+from airgun.widgets import (
+    FilteredDropdown,
+    ActionsDropdown,
+    SatTable,
+    MultiSelect,
+)
 from widgetastic_patternfly import BreadCrumb
 
 
@@ -34,7 +39,7 @@ class ComputeResourcesView(BaseLoggedInView, SearchableViewMixin):
             self.title, exception=False) is not None
 
 
-class ResourceProviderEditView(BaseLoggedInView):
+class ResourceProviderCreateView(BaseLoggedInView):
     name = TextInput(id='compute_resource_name')
     description = TextInput(id='compute_resource_description')
     submit = Text('//input[@name="commit"]')
@@ -55,6 +60,7 @@ class ResourceProviderEditView(BaseLoggedInView):
         access_key = TextInput(id='compute_resource_user')
         secret_key = TextInput(id='compute_resource_password')
         load_regions = Text("//*[contains(@id,'test_connection_button')]")
+        region = FilteredDropdown(id='s2id_compute_resource_region')
 
         def after_fill(self, was_change):
             self.load_regions.click()
@@ -124,30 +130,87 @@ class ResourceProviderEditView(BaseLoggedInView):
             self.name, exception=False) is not None
 
 
-class ResourceProviderDetailView(BaseLoggedInView):
-    breadcrumb = BreadCrumb()
-    compprofiles = Text("//a[text()='Compute profiles']")
+class ResourceProviderEditView(ResourceProviderCreateView):
 
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Compute resources'
-                and self.browser.wait_for_element(
-                    self.compprofiles, exception=False) is not None
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Compute resources'
+            and self.breadcrumb.read().startswith('Edit ')
         )
+
+
+class ResourceProviderDetailView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+    submit = Text('//input[@name="commit"]')
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Compute resources'
+            and self.breadcrumb.read() != 'Create Compute Resource'
+        )
+
+    @View.nested
+    class compute_resource(SatTab):
+        TAB_NAME = 'Compute Resource'
+        table = SatTable('.//table')
 
     @View.nested
     class virtual_machines(SatTab):
         TAB_NAME = 'Virtual Machines'
 
         table = SatTable(
-                './/table',
-                column_widgets={
-                    'Name': Text('./a'),
-                    'Actions': Text('.//a[@data-method="put"]'),
-                    'Power': Text('.//span[contains(@class,"label")]'),
-                }
+            './/table',
+            column_widgets={
+                'Name': Text('./a'),
+                'Actions': Text('.//a[@data-method="put"]'),
+                'Power': Text('.//span[contains(@class,"label")]'),
+            }
+        )
+
+    @View.nested
+    class compute_profiles(SatTab):
+        TAB_NAME = 'Compute profiles'
+        table = SatTable(
+            './/table',
+            column_widgets={
+                'Compute profile': Text('./a'),
+            }
+        )
+
+
+class ResourceProviderProfileView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+    compute_profile = FilteredDropdown(
+        id='s2id_compute_attribute_compute_profile_id')
+    compute_resource = FilteredDropdown(
+        id='s2id_compute_attribute_compute_resource_id')
+    flavor = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_flavor_id')
+    image = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_image_id')
+    availability_zone = FilteredDropdown(
+        id='s2id_compute_attribute_vm_attrs_availability_zone')
+    subnet = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_subnet_id')
+    security_groups = MultiSelect(
+        id='ms-compute_attribute_vm_attrs_security_group_ids')
+    managed_ip = FilteredDropdown(
+        id='s2id_compute_attribute_vm_attrs_managed_ip')
+
+    submit = Text('//input[@name="commit"]')
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Compute resources'
+            and self.breadcrumb.locations[2] == 'Compute profiles'
+            and self.breadcrumb.read().startswith('Edit ')
         )

@@ -2,7 +2,10 @@ from widgetastic.widget import Text, TextInput
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import ActionsDropdown, SatTable
+from airgun.widgets import (
+    ActionsDropdown,
+    SatTable,
+)
 
 
 class ComputeProfilesView(BaseLoggedInView, SearchableViewMixin):
@@ -32,9 +35,30 @@ class ComputeProfileCreateView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Compute Profiles'
-                and self.breadcrumb.read() == 'Create Compute Profile'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Compute Profiles'
+            and self.breadcrumb.read() == 'Create Compute Profile'
+        )
+
+
+class ComputeProfileDetailView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+    table = SatTable(
+        './/table',
+        column_widgets={
+            'Compute Resource': Text('./a'),
+        }
+    )
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Compute Profiles'
+            and self.breadcrumb.read() != 'Create Compute Profile'
+            and self.breadcrumb.read() != 'Edit Compute Profile'
         )
 
 
@@ -45,7 +69,7 @@ class ComputeProfileRenameView(ComputeProfileCreateView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Compute profiles'
-                and self.breadcrumb.read() == 'Edit Compute profile'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Compute profiles'
+            and self.breadcrumb.read() == 'Edit Compute profile'
         )

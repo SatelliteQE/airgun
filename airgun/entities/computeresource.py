@@ -1,16 +1,20 @@
+
 from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.computeresource import (
     ComputeResourcesView,
+    ResourceProviderCreateView,
     ResourceProviderEditView,
     ResourceProviderDetailView,
+    ResourceProviderProfileView,
 )
 
 
 class ComputeResourceEntity(BaseEntity):
 
     def create(self, values):
+        """Create new compute resource entity"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
@@ -18,10 +22,13 @@ class ComputeResourceEntity(BaseEntity):
         view.flash.dismiss()
 
     def search(self, value):
+        """Search for compute resource entity and return table row
+        that contains that entity"""
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
     def edit(self, name, values):
+        """Edit specific compute resource values"""
         view = self.navigate_to(self, 'Edit', entity_name=name)
         view.fill(values)
         view.submit.click()
@@ -29,10 +36,12 @@ class ComputeResourceEntity(BaseEntity):
         view.flash.dismiss()
 
     def read(self, entity_name):
+        """Read all values for existing compute resource entity"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
 
     def delete(self, value):
+        """Delete specific compute profile"""
         view = self.navigate_to(self, 'All')
         view.search(value)
         view.table.row(name=value)['Actions'].widget.fill('Delete')
@@ -65,6 +74,27 @@ class ComputeResourceEntity(BaseEntity):
         if vm['Power'].widget.read() == 'On':
             vm['Actions'].widget.click(handle_alert=True)
 
+    def update_computeprofile(self, computeresource, computeprofile, values):
+        """Update specific compute profile attributes through CR detail view"""
+        view = self.navigate_to(
+            self,
+            'Profile',
+            rhev_name=computeresource,
+            entity_name=computeprofile
+        )
+        view.fill(values)
+        view.submit.click()
+
+    def read_computeprofile(self, computeresource, computeprofile):
+        """Read specific compute profile attributes through CR detail view"""
+        view = self.navigate_to(
+            self,
+            'Profile',
+            rhev_name=computeresource,
+            entity_name=computeprofile
+        )
+        return view.read()
+
 
 @navigator.register(ComputeResourceEntity, 'All')
 class ShowAllComputeResources(NavigateStep):
@@ -76,7 +106,7 @@ class ShowAllComputeResources(NavigateStep):
 
 @navigator.register(ComputeResourceEntity, 'New')
 class AddNewComputeResource(NavigateStep):
-    VIEW = ResourceProviderEditView
+    VIEW = ResourceProviderCreateView
 
     prerequisite = NavigateToSibling('All')
 
@@ -109,3 +139,16 @@ class ComputeResourceDetail(NavigateStep):
         entity_name = kwargs.get('rhev_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+
+@navigator.register(ComputeResourceEntity, 'Profile')
+class ComputeResourceProfileDetail(NavigateStep):
+    VIEW = ResourceProviderProfileView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'Detail', **kwargs)
+
+    def step(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        self.parent.compute_profiles.table.row(compute_profile=entity_name)[
+            'Compute profile'].widget.click()
