@@ -657,11 +657,22 @@ class AirgunBrowser(Browser):
         if settings.selenium.webdriver != 'chrome':
             raise NotImplementedError('Currently only chrome is supported')
         result = self.selenium.execute_async_script("""
+            function _arrayBufferToBase64(buffer) {
+                var binary = '';
+                var bytes = new Uint8Array(buffer);
+                var len = bytes.byteLength;
+                for (var i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary);
+            }
             var uri = arguments[0];
             var callback = arguments[1];
             var xhr = new XMLHttpRequest();
             xhr.responseType = 'arraybuffer';
-            xhr.onload = function(){ callback(btoa(xhr.response)) };
+            xhr.onload = function(){
+                callback(_arrayBufferToBase64(xhr.response))
+            };
             xhr.onerror = function(){ callback(xhr.status) };
             xhr.open('GET', uri);
             xhr.send();
@@ -691,7 +702,8 @@ class AirgunBrowser(Browser):
             latest downloaded file will be selected
         :param str optional save_path: local path where the file should be
             saved. If not specified - ``temp_dir`` from airgun settings will be
-            used.
+            used in case of remote session or just path to saved file in case
+            local one.
         """
         files, _ = wait_for(
             self.browser.get_downloads_list,
@@ -701,11 +713,21 @@ class AirgunBrowser(Browser):
         if not file_uri:
             file_uri = files[0]
         content = self.get_file_content(file_uri)
-        filename = urllib.parse.unquote(os.path.basename(file_uri))
-        if not save_path:
-            save_path = settings.airgun.tmp_dir
-        with open(os.path.join(save_path, filename), 'wb') as f:
-            f.write(content)
+        file_uri = urllib.parse.unquote(file_uri)
+        filename = os.path.basename(file_uri)
+        if (
+                not save_path
+                and settings.selenium.browser == 'selenium'
+                and settings.selenium.webdriver != 'remote'):
+            # if test is running locally, there's no need to save the file once
+            # again except when explicitly asked to
+            file_path = urllib.parse.urlparse(file_uri).path
+        else:
+            if not save_path:
+                save_path = settings.airgun.tmp_dir
+            with open(os.path.join(save_path, filename), 'wb') as f:
+                f.write(content)
+            file_path = os.path.join(save_path, filename)
         self.selenium.back()
         self.plugin.ensure_page_safe()
-        return os.path.join(save_path, filename)
+        return file_path
