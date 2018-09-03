@@ -712,19 +712,19 @@ class AirgunBrowser(Browser):
         )
         if not file_uri:
             file_uri = files[0]
-        content = self.get_file_content(file_uri)
-        file_uri = urllib.parse.unquote(file_uri)
-        filename = os.path.basename(file_uri)
         if (
                 not save_path
                 and settings.selenium.browser == 'selenium'
                 and settings.selenium.webdriver != 'remote'):
             # if test is running locally, there's no need to save the file once
             # again except when explicitly asked to
-            file_path = urllib.parse.urlparse(file_uri).path
+            file_path = urllib.parse.unquote(
+                urllib.parse.urlparse(file_uri).path)
         else:
             if not save_path:
                 save_path = settings.airgun.tmp_dir
+            content = self.get_file_content(file_uri)
+            filename = urllib.parse.unquote(os.path.basename(file_uri))
             with open(os.path.join(save_path, filename), 'wb') as f:
                 f.write(content)
             file_path = os.path.join(save_path, filename)
