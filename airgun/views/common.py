@@ -102,7 +102,7 @@ class SatTabWithDropdown(TabWithDropdown):
         'contains(@class, "tab-content")]')
 
 
-class SatSecondaryTab(Tab):
+class SatSecondaryTab(SatTab):
     """Secondary level Tab, typically 'List/Remove' or 'Add' sub-tab inside
     some primary tab.
 
@@ -114,6 +114,11 @@ class SatSecondaryTab(Tab):
     """
     ROOT = ParametrizedLocator(
         './/nav[@class="ng-scope" or not(@*)]/following-sibling::div')
+
+    TAB_LOCATOR = ParametrizedLocator(
+        './/nav[@class="ng-scope" or not(@*)]/ul[contains(@class, "nav-tabs")]'
+        '/li[./a[normalize-space(.)={@tab_name|quote}]]'
+    )
 
 
 class LCESelectorGroup(ParametrizedView):
