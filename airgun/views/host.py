@@ -3,6 +3,7 @@ from wait_for import wait_for
 from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
+    GenericLocatorWidget,
     Select,
     Text,
     TextInput,
@@ -364,37 +365,55 @@ class HostsChangeEnvironment(HostsActionCommonDialog):
     environment = Select(id='environment_id')
 
 
-class HostsTaxonomyMismatchRadioGroup(View):
+class HostsTaxonomyMismatchRadioGroup(GenericLocatorWidget):
     """Handle Taxonomy Mismatch Radio Group
 
-        Example html representation::
+    Example html representation::
 
-            <form ...>
-                <div class="clearfix">
-                    ...
-                </div>
-                <input type="radio" id="location_optimistic_import_yes" ..>
-                 Fix Location on Mismatch
-                <input type="radio" id="location_optimistic_import_no" ..>
-                 Fail on Mismatch
-            </form>
-        """
+        <form ...>
+            <div class="clearfix">
+                ...
+            </div>
+            <input type="radio" id="location_optimistic_import_yes" ..>
+             Fix Location on Mismatch
+            <input type="radio" id="location_optimistic_import_no" ..>
+             Fail on Mismatch
+        </form>
+    """
+    taxonomy = None
     fix_mismatch = Text("//input[contains(@id, 'optimistic_import_yes')]")
     fail_on_mismatch = Text(
         "//input[contains(@id, 'optimistic_import_no')]")
+    buttons_text = dict(
+        fix_mismatch='Fix {taxonomy} on Mismatch',
+        fail_on_mismatch='Fail on Mismatch'
+    )
 
-    def is_checked(self, widget):
+    def __init__(self, parent, **kwargs):
+        self.taxonomy = kwargs.pop('taxonomy')
+        super(HostsTaxonomyMismatchRadioGroup, self).__init__(
+            parent,
+            "//div[@class='modal-body']//div[@id='content']/form",
+            **kwargs
+        )
+
+    def _is_checked(self, widget):
         """Returns whether the widget is checked"""
         return self.browser.get_attribute('checked', widget) is not None
 
     def read(self):
-        return self.is_checked(self.fix_mismatch)
+        """Return the text of the selected button"""
+        for name, text in self.buttons_text.items():
+            if self._is_checked(getattr(self, name)):
+                return text.replace('{taxonomy}', self.taxonomy)
 
     def fill(self, value):
-        if value and not self.is_checked(self.fix_mismatch):
-            self.fix_mismatch.click()
-        elif not self.is_checked(self.fail_on_mismatch):
-            self.fail_on_mismatch.click()
+        """Select the button with text equal to value"""
+        for name, text in self.buttons_text.items():
+            text = text.replace('{taxonomy}', self.taxonomy)
+            widget = getattr(self, name)
+            if text == value and not self._is_checked(widget):
+                widget.click()
 
     @property
     def is_displayed(self):
@@ -407,7 +426,7 @@ class HostsAssignOrganization(HostsActionCommonDialog):
         "//h4[text()='Assign Organization"
         " - The following hosts are about to be changed']")
     organization = Select(id='organization_id')
-    fix_mismatch = HostsTaxonomyMismatchRadioGroup()
+    on_mismatch = HostsTaxonomyMismatchRadioGroup(taxonomy='Organization')
 
 
 class HostsAssignLocation(HostsActionCommonDialog):
@@ -415,7 +434,7 @@ class HostsAssignLocation(HostsActionCommonDialog):
         "//h4[text()='Assign Location"
         " - The following hosts are about to be changed']")
     location = Select(id='location_id')
-    fix_mismatch = HostsTaxonomyMismatchRadioGroup()
+    on_mismatch = HostsTaxonomyMismatchRadioGroup(taxonomy='Location')
 
 
 class HostsAssignCompliancePolicy(HostsActionCommonDialog):
