@@ -1,4 +1,5 @@
 from widgetastic.widget import Table, Text, TextInput
+from widgetastic_patternfly import Button
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import ActionsDropdown, SatTable
@@ -50,3 +51,14 @@ class OverviewDetailsView(BaseLoggedInView):
             self.inventory_link.is_displayed and
             self.actions_link.is_displayed
         )
+
+
+class ActionsDetailsView(BaseLoggedInView):
+    title = Text(".//h1[normalize-space(.)='Actions']")
+    export_csv = Button("Export CSV")
+    stability_issues = Text(".//a[@class='stability']/span[@class='count']")
+    security_issues = Text(".//a[@class='security']/span[@class='count']")
+
+    @property
+    def is_displayed(self):
+        return self.title.is_displayed
