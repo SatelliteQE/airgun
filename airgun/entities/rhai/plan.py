@@ -14,6 +14,7 @@ from airgun.views.rhai import (
 class PlanEntity(BaseEntity):
 
     def create(self, name, rules):
+        """Create a new RHAI Plan entity."""
         view = self.navigate_to(self, "Add")
         view.name.fill(name)
         for rule in rules:
@@ -22,6 +23,7 @@ class PlanEntity(BaseEntity):
         view.save.click()
 
     def delete(self, entity_name):
+        """Delete RHAI Plan entity."""
         view = self.navigate_to(
             self, "Details", entity_name=entity_name).plan(entity_name)
         wait_for(lambda: view.delete.is_displayed)
@@ -30,6 +32,7 @@ class PlanEntity(BaseEntity):
         modal.yes.click()
 
     def update(self, entity_name, values):
+        """Update RHAI Plan entity."""
         view = self.navigate_to(
             self, "Details", entity_name=entity_name).plan(entity_name)
         view.edit.click()
@@ -39,6 +42,7 @@ class PlanEntity(BaseEntity):
 
 @navigator.register(PlanEntity, "All")
 class AllPlans(NavigateStep):
+    """Navigate to Insights Planner screen."""
     VIEW = AllPlansView
 
     def step(self, *args, **kwargs):
@@ -47,6 +51,7 @@ class AllPlans(NavigateStep):
 
 @navigator.register(PlanEntity, "Add")
 class AddPlan(NavigateStep):
+    """Navigate to Insights Plan builder screen."""
     VIEW = AddPlanView
     prerequisite = NavigateToSibling("All")
 
@@ -56,6 +61,11 @@ class AddPlan(NavigateStep):
 
 @navigator.register(PlanEntity, "Details")
 class PlanDetails(NavigateStep):
+    """Navigate to Insights plan details screen.
+
+    Args:
+        entity_name: plan name
+    """
     VIEW = AllPlansView
 
     def prerequisite(self, *args, **kwargs):
