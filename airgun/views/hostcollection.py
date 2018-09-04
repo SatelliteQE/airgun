@@ -75,16 +75,12 @@ class HostCollectionEditView(BaseLoggedInView):
         description = EditableEntry(name='Description')
         content_host_limit = EditableLimitEntry(name='Content Host Limit')
         # Package Installation, Removal, and Update
-        manage_packages = Text(".//li[@bst-feature-flag='remote_actions']"
-                               "/a[@ng-click='openPackagesModal()']")
+        manage_packages = Text(".//a[@ng-click='openPackagesModal()']")
         # Errata Installation
-        install_errata = Text(".//li[@bst-feature-flag='remote_actions']"
-                              "/a[@ng-click='openErrataModal()']")
+        install_errata = Text(".//a[@ng-click='openErrataModal()']")
         # Change assigned Lifecycle Environment or Content View
         change_assigned_content = Text(
-            ".//li[@bst-feature-flag='lifecycle_environments']"
-            "/a[@ng-click='openEnvironmentModal()']"
-        )
+            ".//a[@ng-click='openEnvironmentModal()']")
 
         @View.nested
         class content_hosts(View):
@@ -179,8 +175,9 @@ class HostCollectionPackageContentRadioGroup(RadioGroup):
 class HostCollectionManagePackagesView(BaseLoggedInView):
     title = Text("//h4[contains(., 'Update Packages')]")
     update_all = ActionsDropdown(
-        "//button[contains(@class, 'btn')][contains(@ng-click, 'update all')]"
-        "/ancestor::span[contains(@class, 'input-group')]"
+        "//span[contains(@class, 'input-group')]"
+        "[button[contains(@class, 'btn')"
+        " and contains(@ng-click, 'update all')]]"
     )
     content_type = HostCollectionPackageContentRadioGroup(
         "//div[@name='systemContentForm']/div")
@@ -190,17 +187,17 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
                  "contains(@ng-model, 'content.content')]")
     )
     install = ActionsDropdown(
-        "//button[contains(@class, 'btn')][contains(@ng-click, 'install')]"
-        "/ancestor::span[contains(@class, 'input-group')]"
+        "//span[contains(@class, 'input-group')]"
+        "[button[contains(@class, 'btn') and contains(@ng-click, 'install')]]"
     )
     update = ActionsDropdown(
-        "//button[contains(@class, 'btn') and contains(@ng-click, 'update')"
-        " and not(contains(@ng-click, 'update all'))]"
-        "/ancestor::span[contains(@class, 'input-group')]"
+        "//span[contains(@class, 'input-group')]"
+        "[button[contains(@class, 'btn') and contains(@ng-click, 'update')"
+        " and not(contains(@ng-click, 'update all'))]]"
     )
     remove = ActionsDropdown(
-        "//button[contains(@class, 'btn')][contains(@ng-click, 'remove')]"
-        "/ancestor::span[contains(@class, 'input-group')]"
+        "//span[contains(@class, 'input-group')]"
+        "[button[contains(@class, 'btn')][contains(@ng-click, 'remove')]]"
     )
     done = Text("//button[@ng-click='ok()']")
 
@@ -213,15 +210,8 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
     @View.nested
     class dialog(ConfirmationDialog):
         ROOT = ".//div[@class='inline-confirmation']"
-        confirm_dialog = Text(
-            locator=("//div[@ng-show='content.confirm']"
-                     "//button[@type='submit']")
-        )
-        cancel_dialog = Text(
-            locator=("//div[@ng-show='content.confirm']"
-                     "//button[@type='button']"
-                     "[@ng-click='content.confirm = false']")
-        )
+        confirm_dialog = Text(locator=".//button[@type='submit']")
+        cancel_dialog = Text(locator=".//button[@type='button']")
 
     def get_action_button(self, name):
         """Return an action button by it's name"""
@@ -234,10 +224,8 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
     def apply_action(self, name, action_via='via Katello Agent'):
         """Apply an action by name using action via if indicated"""
         action_button = self.get_action_button(name)
-        if action_via:
-            action_button.select(action_via)
-        else:
-            action_button.button.click()
+        action_button.fill(action_via)
+        if self.dialog.is_displayed:
             self.dialog.confirm()
 
 
@@ -245,12 +233,12 @@ class HostCollectionInstallErrataView(BaseLoggedInView):
     title = Text("//h4[contains(., 'Content Host Errata Management')]")
 
     search = TextInput(
-        locator=".//input[@type='text'][@ng-model='errataFilter']")
+        locator=".//input[@type='text' and @ng-model='errataFilter']")
     refresh = Text(locator=".//button[@ng-click='fetchErrata()']")
     install = ActionsDropdown(
-            "//button[contains(@class, 'btn')]"
-            "[contains(@ng-click, 'showConfirm')]"
-            "/ancestor::span[contains(@class, 'btn-group')]"
+            "//span[contains(@class, 'btn-group')]"
+            "[button[contains(@class, 'btn') "
+            "and contains(@ng-click, 'showConfirm')]]"
     )
     table = SatTable(
         ".//table",
@@ -280,13 +268,12 @@ class HostCollectionChangeAssignedContentView(BaseLoggedInView):
 
     @View.nested
     class dialog(ConfirmationDialog):
+        ROOT = ".//div[@ng-show='showConfirm']"
         confirm_dialog = Text(
-            ".//div[@ng-show='showConfirm']"
-            "//button[contains(@ng-click, 'performAction')]"
+            ".//button[contains(@ng-click, 'performAction')]"
         )
         cancel_dialog = Text(
-            ".//div[@ng-show='showConfirm']"
-            "//button[contains(@ng-click, 'showConfirm')"
+            ".//button[contains(@ng-click, 'showConfirm')"
             " and not(contains(@ng-click, 'performAction'))]"
         )
 
