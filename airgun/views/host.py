@@ -3,6 +3,7 @@ from wait_for import wait_for
 from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
+    GenericLocatorWidget,
     Select,
     Text,
     TextInput,
@@ -203,7 +204,85 @@ class HostCreateView(BaseLoggedInView):
 
     @View.nested
     class parameters(SatTab):
+        """Host parameters tab"""
+        @View.nested
+        class global_params(SatTable):
+
+            def __init__(self, parent, **kwargs):
+                locator = ".//table[@id='inherited_parameters']"
+                column_widgets = {
+                    'Name': Text(
+                        locator=".//span[starts-with(@id, 'name_')]"),
+                    'Value': TextInput(
+                        locator=".//textarea[@data-property='value']"),
+                    'Actions': Text(
+                        locator=(".//a[@data-original-title"
+                                 "='Override this value']")
+                    )
+                }
+                SatTable.__init__(self, parent, locator,
+                                  column_widgets=column_widgets, **kwargs)
+
+            def read(self):
+                """Return a list of dictionaries. Each dictionary consists of
+                global parameter name, value and whether overridden or not.
+                """
+                parameters = []
+                for row in self.rows():
+                    parameters.append({
+                        'name': row['Name'].widget.read(),
+                        'value': row['Value'].widget.read(),
+                        'overridden': not row['Actions'].widget.is_displayed
+                    })
+                return parameters
+
+            def override(self, name):
+                """Override a single global parameter.
+
+                :param str name: The name of the global parameter to override.
+                """
+                for row in self.rows():
+                    if (row['Name'].widget.read() == name
+                            and row['Actions'].widget.is_displayed):
+                        row['Actions'].widget.click()  # click 'Override'
+                        break
+
+            def fill(self, names):
+                """Override global parameter entries.
+
+                :param list[str] names: global parameters names to override.
+                """
+                for name in names:
+                    self.override(name)
+
         host_params = CustomParameter(id='global_parameters_table')
+
+        def fill(self, values):
+            """Fill the parameters tab widgets with values.
+
+            Args:
+                values: A dictionary of ``widget_name: value_to_fill``.
+
+            Note:
+                The global_params value can be a list of names of global
+                parameters to override or a list of dicts like
+                [{name: global_param_name_to_override, value: new_value}...]
+            """
+            host_params = values.get('host_params')
+            global_params = values.get('global_params')
+            if global_params:
+                new_global_params = []
+                if not host_params:
+                    host_params = []
+                    values['host_params'] = host_params
+                for global_param in global_params:
+                    if isinstance(global_param, dict):
+                        host_params.append(global_param)
+                        new_global_params.append(global_param['name'])
+                    else:
+                        new_global_params.append(global_param)
+                values['global_params'] = new_global_params
+            return SatTab.fill(self, values)
 
     @View.nested
     class additional_information(SatTab):
@@ -269,31 +348,107 @@ class HostEditView(HostCreateView):
         )
 
 
-class HostsChangeGroup(BaseLoggedInView):
+class HostsActionCommonDialog(BaseLoggedInView):
+    """Common base class Dialog for Hosts Actions"""
+    title = None
+    table = SatTable("//div[@class='modal-body']//table")
+    keep_selected = Checkbox(id='keep_selected')
+    submit = Text('//button[@onclick="submit_modal_form()"]')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
+
+
+class HostsChangeGroup(HostsActionCommonDialog):
     title = Text(
         "//h4[text()='Change Group - The"
         " following hosts are about to be changed']")
-    table = SatTable("//div[@class='modal-body']//table")
-    keep_selected = Checkbox(id='keep_selected')
     host_group = Select(id='hostgroup_id')
-    submit = Text('//button[@onclick="submit_modal_form()"]')
-
-    @property
-    def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
 
 
-class HostsChangeEnvironment(BaseLoggedInView):
+class HostsChangeEnvironment(HostsActionCommonDialog):
     title = Text(
         "//h4[text()='Change Environment - The"
         " following hosts are about to be changed']")
-    table = SatTable("//div[@class='modal-body']//table")
-    keep_selected = Checkbox(id='keep_selected')
     environment = Select(id='environment_id')
-    submit = Text('//button[@onclick="submit_modal_form()"]')
+
+
+class HostsTaxonomyMismatchRadioGroup(GenericLocatorWidget):
+    """Handle Taxonomy Mismatch Radio Group
+
+    Example html representation::
+
+        <form ...>
+            <div class="clearfix">
+                ...
+            </div>
+            <input type="radio" id="location_optimistic_import_yes" ..>
+             Fix Location on Mismatch
+            <input type="radio" id="location_optimistic_import_no" ..>
+             Fail on Mismatch
+        </form>
+    """
+    taxonomy = None
+    fix_mismatch = Text("//input[contains(@id, 'optimistic_import_yes')]")
+    fail_on_mismatch = Text(
+        "//input[contains(@id, 'optimistic_import_no')]")
+    buttons_text = dict(
+        fix_mismatch='Fix {taxonomy} on Mismatch',
+        fail_on_mismatch='Fail on Mismatch'
+    )
+
+    def __init__(self, parent, **kwargs):
+        self.taxonomy = kwargs.pop('taxonomy')
+        super(HostsTaxonomyMismatchRadioGroup, self).__init__(
+            parent,
+            "//div[@class='modal-body']//div[@id='content']/form",
+            **kwargs
+        )
+
+    def _is_checked(self, widget):
+        """Returns whether the widget is checked"""
+        return self.browser.get_attribute('checked', widget) is not None
+
+    def read(self):
+        """Return the text of the selected button"""
+        for name, text in self.buttons_text.items():
+            if self._is_checked(getattr(self, name)):
+                return text.replace('{taxonomy}', self.taxonomy)
+
+    def fill(self, value):
+        """Select the button with text equal to value"""
+        for name, text in self.buttons_text.items():
+            text = text.replace('{taxonomy}', self.taxonomy)
+            widget = getattr(self, name)
+            if text == value and not self._is_checked(widget):
+                widget.click()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return (self.fix_mismatch.is_displayed
+                and self.fail_on_mismatch.is_displayed)
+
+
+class HostsAssignOrganization(HostsActionCommonDialog):
+    title = Text(
+        "//h4[text()='Assign Organization"
+        " - The following hosts are about to be changed']")
+    organization = Select(id='organization_id')
+    on_mismatch = HostsTaxonomyMismatchRadioGroup(taxonomy='Organization')
+
+
+class HostsAssignLocation(HostsActionCommonDialog):
+    title = Text(
+        "//h4[text()='Assign Location"
+        " - The following hosts are about to be changed']")
+    location = Select(id='location_id')
+    on_mismatch = HostsTaxonomyMismatchRadioGroup(taxonomy='Location')
+
+
+class HostsAssignCompliancePolicy(HostsActionCommonDialog):
+    title = Text(
+        "//h4[text()='Assign Compliance Policy"
+        " - The following hosts are about to be changed']")
+    policy = Select(id='policy_id')

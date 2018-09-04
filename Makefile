@@ -7,6 +7,7 @@ help:
 	@echo "  pyc-clean                  to delete all temporary artifacts"
 	@echo "  docs-html                  to generate HTML documentation"
 	@echo "  docs-clean                 to remove documentation"
+	@echo "  lint                       to run pylint on the entire codebase"
 
 pyc-clean:
 	$(info Removing unused Python compiled files, caches and ~ backups...)
@@ -23,3 +24,6 @@ docs-clean:
 
 docs-spelling:
 	@cd docs; $(MAKE) spelling
+
+lint:
+	flake8 .

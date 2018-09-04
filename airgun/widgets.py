@@ -690,13 +690,14 @@ class CustomParameter(Table):
             else:
                 # Check if value should be updated for this name
                 # First get the desired value for this param name
-                for param in params_to_fill:
+                desired_value = None
+                for index, param in enumerate(params_to_fill):
                     if param['name'] == this_name:
                         desired_value = param['value']
                         # Since we're editing this name now, don't add it later
-                        params_to_fill.pop(param)
+                        params_to_fill.pop(index)
                         break
-                if this_value != desired_value:
+                if desired_value is not None and this_value != desired_value:
                     # Update row's value for this name
                     row['Value'].widget.fill(desired_value)
                 else:
