@@ -1,5 +1,6 @@
 [airgun]
 verbosity=INFO
+tmp_dir=/var/tmp
 
 [satellite]
 hostname=example.com

@@ -78,6 +78,15 @@ class HostEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def export(self):
+        """Export hosts list.
+
+         :return str: path to saved file
+        """
+        view = self.navigate_to(self, 'All')
+        view.export.click()
+        return self.browser.save_downloaded_file()
+
 
 @navigator.register(HostEntity, 'All')
 class ShowAllHosts(NavigateStep):
