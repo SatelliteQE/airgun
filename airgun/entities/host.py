@@ -160,6 +160,9 @@ class HostsSelectAction(NavigateStep):
     def step(self, *args, **kwargs):
         action_name = kwargs.get('action_name')
         self.VIEW = self.ACTIONS_VIEWS.get(action_name)
+        if not self.VIEW:
+            raise ValueError('Please provide a valid action name.'
+                             ' action_name: "{0}" not found.')
         entities_list = kwargs.get('entities_list')
         for entity in entities_list:
             self.parent.table.row(name=entity)[0].widget.fill(True)

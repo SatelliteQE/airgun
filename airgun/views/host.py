@@ -258,6 +258,16 @@ class HostCreateView(BaseLoggedInView):
         host_params = CustomParameter(id='global_parameters_table')
 
         def fill(self, values):
+            """Fill the parameters tab widgets with values.
+
+            Args:
+                values: A dictionary of ``widget_name: value_to_fill``.
+
+            Note:
+                The global_params value can be a list of names of global
+                parameters to override or a list of dicts like
+                [{name: global_param_name_to_override, value: new_value}...]
+            """
             host_params = values.get('host_params')
             global_params = values.get('global_params')
             if global_params:
