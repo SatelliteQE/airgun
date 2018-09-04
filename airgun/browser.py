@@ -677,7 +677,7 @@ class AirgunBrowser(Browser):
             xhr.open('GET', uri);
             xhr.send();
         """, uri)
-        if type(result) == int:
+        if isinstance(result, int):
             raise Exception(
                 'Failed to get file content. Status code {}'.format(result))
         return base64.b64decode(result)
