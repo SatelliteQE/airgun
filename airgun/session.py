@@ -13,9 +13,10 @@ from airgun.browser import AirgunBrowser, SeleniumBrowserFactory
 from airgun.entities.activationkey import ActivationKeyEntity
 from airgun.entities.architecture import ArchitectureEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
-from airgun.entities.contentcredential import ContentCredentialEntity
-from airgun.entities.contentview import ContentViewEntity
 from airgun.entities.computeresource import ComputeResourceEntity
+from airgun.entities.contentcredential import ContentCredentialEntity
+from airgun.entities.contenthost import ContentHostEntity
+from airgun.entities.contentview import ContentViewEntity
 from airgun.entities.discoveryrule import DiscoveryRuleEntity
 from airgun.entities.domain import DomainEntity
 from airgun.entities.errata import ErrataEntity
@@ -237,6 +238,11 @@ class Session(object):
     def contentcredential(self):
         """Instance of Content Credential entity."""
         return ContentCredentialEntity(self.browser)
+
+    @cached_property
+    def contenthost(self):
+        """Instance of Content Host entity."""
+        return ContentHostEntity(self.browser)
 
     @cached_property
     def computeresource(self):
