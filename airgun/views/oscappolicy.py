@@ -40,6 +40,15 @@ class SCAPPoliciesView(BaseLoggedInView, SearchableViewMixin):
 class SCAPPolicyCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
 
+    def fill(self, values):
+        if not values.get('organizations.resources.assigned'):
+            values[
+                'organizations.resources.assigned'] = ['Default Organization']
+
+        if not values.get('locations.resources.assigned'):
+            values['locations.resources.assigned'] = ['Default Location']
+        super().fill(values)
+
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(
