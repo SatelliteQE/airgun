@@ -22,6 +22,7 @@ from airgun.widgets import (
     EditableEntry,
     EditableLimitEntry,
     RadioGroup,
+    ReadOnlyEntry,
     SatTable,
 )
 
@@ -73,6 +74,10 @@ class HostCollectionEditView(BaseLoggedInView):
     class details(SatTab):
         name = EditableEntry(name='Name')
         description = EditableEntry(name='Description')
+        content_hosts = ReadOnlyEntry(
+            locator=(".//dt[contains(., 'Content Hosts')]/following-sibling"
+                     "::dd/a[not(contains(@class, 'ng-hide'))][1]")
+        )
         content_host_limit = EditableLimitEntry(name='Content Host Limit')
         # Package Installation, Removal, and Update
         manage_packages = Text(".//a[@ng-click='openPackagesModal()']")
@@ -81,29 +86,6 @@ class HostCollectionEditView(BaseLoggedInView):
         # Change assigned Lifecycle Environment or Content View
         change_assigned_content = Text(
             ".//a[@ng-click='openEnvironmentModal()']")
-
-        @View.nested
-        class content_hosts(View):
-            ROOT = ("//dt[normalize-space(.)='Content Hosts']"
-                    "/following-sibling::dd[1]")
-            add_hosts = Text(
-                "./a[contains(@ui-sref, 'host-collection.hosts.add')]")
-            list_hosts = Text(
-                "./a[contains(@ui-sref, 'host-collection.hosts.list')]")
-
-            def read(self):
-                if self.add_hosts.is_displayed:
-                    return self.add_hosts.read()
-                else:
-                    return self.list_hosts.read()
-
-            def click(self):
-                if self.add_hosts.is_displayed:
-                    # This click should open hosts>resources>AddTab
-                    return self.add_hosts.click()
-                else:
-                    # This click should open hosts>resources>ListRemoveTab
-                    return self.list_hosts.click()
 
     @View.nested
     class hosts(SatTab):
