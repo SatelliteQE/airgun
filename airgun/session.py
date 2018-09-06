@@ -19,6 +19,7 @@ from airgun.entities.contentcredential import ContentCredentialEntity
 from airgun.entities.contenthost import ContentHostEntity
 from airgun.entities.contentview import ContentViewEntity
 from airgun.entities.dashboard import DashboardEntity
+from airgun.entities.discoveredhosts import DiscoveredHostsEntity
 from airgun.entities.discoveryrule import DiscoveryRuleEntity
 from airgun.entities.domain import DomainEntity
 from airgun.entities.errata import ErrataEntity
@@ -267,6 +268,10 @@ class Session(object):
     def dashboard(self):
         """Instance of Dashboard entity."""
         return DashboardEntity(self.browser)
+
+    @cached_property
+    def discoveredhosts(self):
+        return DiscoveredHostsEntity(self.browser)
 
     @cached_property
     def discoveryrule(self):
