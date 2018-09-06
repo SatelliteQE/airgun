@@ -53,9 +53,6 @@ class OSCAPPolicyEntity(BaseEntity):
         :param entity_name:
         :return: dictionary with values from SCAP Policy Details View
         """
-        view = self.navigate_to(self, 'All')
-        view.search(entity_name)
-        view.table.row(name=entity_name)['Name'].widget.click()
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
         return view.read()
 
@@ -104,7 +101,11 @@ class NewSCAPPolicy(NavigateStep):
 
 @navigator.register(OSCAPPolicyEntity, 'Edit')
 class EditSCAPPolicy(NavigateStep):
-    """Navigate to edit existing SCAP Policy page."""
+    """Navigate to edit existing SCAP Policy page.
+
+        Args:
+        entity_name: name of SCAP policy
+    """
     VIEW = SCAPPolicyEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -118,5 +119,17 @@ class EditSCAPPolicy(NavigateStep):
 
 @navigator.register(OSCAPPolicyEntity, 'Details')
 class DetailsSCAPPolicy(NavigateStep):
-    """To get data from SCAPPolicyDetail view"""
+    """To get data from SCAPPolicyDetail view
+
+        Args:
+        entity_name: name of SCAP policy
+    """
     VIEW = SCAPPolicyDetailsView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Name'].widget.click()

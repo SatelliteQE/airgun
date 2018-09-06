@@ -41,6 +41,9 @@ class SCAPPolicyCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
 
     def fill(self, values):
+        """overrides fill method, to be able to click next button during
+        the creation process even, if no location or organization was selected,
+        by adding the SCAP policy to Default Location or Organization."""
         if not values.get('organizations.resources.assigned'):
             values[
                 'organizations.resources.assigned'] = ['Default Organization']
