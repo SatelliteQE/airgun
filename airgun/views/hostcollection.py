@@ -16,6 +16,7 @@ from airgun.views.common import (
     SearchableViewMixin,
     TaskDetailsView,
 )
+from airgun.views.job_invocation import JobInvocationCreateView
 from airgun.widgets import (
     ActionsDropdown,
     ConfirmationDialog,
@@ -145,21 +146,12 @@ class HostCollectionPackageContentRadioGroup(RadioGroup):
                 return True
         return False
 
-    def read(self):
-        """Wrap method according to architecture"""
-        return self.selected
-
-    def fill(self, name):
-        """Wrap method according to architecture"""
-        return self.select(name)
-
 
 class HostCollectionManagePackagesView(BaseLoggedInView):
     title = Text("//h4[contains(., 'Update Packages')]")
     update_all = ActionsDropdown(
         "//span[contains(@class, 'input-group')]"
-        "[button[contains(@class, 'btn')"
-        " and contains(@ng-click, 'update all')]]"
+        "[button[contains(@ng-click, 'update all')]]"
     )
     content_type = HostCollectionPackageContentRadioGroup(
         "//div[@name='systemContentForm']/div")
@@ -170,16 +162,16 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
     )
     install = ActionsDropdown(
         "//span[contains(@class, 'input-group')]"
-        "[button[contains(@class, 'btn') and contains(@ng-click, 'install')]]"
+        "[button[contains(@ng-click, 'install')]]"
     )
     update = ActionsDropdown(
-        "//span[contains(@class, 'input-group')]"
-        "[button[contains(@class, 'btn') and contains(@ng-click, 'update')"
-        " and not(contains(@ng-click, 'update all'))]]"
+            "//span[contains(@class, 'input-group')]"
+            "[button[contains(@ng-click, 'update') "
+            "and not(contains(@ng-click, 'update all'))]]"
     )
     remove = ActionsDropdown(
         "//span[contains(@class, 'input-group')]"
-        "[button[contains(@class, 'btn')][contains(@ng-click, 'remove')]]"
+        "[button[contains(@ng-click, 'remove')]]"
     )
     done = Text("//button[@ng-click='ok()']")
 
@@ -213,7 +205,6 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
 
 class HostCollectionInstallErrataView(BaseLoggedInView):
     title = Text("//h4[contains(., 'Content Host Errata Management')]")
-
     search = TextInput(
         locator=".//input[@type='text' and @ng-model='errataFilter']")
     refresh = Text(locator=".//button[@ng-click='fetchErrata()']")
@@ -241,12 +232,11 @@ class HostCollectionInstallErrataView(BaseLoggedInView):
 
 class HostCollectionChangeAssignedContentView(BaseLoggedInView):
     title = Text("//h4[contains(., 'Content Host Bulk Content')]")
-
     lce = ParametrizedView.nested(LCESelectorGroup)
     content_view = Select(
         locator=".//select[@ng-model='selected.contentView']")
     assign = Text(
-        locator=".//form//button[contains(@ng-click, 'showConfirm')]")
+        locator=".//form/button[contains(@ng-click, 'showConfirm')]")
 
     @View.nested
     class dialog(ConfirmationDialog):
@@ -275,3 +265,16 @@ class HostCollectionActionTaskDetailsView(TaskDetailsView):
         """The view is displayed when it's title exists"""
         return self.browser.wait_for_element(
             self.title, exception=False) is not None
+
+
+class HostCollectionActionRemoteExecutionJobCreate(JobInvocationCreateView):
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Remote Executions'
+            and self.breadcrumb.read() == 'Job invocation'
+        )

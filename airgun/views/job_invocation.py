@@ -182,6 +182,14 @@ class JobInvocationStatusView(BaseLoggedInView):
 
     @View.nested
     class overview(SatTab):
+        job_status = Text(
+            "//div[@id='job_invocations_chart_container']"
+            "//*[name()='tspan'][contains(@class,'donut-title-small-pf')]"
+        )
+        job_status_progress = Text(
+            "//div[@id='job_invocations_chart_container']"
+            "//*[name()='tspan'][contains(@class,'donut-title-big-pf')]"
+        )
         hosts_table = SatTable(
             './/table',
             column_widgets={
