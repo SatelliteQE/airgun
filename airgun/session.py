@@ -17,6 +17,7 @@ from airgun.entities.computeresource import ComputeResourceEntity
 from airgun.entities.contentcredential import ContentCredentialEntity
 from airgun.entities.contenthost import ContentHostEntity
 from airgun.entities.contentview import ContentViewEntity
+from airgun.entities.dashboard import DashboardEntity
 from airgun.entities.discoveryrule import DiscoveryRuleEntity
 from airgun.entities.domain import DomainEntity
 from airgun.entities.errata import ErrataEntity
@@ -46,6 +47,7 @@ from airgun.entities.rhai.manage import ManageEntity
 from airgun.entities.rhai.rule import RuleEntity
 from airgun.entities.rhai.overview import OverviewEntity
 from airgun.entities.role import RoleEntity
+from airgun.entities.task import TaskEntity
 from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.smart_class_parameter import SmartClassParameterEntity
 from airgun.entities.smart_variable import SmartVariableEntity
@@ -256,6 +258,11 @@ class Session(object):
         return ContentViewEntity(self.browser)
 
     @cached_property
+    def dashboard(self):
+        """Instance of Dashboard entity."""
+        return DashboardEntity(self.browser)
+
+    @cached_property
     def discoveryrule(self):
         """Instance of Discovery Rule entity."""
         return DiscoveryRuleEntity(self.browser)
@@ -424,6 +431,11 @@ class Session(object):
     def syncplan(self):
         """Instance of Sync Plan entity."""
         return SyncPlanEntity(self.browser)
+
+    @cached_property
+    def task(self):
+        """Instance of Task entity."""
+        return TaskEntity(self.browser)
 
     @cached_property
     def user(self):

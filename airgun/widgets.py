@@ -1061,6 +1061,10 @@ class ReadOnlyEntry(GenericLocatorWidget):
 
     """
     entry_value = Text(".")
+    BASE_LOCATOR = (
+        ".//dt[contains(., '{}')]/following-sibling::dd[not(contains("
+        "@class, 'ng-hide'))][1]"
+    )
 
     def __init__(self, parent, locator=None, name=None, logger=None):
         """Supports initialization via ``locator=`` or ``name=``"""
@@ -1068,9 +1072,7 @@ class ReadOnlyEntry(GenericLocatorWidget):
             raise TypeError('Please specify either locator or name')
         locator = (
             locator or
-            ".//dt[contains(., '{}')]"
-            "/following-sibling::dd[not(contains(@class, 'ng-hide'))]"
-            "[1]".format(name)
+            self.BASE_LOCATOR.format(name)
         )
         super(ReadOnlyEntry, self).__init__(parent, locator, logger)
 
@@ -1441,3 +1443,23 @@ class PublishPromoteProgressBar(ProgressBar):
         if self.is_completed:
             return self.MESSAGE.read()
         return self.TASK.read()
+
+
+class PieChart(GenericLocatorWidget):
+    """Default Pie Chart that can be found across application. At that moment
+    only return values that displayed inside of the chart
+    """
+    chart_title_text = Text(
+        ".//*[name()='svg']//*[name()='tspan']"
+        "[contains(@class,'donut-title-small-pf')]"
+    )
+    chart_title_value = Text(
+        ".//*[name()='svg']//*[name()='tspan']"
+        "[contains(@class,'donut-title-big-pf')]"
+    )
+
+    def read(self):
+        """Return dictionary that contains chart title name as key and chart
+        value as its value
+        """
+        return {self.chart_title_text.read(): self.chart_title_value.read()}

@@ -1,0 +1,162 @@
+from widgetastic.widget import (
+    Text,
+    View,
+    Widget,
+)
+
+from airgun.views.common import (
+    BaseLoggedInView,
+    SatTable,
+)
+from airgun.widgets import (
+    ActionsDropdown,
+    PieChart,
+    Search,
+)
+
+
+class ItemValueList(Widget):
+    """List of name-value pairs. Each name element from every pair is clickable
+
+     Example html representation::
+
+    <ul>
+        <li>
+            <a class="dashboard-links"...>Hosts with no reports</a>
+            <h4>5</h4>
+        </li>
+     """
+    LABELS = ".//li/a[@class='dashboard-links']"
+    LABEL = ".//li/a[@class='dashboard-links'][normalize-space(.)='%s']"
+    VALUE = './/h4[preceding-sibling::a[contains(., "{}")]]'
+
+    def read(self):
+        """Return a dictionary where keys are widget criteria names and
+        values are number of hosts that correspond to these criteria
+        """
+        values = {}
+        for item in self.browser.elements(self.LABELS):
+            name = self.browser.text(item)
+            value = self.browser.text(self.VALUE.format(name))
+            values[name] = value
+        return values
+
+    def fill(self, value):
+        """Click on specific criteria from the widget list"""
+        self.browser.click(
+            self.browser.element(self.LABEL % value))
+
+
+class TotalCount(Widget):
+    """Return total hosts count from Host Configuration Status type of
+    widgets
+    """
+    total_count = Text(".//h4[@class='total']")
+
+    def read(self):
+        """Return hosts count from widget. Usually it is a string like
+        'Total Hosts: 5'
+        """
+        _, count = self.total_count.read().split(': ')
+        return int(count)
+
+
+class DashboardView(BaseLoggedInView):
+    title = Text("//h1[text()='Overview']")
+    manage = ActionsDropdown("//div[@class='btn-group']")
+    AUTO_REFRESH = "//a[contains(@href, '/?auto_refresh')]"
+    searchbox = Search()
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
+
+    def search(self, query):
+        """Return whole dashboard view as a result of a search
+
+        :param str query: search query to type into search field.
+        :return: all view widgets values
+        :rtype: dict
+        """
+        self.searchbox.search(query)
+        return self.read()
+
+    @View.nested
+    class HostConfigurationStatus(View):
+        ROOT = ".//li[@data-name='Host Configuration Status for All']"
+        status_list = ItemValueList()
+        total_count = TotalCount()
+
+    @View.nested
+    class TaskStatus(View):
+        ROOT = ".//li[@data-name='Task Status']"
+        states = SatTable(
+            './/table',
+            column_widgets={'No. of Tasks': Text('./a')},
+        )
+
+        def fill(self, values):
+            if 'state' not in values or 'result' not in values:
+                raise AttributeError(
+                    'both state and result values have to be provided')
+            self.states.row(
+                state=values['state'],
+                result=values['result']
+            )['No. of Tasks'].widget.click()
+
+    @View.nested
+    class HostConfigurationChart(View):
+        ROOT = ".//li[@data-name='Host Configuration Chart for All']"
+        chart = PieChart(".//div[@id='host_configuration_chart_all']")
+
+    @View.nested
+    class ContentViews(View):
+        ROOT = ".//li[@data-name='Content Views']"
+        content_views = SatTable(
+            './/table',
+            column_widgets={'Content View': Text('./a')}
+        )
+
+    @View.nested
+    class syncoverview(View):
+        ROOT = ".//li[@data-name='Sync Overview']"
+        syncs = SatTable('.//table')
+
+    @View.nested
+    class HostSubscription(View):
+        ROOT = ".//li[@data-name='Host Subscription Status']"
+        subscriptions = SatTable(
+            './/table',
+            column_widgets={0: Text('./a')}
+        )
+
+        def fill(self, values):
+            if 'type' not in values:
+                raise AttributeError('You need provide subscription task type')
+            self.subscriptions.row((
+                0, 'contains', '{}'.format(values['type'])))[0].widget.click()
+
+    @View.nested
+    class subscriptionstatus(View):
+        ROOT = ".//li[@data-name='Subscription Status']"
+        subscriptions = SatTable('.//table')
+
+    @View.nested
+    class HostCollections(View):
+        ROOT = ".//li[@data-name='Host Collections']"
+        collections = SatTable('.//table')
+
+    @View.nested
+    class LatestFailedTasks(View):
+        ROOT = ".//li[@data-name='Latest Warning/Error Tasks']"
+        tasks = SatTable(
+            './/table',
+            column_widgets={'Name': Text('./a')}
+        )
+
+        def fill(self, values):
+            if 'name' not in values:
+                raise AttributeError('You need provide name of the task')
+            self.tasks.row(
+                name=values['name'])['Name'].widget.click()
