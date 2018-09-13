@@ -12,7 +12,14 @@ class DashboardEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def read(self):
+    def read(self, widget_name):
+        """Read specific widget value"""
+        view = self.navigate_to(self, 'All')
+        if widget_name not in view.widget_names:
+            raise ValueError('Provide correct widget name to be read')
+        return getattr(view, widget_name).read()
+
+    def read_all(self):
         """Read all dashboard widgets values"""
         view = self.navigate_to(self, 'All')
         return view.read()
@@ -37,6 +44,4 @@ class OpenDashboard(NavigateStep):
         """Disable auto-refresh feature for dashboard entity each time
         navigation to the page is finished
         """
-        if self.view.browser.element(self.view.AUTO_REFRESH).get_attribute(
-                'data-original-title') == 'Auto refresh on':
-            self.view.browser.element(self.view.AUTO_REFRESH).click()
+        self.view.refresh.fill(False)

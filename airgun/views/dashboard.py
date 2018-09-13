@@ -27,8 +27,8 @@ class ItemValueList(Widget):
         </li>
      """
     LABELS = ".//li/a[@class='dashboard-links']"
-    LABEL = ".//li/a[@class='dashboard-links'][normalize-space(.)='%s']"
-    VALUE = './/h4[preceding-sibling::a[contains(., "{}")]]'
+    LABEL = ".//li/a[@class='dashboard-links'][normalize-space(.)='{}']"
+    VALUE = ".//h4[preceding-sibling::a[contains(., '{}')]]"
 
     def read(self):
         """Return a dictionary where keys are widget criteria names and
@@ -37,14 +37,14 @@ class ItemValueList(Widget):
         values = {}
         for item in self.browser.elements(self.LABELS):
             name = self.browser.text(item)
-            value = self.browser.text(self.VALUE.format(name))
+            value = int(self.browser.text(self.VALUE.format(name)))
             values[name] = value
         return values
 
     def fill(self, value):
         """Click on specific criteria from the widget list"""
         self.browser.click(
-            self.browser.element(self.LABEL % value))
+            self.browser.element(self.LABEL.format(value)))
 
 
 class TotalCount(Widget):
@@ -57,14 +57,31 @@ class TotalCount(Widget):
         """Return hosts count from widget. Usually it is a string like
         'Total Hosts: 5'
         """
-        _, count = self.total_count.read().split(': ')
+        _, _, count = self.total_count.read().partition(':')
         return int(count)
+
+
+class AutoRefresh(Widget):
+    """Widget refer to auto refresh functionality on dashboard"""
+    AUTO_REFRESH = "//a[contains(@href, '/?auto_refresh')]"
+
+    def read(self):
+        """Return whether functionality is enabled or disabled"""
+        if self.browser.element(self.AUTO_REFRESH).get_attribute(
+                'data-original-title') == 'Auto refresh on':
+            return True
+        return False
+
+    def fill(self, value):
+        """Click on a button if state of the widget need to be changed"""
+        if self.read() != value:
+            self.browser.element(self.AUTO_REFRESH).click()
 
 
 class DashboardView(BaseLoggedInView):
     title = Text("//h1[text()='Overview']")
     manage = ActionsDropdown("//div[@class='btn-group']")
-    AUTO_REFRESH = "//a[contains(@href, '/?auto_refresh')]"
+    refresh = AutoRefresh()
     searchbox = Search()
 
     @property
@@ -98,7 +115,7 @@ class DashboardView(BaseLoggedInView):
 
         def fill(self, values):
             if 'state' not in values or 'result' not in values:
-                raise AttributeError(
+                raise ValueError(
                     'both state and result values have to be provided')
             self.states.row(
                 state=values['state'],
@@ -119,7 +136,7 @@ class DashboardView(BaseLoggedInView):
         )
 
     @View.nested
-    class syncoverview(View):
+    class SyncOverview(View):
         ROOT = ".//li[@data-name='Sync Overview']"
         syncs = SatTable('.//table')
 
@@ -133,12 +150,12 @@ class DashboardView(BaseLoggedInView):
 
         def fill(self, values):
             if 'type' not in values:
-                raise AttributeError('You need provide subscription task type')
+                raise ValueError('You need provide subscription task type')
             self.subscriptions.row((
                 0, 'contains', '{}'.format(values['type'])))[0].widget.click()
 
     @View.nested
-    class subscriptionstatus(View):
+    class SubscriptionStatus(View):
         ROOT = ".//li[@data-name='Subscription Status']"
         subscriptions = SatTable('.//table')
 
@@ -157,6 +174,6 @@ class DashboardView(BaseLoggedInView):
 
         def fill(self, values):
             if 'name' not in values:
-                raise AttributeError('You need provide name of the task')
+                raise ValueError('You need provide name of the task')
             self.tasks.row(
                 name=values['name'])['Name'].widget.click()
