@@ -1246,6 +1246,7 @@ class SatSubscriptionsTable(SatTable):
                 row['Repository Name'] = next(titles)
         return read_rows
 
+
 class SatSubscriptionsViewTable(SatTable):
     """Table used on Red Hat Subscriptions page. It's mostly the same as
     normal table, but when search returns no results, it does display single
@@ -1255,7 +1256,7 @@ class SatSubscriptionsViewTable(SatTable):
     """
     @property
     def has_rows(self):
-        return self.tbody_row.read() != "No subscriptions match your search criteria."
+        return self.tbody_row.read() != "No subscriptions match your search criteria."  # noqa: E501
 
 
 class SatTableWithUnevenStructure(SatTable):

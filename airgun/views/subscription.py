@@ -29,7 +29,7 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixin):
     manage_manifest_button = Text("//button[text()='Manage Manifest']")
     export_csv_button = Text("//button[text()='Export CSV']")
     delete_button = Text("//button[text()='Delete']")
-    progressbar = ProgressBar('//div[contains(@class, "progress-bar-striped")]')
+    progressbar = ProgressBar('//div[contains(@class,"progress-bar-striped")]')
     confirm_deletion = DeleteSubscriptionConfirmationDialog()
 
     @property
@@ -104,7 +104,8 @@ class SubscriptionDetailsView(BaseLoggedInView):
 
     @View.nested
     class details(SatTab):
-        provided_products = Text("//h2[text()='Provided Products']/following::ul")
+        provided_products = Text(("//h2[text()='Provided Products']"
+                                  "/following::ul"))
 
     @View.nested
     class enabled_products(SatTab):
