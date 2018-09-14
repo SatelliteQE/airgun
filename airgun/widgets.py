@@ -334,10 +334,12 @@ class MultiSelect(GenericLocatorWidget):
 class Search(Widget):
     search_field = TextInput(locator=(
         ".//input[@id='search' or @ng-model='table.searchTerm' or "
-        "contains(@ng-model, 'Filter')]"))
+        "contains(@ng-model, 'Filter') or "
+        "starts-with(@id, 'downshift-')]"))
     search_button = Text(
         ".//button[contains(@type,'submit') or "
-        "@ng-click='table.search(table.searchTerm)']"
+        "@ng-click='table.search(table.searchTerm)' or "
+        "text()='Search']"
     )
 
     def fill(self, value):
@@ -826,6 +828,11 @@ class ConfirmationDialog(Widget):
         do_not_read_this_widget()
 
 
+class DeleteSubscriptionConfirmationDialog(ConfirmationDialog):
+    confirm_dialog = Text(".//button[text()='Delete']")
+    cancel_dialog = Text(".//button[text()='Cancel']")
+
+
 class LCESelector(GenericLocatorWidget):
     """Group of checkboxes that goes in a line one after another. Usually used
     to specify lifecycle environment
@@ -1238,6 +1245,17 @@ class SatSubscriptionsTable(SatTable):
             for row in read_rows:
                 row['Repository Name'] = next(titles)
         return read_rows
+
+class SatSubscriptionsViewTable(SatTable):
+    """Table used on Red Hat Subscriptions page. It's mostly the same as
+    normal table, but when search returns no results, it does display single
+    row with message.
+    Not to be confused with SatSubscriptionsTable, which is not used on
+    that page
+    """
+    @property
+    def has_rows(self):
+        return self.tbody_row.read() != "No subscriptions match your search criteria."
 
 
 class SatTableWithUnevenStructure(SatTable):
