@@ -29,11 +29,10 @@ class ContentViewEntity(BaseEntity):
     def delete(self, entity_name):
         """Delete existing content view"""
         view = self.navigate_to(self, 'Delete', entity_name=entity_name)
-        if view.conflicts_present:
-            raise AssertionError(
-                'Unable to delete content view. Following conflicts are'
-                'present: {}'.format(view.table.read())
-            )
+        assert not view.conflicts_present, (
+            'Unable to delete content view. '
+            'Following conflicts are present: {}'.format(view.table.read())
+        )
         view.remove.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -87,6 +86,8 @@ class ContentViewEntity(BaseEntity):
         """Add puppet module to selected view either by its author name or by
         its version.
 
+        :param str entity_name: content view name
+        :param str module_name: puppet module name
         :param str optional filter_term: can be used to filter the module by
             'author' or by 'version'.
         """
@@ -158,6 +159,9 @@ class ContentViewEntity(BaseEntity):
             self, entity_name, version_name, query, repo=None):
         """Search for a package inside content view version
 
+        :param str entity_name: content view name
+        :param str version_name: content view version name
+        :param str query: search query for content view version's package
         :param str optional repo: repository name to filter by
         """
         view = self.navigate_to(
@@ -171,8 +175,10 @@ class ContentViewEntity(BaseEntity):
                        lces=None):
         """Remove content view version.
 
+        :param str entity_name: content view name
+        :param str version_name: content view version name
         :param bool completely: complete content view version removal if True
-            or removal from all lifecycle environments otherwise
+            or just disassociating from all lifecycle environments otherwise
         :param list optional lces: list of lifecycle environment names to
             select on content view version removal screen
         """

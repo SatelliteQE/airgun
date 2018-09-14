@@ -426,7 +426,6 @@ class EditYumFilterView(BaseLoggedInView):
         )
         add_rule = Text(".//button[@ng-click='addRule()']")
         remove_rule = Text(".//button[@ng-click='removeRules(filter)']")
-
         table = SatTable(
             locator='//table',
             column_widgets={
