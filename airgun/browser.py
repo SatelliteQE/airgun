@@ -539,11 +539,16 @@ class AirgunBrowserPlugin(DefaultPlugin):
          spinner = document.getElementById("turbolinks-progress")
          return (spinner === null) ? true : spinner.style["display"] == "none"
         }
+        function reactLoadingInvisible() {
+         react = document.querySelector("#reactRoot .loading-state")
+         return react === null
+        }
         return {
             jquery: jqueryInactive(),
             ajax: ajaxInactive(),
             angular: angularNoRequests(),
             spinner: spinnerInvisible(),
+            react: reactLoadingInvisible(),
             document: document.readyState == "complete",
         }
         '''
