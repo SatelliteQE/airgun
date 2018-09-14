@@ -1,20 +1,21 @@
 from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.container import (
-    ContainerView,
-    ContainerCreateView
-)
+from airgun.views.container import (ContainerCreateView, ContainerView)
 
 
 class ContainerEntity(BaseEntity):
 
     def create(self, values):
+        """Create new container"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
-        view.ContainerEnvironmentCreateView.submit.click()
+        view.environment.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search(self, value):
+        """Search specific value"""
         view = self.navigate_to(self, 'All')
         return view.search(value)
 

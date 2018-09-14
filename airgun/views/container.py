@@ -14,7 +14,6 @@ from airgun.widgets import (
     ActionsDropdown,
     SatTable,
     MultiSelect,
-    EditableEntryCheckbox,
 )
 from widgetastic_patternfly import BreadCrumb
 
@@ -51,32 +50,36 @@ class ContainerCreateView(BaseLoggedInView):
         )
 
     @View.nested
-    class ContainerPreliminaryCreateView(BaseLoggedInView):
+    class preliminary(BaseLoggedInView):
         next_step = Text("//button[contains(@id, 'next')]")
 
         @View.nested
         class compute_resource(SatTab):
             TAB_NAME = 'Compute resource'
-            deploy_on = FilteredDropdown(
-                id='s2id_docker_container_wizard_states_preliminary_compute_resource_id')
+            first_part = "s2id_docker_container_wizard_states_"
+            second_part = "preliminary_compute_resource_id"
+            id_of_element = first_part + second_part
+            deploy_on = FilteredDropdown(id=id_of_element)
 
         @View.nested
         class locations(SatTab):
-            TAB_NAME = 'Locations'
-            resources = MultiSelect(
-                id='ms-docker_container_wizard_states_preliminary_location_ids')
+            first_part = "ms-docker_container_wizard_states_"
+            second_part = "preliminary_location_ids"
+            id_of_element = first_part + second_part
+            resources = MultiSelect(id=id_of_element)
 
         @View.nested
         class organizations(SatTab):
-            TAB_NAME = 'Organizations'
-            resources = MultiSelect(
-                id='ms-docker_container_wizard_states_preliminary_organization_ids')
+            first_part = "ms-docker_container_wizard_states_"
+            second_part = "preliminary_organization_ids"
+            id_of_element = first_part + second_part
+            resources = MultiSelect(id=id_of_element)
 
         def after_fill(self, was_change):
             self.next_step.click()
 
     @View.nested
-    class ContainerImageCreateView(BaseLoggedInView):
+    class image(BaseLoggedInView):
         next_step = Text("//button[contains(@id, 'next')]")
 
         @View.nested
@@ -115,7 +118,7 @@ class ContainerCreateView(BaseLoggedInView):
             self.next_step.click()
 
     @View.nested
-    class ContainerConfigurationCreateView(BaseLoggedInView):
+    class configuration(BaseLoggedInView):
         next_step = Text("//button[contains(@id, 'next')]")
         name = TextInput(
             id='docker_container_wizard_states_configuration_name')
@@ -134,8 +137,7 @@ class ContainerCreateView(BaseLoggedInView):
             self.next_step.click()
 
     @View.nested
-    class ContainerEnvironmentCreateView(BaseLoggedInView):
-        breadcrumb = BreadCrumb()
+    class environment(BaseLoggedInView):
         add_environment_variable = Text(
             "//a[text()='Add environment variable']")
         add_exposed_port = Text("//a[text()='Add Exposed Port']")
