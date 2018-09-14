@@ -19,7 +19,7 @@ setup(
         'navmazing==1.1.4',
         'pytest',
         'wait_for',
-        'widgetastic.core==0.21.2',
+        'widgetastic.core==0.21.6',
         'widgetastic.patternfly==0.0.33'
     ],
     packages=find_packages(exclude=['tests*']),

@@ -554,13 +554,13 @@ class AirgunBrowserPlugin(DefaultPlugin):
         """
         super().ensure_page_safe(timeout)
 
-    def before_click(self, element):
+    def before_click(self, element, locator=None):
         """Invoked before clicking on an element. Ensure page is fully loaded
         before clicking.
         """
         self.ensure_page_safe()
 
-    def after_click(self, element):
+    def after_click(self, element, locator=None):
         """Invoked after clicking on an element. Ensure page is fully loaded
         before proceeding further.
         """
