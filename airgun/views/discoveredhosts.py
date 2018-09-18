@@ -1,18 +1,18 @@
 from wait_for import wait_for
 from widgetastic.widget import (
     Checkbox,
-    Text,
     Select,
     Table,
-    TableRow,
     TableColumn,
+    TableRow,
+    Text,
 )
 
 from airgun.views.common import (
     BaseLoggedInView,
     BreadCrumb,
-    SatTable,
     SearchableViewMixin,
+    SatTable,
 )
 from airgun.views.host import HostCreateView
 from airgun.widgets import (
@@ -22,7 +22,7 @@ from airgun.widgets import (
 
 
 class DiscoveredHostsViewTable(SatTable):
-    """Discovered hosts table that has a diffrent no rows message location.
+    """Discovered hosts table that has a different no rows message location.
 
     Example html representation::
 
@@ -134,9 +134,7 @@ class DiscoveredHostDetailsView(BaseLoggedInView):
     back = Text(
         ".//a[contains(@class, 'btn') and @data-id='aid_discovered_hosts']")
     actions = ActionsDropdown(
-        "//a[@data-toggle='dropdown']"
-        "/ancestor::div[contains(@class, 'btn-group')]"
-    )
+        "//div[contains(@class, 'btn-group')][a[@data-toggle='dropdown']]")
     delete = Text(".//a[contains(@data-confirm, 'Delete')]")
     expand_all = Text(".//a[@id='expand_all']")
     interfaces = SatTable("//div[@id='interfaces-panel']/table")
@@ -232,8 +230,7 @@ class DiscoveredHostProvisionDialog(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.title.is_displayed
 
     @property
     def is_all_displayed(self):

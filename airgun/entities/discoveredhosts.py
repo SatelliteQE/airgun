@@ -61,22 +61,33 @@ class DiscoveredHostsEntity(BaseEntity):
 
     def provision(self, entity_name, host_group, organization, location,
                   quick=True, host_values=None):
-        """Provision a discovered host with name entity_name."""
+        """Provision a discovered host with name entity_name.
+
+        :param str entity_name: The discovered host name.
+        :param str host_group: The hostgroup to select for the host
+            provisioning.
+        :param str organization: The Organization to select for the host
+            provisioning.
+        :param str location: the Location to select for host provisioning.
+        :param bool quick: Whether to proceed to provisioning with default
+            values. If not a custom host edit dialog will appear to edit the
+            custom values.
+        :param dict host_values: The custom host provisioning values to fill
+            the custom host view that appear in case of not quick procedure.
+        """
         if host_values is None:
             host_values = {}
 
-        view = self.navigate_to(self, 'Details', entity_name=entity_name)
-        view.actions.fill('Provision')
-        dialog_view = DiscoveredHostProvisionDialog(self.browser)
-        dialog_view.fill(dict(
+        view = self.navigate_to(self, 'Provision', entity_name=entity_name)
+        view.fill(dict(
             host_group=host_group,
             organization=organization,
             location=location,
         ))
         if quick:
-            dialog_view.quick_create.click()
+            view.quick_create.click()
         else:
-            dialog_view.customize_create.click()
+            view.customize_create.click()
             discovered_host_edit_view = DiscoveredHostEditProvisioningView(
                 self.browser)
             discovered_host_edit_view.fill(host_values)
@@ -84,58 +95,20 @@ class DiscoveredHostsEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def auto_provision(self, entities_list):
-        """Auto provision discovered hosts which names supplied in
-        entities_list.
+    def apply_action(self, action_name, entities_list, values=None):
+        """Apply action name for discovered hosts.
+
+        :param str action_name: The action name to apply, available:
+            'Assign Location', 'Assign Organization', 'Auto Provision',
+            'Delete', 'Reboot'
+        :param List[str] entities_list: Discovered hosts name list.
+        :param dict values: The values to fill the action form dialog with.
         """
-        if not isinstance(entities_list, (list, tuple)):
-            entities_list = [entities_list]
-        view = self.navigate_to(
-            self, 'Auto Provision', entities_list=entities_list)
-        view.submit.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
-
-    def reboot(self, entities_list):
-        """Reboot discovered hosts which names supplied in entities_list."""
-        if not isinstance(entities_list, (list, tuple)):
-            entities_list = [entities_list]
-        view = self.navigate_to(
-            self, 'Reboot', entities_list=entities_list)
-        view.submit.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
-
-    def assign_organization(self, entities_list, organization):
-        """Assign a new organization to discovered hosts which names supplied
-        in entities_list."""
-        if not isinstance(entities_list, (list, tuple)):
-            entities_list = [entities_list]
-        view = self.navigate_to(
-            self, 'Assign Organization', entities_list=entities_list)
-        view.organization.fill(organization)
-        view.submit.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
-
-    def assign_location(self, entities_list, location):
-        """Assign a new location to discovered hosts which names supplied
-        in entities_list."""
-        if not isinstance(entities_list, (list, tuple)):
-            entities_list = [entities_list]
-        view = self.navigate_to(
-            self, 'Assign Location', entities_list=entities_list)
-        view.location.fill(location)
-        view.submit.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
-
-    def delete(self, entities_list):
-        """Delete discovered hosts which names supplied in entities_list."""
-        if not isinstance(entities_list, (list, tuple)):
-            entities_list = [entities_list]
-        view = self.navigate_to(
-            self, 'Delete', entities_list=entities_list)
+        if values is None:
+            values = {}
+        view = self.navigate_to(self, 'Select Action', action_name=action_name,
+                                entities_list=entities_list)
+        view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -165,59 +138,50 @@ class ShowDiscoveredHostDetailsView(NavigateStep):
             'Name', entity_name)['Name'].widget.click()
 
 
-class DiscoveredHostsActionNavigation(NavigateStep):
-    """Common NavigateStep to discovered hosts entity actions,
-    Navigate to ACTION_NAME dialog by selecting checkboxes for necessary
-    discovered hosts and then clicking on 'ACTION_NAME' button in
-    'Select Action' dropdown.
+@navigator.register(DiscoveredHostsEntity, 'Select Action')
+class DiscoveredHostsSelectAction(NavigateStep):
+    """Navigate to Action page by selecting checkboxes for necessary discovered
+    hosts and then clicking on the action name button in 'Select Action'
+    dropdown.
 
     Args:
-        entities_list: list of discovered hosts to select and apply the action.
+        action_name: the action name to select from dropdown button
+        entities_list: list of discovered hosts that need to apply action on.
     """
-    VIEW = None
-    ACTION_NAME = None
+    ACTIONS_VIEWS = {
+        'Assign Location': DiscoveredHostsAssignLocationDialog,
+        'Assign Organization': DiscoveredHostsAssignOrganizationDialog,
+        'Auto Provision': DiscoveredHostsAutoProvisionDialog,
+        'Delete': DiscoveredHostsDeleteDialog,
+        'Reboot': DiscoveredHostsRebootDialog
+    }
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
+        action_name = kwargs.get('action_name')
+        self.VIEW = self.ACTIONS_VIEWS.get(action_name)
+        if not self.VIEW:
+            raise ValueError('Please provide a valid action name.'
+                             ' action_name: "{0}" not found.')
         entities_list = kwargs.get('entities_list')
+        if not isinstance(entities_list, (list, tuple)):
+            entities_list = [entities_list]
         for entity_name in entities_list:
             self.parent.table.row_by_cell_or_widget_value(
                 'Name', entity_name)[0].widget.click()
-        self.parent.actions.fill(self.ACTION_NAME)
+        self.parent.actions.fill(action_name)
 
 
-@navigator.register(DiscoveredHostsEntity, 'Auto Provision')
-class AutoProvisionDiscoveredHosts(DiscoveredHostsActionNavigation):
-    """Navigate to discovered hosts Auto Provision dialog view"""
-    VIEW = DiscoveredHostsAutoProvisionDialog
-    ACTION_NAME = 'Auto Provision'
+@navigator.register(DiscoveredHostsEntity, 'Provision')
+class DiscoveredHostProvisionActionNavigation(NavigateStep):
 
+    VIEW = DiscoveredHostProvisionDialog
 
-@navigator.register(DiscoveredHostsEntity, 'Delete')
-class DeleteDiscoveredHosts(DiscoveredHostsActionNavigation):
-    """Navigate to discovered hosts Delete dialog view"""
-    VIEW = DiscoveredHostsDeleteDialog
-    ACTION_NAME = 'Delete'
+    def prerequisite(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        return self.navigate_to(self.obj, 'Details', entity_name=entity_name)
 
-
-@navigator.register(DiscoveredHostsEntity, 'Assign Organization')
-class AssignOrganizationDiscoveredHosts(DiscoveredHostsActionNavigation):
-    """Navigate to discovered hosts Assign Organization dialog view"""
-    VIEW = DiscoveredHostsAssignOrganizationDialog
-    ACTION_NAME = 'Assign Organization'
-
-
-@navigator.register(DiscoveredHostsEntity, 'Assign Location')
-class AssignLocationDiscoveredHosts(DiscoveredHostsActionNavigation):
-    """Navigate to discovered hosts Assign Location dialog view"""
-    VIEW = DiscoveredHostsAssignLocationDialog
-    ACTION_NAME = 'Assign Location'
-
-
-@navigator.register(DiscoveredHostsEntity, 'Reboot')
-class RebootDiscoveredHosts(DiscoveredHostsActionNavigation):
-    """Navigate to discovered hosts Reboot dialog view"""
-    VIEW = DiscoveredHostsRebootDialog
-    ACTION_NAME = 'Reboot'
+    def step(self, *args, **kwargs):
+        self.parent.actions.fill('Provision')
