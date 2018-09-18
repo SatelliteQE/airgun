@@ -1,16 +1,18 @@
 from widgetastic.widget import (
     Checkbox,
     ParametrizedView,
+    Select,
     Text,
     TextInput,
     View,
 )
-from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import BreadCrumb, Button
 
 from airgun.views.common import (
     AddRemoveResourcesView,
     BaseLoggedInView,
     LCESelectorGroup,
+    SatSecondaryTab,
     SatTab,
     SatTable,
     SatTabWithDropdown,
@@ -22,7 +24,9 @@ from airgun.widgets import (
     EditableEntry,
     EditableEntryCheckbox,
     PublishPromoteProgressBar,
+    RadioGroup,
     ReadOnlyEntry,
+    SatSelect,
     Search,
 )
 
@@ -55,6 +59,50 @@ class ContentViewCreateView(BaseLoggedInView):
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.read() == 'New Content View'
+        )
+
+
+class ContentViewCopyView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+
+    new_name = TextInput(id='copy_name')
+    create = Text(".//button[@type='submit']")
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Content Views'
+                and len(self.breadcrumb.locations) == 3
+                and self.breadcrumb.read() == 'Copy'
+        )
+
+
+class ContentViewRemoveView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+
+    conflicts = Text("//div[@ng-show='conflictingVersions.length > 0']")
+    table = SatTable('.//table')
+    remove = Text(".//button[@ng-click='delete()']")
+    cancel = Text(
+        ".//a[contains(@class, 'btn')][@ui-sref='content-view.versions']")
+
+    @property
+    def conflicts_present(self):
+        return 'ng-hide' not in self.browser.classes(self.conflicts)
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Content Views'
+                and len(self.breadcrumb.locations) == 3
+                and self.breadcrumb.read() == 'Deletion'
+                and (self.conflicts_present or self.remove.is_displayed)
         )
 
 
@@ -125,6 +173,22 @@ class ContentViewEditView(BaseLoggedInView):
         resources = View.nested(AddRemoveResourcesView)
 
     @View.nested
+    class filters(SatTabWithDropdown, SearchableViewMixin):
+        TAB_NAME = 'Yum Content'
+        SUB_ITEM = 'Filters'
+
+        new_filter = Text(".//button[@ui-sref='content-view.yum.filters.new']")
+        remove_selected = Text(".//button[@ng-click='removeFilters()']")
+
+        table = SatTable(
+            locator='//table',
+            column_widgets={
+                0: Checkbox(locator=".//input[@type='checkbox']"),
+                'Name': Text('./a'),
+            },
+        )
+
+    @View.nested
     class puppet_modules(SatTab):
         TAB_NAME = 'Puppet Modules'
 
@@ -192,6 +256,58 @@ class ContentViewVersionPublishView(BaseLoggedInView):
         )
 
 
+class ContentViewVersionDetailsView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and len(self.breadcrumb.locations) > 3
+                and self.breadcrumb.locations[0] == 'Content Views'
+                and self.breadcrumb.locations[2] == 'Versions'
+        )
+
+    @View.nested
+    class yum_repositories(SatSecondaryTab, SearchableViewMixin):
+        TAB_NAME = 'Yum Repositories'
+        table = SatTable('.//table')
+
+    @View.nested
+    class rpm_packages(SatSecondaryTab):
+        TAB_NAME = 'rpm Packages'
+        repo_filter = SatSelect(".//select[@ng-model='repository']")
+        searchbox = Search()
+        table = SatTable(".//table")
+
+        def search(self, query, repo=None):
+            """Apply available filters before proceeding with searching.
+
+            :param str query: search query to type into search field.
+            :param str optional repo: filter by repository name
+            :return: list of dicts representing table rows
+            :rtype: list
+            """
+            if repo:
+                self.repo_filter.fill(repo)
+            self.searchbox.search(query)
+            return self.table.read()
+
+    @View.nested
+    class errata(SatSecondaryTab, SearchableViewMixin):
+        table = SatTable(
+            locator='.//table',
+            column_widgets={'Title': Text('./a')}
+        )
+
+    @View.nested
+    class details(SatSecondaryTab):
+        description = ReadOnlyEntry(name='Description')
+        environments = ReadOnlyEntry(name='Environments')
+
+
 class ContentViewVersionPromoteView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     lce = ParametrizedView.nested(LCESelectorGroup)
@@ -209,4 +325,123 @@ class ContentViewVersionPromoteView(BaseLoggedInView):
                 breadcrumb_loaded
                 and self.breadcrumb.locations[0] == 'Content Views'
                 and self.breadcrumb.read() == 'Promotion'
+        )
+
+
+class ContentViewVersionRemoveView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+
+    table = SatTable(
+        locator='.//table',
+        column_widgets={
+            0: Checkbox(locator="./input[@type='checkbox']"),
+        }
+    )
+    completely = Checkbox(
+        locator=".//input[@ng-model='deleteOptions.deleteArchive']")
+    next = Text(".//button[@ng-click='processSelection()']")
+    cancel = Text(".//button[normalize-space(.)='Cancel']")
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Content Views'
+                and len(self.breadcrumb.locations) == 3
+                and self.breadcrumb.read() == 'Deletion'
+                and self.next.is_displayed
+        )
+
+
+class ContentViewVersionRemoveConfirmationView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+
+    cancel = Text(".//button[normalize-space(.)='Cancel']")
+    back = Text(".//button[@ng-click='transitionBack()']")
+    confirm_remove = Text(".//button[@ng-click='performDeletion()']")
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'Content Views'
+                and len(self.breadcrumb.locations) == 3
+                and self.breadcrumb.read() == 'Deletion'
+                and self.confirm_remove.is_displayed
+        )
+
+
+class CreateYumFilterView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+
+    name = TextInput(id='name')
+    content_type = Select(id='type')
+    inclusion_type = Select(id='inclusion')
+    description = TextInput(id='description')
+
+    save = Text('.//button[contains(@ng-click, "handleSave()")]')
+    cancel = Text('.//button[@ng-click="handleCancel()"]')
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Views'
+            and self.breadcrumb.read() == 'Create Yum Filter'
+        )
+
+
+class EditYumFilterView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and len(self.breadcrumb.locations) > 3
+            and self.breadcrumb.locations[2] == 'Yum Filters'
+            and self.breadcrumb.read() != 'Create Yum Filter'
+        )
+
+    @View.nested
+    class details(SatSecondaryTab):
+        name = EditableEntry(name='Name')
+        description = EditableEntry(name='Description')
+
+    @View.nested
+    class rpms(SatSecondaryTab, SearchableViewMixin):
+        TAB_NAME = 'RPMs'
+
+        exclude_no_errata = Checkbox(
+            locator=".//input[@type='checkbox']"
+                    "[@ng-model='filter.original_packages']"
+        )
+        add_rule = Text(".//button[@ng-click='addRule()']")
+        remove_rule = Text(".//button[@ng-click='removeRules(filter)']")
+        table = SatTable(
+            locator='//table',
+            column_widgets={
+                0: Checkbox(locator=".//input[@type='checkbox']"),
+                4: Text("./button[contains(@ng-click, 'rule.editMode')]"),
+            },
+        )
+
+    @View.nested
+    class affected_repositories(SatSecondaryTab):
+        TAB_NAME = 'Affected Repositories'
+        filter_toggle = RadioGroup(".//div[@class='col-sm-8']")
+        product_filter = Select(locator=".//select[@ng-model='product']")
+        searchbox = Search()
+        update_repositories = Button('Update Repositories')
+        table = SatTable(
+            locator='//table',
+            column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")},
         )
