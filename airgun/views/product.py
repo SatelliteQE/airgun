@@ -193,9 +193,7 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
             product_name = TextInput(id='productName')
             label = TextInput(id='productLabel')
             gpg_key = Select(
-                locator="//select[contains(@ng-model,"
-                        " 'content_credential_id')]"
-            )
+                locator="//select[contains(@ng-model,'gpg_key_id')]")
 
         serve_via_http = Checkbox(id='unprotected')
         verify_ssl = Checkbox(id='verify_ssl')
