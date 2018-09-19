@@ -124,8 +124,8 @@ class SeleniumBrowserFactory(object):
         # Workaround 'Certificate Error' screen on Microsoft Edge
         if (
                 self.browser == 'edge' and
-                'Certificate Error' in self._webdriver.title or
-                'Login' not in self._webdriver.title):
+                ('Certificate Error' in self._webdriver.title or
+                    'Login' not in self._webdriver.title)):
             self._webdriver.get(
                 "javascript:document.getElementById('invalidcert_continue')"
                 ".click()"
