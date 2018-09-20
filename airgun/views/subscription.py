@@ -1,3 +1,5 @@
+from selenium.common.exceptions import NoSuchElementException
+
 from widgetastic.widget import (
     Checkbox,
     FileInput,
@@ -5,18 +7,49 @@ from widgetastic.widget import (
     TextInput,
     View,
 )
-from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import BreadCrumb, Button
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import (
-    DeleteSubscriptionConfirmationDialog,
+    ConfirmationDialog,
+    ProgressBar,
     SatTable,
-    SatSubscriptionsViewTable,
-    ProgressBar
+    Search,
 )
 
 
-class SubscriptionListView(BaseLoggedInView, SearchableViewMixin):
+# Search field and button on Subscriptions page uses different locators,
+# so subclass it and use it in our custom SearchableViewMixin
+class SubscriptionSearch(Search):
+    search_field = TextInput(locator=(
+        ".//input[starts-with(@id, 'downshift-')]"))
+    search_button = Button('Search')
+
+
+class SubscriptionSearchableViewMixin(SearchableViewMixin):
+    searchbox = SubscriptionSearch()
+
+
+class DeleteSubscriptionConfirmationDialog(ConfirmationDialog):
+    confirm_dialog = Button('Delete')
+    cancel_dialog = Button('Cancel')
+
+
+class SatSubscriptionsViewTable(SatTable):
+    """Table used on Red Hat Subscriptions page. It's mostly the same as
+    normal table, but when search returns no results, it does display single
+    row with message.
+    Not to be confused with SatSubscriptionsTable, which is not used on
+    that page
+    """
+    @property
+    def has_rows(self):
+        return (self.tbody_row.read()
+                != "No subscriptions match your search criteria."
+                )
+
+
+class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
     """List of all subscriptions."""
     table = SatSubscriptionsViewTable(
         locator='//*[@id="subscriptions-table"]//table',
@@ -25,10 +58,10 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixin):
             'Name': Text(".//a"),
         }
     )
-    add_button = Text("//a[@href='subscriptions/add']")
-    manage_manifest_button = Text("//button[text()='Manage Manifest']")
-    export_csv_button = Text("//button[text()='Export CSV']")
-    delete_button = Text("//button[text()='Delete']")
+    add_button = Button(href='subscriptions/add')
+    manage_manifest_button = Button('Manage Manifest')
+    export_csv_button = Button('Export CSV')
+    delete_button = Button('Delete')
     progressbar = ProgressBar('//div[contains(@class,"progress-bar-striped")]')
     confirm_deletion = DeleteSubscriptionConfirmationDialog()
 
@@ -41,20 +74,20 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixin):
 class ManageManifestView(BaseLoggedInView):
     _locator = '//h4[@class="modal-title"][text()="Manage Manifest"]'
     ROOT = _locator + '/ancestor::div[@class="modal-content"]'
-    close_button = Text(".//button[text()='Close']")
+    close_button = Button('Close')
 
     @View.nested
     class manifest(SatTab):
         red_hat_cdn_url = TextInput(id='cdnUrl')
         manifest_file = FileInput(id='usmaFile')
-        refresh_button = Text(".//button[text()='Refresh']")
-        delete_button = Text(".//button[text()='Delete']")
+        refresh_button = Button('Refresh')
+        delete_button = Button('Delete')
 
     @View.nested
     class manifest_history(SatTab):
         TAB_NAME = "Manifest History"
         table = SatTable(
-                locator="div#manifest-history-tabs table",
+                locator='//div[@id="manifest-history-tabs"]//table',
                 column_widgets={
                     'Status': Text(),
                     'Message': Text(),
@@ -72,8 +105,8 @@ class DeleteManifestConfirmationView(BaseLoggedInView):
     _locator = '//h4[@class="modal-title"][text()="Confirm delete manifest"]'
     ROOT = _locator + '/ancestor::div[@class="modal-content"]'
     message = Text('.//div[@class="modal-body"]')
-    delete_button = Text(".//button[text()='Delete']")
-    cancel_button = Text(".//button[text()='Cancel']")
+    delete_button = Button('Delete')
+    cancel_button = Button('Cancel')
 
     @property
     def is_displayed(self):
@@ -90,8 +123,8 @@ class AddSubscriptionView(BaseLoggedInView):
                 'Quantity to Allocate': TextInput(locator='.//input'),
             }
     )
-    submit_button = Text("//button[text()='Submit']")
-    cancel_button = Text("//button[text()='Cancel']")
+    submit_button = Button('Submit')
+    cancel_button = Button('Cancel')
 
     @property
     def is_displayed(self):
@@ -104,12 +137,29 @@ class SubscriptionDetailsView(BaseLoggedInView):
 
     @View.nested
     class details(SatTab):
-        provided_products = Text(("//h2[text()='Provided Products']"
-                                  "/following::ul"))
+
+        @property
+        def provided_products(self):
+            return [elem.text
+                    for elem
+                    in self.browser.elements(
+                        ("//h2[text()='Provided Products']"
+                         "/following::ul/li"))]
 
     @View.nested
     class enabled_products(SatTab):
         TAB_NAME = "Enabled Products"
+
+        @property
+        def enabled_products_list(self):
+            locator = ("//div[contains(@class, 'list-group')]"
+                       "//div[contains(@class, 'list-group-item-heading')]"
+                       )
+            try:
+                self.browser.wait_for_element(locator, visible=True)
+            except NoSuchElementException:
+                return []
+            return [elem.text for elem in self.browser.elements(locator)]
 
     @property
     def is_displayed(self):

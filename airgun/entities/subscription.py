@@ -1,16 +1,14 @@
-from selenium.common.exceptions import NoSuchElementException
-
 from navmazing import NavigateToSibling
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.subscription import (
-    SubscriptionListView,
-    ManageManifestView,
-    DeleteManifestConfirmationView,
     AddSubscriptionView,
+    DeleteManifestConfirmationView,
+    ManageManifestView,
     SubscriptionDetailsView,
+    SubscriptionListView,
 )
 
 
@@ -42,18 +40,8 @@ class SubscriptionEntity(BaseEntity):
         })
         self._wait_for_process_to_finish(has_manifest=True)
 
-    def delete_manifest(self, really=True):
+    def delete_manifest(self):
         view = self.navigate_to(self, 'Delete Manifest Confirmation')
-        if not really:
-            view.cancel_button.click()
-            try:
-                while view.is_displayed:
-                    pass
-            except NoSuchElementException:
-                pass
-            self.navigate_to(self, 'Manage Manifest').close_button.click()
-            return
-
         view.delete_button.click()
         self._wait_for_process_to_finish(has_manifest=False)
 
@@ -73,22 +61,13 @@ class SubscriptionEntity(BaseEntity):
         return view.search(value)
 
     def provided_products(self, entity_name):
-        view = self.navigate_to(self, 'Details', subscription=entity_name)
-        return [elem.text
-                for elem
-                in view.details.provided_products.browser.elements("./li")]
+        view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        return view.details.provided_products
 
     def enabled_products(self, entity_name):
-        locator = ("//div[contains(@class, 'list-group')]"
-                   "//div[contains(@class, 'list-group-item-heading')]"
-                   )
-        view = self.navigate_to(self, 'Details', subscription=entity_name)
+        view = self.navigate_to(self, 'Details', entity_name=entity_name)
         view.enabled_products.select()
-        try:
-            view.browser.wait_for_element(locator, visible=True)
-        except NoSuchElementException:
-            return []
-        return [elem.text for elem in view.browser.elements(locator)]
+        return view.enabled_products.enabled_products_list
 
     def update(self, entity_name, values):
         # This operation was never implemented in Robottelo (no test
@@ -134,9 +113,7 @@ class DeleteManifestConfirmation(NavigateStep):
 
     def step(self, *args, **kwargs):
         wait_for(
-                lambda: self.view.browser.get_attribute(
-                        "disabled",
-                        self.parent.manifest.delete_button) is None,
+                lambda: not self.parent.manifest.delete_button.disabled,
                 logger=self.view.logger,
                 timeout=10
         )
@@ -153,7 +130,8 @@ class AddSubscription(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def am_i_here(self, *args, **kwargs):
-        return self.view.browser.selenium.current_url.endswith('/add')
+        return (self.view.is_displayed
+                and self.view.breadcrumb.locations[1] == 'Add Subscriptions')
 
     def step(self, *args, **kwargs):
         self.parent.add_button.click()
@@ -168,13 +146,9 @@ class SubscriptionDetails(NavigateStep):
 
     def am_i_here(self, *args, **kwargs):
         subscription_name = kwargs.get('subscription')
-        if not subscription_name:
-            raise ValueError('Invalid value of subscription parameter')
         return (self.view.is_displayed and
                 self.view.breadcrumb.read() == subscription_name)
 
     def step(self, *args, **kwargs):
-        subscription_name = kwargs.get('subscription')
-        if not subscription_name:
-            raise ValueError('Invalid value of subscription parameter')
+        subscription_name = kwargs.get('entity_name')
         self.parent.table.row(name=subscription_name)['Name'].widget.click()
