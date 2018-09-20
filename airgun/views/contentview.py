@@ -1,12 +1,11 @@
 from widgetastic.widget import (
     Checkbox,
     ParametrizedView,
-    Select,
     Text,
     TextInput,
     View,
 )
-from widgetastic_patternfly import BreadCrumb, Button
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
     AddRemoveResourcesView,
@@ -24,7 +23,6 @@ from airgun.widgets import (
     EditableEntry,
     EditableEntryCheckbox,
     PublishPromoteProgressBar,
-    RadioGroup,
     ReadOnlyEntry,
     SatSelect,
     Search,
@@ -372,76 +370,4 @@ class ContentViewVersionRemoveConfirmationView(BaseLoggedInView):
                 and len(self.breadcrumb.locations) == 3
                 and self.breadcrumb.read() == 'Deletion'
                 and self.confirm_remove.is_displayed
-        )
-
-
-class CreateYumFilterView(BaseLoggedInView):
-    breadcrumb = BreadCrumb()
-
-    name = TextInput(id='name')
-    content_type = Select(id='type')
-    inclusion_type = Select(id='inclusion')
-    description = TextInput(id='description')
-
-    save = Text('.//button[contains(@ng-click, "handleSave()")]')
-    cancel = Text('.//button[@ng-click="handleCancel()"]')
-
-    @property
-    def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Content Views'
-            and self.breadcrumb.read() == 'Create Yum Filter'
-        )
-
-
-class EditYumFilterView(BaseLoggedInView):
-    breadcrumb = BreadCrumb()
-
-    @property
-    def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and len(self.breadcrumb.locations) > 3
-            and self.breadcrumb.locations[2] == 'Yum Filters'
-            and self.breadcrumb.read() != 'Create Yum Filter'
-        )
-
-    @View.nested
-    class details(SatSecondaryTab):
-        name = EditableEntry(name='Name')
-        description = EditableEntry(name='Description')
-
-    @View.nested
-    class rpms(SatSecondaryTab, SearchableViewMixin):
-        TAB_NAME = 'RPMs'
-
-        exclude_no_errata = Checkbox(
-            locator=".//input[@type='checkbox']"
-                    "[@ng-model='filter.original_packages']"
-        )
-        add_rule = Text(".//button[@ng-click='addRule()']")
-        remove_rule = Text(".//button[@ng-click='removeRules(filter)']")
-        table = SatTable(
-            locator='//table',
-            column_widgets={
-                0: Checkbox(locator=".//input[@type='checkbox']"),
-                4: Text("./button[contains(@ng-click, 'rule.editMode')]"),
-            },
-        )
-
-    @View.nested
-    class affected_repositories(SatSecondaryTab):
-        TAB_NAME = 'Affected Repositories'
-        filter_toggle = RadioGroup(".//div[@class='col-sm-8']")
-        product_filter = Select(locator=".//select[@ng-model='product']")
-        searchbox = Search()
-        update_repositories = Button('Update Repositories')
-        table = SatTable(
-            locator='//table',
-            column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")},
         )

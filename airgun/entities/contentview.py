@@ -377,6 +377,9 @@ class ContentViewVersionDetails(NavigateStep):
     def am_i_here(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         version_name = kwargs.get('version_name')
+        # Breadcrumb contains version name like ``content_view 1.0`` instead of
+        # ``Version 1.0``, updating ``version_name`` accordingly.
+        version_name = '{} {}'.format(entity_name, version_name.split()[-1])
         return (
                 self.view.is_displayed
                 and self.view.breadcrumb.locations[1] == entity_name

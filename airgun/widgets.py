@@ -225,6 +225,42 @@ class DateTime(Widget):
         return values
 
 
+class Date(TextInput):
+    CALENDAR_SWITCH = (
+            "./parent::div//button[i[contains(@class, 'fa-calendar')]]")
+    CALENDAR_POPUP = (
+        "./parent::div/div[@ng-model='date']"
+        "/ul[contains(@class, 'datepicker-popup')]"
+    )
+    CLEAR_BUTTON = ".//button[@ng-click='select(null, $event)']"
+    DONE_BUTTON = ".//button[@ng-click='close($event)']"
+
+    def clear(self):
+        calendar = self.browser.wait_for_element(
+            self.CALENDAR_POPUP, parent=self, exception=False)
+        if calendar is None:
+            self.browser.element(self.CALENDAR_SWITCH, parent=self).click()
+            calendar = self.browser.wait_for_element(
+                self.CALENDAR_POPUP, parent=self)
+        self.browser.element(self.CLEAR_BUTTON, parent=calendar).click()
+
+    def close_calendar(self):
+        calendar = self.browser.wait_for_element(
+            self.CALENDAR_POPUP, parent=self, exception=False)
+        if calendar:
+            self.browser.element(self.DONE_BUTTON, parent=calendar).click()
+
+    def fill(self, value):
+        current_value = self.value
+        if value == current_value:
+            return False
+        self.browser.click(self)
+        self.clear()
+        self.browser.send_keys(value, self)
+        self.close_calendar()
+        return True
+
+
 class ItemsList(GenericLocatorWidget):
     """List with click-able elements. Part of :class:`MultiSelect` or jQuery
     drop-down.

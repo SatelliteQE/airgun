@@ -18,6 +18,7 @@ from airgun.entities.container import ContainerEntity
 from airgun.entities.contentcredential import ContentCredentialEntity
 from airgun.entities.contenthost import ContentHostEntity
 from airgun.entities.contentview import ContentViewEntity
+from airgun.entities.contentviewfilter import ContentViewFilterEntity
 from airgun.entities.dashboard import DashboardEntity
 from airgun.entities.discoveryrule import DiscoveryRuleEntity
 from airgun.entities.domain import DomainEntity
@@ -262,6 +263,11 @@ class Session(object):
     def contentview(self):
         """Instance of Content View entity."""
         return ContentViewEntity(self.browser)
+
+    @cached_property
+    def contentviewfilter(self):
+        """Instance of Content View Filter entity."""
+        return ContentViewFilterEntity(self.browser)
 
     @cached_property
     def dashboard(self):
