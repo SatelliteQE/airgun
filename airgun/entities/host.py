@@ -26,8 +26,8 @@ class HostEntity(BaseEntity):
         host_view = HostDetailsView(self.browser)
         wait_for(
             lambda: host_view.is_displayed is True,
-            timeout=300,
-            delay=10,
+            timeout=60,
+            delay=1,
             logger=host_view.logger
         )
         host_view.flash.assert_no_error()
