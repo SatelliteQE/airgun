@@ -1,3 +1,4 @@
+from wait_for import wait_for
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
@@ -22,8 +23,15 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
+        host_view = HostDetailsView(self.browser)
+        wait_for(
+            lambda: host_view.is_displayed is True,
+            timeout=300,
+            delay=10,
+            logger=host_view.logger
+        )
+        host_view.flash.assert_no_error()
+        host_view.flash.dismiss()
 
     def search(self, value):
         """Search for existing host entity"""

@@ -137,7 +137,7 @@ class HostCreateView(BaseLoggedInView):
             self.breadcrumb, exception=False)
         return (
                 breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Hosts'
+                and self.breadcrumb.locations[0] == 'All Hosts'
                 and self.breadcrumb.read() == 'Create Host'
         )
 
@@ -305,7 +305,7 @@ class HostDetailsView(BaseLoggedInView):
             self.breadcrumb, exception=False)
         return (
                 breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Hosts'
+                and self.breadcrumb.locations[0] == 'All Hosts'
                 and self.breadcrumb.read() != 'Create Host'
         )
 
@@ -345,7 +345,7 @@ class HostEditView(HostCreateView):
             self.breadcrumb, exception=False)
         return (
                 breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Hosts'
+                and self.breadcrumb.locations[0] == 'All Hosts'
                 and self.breadcrumb.read().starts_with('Edit ')
         )
 
