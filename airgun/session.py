@@ -53,6 +53,7 @@ from airgun.entities.smart_class_parameter import SmartClassParameterEntity
 from airgun.entities.smart_variable import SmartVariableEntity
 from airgun.entities.subnet import SubnetEntity
 from airgun.entities.syncplan import SyncPlanEntity
+from airgun.entities.sync_status import SyncStatusEntity
 from airgun.entities.user import UserEntity
 from airgun.entities.usergroup import UserGroupEntity
 from airgun.navigation import navigator
@@ -431,6 +432,11 @@ class Session(object):
     def syncplan(self):
         """Instance of Sync Plan entity."""
         return SyncPlanEntity(self.browser)
+
+    @cached_property
+    def sync_status(self):
+        """Instance of Sync Status entity"""
+        return SyncStatusEntity(self.browser)
 
     @cached_property
     def task(self):
