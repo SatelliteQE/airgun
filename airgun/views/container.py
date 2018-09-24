@@ -56,24 +56,24 @@ class ContainerCreateView(BaseLoggedInView):
         @View.nested
         class compute_resource(SatTab):
             TAB_NAME = 'Compute resource'
-            first_part = "s2id_docker_container_wizard_states_"
-            second_part = "preliminary_compute_resource_id"
-            id_of_element = first_part + second_part
-            deploy_on = FilteredDropdown(id=id_of_element)
+            deploy_on = FilteredDropdown(
+                id=('s2id_docker_container_wizard_states_'
+                    'preliminary_compute_resource_id')
+            )
 
         @View.nested
         class locations(SatTab):
-            first_part = "ms-docker_container_wizard_states_"
-            second_part = "preliminary_location_ids"
-            id_of_element = first_part + second_part
-            resources = MultiSelect(id=id_of_element)
+            resources = MultiSelect(
+                id=('ms-docker_container_wizard_states_'
+                    'preliminary_location_ids')
+            )
 
         @View.nested
         class organizations(SatTab):
-            first_part = "ms-docker_container_wizard_states_"
-            second_part = "preliminary_organization_ids"
-            id_of_element = first_part + second_part
-            resources = MultiSelect(id=id_of_element)
+            resources = MultiSelect(
+                id=('ms-docker_container_wizard_states_'
+                    'preliminary_organization_ids')
+            )
 
         def after_fill(self, was_change):
             self.next_step.click()

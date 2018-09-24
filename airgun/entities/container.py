@@ -1,7 +1,7 @@
 from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.container import (ContainerCreateView, ContainerView)
+from airgun.views.container import ContainerCreateView, ContainerView
 
 
 class ContainerEntity(BaseEntity):
