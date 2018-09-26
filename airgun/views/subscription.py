@@ -72,8 +72,7 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
 
 
 class ManageManifestView(BaseLoggedInView):
-    _locator = '//h4[@class="modal-title"][text()="Manage Manifest"]'
-    ROOT = _locator + '/ancestor::div[@class="modal-content"]'
+    ROOT = '//div[@class="modal-content"][div/h4[text()="Manage Manifest"]]'
     close_button = Button('Close')
 
     @View.nested
@@ -98,12 +97,12 @@ class ManageManifestView(BaseLoggedInView):
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(
-            self._locator, visible=True, exception=False) is not None
+            self.close_button, visible=True, exception=False) is not None
 
 
 class DeleteManifestConfirmationView(BaseLoggedInView):
-    _locator = '//h4[@class="modal-title"][text()="Confirm delete manifest"]'
-    ROOT = _locator + '/ancestor::div[@class="modal-content"]'
+    ROOT = ('//div[@class="modal-content"]'
+            '[div/h4[text()="Confirm delete manifest"]]')
     message = Text('.//div[@class="modal-body"]')
     delete_button = Button('Delete')
     cancel_button = Button('Cancel')
@@ -111,7 +110,7 @@ class DeleteManifestConfirmationView(BaseLoggedInView):
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(
-                self._locator, visible=True, exception=False) is not None
+                self.delete_button, visible=True, exception=False) is not None
 
 
 class AddSubscriptionView(BaseLoggedInView):
