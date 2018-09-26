@@ -11,6 +11,7 @@ from airgun.views.common import (
     SatTab,
     SearchableViewMixin,
 )
+from airgun.views.dashboard import ItemValueList, TotalCount
 
 from airgun.widgets import (
     ActionsDropdown,
@@ -194,10 +195,21 @@ class SCAPPolicyEditView(BaseLoggedInView):
 
 class SCAPPolicyDetailsView(BaseLoggedInView):
     title = Text('h1[text()[contains(., "Compliance policy")]]')
-    total_hosts = Text('//a[text()[contains(.,"Total hosts")]]')
-    hosts_percentage = Text('//div[@class="percent"]')
 
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.title, exception=False) is not None
+
+    @View.nested
+    class HostsBreakdownStatus(View):
+        ROOT = ".//li[@data-name='Status table']"
+        status_list = ItemValueList()
+        total_count = TotalCount()
+
+    @View.nested
+    class HostBreakdownChart(View):
+        """ Navigates to element where are stored information, which comes
+        from the middle of the Chart in Oscap Policy Details View"""
+
+        hosts_breakdown = Text('//div[@id="overview"]/span[@id="pieLabel3"]')
