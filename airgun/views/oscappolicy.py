@@ -209,7 +209,7 @@ class SCAPPolicyDetailsView(BaseLoggedInView):
 
     @View.nested
     class HostBreakdownChart(View):
-        """ Navigates to element where are stored information, which comes
-        from the middle of the Chart in Oscap Policy Details View"""
-
+        """Refer to information from the middle of the chart in Oscap Policy
+        Details View
+        """
         hosts_breakdown = Text('//div[@id="overview"]/span[@id="pieLabel3"]')
