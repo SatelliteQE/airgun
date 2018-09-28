@@ -16,7 +16,7 @@ from airgun.views.common import (
     SearchableViewMixin,
 )
 from airgun.widgets import (
-    Date,
+    DatePicker,
     EditableEntry,
     RadioGroup,
     SatSelect,
@@ -26,12 +26,18 @@ from airgun.widgets import (
 
 
 class CVFRuleActions(View):
+    """'Actions' column for content view filter rules. Can contain either
+    'Edit' button or 'Save' and 'Cancel'.
+    """
     edit = Text(".//button[contains(@ng-click, 'rule.editMode')]")
     save = Text(".//button[contains(@ng-click, 'handleSave()')]")
     cancel = Text(".//button[contains(@ng-click, 'handleCancel()')]")
 
 
 class CVFRuleVersion(View):
+    """'Version' column for content view filter rule. Depending on type (e.g.
+    'Equal To', 'Greater Than' etc) can have different set of inputs.
+    """
     rule_type = SatSelect(locator=".//select[@ng-model='rule.type']")
     rule = ConditionalSwitchableView(reference='rule_type')
     version_text = Text(
@@ -59,8 +65,13 @@ class CVFRuleVersion(View):
         max_version = TextInput(id='maxVersion')
 
     def fill(self, values):
-        # todo: docstring explaining fill needed to support tuple with values
-        # which will be properly passed to widgets
+        """Custom fill to support passing values for all inputs in single tuple
+        without the need to specify specific input name.
+
+        :param tuple values: tuple containing values for specific version type
+            and its inputs, e.g. `('Equal To', '0.5')` or
+            `('Range', '4.1', '4.6')`
+        """
         if not isinstance(values, tuple):
             values = (values,)
         was_change = self.rule_type.fill(values[0])
@@ -72,6 +83,9 @@ class CVFRuleVersion(View):
         return super().fill(values) or was_change
 
     def read(self):
+        """Custom `read` to return "summary" text value, not the dict with
+        every included widget separately.
+        """
         return self.version_text.read()
 
 
@@ -211,9 +225,9 @@ class EditYumFilterView(BaseLoggedInView):
                 locator=".//input[@ng-model='types.bugfix']")
             date_type = RadioGroup(
                 ".//div[label[contains(@class, 'radio-inline')]]")
-            start_date = Date(
+            start_date = DatePicker(
                 locator=".//input[@ng-model='rule.start_date']")
-            end_date = Date(
+            end_date = DatePicker(
                 locator=".//input[@ng-model='rule.end_date']")
             searchbox = Search()
             add_button = Text(
@@ -225,6 +239,14 @@ class EditYumFilterView(BaseLoggedInView):
             table = SatTable(locator=".//table")
 
             def search(self, query=None, filters=None):
+                """Custom search which supports all errata filters.
+
+                :param str optional query: search query to type into search
+                    box. Optional as sometimes filtering is enough to find
+                    desired errata
+                :param dict optional filters: dictionary containing widget
+                    names and values to set (like with regular `fill()`)
+                """
                 if isinstance(filters, dict):
                     for key, value in filters.items():
                         getattr(self, key).fill(value)
@@ -233,6 +255,15 @@ class EditYumFilterView(BaseLoggedInView):
                 return self.table.read()
 
             def add(self, errata_id=None, filters=None):
+                """Add specific errata to filter or all available if id not
+                provided.
+
+                :param str optional errata_id: ID of errata to add. If not
+                    provided - all available errata in table will be selected
+                    (especially useful together with filtering)
+                :param dict optional filters: dictionary containing widget
+                    names and values to set (like with regular `fill()`)
+                """
                 self.search(errata_id, filters)
                 if errata_id:
                     self.table.row((
@@ -258,9 +289,9 @@ class EditYumFilterView(BaseLoggedInView):
                 locator=".//input[@ng-model='types.bugfix']")
             date_type = RadioGroup(
                 ".//div[label[contains(@class, 'radio-inline')]]")
-            start_date = Date(
+            start_date = DatePicker(
                 locator=".//input[@ng-model='rule.start_date']")
-            end_date = Date(
+            end_date = DatePicker(
                 locator=".//input[@ng-model='rule.end_date']")
 
             save = Text('//button[contains(@ng-click, "handleSave()")]')
@@ -270,15 +301,21 @@ class EditYumFilterView(BaseLoggedInView):
                 self.save.click()
 
         def add(self, errata_id=None, filters=None):
-            """Assign some resource(s).
+            """Add specific errata to filter or all available if id not
+                provided.
 
-            :param str or list values: string containing resource name or a
-                list of such strings.
+            :param str optional errata_id: ID of errata to add. If not
+                provided - all available errata in table will be selected
+                (especially useful together with filtering)
+            :param dict optional filters: dictionary containing widget names
+                and values to set (like with regular `fill()`)
             """
             return self.AddTab.fill(errata_id, filters)
 
         def read(self):
-            """Read all table values from both resource tables"""
+            """Read values from tabs depending on errata filter type (by id or
+            daterange filter).
+            """
             if self.erratum_date_range.is_displayed:
                 return {'erratum_date_range': self.erratum_date_range.read()}
             return {

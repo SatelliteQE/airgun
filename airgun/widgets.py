@@ -225,7 +225,33 @@ class DateTime(Widget):
         return values
 
 
-class Date(TextInput):
+class DatePicker(TextInput):
+    """Input for date, which opens calendar on click.
+
+    Example html representation::
+
+        <input type="date" uib-datepicker-popup="" ng-model="rule.start_date"
+         ng-model-options="{timezone: 'UTC'}" is-open="date.startOpen"
+         ng-click="openStartDate($event)">
+            <div uib-datepicker-popup-wrap="" ng-model="date"
+             ng-change="dateSelection(date)"
+             template-url="uib/template/datepickerPopup/popup.html">
+                <ul role="presentation" class="uib-datepicker-popup ..."
+                 ng-if="isOpen" ng-keydown="keydown($event)"
+                 ng-click="$event.stopPropagation()">
+                ...
+            </div>
+            <span class="input-group-btn">
+                    <button class="btn btn-default" type="button"
+                     ng-click="openStartDate($event)">
+                        <i class="fa fa-calendar inline-icon"></i>
+                </button>
+            </span>
+
+    Locator example::
+
+        ".//input[@ng-model='rule.start_date']"
+    """
     CALENDAR_SWITCH = (
             "./parent::div//button[i[contains(@class, 'fa-calendar')]]")
     CALENDAR_POPUP = (
@@ -236,6 +262,9 @@ class Date(TextInput):
     DONE_BUTTON = ".//button[@ng-click='close($event)']"
 
     def clear(self):
+        """Clear input value. Opens calendar popup if it's closed and pushes
+        'Clear' button.
+        """
         calendar = self.browser.wait_for_element(
             self.CALENDAR_POPUP, parent=self, exception=False)
         if calendar is None:
@@ -245,12 +274,16 @@ class Date(TextInput):
         self.browser.element(self.CLEAR_BUTTON, parent=calendar).click()
 
     def close_calendar(self):
+        """Closes calendar popup if it's opened."""
         calendar = self.browser.wait_for_element(
             self.CALENDAR_POPUP, parent=self, exception=False)
         if calendar:
             self.browser.element(self.DONE_BUTTON, parent=calendar).click()
 
     def fill(self, value):
+        """Custom fill which uses custom :meth:`clear` and closes calendar
+        popup after filling.
+        """
         current_value = self.value
         if value == current_value:
             return False

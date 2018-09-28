@@ -41,7 +41,15 @@ class ContentViewFilterEntity(BaseEntity):
 
     def add_package(
             self, cv_name, filter_name, rpm_name, architecture, version):
-        """"""
+        """Add package rule to RPM content view filter.
+
+        :param str cv_name: content view name
+        :param str filter_name: content view filter name
+        :param str rpm_name: affected package (RPM) name
+        :param str architecture: affected architecture
+        :param tuple version: tuple containing version values according to UI
+            (e.g. ('Equal To', '5.21-1') or ('Range', '4.1', '4.6')
+        """
         view = self.navigate_to(
             self, 'Edit',
             cv_name=cv_name,
@@ -61,9 +69,18 @@ class ContentViewFilterEntity(BaseEntity):
 
     def update_package(self, cv_name, filter_name, rpm_name, new_values,
                        architecture=None, version=None):
-        # todo: add note that `version` means version on UI, not tuple of
-        # values
-        # new values: dict with keys 'RPM Name', 'Architecture', 'Version'
+        """Update package rule of RPM content view filter.
+
+        :param str cv_name: content view name
+        :param str filter_name: content view filter name
+        :param str rpm_name: existing package (RPM) name
+        :param dict new_values: dictionary with new values where keys are the
+            same as column names on UI: 'RPM Name', 'Architecture', 'Version'.
+        :param str optional architecture: filter package rule by its
+            architecture
+        :param str optional version: filter package rule by its version (string
+            value with exact correspondence to UI)
+        """
         view = self.navigate_to(
             self, 'Edit',
             cv_name=cv_name,
@@ -95,8 +112,8 @@ class ContentViewFilterEntity(BaseEntity):
             passed_details)
         row = rows[0]
         row[4].widget.edit.click()
-        # as it's impossible to fill specific table row, only in proper order,
-        # prepare list with empty values for all preceding rows
+        # prepare list with empty values for all preceding rows as it's
+        # impossible to fill specific table row, only in proper order
         values = [{} for _ in range(row.index)]
         values.append(new_values)
         view.content_tabs.rpms.table.fill(values)
@@ -108,6 +125,17 @@ class ContentViewFilterEntity(BaseEntity):
 
     def add_errata(
             self, cv_name, filter_name, errata_id=None, search_filters=None):
+        """Add errata to errata content view filter.
+
+        :param str cv_name: content view name
+        :param str filter_name: content view filter name
+        :param str optional errata_id: errata ID. If not provided - all
+            available will be added instead (taking into consideration applied
+            search filters)
+        :param dict search_filters: search filters to apply before adding
+            errata. Dictionary where keys are widget names and values are
+            widget values accordingly
+        """
         view = self.navigate_to(
             self, 'Edit',
             cv_name=cv_name,
@@ -119,6 +147,12 @@ class ContentViewFilterEntity(BaseEntity):
 
     def add_package_group(
             self, cv_name, filter_name, package_group):
+        """Add package group to package group content view filter.
+
+        :param str cv_name: content view name
+        :param str filter_name: content view filter name
+        :param str package_group: package group name
+        """
         view = self.navigate_to(
             self, 'Edit',
             cv_name=cv_name,
@@ -129,6 +163,12 @@ class ContentViewFilterEntity(BaseEntity):
         view.flash.dismiss()
 
     def search_package(self, cv_name, filter_name, query):
+        """Search for specific package in RPM content view filter.
+
+        :param str cv_name: content view name
+        :param str filter_name: content view filter name
+        :param str query: search query
+        """
         view = self.navigate_to(
             self, 'Edit',
             cv_name=cv_name,
@@ -137,6 +177,12 @@ class ContentViewFilterEntity(BaseEntity):
         return view.content_tabs.rpms.search(query)
 
     def update(self, cv_name, filter_name, values):
+        """Update content view filter.
+
+        :param str cv_name: content view name
+        :param str filter_name: content view filter name
+        :param dict values: dictionary with new values
+        """
         view = self.navigate_to(
             self, 'Edit',
             cv_name=cv_name,
@@ -147,6 +193,13 @@ class ContentViewFilterEntity(BaseEntity):
         view.flash.dismiss()
 
     def update_repositories(self, cv_name, filter_name, repositories=None):
+        """Update affected by content view filter repositories.
+
+        :param str cv_name: content view name
+        :param str filter_name: content view filter name
+        :param list optional repositories: list of affected repositories. If
+            not provided - all repositories will be affected.
+        """
         view = self.navigate_to(
             self, 'Edit',
             cv_name=cv_name,
@@ -238,7 +291,7 @@ class EditContentView(NavigateStep):
         return (
                 self.view.is_displayed
                 and self.view.breadcrumb.locations[1] == cv_name
-                # depending on tab both 'filter' and 'Edit filter' occur
+                # depending on tab both 'filter' and 'Edit filter' may occur
                 and filter_name in self.view.breadcrumb.locations[3])
 
     def prerequisite(self, *args, **kwargs):
