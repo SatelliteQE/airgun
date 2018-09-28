@@ -13,17 +13,22 @@ from airgun.views.subscription import (
 
 
 class SubscriptionEntity(BaseEntity):
-    def _wait_for_process_to_finish(self, has_manifest=False):
+    def _wait_for_process_to_finish(self, name, has_manifest=False):
         view = self.navigate_to(self, 'All')
-        view.progressbar.wait_displayed(timeout=20)
+        wait_for(
+                lambda: view.flash.assert_message(
+                        "Task {} completed".format(name), partial=True),
+                handle_exception=True, timeout=60*10,
+                logger=view.flash.logger
+        )
         wait_for(
                 lambda: not view.progressbar.is_displayed,
-                timeout=60*10,
+                handle_exception=True, timeout=60*10,
                 logger=view.progressbar.logger
         )
         wait_for(
                 lambda: self.has_manifest == has_manifest,
-                timeout=10,
+                handle_exception=True, timeout=10,
                 logger=view.progressbar.logger
         )
         view.flash.dismiss()
@@ -38,12 +43,12 @@ class SubscriptionEntity(BaseEntity):
         view.fill({
             'manifest.manifest_file': manifest_file,
         })
-        self._wait_for_process_to_finish(has_manifest=True)
+        self._wait_for_process_to_finish('Import Manifest', has_manifest=True)
 
     def delete_manifest(self):
         view = self.navigate_to(self, 'Delete Manifest Confirmation')
         view.delete_button.click()
-        self._wait_for_process_to_finish(has_manifest=False)
+        self._wait_for_process_to_finish('Delete Manifest', has_manifest=False)
 
     def read_delete_manifest_message(self):
         view = self.navigate_to(self, 'Delete Manifest Confirmation')
@@ -54,7 +59,8 @@ class SubscriptionEntity(BaseEntity):
         for row in view.table.rows(subscription_name=entity_name):
             row['Quantity to Allocate'].fill(quantity)
         view.submit_button.click()
-        self._wait_for_process_to_finish(has_manifest=True)
+        self._wait_for_process_to_finish('Bind entitlements to an allocation',
+                                         has_manifest=True)
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
@@ -81,7 +87,8 @@ class SubscriptionEntity(BaseEntity):
             row['Select all rows'].fill(True)
         view.delete_button.click()
         view.confirm_deletion.confirm()
-        self._wait_for_process_to_finish(has_manifest=True)
+        self._wait_for_process_to_finish('Delete Upstream Subscription',
+                                         has_manifest=True)
 
 
 @navigator.register(SubscriptionEntity, 'All')
