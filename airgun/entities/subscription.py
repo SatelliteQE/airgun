@@ -31,7 +31,7 @@ class SubscriptionEntity(BaseEntity):
     @property
     def has_manifest(self):
         view = self.navigate_to(self, 'All')
-        return "disabled" not in view.browser.classes(view.add_button)
+        return not view.add_button.disabled
 
     def add_manifest(self, manifest_file):
         view = self.navigate_to(self, 'Manage Manifest')
@@ -114,8 +114,7 @@ class DeleteManifestConfirmation(NavigateStep):
     def step(self, *args, **kwargs):
         wait_for(
                 lambda: not self.parent.manifest.delete_button.disabled,
-                logger=self.view.logger,
-                timeout=10
+                handle_exception=True, logger=self.view.logger, timeout=10
         )
         self.parent.manifest.delete_button.click()
 
