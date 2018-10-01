@@ -123,7 +123,7 @@ class DiscoveredHostDetailsTable(Table):
 
     def read(self):
         """Transform rows to a dict {property_name: property_value ...}."""
-        properties = super(DiscoveredHostDetailsTable, self).read()
+        properties = super().read()
         return {prop['name']: prop['value']
                 for prop in properties if prop['value']}
 
@@ -230,7 +230,9 @@ class DiscoveredHostProvisionDialog(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.title.is_displayed
+        return (self.browser.wait_for_element(
+            self.title, exception=False) is not None
+                and self.browser.is_displayed(self.title))
 
     @property
     def is_all_displayed(self):
