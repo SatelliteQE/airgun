@@ -1,3 +1,4 @@
+from wait_for import wait_for
 from widgetastic.widget import (
     Checkbox,
     Text,
@@ -17,6 +18,8 @@ from airgun.widgets import (
     SatTable,
 )
 
+ACTION_COLUMN = 6
+
 
 class DiscoveryRulesView(BaseLoggedInView):
     title = Text("//h1[text()='Discovery Rules']")
@@ -25,7 +28,8 @@ class DiscoveryRulesView(BaseLoggedInView):
         './/table',
         column_widgets={
             'Name': Text('./a'),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            ACTION_COLUMN: ActionsDropdown(
+                "./div[contains(@class, 'btn-group')]"),
         }
     )
 
@@ -59,6 +63,23 @@ class DiscoveryRuleCreateView(BaseLoggedInView):
         hosts_limit = TextInput(id='discovery_rule_max_count')
         priority = TextInput(id='discovery_rule_priority')
         enabled = Checkbox(id='discovery_rule_enabled')
+        AUTOCOMPLETE_LIST = "//ul[contains(@class,'autocomplete')]"
+
+        def fill(self, values):
+            was_change = False
+            if values:
+                search_value = values.pop('search')
+                if search_value is not None:
+                    self.search.fill(search_value)
+                    was_change = True
+                    wait_for(
+                        lambda: self.browser.is_displayed(
+                            self.AUTOCOMPLETE_LIST) is False,
+                        timeout=5,
+                        delay=1,
+                        logger=self.logger
+                    )
+            return super().fill(values) or was_change
 
     @View.nested
     class locations(SatTab):
