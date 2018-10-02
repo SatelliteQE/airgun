@@ -40,6 +40,7 @@ class SubscriptionEntity(BaseEntity):
 
     def add_manifest(self, manifest_file):
         view = self.navigate_to(self, 'Manage Manifest')
+        view.wait_animation_end()
         view.fill({
             'manifest.manifest_file': manifest_file,
         })
@@ -47,11 +48,13 @@ class SubscriptionEntity(BaseEntity):
 
     def delete_manifest(self):
         view = self.navigate_to(self, 'Delete Manifest Confirmation')
+        view.wait_animation_end()
         view.delete_button.click()
         self._wait_for_process_to_finish('Delete Manifest', has_manifest=False)
 
     def read_delete_manifest_message(self):
         view = self.navigate_to(self, 'Delete Manifest Confirmation')
+        view.wait_animation_end()
         return view.message.read()
 
     def add(self, entity_name, quantity=1):
@@ -108,10 +111,6 @@ class ManageManifest(NavigateStep):
     def step(self, *args, **kwargs):
         self.parent.manage_manifest_button.click()
 
-    def post_navigate(self, _tries, *args, **kwargs):
-        self.view.wait_animation_end()
-        return self.view.is_displayed
-
 
 @navigator.register(SubscriptionEntity, 'Delete Manifest Confirmation')
 class DeleteManifestConfirmation(NavigateStep):
@@ -125,10 +124,6 @@ class DeleteManifestConfirmation(NavigateStep):
                 handle_exception=True, logger=self.view.logger, timeout=10
         )
         self.parent.manifest.delete_button.click()
-
-    def post_navigate(self, _tries, *args, **kwargs):
-        self.view.wait_animation_end()
-        return self.view.is_displayed
 
 
 @navigator.register(SubscriptionEntity, 'Add')
