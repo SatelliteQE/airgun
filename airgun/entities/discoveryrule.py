@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.discoveryrule import (
+    ACTION_COLUMN,
     DiscoveryRuleCreateView,
     DiscoveryRuleEditView,
     DiscoveryRulesView,
@@ -29,7 +30,8 @@ class DiscoveryRuleEntity(BaseEntity):
         :param str entity_name: name of the corresponding discovery rule
         """
         view = self.navigate_to(self, 'All')
-        view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
+        view.table.row(
+            name=entity_name)[ACTION_COLUMN].widget.fill('Delete')
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -71,7 +73,7 @@ class DiscoveryRuleEntity(BaseEntity):
         :param str entity_name: name of the corresponding discovery rule
         """
         view = self.navigate_to(self, 'All')
-        view.table.row(name=entity_name)['Actions'].widget.fill('Enable')
+        view.table.row(name=entity_name)[ACTION_COLUMN].widget.fill('Enable')
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -82,7 +84,7 @@ class DiscoveryRuleEntity(BaseEntity):
         :param str entity_name: name of the corresponding discovery rule
         """
         view = self.navigate_to(self, 'All')
-        view.table.row(name=entity_name)['Actions'].widget.fill('Disable')
+        view.table.row(name=entity_name)[ACTION_COLUMN].widget.fill('Disable')
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
