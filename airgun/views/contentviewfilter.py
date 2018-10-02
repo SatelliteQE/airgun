@@ -16,13 +16,15 @@ from airgun.views.common import (
     SearchableViewMixin,
 )
 from airgun.widgets import (
-    DatePicker,
+    DatePickerInput,
     EditableEntry,
     RadioGroup,
     SatSelect,
     SatTable,
     Search,
 )
+
+ACTIONS_COLUMN = 4
 
 
 class CVFRuleActions(View):
@@ -112,7 +114,7 @@ class AffectedRepositoriesTab(SatSecondaryTab):
     making it impossible to rely on exact string value. Using ``starts-with``
     instead.
     """
-
+    TAB_NAME = 'Affected Repositories'
     TAB_LOCATOR = ParametrizedLocator(
         './/nav[@class="ng-scope" or not(@*)]/ul[contains(@class, "nav-tabs")]'
         '/li[./a[starts-with(normalize-space(), {@tab_name|quote})]]'
@@ -208,7 +210,7 @@ class EditYumFilterView(BaseLoggedInView):
                     'RPM Name': TextInput(locator='.//input'),
                     'Architecture': TextInput(locator='.//input'),
                     'Version': CVFRuleVersion(),
-                    4: CVFRuleActions(),
+                    ACTIONS_COLUMN: CVFRuleActions(),
                 },
             )
 
@@ -225,9 +227,9 @@ class EditYumFilterView(BaseLoggedInView):
                 locator=".//input[@ng-model='types.bugfix']")
             date_type = RadioGroup(
                 ".//div[label[contains(@class, 'radio-inline')]]")
-            start_date = DatePicker(
+            start_date = DatePickerInput(
                 locator=".//input[@ng-model='rule.start_date']")
-            end_date = DatePicker(
+            end_date = DatePickerInput(
                 locator=".//input[@ng-model='rule.end_date']")
             searchbox = Search()
             add_button = Text(
@@ -289,9 +291,9 @@ class EditYumFilterView(BaseLoggedInView):
                 locator=".//input[@ng-model='types.bugfix']")
             date_type = RadioGroup(
                 ".//div[label[contains(@class, 'radio-inline')]]")
-            start_date = DatePicker(
+            start_date = DatePickerInput(
                 locator=".//input[@ng-model='rule.start_date']")
-            end_date = DatePicker(
+            end_date = DatePickerInput(
                 locator=".//input[@ng-model='rule.end_date']")
 
             save = Text('//button[contains(@ng-click, "handleSave()")]')
@@ -330,7 +332,6 @@ class EditYumFilterView(BaseLoggedInView):
 
     @View.nested
     class affected_repositories(AffectedRepositoriesTab):
-        TAB_NAME = 'Affected Repositories'
         filter_toggle = RadioGroup(".//div[@class='col-sm-8']")
         product_filter = Select(locator=".//select[@ng-model='product']")
         searchbox = TextInput(locator=".//input[@ng-model='repositorySearch']")
