@@ -109,6 +109,7 @@ class ManageManifest(NavigateStep):
         self.parent.manage_manifest_button.click()
 
     def post_navigate(self, _tries, *args, **kwargs):
+        self.view.wait_animation_end()
         return self.view.is_displayed
 
 
@@ -126,6 +127,7 @@ class DeleteManifestConfirmation(NavigateStep):
         self.parent.manifest.delete_button.click()
 
     def post_navigate(self, _tries, *args, **kwargs):
+        self.view.wait_animation_end()
         return self.view.is_displayed
 
 

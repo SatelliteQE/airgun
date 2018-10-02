@@ -1,4 +1,5 @@
 from selenium.common.exceptions import NoSuchElementException
+from wait_for import wait_for
 
 from widgetastic.widget import (
     Checkbox,
@@ -72,7 +73,8 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
 
 
 class ManageManifestView(BaseLoggedInView):
-    ROOT = '//div[@class="modal-content"][div/h4[text()="Manage Manifest"]]'
+    ROOT = ('//div[@role="dialog" and @tabindex]'
+            '[div//h4[text()="Manage Manifest"]]')
     close_button = Button('Close')
 
     @View.nested
@@ -96,21 +98,35 @@ class ManageManifestView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.close_button, visible=True, exception=False) is not None
+        return (self.browser.wait_for_element(
+                self.close_button, visible=True, exception=False) is not None
+                and 'in' in self.browser.classes(self))
+
+    def wait_animation_end(self):
+        wait_for(
+                lambda: 'in' in self.browser.classes(self),
+                handle_exception=True, logger=self.logger, timeout=10
+        )
 
 
 class DeleteManifestConfirmationView(BaseLoggedInView):
-    ROOT = ('//div[@class="modal-content"]'
-            '[div/h4[text()="Confirm delete manifest"]]')
+    ROOT = ('//div[@role="dialog" and @tabindex]'
+            '[div//h4[text()="Confirm delete manifest"]]')
     message = Text('.//div[@class="modal-body"]')
     delete_button = Button('Delete')
     cancel_button = Button('Cancel')
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
+        return (self.browser.wait_for_element(
                 self.delete_button, visible=True, exception=False) is not None
+                and 'in' in self.browser.classes(self))
+
+    def wait_animation_end(self):
+        wait_for(
+                lambda: 'in' in self.browser.classes(self),
+                handle_exception=True, logger=self.logger, timeout=10
+        )
 
 
 class AddSubscriptionView(BaseLoggedInView):
