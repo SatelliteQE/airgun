@@ -15,6 +15,7 @@ from airgun.entities.architecture import ArchitectureEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.computeresource import ComputeResourceEntity
 from airgun.entities.container import ContainerEntity
+from airgun.entities.containerimagetag import ContainerImageTagEntity
 from airgun.entities.contentcredential import ContentCredentialEntity
 from airgun.entities.contenthost import ContentHostEntity
 from airgun.entities.contentview import ContentViewEntity
@@ -242,6 +243,11 @@ class Session(object):
     def container(self):
         """Instance of Container entity."""
         return ContainerEntity(self.browser)
+
+    @cached_property
+    def containerimagetag(self):
+        """Instance of Container Image Tags entity."""
+        return ContainerImageTagEntity(self.browser)
 
     @cached_property
     def contentcredential(self):
