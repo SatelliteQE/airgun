@@ -1,13 +1,16 @@
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
+from airgun.views.discoveredhosts import DiscoveredHostsView
 from airgun.views.discoveryrule import (
     ACTION_COLUMN,
     DiscoveryRuleCreateView,
     DiscoveryRuleEditView,
     DiscoveryRulesView,
 )
+from airgun.views.host import HostsView
 
 
 class DiscoveryRuleEntity(BaseEntity):
@@ -88,6 +91,48 @@ class DiscoveryRuleEntity(BaseEntity):
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
+
+    def discovered_hosts(self, entity_name):
+        """View Discovered hosts corresponding to Discovery rule search field.
+
+        :param str entity_name: name of the discovery rule entity
+        :return: The discovered hosts view properties
+        """
+        view = self.navigate_to(self, 'All')
+        view.table.row(name=entity_name)[ACTION_COLUMN].widget.fill(
+            'Discovered Hosts')
+        discovered_hosts_view = DiscoveredHostsView(
+            self.browser, logger=view.logger)
+        wait_for(
+            lambda: discovered_hosts_view.is_displayed is True,
+            timeout=60,
+            delay=1,
+            logger=discovered_hosts_view.logger
+        )
+        discovered_hosts_view.flash.assert_no_error()
+        discovered_hosts_view.flash.dismiss()
+        return discovered_hosts_view.read()
+
+    def associated_hosts(self, entity_name):
+        """View Discovery rule associated hosts.
+
+        :param entity_name: name of the discovery rule entity
+        :return: The hosts view properties
+        """
+        # Associated Hosts
+        view = self.navigate_to(self, 'All')
+        view.table.row(name=entity_name)[ACTION_COLUMN].widget.fill(
+            'Associated Hosts')
+        hosts_view = HostsView(self.browser, logger=view.logger)
+        wait_for(
+            lambda: hosts_view.is_displayed is True,
+            timeout=60,
+            delay=1,
+            logger=hosts_view.logger
+        )
+        hosts_view.flash.assert_no_error()
+        hosts_view.flash.dismiss()
+        return hosts_view.read()
 
 
 @navigator.register(DiscoveryRuleEntity, 'All')
