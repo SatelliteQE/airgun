@@ -3,6 +3,7 @@ from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
     BaseLoggedInView,
+    ReadOnlyEntry,
     SatTab,
     SearchableViewMixin,
     TaskDetailsView,
@@ -11,7 +12,7 @@ from airgun.widgets import SatTable
 
 
 class ContainerImageTagsView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h2/span[contains(., 'Container Image Tags')]")
+    title = Text("//h2[contains(., 'Container Image Tags')]")
     table = SatTable('.//table', column_widgets={'Name': Text('./a')})
 
     @property
@@ -20,7 +21,7 @@ class ContainerImageTagsView(BaseLoggedInView, SearchableViewMixin):
             self.title, exception=False) is not None
 
 
-class ContainerImageTagReadDetailsView(TaskDetailsView):
+class ContainerImageTagDetailsView(TaskDetailsView):
     breadcrumb = BreadCrumb()
 
     @property
@@ -30,13 +31,13 @@ class ContainerImageTagReadDetailsView(TaskDetailsView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Container Image Tags'
-            and len(self.breadcrumb.locations) >= 2
+            and len(self.breadcrumb.locations) == 2
         )
 
     @View.nested
     class details(SatTab):
-        product_name = Text("//a[contains(@ui-sref, 'product.info')]")
-        repository_name = Text("//a[contains(@ui-sref, 'product.repository')]")
+        product = ReadOnlyEntry(name='Product')
+        repository = ReadOnlyEntry(name='Repository')
 
     @View.nested
     class lce(SatTab):

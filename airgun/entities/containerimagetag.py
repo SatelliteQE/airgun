@@ -1,7 +1,7 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.containerimagetag import (
-    ContainerImageTagReadDetailsView,
+    ContainerImageTagDetailsView,
     ContainerImageTagsView,
 )
 
@@ -17,13 +17,13 @@ class ContainerImageTagEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def read_details(self, entity_name):
+    def read(self, entity_name):
         """Reads details of specific Container Image Tag
 
         :param entity_name: name of Container Image Tag
         :return: dict with properties of Container Image Tag
         """
-        view = self.navigate_to(self, 'Read', entity_name=entity_name)
+        view = self.navigate_to(self, 'Details', entity_name=entity_name)
         return view.read()
 
 
@@ -36,14 +36,14 @@ class ShowAllContainerImageTags(NavigateStep):
         self.view.menu.select('Content', 'Container Image Tags')
 
 
-@navigator.register(ContainerImageTagEntity, 'Read')
+@navigator.register(ContainerImageTagEntity, 'Details')
 class ReadContainerImageTag(NavigateStep):
-    """Navigate to read information from existing Container Image Tag page.
+    """Navigate to Container Image Tag details page
 
         Args:
         entity_name: name of Container Image Tag
     """
-    VIEW = ContainerImageTagReadDetailsView
+    VIEW = ContainerImageTagDetailsView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
