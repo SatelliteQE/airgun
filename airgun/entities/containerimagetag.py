@@ -37,7 +37,7 @@ class ShowAllContainerImageTags(NavigateStep):
 
 
 @navigator.register(ContainerImageTagEntity, 'Details')
-class ReadContainerImageTag(NavigateStep):
+class ContainerImageTagDetails(NavigateStep):
     """Navigate to Container Image Tag details page
 
         Args:
