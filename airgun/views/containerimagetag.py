@@ -31,7 +31,7 @@ class ContainerImageTagDetailsView(TaskDetailsView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Container Image Tags'
-            and len(self.breadcrumb.locations) == 2
+            and len(self.breadcrumb.locations) >= 2
         )
 
     @View.nested
