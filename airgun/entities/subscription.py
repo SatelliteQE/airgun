@@ -29,7 +29,7 @@ class SubscriptionEntity(BaseEntity):
         wait_for(
                 lambda: self.has_manifest == has_manifest,
                 handle_exception=True, timeout=10,
-                logger=view.progressbar.logger
+                logger=view.logger
         )
         view.flash.dismiss()
 
@@ -97,6 +97,13 @@ class SubscriptionEntity(BaseEntity):
 @navigator.register(SubscriptionEntity, 'All')
 class SubscriptionList(NavigateStep):
     VIEW = SubscriptionListView
+
+    def pre_navigate(self, _tries, *args, **kwargs):
+        super(SubscriptionList, self).pre_navigate(_tries, *args, **kwargs)
+        wait_for(
+                lambda: not self.view.fake_fade_widget.is_displayed,
+                handle_exception=True, logger=self.view.logger, timeout=10 * 60
+        )
 
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Subscriptions')

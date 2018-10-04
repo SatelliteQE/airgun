@@ -65,6 +65,9 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
     delete_button = Button('Delete')
     progressbar = ProgressBar('//div[contains(@class,"progress-bar-striped")]')
     confirm_deletion = DeleteSubscriptionConfirmationDialog()
+    # In pre_navigate we wait for element with class `fade` to be not
+    # visible; we need to first define it here
+    fake_fade_widget = Text(".//*[contains(@class, 'fade')]")
 
     @property
     def is_displayed(self):
