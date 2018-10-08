@@ -17,6 +17,10 @@ class ReservedToSectionOnlyError(Exception):
     """Mainly raised when adding a child to a non section node"""
 
 
+class NodeNotFoundError(Exception):
+    """Raise when a node was not found"""
+
+
 class SyncStatusTableNode(object):
     """Table row interface to implement a sync status table row tree node"""
     CHECKBOX = "./td/input[@type='checkbox']"
@@ -249,8 +253,12 @@ class SyncStatusTable(SatTable):
         parent_node = self.nodes
         node = None
         for name in node_path:
-            node = parent_node[name]
-            parent_node = node
+            if name and name in parent_node:
+                node = parent_node[name]
+                parent_node = node
+        if node and node.name != node_path[-1]:
+            raise NodeNotFoundError(
+                'Target node "{0}" not found'.format(node_path))
         return node
 
 
