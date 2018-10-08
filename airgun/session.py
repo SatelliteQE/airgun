@@ -12,6 +12,7 @@ from airgun import settings
 from airgun.browser import AirgunBrowser, SeleniumBrowserFactory
 from airgun.entities.activationkey import ActivationKeyEntity
 from airgun.entities.architecture import ArchitectureEntity
+from airgun.entities.bookmark import BookmarkEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.computeresource import ComputeResourceEntity
 from airgun.entities.container import ContainerEntity
@@ -237,6 +238,11 @@ class Session(object):
     def architecture(self):
         """Instance of Architecture entity."""
         return ArchitectureEntity(self.browser)
+
+    @cached_property
+    def bookmark(self):
+        """Instance of Bookmark entity."""
+        return BookmarkEntity(self.browser)
 
     @cached_property
     def computeprofile(self):

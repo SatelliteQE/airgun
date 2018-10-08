@@ -408,6 +408,85 @@ class MultiSelect(GenericLocatorWidget):
         }
 
 
+class ActionsDropdown(GenericLocatorWidget):
+    """List of actions, expandable via button with caret. Usually comes with
+    button attached on left side, representing either most common action or
+    hint like 'Select Action'.
+
+    Example html representation::
+
+        <div class="btn-group dropdown" is-open="status.isOpen">
+          <button type="button" class="btn btn-default" ...>
+            <span><span >Select Action</span></span>
+          </button>
+          <button type="button" class="btn btn-default" ...>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right ng-scope" role="menu">
+            <li role="menuitem"><a><span><span>Action1</span></span></a></li>
+            <li role="menuitem"><a><span><span>Action2</span></span></a></li>
+          </ul>
+        </div>
+
+    Locator example::
+
+        //div[contains(@class, 'dropdown')]
+        //div[contains(@class, 'btn-group')]
+
+    """
+    dropdown = Text(
+        ".//*[self::a or self::button][contains(@class, 'dropdown-toggle') or "
+        "contains(@ng-click, 'toggleDropdown')][contains(@class, 'btn')]"
+        "[*[self::span or self::i][contains(@class, 'caret')]]")
+    button = Text(
+        ".//*[self::button or self::span][contains(@class, 'btn')]"
+        "[not(*[self::span or self::i][contains(@class, 'caret')])]")
+    ITEMS_LOCATOR = './/ul/li/a'
+    ITEM_LOCATOR = './/ul/li/a[normalize-space(.)="{}"]'
+
+    @property
+    def is_open(self):
+        """Checks whether dropdown list is open."""
+        return 'open' in self.browser.classes(self)
+
+    def open(self):
+        """Opens dropdown list"""
+        if not self.is_open:
+            self.dropdown.click()
+
+    @property
+    def items(self):
+        """Returns a list of all dropdown items as strings."""
+        return [
+            self.browser.text(el) for el in
+            self.browser.elements(self.ITEMS_LOCATOR, parent=self)]
+
+    def select(self, item):
+        """Selects item from dropdown."""
+        if item in self.items:
+            self.open()
+            self.browser.element(
+                self.ITEM_LOCATOR.format(item), parent=self).click()
+        else:
+            raise ValueError(
+                'Specified action "{}" not found in actions list. Available'
+                ' actions are {}'
+                .format(item, self.items)
+            )
+
+    def fill(self, item):
+        """Selects action. Apart from dropdown also checks attached button
+        label if present"""
+        if self.button.is_displayed and self.button.text == item:
+            self.button.click()
+        else:
+            self.select(item)
+
+    def read(self):
+        """Returns a list of available actions."""
+        return self.items
+
+
 class Search(Widget):
     search_field = TextInput(locator=(
         ".//input[@id='search' or @placeholder='Filter...' or "
@@ -416,6 +495,7 @@ class Search(Widget):
         ".//button[contains(@type,'submit') or "
         "@ng-click='table.search(table.searchTerm)']"
     )
+    actions = ActionsDropdown(".//span[contains(@class, 'input-group-btn')]")
 
     def fill(self, value):
         return self.search_field.fill(value)
@@ -792,85 +872,6 @@ class CustomParameter(Table):
         # Add the remaining values for names that were not already in the table
         for param in params_to_fill:
             self.add(param)
-
-
-class ActionsDropdown(GenericLocatorWidget):
-    """List of actions, expandable via button with caret. Usually comes with
-    button attached on left side, representing either most common action or
-    hint like 'Select Action'.
-
-    Example html representation::
-
-        <div class="btn-group dropdown" is-open="status.isOpen">
-          <button type="button" class="btn btn-default" ...>
-            <span><span >Select Action</span></span>
-          </button>
-          <button type="button" class="btn btn-default" ...>
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-right ng-scope" role="menu">
-            <li role="menuitem"><a><span><span>Action1</span></span></a></li>
-            <li role="menuitem"><a><span><span>Action2</span></span></a></li>
-          </ul>
-        </div>
-
-    Locator example::
-
-        //div[contains(@class, 'dropdown')]
-        //div[contains(@class, 'btn-group')]
-
-    """
-    dropdown = Text(
-        ".//*[self::a or self::button][contains(@class, 'dropdown-toggle') or "
-        "contains(@ng-click, 'toggleDropdown')][contains(@class, 'btn')]"
-        "[*[self::span or self::i][contains(@class, 'caret')]]")
-    button = Text(
-        ".//*[self::button or self::span][contains(@class, 'btn')]"
-        "[not(*[self::span or self::i][contains(@class, 'caret')])]")
-    ITEMS_LOCATOR = './ul/li/a'
-    ITEM_LOCATOR = './ul/li/a[normalize-space(.)="{}"]'
-
-    @property
-    def is_open(self):
-        """Checks whether dropdown list is open."""
-        return 'open' in self.browser.classes(self)
-
-    def open(self):
-        """Opens dropdown list"""
-        if not self.is_open:
-            self.dropdown.click()
-
-    @property
-    def items(self):
-        """Returns a list of all dropdown items as strings."""
-        return [
-            self.browser.text(el) for el in
-            self.browser.elements(self.ITEMS_LOCATOR, parent=self)]
-
-    def select(self, item):
-        """Selects item from dropdown."""
-        if item in self.items:
-            self.open()
-            self.browser.element(
-                self.ITEM_LOCATOR.format(item), parent=self).click()
-        else:
-            raise ValueError(
-                'Specified action "{}" not found in actions list. Available'
-                ' actions are {}'
-                .format(item, self.items)
-            )
-
-    def fill(self, item):
-        """Selects action. Apart from dropdown also checks attached button
-        label if present"""
-        if self.button.is_displayed and self.button.text == item:
-            self.button.click()
-        else:
-            self.select(item)
-
-    def read(self):
-        """Returns a list of available actions."""
-        return self.items
 
 
 class ConfirmationDialog(Widget):
