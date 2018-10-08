@@ -334,7 +334,7 @@ class MultiSelect(GenericLocatorWidget):
 class Search(Widget):
     search_field = TextInput(locator=(
         ".//input[@id='search' or @ng-model='table.searchTerm' or "
-        "contains(@ng-model, 'Filter')]"))
+        "contains(@ng-model, 'Filter') or @type='search']"))
     search_button = Text(
         ".//button[contains(@type,'submit') or "
         "@ng-click='table.search(table.searchTerm)']"
