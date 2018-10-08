@@ -92,47 +92,37 @@ class DiscoveryRuleEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def discovered_hosts(self, entity_name):
-        """View Discovered hosts corresponding to Discovery rule search field.
+    def read_discovered_hosts(self, entity_name):
+        """Read Discovered hosts corresponding to Discovery rule search field.
 
         :param str entity_name: name of the discovery rule entity
         :return: The discovered hosts view properties
         """
-        view = self.navigate_to(self, 'All')
-        view.table.row(name=entity_name)[ACTION_COLUMN].widget.fill(
-            'Discovered Hosts')
-        discovered_hosts_view = DiscoveredHostsView(
-            self.browser, logger=view.logger)
-        wait_for(
-            lambda: discovered_hosts_view.is_displayed is True,
-            timeout=60,
-            delay=1,
-            logger=discovered_hosts_view.logger
+        view = self.navigate_to(
+            self,
+            'Hosts',
+            action_name='Discovered Hosts',
+            entity_name=entity_name
         )
-        discovered_hosts_view.flash.assert_no_error()
-        discovered_hosts_view.flash.dismiss()
-        return discovered_hosts_view.read()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+        return view.read()
 
-    def associated_hosts(self, entity_name):
-        """View Discovery rule associated hosts.
+    def read_associated_hosts(self, entity_name):
+        """Read Discovery rule associated hosts.
 
         :param entity_name: name of the discovery rule entity
         :return: The hosts view properties
         """
-        # Associated Hosts
-        view = self.navigate_to(self, 'All')
-        view.table.row(name=entity_name)[ACTION_COLUMN].widget.fill(
-            'Associated Hosts')
-        hosts_view = HostsView(self.browser, logger=view.logger)
-        wait_for(
-            lambda: hosts_view.is_displayed is True,
-            timeout=60,
-            delay=1,
-            logger=hosts_view.logger
+        view = self.navigate_to(
+            self,
+            'Hosts',
+            action_name='Associated Hosts',
+            entity_name=entity_name
         )
-        hosts_view.flash.assert_no_error()
-        hosts_view.flash.dismiss()
-        return hosts_view.read()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+        return view.read()
 
 
 @navigator.register(DiscoveryRuleEntity, 'All')
@@ -170,3 +160,39 @@ class EditDiscoveryRule(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+
+@navigator.register(DiscoveryRuleEntity, 'Hosts')
+class DiscoveredRuleHosts(NavigateStep):
+    """Navigate to discovery rule entity Associated/Discovered Hosts page by
+    clicking on the action name of the entity dropdown button.
+
+        Args:
+            action_name: the action name to select from dropdown button.
+            entity_name: name of the discovery rule entity.
+    """
+    ACTIONS_VIEWS = {
+        'Associated Hosts': HostsView,
+        'Discovered Hosts': DiscoveredHostsView
+    }
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        action_name = kwargs.get('action_name')
+        self.VIEW = self.ACTIONS_VIEWS.get(action_name)
+        if not self.VIEW:
+            raise ValueError('Please provide a valid action name.'
+                             ' action_name: "{0}" not found.')
+        entity_name = kwargs.get('entity_name')
+        self.parent.table.row(name=entity_name)[ACTION_COLUMN].widget.fill(
+            action_name)
+
+    def am_i_here(self, *args, **kwargs):
+        return wait_for(
+            lambda: self.view.is_displayed is True,
+            timeout=60,
+            delay=1,
+            logger=self.view.logger
+        )
