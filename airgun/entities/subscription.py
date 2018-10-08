@@ -1,3 +1,4 @@
+from selenium.common.exceptions import NoSuchElementException
 from navmazing import NavigateToSibling
 from wait_for import wait_for
 
@@ -62,8 +63,8 @@ class SubscriptionEntity(BaseEntity):
         for row in view.table.rows(subscription_name=entity_name):
             row['Quantity to Allocate'].fill(quantity)
         view.submit_button.click()
-        self._wait_for_process_to_finish('Bind entitlements to an allocation',
-                                         has_manifest=True)
+        self._wait_for_process_to_finish(
+                'Bind entitlements to an allocation', has_manifest=True)
 
     def search(self, value):
         view = self.navigate_to(self, 'All')
@@ -76,7 +77,10 @@ class SubscriptionEntity(BaseEntity):
     def enabled_products(self, entity_name):
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
         view.enabled_products.select()
-        return view.enabled_products.enabled_products_list
+        try:
+            return view.enabled_products.enabled_products_list
+        except NoSuchElementException:
+            return []
 
     def update(self, entity_name, values):
         # This operation was never implemented in Robottelo (no test
@@ -90,8 +94,8 @@ class SubscriptionEntity(BaseEntity):
             row['Select all rows'].fill(True)
         view.delete_button.click()
         view.confirm_deletion.confirm()
-        self._wait_for_process_to_finish('Delete Upstream Subscription',
-                                         has_manifest=True)
+        self._wait_for_process_to_finish(
+                'Delete Upstream Subscription', has_manifest=True)
 
 
 @navigator.register(SubscriptionEntity, 'All')

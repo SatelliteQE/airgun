@@ -1,4 +1,3 @@
-from selenium.common.exceptions import NoSuchElementException
 from wait_for import wait_for
 
 from widgetastic.widget import (
@@ -53,7 +52,7 @@ class SatSubscriptionsViewTable(SatTable):
 class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
     """List of all subscriptions."""
     table = SatSubscriptionsViewTable(
-        locator='//*[@id="subscriptions-table"]//table',
+        locator='//div[@id="subscriptions-table"]//table',
         column_widgets={
             'Select all rows': Checkbox(locator=".//input[@type='checkbox']"),
             'Name': Text(".//a"),
@@ -67,7 +66,7 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
     confirm_deletion = DeleteSubscriptionConfirmationDialog()
     # In pre_navigate we wait for element with class `fade` to be not
     # visible; we need to first define it here
-    fake_fade_widget = Text(".//*[contains(@class, 'fade')]")
+    fake_fade_widget = Text(".//div[contains(@class, 'fade')]")
 
     @property
     def is_displayed(self):
@@ -173,10 +172,7 @@ class SubscriptionDetailsView(BaseLoggedInView):
             locator = ("//div[contains(@class, 'list-group')]"
                        "//div[contains(@class, 'list-group-item-heading')]"
                        )
-            try:
-                self.browser.wait_for_element(locator, visible=True)
-            except NoSuchElementException:
-                return []
+            self.browser.wait_for_element(locator, visible=True)
             return [elem.text for elem in self.browser.elements(locator)]
 
     @property
