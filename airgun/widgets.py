@@ -225,6 +225,82 @@ class DateTime(Widget):
         return values
 
 
+class DatePickerInput(TextInput):
+    """Input for date, which opens calendar on click.
+
+    Example html representation::
+
+        <input type="date" uib-datepicker-popup="" ng-model="rule.start_date"
+         ng-model-options="{timezone: 'UTC'}" is-open="date.startOpen"
+         ng-click="openStartDate($event)">
+            <div uib-datepicker-popup-wrap="" ng-model="date"
+             ng-change="dateSelection(date)"
+             template-url="uib/template/datepickerPopup/popup.html">
+                <ul role="presentation" class="uib-datepicker-popup ..."
+                 ng-if="isOpen" ng-keydown="keydown($event)"
+                 ng-click="$event.stopPropagation()">
+                ...
+            </div>
+            <span class="input-group-btn">
+                    <button class="btn btn-default" type="button"
+                     ng-click="openStartDate($event)">
+                        <i class="fa fa-calendar inline-icon"></i>
+                </button>
+            </span>
+
+    Locator example::
+
+        ".//input[@ng-model='rule.start_date']"
+    """
+    CALENDAR_POPUP = (
+        "./parent::div/div[@ng-model='date']"
+        "/ul[contains(@class, 'datepicker-popup')]"
+    )
+    calendar_button = Text(
+        "./parent::div//button[i[contains(@class, 'fa-calendar')]]")
+    clear_button = Text(
+        "{}//button[@ng-click='select(null, $event)']".format(CALENDAR_POPUP))
+    done_button = Text(
+        "{}//button[@ng-click='close($event)']".format(CALENDAR_POPUP)
+    )
+
+    @property
+    def is_open(self):
+        """Bool value whether the calendar is opened or not"""
+        return self.browser.wait_for_element(
+            self.CALENDAR_POPUP,
+            parent=self,
+            timeout=1,
+            exception=False
+        ) is not None
+
+    def clear(self):
+        """Clear input value. Opens calendar popup if it's closed and pushes
+        'Clear' button.
+        """
+        if not self.is_open:
+            self.calendar_button.click()
+        self.clear_button.click()
+
+    def close_calendar(self):
+        """Closes calendar popup if it's opened."""
+        if self.is_open:
+            self.done_button.click()
+
+    def fill(self, value):
+        """Custom fill which uses custom :meth:`clear` and closes calendar
+        popup after filling.
+        """
+        current_value = self.value
+        if value == current_value:
+            return False
+        self.browser.click(self)
+        self.clear()
+        self.browser.send_keys(value, self)
+        self.close_calendar()
+        return True
+
+
 class ItemsList(GenericLocatorWidget):
     """List with click-able elements. Part of :class:`MultiSelect` or jQuery
     drop-down.

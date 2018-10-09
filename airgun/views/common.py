@@ -213,7 +213,6 @@ class AddRemoveResourcesView(View):
     checkbox_locator = (
         './/tr[td[normalize-space(.)="%s"]]/td[@class="row-select"]'
         '/input[@type="checkbox"]')
-    table = SatTable(locator=".//table")
 
     @View.nested
     class ListRemoveTab(SatSecondaryTab):
@@ -223,6 +222,7 @@ class AddRemoveResourcesView(View):
             './/div[@data-block="list-actions"]'
             '//button[contains(@ng-click, "remove")]'
         )
+        table = SatTable(locator=".//table")
 
         def search(self, value):
             self.searchbox.search(value)
@@ -241,7 +241,7 @@ class AddRemoveResourcesView(View):
                 self.remove(value)
 
         def read(self):
-            return self.parent_view.table.read()
+            return self.table.read()
 
     @View.nested
     class AddTab(SatSecondaryTab):
@@ -251,6 +251,7 @@ class AddRemoveResourcesView(View):
             './/div[@data-block="list-actions"]'
             '//button[contains(@ng-click, "add")]'
         )
+        table = SatTable(locator=".//table")
 
         def search(self, value):
             self.searchbox.search(value)
@@ -269,7 +270,7 @@ class AddRemoveResourcesView(View):
                 self.add(value)
 
         def read(self):
-            return self.parent_view.table.read()
+            return self.table.read()
 
     def add(self, values):
         """Assign some resource(s).
