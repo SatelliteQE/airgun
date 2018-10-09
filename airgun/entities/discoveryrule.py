@@ -1,5 +1,4 @@
 from navmazing import NavigateToSibling
-from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -188,11 +187,3 @@ class DiscoveredRuleHosts(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.table.row(name=entity_name)[ACTION_COLUMN].widget.fill(
             action_name)
-
-    def am_i_here(self, *args, **kwargs):
-        return wait_for(
-            lambda: self.view.is_displayed is True,
-            timeout=60,
-            delay=1,
-            logger=self.view.logger
-        )
