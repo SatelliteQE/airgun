@@ -216,6 +216,11 @@ class EditYumFilterView(BaseLoggedInView):
 
     @content_tabs.register(lambda filter_type: filter_type.endswith('Errata'))
     class errata_filter(AddRemoveResourcesView):
+        """Combines both 'Errata by ID' and 'Errata by date and type' filters
+        as they can't be easily distinguished on UI. For 'Errata by ID' filter
+        'Add' and 'List/Remove' tabs are available, for 'Errata by date and
+        type' - only 'Erratum Date Range' tab is displayed.
+        """
 
         @View.nested
         class AddTab(SatSecondaryTab):
