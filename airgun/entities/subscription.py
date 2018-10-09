@@ -72,7 +72,7 @@ class SubscriptionEntity(BaseEntity):
 
     def provided_products(self, entity_name):
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
-        return view.details.provided_products
+        return view.details.provided_products.read()
 
     def enabled_products(self, entity_name):
         view = self.navigate_to(self, 'Details', entity_name=entity_name)

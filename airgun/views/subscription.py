@@ -12,6 +12,7 @@ from widgetastic_patternfly import BreadCrumb, Button
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import (
     ConfirmationDialog,
+    ItemsListReadOnly,
     ProgressBar,
     SatTable,
     Search,
@@ -155,13 +156,8 @@ class SubscriptionDetailsView(BaseLoggedInView):
     @View.nested
     class details(SatTab):
 
-        @property
-        def provided_products(self):
-            return [elem.text
-                    for elem
-                    in self.browser.elements(
-                        ("//h2[text()='Provided Products']"
-                         "/following::ul/li"))]
+        provided_products = ItemsListReadOnly(
+                (".//h2[text()='Provided Products']/following::ul"))
 
     @View.nested
     class enabled_products(SatTab):
