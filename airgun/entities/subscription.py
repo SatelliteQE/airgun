@@ -15,6 +15,14 @@ from airgun.views.subscription import (
 
 class SubscriptionEntity(BaseEntity):
     def _wait_for_process_to_finish(self, name, has_manifest=False):
+        """Helper ensuring that task (upload / delete manifest / subscription)
+        has finished. Run after action invoking task to leave Satellite
+        in usable state.
+        Currently waits for three events. Since page is written asynchronously,
+        they can happen in any order.
+        :param name: Name of running task
+        :param has_manifest: Should manifest exist after task ended?
+        """
         view = self.navigate_to(self, 'All')
         wait_for(
                 lambda: view.flash.assert_message(
@@ -36,10 +44,16 @@ class SubscriptionEntity(BaseEntity):
 
     @property
     def has_manifest(self):
+        """Is there manifest present in current organization?
+        :return: boolean value indicating whether manifest is present
+        """
         view = self.navigate_to(self, 'All')
         return not view.add_button.disabled
 
     def add_manifest(self, manifest_file):
+        """Upload manifest file
+        :param manifest_file: Path to manifest file
+        """
         view = self.navigate_to(self, 'Manage Manifest')
         view.wait_animation_end()
         view.fill({
@@ -48,17 +62,23 @@ class SubscriptionEntity(BaseEntity):
         self._wait_for_process_to_finish('Import Manifest', has_manifest=True)
 
     def delete_manifest(self):
+        """Delete manifest from current organization"""
         view = self.navigate_to(self, 'Delete Manifest Confirmation')
         view.wait_animation_end()
         view.delete_button.click()
         self._wait_for_process_to_finish('Delete Manifest', has_manifest=False)
 
     def read_delete_manifest_message(self):
+        """Read message displayed on 'Confirm delete manifest' dialog"""
         view = self.navigate_to(self, 'Delete Manifest Confirmation')
         view.wait_animation_end()
         return view.message.read()
 
     def add(self, entity_name, quantity=1):
+        """Attach new subscriptions
+        :param entity_name: Name of subscription to attach
+        :param quantity: Number of subscriptions to attach
+        """
         view = self.navigate_to(self, 'Add')
         for row in view.table.rows(subscription_name=entity_name):
             row['Quantity to Allocate'].fill(quantity)
@@ -67,14 +87,24 @@ class SubscriptionEntity(BaseEntity):
                 'Bind entitlements to an allocation', has_manifest=True)
 
     def search(self, value):
+        """search for subscription"""
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
     def provided_products(self, entity_name):
+        """Read list of products provided by subscription
+        :param entity_name: Name of subscription
+        :return: List of strings with product names
+        """
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
         return view.details.provided_products.read()
 
     def enabled_products(self, entity_name):
+        """Read list of enabled products provided by subscription
+        Catches possible exception to always return known data structure
+        :param entity_name: Name of subscription
+        :return: List of strings with product names (may be empty)
+        """
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
         view.enabled_products.select()
         try:
@@ -83,12 +113,16 @@ class SubscriptionEntity(BaseEntity):
             return []
 
     def update(self, entity_name, values):
-        # This operation was never implemented in Robottelo (no test
-        # requires it). It is here for consistency, but raises
-        # exception until it is actually needed
+        """Stub method provided for consistency with other Airgun entities.
+        This operation was never implemented in Robottelo (no test requires
+        it).
+        """
         raise NotImplementedError("Subscriptions update is not implemented")
 
     def delete(self, entity_name):
+        """Remove subscription
+        :param entity_name: Name of subscription
+        """
         view = self.navigate_to(self, 'All')
         for row in view.table.rows(name=entity_name):
             row['Select all rows'].fill(True)
@@ -100,6 +134,7 @@ class SubscriptionEntity(BaseEntity):
 
 @navigator.register(SubscriptionEntity, 'All')
 class SubscriptionList(NavigateStep):
+    """Navigate to Subscriptions main page"""
     VIEW = SubscriptionListView
 
     def pre_navigate(self, _tries, *args, **kwargs):
@@ -115,6 +150,7 @@ class SubscriptionList(NavigateStep):
 
 @navigator.register(SubscriptionEntity, 'Manage Manifest')
 class ManageManifest(NavigateStep):
+    """Navigate to 'Manage Manifest' dialog box on Subscriptions main page"""
     VIEW = ManageManifestView
 
     prerequisite = NavigateToSibling('All')
@@ -125,6 +161,11 @@ class ManageManifest(NavigateStep):
 
 @navigator.register(SubscriptionEntity, 'Delete Manifest Confirmation')
 class DeleteManifestConfirmation(NavigateStep):
+    """Navigate to 'Delete Manifest Confirmation' dialog box on
+    Subscriptions main page
+    Dialog box appearance is animated. wait_for ensures that we
+    interact with content only after animation has finished
+    """
     VIEW = DeleteManifestConfirmationView
 
     prerequisite = NavigateToSibling('Manage Manifest')
@@ -139,6 +180,7 @@ class DeleteManifestConfirmation(NavigateStep):
 
 @navigator.register(SubscriptionEntity, 'Add')
 class AddSubscription(NavigateStep):
+    """Navigate to Add Subscriptions page"""
     VIEW = AddSubscriptionView
 
     prerequisite = NavigateToSibling('All')
@@ -153,6 +195,11 @@ class AddSubscription(NavigateStep):
 
 @navigator.register(SubscriptionEntity, 'Details')
 class SubscriptionDetails(NavigateStep):
+    """Navigate to Subscriptions' Details page
+
+    Args:
+        entity_name: name of Subscription
+    """
     VIEW = SubscriptionDetailsView
 
     def prerequisite(self, *args, **kwargs):
