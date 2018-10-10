@@ -3,12 +3,14 @@ from wait_for import wait_for
 from widgetastic.widget import (
     Checkbox,
     FileInput,
+    GenericLocatorWidget,
     Text,
     TextInput,
     View,
 )
 from widgetastic_patternfly import BreadCrumb, Button
 
+from airgun.exceptions import ReadOnlyWidgetError
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import (
     ConfirmationDialog,
@@ -48,6 +50,34 @@ class SatSubscriptionsViewTable(SatTable):
         return (self.tbody_row.read()
                 != "No subscriptions match your search criteria."
                 )
+
+
+class EnabledProductsItemsList(GenericLocatorWidget):
+    """Models list of enabled products (Subscriptions -> any ->
+    Enabled products)
+    Main reason is that page is constructed when tab is activated. There is
+    no HTTP request, but delay is visible nevertheless - and during that time,
+    message about no enabled product can be seen. We have to wait for a short
+    while before we can be sure that there really are no products.
+    """
+
+    ITEMS = ".//div[contains(@class, 'list-group-item-heading')]"
+
+    @property
+    def has_items(self):
+        return (self.browser.text(self.ROOT)
+                != 'No products are enabled.')
+
+    def read(self):
+        result = wait_for(lambda: self.has_items,
+                          timeout=5,
+                          silent_failure=True)
+        if not result:
+            return []
+        return [elem.text for elem in self.browser.elements(self.ITEMS)]
+
+    def fill(self, value):
+        raise ReadOnlyWidgetError('Widget is read only, fill is prohibited')
 
 
 class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
@@ -163,13 +193,7 @@ class SubscriptionDetailsView(BaseLoggedInView):
     class enabled_products(SatTab):
         TAB_NAME = "Enabled Products"
 
-        @property
-        def enabled_products_list(self):
-            locator = ("//div[contains(@class, 'list-group')]"
-                       "//div[contains(@class, 'list-group-item-heading')]"
-                       )
-            self.browser.wait_for_element(locator, visible=True)
-            return [elem.text for elem in self.browser.elements(locator)]
+        enabled_products_list = EnabledProductsItemsList(".")
 
     @property
     def is_displayed(self):

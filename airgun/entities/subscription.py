@@ -1,4 +1,3 @@
-from selenium.common.exceptions import NoSuchElementException
 from navmazing import NavigateToSibling
 from wait_for import wait_for
 
@@ -107,10 +106,7 @@ class SubscriptionEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
         view.enabled_products.select()
-        try:
-            return view.enabled_products.enabled_products_list
-        except NoSuchElementException:
-            return []
+        return view.enabled_products.enabled_products_list.read()
 
     def update(self, entity_name, values):
         """Stub method provided for consistency with other Airgun entities.
