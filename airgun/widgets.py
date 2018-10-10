@@ -1,9 +1,10 @@
 from jsmin import jsmin
 from wait_for import wait_for
 from widgetastic.exceptions import (
-    NoSuchElementException, WidgetOperationFailed)
-
-
+    NoSuchElementException,
+    WidgetOperationFailed,
+)
+from widgetastic.utils import retry_stale_element
 from widgetastic.widget import (
     Checkbox,
     do_not_read_this_widget,
@@ -477,6 +478,14 @@ class SatFlashMessages(FlashMessages):
         except NoSuchElementException:
             pass
         return result
+
+    @retry_stale_element
+    def assert_no_error(self):
+        return super().assert_no_error()
+
+    @retry_stale_element
+    def dismiss(self):
+        return super().assert_no_error()
 
 
 class SatFlashMessage(FlashMessage):
