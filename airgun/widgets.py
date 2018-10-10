@@ -485,7 +485,7 @@ class SatFlashMessages(FlashMessages):
 
     @retry_stale_element
     def dismiss(self):
-        return super().assert_no_error()
+        return super().dismiss()
 
 
 class SatFlashMessage(FlashMessage):
