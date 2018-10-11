@@ -3,6 +3,19 @@ from airgun.navigation import NavigateStep, navigator
 from airgun.views.bookmark import BookmarkEditView, BookmarksView
 
 
+def _gen_queries(entity_name, controller=None):
+    """Generate search query and row filtering query from bookmark name and
+    controller if passed.
+    """
+    row_query = {'name': entity_name}
+    search_query = 'name = "{}"'.format(entity_name)
+    if controller:
+        search_query = '{} and controller = "{}"'.format(
+            search_query, controller)
+        row_query['controller'] = controller
+    return search_query, row_query
+
+
 class BookmarkEntity(BaseEntity):
 
     # Note: creation procedure takes place on specific entity page, generic
@@ -11,13 +24,7 @@ class BookmarkEntity(BaseEntity):
     def delete(self, entity_name, controller=None):
         """Delete existing bookmark"""
         view = self.navigate_to(self, 'All')
-        row_query = {'name': entity_name}
-        if not controller:
-            query = entity_name
-        else:
-            query = 'name = "{}" and controller = "{}"'.format(
-                entity_name, controller)
-            row_query['controller'] = controller
+        query, row_query = _gen_queries(entity_name, controller)
         view.search(query)
         view.table.row(**row_query)['Actions'].widget.click(handle_alert=True)
         view.flash.assert_no_error()
@@ -70,12 +77,6 @@ class EditBookmark(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         controller = kwargs.get('controller')
-        row_query = {'name': entity_name}
-        if not controller:
-            query = entity_name
-        else:
-            query = 'name = "{}" and controller = "{}"'.format(
-                entity_name, controller)
-            row_query['controller'] = controller
+        query, row_query = _gen_queries(entity_name, controller)
         self.parent.search(query)
         self.parent.table.row(**row_query)['Name'].widget.click()
