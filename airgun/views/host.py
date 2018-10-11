@@ -8,6 +8,7 @@ from widgetastic.widget import (
     Text,
     TextInput,
     View,
+    Widget,
 )
 from widgetastic_patternfly import BreadCrumb
 
@@ -30,6 +31,31 @@ class TableActions(View):
     """
     edit = Text(".//button[contains(., 'Edit')]")
     delete = Text(".//button[contains(., 'Delete')]")
+
+
+class PuppetClassParameterValue(Widget):
+    """Represent value field for Puppet Class parameters table row from Host
+    Parameters tab. That field can be interacted with as usual text input, but
+    also it can be overriden with new value
+    """
+    ROOT = ".//div[@class='input-group']"
+    value = TextInput(
+        locator=".//textarea[contains(@name, 'lookup_values_attributes')]")
+    override_parameter = Text(".//a[@data-tag='override']")
+    remove_override = Text(".//a[@data-tag='remove']")
+
+    def read(self):
+        return self.value.read()
+
+    def fill(self, value):
+        return self.value.fill(value)
+
+    def override(self, value=True):
+        """Click corresponding button depends on action needed"""
+        if value:
+            self.override_parameter.click()
+        else:
+            self.remove_override.click()
 
 
 class HostInterface(View):
@@ -207,6 +233,11 @@ class HostCreateView(BaseLoggedInView):
     @View.nested
     class parameters(SatTab):
         """Host parameters tab"""
+        puppet_class_parameters = SatTable(
+            ".//table[@id='inherited_puppetclasses_parameters']",
+            column_widgets={'Value': PuppetClassParameterValue()}
+        )
+
         @View.nested
         class global_params(SatTable):
 
