@@ -1,5 +1,5 @@
 from navmazing import NavigateToSibling
-from widgetastic.widget import RowNotFound
+from widgetastic.exceptions import RowNotFound
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
