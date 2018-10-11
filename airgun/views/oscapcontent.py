@@ -54,6 +54,7 @@ class SCAPContentCreateView(BaseLoggedInView):
     class organizations(SatTab):
         resources = MultiSelect(id='ms-scap_content_organization_ids')
 
+    @property
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.create_form, exception=False) is not None

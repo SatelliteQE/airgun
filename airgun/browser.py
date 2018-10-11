@@ -569,7 +569,10 @@ class AirgunBrowserPlugin(DefaultPlugin):
         """Invoked after clicking on an element. Ensure page is fully loaded
         before proceeding further.
         """
-        self.ensure_page_safe()
+        # plugin.ensure_page_safe() is invoked from browser click.
+        # we should not invoke it a second time, this can conflict with
+        # ignore_ajax=True usage from browser click
+        pass
 
 
 class AirgunBrowser(Browser):
