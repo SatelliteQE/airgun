@@ -86,7 +86,7 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
         locator='//div[@id="subscriptions-table"]//table',
         column_widgets={
             'Select all rows': Checkbox(locator=".//input[@type='checkbox']"),
-            'Name': Text(".//a"),
+            'Name': Text("./a"),
         }
     )
     add_button = Button(href='subscriptions/add')
