@@ -1,8 +1,10 @@
 from widgetastic.widget import (
+    Checkbox,
     do_not_read_this_widget,
     ParametrizedLocator,
     ParametrizedView,
     Text,
+    TextInput,
     View,
     WTMixin,
 )
@@ -384,3 +386,32 @@ class TaskDetailsView(BaseLoggedInView):
     result = ReadOnlyEntry(name='Result')
     progressbar = ProgressBar()
     details = ReadOnlyEntry(name='Details')
+
+
+class BookmarkCreateView(BaseLoggedInView):
+    """Bookmark creation modal window, available via searchbox dropdown ->
+    Bookmark this search.
+
+    Has slightly different style for katello and foreman pages, thus some
+    widgets have special locators.
+    """
+    ROOT = ".//div[contains(@class, 'modal-dialog')]"
+
+    title = Text(
+        "//*[self::div[@data-block='modal-header'] or self::h4]"
+        "[normalize-space(.) = 'Add Bookmark'"
+        " or normalize-space(.) = 'Create Bookmark']"
+    )
+    name = TextInput(name='name')
+    query = TextInput(name='query')
+    public = Checkbox(
+        locator="//input[@type='checkbox'][@name='public' or @name='publik']")
+    # text can be either 'Submit' or 'Save'
+    submit = Text(".//button[@type='submit' or @ng-click='ok()']")
+    # may contain <span> inside, using normalize-space
+    cancel = Text(".//button[normalize-space(.)='Cancel']")
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
