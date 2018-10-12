@@ -58,6 +58,7 @@ from airgun.entities.template import ProvisioningTemplateEntity
 from airgun.entities.smart_class_parameter import SmartClassParameterEntity
 from airgun.entities.smart_variable import SmartVariableEntity
 from airgun.entities.subnet import SubnetEntity
+from airgun.entities.subscription import SubscriptionEntity
 from airgun.entities.syncplan import SyncPlanEntity
 from airgun.entities.sync_status import SyncStatusEntity
 from airgun.entities.user import UserEntity
@@ -462,6 +463,11 @@ class Session(object):
     def subnet(self):
         """Instance of Subnet entity."""
         return SubnetEntity(self.browser)
+
+    @cached_property
+    def subscription(self):
+        """Instance of Subscription entity."""
+        return SubscriptionEntity(self.browser)
 
     @cached_property
     def syncplan(self):
