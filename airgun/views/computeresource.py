@@ -18,6 +18,7 @@ from airgun.widgets import (
     MultiSelect,
 )
 from widgetastic_patternfly import BreadCrumb
+from airgun.views.host import HostCreateView
 
 
 class ComputeResourcesView(BaseLoggedInView, SearchableViewMixin):
@@ -178,6 +179,7 @@ class ResourceProviderDetailView(BaseLoggedInView):
     class virtual_machines(SatTab, SearchableViewMixin):
         TAB_NAME = 'Virtual Machines'
 
+        actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
         table = SatTable(
             './/table',
             column_widgets={
@@ -225,4 +227,18 @@ class ResourceProviderProfileView(BaseLoggedInView):
             and self.breadcrumb.locations[0] == 'Compute resources'
             and self.breadcrumb.locations[2] == 'Compute profiles'
             and self.breadcrumb.read().startswith('Edit ')
+        )
+
+
+class ResourceProviderVMImport(HostCreateView):
+    breadcrumb = BreadCrumb()
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Compute Resources Vms'
+            and self.breadcrumb.read().startswith('Import ')
         )

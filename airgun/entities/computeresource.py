@@ -8,6 +8,7 @@ from airgun.views.computeresource import (
     ResourceProviderEditView,
     ResourceProviderDetailView,
     ResourceProviderProfileView,
+    ResourceProviderVMImport,
 )
 
 
@@ -74,6 +75,13 @@ class ComputeResourceEntity(BaseEntity):
         vm = self.list_vms(rhev_name, vm_name)
         if vm['Power'].widget.read() == 'On':
             vm['Actions'].widget.click(handle_alert=True)
+
+    def vm_import(self, entity_name, vm_name, hostgroup, location):
+        """Imports the specified VM"""
+        view = self.navigate_to(self, 'VMImport',
+                                entity_name=entity_name, vm_name=vm_name)
+        view.fill({'host.hostgroup': hostgroup, 'host.location': location})
+        view.submit.click()
 
     def update_computeprofile(self, computeresource, computeprofile, values):
         """Update specific compute profile attributes through CR detail view"""
@@ -153,3 +161,17 @@ class ComputeResourceProfileDetail(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.compute_profiles.table.row(compute_profile=entity_name)[
             'Compute profile'].widget.click()
+
+
+@navigator.register(ComputeResourceEntity, 'VMImport')
+class ComputeResourceVMImport(NavigateStep):
+    VIEW = ResourceProviderVMImport
+
+    def prerequisite(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        return self.navigate_to(self.obj, 'Detail', rhev_name=entity_name)
+
+    def step(self, *args, **kwargs):
+        vm_name = kwargs.get('vm_name')
+        self.parent.virtual_machines.search(vm_name)
+        self.parent.virtual_machines.actions.fill("Import")
