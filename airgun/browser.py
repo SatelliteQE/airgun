@@ -136,7 +136,7 @@ class SeleniumBrowserFactory(object):
             )
         # Workaround maximize_window() not working with chrome in docker
         if not (self.provider == 'docker' and
-                self.browser == 'chrome'):
+                self.browser == 'chrome' or self.provider == 'selenium'):
             self._webdriver.maximize_window()
 
     def finalize(self, passed=True):
@@ -197,7 +197,8 @@ class SeleniumBrowserFactory(object):
         elif self.browser == 'remote':
             capabilities = vars(settings.webdriver_desired_capabilities)
             self._webdriver = webdriver.Remote(
-                desired_capabilities=capabilities
+                command_executor=settings.selenium.command_executor,
+                desired_capabilities=capabilities,
             )
         if self._webdriver is None:
             raise ValueError(
