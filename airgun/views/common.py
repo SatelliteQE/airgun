@@ -199,6 +199,77 @@ class LCESelectorGroup(ParametrizedView):
         return self.lce.read()
 
 
+class ListRemoveTab(SatSecondaryTab):
+    """'List/Remove' tab, part of :class:`AddRemoveResourcesView`."""
+    TAB_NAME = 'List/Remove'
+    searchbox = Search()
+    remove_button = Text(
+        './/div[@data-block="list-actions"]'
+        '//button[contains(@ng-click, "remove")]'
+    )
+    table = SatTable(
+        locator=".//table",
+        column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+    )
+
+    def search(self, value):
+        """Search for specific associated resource and return the results"""
+        self.searchbox.search(value)
+        return self.table.read()
+
+    def remove(self, value):
+        """Remove specific associated resource"""
+        self.search(value)
+        next(self.table.rows())[0].widget.fill(True)
+        self.remove_button.click()
+
+    def fill(self, values):
+        """Remove associated resource(s)."""
+        if not isinstance(values, list):
+            values = list((values,))
+        for value in values:
+            self.remove(value)
+
+    def read(self):
+        """Return a list of associated resources"""
+        return self.table.read()
+
+
+class AddTab(SatSecondaryTab):
+    TAB_NAME = 'Add'
+    searchbox = Search()
+    add_button = Text(
+        './/div[@data-block="list-actions"]'
+        '//button[contains(@ng-click, "add")]'
+    )
+    table = SatTable(
+        locator=".//table",
+        column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+    )
+
+    def search(self, value):
+        """Search for specific available resource and return the results"""
+        self.searchbox.search(value)
+        return self.table.read()
+
+    def add(self, value):
+        """Associate specific resource"""
+        self.search(value)
+        next(self.table.rows())[0].widget.fill(True)
+        self.add_button.click()
+
+    def fill(self, values):
+        """Associate resource(s)"""
+        if not isinstance(values, list):
+            values = list((values,))
+        for value in values:
+            self.add(value)
+
+    def read(self):
+        """Return a list of available resources"""
+        return self.table.read()
+
+
 class AddRemoveResourcesView(View):
     """View which allows assigning/unassigning some resources to entity.
     Contains two secondary level tabs 'List/Remove' and 'Add' with tables
@@ -209,70 +280,9 @@ class AddRemoveResourcesView(View):
         @View.nested
         class resources(AddRemoveResourcesView): pass
 
-    Note that locator for checkboxes of resources in tables and labels getter
-    method can be overwritten if needed.
     """
-    checkbox_locator = (
-        './/tr[td[normalize-space(.)="%s"]]/td[@class="row-select"]'
-        '/input[@type="checkbox"]')
-
-    @View.nested
-    class ListRemoveTab(SatSecondaryTab):
-        TAB_NAME = 'List/Remove'
-        searchbox = Search()
-        remove_button = Text(
-            './/div[@data-block="list-actions"]'
-            '//button[contains(@ng-click, "remove")]'
-        )
-        table = SatTable(locator=".//table")
-
-        def search(self, value):
-            self.searchbox.search(value)
-            return self.browser.element(
-                self.parent_view.checkbox_locator % value)
-
-        def remove(self, value):
-            checkbox = self.search(value)
-            checkbox.click()
-            self.remove_button.click()
-
-        def fill(self, values):
-            if not isinstance(values, list):
-                values = list((values,))
-            for value in values:
-                self.remove(value)
-
-        def read(self):
-            return self.table.read()
-
-    @View.nested
-    class AddTab(SatSecondaryTab):
-        TAB_NAME = 'Add'
-        searchbox = Search()
-        add_button = Text(
-            './/div[@data-block="list-actions"]'
-            '//button[contains(@ng-click, "add")]'
-        )
-        table = SatTable(locator=".//table")
-
-        def search(self, value):
-            self.searchbox.search(value)
-            return self.browser.element(
-                self.parent_view.checkbox_locator % value)
-
-        def add(self, value):
-            checkbox = self.search(value)
-            checkbox.click()
-            self.add_button.click()
-
-        def fill(self, values):
-            if not isinstance(values, list):
-                values = list((values,))
-            for value in values:
-                self.add(value)
-
-        def read(self):
-            return self.table.read()
+    list_remove_tab = View.nested(ListRemoveTab)
+    add_tab = View.nested(AddTab)
 
     def add(self, values):
         """Assign some resource(s).
@@ -280,7 +290,7 @@ class AddRemoveResourcesView(View):
         :param str or list values: string containing resource name or a list of
             such strings.
         """
-        return self.AddTab.fill(values)
+        return self.add_tab.fill(values)
 
     def remove(self, values):
         """Unassign some resource(s).
@@ -288,13 +298,13 @@ class AddRemoveResourcesView(View):
         :param str or list values: string containing resource name or a list of
             such strings.
         """
-        return self.ListRemoveTab.fill(values)
+        return self.list_remove_tab.fill(values)
 
     def read(self):
         """Read all table values from both resource tables"""
         return {
-            'assigned': self.ListRemoveTab.read(),
-            'unassigned': self.AddTab.read(),
+            'assigned': self.list_remove_tab.read(),
+            'unassigned': self.add_tab.read(),
         }
 
 
@@ -303,10 +313,19 @@ class AddRemoveSubscriptionsView(AddRemoveResourcesView):
     Subscriptions table has different structure - entity label is located in
     separate row apart from checkbox and other cells.
     """
-    checkbox_locator = (
-        './/table//tr[td[normalize-space(.)="%s"]]'
-        '/following-sibling::tr//input[@type="checkbox"]')
-    table = SatSubscriptionsTable(locator=".//table")
+    @View.nested
+    class list_remove_tab(ListRemoveTab):
+        table = SatSubscriptionsTable(
+            locator=".//table",
+            column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+        )
+
+    @View.nested
+    class add_tab(AddTab):
+        table = SatSubscriptionsTable(
+            locator=".//table",
+            column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+        )
 
 
 class TemplateEditor(View):
