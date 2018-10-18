@@ -307,7 +307,7 @@ class EditYumFilterView(BaseLoggedInView):
             :param dict optional filters: dictionary containing widget names
                 and values to set (like with regular `fill()`)
             """
-            return self.AddTab.fill(errata_id, filters)
+            return self.add_tab.fill(errata_id, filters)
 
         def read(self):
             """Read values from tabs depending on errata filter type (by id or
@@ -316,8 +316,8 @@ class EditYumFilterView(BaseLoggedInView):
             if self.erratum_date_range.is_displayed:
                 return {'erratum_date_range': self.erratum_date_range.read()}
             return {
-                'assigned': self.ListRemoveTab.read(),
-                'unassigned': self.AddTab.read(),
+                'assigned': self.list_remove_tab.read(),
+                'unassigned': self.add_tab.read(),
             }
 
     @content_tabs.register(
