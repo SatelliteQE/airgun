@@ -11,6 +11,7 @@ from widgetastic_patternfly import BreadCrumb, Button
 
 from airgun.views.common import (
     AddRemoveResourcesView,
+    AddTab,
     BaseLoggedInView,
     SatSecondaryTab,
     SearchableViewMixin,
@@ -21,7 +22,6 @@ from airgun.widgets import (
     RadioGroup,
     SatSelect,
     SatTable,
-    Search,
 )
 
 ACTIONS_COLUMN = 4
@@ -223,8 +223,7 @@ class EditYumFilterView(BaseLoggedInView):
         """
 
         @View.nested
-        class AddTab(SatSecondaryTab):
-            TAB_NAME = 'Add'
+        class add_tab(AddTab):
             security = Checkbox(locator=".//input[@ng-model='types.security']")
             enhancement = Checkbox(
                 locator=".//input[@ng-model='types.enhancement']")
@@ -236,14 +235,8 @@ class EditYumFilterView(BaseLoggedInView):
                 locator=".//input[@ng-model='rule.start_date']")
             end_date = DatePickerInput(
                 locator=".//input[@ng-model='rule.end_date']")
-            searchbox = Search()
-            add_button = Text(
-                './/div[@data-block="list-actions"]'
-                '//button[contains(@ng-click, "add")]'
-            )
             select_all = Checkbox(
                 locator=".//table//th[@class='row-select']/input")
-            table = SatTable(locator=".//table")
 
             def search(self, query=None, filters=None):
                 """Custom search which supports all errata filters.
@@ -282,9 +275,6 @@ class EditYumFilterView(BaseLoggedInView):
             def fill(self, errata_id=None, filters=None):
                 self.add(errata_id, filters)
 
-            def read(self):
-                return self.table.read()
-
         @View.nested
         class erratum_date_range(SatSecondaryTab):
             TAB_NAME = 'Erratum Date Range'
@@ -317,7 +307,7 @@ class EditYumFilterView(BaseLoggedInView):
             :param dict optional filters: dictionary containing widget names
                 and values to set (like with regular `fill()`)
             """
-            return self.AddTab.fill(errata_id, filters)
+            return self.add_tab.fill(errata_id, filters)
 
         def read(self):
             """Read values from tabs depending on errata filter type (by id or
@@ -326,8 +316,8 @@ class EditYumFilterView(BaseLoggedInView):
             if self.erratum_date_range.is_displayed:
                 return {'erratum_date_range': self.erratum_date_range.read()}
             return {
-                'assigned': self.ListRemoveTab.read(),
-                'unassigned': self.AddTab.read(),
+                'assigned': self.list_remove_tab.read(),
+                'unassigned': self.add_tab.read(),
             }
 
     @content_tabs.register(
