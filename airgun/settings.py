@@ -62,7 +62,6 @@ class WebdriverCapabilitiesSettings(object):
         self.tunnelIdentifier = None
         self.tags = None
         self.browserName = None
-        self.javascriptEnabled = None
 
 
 class Settings(object):
