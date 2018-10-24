@@ -22,7 +22,7 @@ class SubscriptionEntity(BaseEntity):
         :param name: Name of running task
         :param has_manifest: Should manifest exist after task ended?
         """
-        view = self.navigate_to(self, 'All')
+        view = SubscriptionListView(self.browser, logger=self.browser.logger)
         wait_for(
                 lambda: view.flash.assert_message(
                         "Task {} completed".format(name), partial=True),
