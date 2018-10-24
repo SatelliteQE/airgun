@@ -46,7 +46,11 @@ class SyncPlanEntity(BaseEntity):
         return filled_values
 
     def add_product(self, entity_name, products_list):
-        """Add product to sync plan"""
+        """Add product to sync plan
+
+        :param str entity_name: sync plan name
+        :param products_list: either one or list of products
+        """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.products.resources.add(products_list)
         assert view.flash.is_displayed
