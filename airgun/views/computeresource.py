@@ -59,11 +59,15 @@ class ResourceProviderCreateView(BaseLoggedInView):
         http_proxy = TextInput(id='compute_resource_http_proxy_id')
         access_key = TextInput(id='compute_resource_user')
         secret_key = TextInput(id='compute_resource_password')
-        load_regions = Text("//*[contains(@id,'test_connection_button')]")
-        region = FilteredDropdown(id='s2id_compute_resource_region')
 
-        def after_fill(self, was_change):
-            self.load_regions.click()
+        @View.nested
+        class region(View):
+            load_regions = Text(
+                "//a[contains(@id,'test_connection_button')]")
+            value = FilteredDropdown(id='s2id_compute_resource_region')
+
+            def before_fill(self, values=None):
+                self.load_regions.click()
 
     @provider_content.register('Google')
     class GCEProviderForm(View):
@@ -123,6 +127,14 @@ class ResourceProviderCreateView(BaseLoggedInView):
 
             def before_fill(self, values=None):
                 self.load_datacenters.click()
+
+    @View.nested
+    class locations(SatTab):
+        resources = MultiSelect(id='ms-compute_resource_location_ids')
+
+    @View.nested
+    class organizations(SatTab):
+        resources = MultiSelect(id='ms-compute_resource_organization_ids')
 
     @property
     def is_displayed(self):
