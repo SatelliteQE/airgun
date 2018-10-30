@@ -28,6 +28,7 @@ from airgun.entities.domain import DomainEntity
 from airgun.entities.errata import ErrataEntity
 from airgun.entities.host import HostEntity
 from airgun.entities.hostcollection import HostCollectionEntity
+from airgun.entities.hostgroup import HostGroupEntity
 from airgun.entities.job_invocation import JobInvocationEntity
 from airgun.entities.job_template import JobTemplateEntity
 from airgun.entities.filter import FilterEntity
@@ -323,6 +324,11 @@ class Session(object):
     def hostcollection(self):
         """Instance of Host Collection entity."""
         return HostCollectionEntity(self.browser)
+
+    @cached_property
+    def hostgroup(self):
+        """Instance of Host Group entity."""
+        return HostGroupEntity(self.browser)
 
     @cached_property
     def insightsaction(self):
