@@ -377,7 +377,7 @@ class SearchableViewMixin(WTMixin):
         :return: list of dicts representing table rows
         :rtype: list
         """
-        if not hasattr(self, 'table'):
+        if not hasattr(self.__class__, 'table'):
             raise AttributeError(
                 'Class {} does not have attribute "table". SearchableViewMixin'
                 ' only works with views, which have table for results. Please '
