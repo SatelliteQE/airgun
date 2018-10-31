@@ -91,7 +91,9 @@ class DiscoveredHostsEntity(BaseEntity):
             discovered_host_edit_view = DiscoveredHostEditProvisioningView(
                 self.browser)
             discovered_host_edit_view.fill(host_values)
-            discovered_host_edit_view.submit.click()
+            self.browser.click(
+                discovered_host_edit_view.submit, ignore_ajax=True)
+            self.browser.plugin.ensure_page_safe(timeout='120s')
         view.flash.assert_no_error()
         view.flash.dismiss()
 
