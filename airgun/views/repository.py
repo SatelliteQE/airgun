@@ -123,6 +123,28 @@ class RepositoryCreateView(BaseLoggedInView):
         )
 
 
+class AuthorizationEntry(EditableEntry):
+
+    clear_button = Text(
+        ".//span[contains(@ng-hide, 'editMode')]/i[@ng-show='deletable']")
+
+    @View.nested
+    class edit_field(View):
+        username = TextInput(id='upstream_username')
+        password = TextInput(id='upstream_password')
+
+    def fill(self, value):
+        """Handle the clear functionality, if username is supplied with None or empty
+        value this will clear the credentials.
+        """
+        if (isinstance(value, dict) and 'username' in value
+                and not value['username']):
+            if self.clear_button.is_displayed:
+                self.clear_button.click()
+                return
+        return super().fill(value)
+
+
 class RepositoryEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
@@ -142,8 +164,8 @@ class RepositoryEditView(BaseLoggedInView):
         upstream_repo_name = EditableEntry(name='Upstream Repository')
         repo_name = ReadOnlyEntry(name='Name')
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
-        upstream_username = EditableEntry(name='Upstream Username')
-        upstream_password = EditableEntry(name='Upstream Password')
+        upstream_authorization = AuthorizationEntry(
+            name='Upstream Authorization')
         ignore_global_proxy = EditableEntryCheckbox(
             name='Ignore Global HTTP Proxy')
         publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
@@ -153,8 +175,8 @@ class RepositoryEditView(BaseLoggedInView):
         arch_restrict = EditableEntrySelect(name='Restrict to architecture')
         upstream_url = EditableEntry(name='Upstream URL')
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
-        upstream_username = EditableEntry(name='Upstream Username')
-        upstream_password = EditableEntry(name='Upstream Password')
+        upstream_authorization = AuthorizationEntry(
+            name='Upstream Authorization')
         metadata_type = EditableEntrySelect(name='Yum Metadata Checksum')
         mirror_on_sync = EditableEntryCheckbox(name='Mirror on Sync')
         ignore_global_proxy = EditableEntryCheckbox(
@@ -169,8 +191,8 @@ class RepositoryEditView(BaseLoggedInView):
     class PuppetRepository(View):
         upstream_url = EditableEntry(name='Upstream URL')
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
-        upstream_username = EditableEntry(name='Upstream Username')
-        upstream_password = EditableEntry(name='Upstream Password')
+        upstream_authorization = AuthorizationEntry(
+            name='Upstream Authorization')
         mirror_on_sync = EditableEntryCheckbox(name='Mirror on Sync')
         ignore_global_proxy = EditableEntryCheckbox(
             name='Ignore Global HTTP Proxy')
@@ -179,6 +201,17 @@ class RepositoryEditView(BaseLoggedInView):
         published_at = ReadOnlyEntry(name='Published At')
         upload_content = FileInput(name='content[]')
         upload = Text("//button[contains(., 'Upload')]")
+
+    @repo_content.register('ostree')
+    class OstreeRepository(View):
+        upstream_url = EditableEntry(name='Upstream URL')
+        verify_ssl = EditableEntryCheckbox(name='Verify SSL')
+        upstream_authorization = AuthorizationEntry(
+            name='Upstream Authorization')
+        ignore_global_proxy = EditableEntryCheckbox(
+            name='Ignore Global HTTP Proxy')
+        publish_via_https = ReadOnlyEntry(name='Publish via HTTPS')
+        published_at = ReadOnlyEntry(name='Published At')
 
     @property
     def is_displayed(self):
