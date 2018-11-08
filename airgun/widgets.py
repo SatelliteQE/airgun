@@ -590,7 +590,7 @@ class SatFlashMessage(FlashMessage):
 
     @property
     def text(self):
-        return self.browser.text('./span/span', parent=self)
+        return self.browser.text('./span[text()]', parent=self)
 
 
 class ValidationErrors(Widget):
