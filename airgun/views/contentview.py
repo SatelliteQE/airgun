@@ -126,7 +126,7 @@ class ContentViewEditView(BaseLoggedInView):
         label = ReadOnlyEntry(name='Label')
         description = EditableEntry(name='Description')
         composite = ReadOnlyEntry(name='Composite?')
-        force_puppet = EditableEntryCheckbox(name='Force Puppet')
+        force_puppet = EditableEntryCheckbox(name='Force Puppet Environment')
 
     @View.nested
     class versions(SatTab):
@@ -193,6 +193,12 @@ class ContentViewEditView(BaseLoggedInView):
         add_new_module = Text(
             './/button[@ui-sref="content-view.puppet-modules.names"]')
         table = SatTable('.//table')
+
+    @View.nested
+    class ostree_content(SatTab):
+        TAB_NAME = 'OSTree Content'
+
+        resources = View.nested(AddRemoveResourcesView)
 
 
 class AddNewPuppetModuleView(BaseLoggedInView, SearchableViewMixin):

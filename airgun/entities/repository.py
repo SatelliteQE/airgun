@@ -1,3 +1,5 @@
+from wait_for import wait_for
+
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.entities.product import ProductEntity
@@ -38,6 +40,21 @@ class RepositoryEntity(BaseEntity):
             self, 'Edit', product_name=product_name, entity_name=entity_name)
         view.fill(values)
         view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def upload_content(self, product_name, entity_name, file_name):
+        """Update product repository values"""
+        view = self.navigate_to(
+            self, 'Edit', product_name=product_name, entity_name=entity_name)
+        view.repo_content.upload_content.fill(file_name)
+        view.repo_content.upload.click()
+        wait_for(
+            lambda: view.flash.assert_message(
+                "Successfully uploaded content: {}".format(file_name.rpartition('/')[-1])),
+            handle_exception=True,
+            timeout=120,
+            logger=view.flash.logger
+        )
         view.flash.dismiss()
 
     def delete(self, product_name, entity_name):

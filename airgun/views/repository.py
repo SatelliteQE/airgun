@@ -1,6 +1,7 @@
 from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
+    FileInput,
     Select,
     Text,
     TextInput,
@@ -161,6 +162,8 @@ class RepositoryEditView(BaseLoggedInView):
         publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
         gpg_key = EditableEntrySelect(name='GPG Key')
         download_policy = EditableEntrySelect(name='Download Policy')
+        upload_content = FileInput(name='content[]')
+        upload = Text("//button[contains(., 'Upload')]")
 
     @repo_content.register('puppet')
     class PuppetRepository(View):
@@ -174,6 +177,8 @@ class RepositoryEditView(BaseLoggedInView):
         publish_via_https = ReadOnlyEntry(name='Publish via HTTPS')
         publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
         published_at = ReadOnlyEntry(name='Published At')
+        upload_content = FileInput(name='content[]')
+        upload = Text("//button[contains(., 'Upload')]")
 
     @property
     def is_displayed(self):

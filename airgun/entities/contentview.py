@@ -102,6 +102,20 @@ class ContentViewEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def add_ostree_repo(self, entity_name, repo_name):
+        """Add OSTree repository to content view"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.ostree_content.resources.add(repo_name)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def remove_ostree_repo(self, entity_name, repo_name):
+        """Remove OSTree repository from content view"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.ostree_content.resources.remove(repo_name)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
     def publish(self, entity_name, values=None):
         """Publishes to create new version of CV and promotes the contents to
         'Library' environment.
@@ -201,7 +215,9 @@ class ContentViewEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.versions.search(version_name)
+        result = view.versions.search(version_name)
+        if completely and not result:
+            return
         view.versions.table.row(
             version=version_name)['Status'].widget.wait_for_result()
 
