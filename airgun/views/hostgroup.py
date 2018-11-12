@@ -1,4 +1,4 @@
-from widgetastic.widget import (Text, TextInput, View)
+from widgetastic.widget import ConditionalSwitchableView, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
@@ -87,7 +87,16 @@ class HostGroupCreateView(BaseLoggedInView):
         operating_system = FilteredDropdown(id='hostgroup_operatingsystem')
         media_type = RadioGroup(
             locator="//div[label[contains(., 'Media Selection')]]")
-        media = FilteredDropdown(id='hostgroup_medium')
+        media_content = ConditionalSwitchableView(reference='media_type')
+
+        @media_content.register('All Media')
+        class TypeMedium(View):
+            media = FilteredDropdown(id='hostgroup_medium')
+
+        @media_content.register('Synced Content')
+        class TypeSynced(View):
+            synced_content = FilteredDropdown(id='host_group_kickstart_repository')
+
         ptable = FilteredDropdown(id='hostgroup_ptable')
         root_password = TextInput(id='hostgroup_root_pass')
 

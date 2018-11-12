@@ -1468,7 +1468,13 @@ class ProgressBar(GenericLocatorWidget):
         :param delay: float value for delay between attempts in seconds
         """
         wait_for(
-            lambda: self.is_completed is True,
+            lambda: self.is_displayed,
+            timeout=30,
+            delay=delay,
+            logger=self.logger
+        )
+        wait_for(
+            lambda: self.is_completed is True or not self.is_displayed,
             timeout=timeout,
             delay=delay,
             logger=self.logger
