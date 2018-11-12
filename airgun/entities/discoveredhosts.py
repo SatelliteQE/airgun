@@ -54,6 +54,10 @@ class DiscoveredHostsEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
+    def delete(self, entity_name):
+        """Delete discovered host with name entity_name"""
+        return self.apply_action('Delete', entity_name)
+
     def read(self, entity_name):
         """Return a dict with properties of discovered host."""
         view = self.navigate_to(self, 'Details', entity_name=entity_name)

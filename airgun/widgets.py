@@ -489,11 +489,11 @@ class ActionsDropdown(GenericLocatorWidget):
 
 class Search(Widget):
     search_field = TextInput(locator=(
-        ".//input[@id='search' or @placeholder='Filter...' or "
+        ".//input[@id='search' or contains(@placeholder, 'Filter') or "
         "@ng-model='table.searchTerm' or contains(@ng-model, 'Filter')]"))
     search_button = Text(
-        ".//button[contains(@type,'submit') or "
-        "@ng-click='table.search(table.searchTerm)']"
+        ".//button[contains(@type,'submit') or contains(@class, 'search-btn') "
+        "or @ng-click='table.search(table.searchTerm)']"
     )
     actions = ActionsDropdown(".//span[contains(@class, 'input-group-btn')]")
 
