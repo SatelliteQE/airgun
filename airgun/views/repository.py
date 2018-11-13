@@ -134,14 +134,10 @@ class AuthorizationEntry(EditableEntry):
         password = TextInput(id='upstream_password')
 
     def fill(self, value):
-        """Handle the clear functionality, if username is supplied with None or empty
-        value this will clear the credentials.
-        """
-        if (isinstance(value, dict) and 'username' in value
-                and not value['username']):
-            if self.clear_button.is_displayed:
-                self.clear_button.click()
-                return
+        """Handle the clear functionality, if bool(value) is False clear the credentials."""
+        if not value and self.clear_button.is_displayed:
+            self.clear_button.click()
+            return
         return super().fill(value)
 
 

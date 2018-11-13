@@ -447,7 +447,7 @@ class Session(object):
         return ProvisioningTemplateEntity(self.browser)
 
     @cached_property
-    def redhat_repository(self):
+    def redhatrepository(self):
         return RedHatRepositoryEntity(self.browser)
 
     @cached_property

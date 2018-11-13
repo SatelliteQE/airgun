@@ -11,14 +11,12 @@ from airgun.widgets import (
     ActionsDropdown,
 )
 
-SPINNER_LOCATOR = ".//div[contains(@class, 'spinner')]"
-
 
 def _wait_for_spinner(widget):
     """Wait for any spinner to disappear from widget"""
     wait_for(
         lambda: widget.is_displayed and not widget.browser.elements(
-            SPINNER_LOCATOR, parent=widget),
+            ".//div[contains(@class, 'spinner')]", parent=widget),
         timeout=60,
         delay=1,
         logger=widget.logger
@@ -121,7 +119,7 @@ class AvailableRepositorySetWidget(GenericLocatorWidget):
 
     def fill(self, value):
         """Fill this widget with value, this will enable the repository name in this repository set
-            if value is True."""
+        if value is True."""
         if value is True:
             self.enable(value)
 

@@ -66,6 +66,13 @@ class RepositoryEntity(BaseEntity):
         view.dialog.confirm()
         view.flash.assert_no_error()
         view.flash.dismiss()
+        result = wait_for(
+            lambda: view.search('name = "{0}"'.format(entity_name)) == [],
+            timeout=30,
+            delay=2,
+            logger=view.logger
+        )
+        return result.out
 
     def synchronize(self, product_name, entity_name):
         """Synchronize repository"""
