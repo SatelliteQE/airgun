@@ -536,7 +536,7 @@ class AirgunBrowserPlugin(DefaultPlugin):
          }
         }
         function spinnerInvisible() {
-         spinner = document.getElementById("turbolinks-progress")
+         spinner = document.getElementById("vertical-spinner")
          return (spinner === null) ? true : spinner.style["display"] == "none"
         }
         function reactLoadingInvisible() {
