@@ -448,6 +448,7 @@ class Session(object):
 
     @cached_property
     def redhatrepository(self):
+        """Instance of Red Hat Repository entity."""
         return RedHatRepositoryEntity(self.browser)
 
     @cached_property
