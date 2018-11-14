@@ -21,7 +21,7 @@ class RedHatRepositoryEntity(BaseEntity):
         """Read RH Repositories values.
 
         :param entity_name: The repository name
-        :param category: The repository category to search, options: Available, Enabled, Both
+        :param category: The repository category to search, options: Available, Enabled
         """
         view = self.navigate_to(self, 'All')
         entity_data = view.search('name = "{0}"'.format(entity_name), category=category)[0]

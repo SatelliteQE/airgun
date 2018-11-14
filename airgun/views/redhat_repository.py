@@ -44,11 +44,6 @@ class AvailableRepositoryItem(GenericLocatorWidget):
         self.browser.click(self.ENABLE_BUTTON, parent=self)
         _wait_for_spinner(self.parent)
 
-    def fill(self, value):
-        """Fill this widget by enabling the repository if value is True"""
-        if value is True:
-            self.enable()
-
 
 class AvailableRepositorySetWidget(GenericLocatorWidget):
     """The widget representation of Available repository set item."""
@@ -117,12 +112,6 @@ class AvailableRepositorySetWidget(GenericLocatorWidget):
             raise ValueError(
                 'Repository "{0}" was not found in repository set "{1}"'.format(item, self.name))
 
-    def fill(self, value):
-        """Fill this widget with value, this will enable the repository name in this repository set
-        if value is True."""
-        if value is True:
-            self.enable(value)
-
 
 class EnabledRepositoryWidget(AvailableRepositorySetWidget):
     """The widget representation of Enabled repository item."""
@@ -133,11 +122,6 @@ class EnabledRepositoryWidget(AvailableRepositorySetWidget):
         """Disable this repository."""
         self.browser.click(self.DISABLE_BUTTON, parent=self)
         _wait_for_spinner(self.parent)
-
-    def fill(self, value):
-        """Fill this widget with value, this will disable this repository if value is False."""
-        if value is False:
-            self.disable()
 
 
 class RepositorySearchCategory(ActionsDropdown):
