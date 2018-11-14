@@ -46,6 +46,7 @@ from airgun.entities.partitiontable import PartitionTableEntity
 from airgun.entities.puppet_class import PuppetClassEntity
 from airgun.entities.puppet_environment import PuppetEnvironmentEntity
 from airgun.entities.product import ProductEntity
+from airgun.entities.redhat_repository import RedHatRepositoryEntity
 from airgun.entities.repository import RepositoryEntity
 from airgun.entities.rhai.action import ActionEntity
 from airgun.entities.rhai.inventory import InventoryHostEntity
@@ -444,6 +445,11 @@ class Session(object):
     def provisioningtemplate(self):
         """Instance of Provisioning Template entity."""
         return ProvisioningTemplateEntity(self.browser)
+
+    @cached_property
+    def redhatrepository(self):
+        """Instance of Red Hat Repository entity."""
+        return RedHatRepositoryEntity(self.browser)
 
     @cached_property
     def repository(self):
