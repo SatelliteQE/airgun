@@ -123,6 +123,7 @@ class ProductEditView(BaseLoggedInView):
         repos_count = ReadOnlyEntry(name='Number of Repositories')
         tasks_count = ReadOnlyEntry(name='Active Tasks')
         sync_plan = EditableEntrySelect(name='Sync Plan')
+        sync_state = ReadOnlyEntry(name='Sync State')
 
     @View.nested
     class repositories(SatTab):
