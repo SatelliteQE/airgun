@@ -1,3 +1,4 @@
+from wait_for import wait_for
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
@@ -6,6 +7,7 @@ from airgun.views.product import (
     ProductCreateView,
     ProductEditView,
     ProductRepoDiscoveryView,
+    ProductTaskDetailsView,
     ProductsTableView,
 )
 
@@ -25,6 +27,13 @@ class ProductEntity(BaseEntity):
         view.dialog.confirm()
         view.flash.assert_no_error()
         view.flash.dismiss()
+        view = self.navigate_to(self, 'All')
+        wait_for(
+            lambda: view.search('name = "{0}"'.format(entity_name)) == [],
+            timeout=30,
+            delay=2,
+            logger=view.logger
+        )
 
     def search(self, value):
         """Search for specific product"""
@@ -52,6 +61,14 @@ class ProductEntity(BaseEntity):
         view.create_repo.wait_repo_created()
         view.flash.assert_no_error()
         view.flash.dismiss()
+
+    def synchronize(self, entity_name):
+        """Synchronize product"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.actions.fill('Sync Now')
+        view = ProductTaskDetailsView(view.browser)
+        view.progressbar.wait_for_result()
+        return view.read()
 
 
 @navigator.register(ProductEntity, 'All')

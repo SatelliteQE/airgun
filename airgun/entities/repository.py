@@ -43,7 +43,7 @@ class RepositoryEntity(BaseEntity):
         view.flash.dismiss()
 
     def upload_content(self, product_name, entity_name, file_name):
-        """Update product repository values"""
+        """Upload a new content to existing repository"""
         view = self.navigate_to(
             self, 'Edit', product_name=product_name, entity_name=entity_name)
         view.repo_content.upload_content.fill(file_name)
