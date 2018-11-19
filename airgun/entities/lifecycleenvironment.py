@@ -46,12 +46,20 @@ class LCEEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.read()
 
-    def update(self, values, entity_name='Library'):
+    def update(self, entity_name='Library', values=None):
+        """Update existing lifecycle environment values"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         filled_values = view.fill(values)
         view.flash.assert_no_error()
         view.flash.dismiss()
         return filled_values
+
+    def delete(self, entity_name):
+        """Deletes existing lifecycle environment entity"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.remove.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def search_package(self, entity_name, package_name, cv_name=None,
                        repo_name=None):
