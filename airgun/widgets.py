@@ -360,7 +360,7 @@ class MultiSelect(GenericLocatorWidget):
         id='ms-operatingsystem_architecture_ids'
 
     """
-    filter = TextInput(locator=".//input[@class='ms-filter']")
+    filter = TextInput(locator=".//input[contains(@class,'ms-filter')]")
     unassigned = ItemsList("./div[@class='ms-selectable']/ul")
     assigned = ItemsList("./div[@class='ms-selection']/ul")
 
