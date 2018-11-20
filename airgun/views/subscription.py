@@ -21,6 +21,16 @@ from airgun.widgets import (
 )
 
 
+def wait_for_spinner(widget):
+    """Wait for any spinner to disappear"""
+    wait_for(
+        lambda: not widget.browser.elements("//div[contains(@class, 'spinner')]"),
+        timeout=60,
+        delay=1,
+        logger=widget.logger
+    )
+
+
 # Search field and button on Subscriptions page uses different locators,
 # so subclass it and use it in our custom SearchableViewMixin
 class SubscriptionSearch(Search):
@@ -52,7 +62,7 @@ class SatSubscriptionsViewTable(SatTable):
                 )
 
 
-class EnabledProductsItemsList(GenericLocatorWidget):
+class ProductContentItemsList(GenericLocatorWidget):
     """Models list of enabled products (Subscriptions -> any ->
     Enabled products)
     Main reason is that page is constructed when tab is activated. There is
@@ -103,6 +113,12 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
     def is_displayed(self):
         return self.browser.wait_for_element(
             'div#subscriptions-table', timeout=10, exception=False) is not None
+
+    def search(self, query):
+        """Customized search to make sure that the table spinner is hidden, after search"""
+        self.searchbox.search(query)
+        wait_for_spinner(self)
+        return self.table.read()
 
 
 class ManageManifestView(BaseLoggedInView):
@@ -186,14 +202,21 @@ class SubscriptionDetailsView(BaseLoggedInView):
     @View.nested
     class details(SatTab):
 
+        associations = SatTable(
+            locator=".//div[h2[text()='Associations']]/table",
+            column_widgets={
+                'Quantity': Text('.//a'),
+            }
+        )
+
         provided_products = ItemsListReadOnly(
                 (".//h2[text()='Provided Products']/following::ul"))
 
     @View.nested
-    class enabled_products(SatTab):
-        TAB_NAME = "Enabled Products"
+    class product_content(SatTab):
+        TAB_NAME = "Product Content"
 
-        enabled_products_list = EnabledProductsItemsList(".")
+        product_content_list = ProductContentItemsList(".")
 
     @property
     def is_displayed(self):

@@ -93,6 +93,17 @@ class ContentHostEntity(BaseEntity):
         view.export.click()
         return self.browser.save_downloaded_file()
 
+    def add_subscription(self, entity_name, subscription_name):
+        """Add a subscription to content host.
+
+        :param str entity_name: the content hosts name.
+        :param str subscription_name: The subscription name to add to content host.
+        """
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.subscriptions.resources.add(subscription_name)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
 
 @navigator.register(ContentHostEntity, 'All')
 class ShowAllContentHosts(NavigateStep):
