@@ -5,11 +5,12 @@ from widgetastic.widget import (
     TextInput,
     View,
 )
-from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import BreadCrumb, Button
 
 from airgun.views.common import BaseLoggedInView, SatTab
 from airgun.widgets import (
     EditableEntry,
+    EditableEntryCheckbox,
     ReadOnlyEntry,
     SatSelect,
     SatTable,
@@ -107,6 +108,7 @@ class LCECreateView(BaseLoggedInView):
 
 class LCEEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    remove = Button('Remove Environment')
 
     @property
     def is_displayed(self):
@@ -123,6 +125,8 @@ class LCEEditView(BaseLoggedInView):
         name = EditableEntry(name='Name')
         label = ReadOnlyEntry(name='Label')
         description = EditableEntry(name='Description')
+        unauthenticated_pull = EditableEntryCheckbox(name='Unauthenticated Pull')
+        registry_name_pattern = EditableEntry(name='Registry Name Pattern')
 
     @View.nested
     class packages(SatTab):
