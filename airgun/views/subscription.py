@@ -52,7 +52,7 @@ class SatSubscriptionsViewTable(SatTable):
                 )
 
 
-class EnabledProductsItemsList(GenericLocatorWidget):
+class ProductContentItemsList(GenericLocatorWidget):
     """Models list of enabled products (Subscriptions -> any ->
     Enabled products)
     Main reason is that page is constructed when tab is activated. There is
@@ -190,10 +190,10 @@ class SubscriptionDetailsView(BaseLoggedInView):
                 (".//h2[text()='Provided Products']/following::ul"))
 
     @View.nested
-    class enabled_products(SatTab):
-        TAB_NAME = "Enabled Products"
+    class product_content(SatTab):
+        TAB_NAME = "Product Content"
 
-        enabled_products_list = EnabledProductsItemsList(".")
+        product_content_list = ProductContentItemsList(".")
 
     @property
     def is_displayed(self):
