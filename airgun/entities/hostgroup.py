@@ -58,7 +58,7 @@ class ShowAllHostGroups(NavigateStep):
     VIEW = HostGroupsView
 
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Host Groups')
+        self.view.menu.select('Configure', 'Host Group')
 
 
 @navigator.register(HostGroupEntity, 'New')
