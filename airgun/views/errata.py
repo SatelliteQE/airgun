@@ -50,7 +50,7 @@ class ErratumView(BaseLoggedInView):
         if repo is not None:
             self.repo_filter.fill(repo)
 
-        if re.search(r'\w{4}-\d{4}:\d{4}', query):
+        if re.search(r'\w{3,4}[:-]\d{4}[-:]\d{4}', query):
             query = 'id = {}'.format(query)
         self.searchbox.search(query)
 
