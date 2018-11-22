@@ -118,6 +118,6 @@ class ErrataDetails(NavigateStep):
             repo=repo
         )
         row_filter = {'title': entity_name}
-        if re.search(r'\w{4}-\d{4}:\d{4}', entity_name):
+        if re.search(r'\w{3,4}[:-]\d{4}[-:]\d{4}', entity_name):
             row_filter = {'errata_id': entity_name}
         self.parent.table.row(**row_filter)['Errata ID'].widget.click()
