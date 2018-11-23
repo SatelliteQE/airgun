@@ -21,16 +21,6 @@ from airgun.widgets import (
 )
 
 
-def wait_for_spinner(widget):
-    """Wait for any spinner to disappear"""
-    wait_for(
-        lambda: not widget.browser.elements("//div[contains(@class, 'spinner')]"),
-        timeout=60,
-        delay=1,
-        logger=widget.logger
-    )
-
-
 # Search field and button on Subscriptions page uses different locators,
 # so subclass it and use it in our custom SearchableViewMixin
 class SubscriptionSearch(Search):
@@ -116,8 +106,12 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
 
     def search(self, query):
         """Customized search to make sure that the table spinner is hidden, after search"""
+        # the search box is always, but in case of no manifest subscription the welcome message is
+        # always displayed.
+        if self.welcome_message.is_displayed:
+            return None
         self.searchbox.search(query)
-        wait_for_spinner(self)
+        self.browser.plugin.ensure_page_safe(wait_for_spinner=True)
         return self.table.read()
 
 

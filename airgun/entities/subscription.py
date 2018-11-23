@@ -9,7 +9,6 @@ from airgun.views.subscription import (
     ManageManifestView,
     SubscriptionDetailsView,
     SubscriptionListView,
-    wait_for_spinner,
 )
 
 
@@ -78,6 +77,7 @@ class SubscriptionEntity(BaseEntity):
         view = self.navigate_to(self, 'Delete Manifest Confirmation')
         view.wait_animation_end()
         delete_message = view.message.read()
+        # To not break further navigation, we need to close all the opened modal dialogs views
         view.cancel_button.click()
         manage_view = ManageManifestView(self.browser)
         if manage_view.is_displayed:
@@ -140,8 +140,22 @@ class SubscriptionEntity(BaseEntity):
                 'Delete Upstream Subscription', has_manifest=True)
 
 
+class SubscriptionNavigationStep(NavigateStep):
+    """To ensure that we reached the destination, some targets need extra post navigation tasks"""
+
+    def post_navigate(self, _tries, *args, **kwargs):
+        self.view.browser.plugin.ensure_page_safe(wait_for_spinner=True)
+        wait_for(
+            lambda: self.am_i_here(*args, **kwargs),
+            timeout=30,
+            delay=1,
+            handle_exception=True,
+            logger=self.view.logger
+        )
+
+
 @navigator.register(SubscriptionEntity, 'All')
-class SubscriptionList(NavigateStep):
+class SubscriptionList(SubscriptionNavigationStep):
     """Navigate to Subscriptions main page"""
     VIEW = SubscriptionListView
 
@@ -154,15 +168,6 @@ class SubscriptionList(NavigateStep):
 
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Subscriptions')
-        wait_for_spinner(self.view)
-        self.parent.browser.plugin.ensure_page_safe()
-        wait_for(
-            lambda: self.am_i_here(*args, **kwargs),
-            timeout=30,
-            delay=1,
-            handle_exception=True,
-            logger=self.view.logger
-        )
 
 
 @navigator.register(SubscriptionEntity, 'Manage Manifest')
@@ -211,7 +216,7 @@ class AddSubscription(NavigateStep):
 
 
 @navigator.register(SubscriptionEntity, 'Details')
-class SubscriptionDetails(NavigateStep):
+class SubscriptionDetails(SubscriptionNavigationStep):
     """Navigate to Subscriptions' Details page
 
     Args:
@@ -223,11 +228,6 @@ class SubscriptionDetails(NavigateStep):
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
 
-    def am_i_here(self, *args, **kwargs):
-        subscription_name = kwargs.get('entity_name')
-        return (self.view.is_displayed and
-                self.view.breadcrumb.read() == subscription_name)
-
     def step(self, *args, **kwargs):
         subscription_name = kwargs.get('entity_name')
         virt_who = kwargs.get('virt_who')
@@ -236,12 +236,3 @@ class SubscriptionDetails(NavigateStep):
             search_string = 'virt_who = true and {0}'.format(search_string)
         self.parent.search(search_string)
         self.parent.table.row(name=subscription_name)['Name'].widget.click()
-        wait_for_spinner(self.view)
-        self.parent.browser.plugin.ensure_page_safe()
-        wait_for(
-            lambda: self.am_i_here(*args, **kwargs),
-            timeout=30,
-            delay=1,
-            handle_exception=True,
-            logger=self.view.logger
-        )
