@@ -543,44 +543,32 @@ class AirgunBrowserPlugin(DefaultPlugin):
          react = document.querySelector("#reactRoot .loading-state")
          return react === null
         }
+        function anySpinnerInvisible() {
+         spinners = Array.prototype.slice.call(
+          document.querySelectorAll('.spinner')
+          ).filter(function (item,index) {
+            return item.offsetWidth > 0 || item.offsetHeight > 0
+             || item.getClientRects().length > 0;
+           }
+          );
+         return spinners.length === 0
+        }
         return {
             jquery: jqueryInactive(),
             ajax: ajaxInactive(),
             angular: angularNoRequests(),
             spinner: spinnerInvisible(),
+            any_spinner: anySpinnerInvisible(),
             react: reactLoadingInvisible(),
             document: document.readyState == "complete",
         }
         '''
 
-    def wait_for_spinner(self, parent=None, timeout=60, check_safe=True, check_visibility=True):
-        """Wait for any spinner to disappear
-
-        :param parent: (optional) The spinner parent widget or any valid locator.
-        :param timeout: How much seconds we should wait before giving up.
-        :param check_safe: whether to ensure page is safe.
-        :param check_visibility: If ``True`` it will filter out elements that are not visible.
-        """
-        wait_for(
-            lambda: not self.browser.elements(
-                "//div[contains(@class, 'spinner')]",
-                parent=parent,
-                check_safe=check_safe,
-                check_visibility=check_visibility
-            ),
-            timeout=timeout,
-            delay=1,
-            logger=self.browser.logger
-        )
-
-    def ensure_page_safe(self, timeout='30s', wait_for_spinner=False):
-        """Ensures page is fully loaded. Optionally we can wait for any spinners to be hidden.
+    def ensure_page_safe(self, timeout='30s'):
+        """Ensures page is fully loaded.
         Default timeout was 10s, this changes it to 30s.
         """
         super().ensure_page_safe(timeout)
-        if wait_for_spinner:
-            # avoid check safe as will recall this function again and again
-            self.wait_for_spinner(check_safe=False)
 
     def before_click(self, element, locator=None):
         """Invoked before clicking on an element. Ensure page is fully loaded

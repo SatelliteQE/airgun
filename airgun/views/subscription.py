@@ -105,13 +105,12 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
             'div#subscriptions-table', timeout=10, exception=False) is not None
 
     def search(self, query):
-        """Customized search to make sure that the table spinner is hidden, after search"""
-        # the search box is always, but in case of no manifest subscription the welcome message is
-        # always displayed.
+        """Customized search"""
+        # The search box is always displayed, but in case of no manifest subscription the
+        # welcome message is always displayed and there is no table element.
         if self.welcome_message.is_displayed:
             return None
         self.searchbox.search(query)
-        self.browser.plugin.ensure_page_safe(wait_for_spinner=True)
         return self.table.read()
 
 

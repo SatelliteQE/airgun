@@ -144,7 +144,6 @@ class SubscriptionNavigationStep(NavigateStep):
     """To ensure that we reached the destination, some targets need extra post navigation tasks"""
 
     def post_navigate(self, _tries, *args, **kwargs):
-        self.view.browser.plugin.ensure_page_safe(wait_for_spinner=True)
         wait_for(
             lambda: self.am_i_here(*args, **kwargs),
             timeout=30,
