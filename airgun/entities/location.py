@@ -84,10 +84,9 @@ class SelectLocationContext(NavigateStep):
 
     def am_i_here(self, *args, **kwargs):
         loc_name = kwargs.get('loc_name')
-        current_loc = self.view.taxonomies.current_loc()
         if len(loc_name) > 30:
             loc_name = loc_name[:27] + '...'
-        return current_loc == loc_name
+        return loc_name == self.view.taxonomies.current_loc
 
     def step(self, *args, **kwargs):
         loc_name = kwargs.get('loc_name')

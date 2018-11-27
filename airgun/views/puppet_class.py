@@ -35,7 +35,7 @@ class PuppetClassDetailsView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Puppetclasses'
-            and self.breadcrumb.read().starts_with('Edit Puppet Class ')
+            and self.breadcrumb.read().startswith('Edit Puppet Class ')
         )
 
     @View.nested

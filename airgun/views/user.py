@@ -33,7 +33,7 @@ class UserDetailsView(BaseLoggedInView):
         return (
                 breadcrumb_loaded
                 and self.breadcrumb.locations[0] == 'Users'
-                and self.breadcrumb.read().starts_with('Edit ')
+                and self.breadcrumb.read().startswith('Edit ')
         )
 
     @View.nested

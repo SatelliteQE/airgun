@@ -1,4 +1,5 @@
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -27,6 +28,13 @@ class OrganizationEntity(BaseEntity):
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
+        view = self.navigate_to(self, 'All')
+        wait_for(
+            lambda: not view.search(entity_name),
+            timeout=120,
+            delay=2,
+            logger=view.logger
+        )
 
     def read(self, entity_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
@@ -84,10 +92,9 @@ class SelectOrganizationContext(NavigateStep):
 
     def am_i_here(self, *args, **kwargs):
         org_name = kwargs.get('org_name')
-        current_org = self.view.taxonomies.current_org()
         if len(org_name) > 30:
             org_name = org_name[:27] + '...'
-        return current_org == org_name
+        return org_name == self.view.taxonomies.current_org
 
     def step(self, *args, **kwargs):
         org_name = kwargs.get('org_name')

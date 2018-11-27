@@ -89,5 +89,5 @@ class LDAPAuthenticationEditView(LDAPAuthenticationCreateView):
         return (
                 breadcrumb_loaded
                 and self.breadcrumb.locations[0] == 'Auth source ldaps'
-                and self.breadcrumb.read().starts_with('Edit LDAP-')
+                and self.breadcrumb.read().startswith('Edit LDAP-')
         )
