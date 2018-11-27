@@ -79,7 +79,7 @@ class OrganizationEditView(BaseLoggedInView):
         return (
                 breadcrumb_loaded
                 and self.breadcrumb.locations[0] == 'Organizations'
-                and self.breadcrumb.read().starts_with('Edit ')
+                and self.breadcrumb.read().startswith('Edit ')
         )
 
     @View.nested
