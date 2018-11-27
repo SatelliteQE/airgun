@@ -39,8 +39,7 @@ class SubscriptionEntity(BaseEntity):
                 handle_exception=True, timeout=10,
                 logger=view.logger
         )
-        # uncomment when BZ#1651981 is fixed
-        # view.flash.assert_no_error()
+        view.flash.assert_no_error()
         view.flash.dismiss()
 
     @property
