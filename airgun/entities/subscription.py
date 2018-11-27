@@ -13,7 +13,7 @@ from airgun.views.subscription import (
 
 
 class SubscriptionEntity(BaseEntity):
-    def _wait_for_process_to_finish(self, name, has_manifest=False):
+    def _wait_for_process_to_finish(self, name, has_manifest=False, timeout=600):
         """Helper ensuring that task (upload / delete manifest / subscription)
         has finished. Run after action invoking task to leave Satellite
         in usable state.
@@ -26,12 +26,12 @@ class SubscriptionEntity(BaseEntity):
         wait_for(
                 lambda: view.flash.assert_message(
                         "Task {} completed".format(name), partial=True),
-                handle_exception=True, timeout=60*10,
+                handle_exception=True, timeout=timeout,
                 logger=view.flash.logger
         )
         wait_for(
                 lambda: not view.progressbar.is_displayed,
-                handle_exception=True, timeout=60*10,
+                handle_exception=True, timeout=timeout,
                 logger=view.progressbar.logger
         )
         wait_for(
@@ -69,7 +69,10 @@ class SubscriptionEntity(BaseEntity):
         view.manifest.refresh_button.click()
         org_name = view.taxonomies.current_org
         self._wait_for_process_to_finish(
-            'Refresh Manifest organization \'{}\''.format(org_name), has_manifest=True)
+            'Refresh Manifest organization \'{}\''.format(org_name),
+            has_manifest=True,
+            timeout=1200
+        )
 
     def delete_manifest(self):
         """Delete manifest from current organization"""
