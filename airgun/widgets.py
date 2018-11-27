@@ -676,6 +676,7 @@ class ContextSelector(Widget):
         )
         self.browser.plugin.ensure_page_safe()
 
+    @property
     def current_org(self):
         return self.browser.text(self.CURRENT_ORG)
 
@@ -691,6 +692,7 @@ class ContextSelector(Widget):
         )
         self.browser.plugin.ensure_page_safe()
 
+    @property
     def current_loc(self):
         return self.browser.text(self.CURRENT_LOC)
 

@@ -1,4 +1,5 @@
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -27,6 +28,13 @@ class OrganizationEntity(BaseEntity):
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
+        view = self.navigate_to(self, 'All')
+        wait_for(
+         lambda: not view.search(entity_name),
+         timeout=120,
+         delay=2,
+         logger=view.logger
+        )
 
     def read(self, entity_name):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)

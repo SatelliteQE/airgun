@@ -39,6 +39,8 @@ class SubscriptionEntity(BaseEntity):
                 handle_exception=True, timeout=10,
                 logger=view.logger
         )
+        # uncomment when BZ#1651981 is fixed
+        # view.flash.assert_no_error()
         view.flash.dismiss()
 
     @property
@@ -59,6 +61,15 @@ class SubscriptionEntity(BaseEntity):
             'manifest.manifest_file': manifest_file,
         })
         self._wait_for_process_to_finish('Import Manifest', has_manifest=True)
+
+    def refresh_manifest(self):
+        """Refresh manifest"""
+        view = self.navigate_to(self, 'Manage Manifest')
+        view.wait_animation_end()
+        view.manifest.refresh_button.click()
+        org_name = view.taxonomies.current_org
+        self._wait_for_process_to_finish(
+            'Refresh Manifest organization \'{}\''.format(org_name), has_manifest=True)
 
     def delete_manifest(self):
         """Delete manifest from current organization"""
