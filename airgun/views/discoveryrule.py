@@ -17,8 +17,6 @@ from airgun.widgets import (
     SatTable,
 )
 
-ACTION_COLUMN = 6
-
 
 class DiscoveryRulesView(BaseLoggedInView):
     title = Text("//h1[text()='Discovery Rules']")
@@ -27,7 +25,7 @@ class DiscoveryRulesView(BaseLoggedInView):
         './/table',
         column_widgets={
             'Name': Text('./a'),
-            ACTION_COLUMN: ActionsDropdown(
+            'Actions': ActionsDropdown(
                 "./div[contains(@class, 'btn-group')]"),
         }
     )

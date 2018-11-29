@@ -4,7 +4,6 @@ from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.discoveredhosts import DiscoveredHostsView
 from airgun.views.discoveryrule import (
-    ACTION_COLUMN,
     DiscoveryRuleCreateView,
     DiscoveryRuleEditView,
     DiscoveryRulesView,
@@ -33,7 +32,7 @@ class DiscoveryRuleEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'All')
         view.table.row(
-            name=entity_name)[ACTION_COLUMN].widget.fill('Delete')
+            name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -75,7 +74,7 @@ class DiscoveryRuleEntity(BaseEntity):
         :param str entity_name: name of the corresponding discovery rule
         """
         view = self.navigate_to(self, 'All')
-        view.table.row(name=entity_name)[ACTION_COLUMN].widget.fill('Enable')
+        view.table.row(name=entity_name)['Actions'].widget.fill('Enable')
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -86,7 +85,7 @@ class DiscoveryRuleEntity(BaseEntity):
         :param str entity_name: name of the corresponding discovery rule
         """
         view = self.navigate_to(self, 'All')
-        view.table.row(name=entity_name)[ACTION_COLUMN].widget.fill('Disable')
+        view.table.row(name=entity_name)['Actions'].widget.fill('Disable')
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -185,5 +184,5 @@ class DiscoveredRuleHosts(NavigateStep):
             raise ValueError('Please provide a valid action name.'
                              ' action_name: "{0}" not found.')
         entity_name = kwargs.get('entity_name')
-        self.parent.table.row(name=entity_name)[ACTION_COLUMN].widget.fill(
+        self.parent.table.row(name=entity_name)['Actions'].widget.fill(
             action_name)
