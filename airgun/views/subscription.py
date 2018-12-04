@@ -104,14 +104,13 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
         return self.browser.wait_for_element(
             'div#subscriptions-table', timeout=10, exception=False) is not None
 
-    def search(self, query):
-        """Customized search"""
+    def is_searchable(self):
+        """Customized is_searchable"""
         # The search box is always displayed, but in case of no manifest subscription the
         # welcome message is always displayed and there is no table element.
         if self.welcome_message.is_displayed:
-            return None
-        self.searchbox.search(query)
-        return self.table.read()
+            return False
+        return super().is_searchable()
 
 
 class ManageManifestView(BaseLoggedInView):
