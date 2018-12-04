@@ -52,7 +52,7 @@ class SatSubscriptionsViewTable(SatTable):
                 )
 
 
-class EnabledProductsItemsList(GenericLocatorWidget):
+class ProductContentItemsList(GenericLocatorWidget):
     """Models list of enabled products (Subscriptions -> any ->
     Enabled products)
     Main reason is that page is constructed when tab is activated. There is
@@ -103,6 +103,14 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
     def is_displayed(self):
         return self.browser.wait_for_element(
             'div#subscriptions-table', timeout=10, exception=False) is not None
+
+    def is_searchable(self):
+        """Customized is_searchable"""
+        # The search box is always displayed, but in case of no manifest subscription the
+        # welcome message is always displayed and there is no table element.
+        if self.welcome_message.is_displayed:
+            return False
+        return super().is_searchable()
 
 
 class ManageManifestView(BaseLoggedInView):
@@ -186,14 +194,21 @@ class SubscriptionDetailsView(BaseLoggedInView):
     @View.nested
     class details(SatTab):
 
+        associations = SatTable(
+            locator=".//div[h2[text()='Associations']]/table",
+            column_widgets={
+                'Quantity': Text('.//a'),
+            }
+        )
+
         provided_products = ItemsListReadOnly(
                 (".//h2[text()='Provided Products']/following::ul"))
 
     @View.nested
-    class enabled_products(SatTab):
-        TAB_NAME = "Enabled Products"
+    class product_content(SatTab):
+        TAB_NAME = "Product Content"
 
-        enabled_products_list = EnabledProductsItemsList(".")
+        product_content_list = ProductContentItemsList(".")
 
     @property
     def is_displayed(self):

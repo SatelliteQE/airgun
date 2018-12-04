@@ -24,12 +24,6 @@ class SubscriptionEntity(BaseEntity):
         """
         view = SubscriptionListView(self.browser, logger=self.browser.logger)
         wait_for(
-                lambda: view.flash.assert_message(
-                        "Task {} completed".format(name), partial=True),
-                handle_exception=True, timeout=timeout,
-                logger=view.flash.logger
-        )
-        wait_for(
                 lambda: not view.progressbar.is_displayed,
                 handle_exception=True, timeout=timeout,
                 logger=view.progressbar.logger
@@ -56,9 +50,7 @@ class SubscriptionEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'Manage Manifest')
         view.wait_animation_end()
-        view.fill({
-            'manifest.manifest_file': manifest_file,
-        })
+        view.manifest.manifest_file.fill(manifest_file)
         self._wait_for_process_to_finish('Import Manifest', has_manifest=True)
 
     def refresh_manifest(self):
@@ -84,7 +76,13 @@ class SubscriptionEntity(BaseEntity):
         """Read message displayed on 'Confirm delete manifest' dialog"""
         view = self.navigate_to(self, 'Delete Manifest Confirmation')
         view.wait_animation_end()
-        return view.message.read()
+        delete_message = view.message.read()
+        # To not break further navigation, we need to close all the opened modal dialogs views
+        view.cancel_button.click()
+        manage_view = ManageManifestView(self.browser)
+        if manage_view.is_displayed:
+            manage_view.close_button.click()
+        return delete_message
 
     def add(self, entity_name, quantity=1):
         """Attach new subscriptions
@@ -103,23 +101,24 @@ class SubscriptionEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def provided_products(self, entity_name):
-        """Read list of products provided by subscription
+    def provided_products(self, entity_name, virt_who=False):
+        """Read list of all products provided by subscription.
         :param entity_name: Name of subscription
+        :param virt_who: Whether this is a virt who client subscription.
         :return: List of strings with product names
         """
-        view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        view = self.navigate_to(self, 'Details', entity_name=entity_name, virt_who=virt_who)
         return view.details.provided_products.read()
 
-    def enabled_products(self, entity_name):
-        """Read list of enabled products provided by subscription
-        Catches possible exception to always return known data structure
+    def content_products(self, entity_name, virt_who=False):
+        """Read list of products provided by subscription for subscribed content hosts.
         :param entity_name: Name of subscription
+        :param virt_who: Whether this is a virt who client subscription.
         :return: List of strings with product names (may be empty)
         """
-        view = self.navigate_to(self, 'Details', entity_name=entity_name)
-        view.enabled_products.select()
-        return view.enabled_products.enabled_products_list.read()
+        view = self.navigate_to(self, 'Details', entity_name=entity_name, virt_who=virt_who)
+        view.product_content.select()
+        return view.product_content.product_content_list.read()
 
     def update(self, entity_name, values):
         """Stub method provided for consistency with other Airgun entities.
@@ -141,8 +140,21 @@ class SubscriptionEntity(BaseEntity):
                 'Delete Upstream Subscription', has_manifest=True)
 
 
+class SubscriptionNavigationStep(NavigateStep):
+    """To ensure that we reached the destination, some targets need extra post navigation tasks"""
+
+    def post_navigate(self, _tries, *args, **kwargs):
+        wait_for(
+            lambda: self.am_i_here(*args, **kwargs),
+            timeout=30,
+            delay=1,
+            handle_exception=True,
+            logger=self.view.logger
+        )
+
+
 @navigator.register(SubscriptionEntity, 'All')
-class SubscriptionList(NavigateStep):
+class SubscriptionList(SubscriptionNavigationStep):
     """Navigate to Subscriptions main page"""
     VIEW = SubscriptionListView
 
@@ -203,22 +215,23 @@ class AddSubscription(NavigateStep):
 
 
 @navigator.register(SubscriptionEntity, 'Details')
-class SubscriptionDetails(NavigateStep):
+class SubscriptionDetails(SubscriptionNavigationStep):
     """Navigate to Subscriptions' Details page
 
     Args:
         entity_name: name of Subscription
+        virt_who: Whether this is a virt who client subscription.
     """
     VIEW = SubscriptionDetailsView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
 
-    def am_i_here(self, *args, **kwargs):
-        subscription_name = kwargs.get('subscription')
-        return (self.view.is_displayed and
-                self.view.breadcrumb.read() == subscription_name)
-
     def step(self, *args, **kwargs):
         subscription_name = kwargs.get('entity_name')
+        virt_who = kwargs.get('virt_who')
+        search_string = 'name = "{0}"'.format(subscription_name)
+        if virt_who:
+            search_string = 'virt_who = true and {0}'.format(search_string)
+        self.parent.search(search_string)
         self.parent.table.row(name=subscription_name)['Name'].widget.click()
