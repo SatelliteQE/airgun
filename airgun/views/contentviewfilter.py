@@ -3,6 +3,7 @@ from widgetastic.widget import (
     ConditionalSwitchableView,
     ParametrizedLocator,
     Select,
+    Table,
     Text,
     TextInput,
     View,
@@ -203,7 +204,7 @@ class EditYumFilterView(BaseLoggedInView):
             )
             add_rule = Text(".//button[@ng-click='addRule()']")
             remove_rule = Text(".//button[@ng-click='removeRules(filter)']")
-            table = SatTable(
+            table = Table(
                 locator='//table',
                 column_widgets={
                     0: Checkbox(locator=".//input[@type='checkbox']"),

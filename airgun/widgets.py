@@ -1210,7 +1210,9 @@ class ACEEditor(Widget):
 
 
 class SatTable(Table):
-    """Satellite version of table. Main difference - in case it's empty, there
+    """DEPRECATED. Please use :class:`widgetastic.widget.Table` instead.
+
+    Satellite version of table. Main difference - in case it's empty, there
     might be just 1 column with appropriate message in table body or no columns
     and rows at all.
 
