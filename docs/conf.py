@@ -38,6 +38,7 @@ exclude_patterns = ['_build']
 nitpicky = True
 nitpick_ignore = [
     ('py:class', 'widgetastic.browser.Browser'),
+    ('py:class', 'widgetastic.widget.Table'),
     ('py:class', 'widgetastic.widget.View'),
     ('py:class', 'navmazing.Navigate'),
     ('py:class', 'navmazing.NavigateStep'),
