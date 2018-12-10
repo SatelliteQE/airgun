@@ -85,6 +85,7 @@ class OrganizationEditView(BaseLoggedInView):
     @View.nested
     class primary(SatVerticalTab):
         name = TextInput(id='organization_name')
+        label = TextInput(id='organization_label')
         default_system_sla = FilteredDropdown(id='organization_service_level')
         description = TextInput(id='organization_description')
 
