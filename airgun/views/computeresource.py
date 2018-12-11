@@ -7,6 +7,7 @@ from widgetastic.widget import (
     Text,
     TextInput,
     View,
+    Table,
 )
 from widgetastic_patternfly import BreadCrumb
 
@@ -135,6 +136,10 @@ class ResourceProviderCreateView(BaseLoggedInView):
                 self.load_datacenters.click()
 
     @View.nested
+    class compute_resource(SatTab):
+        TAB_NAME = 'Compute Resource'
+
+    @View.nested
     class locations(SatTab):
         resources = MultiSelect(id='ms-compute_resource_location_ids')
 
@@ -166,14 +171,6 @@ class ResourceProviderEditView(ResourceProviderCreateView):
         )
 
 
-class ComputeResourceTabTable(SatTable):
-    """A Table with customized "no rows" and "body rows", to detect that there is no rows, used by
-    table has_rows function.
-    """
-    no_rows_message = ".//td[contains(@class, 'dataTables_empty')]"
-    tbody_row = Text("./tbody/tr[@role='row']")
-
-
 class ResourceProviderDetailView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     submit = Text('//input[@name="commit"]')
@@ -199,7 +196,7 @@ class ResourceProviderDetailView(BaseLoggedInView):
         TAB_NAME = 'Virtual Machines'
 
         actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
-        table = ComputeResourceTabTable(
+        table = Table(
             './/table',
             column_widgets={
                 'Name': Text('./a'),
@@ -220,7 +217,7 @@ class ResourceProviderDetailView(BaseLoggedInView):
 
     class images(SatTab, SearchableViewMixin):
         TAB_NAME = 'Images'
-        table = ComputeResourceTabTable(
+        table = Table(
             './/table',
             column_widgets={
                 'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
