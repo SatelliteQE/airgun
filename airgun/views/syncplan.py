@@ -36,6 +36,7 @@ class SyncPlanCreateView(BaseLoggedInView):
     name = TextInput(id='name')
     description = TextInput(id='description')
     interval = Select(id='interval')
+    cron_expression = TextInput(id='cron_expression')
     date_time = DateTime()
     submit = Text("//button[contains(@ng-click, 'handleSave')]")
 
@@ -71,8 +72,10 @@ class SyncPlanEditView(BaseLoggedInView):
         description = EditableEntry(name='Description')
         date_time = EditableDateTime(name='Start Date')
         next_sync = ReadOnlyEntry(name='Next Sync')
+        recurring_logic = ReadOnlyEntry(name='Recurring Logic')
         enabled = EditableEntryCheckbox(name='Sync Enabled')
         interval = EditableEntrySelect(name='Interval')
+        cron_expression = EditableEntry(name='Cron Logic')
         products_count = ReadOnlyEntry(name='Products')
 
     @View.nested
