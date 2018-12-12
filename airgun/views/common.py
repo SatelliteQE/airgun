@@ -8,7 +8,7 @@ from widgetastic.widget import (
     View,
     WTMixin,
 )
-from widgetastic_patternfly import BreadCrumb, Tab, TabWithDropdown
+from widgetastic_patternfly import BreadCrumb, Button, Tab, TabWithDropdown
 
 from airgun.widgets import (
     ACEEditor,
@@ -37,6 +37,21 @@ class BaseLoggedInView(View):
     # TODO Defining current user procedure needs to be improved as it is not
     # simple field, but a dropdown menu that contains more items/actions
     current_user = Text("//a[@id='account_menu']")
+
+
+class WrongContextAlert(View):
+    """Alert screen which appears when switching organization while organization-specific entity is
+    opened.
+    """
+    message = Text(
+        "//div[contains(@class, 'alert-warning')]"
+        "[span[text()='Please try to update your request']]"
+    )
+    back = Button(href='/')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.message, timeout=2, exception=False) is not None
 
 
 class SatTab(Tab):
