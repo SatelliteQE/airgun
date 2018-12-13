@@ -201,6 +201,14 @@ class EditExistingComputeResource(NavigateStep):
         """Select Compute resource tab for initialization"""
         self.view.compute_resource.click()
 
+    def am_i_here(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        return (
+                self.view.is_displayed
+                and self.view.breadcrumb.locations[0] == 'Compute Resources'
+                and self.view.breadcrumb.read() == 'Edit {}'.format(entity_name)
+        )
+
 
 @navigator.register(ComputeResourceEntity, 'Detail')
 class ComputeResourceDetail(NavigateStep):
@@ -250,53 +258,46 @@ class ComputeResourceVMImport(NavigateStep):
         self.parent.virtual_machines.actions.fill("Import")
 
 
+class ComputeResourceImageProvider(NavigateStep):
+    """Base class for image create and edit views, that need to dynamically define the view type
+    (that depend from from compute resource provider) before reaching navigation destination.
+    """
+    PROVIDER_VIEWS = dict()
+
+    def prerequisite(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        parent_view = self.navigate_to(self.obj, 'Detail', entity_name=entity_name)
+        provider = parent_view.compute_resource.table.row(property='Provider')['Value'].read()
+        view = self.PROVIDER_VIEWS.get(provider)
+        if not view:
+            raise ValueError('Provider type "{0}" for class "{1}" not implemented'.format(
+                provider, self.__class__.__name__))
+        self.VIEW = view
+        return parent_view
+
+    def am_i_here(self, *args, **kwargs):
+        return self.view.is_displayed
+
+
 @navigator.register(ComputeResourceEntity, 'Create Image')
-class ComputeResourceImageCreate(NavigateStep):
+class ComputeResourceImageCreate(ComputeResourceImageProvider):
 
     PROVIDER_VIEWS = dict(
         RHV=ComputeResourceRHVImageCreateView,
     )
 
-    def prerequisite(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
-        parent_view = self.navigate_to(self.obj, 'Detail', entity_name=entity_name)
-        provider = parent_view.compute_resource.table.row(property='Provider')['Value'].read()
-        view = self.PROVIDER_VIEWS.get(provider)
-        if not view:
-            raise ValueError('Provider type "{0}" for class "{1}" not implemented'.format(
-                provider, self.__class__.__name__))
-        self.VIEW = view
-        return parent_view
-
     def step(self, *args, **kwargs):
         self.parent.create_image.click()
 
-    def am_i_here(self, *args, **kwargs):
-        return self.view.is_displayed
-
 
 @navigator.register(ComputeResourceEntity, 'Edit Image')
-class ComputeResourceImageEdit(NavigateStep):
+class ComputeResourceImageEdit(ComputeResourceImageProvider):
 
     PROVIDER_VIEWS = dict(
         RHV=ComputeResourceRHVImageEditView,
     )
 
-    def prerequisite(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
-        parent_view = self.navigate_to(self.obj, 'Detail', entity_name=entity_name)
-        provider = parent_view.compute_resource.table.row(property='Provider')['Value'].read()
-        view = self.PROVIDER_VIEWS.get(provider)
-        if not view:
-            raise ValueError('Provider type "{0}" for class "{1}" not implemented'.format(
-                provider, self.__class__.__name__))
-        self.VIEW = view
-        return parent_view
-
     def step(self, *args, **kwargs):
         image_name = kwargs.get('image_name')
         self.parent.images.search(image_name)
         self.parent.images.table.row(name=image_name)['Actions'].widget.fill('Edit')
-
-    def am_i_here(self, *args, **kwargs):
-        return self.view.is_displayed
