@@ -86,8 +86,6 @@ class ErrataDetailsView(BaseLoggedInView):
             ".//h3[contains(., 'Solution')]"
             "/following-sibling::p[contains(@class, 'info-paragraph')][1]"
         )
-        affected_packages = ItemsList(
-            ".//h3[contains(., 'Affected Packages')]/following-sibling::ul")
 
     @View.nested
     class content_hosts(SatTab):
@@ -145,6 +143,13 @@ class ErrataDetailsView(BaseLoggedInView):
                 self.cv_filter.fill(cv)
             self.searchbox.search(query)
             return self.table.read()
+
+    @View.nested
+    class packages(SatTab):
+        independent_packages = ItemsList(
+            ".//h3[contains(., 'Independent Packages')]/following-sibling::ul")
+        module_stream_packages = ItemsList(
+            ".//h3[contains(., 'Module Stream Packages')]/following-sibling::ul")
 
     @property
     def is_displayed(self):
