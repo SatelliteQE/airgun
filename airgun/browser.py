@@ -750,3 +750,24 @@ class AirgunBrowser(Browser):
         self.selenium.back()
         self.plugin.ensure_page_safe()
         return file_path
+
+    def wait_for_element(
+            self, locator, parent=None, visible=False, timeout=5, delay=0.2,
+            exception=True, ensure_page_safe=False):
+        """Wrapper for basic framework `wait_for_element` method. Adding `exception`
+        parameter to be able to handle exception silently.
+        """
+        try:
+            return super(AirgunBrowser, self).wait_for_element(
+                locator=locator,
+                parent=parent,
+                visible=visible,
+                timeout=timeout,
+                delay=delay,
+                ensure_page_safe=ensure_page_safe
+            )
+        except Exception as e:
+            if exception:
+                raise e
+            else:
+                return None
