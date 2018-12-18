@@ -1,4 +1,4 @@
-import functools
+import re
 
 from widgetastic.widget import (
     Checkbox,
@@ -344,37 +344,33 @@ class ComputeResourceRHVProfileStorageItem(GenericRemovableWidgetItem):
                 self.browser.click(self)
 
 
-def _is_provider(provider_type, current_provider):
-    """Check if the current provider is of type provider_type, used with ConditionalSwitchableView.
-    The view must contain an attribute current_provider that will be read and returned by
-    ConditionalSwitchableView instance, see ResourceProviderProfileView class for usage.
-
-    Note: The provider type is always appended to the end of the compute resource name,
-    for example: compute resource name "foo"
-
-        1. For RHV type the provider name will be displayed as: "foo (RHV)"
-        2. For EC2 type the provider name will be dipalayed as: "foo (ca-central-1-EC2)" where
-            "ca-central-1" is the region.
-    """
-    return current_provider.endswith('{0})'.format(provider_type))
-
-
 class ResourceProviderProfileView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     compute_profile = FilteredDropdown(id='s2id_compute_attribute_compute_profile_id')
     compute_resource = FilteredDropdown(id='s2id_compute_attribute_compute_resource_id')
 
-    provider_content = ConditionalSwitchableView()
+    provider_content = ConditionalSwitchableView(reference='current_provider')
 
     submit = Text('//input[@name="commit"]')
 
     @property
     def current_provider(self):
-        # Return a widget to be read by ConditionalSwitchableView instance and to be passed to
-        # _is_provider function.
-        return self.compute_resource
+        """Retrieve the provider name from the compute resource name.
 
-    @provider_content.register(functools.partial(_is_provider, 'EC2'))
+        Note: The provider name is always appended to the end of the compute resource name,
+        for example: compute resource name "foo"
+
+        1. For RHV provider, the compute resource name will be displayed as: "foo (RHV)"
+        2. For EC2 provider, the compute resource name will be displayed as:
+            "foo (ca-central-1-EC2)" where "ca-central-1" is the region.
+        """
+        compute_resource_name = self.compute_resource.read()
+        res = re.findall(r'.*\((?:.*-)*(.*?)\)\Z', compute_resource_name)
+        if res:
+            return res[0]
+        return None
+
+    @provider_content.register('EC2')
     class EC2ResourceForm(View):
         flavor = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_flavor_id')
         image = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_image_id')
@@ -384,7 +380,7 @@ class ResourceProviderProfileView(BaseLoggedInView):
         security_groups = MultiSelect(id='ms-compute_attribute_vm_attrs_security_group_ids')
         managed_ip = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_managed_ip')
 
-    @provider_content.register(functools.partial(_is_provider, 'RHV'))
+    @provider_content.register('RHV')
     class RHVResourceForm(View):
         cluster = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_cluster')
         template = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_template')
