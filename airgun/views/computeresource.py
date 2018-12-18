@@ -275,7 +275,7 @@ class RemovableWidgetsItemsListView(View):
         return [self.get_item_at_index(index) for index in range(self.items_length)]
 
     def clear(self):
-        """Remove all items if item remove button att defined."""
+        """Remove all items if item remove button attribute defined."""
         if self.ITEM_REMOVE_BUTTON_ATTR:
             for item in reversed(self.items):
                 self.remove_item(item)
@@ -365,10 +365,7 @@ class ResourceProviderProfileView(BaseLoggedInView):
             "foo (ca-central-1-EC2)" where "ca-central-1" is the region.
         """
         compute_resource_name = self.compute_resource.read()
-        res = re.findall(r'.*\((?:.*-)*(.*?)\)\Z', compute_resource_name)
-        if res:
-            return res[0]
-        return None
+        return re.findall(r'.*\((?:.*-)*(.*?)\)\Z|$', compute_resource_name)[0]
 
     @provider_content.register('EC2')
     class EC2ResourceForm(View):
