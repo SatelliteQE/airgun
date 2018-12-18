@@ -9,15 +9,27 @@ from airgun.views.product import (
     ProductRepoDiscoveryView,
     ProductTaskDetailsView,
     ProductsTableView,
+    ProductSyncPlanView,
 )
 
 
 class ProductEntity(BaseEntity):
 
-    def create(self, values):
-        """Creates new product from UI"""
+    def create(self, values, sync_plan_values=None):
+        """Creates new product from UI.
+
+        :param sync_plan_values: dict with values for creating sync_plan from
+         product create page
+        """
         view = self.navigate_to(self, 'New')
         view.fill(values)
+        if sync_plan_values:
+            view.create_sync_plan.click()
+            sync_plan_create_view = ProductSyncPlanView(self.browser)
+            sync_plan_create_view.fill(sync_plan_values)
+            sync_plan_create_view.submit.click()
+            view.flash.assert_no_error()
+            view.flash.dismiss()
         view.submit.click()
 
     def delete(self, entity_name):

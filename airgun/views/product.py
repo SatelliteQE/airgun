@@ -16,6 +16,7 @@ from airgun.views.common import (
     SearchableViewMixin,
     TaskDetailsView,
 )
+from airgun.views.syncplan import SyncPlanCreateView
 from airgun.widgets import (
     ActionsDropdown,
     ConfirmationDialog,
@@ -80,6 +81,7 @@ class ProductCreateView(BaseLoggedInView):
     ssl_client_cert = Select(id='ssl_client_cert_id')
     ssl_client_key = Select(id='ssl_client_key_id')
     sync_plan = Select(id='sync_plan_id')
+    create_sync_plan = Text("//a[contains(@ng-click, 'openSyncPlanModal')]")
     description = TextInput(id='description')
     submit = Text("//button[contains(@ng-click, 'handleSave')]")
 
@@ -225,3 +227,13 @@ class ProductTaskDetailsView(TaskDetailsView):
                 and self.breadcrumb.locations[2] == 'Tasks'
                 and len(self.breadcrumb.locations) > 3
         )
+
+
+class ProductSyncPlanView(SyncPlanCreateView):
+    title = Text("//h4[contains(., 'New Sync Plan')]")
+    submit = Text("//button[contains(@ng-click, 'ok(syncPlan)')]")
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
