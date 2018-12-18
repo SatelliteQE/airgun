@@ -260,7 +260,7 @@ class ComputeResourceVMImport(NavigateStep):
 
 class ComputeResourceImageProvider(NavigateStep):
     """Base class for image create and edit views, that need to dynamically define the view type
-    (that depend from from compute resource provider) before reaching navigation destination.
+    (that depend from compute resource provider) before reaching navigation destination.
     """
     PROVIDER_VIEWS = dict()
 
