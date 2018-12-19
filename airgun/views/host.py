@@ -219,7 +219,7 @@ class HostCreateView(BaseLoggedInView):
             self.interfaces_list[0]['Actions'].widget.edit.click()
             wait_for(
                 lambda: self.interface.is_displayed is True,
-                timeout=300,
+                timeout=30,
                 delay=1,
                 logger=self.logger
             )

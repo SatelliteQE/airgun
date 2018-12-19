@@ -3,7 +3,7 @@ from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.common import BaseLoggedInView
+from airgun.views.common import BaseLoggedInView, WrongContextAlert
 
 from airgun.views.organization import (
     OrganizationCreateView,
@@ -101,3 +101,12 @@ class SelectOrganizationContext(NavigateStep):
         if not org_name:
             raise ValueError('Specify proper value for org_name parameter')
         self.view.taxonomies.select_org(org_name)
+
+    def post_navigate(self, _tries, *args, **kwargs):
+        """Handle alert screen if it's present"""
+        wrong_context_view = WrongContextAlert(self.view.browser)
+        if wrong_context_view.is_displayed:
+            wrong_context_view.back.click()
+            self.view.browser.wait_for_element(
+                self.view.menu, exception=False, ensure_page_safe=True)
+        super().post_navigate(_tries, *args, **kwargs)
