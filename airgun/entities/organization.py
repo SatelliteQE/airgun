@@ -108,5 +108,5 @@ class SelectOrganizationContext(NavigateStep):
         if wrong_context_view.is_displayed:
             wrong_context_view.back.click()
             self.view.browser.wait_for_element(
-                self.view.menu.__locator__(), exception=False, ensure_page_safe=True)
+                self.view.menu, exception=False, ensure_page_safe=True)
         super().post_navigate(_tries, *args, **kwargs)

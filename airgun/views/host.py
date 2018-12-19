@@ -127,7 +127,7 @@ class HostInterface(View):
 
     @property
     def is_displayed(self):
-        return self.root_browser.wait_for_element(
+        return self.browser.wait_for_element(
             self.title, visible=True, exception=False) is not None
 
 
