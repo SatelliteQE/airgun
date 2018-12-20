@@ -2,11 +2,13 @@ import re
 
 from widgetastic.widget import (
     Checkbox,
+    GenericLocatorWidget,
     ParametrizedView,
     Select,
     Text,
     TextInput,
     View,
+    Widget,
 )
 from widgetastic_patternfly import BreadCrumb, Button
 
@@ -32,6 +34,50 @@ from airgun.widgets import (
 )
 
 
+class StatusIcon(GenericLocatorWidget):
+    """Small icon indicating subscription or katello-agent status. Can be
+    colored in either green, yellow or red.
+
+    Example html representation::
+
+        <span
+         ng-class="table.getHostStatusIcon(host.subscription_global_status)"
+         class="red host-status pficon pficon-error-circle-o status-error">
+        </span>
+
+    Locator example::
+
+        //span[contains(@ng-class, 'host.subscription_global_status')]
+        //i[contains(@ng-class, 'host.subscription_global_status')]
+    """
+
+    def __init__(self, parent, locator=None, logger=None):
+        """Provide default locator value if it wasn't passed"""
+        if not locator:
+            locator = ".//span[contains(@ng-class, 'host.subscription_global_status')]"
+        Widget.__init__(self, parent, logger=logger)
+        self.locator = locator
+
+    @property
+    def color(self):
+        """Returns string representing icon color: 'red', 'yellow', 'green' or
+        'unknown'.
+        """
+        colors = {
+            'rgba(204, 0, 0, 1)': 'red',
+            'rgba(236, 122, 8, 1)': 'yellow',
+            'rgba(63, 156, 53, 1)': 'green',
+        }
+        return colors.get(
+            self.browser.element(self, parent=self.parent).value_of_css_property('color'),
+            'unknown'
+        )
+
+    def read(self):
+        """Returns current icon color"""
+        return self.color
+
+
 class ContentHostsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Content Hosts')]")
     export = Text(
@@ -44,6 +90,7 @@ class ContentHostsView(BaseLoggedInView, SearchableViewMixin):
         column_widgets={
             0: Checkbox(locator="./input[@type='checkbox']"),
             'Name': Text('./a'),
+            'Subscription Status': StatusIcon(),
         }
     )
 
