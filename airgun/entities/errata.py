@@ -79,6 +79,23 @@ class ErrataEntity(BaseEntity):
         view.progressbar.wait_for_result()
         return view.read()
 
+    def search_content_hosts(self, entity_name, value, environment=None):
+        """Search errata applicability for content hosts.
+
+        :param str entity_name: errata id or title
+        :param str value: search query to type into search field.
+        :param str optional environment: filter applicable hosts by environment name
+        """
+        view = self.navigate_to(
+            self,
+            'Details',
+            entity_name=entity_name,
+            applicable=False,
+            installable=False,
+            repo=None,
+        )
+        return view.content_hosts.search(value, environment=environment)
+
 
 @navigator.register(ErrataEntity, 'All')
 class ShowAllErratum(NavigateStep):
