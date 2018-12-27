@@ -38,10 +38,12 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def get_details(self, entity_name):
-        """Read host values from Host Details page"""
+    def get_details(self, entity_name, widget_names=None):
+        """Read host values from Host Details page, optionally only the widgets in widget_names
+        will be read.
+        """
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def read(self, entity_name):
         """Read host values from Host Edit page"""

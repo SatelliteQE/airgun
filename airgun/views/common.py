@@ -38,6 +38,44 @@ class BaseLoggedInView(View):
     # simple field, but a dropdown menu that contains more items/actions
     current_user = Text("//a[@id='account_menu']")
 
+    def _get_widget_by_name(self, widget_name):
+        """Return a widget by it's name, where widget can be a sub widget.
+
+        Example:
+             widget_name = 'details'
+             or
+             widget_name = 'details.subscription_status'
+             or
+             widget_name = 'details.subscriptions.resources'
+        """
+        widget = self
+        for sub_widget_name in widget_name.split('.'):
+            name = sub_widget_name
+            if name not in widget.widget_names:
+                name = name.replace(' ', '_')
+                name = name.lower()
+                if name not in widget.widget_names:
+                    raise AttributeError('Object <{0}> has no widget name "{1}"'.format(
+                        widget.__class__, sub_widget_name))
+            widget = getattr(widget, name)
+        return widget
+
+    def read(self, widget_names=None):
+        """Reads the contents of the view and presents them as a dictionary.
+
+        widget_names: If specified , will read only the widgets which names is in the list.
+
+        Returns:
+            A :py:class:`dict` of ``widget_name: widget_read_value`` where the values are retrieved
+            using the :py:meth:`Widget.read`.
+        """
+        if widget_names is None:
+            return super().read()
+        values = {}
+        for widget_name in widget_names:
+            values[widget_name] = self._get_widget_by_name(widget_name).read()
+        return values
+
 
 class WrongContextAlert(View):
     """Alert screen which appears when switching organization while organization-specific entity is

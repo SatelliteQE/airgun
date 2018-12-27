@@ -50,10 +50,10 @@ class ContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def read(self, entity_name):
-        """Read content view values"""
+    def read(self, entity_name, widget_names=None):
+        """Read content view values, optionally only the widgets in widget_names will be read."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
         """Update existing content view"""
