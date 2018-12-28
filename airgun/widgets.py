@@ -495,7 +495,7 @@ class Search(Widget):
         ".//button[contains(@type,'submit') or contains(@class, 'search-btn') "
         "or @ng-click='table.search(table.searchTerm)']"
     )
-    actions = ActionsDropdown(".//span[contains(@class, 'input-group-btn')]")
+    actions = ActionsDropdown(".//*[self::div or self::span][contains(@class, 'input-group-btn')]")
 
     def fill(self, value):
         return self.search_field.fill(value)
