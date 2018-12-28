@@ -104,6 +104,13 @@ class ContentHostEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def update(self, entity_name, values):
+        """Update content host values."""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.fill(values)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
 
 @navigator.register(ContentHostEntity, 'All')
 class ShowAllContentHosts(NavigateStep):
