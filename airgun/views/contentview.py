@@ -260,6 +260,25 @@ class ContentViewVersionPublishView(BaseLoggedInView):
         )
 
 
+class EntitySearchView(SatSecondaryTab):
+    repo_filter = SatSelect(".//select[@ng-model='repository']")
+    searchbox = Search()
+    table = SatTable(".//table")
+
+    def search(self, query, repo=None):
+        """Apply available filters before proceeding with searching.
+
+        :param str query: search query to type into search field.
+        :param str optional repo: filter by repository name
+        :return: list of dicts representing table rows
+        :rtype: list
+        """
+        if repo:
+            self.repo_filter.fill(repo)
+        self.searchbox.search(query)
+        return self.table.read()
+
+
 class ContentViewVersionDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
 
@@ -280,24 +299,12 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
         table = SatTable('.//table')
 
     @View.nested
-    class rpm_packages(SatSecondaryTab):
+    class rpm_packages(EntitySearchView):
         TAB_NAME = 'rpm Packages'
-        repo_filter = SatSelect(".//select[@ng-model='repository']")
-        searchbox = Search()
-        table = SatTable(".//table")
 
-        def search(self, query, repo=None):
-            """Apply available filters before proceeding with searching.
-
-            :param str query: search query to type into search field.
-            :param str optional repo: filter by repository name
-            :return: list of dicts representing table rows
-            :rtype: list
-            """
-            if repo:
-                self.repo_filter.fill(repo)
-            self.searchbox.search(query)
-            return self.table.read()
+    @View.nested
+    class module_streams(EntitySearchView):
+        TAB_NAME = 'Module Streams'
 
     @View.nested
     class errata(SatSecondaryTab, SearchableViewMixin):

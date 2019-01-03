@@ -185,6 +185,22 @@ class ContentViewEntity(BaseEntity):
         )
         return view.rpm_packages.search(query, repo=repo)
 
+    def search_version_module_stream(
+            self, entity_name, version_name, query, repo=None):
+        """Search for a module stream inside content view version
+
+        :param str entity_name: content view name
+        :param str version_name: content view version name
+        :param str query: search query for content view version's module stream
+        :param str optional repo: repository name to filter by
+        """
+        view = self.navigate_to(
+            self, 'Version',
+            entity_name=entity_name,
+            version_name=version_name,
+        )
+        return view.module_streams.search(query, repo=repo)
+
     def remove_version(self, entity_name, version_name, completely=True,
                        lces=None):
         """Remove content view version.
