@@ -29,15 +29,10 @@ class ContentHostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.read()
 
-    def read(self, entity_name):
-        """Read content host details"""
+    def read(self, entity_name, widget_names=None):
+        """Read content host details, optionally read only the widgets in widget_names."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.read()
-
-    def read_details(self, entity_name):
-        """Read content host values from Content Host Edit page details tab only"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.details.read()
+        return view.read(widget_names=widget_names)
 
     def execute_package_action(self, entity_name, action_type, value):
         """Execute remote package action on a content host
