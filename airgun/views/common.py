@@ -10,6 +10,7 @@ from widgetastic.widget import (
 )
 from widgetastic_patternfly import BreadCrumb, Button, Tab, TabWithDropdown
 
+from airgun.utils import get_widget_by_name, normalize_dict_values
 from airgun.widgets import (
     ACEEditor,
     ContextSelector,
@@ -37,6 +38,24 @@ class BaseLoggedInView(View):
     # TODO Defining current user procedure needs to be improved as it is not
     # simple field, but a dropdown menu that contains more items/actions
     current_user = Text("//a[@id='account_menu']")
+
+    def read(self, widget_names=None):
+        """Reads the contents of the view and presents them as a dictionary.
+
+        widget_names: If specified , will read only the widgets which names is in the list.
+
+        Returns:
+            A :py:class:`dict` of ``widget_name: widget_read_value`` where the values are retrieved
+            using the :py:meth:`Widget.read`.
+        """
+        if widget_names is None:
+            return super().read()
+        if not isinstance(widget_names, (list, tuple)):
+            widget_names = [widget_names]
+        values = {}
+        for widget_name in widget_names:
+            values[widget_name] = get_widget_by_name(self, widget_name).read()
+        return normalize_dict_values(values)
 
 
 class WrongContextAlert(View):
