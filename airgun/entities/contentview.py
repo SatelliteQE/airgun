@@ -211,6 +211,8 @@ class ContentViewEntity(BaseEntity):
         view.completely.fill(completely)
         view.next.click()
         view = ContentViewVersionRemoveConfirmationView(self.browser)
+        assert 'Activation Keys using Version' not in view.message_title.text, (
+            'Activation Key is assigned to content view version')
         view.confirm_remove.click()
         view.flash.assert_no_error()
         view.flash.dismiss()

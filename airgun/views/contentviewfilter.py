@@ -265,7 +265,10 @@ class EditYumFilterView(BaseLoggedInView):
                 :param dict optional filters: dictionary containing widget
                     names and values to set (like with regular `fill()`)
                 """
-                self.search(errata_id, filters)
+                query = None
+                if errata_id:
+                    query = 'errata_id = {}'.format(errata_id)
+                self.search(query, filters)
                 if errata_id:
                     self.table.row((
                         'Errata ID', errata_id))[0].widget.fill(True)

@@ -163,9 +163,7 @@ class ContentViewFilterEntity(BaseEntity):
         row[ACTIONS_COLUMN].widget.edit.click()
         # prepare list with empty values for all preceding rows as it's
         # impossible to fill specific table row, only in proper order
-        # todo: replace with `range(row.index)` when widgetastic.core#117 is
-        # fixed
-        values = [{} for _ in range(row.index - 1)]
+        values = [{} for _ in range(row.index)]
         values.append(new_values)
         view.content_tabs.rpms.table.fill(values)
         row[ACTIONS_COLUMN].widget.save.click()
