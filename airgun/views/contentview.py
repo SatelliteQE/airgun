@@ -365,6 +365,7 @@ class ContentViewVersionRemoveConfirmationView(BaseLoggedInView):
     cancel = Text(".//button[normalize-space(.)='Cancel']")
     back = Text(".//button[@ng-click='transitionBack()']")
     confirm_remove = Text(".//button[@ng-click='performDeletion()']")
+    message_title = Text(".//h3")
 
     @property
     def is_displayed(self):
