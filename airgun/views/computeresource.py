@@ -509,8 +509,8 @@ class ResourceProviderVMImport(HostCreateView):
         )
 
 
-class ComputeResourceRHVImageCreateView(BaseLoggedInView):
-    """Compute resource Image create view."""
+class ComputeResourceGenericImageCreateView(BaseLoggedInView):
+    """A Generic Compute Resource Image create view."""
     breadcrumb = BreadCrumb()
     name = TextInput(id='image_name')
     operating_system = FilteredDropdown(id='image_operatingsystem_id')
@@ -533,8 +533,8 @@ class ComputeResourceRHVImageCreateView(BaseLoggedInView):
         )
 
 
-class ComputeResourceRHVImageEditView(ComputeResourceRHVImageCreateView):
-    """Compute resource Image edit view."""
+class ComputeResourceGenericImageEditViewMixin:
+    """A Generic Mixin Resource Image edit view."""
 
     @property
     def is_displayed(self):
@@ -548,9 +548,19 @@ class ComputeResourceRHVImageEditView(ComputeResourceRHVImageCreateView):
         )
 
 
-class ComputeResourceVMwareImageCreateView(ComputeResourceRHVImageCreateView):
+class ComputeResourceRHVImageCreateView(ComputeResourceGenericImageCreateView):
+    """RHV Compute resource Image create view."""
+
+
+class ComputeResourceRHVImageEditView(
+        ComputeResourceRHVImageCreateView, ComputeResourceGenericImageEditViewMixin):
+    """RHV Compute resource Image edit view."""
+
+
+class ComputeResourceVMwareImageCreateView(ComputeResourceGenericImageCreateView):
     """VMWare ComputeResource Image create View"""
 
 
-class ComputeResourceVMwareImageEditView(ComputeResourceRHVImageEditView):
+class ComputeResourceVMwareImageEditView(
+        ComputeResourceVMwareImageCreateView, ComputeResourceGenericImageEditViewMixin):
     """VMWare ComputeResource Image edit View"""
