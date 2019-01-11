@@ -9,6 +9,8 @@ from airgun.views.computeresource import (
     ResourceProviderDetailView,
     ComputeResourceRHVImageCreateView,
     ComputeResourceRHVImageEditView,
+    ComputeResourceVMwareImageCreateView,
+    ComputeResourceVMwareImageEditView,
     ResourceProviderProfileView,
     ResourceProviderVMImport,
 )
@@ -59,6 +61,17 @@ class ComputeResourceEntity(BaseEntity):
             view.virtual_machines.search(expected_vm_name)
             return view.virtual_machines.table.row(name=expected_vm_name)
         return view.virtual_machines.table.rows()
+
+    def search_virtual_machine(self, entity_name, value):
+        """Search for compute resource virtual machine.
+
+        :param str entity_name: The compute resource name.
+        :param str value: The value to put in virtual machine tab search box.
+
+        :return: The Compute resource virtual machines table rows values.
+        """
+        view = self.navigate_to(self, 'Detail', entity_name=entity_name)
+        return view.virtual_machines.search(value)
 
     def vm_status(self, entity_name, vm_name):
         """Returns True if the machine is running, False otherwise"""
@@ -284,6 +297,7 @@ class ComputeResourceImageCreate(ComputeResourceImageProvider):
 
     PROVIDER_VIEWS = dict(
         RHV=ComputeResourceRHVImageCreateView,
+        VMware=ComputeResourceVMwareImageCreateView,
     )
 
     def step(self, *args, **kwargs):
@@ -295,6 +309,7 @@ class ComputeResourceImageEdit(ComputeResourceImageProvider):
 
     PROVIDER_VIEWS = dict(
         RHV=ComputeResourceRHVImageEditView,
+        VMware=ComputeResourceVMwareImageEditView,
     )
 
     def step(self, *args, **kwargs):
