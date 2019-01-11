@@ -78,6 +78,21 @@ class StatusIcon(GenericLocatorWidget):
         return self.color
 
 
+class InstallableUpdatesCellView(View):
+    """Installable Updates Table Cell View for content host view Table"""
+    ROOT = '.'
+
+    @View.nested
+    class errata(View):
+        ROOT = "./a[contains(@ui-sref, 'errata')]"
+
+        security = Text(".//span[contains(@ng-class, 'errataCounts.security')]")
+        bug_fix = Text(".//span[contains(@ng-class, 'errataCounts.bugfix')]")
+        enhancement = Text(".//span[contains(@ng-class, 'errataCounts.enhancement')]")
+
+    packages = Text("./a[contains(@ui-sref, 'packages.applicable')]")
+
+
 class ContentHostsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Content Hosts')]")
     export = Text(
@@ -91,6 +106,7 @@ class ContentHostsView(BaseLoggedInView, SearchableViewMixin):
             0: Checkbox(locator="./input[@type='checkbox']"),
             'Name': Text('./a'),
             'Subscription Status': StatusIcon(),
+            'Installable Updates': InstallableUpdatesCellView(),
         }
     )
 

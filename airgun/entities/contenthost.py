@@ -29,10 +29,10 @@ class ContentHostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.read()
 
-    def read(self, entity_name):
-        """Read content host details"""
+    def read(self, entity_name, widget_names=None):
+        """Read content host details, optionally read only the widgets in widget_names."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def execute_package_action(self, entity_name, action_type, value):
         """Execute remote package action on a content host
@@ -78,10 +78,15 @@ class ContentHostEntity(BaseEntity):
         view.progressbar.wait_for_result()
         return view.read()
 
-    def search_errata(self, entity_name, errata_id):
-        """Search for specific errata applicable for content host"""
+    def search_errata(self, entity_name, errata_id, environment=None):
+        """Search for specific errata applicable for content host.
+
+        :param str entity_name: the content hosts name.
+        :param str errata_id: errata id or title, e.g. 'RHEA-2012:0055'
+        :param str optional environment: lifecycle environment to filter by.
+        """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.errata.search(errata_id)
+        view.errata.search(errata_id, lce=environment)
         return view.errata.table.read()
 
     def export(self):
