@@ -70,6 +70,13 @@ class ContentViewEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def add_docker_repo(self, entity_name, repo_name):
+        """Add docker repository to content view"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.docker_repositories.resources.add(repo_name)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
     def add_cv(self, entity_name, cv_name):
         """Add content view to selected composite content view."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)

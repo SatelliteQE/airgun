@@ -195,6 +195,13 @@ class ContentViewEditView(BaseLoggedInView):
         table = SatTable('.//table')
 
     @View.nested
+    class docker_repositories(SatTabWithDropdown):
+        TAB_NAME = 'Container Images'
+        SUB_ITEM = 'Repositories'
+
+        resources = View.nested(AddRemoveResourcesView)
+
+    @View.nested
     class ostree_content(SatTab):
         TAB_NAME = 'OSTree Content'
 
