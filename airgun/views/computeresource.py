@@ -221,12 +221,22 @@ class ResourceProviderDetailView(BaseLoggedInView):
             }
         )
 
+    @View.nested
     class images(SatTab, SearchableViewMixin):
-        TAB_NAME = 'Images'
         table = Table(
             './/table',
             column_widgets={
                 'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            }
+        )
+
+    @View.nested
+    class containers(SatTab, SearchableViewMixin):
+        table = Table(
+            './/table',
+            column_widgets={
+                'Name': Text('./a'),
+                'Action': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
             }
         )
 

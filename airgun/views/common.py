@@ -138,6 +138,16 @@ class SatTabWithDropdown(TabWithDropdown):
         './/div[contains(@class, "page-content") or '
         'contains(@class, "tab-content")]')
 
+    @property
+    def is_displayed(self):
+        return 'ng-hide' not in self.parent_browser.classes(self.TAB_LOCATOR)
+
+    def read(self):
+        """Do not attempt to read hidden tab contents"""
+        if not self.is_displayed:
+            do_not_read_this_widget()
+        return super().read()
+
 
 class SatSecondaryTab(SatTab):
     """Secondary level Tab, typically 'List/Remove' or 'Add' sub-tab inside
