@@ -171,3 +171,28 @@ class LCEEditView(BaseLoggedInView):
                 self.cv_filter.fill(cv)
             self.searchbox.search(query)
             return self.table.read()
+
+    @View.nested
+    class module_streams(SatTab):
+        TAB_NAME = 'Module Streams'
+
+        cv_filter = SatSelect(".//select[@ng-model='contentView']")
+        repo_filter = SatSelect(".//select[@ng-model='repository']")
+        searchbox = Search()
+        table = SatTable(".//table")
+
+        def search(self, query, cv=None, repo=None):
+            """Apply available filters before proceeding with searching.
+
+            :param str query: search query to type into search field.
+            :param str optional cv: filter by content view name
+            :param str optional repo: filter by repository name
+            :return: list of dicts representing table rows
+            :rtype: list
+            """
+            if cv:
+                self.cv_filter.fill(cv)
+            if repo:
+                self.repo_filter.fill(repo)
+            self.searchbox.search(query)
+            return self.table.read()
