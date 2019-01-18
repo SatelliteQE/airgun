@@ -24,10 +24,17 @@ class JobTemplateEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def read(self, entity_name):
-        """Read all values for existing job template"""
+    def read(self, entity_name, editor_view_option=None, widget_names=None):
+        """Read Job template values from job template Edit view.
+
+        :param entity_name: Job template name
+        :param editor_view_option: The edit view option to set.
+        :param widget_names: Read only the widgets in widget_names (Optional)
+        """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.read()
+        if editor_view_option is not None:
+            view.fill({'template.template_editor.rendering_options': editor_view_option})
+        return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
         """Update necessary values for existing job template"""

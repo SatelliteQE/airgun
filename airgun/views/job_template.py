@@ -18,7 +18,9 @@ from airgun.views.common import (
 from airgun.widgets import (
     ActionsDropdown,
     FilteredDropdown,
+    GenericRemovableWidgetItem,
     MultiSelect,
+    RemovableWidgetsItemsListView,
     SatSelect,
 )
 
@@ -39,6 +41,63 @@ class JobTemplatesView(BaseLoggedInView, SearchableViewMixin):
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.title, exception=False) is not None
+
+
+class JobTemplateInputItem(GenericRemovableWidgetItem):
+    """Job Template Input item widget"""
+    remove_button = Text(".//a[@class='remove_nested_fields']")
+    name = TextInput(locator=".//input[contains(@name, '[name]')]")
+    required = Checkbox(locator=".//input[contains(@id, 'required')]")
+    input_type = SatSelect(
+        locator=".//select[contains(@name, '[input_type]')]")
+
+    input_content = ConditionalSwitchableView(reference='input_type')
+
+    @input_content.register('User input')
+    class UserInputForm(View):
+        advanced = Checkbox(
+            locator=".//input[contains(@id, 'advanced')]")
+        options = TextInput(
+            locator=".//textarea[contains(@name, '[options]')]")
+        description = TextInput(
+            locator=".//textarea[contains(@name, '[description]')]")
+
+    @input_content.register('Fact value')
+    class FactValueForm(View):
+        fact_name = TextInput(
+            locator=".//input[contains(@name, '[fact_name]')]")
+        description = TextInput(
+            locator=".//textarea[contains(@name, '[description]')]")
+
+    @input_content.register('Variable value')
+    class VariableValueForm(View):
+        variable_name = TextInput(
+            locator=".//input[contains(@name, '[variable_name]')]")
+        description = TextInput(
+            locator=".//textarea[contains(@name, '[description]')]")
+
+    @input_content.register('Puppet parameter')
+    class PuppetParameterForm(View):
+        puppet_class_name = TextInput(
+            locator=".//input[contains(@name, '[puppet_class_name]')]")
+        puppet_parameter_name = TextInput(
+            locator=".//input[contains("
+                    "@name, '[puppet_parameter_name]')]")
+        description = TextInput(
+            locator=".//textarea[contains(@name, '[description]')]")
+
+
+class JobTemplateForeignInputSetItem(GenericRemovableWidgetItem):
+    """Job Template Foreign Input Set Item widget"""
+    remove_button = Text(".//a[@class='remove_nested_fields']")
+    target_template = Select(
+        locator=".//select[contains(@name, '[target_template_id]')]")
+    include_all = Checkbox(
+        locator=".//input[contains(@id, 'include_all')]")
+    include = TextInput(
+        locator=".//input[contains(@name, '[include]')]")
+    exclude = TextInput(
+        locator=".//input[contains(@name, '[exclude]')]")
 
 
 class JobTemplateCreateView(BaseLoggedInView):
@@ -63,77 +122,26 @@ class JobTemplateCreateView(BaseLoggedInView):
         audit = TextInput(id='job_template_audit_comment')
 
     @View.nested
+    class inputs(RemovableWidgetsItemsListView, SatTab):
+        ITEMS = ".//div[contains(@class, 'template_inputs')]/following-sibling::div"
+        ITEM_WIDGET_CLASS = JobTemplateInputItem
+        add_item_button = Text(".//a[@data-association='template_inputs']")
+
+    @View.nested
     class job(SatTab):
         job_category = TextInput(name='job_template[job_category]')
         description_format = TextInput(id='job_template_description_format')
         provider_type = FilteredDropdown(id='job_template_provider_type')
         timeout = TextInput(id='job_template_execution_timeout_interval')
-        add_template_inputs = Text("//a[@data-association='template_inputs']")
         add_foreign_input_set = Text(
             "//a[@data-association='foreign_input_sets']")
 
         @View.nested
-        class template_input(View):
-            ROOT = "//div[contains(@class, 'template_inputs')]" \
-                   "/following-sibling::div[1]"
-            name = TextInput(locator=".//input[contains(@name, '[name]')]")
-            required = Checkbox(locator=".//input[contains(@id, 'required')]")
-            input_type = SatSelect(
-                locator=".//select[contains(@name, '[input_type]')]")
-
-            input_content = ConditionalSwitchableView(reference='input_type')
-
-            @input_content.register('User input')
-            class UserInputForm(View):
-                advanced = Checkbox(
-                    locator=".//input[contains(@id, 'advanced')]")
-                options = TextInput(
-                    locator=".//textarea[contains(@name, '[options]')]")
-                description = TextInput(
-                    locator=".//textarea[contains(@name, '[description]')]")
-
-            @input_content.register('Fact value')
-            class FactValueForm(View):
-                fact_name = TextInput(
-                    locator=".//input[contains(@name, '[fact_name]')]")
-                description = TextInput(
-                    locator=".//textarea[contains(@name, '[description]')]")
-
-            @input_content.register('Variable value')
-            class VariableValueForm(View):
-                variable_name = TextInput(
-                    locator=".//input[contains(@name, '[variable_name]')]")
-                description = TextInput(
-                    locator=".//textarea[contains(@name, '[description]')]")
-
-            @input_content.register('Puppet parameter')
-            class PuppetParameterForm(View):
-                puppet_class_name = TextInput(
-                    locator=".//input[contains(@name, '[puppet_class_name]')]")
-                puppet_parameter_name = TextInput(
-                    locator=".//input[contains("
-                            "@name, '[puppet_parameter_name]')]")
-                description = TextInput(
-                    locator=".//textarea[contains(@name, '[description]')]")
-
-            def before_fill(self, values=None):
-                self.parent.add_template_inputs.click()
-
-        @View.nested
-        class foreign_input(View):
-            ROOT = "//div[contains(@class, 'foreign_input')]" \
-                   "/following-sibling::div[1]"
-            target_template = Select(
-                locator=".//select[contains(@name, '[target_template_id]')]")
-            include_all = Checkbox(
-                locator=".//input[contains(@id, 'include_all')]")
-            include = TextInput(
-                locator=".//input[contains(@name, '[include]')]")
-            exclude = TextInput(
-                locator=".//input[contains(@name, '[exclude]')]")
-
-            def before_fill(self, values=None):
-                self.parent.add_foreign_input_set.click()
+        class foreign_input_sets(RemovableWidgetsItemsListView):
+            ROOT = "//div[div[contains(@class, 'foreign_input_sets')]]"
+            ITEMS = ".//div[contains(@class, 'foreign_input_sets')]/following-sibling::div"
+            ITEM_WIDGET_CLASS = JobTemplateForeignInputSetItem
+            add_item_button = Text(".//a[@data-association='foreign_input_sets']")
 
         value = TextInput(
             id='job_template_effective_user_attributes_value')
