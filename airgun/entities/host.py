@@ -12,6 +12,8 @@ from airgun.views.host import (
     HostsAssignOrganization,
     HostsChangeGroup,
     HostsChangeEnvironment,
+    HostsJobInvocationCreateView,
+    HostsJobInvocationStatusView,
     HostsView,
 )
 
@@ -102,6 +104,24 @@ class HostEntity(BaseEntity):
         view.export.click()
         return self.browser.save_downloaded_file()
 
+    def schedule_remote_job(self, entities_list, values, timeout=60):
+        """Apply Schedule Remote Job action to the hosts names in entities_list
+
+        :param entities_list: The host names to apply the remote job.
+        :param values: the values to fill The Job invocation view.
+        :param timeout: The time to wait for the job to finish.
+
+        :returns: The job invocation status view values
+        """
+        view = self._select_action('Schedule Remote Job', entities_list)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+        status_view = HostsJobInvocationStatusView(self.browser)
+        status_view.wait_for_result(timeout=timeout)
+        return status_view.read()
+
 
 @navigator.register(HostEntity, 'All')
 class ShowAllHosts(NavigateStep):
@@ -176,6 +196,7 @@ class HostsSelectAction(NavigateStep):
         'Assign Compliance Policy': HostsAssignCompliancePolicy,
         'Assign Location': HostsAssignLocation,
         'Assign Organization': HostsAssignOrganization,
+        'Schedule Remote Job': HostsJobInvocationCreateView,
     }
 
     def prerequisite(self, *args, **kwargs):

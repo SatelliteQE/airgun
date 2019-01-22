@@ -14,6 +14,7 @@ from widgetastic.widget import (
     Table,
     Text,
     TextInput,
+    View,
     Widget,
 )
 from widgetastic.xpath import quote
@@ -24,6 +25,7 @@ from widgetastic_patternfly import (
 )
 
 from airgun.exceptions import ReadOnlyWidgetError
+from airgun.utils import get_widget_by_name
 
 
 class SatSelect(Select):
@@ -1206,7 +1208,7 @@ class ACEEditor(Widget):
     def read(self):
         """Returns string with current widget value"""
         return self.browser.execute_script(
-            "ace.edit('{0}').getValue();".format(self.ace_edit_id))
+            "return ace.edit('{0}').getValue();".format(self.ace_edit_id))
 
 
 class SatTable(Table):
@@ -1559,3 +1561,104 @@ class PieChart(GenericLocatorWidget):
         value as its value
         """
         return {self.chart_title_text.read(): self.chart_title_value.read()}
+
+
+class RemovableWidgetsItemsListView(View):
+    """A host for widgets list. Items that can be added or removed, mainly used in profile for
+    network interfaces, storage and job template.
+
+    Usage::
+
+        @View.nested
+        class resources(RemovableWidgetsItemsListView):
+            ROOT = "//fieldset[@id='storage_volumes']"
+            ITEMS = "./div/div[contains(@class, 'removable-item')]"
+            ITEM_WIDGET_CLASS = ComputeResourceRHVProfileStorageItem
+    """
+    ITEMS = "./div[contains(@class, 'removable-item')]"
+    ITEM_WIDGET_CLASS = None
+    ITEM_REMOVE_BUTTON_ATTR = 'remove_button'
+    add_item_button = Text(".//a[contains(@class, 'add_nested_fields')]")
+
+    def _get_item_locator(self, index):
+        """Return the item locator located at index position"""
+        return '{0}[{1}]'.format(self.ITEMS, index + 1)
+
+    def get_item_at_index(self, index):
+        """Return the item widget instance at index"""
+        return self.ITEM_WIDGET_CLASS(self, self._get_item_locator(index))
+
+    def add_item(self):
+        """Add an item by pressing the add_item button and return the item instance"""
+        self.add_item_button.click()
+        return self.get_item_at_index(self.items_length - 1)
+
+    def remove_item(self, item):
+        """Remove item widget by clicking on it's remove button"""
+        if self.ITEM_REMOVE_BUTTON_ATTR:
+            getattr(item, self.ITEM_REMOVE_BUTTON_ATTR).click()
+
+    def remove_item_at_index(self, index):
+        """Remove item at index"""
+        self.remove_item(self.get_item_at_index(index))
+
+    @property
+    def items_length(self):
+        # Returns the items length
+        return len(self.browser.elements(self.ITEMS, parent=self))
+
+    @property
+    def items(self):
+        """Return all the items widget instances"""
+        return [self.get_item_at_index(index) for index in range(self.items_length)]
+
+    def clear(self):
+        """Remove all items if item remove button attribute defined."""
+        if self.ITEM_REMOVE_BUTTON_ATTR:
+            for item in reversed(self.items):
+                self.remove_item(item)
+
+    def read(self):
+        """Read all items"""
+        return [item.read() for item in self.items]
+
+    def fill(self, values):
+        """Fill all items.
+        :param values: A list of values to fill the item widgets with.
+        """
+        if not values:
+            values = []
+        # Clear all before fill
+        self.clear()
+        for value in values:
+            item = self.add_item()
+            item.fill(value)
+
+
+class GenericRemovableWidgetItem(GenericLocatorWidget):
+    """Generic Item widget (to be inherited) and to be used as Widget Item for
+    `RemovableWidgetsItemsListView`.
+     """
+    remove_button = Text(".//div[@class='remove-button']/a")
+
+    # Context is needed to support ConditionalSwitchableView in derived classes
+    context = {}
+
+    def read(self):
+        values = {}
+        for widget_name in self.widget_names:
+            widget = getattr(self, widget_name)
+            try:
+                value = widget.read()
+            except NoSuchElementException:
+                continue
+            values[widget_name] = value
+        return values
+
+    def fill(self, values):
+        if values:
+            for key, value in values.items():
+                # in case of nested Views and ConditionalSwitchableView the key can be like "a.b.c"
+                widget = get_widget_by_name(self, key)
+                if widget:
+                    widget.fill(value)

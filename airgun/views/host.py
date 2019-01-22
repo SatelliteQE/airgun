@@ -13,6 +13,7 @@ from widgetastic.widget import (
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
+from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 from airgun.widgets import (
     ActionsDropdown,
     CheckboxWithAlert,
@@ -485,3 +486,11 @@ class HostsAssignCompliancePolicy(HostsActionCommonDialog):
         "//h4[text()='Assign Compliance Policy"
         " - The following hosts are about to be changed']")
     policy = Select(id='policy_id')
+
+
+class HostsJobInvocationCreateView(JobInvocationCreateView):
+    """Hosts Job Invocation Create View"""
+
+
+class HostsJobInvocationStatusView(JobInvocationStatusView):
+    """Hosts Job Invocation Status View"""
