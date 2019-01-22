@@ -275,6 +275,34 @@ class ContentHostDetailsView(BaseLoggedInView):
             return self.table.read()
 
     @View.nested
+    class module_streams(SatTab):
+        TAB_NAME = 'Module Streams'
+        status_filter = Select(
+            locator='.//select[@ng-model="nutupaneParams.status"]')
+        searchbox = Search()
+        table = SatTable(
+            locator='//table',
+            column_widgets={
+                'Name': Text('.//a'),
+                'Actions': ActionsDropdown(".//div[contains(@class, 'dropdown')]")
+            },
+        )
+
+        def search(self, query, status='All'):
+            """Searches for Module Streams. Apply available filters before
+            proceeding with searching. By default 'All' is passed
+
+            :param str query: search query to type into search field.
+            :param str optional status: filter by status of module stream on host
+            :return: list of dicts representing table rows
+            :rtype: list
+            """
+            if status is not None:
+                self.status_filter.fill(status)
+            self.searchbox.search(query)
+            return self.table.read()
+
+    @View.nested
     class repository_sets(SatTab, SearchableViewMixin):
         TAB_NAME = 'Repository Sets'
 
