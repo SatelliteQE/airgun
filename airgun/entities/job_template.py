@@ -31,9 +31,8 @@ class JobTemplateEntity(BaseEntity):
         :param editor_view_option: The edit view option to set.
         :param widget_names: Read only the widgets in widget_names (Optional)
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        if editor_view_option is not None:
-            view.fill({'template.template_editor.rendering_options': editor_view_option})
+        view = self.navigate_to(
+            self, 'Read', entity_name=entity_name, editor_view_option=editor_view_option)
         return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
@@ -96,6 +95,21 @@ class EditTemplate(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+
+@navigator.register(JobTemplateEntity, 'Read')
+class ReadTemplate(EditTemplate):
+    """Navigate to Read Job Template screen.
+
+         Args:
+            entity_name: name of job template
+            editor_view_option: The edit view option to set.
+        """
+
+    def post_navigate(self, _tries, *args, **kwargs):
+        editor_view_option = kwargs.get('editor_view_option')
+        if editor_view_option is not None:
+            self.view.template.template_editor.rendering_options.fill(editor_view_option)
 
 
 @navigator.register(JobTemplateEntity, 'Clone')
