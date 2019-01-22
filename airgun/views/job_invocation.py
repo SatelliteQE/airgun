@@ -89,8 +89,7 @@ class JobInvocationCreateView(BaseLoggedInView):
             View.__init__(self, parent, logger=logger)
             if self.expander.is_displayed:
                 self.expander.click()
-                self.browser.wait_for_element(
-                    self.effective_user, visible=True)
+                self.browser.wait_for_element(self.effective_user, visible=True, exception=False)
 
     schedule = RadioGroup(locator="//div[label[text()='Schedule']]")
     schedule_content = ConditionalSwitchableView(reference='schedule')
