@@ -83,10 +83,10 @@ class ContentHostEntity(BaseEntity):
         view.packages_installed.search(package_name)
         return view.packages_installed.table.read()
 
-    def search_module_stream(self, entity_name, module_name):
+    def search_module_stream(self, entity_name, module_name, status='All'):
         """Search for specific package installed in content host"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.module_streams.search(module_name)
+        view.module_streams.search(module_name, status)
         return view.module_streams.table.read()
 
     def install_errata(self, entity_name, errata_id):
