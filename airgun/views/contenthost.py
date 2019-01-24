@@ -28,6 +28,7 @@ from airgun.widgets import (
     ConfirmationDialog,
     EditableEntry,
     EditableEntryCheckbox,
+    EditableEntryMultiCheckbox,
     EditableEntrySelect,
     ReadOnlyEntry,
     Search,
@@ -146,6 +147,12 @@ class ContentHostDetailsView(BaseLoggedInView):
         details = ReadOnlyEntry(name='Details')
         auto_attach = EditableEntryCheckbox(name='Auto-Attach')
         service_level = EditableEntrySelect(name='Service Level')
+        # System Purpose
+        system_purpose_status = ReadOnlyEntry(name='System Purpose Status')
+        service_level = EditableEntrySelect(name='Service Level (SLA)')
+        usage_type = EditableEntrySelect(name='Usage Type')
+        role = EditableEntrySelect(name='Role')
+        addons = EditableEntryMultiCheckbox(name='Add ons')
         # Content Host Properties
         os = ReadOnlyEntry(name='OS')
         architecture = ReadOnlyEntry(name='Architecture')

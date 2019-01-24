@@ -1,3 +1,4 @@
+from cached_property import cached_property
 from jsmin import jsmin
 from wait_for import wait_for
 from widgetastic.exceptions import (
@@ -1116,6 +1117,48 @@ class EditableEntryCheckbox(EditableEntry):
     a field, but by checkbox.
     """
     edit_field = Checkbox(locator=".//input[@type='checkbox']")
+
+
+class CheckboxGroup(GenericLocatorWidget):
+    """
+    A set of checkboxes of the same property type
+    """
+    ITEMS_LOCATOR = './/p'
+    CHECKBOX_LOCATOR = './/p[normalize-space(.)="{}"]/input'
+
+    @cached_property
+    def checkboxes(self):
+        labels = [
+            line.text
+            for line in self.browser.elements(self.ITEMS_LOCATOR, parent=self)
+        ]
+        return {
+            label: Checkbox(self, locator=self.CHECKBOX_LOCATOR.format(label))
+            for label in labels
+        }
+
+    def read(self):
+        """Read values of checkboxes"""
+        return {
+            name: checkbox.read()
+            for name, checkbox in self.checkboxes.items()
+        }
+
+    def fill(self, values):
+        """Check or uncheck one of the checkboxes
+
+        :param value: string with specification of fields' values
+            Example: value={'details.addons': {'Test addon 1': True, 'Test addon 2': False}}
+        """
+        for name, value in values.items():
+            self.checkboxes[name].fill(value)
+
+
+class EditableEntryMultiCheckbox(EditableEntry):
+    """Should be used in case :class:`EditableEntry` widget represented not by
+    a field, but by a set of checkboxes.
+    """
+    edit_field = CheckboxGroup(locator='.//form')
 
 
 class EditableLimitEntry(EditableEntry):
