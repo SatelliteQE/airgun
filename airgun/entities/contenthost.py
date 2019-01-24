@@ -5,7 +5,10 @@ from airgun.views.contenthost import (
     ContentHostsView,
     ContentHostTaskDetailsView,
 )
-from airgun.views.job_invocation import JobInvocationStatusView
+from airgun.views.job_invocation import (
+    JobInvocationCreateView,
+    JobInvocationStatusView,
+)
 
 
 class ContentHostEntity(BaseEntity):
@@ -61,11 +64,12 @@ class ContentHostEntity(BaseEntity):
 
         :param entity_name: content host name to remotely execute package
             action on
-        :param action_type: remote action to execute. Can be one of 5: 'Enable', 'Disable'
-            'Install', 'Update', 'Remove', 'Reset' and 'Customize'
+        :param action_type: remote action to execute. This is dict with containing 'Action'
+            and 'is_Customize' keys. Action key value can be one of
+            5: 'Enable', 'Disable', 'Install', 'Update', 'Remove', 'Reset'
         :param module_name: Module Stream name to remotely
             install/upgrade/remove (depending on `action_type`)
-        :param stream_version: this uniduely identifies the module with Stream Version
+        :param stream_version: this uniquely identifies the module with Stream Version
 
         :return: Returns a dict containing job status details
         """
@@ -73,6 +77,10 @@ class ContentHostEntity(BaseEntity):
         view.module_streams.search('name = {} and stream = {}'.format(module_name, stream_version))
         view.module_streams.table.row(
             name=module_name, stream=stream_version)['Actions'].fill(action_type)
+        if isinstance(action_type, dict):
+            if 'is_customize' in action_type and action_type['is_customize']:
+                view = JobInvocationCreateView(view.browser)
+                view.submit.click()
         view = JobInvocationStatusView(view.browser)
         view.wait_for_result()
         return view.read()

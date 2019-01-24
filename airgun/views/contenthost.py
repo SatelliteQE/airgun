@@ -79,6 +79,18 @@ class StatusIcon(GenericLocatorWidget):
         return self.color
 
 
+class UnEvenActionDropDown(ActionsDropdown):
+    """"""
+    customize_check_box = Checkbox(id="customize")
+
+    def fill(self, item):
+        if isinstance(item, dict):
+            if 'is_customize' in item and item['is_customize']:
+                self.open()
+                self.customize_check_box.click()
+            self.select(item['action'])
+
+
 class InstallableUpdatesCellView(View):
     """Installable Updates Table Cell View for content host view Table"""
     ROOT = '.'
@@ -284,7 +296,7 @@ class ContentHostDetailsView(BaseLoggedInView):
             locator='//table',
             column_widgets={
                 'Name': Text('.//a'),
-                'Actions': ActionsDropdown(".//div[contains(@class, 'dropdown')]")
+                'Actions': UnEvenActionDropDown(".//div[contains(@class, 'dropdown')]")
             },
         )
 

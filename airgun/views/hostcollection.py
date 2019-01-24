@@ -25,7 +25,9 @@ from airgun.widgets import (
     RadioGroup,
     ReadOnlyEntry,
     SatTable,
+    Search
 )
+from airgun.views.contenthost import UnEvenActionDropDown
 
 
 class HostCollectionsView(BaseLoggedInView, SearchableViewMixin):
@@ -86,6 +88,8 @@ class HostCollectionEditView(BaseLoggedInView):
         manage_packages = Text(".//a[@ng-click='openPackagesModal()']")
         # Errata Installation
         install_errata = Text(".//a[@ng-click='openErrataModal()']")
+        # Module Stream Installation, Removal, and Update
+        manage_module_streams = Text(".//a[@ng-click='openModuleStreamsModal()']")
         # Change assigned Lifecycle Environment or Content View
         change_assigned_content = Text(
             ".//a[@ng-click='openEnvironmentModal()']")
@@ -230,6 +234,29 @@ class HostCollectionInstallErrataView(BaseLoggedInView):
         """The view is displayed when it's title exists"""
         return self.browser.wait_for_element(
             self.title, exception=False) is not None
+
+
+class HostCollectionManageModuleStreamsView(BaseLoggedInView):
+    title = Text("//h4[contains(., 'Content Host Module Stream Management')]")
+    search_box = Search()
+    table = SatTable(
+        locator='//table',
+        column_widgets={
+            'Name': Text('.//a'),
+            'Actions': UnEvenActionDropDown(".//div[contains(@class, 'dropdown')]")
+        },
+    )
+
+    @property
+    def is_displayed(self):
+        """The view is displayed when it's title exists"""
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
+
+    def search(self, query):
+        """search module stream based on name and stream version"""
+        self.search_box.search(query)
+        return self.table.read()
 
 
 class HostCollectionChangeAssignedContentView(BaseLoggedInView):
