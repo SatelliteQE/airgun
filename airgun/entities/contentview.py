@@ -77,6 +77,22 @@ class ContentViewEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def search_content_view(self, entity_name, value, assigned=True):
+        """Search a composite content view for content views with query value in assigned or
+        unassigned resources.
+        """
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        assert view.content_views.is_displayed, (
+            'Could not find "Content Views" tab. '
+            'Make sure {} is composite content view'
+            .format(entity_name)
+        )
+        if assigned:
+            resource_widget = view.content_views.resources.list_remove_tab
+        else:
+            resource_widget = view.content_views.resources.add_tab
+        return resource_widget.search(value)
+
     def add_cv(self, entity_name, cv_name):
         """Add content view to selected composite content view."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
