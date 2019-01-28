@@ -181,8 +181,8 @@ class HostCollectionEntity(BaseEntity):
         """Manage module streams (install, remove, update, reset)
 
         :param str entity_name:  The host collection name.
-        :param action_type: remote action to execute. This is dict with containing 'Action'
-            and 'is_Customize' keys. Action key value can be one of 5:
+        :param action_type: remote action to execute. This is dict with containing 'action'
+            and 'is_customize' keys. Action key value can be one of 5:
             'Enable', 'Disable', 'Install', 'Update', 'Remove', 'Reset'
         :param str module_name:  The name of module on which action is performed
         :param str stream_version:  The version of module on which action is performed
@@ -200,7 +200,7 @@ class HostCollectionEntity(BaseEntity):
                 view = JobInvocationCreateView(view.browser)
                 view.submit.click()
         view = JobInvocationStatusView(view.browser)
-        view.wait_for_result(timeout=60)
+        view.wait_for_result(timeout=120)
         return view.read()
 
     def change_assigned_content(self, entity_name, lce, content_view):

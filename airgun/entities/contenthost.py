@@ -64,8 +64,8 @@ class ContentHostEntity(BaseEntity):
 
         :param entity_name: content host name to remotely execute package
             action on
-        :param action_type: remote action to execute. This is dict with containing 'Action'
-            and 'is_Customize' keys. Action key value can be one of
+        :param action_type: remote action to execute. This is dict with containing 'action'
+            and 'is_customize' keys. Action key value can be one of
             5: 'Enable', 'Disable', 'Install', 'Update', 'Remove', 'Reset'
         :param module_name: Module Stream name to remotely
             install/upgrade/remove (depending on `action_type`)
@@ -82,7 +82,7 @@ class ContentHostEntity(BaseEntity):
                 view = JobInvocationCreateView(view.browser)
                 view.submit.click()
         view = JobInvocationStatusView(view.browser)
-        view.wait_for_result()
+        view.wait_for_result(timeout=120)
         return view.read()
 
     def search_package(self, entity_name, package_name):
