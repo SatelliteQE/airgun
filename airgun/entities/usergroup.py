@@ -41,6 +41,13 @@ class UserGroupEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def refresh_external_group(self, entity_name, external_group_name):
+        """Refresh external group."""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.external_groups.table.row(name=external_group_name)['Actions'].widget.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
 
 @navigator.register(UserGroupEntity, 'All')
 class ShowAllUserGroups(NavigateStep):
