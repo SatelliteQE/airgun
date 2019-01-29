@@ -5,7 +5,7 @@ from widgetastic.widget import (
     TextInput,
     View,
 )
-from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import BreadCrumb, Button
 
 from airgun.views.common import (
     AddRemoveResourcesView,
@@ -106,7 +106,7 @@ class ContentViewRemoveView(BaseLoggedInView):
 
 class ContentViewEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    publish = Text("//button[contains(., 'Publish New Version')]")
+    publish = Button("Publish New Version")
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
 
