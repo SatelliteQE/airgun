@@ -2,7 +2,7 @@ from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
-from airgun.widgets import MultiSelect, SatTable
+from airgun.widgets import FilteredDropdown, MultiSelect, SatTable
 
 
 class UserGroupsView(BaseLoggedInView, SearchableViewMixin):
@@ -48,6 +48,33 @@ class UserGroupDetailsView(BaseLoggedInView):
     class roles(SatTab):
         admin = Checkbox(id='usergroup_admin')
         resources = MultiSelect(id='ms-usergroup_role_ids')
+
+    @View.nested
+    class external_groups(SatTab):
+        TAB_NAME = 'External Groups'
+        table = SatTable(
+            './/table',
+            column_widgets={
+                'Actions': Text('.//a[contains(@href, "refresh")]'),
+            }
+        )
+
+        add_external_user_group = Text('.//a[@data-association="external_usergroups"]')
+        name = TextInput(
+            locator=(
+                "(//input[starts-with(@name, 'usergroup[external_usergroups_attributes]')]"
+                "[contains(@name, '[name]')])[last()]"
+            )
+        )
+        auth_source = FilteredDropdown(
+            locator=(
+                "//div[starts-with(@id, 's2id_usergroup_external_usergroups_attributes')]"
+                "[contains(@id, 'auth_source_id')]"
+            )
+        )
+
+        def before_fill(self, values):
+            self.add_external_user_group.click()
 
 
 class UserGroupCreateView(UserGroupDetailsView):
