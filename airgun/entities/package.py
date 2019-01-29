@@ -27,7 +27,7 @@ class PackageEntity(BaseEntity):
             upgradable=upgradable
         )
 
-    def read(self, entity_name, repository='All Repositories'):
+    def read(self, entity_name, repository='All Repositories', widget_names=None):
         """Read package values from Package Details page
 
         :param str entity_name: the package name to read.
@@ -36,7 +36,7 @@ class PackageEntity(BaseEntity):
         """
         view = self.navigate_to(
             self, 'Details', entity_name=entity_name, repository=repository)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
 
 @navigator.register(PackageEntity, 'All')

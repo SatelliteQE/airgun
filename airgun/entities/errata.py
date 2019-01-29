@@ -31,7 +31,7 @@ class ErrataEntity(BaseEntity):
         )
 
     def read(self, entity_name, applicable=False, installable=False, repo=None,
-             environment=None):
+             environment=None, widget_names=None):
         """Read errata details.
 
         :param str entity_name: errata id or title
@@ -54,7 +54,7 @@ class ErrataEntity(BaseEntity):
         )
         if environment:
             view.content_hosts.environment_filter.fill(environment)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def install(self, entity_name, host_name):
         """Install errata on content host.

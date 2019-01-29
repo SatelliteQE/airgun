@@ -18,14 +18,14 @@ class ModuleStreamEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(query)
 
-    def read(self, entity_name):
+    def read(self, entity_name, widget_names=None):
         """Read module streams values from Module Stream Details page
 
         :param str entity_name: the module stream name to read.
         """
         view = self.navigate_to(
             self, 'Details', entity_name=entity_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
 
 @navigator.register(ModuleStreamEntity, 'All')

@@ -17,7 +17,7 @@ class RedHatRepositoryEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value, category=category, types=types)
 
-    def read(self, entity_name, category='Available'):
+    def read(self, entity_name, category='Available', widget_names=None):
         """Read RH Repositories values.
 
         :param entity_name: The repository name

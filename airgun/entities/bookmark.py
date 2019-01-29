@@ -35,11 +35,11 @@ class BookmarkEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(query)
 
-    def read(self, entity_name, controller=None):
+    def read(self, entity_name, controller=None, widget_names=None):
         """Read bookmark values"""
         view = self.navigate_to(
             self, 'Edit', entity_name=entity_name, controller=controller)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values, controller=None):
         """Update existing bookmark"""

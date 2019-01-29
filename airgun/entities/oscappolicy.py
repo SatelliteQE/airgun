@@ -46,7 +46,7 @@ class OSCAPPolicyEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(entity_name)
 
-    def details(self, entity_name):
+    def details(self, entity_name, widget_names=None):
         """Read the content from corresponding SCAP Policy dashboard,
             clicking on the Name of SCAP Policy shows the dashboard
 
@@ -54,16 +54,16 @@ class OSCAPPolicyEntity(BaseEntity):
         :return: dictionary with values from SCAP Policy Details View
         """
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
-    def read(self, entity_name):
+    def read(self, entity_name, widget_names=None):
         """Reads the values of corresponding SCAP Policy - edit menu
 
         :param entity_name: specifies corresponding SCAP Policy
         :return: dict representing tabs, with nested dicts representing fields
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
         """Updates instance of SCAP Policy with new values

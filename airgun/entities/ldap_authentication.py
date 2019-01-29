@@ -20,10 +20,10 @@ class LDAPAuthenticationEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def read(self, entity_name):
+    def read(self, entity_name, widget_names=None):
         """Read all values for existing LDAP Authentication source"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def read_table_row(self, entity_name):
         """Read values for corresponding table row from LDAP Authentication
