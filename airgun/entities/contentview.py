@@ -162,14 +162,14 @@ class ContentViewEntity(BaseEntity):
         view.flash.dismiss()
         return view.versions.table.row(version=version_name).read()
 
-    def read_version(self, entity_name, version_name):
+    def read_version(self, entity_name, version_name, widget_names=None):
         """Read content view version values"""
         view = self.navigate_to(
             self, 'Version',
             entity_name=entity_name,
             version_name=version_name,
         )
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def search_version(self, entity_name, query):
         """Search for content view version"""

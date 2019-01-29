@@ -5,10 +5,10 @@ from airgun.views.rhai import ActionsDetailsView
 
 class ActionEntity(BaseEntity):
 
-    def read(self):
+    def read(self, widget_names=None):
         """Read the content of the view."""
         view = self.navigate_to(self, "Details")
-        return view.read()
+        return view.read(widget_names=widget_names)
 
 
 @navigator.register(ActionEntity, "Details")

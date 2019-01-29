@@ -5,9 +5,9 @@ from airgun.views.rhai import OverviewDetailsView
 
 class OverviewEntity(BaseEntity):
 
-    def read(self):
+    def read(self, widget_names=None):
         view = self.navigate_to(self, "Details")
-        return view.read()
+        return view.read(widget_names=widget_names)
 
 
 @navigator.register(OverviewEntity, "Details")

@@ -31,14 +31,14 @@ class ContentViewFilterEntity(BaseEntity):
         view = self.navigate_to(self, 'All', cv_name=cv_name)
         return view.search(value)
 
-    def read(self, cv_name, filter_name):
+    def read(self, cv_name, filter_name, widget_names=None):
         """Read content view filter values"""
         view = self.navigate_to(
             self, 'Edit',
             cv_name=cv_name,
             filter_name=filter_name,
         )
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def update(self, cv_name, filter_name, values):
         """Update content view filter.

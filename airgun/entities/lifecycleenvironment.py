@@ -34,10 +34,10 @@ class LCEEntity(BaseEntity):
         else:
             self.create_environment_path(values)
 
-    def read(self, entity_name):
+    def read(self, entity_name, widget_names=None):
         """Read specific lifecycle environment details from its Edit page"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def read_all(self):
         """Read all available lifecycle environments details from generic

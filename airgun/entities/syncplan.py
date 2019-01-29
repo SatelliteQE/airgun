@@ -32,10 +32,10 @@ class SyncPlanEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def read(self, entity_name):
+    def read(self, entity_name, widget_names=None):
         """Read values for created sync plan"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
         """Update sync plan with necessary values"""

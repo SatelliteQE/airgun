@@ -6,10 +6,10 @@ from airgun.views.sync_status import SyncStatusView
 
 class SyncStatusEntity(BaseEntity):
 
-    def read(self):
+    def read(self, widget_names=None):
         """Read all widgets at Sync status entity"""
         view = self.navigate_to(self, 'All')
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def synchronize(self, repository_paths, timeout=3600):
         """Synchronize repositories

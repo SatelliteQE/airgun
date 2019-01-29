@@ -45,14 +45,14 @@ class OSCAPContentEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(title)
 
-    def read(self, entity_name):
+    def read(self, entity_name, widget_names=None):
         """Reads the content of corresponding SCAP Content
 
         :param entity_name: specify corresponding SCAP Content
         :return: dict representing tabs, with nested dicts representing fields
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
         """Updates instance of SCAP Content with new values

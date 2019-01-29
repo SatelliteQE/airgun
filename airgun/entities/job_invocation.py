@@ -23,7 +23,7 @@ class JobInvocationEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def read(self, entity_name, host_name):
+    def read(self, entity_name, host_name, widget_names=None):
         """Read values for scheduled or already executed job"""
         view = self.navigate_to(
             self,
@@ -31,7 +31,7 @@ class JobInvocationEntity(BaseEntity):
             entity_name=entity_name,
             host_name=host_name
         )
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def wait_job_invocation_state(
             self, entity_name, host_name, expected_state='succeeded'):

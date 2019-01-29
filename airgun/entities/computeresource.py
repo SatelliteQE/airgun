@@ -40,10 +40,10 @@ class ComputeResourceEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def read(self, entity_name):
+    def read(self, entity_name, widget_names=None):
         """Read all values for existing compute resource entity"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def delete(self, value):
         """Delete specific compute profile"""
@@ -108,7 +108,7 @@ class ComputeResourceEntity(BaseEntity):
         view.fill(values)
         view.submit.click()
 
-    def read_computeprofile(self, entity_name, compute_profile):
+    def read_computeprofile(self, entity_name, compute_profile, widget_names=None):
         """Read specific compute profile attributes through CR detail view"""
         view = self.navigate_to(
             self,
@@ -116,7 +116,7 @@ class ComputeResourceEntity(BaseEntity):
             entity_name=entity_name,
             compute_profile=compute_profile
         )
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def create_image(self, entity_name, values):
         """Create a compute resource image.
@@ -152,7 +152,7 @@ class ComputeResourceEntity(BaseEntity):
         view = self.navigate_to(self, 'Detail', entity_name=entity_name)
         return view.containers.search(value)
 
-    def read_image(self, entity_name, image_name):
+    def read_image(self, entity_name, image_name, widget_names=None):
         """Read from compute resource image edit view.
 
         :param str entity_name: The compute resource name.
@@ -160,7 +160,7 @@ class ComputeResourceEntity(BaseEntity):
         :returns: The edit view widgets values
         """
         view = self.navigate_to(self, 'Edit Image', entity_name=entity_name, image_name=image_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def update_image(self, entity_name, image_name, values):
         """Update compute resource image properties.

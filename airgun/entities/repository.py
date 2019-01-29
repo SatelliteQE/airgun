@@ -28,11 +28,11 @@ class RepositoryEntity(BaseEntity):
         view = self.navigate_to(self, 'All', product_name=product_name)
         return view.search(value)
 
-    def read(self, product_name, entity_name):
+    def read(self, product_name, entity_name, widget_names=None):
         """Read values for repository"""
         view = self.navigate_to(
             self, 'Edit', product_name=product_name, entity_name=entity_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def update(self, product_name, entity_name, values):
         """Update product repository values"""

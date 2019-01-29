@@ -18,11 +18,11 @@ class ManageEntity(BaseEntity):
         """Disable the service."""
         self._toggle_service(False)
 
-    def read(self):
+    def read(self, widget_names=None):
         """Read the content of the view."""
         view = self.navigate_to(self, "Details")
         view.check_connection.click()
-        return view.read()
+        return view.read(widget_names=widget_names)
 
 
 @navigator.register(ManageEntity, "Details")
