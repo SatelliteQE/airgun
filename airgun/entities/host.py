@@ -12,6 +12,7 @@ from airgun.views.host import (
     HostsAssignOrganization,
     HostsChangeGroup,
     HostsChangeEnvironment,
+    HostsDeleteActionDialog,
     HostsJobInvocationCreateView,
     HostsJobInvocationStatusView,
     HostsView,
@@ -35,6 +36,17 @@ class HostEntity(BaseEntity):
         host_view.flash.assert_no_error()
         host_view.flash.dismiss()
 
+    def create_without_submit(self, values, read_widget_names=None):
+        """Goto create host view, fill the view with supplied values, and return the view read
+        fields values, will read only read_widget_names if supplied otherwise read the fields in
+        values.
+        """
+        view = self.navigate_to(self, 'New')
+        view.fill(values)
+        if not read_widget_names:
+            read_widget_names = list(values.keys())
+        return view.read(widget_names=read_widget_names)
+
     def search(self, value):
         """Search for existing host entity"""
         view = self.navigate_to(self, 'All')
@@ -57,12 +69,33 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.read()
 
+    def update(self, entity_name, values):
+        """Update an existing host with values"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
     def delete(self, entity_name):
         """Delete host from the system"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def delete_interface(self, entity_name, interface_id):
+        """Delete host network interface.
+
+        :param entity_name: The host name to delete the network interface from
+        :param interface_id: The network interface identifier.
+        """
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.interfaces.interfaces_list.row(
+            identifier=interface_id)['Actions'].widget.delete.click()
+        view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -198,6 +231,7 @@ class HostsSelectAction(NavigateStep):
         'Assign Compliance Policy': HostsAssignCompliancePolicy,
         'Assign Location': HostsAssignLocation,
         'Assign Organization': HostsAssignOrganization,
+        'Delete Hosts': HostsDeleteActionDialog,
         'Schedule Remote Job': HostsJobInvocationCreateView,
     }
 
