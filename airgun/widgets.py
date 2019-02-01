@@ -562,8 +562,21 @@ class SatFlashMessages(FlashMessages):
         return result
 
     @retry_stale_element
-    def assert_no_error(self):
-        return super().assert_no_error()
+    def assert_no_error(self, ignore_messages=None):
+        if ignore_messages is None:
+            ignore_messages = []
+        self.logger.info('asserting there are no error messages')
+        for message in self.messages:
+            message_text = message.text
+            if message.type not in {'success', 'info', 'warning'}:
+                if message_text in ignore_messages:
+                    self.logger.info('ERROR MESSAGE IGNORED %s: %r', message.type, message_text)
+                    continue
+                self.logger.error('%s: %r', message.type, message_text)
+                raise AssertionError(
+                    'assert_no_error: {}: {!r}'.format(message.type, message_text))
+            else:
+                self.logger.info('%s: %r', message.type, message_text)
 
     @retry_stale_element
     def dismiss(self):
