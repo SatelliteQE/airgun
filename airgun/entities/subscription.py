@@ -13,7 +13,8 @@ from airgun.views.subscription import (
 
 
 class SubscriptionEntity(BaseEntity):
-    def _wait_for_process_to_finish(self, name, has_manifest=False, timeout=600):
+    def _wait_for_process_to_finish(self, name, has_manifest=False, timeout=600,
+                                    ignore_error_messages=None):
         """Helper ensuring that task (upload / delete manifest / subscription)
         has finished. Run after action invoking task to leave Satellite
         in usable state.
@@ -21,6 +22,8 @@ class SubscriptionEntity(BaseEntity):
         they can happen in any order.
         :param name: Name of running task
         :param has_manifest: Should manifest exist after task ended?
+        :param timeout: Waiting timeout
+        :param ignore_error_messages: A List of strings representing the error messages to ignore.
         """
         view = SubscriptionListView(self.browser, logger=self.browser.logger)
         wait_for(
@@ -33,7 +36,7 @@ class SubscriptionEntity(BaseEntity):
                 handle_exception=True, timeout=10,
                 logger=view.logger
         )
-        view.flash.assert_no_error()
+        view.flash.assert_no_error(ignore_messages=ignore_error_messages)
         view.flash.dismiss()
 
     @property
@@ -44,14 +47,16 @@ class SubscriptionEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return not view.add_button.disabled
 
-    def add_manifest(self, manifest_file):
+    def add_manifest(self, manifest_file, ignore_error_messages=None):
         """Upload manifest file
         :param manifest_file: Path to manifest file
+        :param ignore_error_messages: List of error messages to ignore
         """
         view = self.navigate_to(self, 'Manage Manifest')
         view.wait_animation_end()
         view.manifest.manifest_file.fill(manifest_file)
-        self._wait_for_process_to_finish('Import Manifest', has_manifest=True)
+        self._wait_for_process_to_finish(
+            'Import Manifest', has_manifest=True, ignore_error_messages=ignore_error_messages)
 
     def refresh_manifest(self):
         """Refresh manifest"""
@@ -65,12 +70,13 @@ class SubscriptionEntity(BaseEntity):
             timeout=1200
         )
 
-    def delete_manifest(self):
+    def delete_manifest(self, ignore_error_messages=None):
         """Delete manifest from current organization"""
         view = self.navigate_to(self, 'Delete Manifest Confirmation')
         view.wait_animation_end()
         view.delete_button.click()
-        self._wait_for_process_to_finish('Delete Manifest', has_manifest=False)
+        self._wait_for_process_to_finish(
+            'Delete Manifest', has_manifest=False, ignore_error_messages=ignore_error_messages)
 
     def read_delete_manifest_message(self):
         """Read message displayed on 'Confirm delete manifest' dialog"""
@@ -157,13 +163,6 @@ class SubscriptionNavigationStep(NavigateStep):
 class SubscriptionList(SubscriptionNavigationStep):
     """Navigate to Subscriptions main page"""
     VIEW = SubscriptionListView
-
-    def pre_navigate(self, _tries, *args, **kwargs):
-        super(SubscriptionList, self).pre_navigate(_tries, *args, **kwargs)
-        wait_for(
-                lambda: not self.view.fake_fade_widget.is_displayed,
-                handle_exception=True, logger=self.view.logger, timeout=10 * 60
-        )
 
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Subscriptions')
