@@ -107,6 +107,23 @@ class SubscriptionEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
+    def filter_columns(self, columns=None):
+        """Filters column headers
+        :param columns: dict mapping column name to boolean value
+        :return: tuple of the name of the headers
+        """
+        view = self.navigate_to(self, 'All')
+        if columns is not None:
+            view.columns_filter_checkboxes.fill(columns)
+            wait_for(
+                lambda: view.table.headers is not None,
+                timeout=10,
+                delay=1,
+                handle_exception=True,
+                logger=view.logger
+            )
+        return view.table.headers
+
     def provided_products(self, entity_name, virt_who=False):
         """Read list of all products provided by subscription.
         :param entity_name: Name of subscription
