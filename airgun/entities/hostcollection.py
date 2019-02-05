@@ -176,31 +176,38 @@ class HostCollectionEntity(BaseEntity):
             )
             return job_status_view.overview.read()
 
-    def manage_module_streams(self, entity_name, action_type,
-                              module_name, stream_version):
-        """Manage module streams (install, remove, update, reset)
-
+    def manage_module_streams(self, entity_name, action_type, module_name,
+                              stream_version, customize=False, customize_values=None):
+        """ Manage module streams
         :param str entity_name:  The host collection name.
         :param action_type: remote action to execute. This is dict with containing 'action'
             and 'is_customize' keys. Action key value can be one of 5:
             'Enable', 'Disable', 'Install', 'Update', 'Remove', 'Reset'
         :param str module_name:  The name of module on which action is performed
         :param str stream_version:  The version of module on which action is performed
+        :param customize: special action type which should call on content host module streams
+            tab to run some custom expression related to module streams
+        :param customize_values: need to pass if run some custom command expression in content host
+
         :returns job status view values
 
         """
+        if customize_values is None:
+            customize_values = {}
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.details.manage_module_streams.click()
         view = HostCollectionManageModuleStreamsView(view.browser)
         view.search('name = {} and stream = {}'.format(module_name, stream_version))
+        if customize:
+            action_type = dict(is_customize=customize, action=action_type)
         view.table.row(
             name=module_name, stream=stream_version)['Actions'].fill(action_type)
-        if isinstance(action_type, dict):
-            if 'is_customize' in action_type and action_type['is_customize']:
-                view = JobInvocationCreateView(view.browser)
-                view.submit.click()
+        if customize:
+            view = JobInvocationCreateView(view.browser)
+            view.fill(customize_values)
+            view.submit.click
         view = JobInvocationStatusView(view.browser)
-        view.wait_for_result(timeout=120)
+        view.wait_for_result()
         return view.read()
 
     def change_assigned_content(self, entity_name, lce, content_view):

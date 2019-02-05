@@ -25,9 +25,8 @@ from airgun.widgets import (
     RadioGroup,
     ReadOnlyEntry,
     SatTable,
-    Search
 )
-from airgun.views.contenthost import UnEvenActionDropDown
+from airgun.views.contenthost import ModuleStreamActionDropDown
 
 
 class HostCollectionsView(BaseLoggedInView, SearchableViewMixin):
@@ -209,7 +208,7 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
             self.dialog.confirm()
 
 
-class HostCollectionInstallErrataView(BaseLoggedInView):
+class HostCollectionInstallErrataView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h4[contains(., 'Content Host Errata Management')]")
     search = TextInput(
         locator=".//input[@type='text' and @ng-model='errataFilter']")
@@ -236,14 +235,13 @@ class HostCollectionInstallErrataView(BaseLoggedInView):
             self.title, exception=False) is not None
 
 
-class HostCollectionManageModuleStreamsView(BaseLoggedInView):
+class HostCollectionManageModuleStreamsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h4[contains(., 'Content Host Module Stream Management')]")
-    search_box = Search()
     table = SatTable(
         locator='//table',
         column_widgets={
             'Name': Text('.//a'),
-            'Actions': UnEvenActionDropDown(".//div[contains(@class, 'dropdown')]")
+            'Actions': ModuleStreamActionDropDown(".//div[contains(@class, 'dropdown')]")
         },
     )
 
@@ -255,7 +253,7 @@ class HostCollectionManageModuleStreamsView(BaseLoggedInView):
 
     def search(self, query):
         """search module stream based on name and stream version"""
-        self.search_box.search(query)
+        self.searchbox.search(query)
         return self.table.read()
 
 

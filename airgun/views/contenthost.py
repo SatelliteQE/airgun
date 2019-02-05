@@ -79,16 +79,18 @@ class StatusIcon(GenericLocatorWidget):
         return self.color
 
 
-class UnEvenActionDropDown(ActionsDropdown):
-    """"""
+class ModuleStreamActionDropDown(ActionsDropdown):
+    """Custom drop down for module streams tab in content host page"""
     customize_check_box = Checkbox(id="customize")
 
     def fill(self, item):
+        value = item
         if isinstance(item, dict):
-            if 'is_customize' in item and item['is_customize']:
+            if item.get('is_customize'):
                 self.open()
                 self.customize_check_box.click()
-            self.select(item['action'])
+            value = item['action']
+        self.select(value)
 
 
 class InstallableUpdatesCellView(View):
@@ -287,16 +289,15 @@ class ContentHostDetailsView(BaseLoggedInView):
             return self.table.read()
 
     @View.nested
-    class module_streams(SatTab):
+    class module_streams(SatTab, SearchableViewMixin):
         TAB_NAME = 'Module Streams'
         status_filter = Select(
             locator='.//select[@ng-model="nutupaneParams.status"]')
-        searchbox = Search()
         table = SatTable(
             locator='//table',
             column_widgets={
                 'Name': Text('.//a'),
-                'Actions': UnEvenActionDropDown(".//div[contains(@class, 'dropdown')]")
+                'Actions': ModuleStreamActionDropDown(".//div[contains(@class, 'dropdown')]")
             },
         )
 
