@@ -104,12 +104,14 @@ class HostEntity(BaseEntity):
         view.export.click()
         return self.browser.save_downloaded_file()
 
-    def schedule_remote_job(self, entities_list, values, timeout=60):
+    def schedule_remote_job(self, entities_list, values, timeout=60, wait_for_results=True):
         """Apply Schedule Remote Job action to the hosts names in entities_list
 
         :param entities_list: The host names to apply the remote job.
         :param values: the values to fill The Job invocation view.
         :param timeout: The time to wait for the job to finish.
+        :param wait_for_results: Whether to wait for the job to finish execution and return the
+            final job status results.
 
         :returns: The job invocation status view values
         """
@@ -119,7 +121,8 @@ class HostEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
         status_view = HostsJobInvocationStatusView(self.browser)
-        status_view.wait_for_result(timeout=timeout)
+        if wait_for_results:
+            status_view.wait_for_result(timeout=timeout)
         return status_view.read()
 
 
