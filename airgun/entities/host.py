@@ -110,8 +110,7 @@ class HostEntity(BaseEntity):
         :param entities_list: The host names to apply the remote job.
         :param values: the values to fill The Job invocation view.
         :param timeout: The time to wait for the job to finish.
-        :param wait_for_results: Whether to wait for the job to finish execution and return the
-            final job status results.
+        :param wait_for_results: Whether to wait for the job to finish execution.
 
         :returns: The job invocation status view values
         """
