@@ -26,14 +26,14 @@ class PartitionTableEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def update(self, values, entity_name):
+    def update(self, entity_name, values):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def clone(self, values, entity_name):
+    def clone(self, entity_name, values):
         view = self.navigate_to(self, 'Clone', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
