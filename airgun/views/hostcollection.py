@@ -251,11 +251,6 @@ class HostCollectionManageModuleStreamsView(BaseLoggedInView, SearchableViewMixi
         return self.browser.wait_for_element(
             self.title, exception=False) is not None
 
-    def search(self, query):
-        """search module stream based on name and stream version"""
-        self.searchbox.search(query)
-        return self.table.read()
-
 
 class HostCollectionChangeAssignedContentView(BaseLoggedInView):
     title = Text("//h4[contains(., 'Content Host Bulk Content')]")
