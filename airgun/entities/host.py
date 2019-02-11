@@ -36,7 +36,7 @@ class HostEntity(BaseEntity):
         host_view.flash.assert_no_error()
         host_view.flash.dismiss()
 
-    def create_without_submit(self, values, read_widget_names=None):
+    def read_create_form(self, values, read_widget_names=None):
         """Goto create host view, fill the view with supplied values, and return the view read
         fields values, will read only read_widget_names if supplied otherwise read the fields in
         values.

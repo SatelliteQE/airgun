@@ -19,10 +19,12 @@ from airgun.widgets import (
     CheckboxWithAlert,
     CustomParameter,
     FilteredDropdown,
+    Link,
     MultiSelect,
     RadioGroup,
     SatTableWithUnevenStructure,
     SatTable,
+    ToggleButton,
 )
 
 
@@ -154,22 +156,6 @@ class HostsView(BaseLoggedInView, SearchableViewMixin):
             self.title, exception=False) is not None
 
 
-class InheritButton(GenericLocatorWidget):
-    """Inherit button, mainly used with puppet environment, puppet master, puppet ca fields"""
-
-    @property
-    def is_active(self):
-        return 'active' in self.browser.classes(self, check_safe=False)
-
-    def fill(self, value):
-        active = self.is_active
-        if (value and not active) or (not value and active):
-            self.click()
-
-    def read(self):
-        return self.is_active
-
-
 class HostCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     submit = Text('//input[@name="commit"]')
@@ -194,19 +180,9 @@ class HostCreateView(BaseLoggedInView):
         lce = FilteredDropdown(id='host_lifecycle_environment')
         content_view = FilteredDropdown(id='host_content_view')
         content_source = FilteredDropdown(id='s2id_content_source_id')
-
-        @View.nested
-        class reset_puppet_environment(View):
-            ROOT = ".//a[@id='reset_puppet_environment']"
-
-            def fill(self, value):
-                if value:
-                    self.browser.click(self)
-
-        inherit_puppet_environment = InheritButton(
-            ".//div[contains(@id, 'host_environment')]/following-sibling::span"
-            "/button[contains(@class, 'btn-can-disable')]"
-        )
+        reset_puppet_environment = Link(".//a[@id='reset_puppet_environment']")
+        inherit_puppet_environment = ToggleButton(
+            locator=".//div[label[@for='environment_id']]//button")
         puppet_environment = FilteredDropdown(id='host_environment')
         puppet_master = FilteredDropdown(id='host_puppet_proxy')
         puppet_ca = FilteredDropdown(id='host_puppet_ca_proxy')

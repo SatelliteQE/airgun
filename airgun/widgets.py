@@ -20,6 +20,7 @@ from widgetastic.widget import (
 )
 from widgetastic.xpath import quote
 from widgetastic_patternfly import (
+    Button,
     FlashMessage,
     FlashMessages,
     VerticalNavigation,
@@ -1730,3 +1731,35 @@ class AutoCompleteTextInput(TextInput):
         self.browser.plugin.ensure_page_safe()
         self.browser.execute_script('arguments[0].blur();', self.__element__())
         return changes
+
+
+class ToggleButton(Button):
+    """A simple toggle button that we can read/write it's state via the standard view functions
+    read/fill
+    """
+
+    def __init__(self, parent, *text, locator=None, **kwargs):
+        self.locator = locator
+        super().__init__(parent, *text, **kwargs)
+
+    def __locator__(self):
+        if self.locator:
+            return self.locator
+        return super().__locator__()
+
+    def fill(self, value):
+        active = self.active
+        if not self.disabled and ((value and not active) or (not value and active)):
+            self.click()
+
+    def read(self):
+        return self.active
+
+
+class Link(Text):
+    """A link representation that we can read/click via the standard view functions read/fill.
+    """
+
+    def fill(self, value):
+        if value:
+            self.browser.click(self)
