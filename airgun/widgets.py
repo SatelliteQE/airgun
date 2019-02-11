@@ -1259,7 +1259,7 @@ class ACEEditor(Widget):
             procedure
         """
         self.browser.execute_script(
-            "ace.edit('{0}').setValue('{1}');".format(self.ace_edit_id, value))
+            "ace.edit('{0}').setValue(arguments[0])".format(self.ace_edit_id), value)
 
     def read(self):
         """Returns string with current widget value"""
