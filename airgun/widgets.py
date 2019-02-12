@@ -1748,9 +1748,12 @@ class ToggleButton(Button):
         return super().__locator__()
 
     def fill(self, value):
-        active = self.active
-        if not self.disabled and ((value and not active) or (not value and active)):
+        value = bool(value)
+        current_value = self.active
+        if value != current_value:
             self.click()
+            return True
+        return False
 
     def read(self):
         return self.active
