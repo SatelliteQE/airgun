@@ -36,6 +36,19 @@ class DiscoveryRulesView(BaseLoggedInView):
             self.title, exception=False) is not None
 
 
+class SearchInput(TextInput):
+    """Discovery Search input field, This field has no value attribute, and The only way to set or
+    read it values correctly is using javascript.
+    """
+
+    @property
+    def value(self):
+        return self.browser.execute_script('return arguments[0].value;', self)
+
+    def fill(self, value):
+        self.browser.execute_script('arguments[0].value=arguments[1];', self, value)
+
+
 class DiscoveryRuleCreateView(BaseLoggedInView):
     submit = Text('//input[@name="commit"]')
     cancel = Text('//a[text()="Cancel"]')
@@ -54,7 +67,7 @@ class DiscoveryRuleCreateView(BaseLoggedInView):
     @View.nested
     class primary(SatTab):
         name = TextInput(id='discovery_rule_name')
-        search = TextInput(id='search')
+        search = SearchInput(id='search')
         host_group = FilteredDropdown(id='discovery_rule_hostgroup_id')
         hostname = TextInput(id='discovery_rule_hostname')
         hosts_limit = TextInput(id='discovery_rule_max_count')
