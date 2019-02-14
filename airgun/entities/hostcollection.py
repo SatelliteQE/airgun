@@ -47,7 +47,7 @@ class HostCollectionEntity(BaseEntity):
     def update(self, entity_name, values):
         """Update host collection properties with values."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.details.fill(values)
+        return view.fill(values)
 
     def associate_host(self, entity_name, host_name):
         """Associate a host with host collection

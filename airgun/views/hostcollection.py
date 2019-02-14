@@ -60,6 +60,8 @@ class HostCollectionCreateView(BaseLoggedInView):
 
 class HostCollectionEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
+    dialog = ConfirmationDialog()
 
     @property
     def is_displayed(self):
