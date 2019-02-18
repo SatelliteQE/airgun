@@ -510,7 +510,7 @@ class TemplateInputItem(GenericRemovableWidgetItem):
         description = TextInput(
             locator=".//textarea[contains(@name, '[description]')]")
 
-    @input_content.register('Variable value')
+    @input_content.register('Variable')
     class VariableValueForm(View):
         variable_name = TextInput(
             locator=".//input[contains(@name, '[variable_name]')]")

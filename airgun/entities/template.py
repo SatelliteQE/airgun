@@ -26,6 +26,13 @@ class ProvisioningTemplateEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
+    def update(self, entity_name, values):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
     def clone(self, entity_name, values):
         view = self.navigate_to(self, 'Clone', entity_name=entity_name)
         view.fill(values)
@@ -44,6 +51,14 @@ class ProvisioningTemplateEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Unlock')
+        self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def delete(self, entity_name):
+        view = self.navigate_to(self, 'All')
+        view.search(entity_name)
+        view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()

@@ -88,8 +88,6 @@ class JobTemplateCreateView(BaseLoggedInView):
         description_format = TextInput(id='job_template_description_format')
         provider_type = FilteredDropdown(id='job_template_provider_type')
         timeout = TextInput(id='job_template_execution_timeout_interval')
-        add_foreign_input_set = Text(
-            "//a[@data-association='foreign_input_sets']")
 
         @View.nested
         class foreign_input_sets(RemovableWidgetsItemsListView):

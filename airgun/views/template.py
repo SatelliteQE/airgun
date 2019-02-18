@@ -1,5 +1,5 @@
 from widgetastic.widget import Checkbox, Text, TextInput, View
-from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import BreadCrumb, Button
 
 from airgun.views.common import (
     BaseLoggedInView,
@@ -7,17 +7,31 @@ from airgun.views.common import (
     SatTable,
     SearchableViewMixin,
     TemplateEditor,
+    TemplateInputItem,
 )
 from airgun.widgets import (
     ActionsDropdown,
+    GenericRemovableWidgetItem,
     FilteredDropdown,
     MultiSelect,
+    RemovableWidgetsItemsListView,
+    Select,
 )
 
 
+class TemplateHostEnvironmentAssociation(GenericRemovableWidgetItem):
+    """Provisioning Template Foreign Input Set Item widget"""
+    remove_button = Text(".//a[@title='Remove Combination']")
+    host_group = Select(
+        locator=".//select[contains(@name, '[hostgroup_id]')]")
+    environment = Select(
+        locator=".//select[contains(@name, '[environment_id]')]")
+
+
 class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[contains(., 'Provisioning Templates')]")
-    new = Text("//a[contains(@href, '/templates/provisioning_templates/new')]")
+    title = Text("//h1[text()='Provisioning Templates']")
+    new = Button("Create Template")
+    build_pxe_default = Button("Build PXE Default")
     table = SatTable(
         './/table',
         column_widgets={
@@ -34,7 +48,6 @@ class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixin):
 
 class ProvisioningTemplateDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    FORM = "//form[contains(@id, 'provisioning_template')]"
     submit = Text('//input[@name="commit"]')
 
     @property
@@ -42,9 +55,9 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Provisioning templates'
-                and self.breadcrumb.read().startswith('Edit ')
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Provisioning Templates'
+            and self.breadcrumb.read().startswith('Edit ')
         )
 
     @View.nested
@@ -53,6 +66,12 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
         default = Checkbox(id='provisioning_template_default')
         template_editor = View.nested(TemplateEditor)
         audit = TextInput(id='provisioning_template_audit_comment')
+
+    @View.nested
+    class inputs(RemovableWidgetsItemsListView, SatTab):
+        ITEMS = ".//div[contains(@class, 'template_inputs')]/following-sibling::div"
+        ITEM_WIDGET_CLASS = TemplateInputItem
+        add_item_button = Text(".//a[@data-association='template_inputs']")
 
     @View.nested
     class type(SatTab):
@@ -64,6 +83,13 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
     class association(SatTab):
         applicable_os = MultiSelect(
             id='ms-provisioning_template_operatingsystem_ids')
+
+        @View.nested
+        class hg_environment_combination(RemovableWidgetsItemsListView):
+            ROOT = "//div[@id='association']"
+            ITEMS = ".//fieldset[@id='template_combination']/div"
+            ITEM_WIDGET_CLASS = TemplateHostEnvironmentAssociation
+            add_item_button = Text(".//a[text()='+ Add Combination']")
 
     @View.nested
     class locations(SatTab):
@@ -84,6 +110,6 @@ class ProvisioningTemplateCreateView(ProvisioningTemplateDetailsView):
             self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Provisioning templates'
+            and self.breadcrumb.locations[0] == 'Provisioning Templates'
             and self.breadcrumb.read() == 'Create Template'
         )
