@@ -2,7 +2,7 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.role import RoleCreateView, RoleEditView, RolesView
+from airgun.views.role import RoleCloneView, RoleCreateView, RoleEditView, RolesView
 
 
 class RoleEntity(BaseEntity):
@@ -38,6 +38,14 @@ class RoleEntity(BaseEntity):
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def clone(self, entity_name, values):
+        """Clone role with entity_name with new properties values"""
+        view = self.navigate_to(self, 'Clone', entity_name=entity_name)
+        view.fill(values)
+        view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -78,3 +86,17 @@ class EditRole(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+
+@navigator.register(RoleEntity, 'Clone')
+class CloneRole(NavigateStep):
+    """Navigate to Clone Role page"""
+    VIEW = RoleCloneView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Actions'].widget.fill('Clone')

@@ -25,7 +25,7 @@ from widgetastic_patternfly import (
     VerticalNavigation,
 )
 
-from airgun.exceptions import ReadOnlyWidgetError
+from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
 from airgun.utils import get_widget_by_name
 
 
@@ -766,6 +766,79 @@ class FilteredDropdown(GenericLocatorWidget):
         self.filter_content.fill(value)
 
 
+class ButtonDropdown(GenericLocatorWidget):
+    """Simple Button dropdown Select
+
+    Example html representation::
+
+        <div class="dropup btn-group">
+            <button type="button" class "dropdown-toggle">item 1</button>
+            <ul class="dropdown-menu">
+                <li class="active">
+                    <a>item 1</a>
+                </li>
+                <li>
+                  <a>item 2</a>
+                </li>
+            </ul>
+        </div>
+    """
+    button = Text("./button")
+    ITEMS_LOCATOR = "./ul/li/a"
+    ITEM_LOCATOR = "./ul/li/a[normalize-space(.)='{}']"
+
+    @property
+    def is_open(self):
+        """Returns whether the dropdown is open"""
+        return 'open' in self.browser.classes(self)
+
+    def open(self):
+        """Open the dropdown if not already open"""
+        if not self.is_open:
+            self.button.click()
+
+    def close(self):
+        """Close the dropdown if open"""
+        if self.is_open:
+            self.button.click()
+
+    @property
+    def items(self):
+        """Returns a list of all button dropdown items as strings."""
+        self.open()
+        values = [
+            elm.text
+            for elm in self.browser.elements(self.ITEMS_LOCATOR, parent=self)
+        ]
+        self.close()
+        return values
+
+    @property
+    def selected(self):
+        """Return the current selected item text"""
+        return self.button.text
+
+    def select(self, item):
+        """Select the item from the dropdown list"""
+        if item != self.selected:
+            self.open()
+            self.browser.click(self.ITEM_LOCATOR.format(item), parent=self)
+
+    def read(self):
+        """Return drop-down selected item value"""
+        return self.selected
+
+    def fill(self, value):
+        """Select specific item from the drop-down
+
+        :param str value: item value
+        """
+        items = self.items
+        if value not in items:
+            raise ValueError('value "{0}" not found in available values: {1}'.format(value, items))
+        self.select(value)
+
+
 class CustomParameter(Table):
     """Name-Value paired input elements which can be added, edited or removed.
 
@@ -1267,6 +1340,96 @@ class ACEEditor(Widget):
             "return ace.edit('{0}').getValue();".format(self.ace_edit_id))
 
 
+class Pagination(Widget):
+    """Represents Paginator widget that includes per page selector, First/Last/Next/Prev buttons
+    and current page index/overall amount of pages. Mainly used with Table widget.
+    """
+    ROOT = "//form[contains(@class, 'content-view-pf-pagination')]"
+    # Kattelo views use per_page with select, foreman use a per_page with Button DropDown.
+    PER_PAGE_BUTTON_DROPDOWN = ".//div[button[@id='pagination-row-dropdown']]"
+    PER_PAGE_SELECT = ".//select[contains(@ng-model, 'per_page')]"
+    first_page_button = Text(".//a[span[contains(@class, 'angle-double-left')]]")
+    previous_page_button = Text(".//a[span[contains(@class, 'angle-left')]]")
+    next_page_button = Text(".//a[span[contains(@class, 'angle-right')]]")
+    last_page_button = Text(".//a[span[contains(@class, 'angle-double-right')]]")
+    page = TextInput(locator=".//input[contains(@class, 'pagination-pf-page')]")
+    pages = Text(".//span[contains(@class, 'pagination-pf-pages')]")
+
+    def _element_exists(self, locator, parent=None, check_visibility=False):
+        """Check if a locator element/widget exists in the DOM"""
+        try:
+            exists = bool(self.browser.elements(
+                locator, parent=parent, check_visibility=check_visibility))
+        except NoSuchElementException:
+            exists = False
+        return exists
+
+    @property
+    def per_page(self):
+        """Return the per page widget"""
+        if self._element_exists(self.PER_PAGE_SELECT, parent=self):
+            return Select(self, self.PER_PAGE_SELECT)
+        return ButtonDropdown(self, self.PER_PAGE_BUTTON_DROPDOWN)
+
+    @property
+    def is_displayed(self):
+        """Check whether this Pagination widget exists and visible"""
+        return self._element_exists(self.pages, parent=self, check_visibility=True)
+
+    def _is_enabled(self, widget):
+        """Return if the widget is enabled by looking at it's parent class, used with page
+        navigation buttons.
+        """
+        parent_element = self.browser.element(widget).find_element_by_xpath("..")
+        return "disabled" not in self.browser.classes(parent_element)
+
+    def _click_button(self, pager_button):
+        """Click on the pager button if enabled."""
+        if self._is_enabled(pager_button):
+            pager_button.click()
+        else:
+            raise DisabledWidgetError('Button {0} is not enabled'.format(pager_button))
+
+    def first_page(self):
+        """Goto first page by clicking on first page button"""
+        self._click_button(self.first_page_button)
+
+    def previous_page(self):
+        """Goto previous page by clicking on previous page button"""
+        self._click_button(self.previous_page_button)
+
+    def next_page(self):
+        """Goto next page by clicking on next page button"""
+        self._click_button(self.next_page_button)
+
+    def last_page(self):
+        """Goto last page by clicking on last page button"""
+        self._click_button(self.last_page_button)
+
+    @property
+    def current_page(self):
+        """Return the current page as integer value"""
+        return int(self.page.read())
+
+    @property
+    def total_pages(self):
+        """Return the total available pages as integer value"""
+        return int(self.pages.read())
+
+    def read(self):
+        """Read the more valuable sub widgets of this pagination widget"""
+        return {attr: getattr(self, attr).read() for attr in ('per_page', 'page', 'pages')}
+
+    def fill(self, values):
+        """Fill sub widgets with the supplied values"""
+        if not values:
+            values = {}
+        for key, value in values.items():
+            widget = get_widget_by_name(self, key)
+            if widget:
+                widget.fill(value)
+
+
 class SatTable(Table):
     """DEPRECATED. Please use :class:`widgetastic.widget.Table` instead.
 
@@ -1303,6 +1466,7 @@ class SatTable(Table):
         ".//td/span[contains(@data-block, 'no-rows-message') or "
         "contains(@data-block, 'no-search-results-message')]")
     tbody_row = Text('./tbody/tr')
+    pagination = Pagination()
 
     @property
     def has_rows(self):
@@ -1322,8 +1486,39 @@ class SatTable(Table):
         if not self.has_rows:
             self.logger.debug('Table {} is empty'.format(self.locator))
             return []
-
+        if self.pagination.is_displayed:
+            return self._read_all()
         return super(SatTable, self).read()
+
+    def _read_all(self):
+        """Return all available table values with using pagination navigation."""
+        table_rows = []
+        page_number = 1
+        if self.pagination.current_page != page_number:
+            # goto first page
+            self.pagination.first_page()
+            wait_for(
+                lambda: self.pagination.current_page == page_number,
+                timeout=30,
+                delay=1,
+                logger=self.logger
+            )
+        while True:
+            page_table_rows = super().read()
+            table_rows.extend(page_table_rows)
+            if page_number == self.pagination.total_pages:
+                break
+            self.pagination.next_page()
+            page_number += 1
+            # ensure that we are at the right page (to not read the same page twice) and
+            # to escape any ui bug that will cause hanging on this loop.
+            wait_for(
+                lambda: self.pagination.current_page == page_number,
+                timeout=30,
+                delay=1,
+                logger=self.logger
+            )
+        return table_rows
 
 
 class SatSubscriptionsTable(SatTable):

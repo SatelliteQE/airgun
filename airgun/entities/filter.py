@@ -29,6 +29,24 @@ class FilterEntity(BaseEntity):
             self, 'Edit', role_name=role_name, entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
+    def read_all(self, role_name):
+        """Read all the available role filters table values"""
+        view = self.navigate_to(self, 'All', role_name=role_name)
+        return view.table.read()
+
+    def read_permissions(self, role_name):
+        """Return all role filters permissions as a dict with resources as keys and permission
+        names as values.
+        """
+        rows = self.read_all(role_name)
+        permissions = {}
+        for row in rows:
+            resource = row['Resource']
+            if resource not in permissions:
+                permissions[resource] = []
+            permissions[resource].extend(row['Permissions'].split(', '))
+        return permissions
+
     def update(self, role_name, entity_name, values):
         """Update filter values"""
         view = self.navigate_to(

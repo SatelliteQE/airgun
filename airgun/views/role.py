@@ -11,7 +11,7 @@ class RolesView(BaseLoggedInView, SearchableViewMixin):
     table = SatTable(
         './/table',
         column_widgets={
-            'Name': Text('./a'),
+            'Name': Text('./span/a'),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         }
     )
@@ -52,3 +52,7 @@ class RoleCreateView(RoleEditView):
                 and self.breadcrumb.locations[0] == 'Roles'
                 and self.breadcrumb.read() == 'Create Role'
         )
+
+
+class RoleCloneView(RoleCreateView):
+    """Clone Role view"""
