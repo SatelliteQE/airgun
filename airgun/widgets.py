@@ -1718,3 +1718,15 @@ class GenericRemovableWidgetItem(GenericLocatorWidget):
                 widget = get_widget_by_name(self, key)
                 if widget:
                     widget.fill(value)
+
+
+class AutoCompleteSearchInput(TextInput):
+    """Autocomplete Search input field, We must remove the focus from this widget after fill to
+    force the auto-completion list to be hidden.
+    """
+
+    def fill(self, value):
+        changes = super().fill(value)
+        self.browser.plugin.ensure_page_safe()
+        self.browser.execute_script('arguments[0].blur();', self.__element__())
+        return changes
