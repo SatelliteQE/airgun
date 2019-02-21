@@ -261,6 +261,9 @@ class SeleniumBrowserFactory(object):
             ),
             desired_capabilities=desired_capabilities
         )
+        idle_timeout = settings.webdriver_desired_capabilities.idleTimeout
+        if idle_timeout:
+            self._webdriver.command_executor.set_timeout(idle_timeout)
         # todo: attempt to rename job here
         return self._webdriver
 
