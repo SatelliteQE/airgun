@@ -491,26 +491,6 @@ class ActionsDropdown(GenericLocatorWidget):
         return self.items
 
 
-class ButtonDropdown(ActionsDropdown):
-    """Simple Button dropdown Select
-
-    Example html representation::
-
-        <div class="dropup btn-group">
-            <button type="button" class "dropdown-toggle">item 1</button>
-            <ul class="dropdown-menu">
-                <li class="active">
-                    <a>item 1</a>
-                </li>
-                <li>
-                  <a>item 2</a>
-                </li>
-            </ul>
-        </div>
-    """
-    button = ActionsDropdown.dropdown
-
-
 class Search(Widget):
     search_field = TextInput(locator=(
         ".//input[@id='search' or contains(@placeholder, 'Filter') or "
@@ -1296,10 +1276,10 @@ class Pagination(Widget):
     # Kattelo views use per_page with select, foreman use a per_page with Button DropDown.
     PER_PAGE_BUTTON_DROPDOWN = ".//div[button[@id='pagination-row-dropdown']]"
     PER_PAGE_SELECT = ".//select[contains(@ng-model, 'per_page')]"
-    first_page_button = Text(".//a[span[contains(@class, 'angle-double-left')]]")
-    previous_page_button = Text(".//a[span[contains(@class, 'angle-left')]]")
-    next_page_button = Text(".//a[span[contains(@class, 'angle-right')]]")
-    last_page_button = Text(".//a[span[contains(@class, 'angle-double-right')]]")
+    first_page_button = Text(".//li[a[span[contains(@class, 'angle-double-left')]]]")
+    previous_page_button = Text(".//li[a[span[contains(@class, 'angle-left')]]]")
+    next_page_button = Text(".//li[a[span[contains(@class, 'angle-right')]]]")
+    last_page_button = Text(".//li[a[span[contains(@class, 'angle-double-right')]]]")
     page = TextInput(locator=".//input[contains(@class, 'pagination-pf-page')]")
     pages = Text(".//span[contains(@class, 'pagination-pf-pages')]")
 
@@ -1312,28 +1292,21 @@ class Pagination(Widget):
             exists = False
         return exists
 
-    @property
+    @cached_property
     def per_page(self):
         """Return the per page widget"""
         if self._element_exists(self.PER_PAGE_SELECT, parent=self):
             return Select(self, self.PER_PAGE_SELECT)
-        return ButtonDropdown(self, self.PER_PAGE_BUTTON_DROPDOWN)
+        return ActionsDropdown(self, self.PER_PAGE_BUTTON_DROPDOWN)
 
     @property
     def is_displayed(self):
         """Check whether this Pagination widget exists and visible"""
         return self._element_exists(self.pages, parent=self, check_visibility=True)
 
-    def _is_enabled(self, widget):
-        """Return if the widget is enabled by looking at it's parent class, used with page
-        navigation buttons.
-        """
-        parent_element = self.browser.element(widget).find_element_by_xpath("..")
-        return "disabled" not in self.browser.classes(parent_element)
-
     def _click_button(self, pager_button):
         """Click on the pager button if enabled."""
-        if self._is_enabled(pager_button):
+        if "disabled" not in self.browser.classes(pager_button):
             pager_button.click()
         else:
             raise DisabledWidgetError('Button {0} is not enabled'.format(pager_button))
@@ -1451,7 +1424,7 @@ class SatTable(Table):
                 delay=1,
                 logger=self.logger
             )
-        while True:
+        while page_number <= self.pagination.total_pages:
             page_table_rows = super().read()
             table_rows.extend(page_table_rows)
             if page_number == self.pagination.total_pages:
