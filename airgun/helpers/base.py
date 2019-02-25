@@ -17,13 +17,13 @@ class BaseEntityHelper:
     def read_filled_view(self, navigation_name, navigation_kwargs=None, values=None,
                          read_widget_names=None):
         # type: (str, Dict, Dict[str, Any], List[str]) -> Dict[str, Any]
-        """Navigate to a form with registered name navigation_name and with kwargs
-        navigation_kwargs, fill the form with values and read read_widget_names if supplied
-        otherwise read all the view widgets.
+        """Navigate to a form using 'navigation_name' and with parameters from 'navigation_kwargs',
+        fill the form with values and then read values for widgets from 'read_widget_names' list if
+        supplied otherwise read all widgets values.
 
         Example usage:
 
-            # In host entity open create view/form click host.reset_puppet_environment and read
+            # In host entity: open create view, click host.reset_puppet_environment button and read
             # host.puppet_environment
             session.host.helper.read_filled_view(
                 'New',
