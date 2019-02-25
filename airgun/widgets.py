@@ -1720,7 +1720,7 @@ class GenericRemovableWidgetItem(GenericLocatorWidget):
                     widget.fill(value)
 
 
-class AutoCompleteSearchInput(TextInput):
+class AutoCompleteTextInput(TextInput):
     """Autocomplete Search input field, We must remove the focus from this widget after fill to
     force the auto-completion list to be hidden.
     """

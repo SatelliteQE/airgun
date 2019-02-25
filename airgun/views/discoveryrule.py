@@ -11,8 +11,8 @@ from airgun.views.common import (
     SatTab,
 )
 from airgun.widgets import (
-    AutoCompleteSearchInput,
     ActionsDropdown,
+    AutoCompleteTextInput,
     FilteredDropdown,
     MultiSelect,
     SatTable,
@@ -55,7 +55,7 @@ class DiscoveryRuleCreateView(BaseLoggedInView):
     @View.nested
     class primary(SatTab):
         name = TextInput(id='discovery_rule_name')
-        search = AutoCompleteSearchInput(id='search')
+        search = AutoCompleteTextInput(id='search')
         host_group = FilteredDropdown(id='discovery_rule_hostgroup_id')
         hostname = TextInput(id='discovery_rule_hostname')
         hosts_limit = TextInput(id='discovery_rule_max_count')
