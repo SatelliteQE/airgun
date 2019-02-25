@@ -22,7 +22,7 @@ from airgun.views.host import (
 
 class HostEntity(BaseEntity):
 
-    entity_helper_class = HostHelper
+    HELPER_CLASS = HostHelper
 
     def create(self, values):
         """Create new host entity"""

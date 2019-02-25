@@ -6,13 +6,13 @@ from airgun.views.common import BookmarkCreateView
 
 class BaseEntity(object):
 
-    entity_helper_class = BaseEntityHelper
+    HELPER_CLASS = BaseEntityHelper
 
     def __init__(self, browser):
         self.browser = browser
         self.session = browser.extra_objects['session']
         self.navigate_to = self.session.navigator.navigate
-        self._helper = self.entity_helper_class(self)
+        self._helper = self.HELPER_CLASS(self)
 
     @property
     def helper(self):
