@@ -1,6 +1,7 @@
 from wait_for import wait_for
 from navmazing import NavigateToSibling
 
+from airgun.helpers.host import HostHelper
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.host import (
@@ -12,6 +13,7 @@ from airgun.views.host import (
     HostsAssignOrganization,
     HostsChangeGroup,
     HostsChangeEnvironment,
+    HostsDeleteActionDialog,
     HostsJobInvocationCreateView,
     HostsJobInvocationStatusView,
     HostsView,
@@ -19,6 +21,8 @@ from airgun.views.host import (
 
 
 class HostEntity(BaseEntity):
+
+    HELPER_CLASS = HostHelper
 
     def create(self, values):
         """Create new host entity"""
@@ -57,12 +61,33 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.read()
 
+    def update(self, entity_name, values):
+        """Update an existing host with values"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
     def delete(self, entity_name):
         """Delete host from the system"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def delete_interface(self, entity_name, interface_id):
+        """Delete host network interface.
+
+        :param entity_name: The host name to delete the network interface from
+        :param interface_id: The network interface identifier.
+        """
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.interfaces.interfaces_list.row(
+            identifier=interface_id)['Actions'].widget.delete.click()
+        view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -198,6 +223,7 @@ class HostsSelectAction(NavigateStep):
         'Assign Compliance Policy': HostsAssignCompliancePolicy,
         'Assign Location': HostsAssignLocation,
         'Assign Organization': HostsAssignOrganization,
+        'Delete Hosts': HostsDeleteActionDialog,
         'Schedule Remote Job': HostsJobInvocationCreateView,
     }
 

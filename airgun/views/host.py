@@ -19,10 +19,12 @@ from airgun.widgets import (
     CheckboxWithAlert,
     CustomParameter,
     FilteredDropdown,
+    Link,
     MultiSelect,
     RadioGroup,
     SatTableWithUnevenStructure,
     SatTable,
+    ToggleButton,
 )
 
 
@@ -178,6 +180,9 @@ class HostCreateView(BaseLoggedInView):
         lce = FilteredDropdown(id='host_lifecycle_environment')
         content_view = FilteredDropdown(id='host_content_view')
         content_source = FilteredDropdown(id='s2id_content_source_id')
+        reset_puppet_environment = Link(".//a[@id='reset_puppet_environment']")
+        inherit_puppet_environment = ToggleButton(
+            locator=".//div[label[@for='environment_id']]//button")
         puppet_environment = FilteredDropdown(id='host_environment')
         puppet_master = FilteredDropdown(id='host_puppet_proxy')
         puppet_ca = FilteredDropdown(id='host_puppet_ca_proxy')
@@ -486,6 +491,10 @@ class HostsAssignCompliancePolicy(HostsActionCommonDialog):
         "//h4[text()='Assign Compliance Policy"
         " - The following hosts are about to be changed']")
     policy = Select(id='policy_id')
+
+
+class HostsDeleteActionDialog(HostsActionCommonDialog):
+    title = Text("//h4[text()='Delete Hosts - The following hosts are about to be changed']")
 
 
 class HostsJobInvocationCreateView(JobInvocationCreateView):

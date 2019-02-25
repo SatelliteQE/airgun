@@ -1,14 +1,22 @@
 from widgetastic.exceptions import NoSuchElementException
 
+from airgun.helpers.base import BaseEntityHelper
 from airgun.views.common import BookmarkCreateView
 
 
 class BaseEntity(object):
 
+    HELPER_CLASS = BaseEntityHelper
+
     def __init__(self, browser):
         self.browser = browser
         self.session = browser.extra_objects['session']
         self.navigate_to = self.session.navigator.navigate
+        self._helper = self.HELPER_CLASS(self)
+
+    @property
+    def helper(self):
+        return self._helper
 
     def create_bookmark(self, values, search_query=None):
         """Create a bookmark.
