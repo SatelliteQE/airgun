@@ -1,6 +1,7 @@
 from wait_for import wait_for
 from navmazing import NavigateToSibling
 
+from airgun.helpers.host import HostHelper
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.host import (
@@ -21,6 +22,8 @@ from airgun.views.host import (
 
 class HostEntity(BaseEntity):
 
+    entity_helper_class = HostHelper
+
     def create(self, values):
         """Create new host entity"""
         view = self.navigate_to(self, 'New')
@@ -35,17 +38,6 @@ class HostEntity(BaseEntity):
         )
         host_view.flash.assert_no_error()
         host_view.flash.dismiss()
-
-    def read_create_form(self, values, read_widget_names=None):
-        """Goto create host view, fill the view with supplied values, and return the view read
-        fields values, will read only read_widget_names if supplied otherwise read the fields in
-        values.
-        """
-        view = self.navigate_to(self, 'New')
-        view.fill(values)
-        if not read_widget_names:
-            read_widget_names = list(values.keys())
-        return view.read(widget_names=read_widget_names)
 
     def search(self, value):
         """Search for existing host entity"""
