@@ -20,6 +20,16 @@ class BaseEntityHelper:
         """Navigate to a form with registered name navigation_name and with kwargs
         navigation_kwargs, fill the form with values and read read_widget_names if supplied
         otherwise read the fields in values.
+
+        Example usage:
+
+            # In host entity open create view/form click host.reset_puppet_environment and read
+            # host.puppet_environment
+            session.host.helper.form_fill_read(
+                'New',
+                values={'host.reset_puppet_environment': True},
+                read_widget_names=['host.puppet_environment']
+            )
         """
         if navigation_kwargs is None:
             navigation_kwargs = {}
