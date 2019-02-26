@@ -18,13 +18,14 @@ class ModuleStreamEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(query)
 
-    def read(self, entity_name, widget_names=None):
+    def read(self, entity_name, stream_version, widget_names=None):
         """Read module streams values from Module Stream Details page
 
         :param str entity_name: the module stream name to read.
+        :param str stream_version: stream version of module.
         """
         view = self.navigate_to(
-            self, 'Details', entity_name=entity_name)
+            self, 'Details', entity_name=entity_name, stream_version=stream_version)
         return view.read(widget_names=widget_names)
 
 
@@ -52,9 +53,9 @@ class ShowModuleStreamsDetails(NavigateStep):
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
-
+        stream_version = kwargs.get('stream_version')
         self.parent.search(
-            'name = {0}'.format(entity_name))
+            'name = {0} and stream = {1}'.format(entity_name, stream_version))
         self.parent.table.row(name=entity_name)['Name'].widget.click()
 
     def post_navigate(self, _tries, *args, **kwargs):
