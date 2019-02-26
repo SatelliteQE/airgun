@@ -5,7 +5,7 @@ from airgun.navigation import NavigateStep, navigator
 from airgun.views.media import (
     MediaCreateView,
     MediaEditView,
-    MediasView,
+    MediumView,
 )
 
 
@@ -46,9 +46,9 @@ class MediaEntity(BaseEntity):
 
 
 @navigator.register(MediaEntity, 'All')
-class ShowAllMedias(NavigateStep):
-    """Navigate to All Medias screen."""
-    VIEW = MediasView
+class ShowAllMedium(NavigateStep):
+    """Navigate to All Medium screen."""
+    VIEW = MediumView
 
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Installation Media')

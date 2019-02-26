@@ -5,7 +5,7 @@ from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
 from airgun.widgets import FilteredDropdown, MultiSelect, SatTable
 
 
-class MediasView(BaseLoggedInView, SearchableViewMixin):
+class MediumView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Installation Media']")
     new = Text("//a[contains(@href, '/media/new')]")
     table = SatTable(
