@@ -36,6 +36,7 @@ from airgun.entities.ldap_authentication import LDAPAuthenticationEntity
 from airgun.entities.lifecycleenvironment import LCEEntity
 from airgun.entities.location import LocationEntity
 from airgun.entities.login import LoginEntity
+from airgun.entities.media import MediaEntity
 from airgun.entities.modulestream import ModuleStreamEntity
 from airgun.entities.organization import OrganizationEntity
 from airgun.entities.os import OperatingSystemEntity
@@ -421,6 +422,11 @@ class Session(object):
     def package(self):
         """Instance of Packge entity."""
         return PackageEntity(self.browser)
+
+    @cached_property
+    def media(self):
+        """Instance of Media entity."""
+        return MediaEntity(self.browser)
 
     @cached_property
     def modulestream(self):
