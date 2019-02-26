@@ -1283,26 +1283,19 @@ class Pagination(Widget):
     page = TextInput(locator=".//input[contains(@class, 'pagination-pf-page')]")
     pages = Text(".//span[contains(@class, 'pagination-pf-pages')]")
 
-    def _element_exists(self, locator, parent=None, check_visibility=False):
-        """Check if a locator element/widget exists in the DOM"""
-        try:
-            exists = bool(self.browser.elements(
-                locator, parent=parent, check_visibility=check_visibility))
-        except NoSuchElementException:
-            exists = False
-        return exists
-
     @cached_property
     def per_page(self):
         """Return the per page widget"""
-        if self._element_exists(self.PER_PAGE_SELECT, parent=self):
+        if self.browser.wait_for_element(
+                self.PER_PAGE_SELECT, parent=self, timeout=1, exception=False) is not None:
             return Select(self, self.PER_PAGE_SELECT)
         return ActionsDropdown(self, self.PER_PAGE_BUTTON_DROPDOWN)
 
     @property
     def is_displayed(self):
         """Check whether this Pagination widget exists and visible"""
-        return self._element_exists(self.pages, parent=self, check_visibility=True)
+        return self.browser.wait_for_element(
+            self.pages, parent=self, visible=True, timeout=1, exception=False) is not None
 
     def _click_button(self, pager_button):
         """Click on the pager button if enabled."""
@@ -1338,7 +1331,7 @@ class Pagination(Widget):
         return int(self.pages.read())
 
     def read(self):
-        """Read the more valuable sub widgets of this pagination widget"""
+        """Read the basic sub widgets of this pagination widget"""
         return {attr: getattr(self, attr).read() for attr in ('per_page', 'page', 'pages')}
 
     def fill(self, values):
