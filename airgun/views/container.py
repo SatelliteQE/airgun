@@ -10,15 +10,17 @@ from airgun.views.common import (
     SatTab,
 )
 from airgun.widgets import (
-    FilteredDropdown,
     ActionsDropdown,
-    SatTable,
+    AutoCompleteTextInput,
+    FilteredDropdown,
     MultiSelect,
+    SatTable,
+    SatTableWithUnevenStructure,
 )
-from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import BreadCrumb, Button
 
 
-class ContainerView(BaseLoggedInView, SearchableViewMixin):
+class ContainersView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Containers']")
     new = Text("//a[contains(@href, '/containers/new')]")
     table = SatTable(
@@ -26,7 +28,7 @@ class ContainerView(BaseLoggedInView, SearchableViewMixin):
         column_widgets={
             'Name': Text('./a'),
             'Status': Text("./span[text()='On']"),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            'Action': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         }
     )
 
@@ -80,7 +82,7 @@ class ContainerCreateView(BaseLoggedInView):
 
     @View.nested
     class image(BaseLoggedInView):
-        next_step = Text("//button[contains(@id, 'next')]")
+        next_step = Text("//div[contains(@class, 'active')]//button[contains(@id, 'next')]")
 
         @View.nested
         class content_view(SatTab):
@@ -107,10 +109,10 @@ class ContainerCreateView(BaseLoggedInView):
             TAB_NAME = 'External registry'
             registry = FilteredDropdown(
                 id='s2id_docker_container_wizard_states_image_registry_id')
-            search = TextInput(
-                id='hub_docker_container_wizard_states_image_repository_name')
-            tag = TextInput(
-                id='hub_docker_container_wizard_states_image_tag')
+            search = AutoCompleteTextInput(
+                id='registry_docker_container_wizard_states_image_repository_name')
+            tag = AutoCompleteTextInput(
+                id='registry_docker_container_wizard_states_image_tag')
             search_for_images = Text(
                 "./a[contains(@id,'search_repository_button_registry')]")
 
@@ -150,3 +152,22 @@ class ContainerCreateView(BaseLoggedInView):
         attach_stderr = Checkbox(
             id='docker_container_wizard_states_environment_attach_stderr')
         submit = Text("//button[contains(@id, 'next')]")
+
+
+class ContainerDetailsView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[0] == 'All Containers'
+        )
+
+    commit = Button('Commit')
+    power_on = Button('Power On')
+    power_off = Button('Power Off')
+    delete = Button('Delete')
+    properties = SatTableWithUnevenStructure(".//table[@id='properties_table']")
