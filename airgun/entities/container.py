@@ -25,6 +25,12 @@ class ContainerEntity(BaseEntity):
         return view.read(widget_names=widget_names)
 
     def set_power(self, entity_name, power):
+        """Power on or power off specific container.
+
+        Args:
+            entity_name: name of container
+            power: power state to set container into. May be one of "On"/"Off"/True/False.
+        """
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
         if power in (True, 'On'):
             view.power_on.click()
