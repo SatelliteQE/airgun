@@ -10,7 +10,7 @@ from widgetastic.widget import (
     View,
     Widget,
 )
-from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import BreadCrumb, Button
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
 from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
@@ -32,8 +32,8 @@ class TableActions(View):
     """Interface table has Action column that contains only two buttons,
     without any extra controls, so we cannot re-use any existing widgets
     """
-    edit = Text(".//button[contains(., 'Edit')]")
-    delete = Text(".//button[contains(., 'Delete')]")
+    edit = Button('Edit')
+    delete = Button('Delete')
 
 
 class PuppetClassParameterValue(Widget):

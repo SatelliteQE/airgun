@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 
 from airgun.helpers.host import HostHelper
 from airgun.entities.base import BaseEntity
+from airgun.exceptions import DisabledWidgetError
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.host import (
     HostCreateView,
@@ -85,8 +86,11 @@ class HostEntity(BaseEntity):
         :param interface_id: The network interface identifier.
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.interfaces.interfaces_list.row(
-            identifier=interface_id)['Actions'].widget.delete.click()
+        delete_button = view.interfaces.interfaces_list.row(
+            identifier=interface_id)['Actions'].widget.delete
+        if delete_button.disabled:
+            raise DisabledWidgetError('Interface Delete button is disabled')
+        delete_button.click()
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
