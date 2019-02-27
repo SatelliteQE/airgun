@@ -56,7 +56,7 @@ class ShowModuleStreamsDetails(NavigateStep):
         stream_version = kwargs.get('stream_version')
         self.parent.search(
             'name = {0} and stream = {1}'.format(entity_name, stream_version))
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+        self.parent.table.row(name=entity_name, stream=stream_version)['Name'].widget.click()
 
     def post_navigate(self, _tries, *args, **kwargs):
         wait_for(
