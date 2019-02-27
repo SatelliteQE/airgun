@@ -45,6 +45,7 @@ class ShowModuleStreamsDetails(NavigateStep):
 
     Args:
         entity_name: The module name.
+        module_version: The version of module stream.
     """
     VIEW = ModuleStreamsDetailsView
 
