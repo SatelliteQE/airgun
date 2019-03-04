@@ -26,6 +26,7 @@ from airgun.entities.discoveredhosts import DiscoveredHostsEntity
 from airgun.entities.discoveryrule import DiscoveryRuleEntity
 from airgun.entities.domain import DomainEntity
 from airgun.entities.errata import ErrataEntity
+from airgun.entities.hardware_model import HardwareModelEntity
 from airgun.entities.host import HostEntity
 from airgun.entities.hostcollection import HostCollectionEntity
 from airgun.entities.hostgroup import HostGroupEntity
@@ -317,6 +318,11 @@ class Session(object):
     def filter(self):
         """Instance of Filter entity."""
         return FilterEntity(self.browser)
+
+    @cached_property
+    def hardwaremodel(self):
+        """Instance of Hardware Model entity."""
+        return HardwareModelEntity(self.browser)
 
     @cached_property
     def host(self):

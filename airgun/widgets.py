@@ -740,6 +740,7 @@ class FilteredDropdown(GenericLocatorWidget):
     """
     selected_value = Text("./a/span[contains(@class, 'chosen')]")
     open_filter = Text("./a/span[contains(@class, 'arrow')]")
+    clear_filter = Text("./a/abbr")
     filter_criteria = TextInput(locator="//div[@id='select2-drop']//input")
     filter_content = ItemsList(
         "//div[not(contains(@style, 'display: none')) and "
@@ -757,11 +758,18 @@ class FilteredDropdown(GenericLocatorWidget):
         """Return drop-down selected item value"""
         return self.browser.text(self.selected_value)
 
+    def clear(self):
+        """Clear currently selected value for drop-down"""
+        self.clear_filter.click()
+
     def fill(self, value):
         """Select specific item from the drop-down
 
         :param value: string with item value
         """
+        if value == '':
+            self.clear()
+            return
         self.open_filter.click()
         self.filter_criteria.fill(value)
         self.filter_content.fill(value)
