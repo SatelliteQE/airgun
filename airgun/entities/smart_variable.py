@@ -43,8 +43,7 @@ class SmartVariableEntity(BaseEntity):
         """Delete smart variable entity"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(username=entity_name)['Actions'].widget.click(
-            handle_alert=True)
+        view.table.row(variable=entity_name)['Actions'].widget.click(handle_alert=True)
         view.flash.assert_no_error()
         view.flash.dismiss()
 

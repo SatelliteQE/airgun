@@ -18,6 +18,7 @@ from airgun.views.host import (
     HostsJobInvocationCreateView,
     HostsJobInvocationStatusView,
     HostsView,
+    PuppetClassParameterValue,
 )
 
 
@@ -152,6 +153,34 @@ class HostEntity(BaseEntity):
         if wait_for_results:
             status_view.wait_for_result(timeout=timeout)
         return status_view.read()
+
+    def get_puppet_class_parameter_value(self, entity_name, name):
+        """Read host Puppet class parameter value.
+
+        :param entity_name: The host name for which to read the parameter.
+        :param name: the parameter name.
+        """
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)  # type: HostEditView
+        # todo After rowspan bug resolution the code should be updated with the commented one
+        # return view.parameters.puppet_class_parameters.row(name=name)['Value'].widget.read()
+        row = view.parameters.puppet_class_parameters.row(name=name)
+        return PuppetClassParameterValue(row).read()
+
+    def set_puppet_class_parameter_value(self, entity_name, name, value):
+        """Set Puppet class parameter value
+
+        :param str entity_name: The host name for which to set the parameter value.
+        :param str name: the parameter name.
+        :param dict value: The parameter value
+        """
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)  # type: HostEditView
+        # todo After rowspan bug resolution the code should be updated with the commented one
+        # view.parameters.puppet_class_parameters.row(name=name).fill({'Value': value})
+        row = view.parameters.puppet_class_parameters.row(name=name)
+        PuppetClassParameterValue(row).fill(value)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(HostEntity, 'All')

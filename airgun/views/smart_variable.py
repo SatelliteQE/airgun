@@ -37,6 +37,10 @@ class SmartVariableContent(View):
         View.__init__(self, parent, logger=logger)
         self.locator = locator
 
+    def _is_input_widget_hidden(self, input_widget):
+        """Return whether input widget value is hidden"""
+        return 'masked-input' in self.browser.classes(input_widget)
+
     @View.nested
     class optional_input_validators(View):
         expander = Text(
@@ -103,6 +107,15 @@ class SmartVariableContent(View):
             for matcher_value in values:
                 self.add_new_matcher.click()
                 self.table[-1].fill(matcher_value)
+
+    def read(self):
+        """Read sub widgets value and add whether default value and matcher values are hidden"""
+        values = super().read()
+        values['default_value_hidden'] = self._is_input_widget_hidden(self.default_value)
+        for index, matcher in enumerate(values['matchers']['table']):
+            matcher['value_hidden'] = self._is_input_widget_hidden(
+                self.matchers.table[index]['Value'].widget)
+        return values
 
 
 class SmartVariablesTableView(BaseLoggedInView, SearchableViewMixin):
