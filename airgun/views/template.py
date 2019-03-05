@@ -20,6 +20,7 @@ from airgun.widgets import (
     SatSelect,
 )
 
+
 class TemplateInputItem(GenericRemovableWidgetItem):
     """Report Template Input item widget"""
     remove_button = Text(".//a[@class='remove_nested_fields']")
@@ -62,6 +63,7 @@ class TemplateInputItem(GenericRemovableWidgetItem):
                     "@name, '[puppet_parameter_name]')]")
         description = TextInput(
             locator=".//textarea[contains(@name, '[description]')]")
+
 
 class TemplatesView(BaseLoggedInView, SearchableViewMixin):
     table = SatTable(

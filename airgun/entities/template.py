@@ -1,7 +1,7 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
+from airgun.navigation import NavigateStep
 
 
 class TemplateEntity(BaseEntity):
@@ -20,13 +20,6 @@ class TemplateEntity(BaseEntity):
     def read(self, entity_name, widget_names=None):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
-
-    def update(self, entity_name, values):
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.fill(values)
-        view.submit.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
 
     def clone(self, entity_name, values):
         view = self.navigate_to(self, 'Clone', entity_name=entity_name)
@@ -68,6 +61,7 @@ class TemplateEntity(BaseEntity):
 
 class ShowAllTemplates(NavigateStep):
     pass
+
 
 class AddNewTemplate(NavigateStep):
     prerequisite = NavigateToSibling('All')

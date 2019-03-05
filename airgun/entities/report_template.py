@@ -1,5 +1,3 @@
-from navmazing import NavigateToSibling
-
 from airgun.navigation import navigator
 from airgun.entities.template import (
         TemplateEntity,
@@ -17,6 +15,7 @@ from airgun.views.report_template import (
 
 class ReportTemplateEntity(TemplateEntity):
     pass
+
 
 @navigator.register(ReportTemplateEntity, 'All')
 class ShowAllReportTemplates(ShowAllTemplates):

@@ -1,5 +1,3 @@
-from navmazing import NavigateToSibling
-
 from airgun.navigation import navigator
 from airgun.entities.template import (
         TemplateEntity,
@@ -17,6 +15,7 @@ from airgun.views.provisioning_template import (
 
 class ProvisioningTemplateEntity(TemplateEntity):
     pass
+
 
 @navigator.register(ProvisioningTemplateEntity, 'All')
 class ShowAllProvisioningTemplates(ShowAllTemplates):

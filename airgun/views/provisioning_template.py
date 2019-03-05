@@ -1,4 +1,4 @@
-from widgetastic_patternfly import BreadCrumb, Button
+from widgetastic_patternfly import Button
 from widgetastic.widget import Checkbox, Text, TextInput, View
 
 from airgun.views.template import (
@@ -8,16 +8,13 @@ from airgun.views.template import (
 )
 from airgun.views.common import (
     SatTab,
-    SearchableViewMixin,
-    TemplateEditor,
     TemplateEditor,
     TemplateInputItem,
 )
 from airgun.widgets import (
     FilteredDropdown,
-    MultiSelect,
-    FilteredDropdown,
     GenericRemovableWidgetItem,
+    MultiSelect,
     RemovableWidgetsItemsListView,
     Select,
 )

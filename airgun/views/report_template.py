@@ -12,11 +12,9 @@ from airgun.views.template import (
 )
 from airgun.views.common import (
     SatTab,
-    SearchableViewMixin,
     TemplateEditor,
 )
 from airgun.widgets import (
-    FilteredDropdown,
     MultiSelect,
 )
 
