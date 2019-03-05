@@ -71,12 +71,12 @@ class ProvisioningTemplateDetailsView(TemplateDetailsView):
         applicable_os = MultiSelect(
             id='ms-provisioning_template_operatingsystem_ids')
 
-    @View.nested
-    class hg_environment_combination(RemovableWidgetsItemsListView):
-        ROOT = "//div[@id='association']"
-        ITEMS = ".//fieldset[@id='template_combination']/div"
-        ITEM_WIDGET_CLASS = TemplateHostEnvironmentAssociation
-        add_item_button = Text(".//a[text()='+ Add Combination']")
+        @View.nested
+        class hg_environment_combination(RemovableWidgetsItemsListView):
+            ROOT = "//div[@id='association']"
+            ITEMS = ".//fieldset[@id='template_combination']/div"
+            ITEM_WIDGET_CLASS = TemplateHostEnvironmentAssociation
+            add_item_button = Text(".//a[text()='+ Add Combination']")
 
     @View.nested
     class locations(SatTab):
