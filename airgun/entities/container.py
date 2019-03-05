@@ -39,6 +39,7 @@ class ContainerEntity(BaseEntity):
         else:
             raise ValueError(
                 'Wrong `power` value passed. Supported values are True/False/"On"/"Off"')
+        # workaround for BZ1683348
         view.flash.assert_no_error(
             ignore_messages=['Error - wrong number of arguments (given 1, expected 0)'])
         view.flash.dismiss()
