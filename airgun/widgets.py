@@ -769,7 +769,7 @@ class FilteredDropdown(GenericLocatorWidget):
         """
         if value == '':
             self.clear()
-            return
+            return True
         self.open_filter.click()
         self.filter_criteria.fill(value)
         self.filter_content.fill(value)
