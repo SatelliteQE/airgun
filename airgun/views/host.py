@@ -106,18 +106,6 @@ class PuppetClassParameterValue(Widget):
             self.remove_override_button.click()
 
 
-class HostSmartClassParameters(Table):
-    # todo After rowspan bug resolution this class should be removed
-
-    def read(self):
-        values = []
-        for row in self.rows():
-            value = row.read()
-            value['Value'] = PuppetClassParameterValue(row).read()
-            values.append(value)
-        return values
-
-
 class HostInterface(View):
     ROOT = ".//div[@id='interfaceModal']"
     title = Text(".//h4[contains(., 'Interface')]")
@@ -296,8 +284,7 @@ class HostCreateView(BaseLoggedInView):
     @View.nested
     class parameters(SatTab):
         """Host parameters tab"""
-        # todo after bug resolution the class HostSmartClassParameters should be replaced by Table
-        puppet_class_parameters = HostSmartClassParameters(
+        puppet_class_parameters = Table(
             ".//table[@id='inherited_puppetclasses_parameters']",
             column_widgets={'Value': PuppetClassParameterValue()}
         )

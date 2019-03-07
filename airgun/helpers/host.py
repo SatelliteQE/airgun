@@ -1,5 +1,4 @@
 from airgun.helpers.base import BaseEntityHelper
-from airgun.views.host import PuppetClassParameterValue
 
 
 class HostHelper(BaseEntityHelper):
@@ -23,8 +22,5 @@ class HostHelper(BaseEntityHelper):
         :param list read_widget_names: [optional] The widget names to read.
         """
         view = self.entity.navigate_to(self.entity, 'Edit', entity_name=entity_name)
-        # todo After rowspan bug resolution the code should be updated with the commented one
-        # view.parameters.puppet_class_parameters.row(name=name).fill({'Value': value})
-        row = view.parameters.puppet_class_parameters.row(name=name)
-        PuppetClassParameterValue(row).fill(value)
+        view.parameters.puppet_class_parameters.row(name=name).fill({'Value': value})
         return view.read(widget_names=read_widget_names)
