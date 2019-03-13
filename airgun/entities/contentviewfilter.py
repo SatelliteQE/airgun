@@ -184,6 +184,24 @@ class ContentViewFilterEntity(BaseEntity):
         )
         return view.content_tabs.rpms.search(query)
 
+    def remove_package_rule(self, cv_name, filter_name, rpm_name):
+        """Remove specific package rule from RPM content view filter.
+
+        :param str cv_name: content view name
+        :param str filter_name: content view filter name
+        :param str rpm_name: name of package used in rule to be removed
+        """
+        view = self.navigate_to(
+            self, 'Edit',
+            cv_name=cv_name,
+            filter_name=filter_name,
+        )
+        view.content_tabs.rpms.search(rpm_name)
+        view.content_tabs.rpms.table.row()[0].widget.fill(True)
+        view.content_tabs.rpms.remove_rule.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
     def add_errata(
             self, cv_name, filter_name, errata_id=None, search_filters=None):
         """Add errata to errata content view filter.
