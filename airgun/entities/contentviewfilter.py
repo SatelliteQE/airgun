@@ -116,10 +116,10 @@ class ContentViewFilterEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def find_rpm_rules(self, view=None, rpm_name=None, architecture=None, version=None):
-        """Form proper rows list according to search criteria
+    def _find_rpm_rules(self, table, rpm_name=None, architecture=None, version=None):
+        """Form proper rpm rows list according to search criteria
 
-        :param view: specify view where rules table is placed
+        :param table: specify table where rows should be searched for
         :param rpm_name: RPM package name
         :param architecture: RPM architecture name
         :param version: RPM version
@@ -144,7 +144,7 @@ class ContentViewFilterEntity(BaseEntity):
         # find row which matches all filters
         rows = [
             row for row
-            in view.content_tabs.rpms.table.rows()
+            in table.rows()
             if row_matches(row, **passed_details)
         ]
         assert rows, 'Table Row not found using passed filters {}'.format(
@@ -170,8 +170,12 @@ class ContentViewFilterEntity(BaseEntity):
             cv_name=cv_name,
             filter_name=filter_name,
         )
-        rows = self.find_rpm_rules(
-            view=view, rpm_name=rpm_name, architecture=architecture, version=version)
+        rows = self._find_rpm_rules(
+            table=view.content_tabs.rpms.table,
+            rpm_name=rpm_name,
+            architecture=architecture,
+            version=version
+        )
         row = rows[0]
         row[ACTIONS_COLUMN].widget.edit.click()
         # prepare list with empty values for all preceding rows as it's
@@ -215,8 +219,12 @@ class ContentViewFilterEntity(BaseEntity):
             filter_name=filter_name,
         )
         view.content_tabs.rpms.search(rpm_name)
-        rows = self.find_rpm_rules(
-            view=view, rpm_name=rpm_name, architecture=architecture, version=version)
+        rows = self._find_rpm_rules(
+            table=view.content_tabs.rpms.table,
+            rpm_name=rpm_name,
+            architecture=architecture,
+            version=version
+        )
         for row in rows:
             row[0].widget.fill(True)
         view.content_tabs.rpms.remove_rule.click()
