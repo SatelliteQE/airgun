@@ -10,7 +10,30 @@ from widgetastic.widget import (
 )
 
 from airgun.views.common import BaseLoggedInView
-from airgun.widgets import ActionsDropdown, SatTable
+from airgun.widgets import (
+    ActionsDropdown,
+    SatTable,
+    GenericRemovableWidgetItem,
+    RemovableWidgetsItemsListView,
+)
+
+
+class InsightsOrganizationErrorView(BaseLoggedInView):
+    """View displayed when no Organization is selected or when the current organization has no
+    manifest
+    """
+    title = Text("//article[@id='content']/section/h1")
+    message = Text("//article[@id='content']/section/p")
+
+    @property
+    def is_displayed(self):
+        return (self.browser.wait_for_element(self.title, exception=False) is not None
+                and self.browser.wait_for_element(self.message, exception=False) is not None)
+
+    def read(self, widget_names=None):
+        if widget_names:
+            return super().read(widget_names=widget_names)
+        return '{0}: {1}'.format(self.title.read(), self.message.read())
 
 
 class AllRulesView(BaseLoggedInView):
@@ -35,9 +58,22 @@ class InventoryAllHosts(BaseLoggedInView):
         return self.title.is_displayed and self.search.is_displayed
 
 
+class InventoryHostRule(GenericRemovableWidgetItem):
+    """Insights inventory host rule widget"""
+    # There is no remove button in this widget
+    remove_button = None
+    title = Text(".//h3[@class='title']")
+
+
 class InventoryHostDetails(BaseLoggedInView):
     hostname = Text(".//div[@class='modal-title']/h2/div/span")
-    close = Text(".//div[contains(@class, 'fa-close'])")
+    close = Text(".//div[contains(@class, 'fa-close')]")
+
+    @View.nested
+    class rules(RemovableWidgetsItemsListView):
+        ROOT = ".//div[@class='rule-summaries']"
+        ITEMS = ".//div[contains(@class, 'rule-summary')]"
+        ITEM_WIDGET_CLASS = InventoryHostRule
 
     @property
     def is_displayed(self):

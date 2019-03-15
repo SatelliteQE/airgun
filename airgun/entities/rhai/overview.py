@@ -1,5 +1,6 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
+from airgun.entities.rhai.base import InsightsNavigateStep
+from airgun.navigation import navigator
 from airgun.views.rhai import OverviewDetailsView
 
 
@@ -11,7 +12,7 @@ class OverviewEntity(BaseEntity):
 
 
 @navigator.register(OverviewEntity, "Details")
-class OverviewDetails(NavigateStep):
+class OverviewDetails(InsightsNavigateStep):
     VIEW = OverviewDetailsView
 
     def step(self, *args, **kwargs):
