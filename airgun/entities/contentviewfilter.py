@@ -116,25 +116,15 @@ class ContentViewFilterEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def update_package_rule(self, cv_name, filter_name, rpm_name, new_values,
-                            architecture=None, version=None):
-        """Update package rule of RPM content view filter.
+    def _find_rpm_rules(self, table, rpm_name=None, architecture=None, version=None):
+        """Form proper rpm rows list according to search criteria
 
-        :param str cv_name: content view name
-        :param str filter_name: content view filter name
-        :param str rpm_name: existing package (RPM) name
-        :param dict new_values: dictionary with new values where keys are the
-            same as column names on UI: 'RPM Name', 'Architecture', 'Version'.
-        :param str optional architecture: filter package rule by its
-            architecture
-        :param str optional version: filter package rule by its version (string
-            value with exact correspondence to UI)
+        :param table: specify table where rows should be searched for
+        :param rpm_name: RPM package name
+        :param architecture: RPM architecture name
+        :param version: RPM version
+        :return: rows list
         """
-        view = self.navigate_to(
-            self, 'Edit',
-            cv_name=cv_name,
-            filter_name=filter_name,
-        )
         # form a dict of passed details of rpm filter
         passed_details = {
             'RPM Name': rpm_name,
@@ -154,11 +144,38 @@ class ContentViewFilterEntity(BaseEntity):
         # find row which matches all filters
         rows = [
             row for row
-            in view.content_tabs.rpms.table.rows()
+            in table.rows()
             if row_matches(row, **passed_details)
         ]
         assert rows, 'Table Row not found using passed filters {}'.format(
             passed_details)
+        return rows
+
+    def update_package_rule(self, cv_name, filter_name, rpm_name, new_values,
+                            architecture=None, version=None):
+        """Update package rule of RPM content view filter.
+
+        :param str cv_name: content view name
+        :param str filter_name: content view filter name
+        :param str rpm_name: existing package (RPM) name
+        :param dict new_values: dictionary with new values where keys are the
+            same as column names on UI: 'RPM Name', 'Architecture', 'Version'.
+        :param str optional architecture: filter package rule by its
+            architecture
+        :param str optional version: filter package rule by its version (string
+            value with exact correspondence to UI)
+        """
+        view = self.navigate_to(
+            self, 'Edit',
+            cv_name=cv_name,
+            filter_name=filter_name,
+        )
+        rows = self._find_rpm_rules(
+            table=view.content_tabs.rpms.table,
+            rpm_name=rpm_name,
+            architecture=architecture,
+            version=version
+        )
         row = rows[0]
         row[ACTIONS_COLUMN].widget.edit.click()
         # prepare list with empty values for all preceding rows as it's
@@ -183,6 +200,36 @@ class ContentViewFilterEntity(BaseEntity):
             filter_name=filter_name,
         )
         return view.content_tabs.rpms.search(query)
+
+    def remove_package_rule(
+            self, cv_name, filter_name, rpm_name, architecture=None, version=None):
+        """Remove specific package rule from RPM content view filter.
+
+        :param str cv_name: content view name
+        :param str filter_name: content view filter name
+        :param str rpm_name: existing package (RPM) name
+        :param str optional architecture: filter package rule by its
+            architecture
+        :param str optional version: filter package rule by its version (string
+            value with exact correspondence to UI)
+        """
+        view = self.navigate_to(
+            self, 'Edit',
+            cv_name=cv_name,
+            filter_name=filter_name,
+        )
+        view.content_tabs.rpms.search(rpm_name)
+        rows = self._find_rpm_rules(
+            table=view.content_tabs.rpms.table,
+            rpm_name=rpm_name,
+            architecture=architecture,
+            version=version
+        )
+        for row in rows:
+            row[0].widget.fill(True)
+        view.content_tabs.rpms.remove_rule.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def add_errata(
             self, cv_name, filter_name, errata_id=None, search_filters=None):

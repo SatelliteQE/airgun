@@ -116,6 +116,7 @@ class ContentViewEditView(BaseLoggedInView):
             self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
+            and len(self.breadcrumb.locations) <= 3
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.read() != 'New Content View'
         )
@@ -306,6 +307,11 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
         table = SatTable('.//table')
 
     @View.nested
+    class docker_repositories(SatSecondaryTab, SearchableViewMixin):
+        TAB_NAME = 'Docker Repositories'
+        table = SatTable('.//table')
+
+    @View.nested
     class rpm_packages(EntitySearchView):
         TAB_NAME = 'rpm Packages'
 
@@ -319,6 +325,11 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
             locator='.//table',
             column_widgets={'Title': Text('./a')}
         )
+
+    @View.nested
+    class puppet_modules(SatSecondaryTab, SearchableViewMixin):
+        TAB_NAME = 'Puppet Modules'
+        table = SatTable('.//table')
 
     @View.nested
     class details(SatSecondaryTab):

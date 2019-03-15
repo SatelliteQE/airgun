@@ -7,7 +7,7 @@ from widgetastic.widget import (
 )
 from widgetastic_patternfly import BreadCrumb, Button
 
-from airgun.views.common import BaseLoggedInView, SatTab
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import (
     EditableEntry,
     EditableEntryCheckbox,
@@ -127,6 +127,11 @@ class LCEEditView(BaseLoggedInView):
         description = EditableEntry(name='Description')
         unauthenticated_pull = EditableEntryCheckbox(name='Unauthenticated Pull')
         registry_name_pattern = EditableEntry(name='Registry Name Pattern')
+
+    @View.nested
+    class content_views(SatTab, SearchableViewMixin):
+        TAB_NAME = 'Content Views'
+        resources = SatTable(locator=".//table")
 
     @View.nested
     class packages(SatTab):
