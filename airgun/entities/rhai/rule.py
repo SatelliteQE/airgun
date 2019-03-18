@@ -1,5 +1,6 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
+from airgun.entities.rhai.base import InsightsNavigateStep
+from airgun.navigation import navigator
 from airgun.views.rhai import AllRulesView
 
 
@@ -12,7 +13,7 @@ class RuleEntity(BaseEntity):
 
 
 @navigator.register(RuleEntity, "All")
-class RulesDetails(NavigateStep):
+class RulesDetails(InsightsNavigateStep):
     """Navigate to Red Hat Access Insights Rules screen."""
     VIEW = AllRulesView
 

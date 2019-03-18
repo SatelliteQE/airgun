@@ -7,3 +7,7 @@ class ReadOnlyWidgetError(Exception):
 
 class DisabledWidgetError(Exception):
     """Raised when a widget is disabled, and not usable for some contexts scenarios"""
+
+
+class DestinationNotReachedError(Exception):
+    """Raised when navigation destination view was not reached (not dispayed)."""

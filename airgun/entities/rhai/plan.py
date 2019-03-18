@@ -2,6 +2,7 @@ from navmazing import NavigateToSibling
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
+from airgun.entities.rhai.base import InsightsNavigateStep
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.rhai import (
     AddPlanView,
@@ -41,7 +42,7 @@ class PlanEntity(BaseEntity):
 
 
 @navigator.register(PlanEntity, "All")
-class AllPlans(NavigateStep):
+class AllPlans(InsightsNavigateStep):
     """Navigate to Insights Planner screen."""
     VIEW = AllPlansView
 
