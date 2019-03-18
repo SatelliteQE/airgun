@@ -1,4 +1,5 @@
 from airgun.entities.base import BaseEntity
+from airgun.entities.rhai.base import InsightsNavigateStep
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.rhai import InventoryAllHosts, InventoryHostDetails
 
@@ -17,9 +18,17 @@ class InventoryHostEntity(BaseEntity):
         view.search.fill(host_name)
         return view.table
 
+    def read(self, entity_name, widget_names=None):
+        """Read host details, optionally read only the widgets in widget_names."""
+        view = self.navigate_to(self, "Details", entity_name=entity_name)
+        values = view.read(widget_names=widget_names)
+        # close the view dialog, as will break next entities navigation
+        view.close.click()
+        return values
+
 
 @navigator.register(InventoryHostEntity, "All")
-class AllHosts(NavigateStep):
+class AllHosts(InsightsNavigateStep):
     """Navigate to Insights Inventory screen."""
     VIEW = InventoryAllHosts
 
@@ -40,5 +49,7 @@ class HostDetails(NavigateStep):
         return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        self.parent.search.fill(kwargs["entity_name"])
-        self.parent.table[0]["System Name"].widget.click()
+        entity_name = kwargs.get('entity_name')
+        self.parent.search.fill(entity_name)
+        self.parent.table.row_by_cell_or_widget_value(
+            "System Name", entity_name)["System Name"].widget.click()

@@ -1,5 +1,6 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
+from airgun.entities.rhai.base import InsightsNavigateStep
+from airgun.navigation import navigator
 from airgun.views.rhai import ManageDetailsView
 
 
@@ -26,7 +27,7 @@ class ManageEntity(BaseEntity):
 
 
 @navigator.register(ManageEntity, "Details")
-class ManageDetails(NavigateStep):
+class ManageDetails(InsightsNavigateStep):
     """Navigate to Red Hat Access Insights Manage screen."""
     VIEW = ManageDetailsView
 
