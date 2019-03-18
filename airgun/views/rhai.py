@@ -31,8 +31,6 @@ class InsightsOrganizationErrorView(BaseLoggedInView):
                 and self.browser.wait_for_element(self.message, exception=False) is not None)
 
     def read(self, widget_names=None):
-        if widget_names:
-            return super().read(widget_names=widget_names)
         return '{0}: {1}'.format(self.title.read(), self.message.read())
 
 
