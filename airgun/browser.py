@@ -543,11 +543,22 @@ class AirgunBrowserPlugin(DefaultPlugin):
          react = document.querySelector("#reactRoot .loading-state")
          return react === null
         }
+        function anySpinnerInvisible() {
+         spinners = Array.prototype.slice.call(
+          document.querySelectorAll('.spinner')
+          ).filter(function (item,index) {
+            return item.offsetWidth > 0 || item.offsetHeight > 0
+             || item.getClientRects().length > 0;
+           }
+          );
+         return spinners.length === 0
+        }
         return {
             jquery: jqueryInactive(),
             ajax: ajaxInactive(),
             angular: angularNoRequests(),
             spinner: spinnerInvisible(),
+            any_spinner: anySpinnerInvisible(),
             react: reactLoadingInvisible(),
             document: document.readyState == "complete",
         }
