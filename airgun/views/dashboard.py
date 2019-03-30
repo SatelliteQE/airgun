@@ -1,4 +1,5 @@
 from widgetastic.widget import (
+    Table,
     Text,
     View,
     Widget,
@@ -98,6 +99,11 @@ class DashboardView(BaseLoggedInView):
         """
         self.searchbox.search(query)
         return self.read()
+
+    @View.nested
+    class DiscoveredHosts(View):
+        ROOT = ".//li[@data-name='Discovered Hosts']"
+        hosts = Table('.//table')
 
     @View.nested
     class HostConfigurationStatus(View):
