@@ -145,7 +145,7 @@ class DashboardView(BaseLoggedInView):
     @View.nested
     class SyncOverview(View):
         ROOT = ".//li[@data-name='Sync Overview']"
-        syncs = SatTable('.//table')
+        syncs = Table('.//table')
 
     @View.nested
     class HostSubscription(View):
@@ -165,6 +165,16 @@ class DashboardView(BaseLoggedInView):
     class SubscriptionStatus(View):
         ROOT = ".//li[@data-name='Subscription Status']"
         subscriptions = SatTable('.//table')
+
+    @View.nested
+    class LatestErrata(View):
+        ROOT = ".//li[@data-name='Latest Errata']"
+        erratas = Table('.//table')
+
+    @View.nested
+    class NewHosts(View):
+        ROOT = ".//li[@data-name='New Hosts']"
+        hosts = Table('.//table')
 
     @View.nested
     class HostCollections(View):
