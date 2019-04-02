@@ -104,6 +104,7 @@ class DashboardView(BaseLoggedInView):
     class DiscoveredHosts(View):
         ROOT = ".//li[@data-name='Discovered Hosts']"
         hosts = Table('.//table')
+        hosts_count = Text(".//a[@data-id='aid_discovered_hosts']")
 
     @View.nested
     class HostConfigurationStatus(View):
