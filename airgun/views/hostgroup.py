@@ -4,8 +4,10 @@ from widgetastic_patternfly import BreadCrumb
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
 from airgun.widgets import (
     ActionsDropdown,
+    ConfigGroupMultiSelect,
     FilteredDropdown,
     MultiSelect,
+    PuppetClassesMultiSelect,
     RadioGroup,
     SatTable,
 )
@@ -70,7 +72,8 @@ class HostGroupCreateView(BaseLoggedInView):
     @View.nested
     class puppet_classes(SatTab):
         TAB_NAME = 'Puppet Classes'
-        pass
+        config_groups = ConfigGroupMultiSelect(locator='.')
+        classes = PuppetClassesMultiSelect(locator='.')
 
     @View.nested
     class network(SatTab):

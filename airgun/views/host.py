@@ -17,10 +17,12 @@ from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationSt
 from airgun.widgets import (
     ActionsDropdown,
     CheckboxWithAlert,
+    ConfigGroupMultiSelect,
     CustomParameter,
     FilteredDropdown,
     Link,
     MultiSelect,
+    PuppetClassesMultiSelect,
     RadioGroup,
     SatTableWithUnevenStructure,
     SatTable,
@@ -233,8 +235,8 @@ class HostCreateView(BaseLoggedInView):
     @View.nested
     class puppet_classes(SatTab):
         TAB_NAME = 'Puppet Classes'
-
-        pass
+        config_groups = ConfigGroupMultiSelect(locator='.')
+        classes = PuppetClassesMultiSelect(locator='.')
 
     @View.nested
     class parameters(SatTab):
