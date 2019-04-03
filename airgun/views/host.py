@@ -51,11 +51,6 @@ class PuppetClassParameterValue(Widget):
     remove_override_button = Text(".//a[@data-tag='remove']")
     hide_button = Text(".//a[contains(@class, 'btn-hide')]")
 
-    def _button_is_displayed(self, button_widget):
-        """Return whether the widget is displayed"""
-        return self.browser.wait_for_element(
-            button_widget, visible=True, exception=False, parent=self) is not None
-
     @property
     def hidden(self):
         """Return whether the variable is hidden"""
@@ -64,9 +59,7 @@ class PuppetClassParameterValue(Widget):
     @property
     def overridden(self):
         """Return whether the variable is overridden, a variable is overridden if not disabled"""
-        return not ('disabled' in self.browser.classes(self.value) or
-                    self.browser.get_attribute('disabled', self.value) == 'disabled' or
-                    self.browser.get_attribute('disabled', self.value) == 'true')
+        return self.browser.get_attribute('disabled', self.value) is None
 
     @property
     def hidden_value(self):
@@ -94,15 +87,15 @@ class PuppetClassParameterValue(Widget):
 
     def hide(self, value=True):
         """Hide or unhide the smart variable input box"""
-        if value != self.hidden and self._button_is_displayed(self.hide_button):
+        if value != self.hidden and self.hide_button.is_displayed:
             self.hide_button.click()
 
     def override(self, value=True):
         """Click corresponding button depends on action needed"""
         overridden = self.overridden
-        if value and not overridden and self._button_is_displayed(self.override_button):
+        if value and not overridden and self.override_button.is_displayed:
             self.override_button.click()
-        elif overridden and self._button_is_displayed(self.remove_override_button):
+        elif overridden and self.remove_override_button.is_displayed:
             self.remove_override_button.click()
 
 
