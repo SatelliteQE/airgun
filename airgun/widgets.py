@@ -338,6 +338,95 @@ class ItemsList(GenericLocatorWidget):
             self.browser.element(self.ITEM % value, parent=self))
 
 
+class AddRemoveItemsList(GenericLocatorWidget):
+    """Similar to ItemsList widget except list elements can be selected only using 'Add'
+    and 'Remove' buttons near each of it
+
+    Example html representation::
+
+        <ul class="config_group_group">
+            <li id="config_group_1" class="config_group ">
+                <span>
+                    <a onclick="expandClassList...">
+                </span>
+                <a onclick="addConfigGroup(this)">Add</a>
+            </li>
+        </ul>
+
+    Locator example::
+
+        //ul[@id='selected_config_groups']
+
+    """
+    ITEM_BUTTON = "./li[not(contains(@style, 'display: none'))][contains(., '%s')]/a"
+    ITEMS = "./li[not(contains(@style, 'display: none'))]/span/a"
+
+    def read(self):
+        """Return a list of strings representing elements in the
+        :class:`AddRemoveItemsList`."""
+        return [
+            el.text for el in self.browser.elements(self.ITEMS, parent=self)]
+
+    def fill(self, value):
+        """Clicks on whether Add or Remove button for necessary element from the list.
+
+        :param value: string with element name
+        """
+        self.browser.click(
+            self.browser.element(self.ITEM_BUTTON % value, parent=self))
+
+
+class ItemsListGroup(GenericLocatorWidget):
+    """Similar to ItemsList widget ideology, but here we have group of items lists instead.
+    Each item list element from such group is placed inside expandable section
+
+    Example html representation::
+
+        <ul class="puppetclass_group">
+            <li>
+                <a onclick="expandClassList...">
+                    stdlib
+                </a>
+                <ul id="pc_stdlib">
+                    <li class="puppetclass">
+                        <span>
+                            <a...>stdlib</a>
+                        </span>
+
+                    </li>
+                    <li class="puppetclass ">
+                        <span>
+                            <a...>stdlib::stages</a>
+                        </span>
+                </li>
+            </li>
+        </ul>
+
+    Locator example::
+
+        //div[contains(@class, 'available_classes')]/div[@class='row']
+
+    """
+    ITEM = (
+        "./div/ul/li/ul/li[not(contains(@style, 'display: none'))]"
+        "[normalize-space(.)='%s']/span/a"
+    )
+    ITEMS = "./div/ul/li/ul/li[not(contains(@style, 'display: none'))]"
+    EXPAND = (
+        "./div/ul/li/ul/li[not(contains(@style, 'display: none'))]"
+        "[normalize-space(.)='%s']/../preceding-sibling::a"
+    )
+
+    def read(self):
+        return [
+            el.text for el in self.browser.elements(self.ITEMS, parent=self)]
+
+    def fill(self, value):
+        if not self.browser.is_displayed(self.ITEM % value):
+            self.browser.element(self.EXPAND % value, parent=self).click()
+        self.browser.element(self.ITEM % value, parent=self).click()
+
+
 class ItemsListReadOnly(ItemsList):
 
     def fill(self, value):
@@ -397,7 +486,8 @@ class MultiSelect(GenericLocatorWidget):
             return False
         if to_add:
             for value in to_add:
-                self.filter.fill(value)
+                if self.filter:
+                    self.filter.fill(value)
                 self.unassigned.fill(value)
         if to_remove:
             for value in to_remove:
@@ -410,6 +500,54 @@ class MultiSelect(GenericLocatorWidget):
             'unassigned': self.unassigned.read(),
             'assigned': self.assigned.read(),
         }
+
+
+class PuppetClassesMultiSelect(MultiSelect):
+    """Widget has different appearance than MultiSelect, because there are no actual panes,
+    but logically it is the same. It looks like two lists of items and specific for puppet
+    classes functionality. Allows to move items from list of 'available' entities to list
+    of 'included' ones and vice versa. Named these lists as 'assigned' and 'unassigned'
+    for proper inheritance.
+
+    Examples on UI::
+        Hosts -> Create Host -> Puppet Classes
+        Configure -> Config Groups
+
+    Example html representation::
+
+
+        <div class="row">
+            <div>
+                <h3>Included Classes</h3>
+                <ul id="selected_classes">
+                </ul>
+            </div>
+
+            <div>
+                 <h3>Available Classes</h3>
+                 <ul class="puppetclass_group">
+                 </ul>
+            </div>
+        </div>
+
+    Locator examples::
+        Usually it is empty locator, because it is impossible to build relative path
+
+    """
+    filter = TextInput(locator=".//input[@placeholder='Filter classes']")
+    assigned = ItemsList(".//ul[@id='selected_classes']")
+    unassigned = ItemsListGroup(
+        ".//div[contains(@class, 'available_classes')]/div[@class='row']")
+
+
+class ConfigGroupMultiSelect(MultiSelect):
+    """Similar to the PuppetClassesMultiSelect widget except items lists has different
+    appearance and there is no filter field for available classes. Usually specific for config
+    group functionality.
+    """
+    filter = None
+    assigned = AddRemoveItemsList(".//ul[@id='selected_config_groups']")
+    unassigned = AddRemoveItemsList(".//ul[@class='config_group_group']")
 
 
 class ActionsDropdown(GenericLocatorWidget):
