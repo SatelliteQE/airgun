@@ -194,3 +194,9 @@ class DashboardView(BaseLoggedInView):
                 raise ValueError('You need provide name of the task')
             self.tasks.row(
                 name=values['name'])['Name'].widget.click()
+
+    @View.nested
+    class VirtWhoConfigStatus(View):
+        ROOT = ".//li[@data-name='Virt-who Configs Status']"
+        config_status = Table('.//table')
+        latest_config = Text(".//div[@class='ca']")
