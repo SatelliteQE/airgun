@@ -1,15 +1,10 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.template import (
-    ProvisioningTemplateCreateView,
-    ProvisioningTemplateDetailsView,
-    ProvisioningTemplatesView,
-)
+from airgun.navigation import NavigateStep
 
 
-class ProvisioningTemplateEntity(BaseEntity):
+class TemplateEntity(BaseEntity):
 
     def create(self, values):
         view = self.navigate_to(self, 'New')
@@ -25,13 +20,6 @@ class ProvisioningTemplateEntity(BaseEntity):
     def read(self, entity_name, widget_names=None):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
-
-    def update(self, entity_name, values):
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.fill(values)
-        view.submit.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
 
     def clone(self, entity_name, values):
         view = self.navigate_to(self, 'Clone', entity_name=entity_name)
@@ -55,6 +43,13 @@ class ProvisioningTemplateEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def update(self, entity_name, values):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
     def delete(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
@@ -64,28 +59,18 @@ class ProvisioningTemplateEntity(BaseEntity):
         view.flash.dismiss()
 
 
-@navigator.register(ProvisioningTemplateEntity, 'All')
 class ShowAllTemplates(NavigateStep):
-    VIEW = ProvisioningTemplatesView
-
-    def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Provisioning Templates')
+    pass
 
 
-@navigator.register(ProvisioningTemplateEntity, 'New')
 class AddNewTemplate(NavigateStep):
-    VIEW = ProvisioningTemplateCreateView
-
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
         self.parent.new.click()
 
 
-@navigator.register(ProvisioningTemplateEntity, 'Edit')
 class EditTemplate(NavigateStep):
-    VIEW = ProvisioningTemplateDetailsView
-
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
 
@@ -95,10 +80,7 @@ class EditTemplate(NavigateStep):
         self.parent.table.row(name=entity_name)['Name'].widget.click()
 
 
-@navigator.register(ProvisioningTemplateEntity, 'Clone')
 class CloneTemplate(NavigateStep):
-    VIEW = ProvisioningTemplateCreateView
-
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
 

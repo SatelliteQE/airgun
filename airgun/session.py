@@ -60,7 +60,8 @@ from airgun.entities.rhai.plan import PlanEntity
 from airgun.entities.rhai.rule import RuleEntity
 from airgun.entities.role import RoleEntity
 from airgun.entities.task import TaskEntity
-from airgun.entities.template import ProvisioningTemplateEntity
+from airgun.entities.provisioning_template import ProvisioningTemplateEntity
+from airgun.entities.report_template import ReportTemplateEntity
 from airgun.entities.smart_class_parameter import SmartClassParameterEntity
 from airgun.entities.smart_variable import SmartVariableEntity
 from airgun.entities.subnet import SubnetEntity
@@ -469,6 +470,11 @@ class Session(object):
     def provisioningtemplate(self):
         """Instance of Provisioning Template entity."""
         return ProvisioningTemplateEntity(self.browser)
+
+    @cached_property
+    def reporttemplate(self):
+        """Instance of Report Template entity."""
+        return ReportTemplateEntity(self.browser)
 
     @cached_property
     def redhatrepository(self):

@@ -1,37 +1,71 @@
-from widgetastic.widget import Checkbox, Text, TextInput, View
-from widgetastic_patternfly import BreadCrumb, Button
+from widgetastic.widget import (
+        Checkbox,
+        ConditionalSwitchableView,
+        Text,
+        TextInput,
+        View,
+)
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
     BaseLoggedInView,
     SatTab,
     SatTable,
     SearchableViewMixin,
-    TemplateEditor,
-    TemplateInputItem,
 )
 from airgun.widgets import (
     ActionsDropdown,
     GenericRemovableWidgetItem,
-    FilteredDropdown,
-    MultiSelect,
     RemovableWidgetsItemsListView,
-    Select,
+    SatSelect,
 )
 
 
-class TemplateHostEnvironmentAssociation(GenericRemovableWidgetItem):
-    """Provisioning Template Foreign Input Set Item widget"""
-    remove_button = Text(".//a[@title='Remove Combination']")
-    host_group = Select(
-        locator=".//select[contains(@name, '[hostgroup_id]')]")
-    environment = Select(
-        locator=".//select[contains(@name, '[environment_id]')]")
+class TemplateInputItem(GenericRemovableWidgetItem):
+    """Report Template Input item widget"""
+    remove_button = Text(".//a[@class='remove_nested_fields']")
+    name = TextInput(locator=".//input[contains(@name, '[name]')]")
+    required = Checkbox(locator=".//input[contains(@id, 'required')]")
+    input_type = SatSelect(
+        locator=".//select[contains(@name, '[input_type]')]")
+
+    input_content = ConditionalSwitchableView(reference='input_type')
+
+    @input_content.register('User input')
+    class UserInputForm(View):
+        advanced = Checkbox(
+            locator=".//input[contains(@id, 'advanced')]")
+        options = TextInput(
+            locator=".//textarea[contains(@name, '[options]')]")
+        description = TextInput(
+            locator=".//textarea[contains(@name, '[description]')]")
+
+    @input_content.register('Fact value')
+    class FactValueForm(View):
+        fact_name = TextInput(
+            locator=".//input[contains(@name, '[fact_name]')]")
+        description = TextInput(
+            locator=".//textarea[contains(@name, '[description]')]")
+
+    @input_content.register('Variable value')
+    class VariableValueForm(View):
+        variable_name = TextInput(
+            locator=".//input[contains(@name, '[variable_name]')]")
+        description = TextInput(
+            locator=".//textarea[contains(@name, '[description]')]")
+
+    @input_content.register('Puppet parameter')
+    class PuppetParameterForm(View):
+        puppet_class_name = TextInput(
+            locator=".//input[contains(@name, '[puppet_class_name]')]")
+        puppet_parameter_name = TextInput(
+            locator=".//input[contains("
+                    "@name, '[puppet_parameter_name]')]")
+        description = TextInput(
+            locator=".//textarea[contains(@name, '[description]')]")
 
 
-class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Provisioning Templates']")
-    new = Button("Create Template")
-    build_pxe_default = Button("Build PXE Default")
+class TemplatesView(BaseLoggedInView, SearchableViewMixin):
     table = SatTable(
         './/table',
         column_widgets={
@@ -46,70 +80,17 @@ class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixin):
             self.title, exception=False) is not None
 
 
-class ProvisioningTemplateDetailsView(BaseLoggedInView):
+class TemplateDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     submit = Text('//input[@name="commit"]')
-
-    @property
-    def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Provisioning Templates'
-            and self.breadcrumb.read().startswith('Edit ')
-        )
-
-    @View.nested
-    class template(SatTab):
-        name = TextInput(id='provisioning_template_name')
-        default = Checkbox(id='provisioning_template_default')
-        template_editor = View.nested(TemplateEditor)
-        audit = TextInput(id='provisioning_template_audit_comment')
 
     @View.nested
     class inputs(RemovableWidgetsItemsListView, SatTab):
         ITEMS = ".//div[contains(@class, 'template_inputs')]/following-sibling::div"
         ITEM_WIDGET_CLASS = TemplateInputItem
         add_item_button = Text(".//a[@data-association='template_inputs']")
-
-    @View.nested
-    class type(SatTab):
-        snippet = Checkbox(id='provisioning_template_snippet')
-        template_type = FilteredDropdown(
-            id='provisioning_template_template_kind')
-
-    @View.nested
-    class association(SatTab):
-        applicable_os = MultiSelect(
-            id='ms-provisioning_template_operatingsystem_ids')
-
-        @View.nested
-        class hg_environment_combination(RemovableWidgetsItemsListView):
-            ROOT = "//div[@id='association']"
-            ITEMS = ".//fieldset[@id='template_combination']/div"
-            ITEM_WIDGET_CLASS = TemplateHostEnvironmentAssociation
-            add_item_button = Text(".//a[text()='+ Add Combination']")
-
-    @View.nested
-    class locations(SatTab):
-        resources = MultiSelect(
-            id='ms-provisioning_template_location_ids')
-
-    @View.nested
-    class organizations(SatTab):
-        resources = MultiSelect(
-            id='ms-provisioning_template_organization_ids')
+        snippet = Checkbox(id='report_template_snippet')
 
 
-class ProvisioningTemplateCreateView(ProvisioningTemplateDetailsView):
-
-    @property
-    def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Provisioning Templates'
-            and self.breadcrumb.read() == 'Create Template'
-        )
+class TemplateCreateView(TemplateDetailsView):
+    pass
