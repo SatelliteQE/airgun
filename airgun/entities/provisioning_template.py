@@ -13,6 +13,7 @@ from airgun.views.provisioning_template import (
 class ProvisioningTemplateEntity(BaseEntity):
 
     def create(self, values):
+        """Create new provisioning template"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
@@ -20,14 +21,17 @@ class ProvisioningTemplateEntity(BaseEntity):
         view.flash.dismiss()
 
     def search(self, value):
+        """Search for existing provisioning template"""
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
     def read(self, entity_name, widget_names=None):
+        """Read provisioning template values"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def clone(self, entity_name, values):
+        """Clone existing provisioning template"""
         view = self.navigate_to(self, 'Clone', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
@@ -35,6 +39,7 @@ class ProvisioningTemplateEntity(BaseEntity):
         view.flash.dismiss()
 
     def lock(self, entity_name):
+        """Lock provisioning template for editing"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Lock')
@@ -42,6 +47,7 @@ class ProvisioningTemplateEntity(BaseEntity):
         view.flash.dismiss()
 
     def unlock(self, entity_name):
+        """Unlock provisioning template for editing"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Unlock')
@@ -50,6 +56,7 @@ class ProvisioningTemplateEntity(BaseEntity):
         view.flash.dismiss()
 
     def update(self, entity_name, values):
+        """Update provisioning template"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
@@ -57,6 +64,7 @@ class ProvisioningTemplateEntity(BaseEntity):
         view.flash.dismiss()
 
     def delete(self, entity_name):
+        """Delete provisioning template"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
@@ -67,6 +75,7 @@ class ProvisioningTemplateEntity(BaseEntity):
 
 @navigator.register(ProvisioningTemplateEntity, 'All')
 class ShowAllProvisioningTemplates(NavigateStep):
+    """Navigate to all Provisioning Templates screen."""
     VIEW = ProvisioningTemplatesView
 
     def step(self, *args, **kwargs):
@@ -75,6 +84,7 @@ class ShowAllProvisioningTemplates(NavigateStep):
 
 @navigator.register(ProvisioningTemplateEntity, 'New')
 class AddNewProvisioningTemplate(NavigateStep):
+    """Navigate to Create new Provisioning Template screen."""
     VIEW = ProvisioningTemplateCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -85,6 +95,11 @@ class AddNewProvisioningTemplate(NavigateStep):
 
 @navigator.register(ProvisioningTemplateEntity, 'Edit')
 class EditProvisioningTemplate(NavigateStep):
+    """Navigate to Edit Provisioning Template screen.
+
+        Args:
+            entity_name: name of provisioning template to edit
+    """
     VIEW = ProvisioningTemplateDetailsView
 
     def prerequisite(self, *args, **kwargs):
@@ -98,6 +113,11 @@ class EditProvisioningTemplate(NavigateStep):
 
 @navigator.register(ProvisioningTemplateEntity, 'Clone')
 class CloneProvisioningTemplate(NavigateStep):
+    """Navigate to Create Provisioning Template screen for cloned entity
+
+        Args:
+            entity_name: name of provisioning template to clone
+    """
     VIEW = ProvisioningTemplateCreateView
 
     def prerequisite(self, *args, **kwargs):

@@ -13,6 +13,7 @@ from airgun.views.report_template import (
 class ReportTemplateEntity(BaseEntity):
 
     def create(self, values):
+        """Create new report template"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
@@ -20,14 +21,17 @@ class ReportTemplateEntity(BaseEntity):
         view.flash.dismiss()
 
     def search(self, value):
+        """Search for existing report template"""
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
     def read(self, entity_name, widget_names=None):
+        """Read report template values"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def clone(self, entity_name, values):
+        """Clone existing report template"""
         view = self.navigate_to(self, 'Clone', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
@@ -35,6 +39,7 @@ class ReportTemplateEntity(BaseEntity):
         view.flash.dismiss()
 
     def lock(self, entity_name):
+        """Lock report template for editing"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Lock')
@@ -42,6 +47,7 @@ class ReportTemplateEntity(BaseEntity):
         view.flash.dismiss()
 
     def unlock(self, entity_name):
+        """Unlock report template for editing"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Unlock')
@@ -50,6 +56,7 @@ class ReportTemplateEntity(BaseEntity):
         view.flash.dismiss()
 
     def update(self, entity_name, values):
+        """Update report template"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
@@ -57,6 +64,7 @@ class ReportTemplateEntity(BaseEntity):
         view.flash.dismiss()
 
     def delete(self, entity_name):
+        """Delete report template"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
@@ -67,6 +75,7 @@ class ReportTemplateEntity(BaseEntity):
 
 @navigator.register(ReportTemplateEntity, 'All')
 class ShowAllReportTemplates(NavigateStep):
+    """Navigate to all Report Templates screen."""
     VIEW = ReportTemplatesView
 
     def step(self, *args, **kwargs):
@@ -75,6 +84,7 @@ class ShowAllReportTemplates(NavigateStep):
 
 @navigator.register(ReportTemplateEntity, 'New')
 class AddNewReportTemplate(NavigateStep):
+    """Navigate to Create new Report Template screen."""
     VIEW = ReportTemplateCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -85,6 +95,11 @@ class AddNewReportTemplate(NavigateStep):
 
 @navigator.register(ReportTemplateEntity, 'Edit')
 class EditReportTemplate(NavigateStep):
+    """Navigate to Edit Report Template screen.
+
+        Args:
+            entity_name: name of report template to edit
+    """
     VIEW = ReportTemplateDetailsView
 
     def prerequisite(self, *args, **kwargs):
@@ -98,6 +113,11 @@ class EditReportTemplate(NavigateStep):
 
 @navigator.register(ReportTemplateEntity, 'Clone')
 class CloneReportTemplate(NavigateStep):
+    """Navigate to Create Report Template screen for cloned entity
+
+        Args:
+            entity_name: name of report template to clone
+    """
     VIEW = ReportTemplateCreateView
 
     def prerequisite(self, *args, **kwargs):
