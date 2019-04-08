@@ -1,11 +1,8 @@
-from airgun.navigation import navigator
-from airgun.entities.template import (
-        TemplateEntity,
-        ShowAllTemplates,
-        AddNewTemplate,
-        EditTemplate,
-        CloneTemplate,
-)
+from navmazing import NavigateToSibling
+
+from airgun.entities.base import BaseEntity
+from airgun.navigation import NavigateStep, navigator
+
 from airgun.views.provisioning_template import (
     ProvisioningTemplateCreateView,
     ProvisioningTemplateDetailsView,
@@ -13,12 +10,63 @@ from airgun.views.provisioning_template import (
 )
 
 
-class ProvisioningTemplateEntity(TemplateEntity):
-    pass
+class ProvisioningTemplateEntity(BaseEntity):
+
+    def create(self, values):
+        view = self.navigate_to(self, 'New')
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def search(self, value):
+        view = self.navigate_to(self, 'All')
+        return view.search(value)
+
+    def read(self, entity_name, widget_names=None):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        return view.read(widget_names=widget_names)
+
+    def clone(self, entity_name, values):
+        view = self.navigate_to(self, 'Clone', entity_name=entity_name)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def lock(self, entity_name):
+        view = self.navigate_to(self, 'All')
+        view.search(entity_name)
+        view.table.row(name=entity_name)['Actions'].widget.fill('Lock')
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def unlock(self, entity_name):
+        view = self.navigate_to(self, 'All')
+        view.search(entity_name)
+        view.table.row(name=entity_name)['Actions'].widget.fill('Unlock')
+        self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def update(self, entity_name, values):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def delete(self, entity_name):
+        view = self.navigate_to(self, 'All')
+        view.search(entity_name)
+        view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
+        self.browser.handle_alert()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(ProvisioningTemplateEntity, 'All')
-class ShowAllProvisioningTemplates(ShowAllTemplates):
+class ShowAllProvisioningTemplates(NavigateStep):
     VIEW = ProvisioningTemplatesView
 
     def step(self, *args, **kwargs):
@@ -26,15 +74,36 @@ class ShowAllProvisioningTemplates(ShowAllTemplates):
 
 
 @navigator.register(ProvisioningTemplateEntity, 'New')
-class AddNewProvisioningTemplate(AddNewTemplate):
+class AddNewProvisioningTemplate(NavigateStep):
     VIEW = ProvisioningTemplateCreateView
+
+    prerequisite = NavigateToSibling('All')
+
+    def step(self, *args, **kwargs):
+        self.parent.new.click()
 
 
 @navigator.register(ProvisioningTemplateEntity, 'Edit')
-class EditProvisioningTemplate(EditTemplate):
+class EditProvisioningTemplate(NavigateStep):
     VIEW = ProvisioningTemplateDetailsView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Name'].widget.click()
 
 
 @navigator.register(ProvisioningTemplateEntity, 'Clone')
-class CloneProvisioningTemplate(CloneTemplate):
+class CloneProvisioningTemplate(NavigateStep):
     VIEW = ProvisioningTemplateCreateView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Actions'].widget.fill('Clone')

@@ -1,19 +1,17 @@
-from widgetastic_patternfly import Button
-from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic.widget import Checkbox, Table, Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb, Button
 
-from airgun.views.template import (
-    TemplatesView,
-    TemplateDetailsView,
-    TemplateCreateView,
-)
 from airgun.views.common import (
+    BaseLoggedInView,
     SatTab,
+    SearchableViewMixin,
     TemplateEditor,
     TemplateInputItem,
 )
 from airgun.widgets import (
-    FilteredDropdown,
+    ActionsDropdown,
     GenericRemovableWidgetItem,
+    FilteredDropdown,
     MultiSelect,
     RemovableWidgetsItemsListView,
     Select,
@@ -29,13 +27,27 @@ class TemplateHostEnvironmentAssociation(GenericRemovableWidgetItem):
         locator=".//select[contains(@name, '[environment_id]')]")
 
 
-class ProvisioningTemplatesView(TemplatesView):
+class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Provisioning Templates']")
     new = Button("Create Template")
     build_pxe_default = Button("Build PXE Default")
+    table = Table(
+        './/table',
+        column_widgets={
+            'Name': Text('./a'),
+            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+        }
+    )
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
 
 
-class ProvisioningTemplateDetailsView(TemplateDetailsView):
+class ProvisioningTemplateDetailsView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+    submit = Text('//input[@name="commit"]')
 
     @property
     def is_displayed(self):
@@ -89,7 +101,7 @@ class ProvisioningTemplateDetailsView(TemplateDetailsView):
             id='ms-provisioning_template_organization_ids')
 
 
-class ProvisioningTemplateCreateView(TemplateCreateView, ProvisioningTemplateDetailsView):
+class ProvisioningTemplateCreateView(ProvisioningTemplateDetailsView):
 
     @property
     def is_displayed(self):

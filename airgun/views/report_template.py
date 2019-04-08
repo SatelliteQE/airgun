@@ -1,40 +1,49 @@
-from widgetastic.widget import (
-        Checkbox,
-        Text,
-        TextInput,
-        View,
-)
+from widgetastic.widget import Checkbox, Table, Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb, Button
 
-from airgun.views.template import (
-    TemplatesView,
-    TemplateDetailsView,
-    TemplateCreateView,
-)
 from airgun.views.common import (
+    BaseLoggedInView,
     SatTab,
+    SearchableViewMixin,
     TemplateEditor,
+    TemplateInputItem,
 )
 from airgun.widgets import (
+    ActionsDropdown,
     MultiSelect,
+    RemovableWidgetsItemsListView,
 )
 
 
-class ReportTemplatesView(TemplatesView):
-    title = Text("//h1[contains(., 'Report Templates')]")
-    new = Text("//a[contains(@href, '/templates/report_templates/new')]")
+class ReportTemplatesView(BaseLoggedInView, SearchableViewMixin):
+    title = Text("//h1[text()='Report Templates']")
+    new = Button("Create Template")
+    table = Table(
+        './/table',
+        column_widgets={
+            'Name': Text('./a'),
+            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+        }
+    )
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
 
 
-class ReportTemplateDetailsView(TemplateDetailsView):
-    FORM = "//form[contains(@id, 'report_template')]"
+class ReportTemplateDetailsView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+    submit = Text('//input[@name="commit"]')
 
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Report Templates'
-                and self.breadcrumb.read().startswith('Edit ')
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Report Templates'
+            and self.breadcrumb.read().startswith('Edit ')
         )
 
     @View.nested
@@ -43,6 +52,12 @@ class ReportTemplateDetailsView(TemplateDetailsView):
         default = Checkbox(id='report_template_default')
         template_editor = View.nested(TemplateEditor)
         audit = TextInput(id='report_template_audit_comment')
+
+    @View.nested
+    class inputs(RemovableWidgetsItemsListView, SatTab):
+        ITEMS = ".//div[contains(@class, 'template_inputs')]/following-sibling::div"
+        ITEM_WIDGET_CLASS = TemplateInputItem
+        add_item_button = Text(".//a[@data-association='template_inputs']")
 
     @View.nested
     class type(SatTab):
@@ -59,7 +74,7 @@ class ReportTemplateDetailsView(TemplateDetailsView):
             id='ms-report_template_organization_ids')
 
 
-class ReportTemplateCreateView(TemplateCreateView, ReportTemplateDetailsView):
+class ReportTemplateCreateView(ReportTemplateDetailsView):
 
     @property
     def is_displayed(self):
