@@ -64,6 +64,14 @@ class SCAPContentEditView(SCAPContentCreateView):
     scap_file_name = Text('//div[@class="col-md-4"]/b')
     breadcrumb = BreadCrumb()
 
+    @View.nested
+    class file_upload(SatTab):
+        TAB_NAME = 'File Upload'
+        title = TextInput(id='scap_content_title')
+        uploaded_scap_file = Text(
+            locator="//label[@for='scap_file']/following-sibling::div/b")
+        scap_file = FileInput(id='scap_content_scap_file')
+
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(

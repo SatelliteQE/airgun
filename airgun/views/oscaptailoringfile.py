@@ -69,6 +69,14 @@ class SCAPTailoringFileEditView(SCAPTailoringFileCreateView):
     scap_file_name = Text(
         '//label[contains(., "Scap File")]/following-sibling::div/b')
 
+    @View.nested
+    class file_upload(SatTab):
+        TAB_NAME = 'File Upload'
+        name = TextInput(id='tailoring_file_name')
+        uploaded_scap_file = Text(
+            locator="//label[@for='scap_file']/following-sibling::div/b")
+        scap_file = FileInput(id='tailoring_file_scap_file')
+
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(
