@@ -46,10 +46,6 @@ class SmartVariableContent(View):
         View.__init__(self, parent, logger=logger)
         self.locator = locator
 
-    def _is_input_widget_hidden(self, input_widget):
-        """Return whether input widget value is hidden"""
-        return 'masked-input' in self.browser.classes(input_widget)
-
     @View.nested
     class optional_input_validators(View):
         expander = Text(
