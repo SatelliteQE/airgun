@@ -87,15 +87,15 @@ class PuppetClassParameterValue(Widget):
 
     def hide(self, value=True):
         """Hide or unhide the smart variable input box"""
-        if value != self.hidden and self.hide_button.is_displayed:
+        if value != self.hidden:
             self.hide_button.click()
 
     def override(self, value=True):
         """Click corresponding button depends on action needed"""
         overridden = self.overridden
-        if value and not overridden and self.override_button.is_displayed:
+        if value and not overridden:
             self.override_button.click()
-        elif overridden and self.remove_override_button.is_displayed:
+        elif not value and overridden:
             self.remove_override_button.click()
 
 
