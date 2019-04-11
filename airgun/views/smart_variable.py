@@ -22,6 +22,15 @@ class MatcherAttribute(View):
         locator=".//input[contains(@class, 'matcher_value')]")
 
 
+class TextInputHidden(TextInput):
+    """Text input widget with content that may be hidden"""
+
+    def read(self):
+        value = super().read()
+        hidden = 'masked-input' in self.browser.classes(self)
+        return dict(value=value, hidden=hidden)
+
+
 class SmartVariableContent(View):
     ROOT = ParametrizedLocator('{@locator}')
     key = TextInput(locator=".//input[contains(@name, '[key]')]")
@@ -29,7 +38,7 @@ class SmartVariableContent(View):
         locator=".//textarea[contains(@name, '[description]')]")
     puppet_class = FilteredDropdown(id='variable_lookup_key_puppetclass_id')
     key_type = Select(locator=".//select[contains(@name, '[key_type]')]")
-    default_value = TextInput(
+    default_value = TextInputHidden(
         locator=".//textarea[contains(@name, '[default_value]')]")
     hidden = Checkbox(locator=".//input[contains(@name, '[hidden_value]')]")
 
@@ -69,7 +78,7 @@ class SmartVariableContent(View):
             ".//table[contains(@class, 'white-header')]",
             column_widgets={
                 'Attribute type': MatcherAttribute(),
-                'Value': TextInput(
+                'Value': TextInputHidden(
                     locator=".//textarea[contains(@id, 'value')]"),
             }
         )

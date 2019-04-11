@@ -153,6 +153,28 @@ class HostEntity(BaseEntity):
             status_view.wait_for_result(timeout=timeout)
         return status_view.read()
 
+    def get_puppet_class_parameter_value(self, entity_name, name):
+        """Read host Puppet class parameter value.
+
+        :param entity_name: The host name for which to read the parameter.
+        :param name: the parameter name.
+        """
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)  # type: HostEditView
+        return view.parameters.puppet_class_parameters.row(name=name)['Value'].widget.read()
+
+    def set_puppet_class_parameter_value(self, entity_name, name, value):
+        """Set Puppet class parameter value
+
+        :param str entity_name: The host name for which to set the parameter value.
+        :param str name: the parameter name.
+        :param dict value: The parameter value
+        """
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)  # type: HostEditView
+        view.parameters.puppet_class_parameters.row(name=name).fill({'Value': value})
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
 
 @navigator.register(HostEntity, 'All')
 class ShowAllHosts(NavigateStep):

@@ -6,6 +6,7 @@ from widgetastic.widget import (
     GenericLocatorWidget,
     Select,
     Text,
+    Table,
     TextInput,
     View,
     Widget,
@@ -41,26 +42,61 @@ class TableActions(View):
 class PuppetClassParameterValue(Widget):
     """Represent value field for Puppet Class parameters table row from Host
     Parameters tab. That field can be interacted with as usual text input, but
-    also it can be overriden with new value
+    also it can be overridden with new value
     """
     ROOT = ".//div[@class='input-group']"
     value = TextInput(
-        locator=".//textarea[contains(@name, 'lookup_values_attributes')]")
-    override_parameter = Text(".//a[@data-tag='override']")
-    remove_override = Text(".//a[@data-tag='remove']")
+        locator=".//*[self::textarea or self::input][contains(@name, 'lookup_values_attributes')]")
+    override_button = Text(".//a[@data-tag='override']")
+    remove_override_button = Text(".//a[@data-tag='remove']")
+    hide_button = Text(".//a[contains(@class, 'btn-hide')]")
+
+    @property
+    def hidden(self):
+        """Return whether the variable is hidden"""
+        return 'masked-input' in self.browser.classes(self.value)
+
+    @property
+    def overridden(self):
+        """Return whether the variable is overridden, a variable is overridden if not disabled"""
+        return self.browser.get_attribute('disabled', self.value) is None
+
+    @property
+    def hidden_value(self):
+        return self.browser.get_attribute('data-hidden-value', self.value)
 
     def read(self):
-        return self.value.read()
+        """Return smart variable widget values"""
+        return {'value': self.value.read(), 'overridden': self.overridden, 'hidden': self.hidden,
+                'hidden_value': self.hidden_value}
 
     def fill(self, value):
-        return self.value.fill(value)
+        """Set smart variable widget values"""
+        overridden = None
+        hidden = None
+        if isinstance(value, dict):
+            overridden = value.get('overridden')
+            hidden = value.get('hidden')
+            value = value.get('value')
+        if hidden is not None:
+            self.hide(hidden)
+        if overridden is not None:
+            self.override(overridden)
+        if value is not None:
+            self.value.fill(value)
+
+    def hide(self, value=True):
+        """Hide or unhide the smart variable input box"""
+        if value != self.hidden:
+            self.hide_button.click()
 
     def override(self, value=True):
         """Click corresponding button depends on action needed"""
-        if value:
-            self.override_parameter.click()
-        else:
-            self.remove_override.click()
+        overridden = self.overridden
+        if value and not overridden:
+            self.override_button.click()
+        elif not value and overridden:
+            self.remove_override_button.click()
 
 
 class HostInterface(View):
@@ -241,7 +277,7 @@ class HostCreateView(BaseLoggedInView):
     @View.nested
     class parameters(SatTab):
         """Host parameters tab"""
-        puppet_class_parameters = SatTable(
+        puppet_class_parameters = Table(
             ".//table[@id='inherited_puppetclasses_parameters']",
             column_widgets={'Value': PuppetClassParameterValue()}
         )
