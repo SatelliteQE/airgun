@@ -172,6 +172,7 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)  # type: HostEditView
         view.parameters.puppet_class_parameters.row(name=name).fill({'Value': value})
         view.submit.click()
+        view.validations.assert_no_errors()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
