@@ -153,6 +153,20 @@ class HostEntity(BaseEntity):
             status_view.wait_for_result(timeout=timeout)
         return status_view.read()
 
+    def play_ansible_roles(self, entities_list, timeout=60, wait_for_results=True):
+        """Play Ansible Roles on hosts names in entities_list
+
+        :param entities_list: The host names to play the ansible roles on.
+        :param timeout: The time to wait for the job to finish.
+        :param wait_for_results: Whether to wait for the job to finish execution.
+
+        :returns: The job invocation status view values
+        """
+        status_view = self._select_action('Play Ansible roles', entities_list)
+        if wait_for_results:
+            status_view.wait_for_result(timeout=timeout)
+        return status_view.read()
+
     def get_puppet_class_parameter_value(self, entity_name, name):
         """Read host Puppet class parameter value.
 
@@ -252,6 +266,7 @@ class HostsSelectAction(NavigateStep):
         'Assign Organization': HostsAssignOrganization,
         'Delete Hosts': HostsDeleteActionDialog,
         'Schedule Remote Job': HostsJobInvocationCreateView,
+        'Play Ansible roles': HostsJobInvocationStatusView,
     }
 
     def prerequisite(self, *args, **kwargs):
