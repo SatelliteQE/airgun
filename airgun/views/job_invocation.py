@@ -1,3 +1,5 @@
+from wait_for import wait_for
+
 from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
@@ -170,7 +172,7 @@ class JobInvocationStatusView(BaseLoggedInView):
             self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Job invocations'
+            and self.breadcrumb.locations[0] == 'Jobs'
             and len(self.breadcrumb.locations) == 2
         )
 
@@ -201,4 +203,21 @@ class JobInvocationStatusView(BaseLoggedInView):
         total_hosts = Text(
             "//h2[contains(., 'Total hosts')]"
             "/span[@class='card-pf-aggregate-status-count']"
+        )
+
+    def wait_for_result(self, timeout=600, delay=1):
+        """Wait for invocation job to finish"""
+        wait_for(
+            lambda: (self.is_displayed and self.overview.job_status.is_displayed
+                     and self.overview.job_status_progress.is_displayed),
+            timeout=timeout,
+            delay=delay,
+            logger=self.logger,
+        )
+        wait_for(
+            lambda: (self.overview.job_status.read() != 'Pending'
+                     and self.overview.job_status_progress.read() == '100%'),
+            timeout=timeout,
+            delay=1,
+            logger=self.logger
         )

@@ -12,6 +12,7 @@ from airgun.views.host import (
     HostsAssignOrganization,
     HostsChangeGroup,
     HostsChangeEnvironment,
+    HostsJobInvocationStatusView,
     HostsView,
 )
 
@@ -45,15 +46,23 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
-    def read(self, entity_name):
+    def read(self, entity_name, widget_names=None):
         """Read host values from Host Edit page"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def read_all(self):
         """Read all values from hosts title page"""
         view = self.navigate_to(self, 'All')
         return view.read()
+
+    def update(self, entity_name, values):
+        """Update an existing host with values"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, entity_name):
         """Delete host from the system"""
