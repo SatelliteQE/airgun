@@ -2,7 +2,6 @@ from wait_for import wait_for
 from widgetastic.widget import (
     Checkbox,
     Select,
-    Table,
     TableColumn,
     TableRow,
     Text,
@@ -18,6 +17,7 @@ from airgun.views.host import HostCreateView
 from airgun.widgets import (
     ActionsDropdown,
     FilteredDropdown,
+    SatTableWithoutHeaders,
 )
 
 
@@ -82,7 +82,7 @@ class DiscoveredHostDetailsTableRow(TableRow):
     Column = DiscoveredHostDetailsTableColumn
 
 
-class DiscoveredHostDetailsTable(Table):
+class DiscoveredHostDetailsTable(SatTableWithoutHeaders):
     """A Table represented by two columns where the property name is the first
     column and the property value is the second column.
 
@@ -103,29 +103,13 @@ class DiscoveredHostDetailsTable(Table):
                     <td>10.8.212.60</td>
                 </tr>
     """
-    ROWS = './tbody/tr'
-    ROW_AT_INDEX = './tbody/tr[{0}]'
-    # there is no header row elements in this table.
-    HEADER_IN_ROWS = None
-    HEADERS = None
-
     Row = DiscoveredHostDetailsTableRow
-
-    @property
-    def _is_header_in_body(self):
-        """Explicitly return False as there is no header row in this table."""
-        return False
-
-    @property
-    def headers(self):
-        """Explicitly returns the headers name and value"""
-        return 'name', 'value'
 
     def read(self):
         """Transform rows to a dict {property_name: property_value ...}."""
         properties = super().read()
-        return {prop['name']: prop['value']
-                for prop in properties if prop['value']}
+        return {
+            prop['column0']: prop['column1'] for prop in properties if prop['column1']}
 
 
 class DiscoveredHostDetailsView(BaseLoggedInView):
