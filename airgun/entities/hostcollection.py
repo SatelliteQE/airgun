@@ -180,9 +180,8 @@ class HostCollectionEntity(BaseEntity):
                               stream_version, customize=False, customize_values=None):
         """ Manage module streams
         :param str entity_name:  The host collection name.
-        :param action_type: remote action to execute. This is dict with containing 'action'
-            and 'is_customize' keys. Action key value can be one of 5:
-            'Enable', 'Disable', 'Install', 'Update', 'Remove', 'Reset'
+        :param action_type: remote action to execute on content host. Action value can be one of
+            them e.g. 'Enable', 'Disable', 'Install', 'Update', 'Remove', 'Reset'
         :param str module_name:  The name of module on which action is performed
         :param str stream_version:  The version of module on which action is performed
         :param customize: special action type which should call on content host module streams
@@ -205,7 +204,7 @@ class HostCollectionEntity(BaseEntity):
         if customize:
             view = JobInvocationCreateView(view.browser)
             view.fill(customize_values)
-            view.submit.click
+            view.submit.click()
         view = JobInvocationStatusView(view.browser)
         view.wait_for_result()
         return view.read()

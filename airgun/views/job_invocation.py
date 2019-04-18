@@ -55,6 +55,12 @@ class JobInvocationCreateView(BaseLoggedInView):
     class RunPuppetForm(View):
         puppet_options = TextInput(id='puppet_options')
 
+    @template_content.register('Module Action - SSH Default')
+    class RunModuleForm(View):
+        action = FilteredDropdown(id='s2id_action')
+        module_spec = TextInput(id='module_spec')
+        puppet_options = TextInput(id='options')
+
     @View.nested
     class advanced_options(View):
         expander = Text(".//a[text()='Display advanced fields']")

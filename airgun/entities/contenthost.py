@@ -65,9 +65,8 @@ class ContentHostEntity(BaseEntity):
 
         :param entity_name: content host name to remotely execute package
             action on
-        :param action_type: remote action to execute. This is dict with containing 'action'
-            and 'is_customize' keys. Action key value can be one of
-            5: 'Enable', 'Disable', 'Install', 'Update', 'Remove', 'Reset'
+        :param action_type: remote action to execute on content host. Action value can be one of
+            them e.g. 'Enable', 'Disable', 'Install', 'Update', 'Remove', 'Reset'
         :param module_name: Module Stream name to remotely
             install/upgrade/remove (depending on `action_type`)
         :param stream_version: this uniquely identifies the module with Stream Version
@@ -81,14 +80,13 @@ class ContentHostEntity(BaseEntity):
             customize_values = {}
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.module_streams.search('name = {} and stream = {}'.format(module_name, stream_version))
-        if customize:
-            action_type = dict(is_customize=customize, action=action_type)
+        action_type = dict(is_customize=customize, action=action_type)
         view.module_streams.table.row(
             name=module_name, stream=stream_version)['Actions'].fill(action_type)
         if customize:
             view = JobInvocationCreateView(view.browser)
             view.fill(customize_values)
-            view.submit.click
+            view.submit.click()
         view = JobInvocationStatusView(view.browser)
         view.wait_for_result()
         return view.read()
@@ -105,21 +103,26 @@ class ContentHostEntity(BaseEntity):
         view.module_streams.search(module_name, status)
         return view.module_streams.table.read()
 
-    def install_errata(self, entity_name, errata_id):
+    def install_errata(self, entity_name, errata_id, install_via=None):
         """Install errata on a content host
 
         :param name: content host name to apply errata on
         :param errata_id: errata id or title, e.g. 'RHEA-2012:0055'
-
+        :param str install_via: Via which mean to install errata. Available
+        options: "via Katello Agent", "via remote execution",
+        "via remote execution - customize first"
         :return: Returns a dict containing task status details
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.errata.search(errata_id)
         view.errata.table.row(id=errata_id)[0].widget.fill(True)
-        view.errata.apply_selected.fill('Apply Selected')
-        view.dialog.confirm()
-        view = ContentHostTaskDetailsView(view.browser)
-        view.progressbar.wait_for_result()
+        if install_via is None:
+            view.errata.apply_selected.fill('Apply Selected')
+            view.dialog.confirm()
+        elif install_via == 'via remote execution':
+            view.errata.apply_selected.fill(install_via)
+        view = JobInvocationStatusView(view.browser)
+        view.wait_for_result()
         return view.read()
 
     def search_errata(self, entity_name, errata_id, environment=None):
