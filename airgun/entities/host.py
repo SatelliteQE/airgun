@@ -12,6 +12,7 @@ from airgun.views.host import (
     HostsAssignOrganization,
     HostsChangeGroup,
     HostsChangeEnvironment,
+    HostsJobInvocationStatusView,
     HostsView,
 )
 
@@ -45,15 +46,23 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
-    def read(self, entity_name):
+    def read(self, entity_name, widget_names=None):
         """Read host values from Host Edit page"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def read_all(self):
         """Read all values from hosts title page"""
         view = self.navigate_to(self, 'All')
         return view.read()
+
+    def update(self, entity_name, values):
+        """Update an existing host with values"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
     def delete(self, entity_name):
         """Delete host from the system"""
@@ -101,6 +110,20 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.export.click()
         return self.browser.save_downloaded_file()
+
+    def play_ansible_roles(self, entities_list, timeout=60, wait_for_results=True):
+        """Play Ansible Roles on hosts names in entities_list
+
+        :param entities_list: The host names to play the ansible roles on.
+        :param timeout: The time to wait for the job to finish.
+        :param wait_for_results: Whether to wait for the job to finish execution.
+
+        :returns: The job invocation status view values
+        """
+        status_view = self._select_action('Play Ansible roles', entities_list)
+        if wait_for_results:
+            status_view.wait_for_result(timeout=timeout)
+        return status_view.read()
 
 
 @navigator.register(HostEntity, 'All')
@@ -176,6 +199,7 @@ class HostsSelectAction(NavigateStep):
         'Assign Compliance Policy': HostsAssignCompliancePolicy,
         'Assign Location': HostsAssignLocation,
         'Assign Organization': HostsAssignOrganization,
+        'Play Ansible roles': HostsJobInvocationStatusView,
     }
 
     def prerequisite(self, *args, **kwargs):
