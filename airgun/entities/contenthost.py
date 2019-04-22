@@ -63,16 +63,14 @@ class ContentHostEntity(BaseEntity):
                                      customize=False, customize_values=None):
         """Execute remote module_stream action on a content
 
-        :param entity_name: content host name to remotely execute package
-            action on
+        :param entity_name: content host name
         :param action_type: remote action to execute on content host. Action value can be one of
             them e.g. 'Enable', 'Disable', 'Install', 'Update', 'Remove', 'Reset'
         :param module_name: Module Stream name to remotely
             install/upgrade/remove (depending on `action_type`)
-        :param stream_version: this uniquely identifies the module with Stream Version
-        :param customize: special action type which should call on content host module streams
-            tab to run some custom expression related to module streams
-        :param customize_values: need to pass if run some custom command expression in content host
+        :param stream_version: String with Stream Version of Module
+        :param customize: Boolean indicating if additional custom action should be called
+        :param customize_values: Dict with custom actions to run. Mandatory if customize is True
 
         :return: Returns a dict containing job status details
         """
@@ -97,10 +95,14 @@ class ContentHostEntity(BaseEntity):
         view.packages_installed.search(package_name)
         return view.packages_installed.table.read()
 
-    def search_module_stream(self, entity_name, module_name, status='All'):
+    def search_module_stream(self, entity_name, module_name, stream_version=None, status='All'):
         """Search for specific package installed in content host"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.module_streams.search(module_name, status)
+        if stream_version is None:
+            view.module_streams.search(module_name, status)
+        else:
+            query = 'name = {} and stream = {}'.format(module_name, stream_version)
+            view.module_streams.search(query, status)
         return view.module_streams.table.read()
 
     def install_errata(self, entity_name, errata_id, install_via=None):
@@ -108,19 +110,20 @@ class ContentHostEntity(BaseEntity):
 
         :param name: content host name to apply errata on
         :param errata_id: errata id or title, e.g. 'RHEA-2012:0055'
-        :param str install_via: Via which mean to install errata. Available
-        options: "via Katello Agent", "via remote execution",
-        "via remote execution - customize first"
+        :param str install_via: via which mean to install errata. Available
+        options: "katello", "rex", "rex_customize"
         :return: Returns a dict containing task status details
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.errata.search(errata_id)
         view.errata.table.row(id=errata_id)[0].widget.fill(True)
-        if install_via is None:
+        if install_via == 'rex_customize':
+            view.errata.apply_selected.fill('via remote execution - customize first')
+        elif install_via == 'rex':
+            view.errata.apply_selected.fill('via remote execution')
+        else:
             view.errata.apply_selected.fill('Apply Selected')
             view.dialog.confirm()
-        elif install_via == 'via remote execution':
-            view.errata.apply_selected.fill(install_via)
         view = JobInvocationStatusView(view.browser)
         view.wait_for_result()
         return view.read()

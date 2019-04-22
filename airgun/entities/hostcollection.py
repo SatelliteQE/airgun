@@ -182,14 +182,13 @@ class HostCollectionEntity(BaseEntity):
         :param str entity_name:  The host collection name.
         :param action_type: remote action to execute on content host. Action value can be one of
             them e.g. 'Enable', 'Disable', 'Install', 'Update', 'Remove', 'Reset'
-        :param str module_name:  The name of module on which action is performed
-        :param str stream_version:  The version of module on which action is performed
-        :param customize: special action type which should call on content host module streams
-            tab to run some custom expression related to module streams
-        :param customize_values: need to pass if run some custom command expression in content host
+        :param str module_name: Module Stream name to remotely
+            install/upgrade/remove (depending on `action_type`)
+        :param str stream_version:  String with Stream Version of Module
+        :param customize: Boolean indicating if additional custom action should be called
+        :param customize_values: Dict with custom actions to run. Mandatory if customize is True
 
-        :returns job status view values
-
+        :returns Returns a dict containing job status details
         """
         if customize_values is None:
             customize_values = {}
@@ -197,8 +196,7 @@ class HostCollectionEntity(BaseEntity):
         view.details.manage_module_streams.click()
         view = HostCollectionManageModuleStreamsView(view.browser)
         view.search('name = {} and stream = {}'.format(module_name, stream_version))
-        if customize:
-            action_type = dict(is_customize=customize, action=action_type)
+        action_type = dict(is_customize=customize, action=action_type)
         view.table.row(
             name=module_name, stream=stream_version)['Actions'].fill(action_type)
         if customize:
