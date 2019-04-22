@@ -1643,6 +1643,54 @@ class SatSubscriptionsTable(SatTable):
         return read_rows
 
 
+class SatTableWithoutHeaders(Table):
+    """Applicable for every table in application that has no headers. Due logic of the Table
+    widget we have to explicitly specify custom headers. As we have no idea about the content
+    and structure of the table in advance, we will dynamically name each column using simple -
+    'column1', 'column2', ... 'columnN'.
+
+    Example html representation::
+
+        <table>
+            <tbody>
+                <tr>
+                    <td>Name</td>
+                    <td>my_host</td>
+                    <td>my_new_host</td>
+                </tr>
+                <tr>
+                    <td>Arhitecture</td>
+                    <td>x32</td>
+                    <td>x64</td>
+                </tr>
+            </tbody>
+        </table>
+
+    Locator example::
+
+        //table[@id='audit_table']
+    """
+    ROWS = './tbody/tr'
+    COLUMNS = './tbody/tr[1]/td'
+    ROW_AT_INDEX = './tbody/tr[{0}]'
+    # there is no header row elements in this table.
+    HEADER_IN_ROWS = None
+    HEADERS = None
+
+    @property
+    def _is_header_in_body(self):
+        """Explicitly return False as there is no header row in this table."""
+        return False
+
+    @cached_property
+    def headers(self):
+        result = []
+        for index, _ in enumerate(self.browser.elements(self.COLUMNS, parent=self)):
+            result.append('column{}'.format(index))
+
+        return tuple(result)
+
+
 class SatTableWithUnevenStructure(SatTable):
     """Applicable for every table in application that has uneven amount of
     headers and columns(usually we talk about 1 header but 2 columns)
