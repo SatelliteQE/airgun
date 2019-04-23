@@ -61,6 +61,7 @@ from airgun.entities.rhai.plan import PlanEntity
 from airgun.entities.rhai.rule import RuleEntity
 from airgun.entities.role import RoleEntity
 from airgun.entities.task import TaskEntity
+from airgun.entities.trend import TrendEntity
 from airgun.entities.provisioning_template import ProvisioningTemplateEntity
 from airgun.entities.report_template import ReportTemplateEntity
 from airgun.entities.smart_class_parameter import SmartClassParameterEntity
@@ -531,6 +532,11 @@ class Session(object):
     def task(self):
         """Instance of Task entity."""
         return TaskEntity(self.browser)
+
+    @cached_property
+    def trend(self):
+        """Instance of Trend entity."""
+        return TrendEntity(self.browser)
 
     @cached_property
     def user(self):
