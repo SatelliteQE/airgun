@@ -117,10 +117,12 @@ class ContentHostEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.errata.search(errata_id)
         view.errata.table.row(id=errata_id)[0].widget.fill(True)
-        if install_via == 'rex_customize':
-            view.errata.apply_selected.fill('via remote execution - customize first')
+        if install_via == 'katello':
+            view.errata.apply_selected.fill('via Katello agent')
         elif install_via == 'rex':
             view.errata.apply_selected.fill('via remote execution')
+        elif install_via == 'rex_customize':
+            view.errata.apply_selected.fill('via remote execution - customize first')
         else:
             view.errata.apply_selected.fill('Apply Selected')
             view.dialog.confirm()
