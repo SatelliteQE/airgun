@@ -59,6 +59,8 @@ class TrendEntity(BaseEntity):
         :param entity_name: name of the trend to be found
         """
         view = self.navigate_to(self, 'All')
+        if view.welcome_page.is_displayed:
+            return False
         try:
             result = bool(view.table.row(name=entity_name)['Name'].read())
         except RowNotFound:

@@ -7,6 +7,7 @@ from airgun.widgets import ActionsDropdown, FilteredDropdown
 
 class TrendsView(BaseLoggedInView):
     title = Text("//h1[text()='Trends']")
+    welcome_page = Text("//div[@class='blank-slate-pf']")
     new = Text("//a[contains(@href, '/trends/new')]")
     table = Table(
         './/table',
@@ -41,7 +42,6 @@ class TrendCreateView(BaseLoggedInView):
 
 
 class TrendEditView(BaseLoggedInView):
-
     breadcrumb = BreadCrumb()
     table = Table(
         './/table',
