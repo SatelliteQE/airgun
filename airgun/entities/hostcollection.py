@@ -11,9 +11,13 @@ from airgun.views.hostcollection import (
     HostCollectionEditView,
     HostCollectionInstallErrataView,
     HostCollectionManagePackagesView,
+    HostCollectionManageModuleStreamsView,
     HostCollectionsView,
 )
-from airgun.views.job_invocation import JobInvocationStatusView
+from airgun.views.job_invocation import (
+    JobInvocationCreateView,
+    JobInvocationStatusView,
+)
 
 
 class HostCollectionEntity(BaseEntity):
@@ -171,6 +175,37 @@ class HostCollectionEntity(BaseEntity):
                 logger=view.logger
             )
             return job_status_view.overview.read()
+
+    def manage_module_streams(self, entity_name, action_type, module_name,
+                              stream_version, customize=False, customize_values=None):
+        """ Manage module streams
+        :param str entity_name:  The host collection name.
+        :param action_type: remote action to execute on content host. Action value can be one of
+            them e.g. 'Enable', 'Disable', 'Install', 'Update', 'Remove', 'Reset'
+        :param str module_name: Module Stream name to remotely
+            install/upgrade/remove (depending on `action_type`)
+        :param str stream_version:  String with Stream Version of Module
+        :param customize: Boolean indicating if additional custom action should be called
+        :param customize_values: Dict with custom actions to run. Mandatory if customize is True
+
+        :returns Returns a dict containing job status details
+        """
+        if customize_values is None:
+            customize_values = {}
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.details.manage_module_streams.click()
+        view = HostCollectionManageModuleStreamsView(view.browser)
+        view.search('name = {} and stream = {}'.format(module_name, stream_version))
+        action_type = dict(is_customize=customize, action=action_type)
+        view.table.row(
+            name=module_name, stream=stream_version)['Actions'].fill(action_type)
+        if customize:
+            view = JobInvocationCreateView(view.browser)
+            view.fill(customize_values)
+            view.submit.click()
+        view = JobInvocationStatusView(view.browser)
+        view.wait_for_result()
+        return view.read()
 
     def change_assigned_content(self, entity_name, lce, content_view):
         """Change host collection lifecycle environment and content view

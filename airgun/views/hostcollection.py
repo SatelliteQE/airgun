@@ -19,6 +19,7 @@ from airgun.views.common import (
 from airgun.views.job_invocation import JobInvocationCreateView
 from airgun.widgets import (
     ActionsDropdown,
+    ActionDropdownWithCheckbox,
     ConfirmationDialog,
     EditableEntry,
     EditableLimitEntry,
@@ -86,6 +87,8 @@ class HostCollectionEditView(BaseLoggedInView):
         manage_packages = Text(".//a[@ng-click='openPackagesModal()']")
         # Errata Installation
         install_errata = Text(".//a[@ng-click='openErrataModal()']")
+        # Module Stream Installation, Removal, and Update
+        manage_module_streams = Text(".//a[@ng-click='openModuleStreamsModal()']")
         # Change assigned Lifecycle Environment or Content View
         change_assigned_content = Text(
             ".//a[@ng-click='openEnvironmentModal()']")
@@ -205,7 +208,7 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
             self.dialog.confirm()
 
 
-class HostCollectionInstallErrataView(BaseLoggedInView):
+class HostCollectionInstallErrataView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h4[contains(., 'Content Host Errata Management')]")
     search = TextInput(
         locator=".//input[@type='text' and @ng-model='errataFilter']")
@@ -224,6 +227,23 @@ class HostCollectionInstallErrataView(BaseLoggedInView):
         }
     )
     dialog = ConfirmationDialog()
+
+    @property
+    def is_displayed(self):
+        """The view is displayed when it's title exists"""
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
+
+
+class HostCollectionManageModuleStreamsView(BaseLoggedInView, SearchableViewMixin):
+    title = Text("//h4[contains(., 'Content Host Module Stream Management')]")
+    table = SatTable(
+        locator='//table',
+        column_widgets={
+            'Name': Text('.//a'),
+            'Actions': ActionDropdownWithCheckbox(".//div[contains(@class, 'dropdown')]")
+        },
+    )
 
     @property
     def is_displayed(self):

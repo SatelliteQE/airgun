@@ -25,6 +25,7 @@ from airgun.views.common import (
 )
 from airgun.widgets import (
     ActionsDropdown,
+    ActionDropdownWithCheckbox,
     ConfirmationDialog,
     EditableEntry,
     EditableEntryCheckbox,
@@ -272,6 +273,33 @@ class ContentHostDetailsView(BaseLoggedInView):
                 query = 'id = {}'.format(query)
             self.searchbox.search(query)
 
+            return self.table.read()
+
+    @View.nested
+    class module_streams(SatTab, SearchableViewMixin):
+        TAB_NAME = 'Module Streams'
+        status_filter = Select(
+            locator='.//select[@ng-model="nutupaneParams.status"]')
+        table = SatTable(
+            locator='//table',
+            column_widgets={
+                'Name': Text('.//a'),
+                'Actions': ActionDropdownWithCheckbox(".//div[contains(@class, 'dropdown')]")
+            },
+        )
+
+        def search(self, query, status='All'):
+            """Searches for Module Streams. Apply available filters before
+            proceeding with searching. By default 'All' is passed
+
+            :param str query: search query to type into search field.
+            :param str optional status: filter by status of module stream on host
+            :return: list of dicts representing table rows
+            :rtype: list
+            """
+            if status is not None:
+                self.status_filter.fill(status)
+            self.searchbox.search(query)
             return self.table.read()
 
     @View.nested
