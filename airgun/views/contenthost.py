@@ -32,6 +32,7 @@ from airgun.widgets import (
     EditableEntrySelect,
     ReadOnlyEntry,
     Search,
+    CustomActionDropDown
 )
 
 
@@ -77,20 +78,6 @@ class StatusIcon(GenericLocatorWidget):
     def read(self):
         """Returns current icon color"""
         return self.color
-
-
-class ModuleStreamActionDropDown(ActionsDropdown):
-    """Custom drop down for module streams tab in content host page"""
-    customize_check_box = Checkbox(id="customize")
-
-    def fill(self, item):
-        value = item
-        if isinstance(item, dict):
-            if item.get('is_customize'):
-                self.open()
-                self.customize_check_box.click()
-            value = item['action']
-        self.select(value)
 
 
 class InstallableUpdatesCellView(View):
@@ -297,7 +284,7 @@ class ContentHostDetailsView(BaseLoggedInView):
             locator='//table',
             column_widgets={
                 'Name': Text('.//a'),
-                'Actions': ModuleStreamActionDropDown(".//div[contains(@class, 'dropdown')]")
+                'Actions': CustomActionDropDown(".//div[contains(@class, 'dropdown')]")
             },
         )
 

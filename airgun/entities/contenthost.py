@@ -99,7 +99,7 @@ class ContentHostEntity(BaseEntity):
         """Search for specific package installed in content host"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         if stream_version is None:
-            view.module_streams.search(module_name, status)
+            query = module_name
         else:
             query = 'name = {} and stream = {}'.format(module_name, stream_version)
             view.module_streams.search(query, status)
@@ -117,12 +117,13 @@ class ContentHostEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.errata.search(errata_id)
         view.errata.table.row(id=errata_id)[0].widget.fill(True)
-        if install_via == 'katello':
-            view.errata.apply_selected.fill('via Katello agent')
-        elif install_via == 'rex':
-            view.errata.apply_selected.fill('via remote execution')
-        elif install_via == 'rex_customize':
-            view.errata.apply_selected.fill('via remote execution - customize first')
+        install_via_dict = {
+            'katello': 'via Katello agent',
+            'rex': 'via remote execution',
+            'rex_customize': 'via remote execution - customize first',
+        }
+        if install_via is not None:
+            view.errata.apply_selected.fill(install_via_dict[install_via])
         else:
             view.errata.apply_selected.fill('Apply Selected')
             view.dialog.confirm()

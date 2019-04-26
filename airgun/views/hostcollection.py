@@ -25,8 +25,8 @@ from airgun.widgets import (
     RadioGroup,
     ReadOnlyEntry,
     SatTable,
+    CustomActionDropDown
 )
-from airgun.views.contenthost import ModuleStreamActionDropDown
 
 
 class HostCollectionsView(BaseLoggedInView, SearchableViewMixin):
@@ -241,7 +241,7 @@ class HostCollectionManageModuleStreamsView(BaseLoggedInView, SearchableViewMixi
         locator='//table',
         column_widgets={
             'Name': Text('.//a'),
-            'Actions': ModuleStreamActionDropDown(".//div[contains(@class, 'dropdown')]")
+            'Actions': CustomActionDropDown(".//div[contains(@class, 'dropdown')]")
         },
     )
 
