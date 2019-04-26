@@ -19,13 +19,13 @@ from airgun.views.common import (
 from airgun.views.job_invocation import JobInvocationCreateView
 from airgun.widgets import (
     ActionsDropdown,
+    ActionDropdownWithCheckbox,
     ConfirmationDialog,
     EditableEntry,
     EditableLimitEntry,
     RadioGroup,
     ReadOnlyEntry,
     SatTable,
-    CustomActionDropDown
 )
 
 
@@ -241,7 +241,7 @@ class HostCollectionManageModuleStreamsView(BaseLoggedInView, SearchableViewMixi
         locator='//table',
         column_widgets={
             'Name': Text('.//a'),
-            'Actions': CustomActionDropDown(".//div[contains(@class, 'dropdown')]")
+            'Actions': ActionDropdownWithCheckbox(".//div[contains(@class, 'dropdown')]")
         },
     )
 

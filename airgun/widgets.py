@@ -629,13 +629,13 @@ class ActionsDropdown(GenericLocatorWidget):
         return self.items
 
 
-class CustomActionDropDown(ActionsDropdown):
+class ActionDropdownWithCheckbox(ActionsDropdown):
     """Custom drop down which contains the checkbox inside in drop down."""
     customize_check_box = Checkbox(id="customize")
 
     def fill(self, item):
         """select action from drop down list, after checking customize checkbox
-        :param item pass dict with values for 'is_customize' and 'action' keys.
+        :param item: dictionary with values for 'is_customize' and 'action' keys.
         """
         self.open()
         self.customize_check_box.fill(item['is_customize'])

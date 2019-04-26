@@ -25,6 +25,7 @@ from airgun.views.common import (
 )
 from airgun.widgets import (
     ActionsDropdown,
+    ActionDropdownWithCheckbox,
     ConfirmationDialog,
     EditableEntry,
     EditableEntryCheckbox,
@@ -32,7 +33,6 @@ from airgun.widgets import (
     EditableEntrySelect,
     ReadOnlyEntry,
     Search,
-    CustomActionDropDown
 )
 
 
@@ -284,7 +284,7 @@ class ContentHostDetailsView(BaseLoggedInView):
             locator='//table',
             column_widgets={
                 'Name': Text('.//a'),
-                'Actions': CustomActionDropDown(".//div[contains(@class, 'dropdown')]")
+                'Actions': ActionDropdownWithCheckbox(".//div[contains(@class, 'dropdown')]")
             },
         )
 

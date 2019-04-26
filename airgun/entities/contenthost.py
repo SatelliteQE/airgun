@@ -102,7 +102,7 @@ class ContentHostEntity(BaseEntity):
             query = module_name
         else:
             query = 'name = {} and stream = {}'.format(module_name, stream_version)
-            view.module_streams.search(query, status)
+        view.module_streams.search(query, status)
         return view.module_streams.table.read()
 
     def install_errata(self, entity_name, errata_id, install_via=None):
