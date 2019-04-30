@@ -22,6 +22,7 @@ class ReportTemplatesView(BaseLoggedInView, SearchableViewMixin):
         './/table',
         column_widgets={
             'Name': Text('./a'),
+            'Locked': Text('.'),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         }
     )

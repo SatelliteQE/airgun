@@ -55,6 +55,14 @@ class ReportTemplateEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def is_locked(self, entity_name):
+        """Check if report template is locked for editing"""
+        view = self.navigate_to(self, 'All')
+        view.search(entity_name)
+        return "This template is locked for editing." in \
+            view.table.row(name=entity_name)['Locked'].widget.\
+            browser.element('.').get_property('innerHTML')
+
     def update(self, entity_name, values):
         """Update report template"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
