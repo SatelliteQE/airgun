@@ -6,6 +6,7 @@ from airgun.navigation import NavigateStep, navigator
 from airgun.views.report_template import (
     ReportTemplateCreateView,
     ReportTemplateDetailsView,
+    ReportTemplateGenerateView,
     ReportTemplatesView,
 )
 
@@ -61,6 +62,27 @@ class ReportTemplateEntity(BaseEntity):
         view.search(entity_name)
         return "This template is locked for editing." in view.table.row(
             name=entity_name)['Locked'].widget.browser.element('.').get_property('innerHTML')
+
+    def export(self, entity_name):
+        """Export report template.
+
+         :return str: path to saved file
+        """
+        view = self.navigate_to(self, 'All')
+        view.search(entity_name)
+        view.table.row(name=entity_name)['Actions'].widget.fill('Export')
+        return self.browser.save_downloaded_file()
+
+    def generate(self, entity_name, values={}):
+        """Generate report template
+
+         :return str: path to saved file
+        """
+        view = self.navigate_to(self, 'Generate', entity_name=entity_name)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        return self.browser.save_downloaded_file()
 
     def update(self, entity_name, values):
         """Update report template"""
@@ -134,3 +156,17 @@ class CloneReportTemplate(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Actions'].widget.fill('Clone')
+
+
+@navigator.register(ReportTemplateEntity, 'Generate')
+class GenerateReportTemplate(NavigateStep):
+    """Navigate to Generate a Report Template."""
+    VIEW = ReportTemplateGenerateView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Actions'].widget.fill('Generate')
