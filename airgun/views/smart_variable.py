@@ -9,7 +9,7 @@ from widgetastic.widget import (
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import FilteredDropdown, SatTable
+from airgun.widgets import FilteredDropdown, SatTable, TextInputHidden
 
 
 class MatcherAttribute(View):
@@ -20,15 +20,6 @@ class MatcherAttribute(View):
         ".//select[contains(@class, 'matcher_key')]")
     matcher_attribute_value = TextInput(
         locator=".//input[contains(@class, 'matcher_value')]")
-
-
-class TextInputHidden(TextInput):
-    """Text input widget with content that may be hidden"""
-
-    def read(self):
-        value = super().read()
-        hidden = 'masked-input' in self.browser.classes(self)
-        return dict(value=value, hidden=hidden)
 
 
 class SmartVariableContent(View):

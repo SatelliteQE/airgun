@@ -1220,6 +1220,15 @@ class LimitInput(Widget):
         return self.limit.read()
 
 
+class TextInputHidden(TextInput):
+    """Text input widget with content that may be hidden"""
+
+    def read(self):
+        value = super().read()
+        hidden = 'masked-input' in self.browser.classes(self)
+        return dict(value=value, hidden=hidden)
+
+
 class EditableEntry(GenericLocatorWidget):
     """Usually represented by static field and edit button that transform
     field into control to change field content to specific value. That control
