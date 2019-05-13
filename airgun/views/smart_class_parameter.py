@@ -9,7 +9,7 @@ from widgetastic.widget import (
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import SatTable
+from airgun.widgets import SatTable, TextInputHidden
 
 
 class MatcherAttribute(View):
@@ -34,7 +34,7 @@ class SmartClassParameterContent(View):
     override = Checkbox(
         locator=".//input[contains(@name, '[override]') and @type!='hidden']")
     key_type = Select(locator=".//select[contains(@name, '[key_type]')]")
-    default_value = TextInput(
+    default_value = TextInputHidden(
         locator=".//textarea[contains(@name, '[default_value]')]")
     omit = Checkbox(
         locator=".//input[contains(@name, '[omit]') and @type!='hidden']")
@@ -83,7 +83,7 @@ class SmartClassParameterContent(View):
             ".//table[contains(@class, 'white-header')]",
             column_widgets={
                 'Attribute type': MatcherAttribute(),
-                'Value': TextInput(
+                'Value': TextInputHidden(
                     locator=".//textarea[contains(@id, 'value')]"),
                 'Omit': Checkbox(
                     locator=".//input[contains(@name, '[omit]') and "
@@ -151,6 +151,6 @@ class SmartClassParameterEditView(BaseLoggedInView):
             self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Puppetclass lookup keys'
-            and self.breadcrumb.read() == 'Edit Smart class parameters'
+            and self.breadcrumb.locations[0] == 'Smart Class Parameters'
+            and len(self.breadcrumb.locations) == 2
         )
