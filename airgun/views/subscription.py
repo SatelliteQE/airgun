@@ -80,6 +80,54 @@ class ProductContentItemsList(GenericLocatorWidget):
         raise ReadOnlyWidgetError('Widget is read only, fill is prohibited')
 
 
+class SubscriptionColumnsFilter(GenericLocatorWidget):
+    """This is the list of interaction items for when opening up the selectable customizable
+    checkboxes"""
+
+    ITEMS_LOCATOR = "//div[@id='subscriptionTableTooltip']//li/span"
+    CHECKBOX_LOCATOR = "//div[@id='subscriptionTableTooltip']//li/span[.='{}']/preceding::input[1]"
+
+    @property
+    def is_open(self):
+        return 'tooltip-open' in self.browser.classes(self)
+
+    def open(self):
+        if not self.is_open:
+            self.click()
+
+    def close(self):
+        if self.is_open:
+            self.click()
+
+    def checkboxes(self):
+        labels = [
+            line.text
+            for line in self.browser.elements(self.ITEMS_LOCATOR)
+        ]
+        return {
+            label: Checkbox(self, locator=self.CHECKBOX_LOCATOR.format(label))
+            for label in labels
+        }
+
+    def read(self):
+        """Read values of checkboxes"""
+        self.open()
+        values = {
+            name: checkbox.read()
+            for name, checkbox in self.checkboxes.items()
+        }
+        self.close()
+        return values
+
+    def fill(self, values):
+        """Check or uncheck one of the checkboxes """
+        self.open()
+        checkboxes = self.checkboxes()
+        for name, value in values.items():
+            checkboxes[name].fill(value)
+        self.close()
+
+
 class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
     """List of all subscriptions."""
     table = SatSubscriptionsViewTable(
@@ -89,12 +137,15 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
             'Name': Text("./a"),
         }
     )
+
     add_button = Button(href='subscriptions/add')
     manage_manifest_button = Button('Manage Manifest')
     export_csv_button = Button('Export CSV')
     delete_button = Button('Delete')
     progressbar = ProgressBar('//div[contains(@class,"progress-bar-striped")]')
     confirm_deletion = DeleteSubscriptionConfirmationDialog()
+    columns_filter_checkboxes = SubscriptionColumnsFilter(
+        ".//form[div[contains(@class, 'filter')]]/div/i")
 
     @property
     def is_displayed(self):
