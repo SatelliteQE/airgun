@@ -70,14 +70,18 @@ class HostEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def delete(self, entity_name):
+    def delete(self, entity_name, get_alert_text=False):
         """Delete host from the system"""
+        alert_message = None
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
+        if get_alert_text:
+            alert_message = self.browser.get_alert().text
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
+        return alert_message
 
     def delete_interface(self, entity_name, interface_id):
         """Delete host network interface.

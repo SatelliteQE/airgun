@@ -156,6 +156,11 @@ class HostInterface(View):
         attached_devices = TextInput(
             locator=".//input[contains(@id, '_attached_devices')]")
 
+    # Compute resource attributes
+    network_type = FilteredDropdown(id='_compute_attributes_type')
+    network = FilteredDropdown(id='_compute_attributes_bridge')
+    nic_type = FilteredDropdown(id='_compute_attributes_model')
+
     def after_fill(self, was_change):
         """Submit the dialog data once all necessary view widgets filled"""
         self.submit.click()
@@ -203,9 +208,9 @@ class HostCreateView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'All Hosts'
-                and self.breadcrumb.read() == 'Create Host'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'All Hosts'
+            and self.breadcrumb.read() == 'Create Host'
         )
 
     @View.nested
@@ -214,6 +219,8 @@ class HostCreateView(BaseLoggedInView):
         organization = FilteredDropdown(id='host_organization')
         location = FilteredDropdown(id='host_location')
         hostgroup = FilteredDropdown(id='host_hostgroup')
+        inherit_deploy_option = ToggleButton(
+            locator=".//div[label[@for='compute_resource_id']]//button")
         deploy = FilteredDropdown(id='host_compute_resource')
         lce = FilteredDropdown(id='host_lifecycle_environment')
         content_view = FilteredDropdown(id='host_content_view')
@@ -231,6 +238,14 @@ class HostCreateView(BaseLoggedInView):
         TAB_NAME = 'Ansible Roles'
 
         resources = MultiSelect(id='ms-host_ansible_role_ids')
+
+    @View.nested
+    class virtual_machine(SatTab):
+        TAB_NAME = 'Virtual Machine'
+
+        cpu = TextInput(id='host_compute_attributes_cpus')
+        memory = TextInput(id='host_compute_attributes_memory')
+        startup = Checkbox(id='host_compute_attributes_start')
 
     @View.nested
     class operating_system(SatTab):
@@ -257,8 +272,7 @@ class HostCreateView(BaseLoggedInView):
 
         def before_fill(self, values=None):
             """If we don't want to break view.fill() procedure flow, we need to
-            push 'Add Interface' button to open necessary dialog to be able to
-            fill values
+            push 'Edit' button to open necessary dialog to be able to fill values
             """
             self.interfaces_list[0]['Actions'].widget.edit.click()
             wait_for(
