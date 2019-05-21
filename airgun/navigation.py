@@ -85,11 +85,50 @@ class NavigateStep(navmazing.NavigateStep):
         """Wrapper around :meth:`navmazing.NavigateStep.go` which returns
         instance of view after successful navigation flow.
 
+        Optional kwargs:
+            use_resetter: boolean control over resetter being called (default True)
+            wait_for_view: control over am_i_here being called after step (default False)
+                            Pass a value for duration of wait_for loop (str or int)
+
+        :raises:
+            wait_for.TimedOutError if wait_for_view is passed and am_i_here does not return true
+
         :return: view instance if class attribute ``VIEW`` is set or ``None``
             otherwise
         """
-        super(NavigateStep, self).go(_tries=_tries, *args, **kwargs)
+        _tries += 1
+        use_resetter = kwargs.pop('use_resetter', True)
+        wait_for_view = kwargs.pop('wait_for_view', None)
+        self.pre_navigate(_tries, *args, **kwargs)
+        self.logger.info("NAVIGATE: Checking if already at {}".format(self._name))
+        here = False
+        try:
+            here = self.am_i_here(*args, **kwargs)
+        except Exception as e:
+            self.logger.error(
+                "NAVIGATE: Exception raised [{}] whilst checking if already at {}".format(
+                    e, self._name
+                    )
+                )
+        if here:
+            self.logger.info("NAVIGATE: Already at {}".format(self._name))
+        else:
+            self.logger.info("NAVIGATE: I'm not at {}".format(self._name))
+            self.parent = self.prerequisite(*args, **kwargs)
+            self.logger.info("NAVIGATE: Heading to destination {}".format(self._name))
+            self.do_nav(_tries, *args, **kwargs)
+        if use_resetter:
+            self.logger.info("NAVIGATE: Using resetter for {}".format(self._name))
+            self.resetter(*args, **kwargs)
+        self.post_navigate(_tries, *args, **kwargs)
         view = self.view if self.VIEW is not None else None
+        if wait_for_view is not None and view is not None:
+            self.logger.info("NAVIGATE: Waiting for am_i_here for {}".format(self._name))
+            wait_for(
+                self.am_i_here, func_args=args, func_kwargs=kwargs,
+                logger=self.logger,
+                timeout=wait_for_view)
+
         return view
 
 
