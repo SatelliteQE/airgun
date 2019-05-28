@@ -241,15 +241,29 @@ class ResourceProviderDetailView(BaseLoggedInView):
         )
 
 
+class ComputeResourceLibvirtProfileNetworkItem(GenericRemovableWidgetItem):
+    """Libvirt Compute Resource Profile "Network interface" item widget"""
+    network_type = FilteredDropdown(id="type")
+    network = FilteredDropdown(id="bridge")
+    nic_type = FilteredDropdown(id="model")
+
+
+class ComputeResourceLibvirtProfileStorageItem(GenericRemovableWidgetItem):
+    """Libvirt Compute Resource profile "Storage" item widget"""
+    storage_pool = FilteredDropdown(id="pool_name")
+    size = TextInput(locator=".//input[contains(@id, 'capacity')]")
+    storage_type = FilteredDropdown(id="format_type")
+
+
 class ComputeResourceRHVProfileNetworkItem(GenericRemovableWidgetItem):
-    """Compute Resource profile "Network interface" item widget"""
+    """RHV Compute Resource profile "Network interface" item widget"""
     name = TextInput(locator=".//input[contains(@id, 'name')]")
     network = FilteredDropdown(id="network")
     interface_type = FilteredDropdown(id="interface")
 
 
 class ComputeResourceRHVProfileStorageItem(GenericRemovableWidgetItem):
-    """Compute Resource profile "Storage" item widget"""
+    """RHV Compute Resource profile "Storage" item widget"""
     size = TextInput(locator=".//input[contains(@id, 'size_gb')]")
     storage_domain = FilteredDropdown(id="storage_domain")
     preallocate_disk = Checkbox(locator=".//input[contains(@id, 'preallocate')]")
@@ -331,6 +345,24 @@ class ResourceProviderProfileView(BaseLoggedInView):
         """
         compute_resource_name = self.compute_resource.read()
         return re.findall(r'.*\((?:.*-)*(.*?)\)\Z|$', compute_resource_name)[0]
+
+    @provider_content.register('Libvirt')
+    class LibvirtResourceForm(View):
+        cpus = TextInput(id='compute_attribute_vm_attrs_cpus')
+        cpu_mode = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_cpu_mode')
+        memory = TextInput(id='compute_attribute_vm_attrs_memory')
+        image = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_image_id')
+
+        @View.nested
+        class network_interfaces(RemovableWidgetsItemsListView):
+            ROOT = "//fieldset[@id='network_interfaces']"
+            ITEM_WIDGET_CLASS = ComputeResourceLibvirtProfileNetworkItem
+
+        @View.nested
+        class storage(RemovableWidgetsItemsListView):
+            ROOT = "//fieldset[@id='storage_volumes']"
+            ITEMS = "./div/div[contains(@class, 'removable-item')]"
+            ITEM_WIDGET_CLASS = ComputeResourceLibvirtProfileStorageItem
 
     @provider_content.register('EC2')
     class EC2ResourceForm(View):

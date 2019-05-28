@@ -1,3 +1,4 @@
+import re
 from wait_for import wait_for
 
 from widgetastic.widget import (
@@ -21,10 +22,12 @@ from airgun.widgets import (
     ConfigGroupMultiSelect,
     CustomParameter,
     FilteredDropdown,
+    GenericRemovableWidgetItem,
     Link,
     MultiSelect,
     PuppetClassesMultiSelect,
     RadioGroup,
+    RemovableWidgetsItemsListView,
     SatTableWithUnevenStructure,
     SatTable,
     ToggleButton,
@@ -97,6 +100,13 @@ class PuppetClassParameterValue(Widget):
             self.override_button.click()
         elif not value and overridden:
             self.remove_override_button.click()
+
+
+class ComputeResourceLibvirtProfileStorageItem(GenericRemovableWidgetItem):
+    """Libvirt Compute Resource profile "Storage" item widget"""
+    storage_pool = FilteredDropdown(id="pool_name")
+    size = TextInput(locator=".//input[contains(@id, 'capacity')]")
+    storage_type = FilteredDropdown(id="format_type")
 
 
 class HostInterface(View):
@@ -239,13 +249,37 @@ class HostCreateView(BaseLoggedInView):
 
         resources = MultiSelect(id='ms-host_ansible_role_ids')
 
-    @View.nested
-    class virtual_machine(SatTab):
-        TAB_NAME = 'Virtual Machine'
+    @property
+    def current_provider(self):
+        """Retrieve the provider name from the compute resource name.
 
-        cpu = TextInput(id='host_compute_attributes_cpus')
-        memory = TextInput(id='host_compute_attributes_memory')
-        startup = Checkbox(id='host_compute_attributes_start')
+        Note: The provider name is always appended to the end of the compute resource name,
+        for example: compute resource name "foo"
+
+        1. For RHV provider, the compute resource name will be displayed as: "foo (RHV)"
+        2. For Libvirt provider, the compute resource name will be displayed as: "foo (Libvirt)"
+        """
+        compute_resource_name = self.host.deploy.read()
+        return re.findall(r'.*\((?:.*-)*(.*?)\)\Z|$', compute_resource_name)[0]
+
+    provider_content = ConditionalSwitchableView(reference='current_provider')
+
+    @provider_content.register('Libvirt')
+    class LibvirtResourceForm(View):
+
+        @View.nested
+        class virtual_machine(SatTab):
+            TAB_NAME = 'Virtual Machine'
+            cpus = TextInput(id='host_compute_attributes_cpus')
+            cpu_mode = FilteredDropdown(id='s2id_host_compute_attributes_cpu_mode')
+            memory = TextInput(id='host_compute_attributes_memory')
+            startup = Checkbox(id='host_compute_attributes_start')
+
+            @View.nested
+            class storage(RemovableWidgetsItemsListView):
+                ROOT = "//fieldset[@id='storage_volumes']"
+                ITEMS = "./div/div[contains(@class, 'removable-item')]"
+                ITEM_WIDGET_CLASS = ComputeResourceLibvirtProfileStorageItem
 
     @View.nested
     class operating_system(SatTab):

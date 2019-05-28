@@ -70,15 +70,13 @@ class HostEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def delete(self, entity_name, get_alert_text=False):
+    def delete(self, entity_name, cancel=False):
         """Delete host from the system"""
-        alert_message = None
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
-        if get_alert_text:
-            alert_message = self.browser.get_alert().text
-        self.browser.handle_alert()
+        alert_message = self.browser.get_alert().text
+        self.browser.handle_alert(cancel=cancel)
         view.flash.assert_no_error()
         view.flash.dismiss()
         return alert_message
