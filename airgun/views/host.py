@@ -1,3 +1,4 @@
+import re
 from wait_for import wait_for
 
 from widgetastic.widget import (
@@ -21,10 +22,12 @@ from airgun.widgets import (
     ConfigGroupMultiSelect,
     CustomParameter,
     FilteredDropdown,
+    GenericRemovableWidgetItem,
     Link,
     MultiSelect,
     PuppetClassesMultiSelect,
     RadioGroup,
+    RemovableWidgetsItemsListView,
     SatTableWithUnevenStructure,
     SatTable,
     ToggleButton,
@@ -99,6 +102,13 @@ class PuppetClassParameterValue(Widget):
             self.remove_override_button.click()
 
 
+class ComputeResourceLibvirtProfileStorageItem(GenericRemovableWidgetItem):
+    """Libvirt Compute Resource profile "Storage" item widget"""
+    storage_pool = FilteredDropdown(id="pool_name")
+    size = TextInput(locator=".//input[contains(@id, 'capacity')]")
+    storage_type = FilteredDropdown(id="format_type")
+
+
 class HostInterface(View):
     ROOT = ".//div[@id='interfaceModal']"
     title = Text(".//h4[contains(., 'Interface')]")
@@ -156,6 +166,11 @@ class HostInterface(View):
         attached_devices = TextInput(
             locator=".//input[contains(@id, '_attached_devices')]")
 
+    # Compute resource attributes
+    network_type = FilteredDropdown(id='_compute_attributes_type')
+    network = FilteredDropdown(id='_compute_attributes_bridge')
+    nic_type = FilteredDropdown(id='_compute_attributes_model')
+
     def after_fill(self, was_change):
         """Submit the dialog data once all necessary view widgets filled"""
         self.submit.click()
@@ -203,9 +218,9 @@ class HostCreateView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'All Hosts'
-                and self.breadcrumb.read() == 'Create Host'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'All Hosts'
+            and self.breadcrumb.read() == 'Create Host'
         )
 
     @View.nested
@@ -214,6 +229,8 @@ class HostCreateView(BaseLoggedInView):
         organization = FilteredDropdown(id='host_organization')
         location = FilteredDropdown(id='host_location')
         hostgroup = FilteredDropdown(id='host_hostgroup')
+        inherit_deploy_option = ToggleButton(
+            locator=".//div[label[@for='compute_resource_id']]//button")
         deploy = FilteredDropdown(id='host_compute_resource')
         lce = FilteredDropdown(id='host_lifecycle_environment')
         content_view = FilteredDropdown(id='host_content_view')
@@ -231,6 +248,38 @@ class HostCreateView(BaseLoggedInView):
         TAB_NAME = 'Ansible Roles'
 
         resources = MultiSelect(id='ms-host_ansible_role_ids')
+
+    @property
+    def current_provider(self):
+        """Retrieve the provider name from the compute resource name.
+
+        Note: The provider name is always appended to the end of the compute resource name,
+        for example: compute resource name "foo"
+
+        1. For RHV provider, the compute resource name will be displayed as: "foo (RHV)"
+        2. For Libvirt provider, the compute resource name will be displayed as: "foo (Libvirt)"
+        """
+        compute_resource_name = self.host.deploy.read()
+        return re.findall(r'.*\((?:.*-)*(.*?)\)\Z|$', compute_resource_name)[0]
+
+    provider_content = ConditionalSwitchableView(reference='current_provider')
+
+    @provider_content.register('Libvirt')
+    class LibvirtResourceForm(View):
+
+        @View.nested
+        class virtual_machine(SatTab):
+            TAB_NAME = 'Virtual Machine'
+            cpus = TextInput(id='host_compute_attributes_cpus')
+            cpu_mode = FilteredDropdown(id='s2id_host_compute_attributes_cpu_mode')
+            memory = TextInput(id='host_compute_attributes_memory')
+            startup = Checkbox(id='host_compute_attributes_start')
+
+            @View.nested
+            class storage(RemovableWidgetsItemsListView):
+                ROOT = "//fieldset[@id='storage_volumes']"
+                ITEMS = "./div/div[contains(@class, 'removable-item')]"
+                ITEM_WIDGET_CLASS = ComputeResourceLibvirtProfileStorageItem
 
     @View.nested
     class operating_system(SatTab):
@@ -257,8 +306,7 @@ class HostCreateView(BaseLoggedInView):
 
         def before_fill(self, values=None):
             """If we don't want to break view.fill() procedure flow, we need to
-            push 'Add Interface' button to open necessary dialog to be able to
-            fill values
+            push 'Edit' button to open necessary dialog to be able to fill values
             """
             self.interfaces_list[0]['Actions'].widget.edit.click()
             wait_for(
