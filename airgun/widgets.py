@@ -790,7 +790,8 @@ class ValidationErrors(Widget):
     )
     ERROR_MESSAGES = (
         ".//*[(contains(@class,'error-msg-block') "
-        "or contains(@class,'error-message')) "
+        "or contains(@class,'error-message') "
+        "or contains(@class,'editable-error-block')) "
         "and not(contains(@style,'display:none'))]"
     )
 
@@ -2090,3 +2091,42 @@ class Link(Text):
     def fill(self, value):
         if value:
             self.browser.click(self)
+
+
+class PopOverWidget(GenericLocatorWidget):
+    """Popover-content UI widget which contains header, drop_down or input_box and
+    submit button. This is associated within a table.
+
+    Example html representation::
+
+        <h3 class="popover-title">Authorize login delegation (Default: false)</h3>
+            <form class="form-inline editableform" style="">
+                <select class="form-control input-sm">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option></select>
+                <div class="editable-buttons">
+                    <button type="submit" class="btn btn-primary btn-sm editable-submit">
+
+        <h3 class="popover-title">Authorize login delegation auth ...(Default: Not set)</h3>
+            <form class="form-inline editableform" style="">
+                <input type="text" ...>
+                <div class="editable-buttons">
+                    <button type="submit" class="btn btn-primary btn-sm editable-submit">
+
+    Locator example::
+
+        //div[contains(@class, 'editable-open')]
+    """
+
+    header = Text("//h3[@class='popover-title']")
+    input_box = TextInput(locator="//div[@class='editable-input']/input")
+    drop_down = Select("//div[@class='editable-input']/select")
+    submit = Text("//button[@type='submit']")
+
+    def fill(self, item):
+        """Selects value from drop_down if exist otherwise write into input_box"""
+        if self.header.is_displayed:
+            if self.drop_down.is_displayed:
+                self.drop_down.select_by_visible_text(item)
+            else:
+                self.input_box.fill(item)
