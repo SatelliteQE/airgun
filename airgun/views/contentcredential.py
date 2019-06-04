@@ -68,9 +68,15 @@ class ContentCredentialEditView(BaseLoggedInView):
         repos = ReadOnlyEntry(name='Repositories')
 
     @View.nested
-    class products(SatTab):
-        table = SatTable(locator=".//table")
+    class products(SatTab, SearchableViewMixin):
+        table = SatTable(
+            './/table',
+            column_widgets={'Name': Text('./a')}
+        )
 
     @View.nested
-    class repositories(SatTab):
-        table = SatTable(locator=".//table")
+    class repositories(SatTab, SearchableViewMixin):
+        table = SatTable(
+            './/table',
+            column_widgets={'Name': Text('./a')}
+        )
