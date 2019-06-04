@@ -1343,6 +1343,46 @@ class EditableEntryMultiCheckbox(EditableEntry):
     edit_field = CheckboxGroup(locator='.//form')
 
 
+class TextInputsGroup(GenericLocatorWidget):
+    """
+    A set of text inputs
+    """
+    FIELD_LABELS = './/div[contains(@id,"template-input-")]//label'
+    TEXTINPUT_LOCATOR = './/div[contains(@id,"template-input-")]//'\
+                        'label[normalize-space(.)="{}"]/following-sibling::div//input'
+
+    @cached_property
+    def labels(self):
+        return [
+            line.text
+            for line in self.browser.elements(self.FIELD_LABELS, parent=self)
+        ]
+
+    @cached_property
+    def textinputs(self):
+        return {
+            label: TextInput(self, locator=self.TEXTINPUT_LOCATOR.format(label))
+            for label in self.labels
+        }
+
+    def read(self):
+        """Read values of text inputs"""
+        return {
+            name: textinput.read()
+            for name, textinput in self.textinputs.items()
+        }
+
+    def fill(self, values):
+        """Fill one of the text inputs
+
+        :param value: string with specification of fields' values
+            Example: value={'Hosts filter': 'name=host11.example.com',
+            'Errata filter': 'whatever'}
+        """
+        for name, value in values.items():
+            self.textinputs[name].fill(value)
+
+
 class EditableLimitEntry(EditableEntry):
     """Should be used in case :class:`EditableEntry` widget represented not by
     a field, but by :class:`LimitInput` widget."""

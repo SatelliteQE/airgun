@@ -12,6 +12,7 @@ from airgun.widgets import (
     ActionsDropdown,
     MultiSelect,
     RemovableWidgetsItemsListView,
+    TextInputsGroup,
 )
 
 
@@ -85,4 +86,22 @@ class ReportTemplateCreateView(ReportTemplateDetailsView):
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Report Templates'
             and self.breadcrumb.read() == 'Create Template'
+        )
+
+
+class ReportTemplateGenerateView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+    email = Checkbox(id='report_template_report_send_mail')
+    email_to = TextInput(id='report_template_report_mail_to')
+    inputs = TextInputsGroup(locator='.//form')
+    submit = Text('//input[@name="commit"]')
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Report Templates'
+            and self.breadcrumb.read() == 'Generate a Report'
         )
