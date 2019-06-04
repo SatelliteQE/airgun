@@ -2117,16 +2117,22 @@ class PopOverWidget(GenericLocatorWidget):
 
         //div[contains(@class, 'editable-open')]
     """
-
-    header = Text("//h3[@class='popover-title']")
-    input_box = TextInput(locator="//div[@class='editable-input']/input")
-    drop_down = Select("//div[@class='editable-input']/select")
-    submit = Text("//button[@type='submit']")
+    column_text = Text("//span[contains(@class, 'editable-click')]")
+    header = Text("//*[contains(@class, 'popover-title')]")
+    input_box = TextInput(locator="//*[contains(@class, 'form-control input-sm') or "
+                                  "contains(@class, 'form-control input-large')]")
+    drop_down = Select("//*[contains(@class, 'editable')]/select")
+    submit = Text("//*[@type='submit']")
 
     def fill(self, item):
         """Selects value from drop_down if exist otherwise write into input_box"""
+        self.column_text.click()
         if self.header.is_displayed:
             if self.drop_down.is_displayed:
-                self.drop_down.select_by_visible_text(item)
+                self.drop_down.fill(item)
             else:
                 self.input_box.fill(item)
+
+    def read(self):
+        """read colum updated value"""
+        return self.column_text.read()

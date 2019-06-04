@@ -2,16 +2,17 @@ from wait_for import wait_for
 from widgetastic.widget import Text
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import PopOverWidget, SatTable
+from airgun.widgets import PopOverWidget, Table
 
 
 class SettingsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Settings']")
-    table = SatTable(
+    table = Table(
         './/table',
         column_widgets={
-            'Name': Text('.//a'),
-            'Value': Text('.//span[contains(@class, "editable-click")]')
+            'Name': Text('.//span[contains(@rel,"twipsy")]'),
+            'Value': PopOverWidget(
+                './/span[contains(@class, "editable-click")]')
         },
     )
 
@@ -19,17 +20,6 @@ class SettingsView(BaseLoggedInView, SearchableViewMixin):
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.title, exception=False) is not None
-
-
-class SettingEditView(SettingsView):
-    table = SatTable(
-        './/table',
-        column_widgets={
-            'Name': Text('.//a'),
-            'Value': PopOverWidget(
-                './/span[contains(@class, "editable-click")]')
-        },
-    )
 
     def wait_for_update(self):
         """Wait for value to update"""
@@ -39,6 +29,3 @@ class SettingEditView(SettingsView):
             delay=1,
             logger=self.logger,
         )
-
-    def check_for_error(self):
-        """Check for error while updating"""
