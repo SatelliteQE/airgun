@@ -10,7 +10,6 @@ class SettingsView(BaseLoggedInView, SearchableViewMixin):
     table = Table(
         './/table',
         column_widgets={
-            'Name': Text('.//span[contains(@rel,"twipsy")]'),
             'Value': PopOverWidget(
                 './/span[contains(@class, "editable-click")]')
         },
@@ -25,7 +24,7 @@ class SettingsView(BaseLoggedInView, SearchableViewMixin):
         """Wait for value to update"""
         wait_for(
             lambda: not self.table.row()['Value'].widget.header.is_displayed,
-            timeout=10,
+            timeout=30,
             delay=1,
             logger=self.logger,
         )
