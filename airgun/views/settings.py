@@ -10,8 +10,7 @@ class SettingsView(BaseLoggedInView, SearchableViewMixin):
     table = Table(
         './/table',
         column_widgets={
-            'Value': PopOverWidget(
-                './/span[contains(@class, "editable-click")]')
+            'Value': PopOverWidget('.')
         },
     )
 

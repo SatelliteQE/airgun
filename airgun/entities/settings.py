@@ -19,6 +19,8 @@ class SettingsEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.search(property_name)
         view.table.row()['Value'].widget.fill(value)
+        view.validations.assert_no_errors()
+        view.wait_for_update()
 
 
 @navigator.register(SettingsEntity, 'All')
