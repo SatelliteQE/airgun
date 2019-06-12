@@ -2093,7 +2093,7 @@ class Link(Text):
             self.browser.click(self)
 
 
-class PopOverWidget(GenericLocatorWidget):
+class PopOverWidget(Widget):
     """Popover-content UI widget which contains header, drop_down or input_box and
     submit button. This is associated within a table.
 
@@ -2117,6 +2117,7 @@ class PopOverWidget(GenericLocatorWidget):
 
         //div[contains(@class, 'editable-open')]
     """
+    ROOT = '.'
     column_value = Text(".//span[contains(@class, 'editable-click')]")
     header = Text(".//h3[contains(@class, 'popover-title')]")
     input_box = TextInput(locator=".//input[contains(@class, 'form-control input-sm') or "
@@ -2135,5 +2136,5 @@ class PopOverWidget(GenericLocatorWidget):
         self.submit.click()
 
     def read(self):
-        """read colum updated value"""
+        """read column updated value"""
         return self.column_value.read()

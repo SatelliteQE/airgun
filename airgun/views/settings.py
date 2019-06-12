@@ -10,7 +10,7 @@ class SettingsView(BaseLoggedInView, SearchableViewMixin):
     table = Table(
         './/table',
         column_widgets={
-            'Value': PopOverWidget('.')
+            'Value': PopOverWidget()
         },
     )
 
