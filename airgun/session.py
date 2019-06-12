@@ -64,6 +64,7 @@ from airgun.entities.task import TaskEntity
 from airgun.entities.trend import TrendEntity
 from airgun.entities.provisioning_template import ProvisioningTemplateEntity
 from airgun.entities.report_template import ReportTemplateEntity
+from airgun.entities.settings import SettingsEntity
 from airgun.entities.smart_class_parameter import SmartClassParameterEntity
 from airgun.entities.smart_variable import SmartVariableEntity
 from airgun.entities.subnet import SubnetEntity
@@ -497,6 +498,11 @@ class Session(object):
     def role(self):
         """Instance of Role entity."""
         return RoleEntity(self.browser)
+
+    @cached_property
+    def settings(self):
+        """Instance of Settings entity."""
+        return SettingsEntity(self.browser)
 
     @cached_property
     def sc_parameter(self):
