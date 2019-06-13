@@ -1,4 +1,4 @@
-from widgetastic.widget import FileInput, Select, Text, TextInput, View
+from widgetastic.widget import FileInput, Select, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
@@ -10,14 +10,13 @@ from airgun.widgets import (
     ConfirmationDialog,
     EditableEntry,
     ReadOnlyEntry,
-    SatTable,
 )
 
 
 class ContentCredentialsTableView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Content Credentials')]")
     new = Text("//button[contains(@href, '/content_credentials/new')]")
-    table = SatTable('.//table', column_widgets={'Name': Text('./a')})
+    table = Table('.//table', column_widgets={'Name': Text('./a')})
 
     @property
     def is_displayed(self):
@@ -68,9 +67,15 @@ class ContentCredentialEditView(BaseLoggedInView):
         repos = ReadOnlyEntry(name='Repositories')
 
     @View.nested
-    class products(SatTab):
-        table = SatTable(locator=".//table")
+    class products(SatTab, SearchableViewMixin):
+        table = Table(
+            './/table',
+            column_widgets={'Name': Text('./a')}
+        )
 
     @View.nested
-    class repositories(SatTab):
-        table = SatTable(locator=".//table")
+    class repositories(SatTab, SearchableViewMixin):
+        table = Table(
+            './/table',
+            column_widgets={'Name': Text('./a')}
+        )
