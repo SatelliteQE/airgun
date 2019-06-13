@@ -5,6 +5,7 @@ from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
     GenericLocatorWidget,
+    NoSuchElementException,
     Select,
     Text,
     Table,
@@ -258,11 +259,21 @@ class HostCreateView(BaseLoggedInView):
 
         1. For RHV provider, the compute resource name will be displayed as: "foo (RHV)"
         2. For Libvirt provider, the compute resource name will be displayed as: "foo (Libvirt)"
+
+        Return "Compute resource is not specified" value in case no compute resource specified
+        in deployment procedure (e.g. "Bare Metal")
         """
-        compute_resource_name = self.host.deploy.read()
+        try:
+            compute_resource_name = self.host.deploy.read()
+        except NoSuchElementException:
+            return 'Compute resource is not specified'
         return re.findall(r'.*\((?:.*-)*(.*?)\)\Z|$', compute_resource_name)[0]
 
     provider_content = ConditionalSwitchableView(reference='current_provider')
+
+    @provider_content.register('Compute resource is not specified', default=True)
+    class NoResourceForm(View):
+        pass
 
     @provider_content.register('Libvirt')
     class LibvirtResourceForm(View):
