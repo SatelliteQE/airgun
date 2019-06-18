@@ -85,6 +85,14 @@ class ResourceProviderCreateView(BaseLoggedInView):
         certificate_path = TextInput(id='compute_resource_key_path')
         load_zones = Text("//*[contains(@id,'test_connection_button')]")
 
+        @View.nested
+        class zone(View):
+            load_zones = Text("//a[contains(@id,'test_connection_button')]")
+            value = FilteredDropdown(id='s2id_compute_resource_zone')
+
+            def before_fill(self, values=None):
+                self.load_zones.click()
+
     @provider_content.register('Libvirt')
     class LibvirtProviderForm(View):
         url = TextInput(id='compute_resource_url')
@@ -373,6 +381,14 @@ class ResourceProviderProfileView(BaseLoggedInView):
         subnet = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_subnet_id')
         security_groups = MultiSelect(id='ms-compute_attribute_vm_attrs_security_group_ids')
         managed_ip = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_managed_ip')
+
+    @provider_content.register('Google')
+    class GCEResourceForm(View):
+        machine_type = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_machine_type')
+        image = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_image_id')
+        network = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_network')
+        external_ip = Checkbox(id='compute_attribute_vm_attrs_associate_external_ip')
+        default_disk_size = TextInput(id='compute_attribute_vm_attrs_volumes_attributes_0_size_gb')
 
     @provider_content.register('RHV')
     class RHVResourceForm(View):
