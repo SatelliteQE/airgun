@@ -489,7 +489,7 @@ class HostsActionCommonDialog(BaseLoggedInView):
     title = None
     table = SatTable("//div[@class='modal-body']//table")
     keep_selected = Checkbox(id='keep_selected')
-    submit = Text('//button[@onclick="submit_modal_form()"]')
+    submit = Text('//button[@onclick="tfm.hosts.table.submitModalForm()"]')
 
     @property
     def is_displayed(self):
