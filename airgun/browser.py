@@ -202,7 +202,8 @@ class SeleniumBrowserFactory(object):
             elif browserName == 'firefox':
                 capabilities = webdriver.DesiredCapabilities.FIREFOX.copy()
             elif browserName == 'ie':
-                capabilities = webdriver.DesiredCapabilities.INTERNETEXPLORER.copy()
+                capabilities = (
+                        webdriver.DesiredCapabilities.INTERNETEXPLORER.copy())
             elif browserName == 'edge':
                 capabilities = webdriver.DesiredCapabilities.EDGE.copy()
             else:
@@ -214,8 +215,8 @@ class SeleniumBrowserFactory(object):
                 capabilities.update(
                     vars(settings.webdriver_desired_capabilities))
             self._webdriver = webdriver.Remote(
-                command_executor = settings.selenium.command_executor,
-                desired_capabilities = capabilities
+                command_executor=settings.selenium.command_executor,
+                desired_capabilities=capabilities
             )
             idle_timeout = settings.webdriver_desired_capabilities.idleTimeout
             if idle_timeout:
