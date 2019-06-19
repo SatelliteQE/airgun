@@ -14,6 +14,7 @@ from airgun.views.location import (
 class LocationEntity(BaseEntity):
 
     def create(self, values):
+        """Create new location entity"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
@@ -21,6 +22,7 @@ class LocationEntity(BaseEntity):
         view.flash.dismiss()
 
     def delete(self, entity_name):
+        """Delete existing location"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
@@ -29,14 +31,17 @@ class LocationEntity(BaseEntity):
         view.flash.dismiss()
 
     def read(self, entity_name, widget_names=None):
+        """Read specific location details"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def search(self, value):
+        """Search for location entity"""
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
     def update(self, entity_name, values):
+        """Update necessary values for location"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
@@ -44,11 +49,13 @@ class LocationEntity(BaseEntity):
         view.flash.dismiss()
 
     def select(self, loc_name):
+        """Select necessary location from context menu on the top of the page"""
         self.navigate_to(self, 'Context', loc_name=loc_name)
 
 
 @navigator.register(LocationEntity, 'All')
 class ShowAllLocations(NavigateStep):
+    """Navigate to All Locations page"""
     VIEW = LocationsView
 
     def step(self, *args, **kwargs):
@@ -57,6 +64,7 @@ class ShowAllLocations(NavigateStep):
 
 @navigator.register(LocationEntity, 'New')
 class AddNewLocation(NavigateStep):
+    """Navigate to Create Location page"""
     VIEW = LocationCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -67,6 +75,11 @@ class AddNewLocation(NavigateStep):
 
 @navigator.register(LocationEntity, 'Edit')
 class EditLocation(NavigateStep):
+    """Navigate to Edit Location page
+
+    Args:
+        entity_name: name of the location
+    """
     VIEW = LocationsEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -80,6 +93,11 @@ class EditLocation(NavigateStep):
 
 @navigator.register(LocationEntity, 'Context')
 class SelectLocationContext(NavigateStep):
+    """Select Location from menu
+
+    Args:
+        loc_name: name of the location
+    """
     VIEW = BaseLoggedInView
 
     def am_i_here(self, *args, **kwargs):

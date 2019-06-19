@@ -4,17 +4,16 @@ tests.
 import base64
 import logging
 import os
+import selenium
 import time
 import urllib
 
 from datetime import datetime
 from fauxfactory import gen_string
-import selenium
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
-from wait_for import wait_for, TimedOutError
+from wait_for import wait_for
 from widgetastic.browser import Browser, DefaultPlugin
-from widgetastic.exceptions import NoSuchElementException
 
 from airgun import settings
 
@@ -754,48 +753,3 @@ class AirgunBrowser(Browser):
         self.selenium.back()
         self.plugin.ensure_page_safe()
         return file_path
-
-    def wait_for_element(
-            self, locator, parent=None, visible=False, timeout=5, delay=0.2,
-            exception=True, ensure_page_safe=False):
-        """Wait for presence or visibility of elements specified by a locator.
-        todo: wrap default wait_for_element method once #132 issue is fixed in widgetastic.core
-
-        :param locator: Elements locator
-        :param parent: Elements parent locator
-        :param visible: If False, then it only checks presence not considering visibility.
-            If True, it also checks visibility.
-        :param timeout: How long to wait for.
-        :param delay: How often to check.
-        :param exception: If True (default), in case of element not being found an exception
-            will be raised. If False, it returns False.
-        :param ensure_page_safe: Whether to call the ``ensure_page_safe`` hook on repeat.
-        :returns: WebElement if element found according to params.
-        :raises: NoSuchElementException: if element not found.
-        """
-        def _element_lookup():
-            try:
-                return self.elements(locator,
-                                     parent=parent,
-                                     check_visibility=visible,
-                                     check_safe=ensure_page_safe)
-            # allow other exceptions through to caller on first wait
-            except NoSuchElementException:
-                return False
-        # turn the timeout into NoSuchElement
-        try:
-            result = wait_for(
-                _element_lookup,
-                num_sec=timeout,
-                delay=delay,
-                fail_condition=lambda elements: not bool(elements),
-                fail_func=self.plugin.ensure_page_safe if ensure_page_safe else None
-            )
-        except TimedOutError:
-            if exception:
-                raise NoSuchElementException(
-                    'Failed waiting for element with {} in {}'.format(locator, parent))
-            else:
-                return None
-        # wait_for returns NamedTuple, return first item from 'out', the WebElement
-        return result.out[0]

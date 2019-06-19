@@ -43,6 +43,12 @@ class DomainEntity(BaseEntity):
         view.flash.dismiss()
 
     def add_parameter(self, entity_name, param_name, param_value):
+        """Add new parameter to existing domain entity
+
+        :param entity_name: Domain name to be edited
+        :param param_name: Name of a parameter to be added
+        :param param_value: Value of a parameter to be added
+        """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.parameters.params.add({'name': param_name, 'value': param_value})
         view.submit_button.click()
@@ -51,6 +57,11 @@ class DomainEntity(BaseEntity):
         view.flash.dismiss()
 
     def remove_parameter(self, entity_name, param_name):
+        """Remove parameter from existing domain entity
+
+        :param entity_name: Domain name to be edited
+        :param param_name: Name of a parameter to be removed
+        """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.parameters.params.remove(param_name)
         view.submit_button.click()
@@ -58,20 +69,20 @@ class DomainEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def delete(self, name):
+    def delete(self, entity_name):
+        """Delete existing domain entity"""
         view = self.navigate_to(self, 'All')
-        self.search(name)
-        if not view.table.row_count:
-            raise ValueError("Unable to find name '{}'".format(name))
-        view.table[0]['Actions'].widget.click()
-        self.browser.handle_alert()
+        self.search(entity_name)
+        view.table.row(description=entity_name)['Actions'].widget.click(
+            handle_alert=True)
         view.validations.assert_no_errors()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
 
 @navigator.register(DomainEntity, 'All')
-class DomainList(NavigateStep):
+class ShowAllDomains(NavigateStep):
+    """Navigate to All Domains page"""
     VIEW = DomainListView
 
     def step(self, *args, **kwargs):
@@ -80,16 +91,22 @@ class DomainList(NavigateStep):
 
 @navigator.register(DomainEntity, 'New')
 class AddNewDomain(NavigateStep):
+    """Navigate to Create Domain page"""
     VIEW = DomainCreateView
 
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.parent.create_button.click()
+        self.parent.new.click()
 
 
 @navigator.register(DomainEntity, 'Edit')
 class EditDomain(NavigateStep):
+    """Navigate to Edit Domain page
+
+    Args:
+        entity_name: name of the domain
+    """
     VIEW = DomainEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -98,5 +115,4 @@ class EditDomain(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
-        row = self.parent.table.row(('Description', entity_name))
-        row['Description'].widget.click()
+        self.parent.table.row(description=entity_name)['Description'].widget.click()

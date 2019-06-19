@@ -42,9 +42,9 @@ class RepositoriesView(BaseLoggedInView, SearchableViewMixin):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Products'
-                and self.breadcrumb.read() == 'Repositories'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Products'
+            and self.breadcrumb.read() == 'Repositories'
         )
 
 
@@ -116,10 +116,10 @@ class RepositoryCreateView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Products'
-                and self.breadcrumb.locations[2] == 'Repositories'
-                and self.breadcrumb.read() == 'New Repository'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Products'
+            and self.breadcrumb.locations[2] == 'Repositories'
+            and self.breadcrumb.read() == 'New Repository'
         )
 
 
@@ -248,10 +248,10 @@ class RepositoryPackagesView(BaseLoggedInView, SearchableViewMixin):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Products'
-                and self.breadcrumb.locations[2] == 'Repositories'
-                and self.breadcrumb.read() == 'Packages'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Products'
+            and self.breadcrumb.locations[2] == 'Repositories'
+            and self.breadcrumb.read() == 'Packages'
         )
 
 
@@ -278,8 +278,8 @@ class RepositoryPuppetModulesView(BaseLoggedInView, SearchableViewMixin):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Products'
-                and self.breadcrumb.locations[2] == 'Repositories'
-                and self.breadcrumb.read() == 'Manage Puppet Modules'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Products'
+            and self.breadcrumb.locations[2] == 'Repositories'
+            and self.breadcrumb.read() == 'Manage Puppet Modules'
         )

@@ -12,6 +12,7 @@ from airgun.views.os import (
 class OperatingSystemEntity(BaseEntity):
 
     def create(self, values):
+        """Create new operating system entity"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
@@ -19,6 +20,7 @@ class OperatingSystemEntity(BaseEntity):
         view.flash.dismiss()
 
     def delete(self, entity_name):
+        """Remove existing operating system entity"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(
@@ -27,14 +29,17 @@ class OperatingSystemEntity(BaseEntity):
         view.flash.dismiss()
 
     def search(self, value):
+        """Search for operating system entity"""
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
     def read(self, entity_name, widget_names=None):
+        """Read all values for created operating system entity"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
+        """Update necessary values for operating system"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
@@ -44,6 +49,7 @@ class OperatingSystemEntity(BaseEntity):
 
 @navigator.register(OperatingSystemEntity, 'All')
 class ShowAllOperatingSystems(NavigateStep):
+    """Navigate to All Operating Systems page"""
     VIEW = OperatingSystemsView
 
     def step(self, *args, **kwargs):
@@ -52,6 +58,7 @@ class ShowAllOperatingSystems(NavigateStep):
 
 @navigator.register(OperatingSystemEntity, 'New')
 class AddNewOperatingSystem(NavigateStep):
+    """Navigate to Create Operating System page"""
     VIEW = OperatingSystemCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -62,6 +69,11 @@ class AddNewOperatingSystem(NavigateStep):
 
 @navigator.register(OperatingSystemEntity, 'Edit')
 class EditOperatingSystem(NavigateStep):
+    """Navigate to Edit Operating System page
+
+    Args:
+        entity_name: name of the operating system
+    """
     VIEW = OperatingSystemEditView
 
     def prerequisite(self, *args, **kwargs):

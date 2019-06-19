@@ -15,6 +15,7 @@ from airgun.views.organization import (
 class OrganizationEntity(BaseEntity):
 
     def create(self, values):
+        """Create new organization entity"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
@@ -22,6 +23,7 @@ class OrganizationEntity(BaseEntity):
         view.flash.dismiss()
 
     def delete(self, entity_name):
+        """Delete existing organization"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
@@ -37,14 +39,17 @@ class OrganizationEntity(BaseEntity):
         )
 
     def read(self, entity_name, widget_names=None):
+        """Read specific organization details"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def search(self, value):
+        """Search for organization entity"""
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
     def update(self, entity_name, values):
+        """Update necessary values for organization"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
@@ -52,11 +57,13 @@ class OrganizationEntity(BaseEntity):
         view.flash.dismiss()
 
     def select(self, org_name):
+        """Select necessary organization from context menu on the top of the page"""
         self.navigate_to(self, 'Context', org_name=org_name)
 
 
 @navigator.register(OrganizationEntity, 'All')
 class ShowAllOrganizations(NavigateStep):
+    """Navigate to All Organizations page"""
     VIEW = OrganizationsView
 
     def step(self, *args, **kwargs):
@@ -65,6 +72,7 @@ class ShowAllOrganizations(NavigateStep):
 
 @navigator.register(OrganizationEntity, 'New')
 class AddNewOrganization(NavigateStep):
+    """Navigate to Create Organization page"""
     VIEW = OrganizationCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -75,6 +83,11 @@ class AddNewOrganization(NavigateStep):
 
 @navigator.register(OrganizationEntity, 'Edit')
 class EditOrganization(NavigateStep):
+    """Navigate to Edit Organization page
+
+    Args:
+        entity_name: name of the organization
+    """
     VIEW = OrganizationEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -88,6 +101,11 @@ class EditOrganization(NavigateStep):
 
 @navigator.register(OrganizationEntity, 'Context')
 class SelectOrganizationContext(NavigateStep):
+    """Select Organization from menu
+
+    Args:
+        org_name: name of the organization
+    """
     VIEW = BaseLoggedInView
 
     def am_i_here(self, *args, **kwargs):

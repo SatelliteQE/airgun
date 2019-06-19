@@ -1,14 +1,14 @@
-from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic.widget import Checkbox, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
-from airgun.widgets import FilteredDropdown, MultiSelect, SatTable
+from airgun.widgets import FilteredDropdown, MultiSelect
 
 
 class UserGroupsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='User Groups']")
     new = Text("//a[contains(@href, '/usergroups/new')]")
-    table = SatTable(
+    table = Table(
             './/table',
             column_widgets={
                 'Name': Text('./a'),
@@ -31,9 +31,9 @@ class UserGroupDetailsView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
                 self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Usergroups'
-                and self.breadcrumb.read().startswith('Edit ')
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'User Groups'
+            and self.breadcrumb.read().startswith('Edit ')
         )
 
     @View.nested
@@ -52,7 +52,7 @@ class UserGroupDetailsView(BaseLoggedInView):
     @View.nested
     class external_groups(SatTab):
         TAB_NAME = 'External Groups'
-        table = SatTable(
+        table = Table(
             './/table',
             column_widgets={
                 'Actions': Text('.//a[contains(@href, "refresh")]'),
@@ -84,7 +84,7 @@ class UserGroupCreateView(UserGroupDetailsView):
         breadcrumb_loaded = self.browser.wait_for_element(
                 self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Usergroups'
-                and self.breadcrumb.read() == 'Create User group'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'User Groups'
+            and self.breadcrumb.read() == 'Create User group'
         )

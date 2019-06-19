@@ -1,4 +1,4 @@
-from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic.widget import Checkbox, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
@@ -11,14 +11,13 @@ from airgun.widgets import (
     CustomParameter,
     FilteredDropdown,
     MultiSelect,
-    SatTable,
 )
 
 
 class OrganizationsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Organizations']")
     new = Text("//a[contains(@href, '/organizations/new')]")
-    table = SatTable(
+    table = Table(
         './/table',
         column_widgets={
             'Name': Text('./a'),
@@ -44,9 +43,9 @@ class OrganizationCreateView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Organizations'
-                and self.breadcrumb.read() == 'New Organization'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Organizations'
+            and self.breadcrumb.read() == 'New Organization'
         )
 
 
@@ -61,9 +60,9 @@ class OrganizationCreateSelectHostsView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Organizations'
-                and self.breadcrumb.read() == 'Assign Hosts to'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Organizations'
+            and self.breadcrumb.read() == 'Assign Hosts to'
         )
 
 
@@ -77,9 +76,9 @@ class OrganizationEditView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Organizations'
-                and self.breadcrumb.read().startswith('Edit ')
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Organizations'
+            and self.breadcrumb.read().startswith('Edit ')
         )
 
     @View.nested

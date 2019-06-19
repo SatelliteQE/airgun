@@ -52,15 +52,16 @@ class ComputeProfileEntity(BaseEntity):
 
 @navigator.register(ComputeProfileEntity, 'All')
 class ShowAllComputeProfiles(NavigateStep):
+    """Navigate to All Compute Profiles page"""
     VIEW = ComputeProfilesView
 
     def step(self, *args, **kwargs):
-        # TODO: No prereq yet
         self.view.menu.select('Infrastructure', 'Compute Profiles')
 
 
 @navigator.register(ComputeProfileEntity, 'New')
 class AddNewComputeProfile(NavigateStep):
+    """Navigate to Create Compute Profile page"""
     VIEW = ComputeProfileCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -71,6 +72,11 @@ class AddNewComputeProfile(NavigateStep):
 
 @navigator.register(ComputeProfileEntity, 'Rename')
 class RenameComputeProfile(NavigateStep):
+    """Navigate to Edit Compute Profile page that basically does rename only
+
+    Args:
+        entity_name: name of the compute profile to be renamed
+    """
     VIEW = ComputeProfileRenameView
 
     def am_i_here(self, *args, **kwargs):
@@ -88,6 +94,12 @@ class RenameComputeProfile(NavigateStep):
 
 @navigator.register(ComputeProfileEntity, 'List')
 class ListComputeResources(NavigateStep):
+    """Navigate to list of Compute Resources for particular Compute Profile
+
+    Args:
+        entity_name: name of the compute profile to be listed
+    """
+
     VIEW = ComputeProfileDetailView
 
     def prerequisite(self, *args, **kwargs):

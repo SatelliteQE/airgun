@@ -4,6 +4,7 @@ from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
     Select,
+    Table,
     Text,
     TextInput,
     View,
@@ -63,7 +64,7 @@ class ProductsTableView(BaseLoggedInView, SearchableViewMixin):
     )
     repo_discovery = Text("//button[contains(.,'Repo Discovery')]")
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
-    table = SatTable('.//table', column_widgets={'Name': Text('./a')})
+    table = Table('.//table', column_widgets={'Name': Text('./a')})
     dialog = ConfirmationDialog()
 
     @property
@@ -106,11 +107,11 @@ class ProductEditView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Products'
-                and self.breadcrumb.read() not in (
-                    'New Product', 'Discover Repositories')
-                and len(self.breadcrumb.locations) <= 3
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Products'
+            and self.breadcrumb.read() not in (
+                'New Product', 'Discover Repositories')
+            and len(self.breadcrumb.locations) <= 3
         )
 
     @View.nested
@@ -149,9 +150,9 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Products'
-                and self.breadcrumb.read() == 'Discover Repositories'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Products'
+            and self.breadcrumb.read() == 'Discover Repositories'
         )
 
     @View.nested
@@ -222,10 +223,10 @@ class ProductTaskDetailsView(TaskDetailsView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Products'
-                and self.breadcrumb.locations[2] == 'Tasks'
-                and len(self.breadcrumb.locations) > 3
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Products'
+            and self.breadcrumb.locations[2] == 'Tasks'
+            and len(self.breadcrumb.locations) > 3
         )
 
 

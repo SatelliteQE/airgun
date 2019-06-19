@@ -1,4 +1,4 @@
-from widgetastic.widget import ConditionalSwitchableView, Text, TextInput, View
+from widgetastic.widget import ConditionalSwitchableView, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
@@ -9,7 +9,6 @@ from airgun.widgets import (
     MultiSelect,
     PuppetClassesMultiSelect,
     RadioGroup,
-    SatTable,
 )
 
 
@@ -18,7 +17,7 @@ class HostGroupsView(BaseLoggedInView, SearchableViewMixin):
         "//h1[contains(., 'Host Group Configuration') or text()='Host Groups']"
     )
     new = Text("//a[contains(@href, '/hostgroups/new')]")
-    table = SatTable(
+    table = Table(
         './/table',
         column_widgets={
             'Name': Text("./a"),
@@ -44,9 +43,9 @@ class HostGroupCreateView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Host Groups'
-                and self.breadcrumb.read() == 'Create Host Group'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Host Groups'
+            and self.breadcrumb.read() == 'Create Host Group'
         )
 
     @View.nested
@@ -130,7 +129,7 @@ class HostGroupEditView(HostGroupCreateView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Host Groups'
-                and self.breadcrumb.read().startswith('Edit ')
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Host Groups'
+            and self.breadcrumb.read().startswith('Edit ')
         )

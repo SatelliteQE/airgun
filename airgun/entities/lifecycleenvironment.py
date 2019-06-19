@@ -61,15 +61,13 @@ class LCEEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def search_package(self, entity_name, package_name, cv_name=None,
-                       repo_name=None):
+    def search_package(self, entity_name, package_name, cv_name=None, repo_name=None):
         """Search for specific package inside lifecycle environment"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.packages.search(package_name, cv=cv_name, repo=repo_name)
         return view.packages.table.read()
 
-    def search_module_stream(self, entity_name, module_name, cv_name=None,
-                             repo_name=None):
+    def search_module_stream(self, entity_name, module_name, cv_name=None, repo_name=None):
         """Search for specific module stream inside lifecycle environment"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.module_streams.search(module_name, cv=cv_name, repo=repo_name)
@@ -78,6 +76,7 @@ class LCEEntity(BaseEntity):
 
 @navigator.register(LCEEntity, 'All')
 class ShowAllLCE(NavigateStep):
+    """Navigate to All Lifecycle Environments page"""
     VIEW = LCEView
 
     def step(self, *args, **kwargs):
@@ -85,7 +84,8 @@ class ShowAllLCE(NavigateStep):
 
 
 @navigator.register(LCEEntity, 'New Path')
-class AddNewEnvironmentPath(NavigateStep):
+class AddNewLCEPath(NavigateStep):
+    """Navigate to New Lifecycle Environment Path page"""
     VIEW = LCECreateView
 
     prerequisite = NavigateToSibling('All')
@@ -95,7 +95,8 @@ class AddNewEnvironmentPath(NavigateStep):
 
 
 @navigator.register(LCEEntity, 'New Environment')
-class AddNewEnvironment(NavigateStep):
+class AddNewLCE(NavigateStep):
+    """Navigate to New Lifecycle Environment page"""
     VIEW = LCECreateView
 
     def prerequisite(self, *args, **kwargs):
@@ -106,7 +107,12 @@ class AddNewEnvironment(NavigateStep):
 
 
 @navigator.register(LCEEntity, 'Edit')
-class EditEnvironment(NavigateStep):
+class EditLCE(NavigateStep):
+    """Navigate to Edit Lifecycle Environment page
+
+    Args:
+        entity_name: name of the lifecycle environment
+    """
     VIEW = LCEEditView
 
     def prerequisite(self, *args, **kwargs):

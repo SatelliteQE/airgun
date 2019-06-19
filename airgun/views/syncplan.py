@@ -1,4 +1,4 @@
-from widgetastic.widget import Select, Text, TextInput, View
+from widgetastic.widget import Select, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
@@ -16,14 +16,13 @@ from airgun.widgets import (
     EditableDateTime,
     EditableEntrySelect,
     ReadOnlyEntry,
-    SatTable,
 )
 
 
 class SyncPlansView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Sync Plans')]")
     new = Text("//button[contains(@href, '/sync_plans/new')]")
-    table = SatTable('.//table', column_widgets={'Name': Text('./a')})
+    table = Table('.//table', column_widgets={'Name': Text('./a')})
 
     @property
     def is_displayed(self):
@@ -45,9 +44,9 @@ class SyncPlanCreateView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Sync Plans'
-                and self.breadcrumb.read() == 'New Sync Plan'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Sync Plans'
+            and self.breadcrumb.read() == 'New Sync Plan'
         )
 
 
@@ -61,9 +60,9 @@ class SyncPlanEditView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Sync Plans'
-                and self.breadcrumb.read() != 'New Sync Plan'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Sync Plans'
+            and self.breadcrumb.read() != 'New Sync Plan'
         )
 
     @View.nested

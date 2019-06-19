@@ -1,6 +1,7 @@
 from widgetastic.widget import (
     Checkbox,
     ParametrizedView,
+    Table,
     Text,
     TextInput,
     View,
@@ -13,7 +14,6 @@ from airgun.views.common import (
     LCESelectorGroup,
     SatSecondaryTab,
     SatTab,
-    SatTable,
     SatTabWithDropdown,
     SearchableViewMixin,
 )
@@ -32,7 +32,7 @@ from airgun.widgets import (
 class ContentViewTableView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Content Views')]")
     new = Text("//a[contains(@href, '/content_views/new')]")
-    table = SatTable('.//table', column_widgets={'Name': Text('./a')})
+    table = Table('.//table', column_widgets={'Name': Text('./a')})
 
     @property
     def is_displayed(self):
@@ -71,10 +71,10 @@ class ContentViewCopyView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Content Views'
-                and len(self.breadcrumb.locations) == 3
-                and self.breadcrumb.read() == 'Copy'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Views'
+            and len(self.breadcrumb.locations) == 3
+            and self.breadcrumb.read() == 'Copy'
         )
 
 
@@ -82,7 +82,7 @@ class ContentViewRemoveView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
 
     conflicts = Text("//div[@ng-show='conflictingVersions.length > 0']")
-    table = SatTable('.//table')
+    table = Table('.//table')
     remove = Text(".//button[@ng-click='delete()']")
     cancel = Text(
         ".//a[contains(@class, 'btn')][@ui-sref='content-view.versions']")
@@ -96,11 +96,11 @@ class ContentViewRemoveView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Content Views'
-                and len(self.breadcrumb.locations) == 3
-                and self.breadcrumb.read() == 'Deletion'
-                and (self.conflicts_present or self.remove.is_displayed)
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Views'
+            and len(self.breadcrumb.locations) == 3
+            and self.breadcrumb.read() == 'Deletion'
+            and (self.conflicts_present or self.remove.is_displayed)
         )
 
 
@@ -132,7 +132,7 @@ class ContentViewEditView(BaseLoggedInView):
     @View.nested
     class versions(SatTab):
         searchbox = Search()
-        table = SatTable(
+        table = Table(
             locator='//table',
             column_widgets={
                 'Version': Text('.//a'),
@@ -179,7 +179,7 @@ class ContentViewEditView(BaseLoggedInView):
         new_filter = Text(".//button[@ui-sref='content-view.yum.filters.new']")
         remove_selected = Text(".//button[@ng-click='removeFilters()']")
 
-        table = SatTable(
+        table = Table(
             locator='//table',
             column_widgets={
                 0: Checkbox(locator=".//input[@type='checkbox']"),
@@ -193,7 +193,7 @@ class ContentViewEditView(BaseLoggedInView):
 
         add_new_module = Text(
             './/button[@ui-sref="content-view.puppet-modules.names"]')
-        table = SatTable('.//table')
+        table = Table('.//table')
 
     @View.nested
     class docker_repositories(SatTabWithDropdown):
@@ -211,7 +211,7 @@ class ContentViewEditView(BaseLoggedInView):
 
 class AddNewPuppetModuleView(BaseLoggedInView, SearchableViewMixin):
     breadcrumb = BreadCrumb()
-    table = SatTable(
+    table = Table(
         locator='.//table',
         column_widgets={
             'Actions': Text('./button[@ng-click="selectVersion(item.name)"]')
@@ -223,15 +223,15 @@ class AddNewPuppetModuleView(BaseLoggedInView, SearchableViewMixin):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Content Views'
-                and self.breadcrumb.read() == 'Add Puppet Module'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Views'
+            and self.breadcrumb.read() == 'Add Puppet Module'
         )
 
 
 class SelectPuppetModuleVersionView(BaseLoggedInView, SearchableViewMixin):
     breadcrumb = BreadCrumb()
-    table = SatTable(
+    table = Table(
         locator='.//table',
         column_widgets={
             'Actions': Text('./button[@ng-click="selectVersion(item)"]')
@@ -243,9 +243,9 @@ class SelectPuppetModuleVersionView(BaseLoggedInView, SearchableViewMixin):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Content Views'
-                and self.breadcrumb.read() == 'Version for Module:'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Views'
+            and self.breadcrumb.read() == 'Version for Module:'
         )
 
 
@@ -262,16 +262,16 @@ class ContentViewVersionPublishView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Content Views'
-                and self.breadcrumb.read() == 'Publish'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Views'
+            and self.breadcrumb.read() == 'Publish'
         )
 
 
 class EntitySearchView(SatSecondaryTab):
     repo_filter = SatSelect(".//select[@ng-model='repository']")
     searchbox = Search()
-    table = SatTable(".//table")
+    table = Table(".//table")
 
     def search(self, query, repo=None):
         """Apply available filters before proceeding with searching.
@@ -295,21 +295,21 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and len(self.breadcrumb.locations) > 3
-                and self.breadcrumb.locations[0] == 'Content Views'
-                and self.breadcrumb.locations[2] == 'Versions'
+            breadcrumb_loaded
+            and len(self.breadcrumb.locations) > 3
+            and self.breadcrumb.locations[0] == 'Content Views'
+            and self.breadcrumb.locations[2] == 'Versions'
         )
 
     @View.nested
     class yum_repositories(SatSecondaryTab, SearchableViewMixin):
         TAB_NAME = 'Yum Repositories'
-        table = SatTable('.//table')
+        table = Table('.//table')
 
     @View.nested
     class docker_repositories(SatSecondaryTab, SearchableViewMixin):
         TAB_NAME = 'Docker Repositories'
-        table = SatTable('.//table')
+        table = Table('.//table')
 
     @View.nested
     class rpm_packages(EntitySearchView):
@@ -321,7 +321,7 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
 
     @View.nested
     class errata(SatSecondaryTab, SearchableViewMixin):
-        table = SatTable(
+        table = Table(
             locator='.//table',
             column_widgets={'Title': Text('./a')}
         )
@@ -329,7 +329,7 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
     @View.nested
     class puppet_modules(SatSecondaryTab, SearchableViewMixin):
         TAB_NAME = 'Puppet Modules'
-        table = SatTable('.//table')
+        table = Table('.//table')
 
     @View.nested
     class details(SatSecondaryTab):
@@ -351,16 +351,16 @@ class ContentViewVersionPromoteView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Content Views'
-                and self.breadcrumb.read() == 'Promotion'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Views'
+            and self.breadcrumb.read() == 'Promotion'
         )
 
 
 class ContentViewVersionRemoveView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
 
-    table = SatTable(
+    table = Table(
         locator='.//table',
         column_widgets={
             0: Checkbox(locator="./input[@type='checkbox']"),
@@ -376,11 +376,11 @@ class ContentViewVersionRemoveView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Content Views'
-                and len(self.breadcrumb.locations) == 3
-                and self.breadcrumb.read() == 'Deletion'
-                and self.next.is_displayed
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Views'
+            and len(self.breadcrumb.locations) == 3
+            and self.breadcrumb.read() == 'Deletion'
+            and self.next.is_displayed
         )
 
 
@@ -397,9 +397,9 @@ class ContentViewVersionRemoveConfirmationView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Content Views'
-                and len(self.breadcrumb.locations) == 3
-                and self.breadcrumb.read() == 'Deletion'
-                and self.confirm_remove.is_displayed
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Views'
+            and len(self.breadcrumb.locations) == 3
+            and self.breadcrumb.read() == 'Deletion'
+            and self.confirm_remove.is_displayed
         )
