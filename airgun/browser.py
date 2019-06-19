@@ -196,10 +196,31 @@ class SeleniumBrowserFactory(object):
             self._webdriver = webdriver.PhantomJS(
                 service_args=['--ignore-ssl-errors=true'])
         elif self.browser == 'remote':
-            capabilities = vars(settings.webdriver_desired_capabilities)
+            browserName = settings.webdriver_desired_capabilities.browserName
+            if browserName == 'chrome':
+                capabilities = webdriver.DesiredCapabilities.CHROME.copy()
+            elif browserName == 'firefox':
+                capabilities = webdriver.DesiredCapabilities.FIREFOX.copy()
+            elif browserName == 'ie':
+                capabilities = webdriver.DesiredCapabilities.INTERNETEXPLORER.copy()
+            elif browserName == 'edge':
+                capabilities = webdriver.DesiredCapabilities.EDGE.copy()
+            else:
+                raise ValueError(
+                    '"{}" browserName is not supported. Please use one of {}'
+                    .format(browserName, ('chrome', 'firefox', 'ie', 'edge'))
+                )
+            if settings.webdriver_desired_capabilities:
+                capabilities.update(
+                    vars(settings.webdriver_desired_capabilities))
             self._webdriver = webdriver.Remote(
-                desired_capabilities=capabilities
+                command_executor = settings.selenium.command_executor,
+                desired_capabilities = capabilities
             )
+            idle_timeout = settings.webdriver_desired_capabilities.idleTimeout
+            if idle_timeout:
+                self._webdriver.command_executor.set_timeout(int(idle_timeout))
+
         if self._webdriver is None:
             raise ValueError(
                 '"{}" webdriver is not supported. Please use one of {}'

@@ -46,6 +46,7 @@ class SeleniumSettings(object):
         self.screenshots_path = None
         self.webdriver = None
         self.webdriver_binary = None
+        self.command_executor = None
 
 
 class WebdriverCapabilitiesSettings(object):
@@ -53,6 +54,7 @@ class WebdriverCapabilitiesSettings(object):
     def __init__(self):
         self.platform = None
         self.version = None
+        self.browserName = None
         self.maxDuration = None
         self.idleTimeout = None
         self.seleniumVersion = None

@@ -12,11 +12,13 @@ browser=selenium
 webdriver=chrome
 webdriver_binary=/home/user/path/to/chromedriver
 screenshots_path=/home/user/path/to/screenshots
+command_executor=http://127.0.0.1:4444/wd/hub
 # saucelabs_user=user
 # saucelabs_key=key
 
 # [webdriver_desired_capabilities]
 # platform=macOS 10.12
+# browserName=chrome
 # version=64.0
 # maxDuration=5400
 # idleTimeout=1000
