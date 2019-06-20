@@ -87,7 +87,6 @@ class ResourceProviderCreateView(BaseLoggedInView):
 
         @View.nested
         class zone(View):
-            load_zones = Text("//a[contains(@id,'test_connection_button')]")
             value = FilteredDropdown(id='s2id_compute_resource_zone')
 
             def before_fill(self, values=None):
