@@ -1,17 +1,14 @@
-from widgetastic.widget import Text, TextInput
+from widgetastic.widget import Table, Text, TextInput
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import (
-    ActionsDropdown,
-    SatTable,
-)
+from airgun.widgets import ActionsDropdown
 
 
 class ComputeProfilesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Compute Profiles']")
     new = Text("//a[contains(@href, '/compute_profiles/new')]")
-    table = SatTable(
+    table = Table(
         './/table',
         column_widgets={
             'Name': Text('./a'),
@@ -43,7 +40,7 @@ class ComputeProfileCreateView(BaseLoggedInView):
 
 class ComputeProfileDetailView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    table = SatTable(
+    table = Table(
         './/table',
         column_widgets={
             'Compute Resource': Text('./a'),

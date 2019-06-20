@@ -1,36 +1,35 @@
-from widgetastic.widget import Text, TextInput, View
+from widgetastic.widget import Table, Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
 from airgun.widgets import (
     CustomParameter,
     FilteredDropdown,
     MultiSelect,
-    SatTable,
 )
 
 
 class DomainListView(BaseLoggedInView, SearchableViewMixin):
     """List of all domains."""
-    # Delete button isn't the typical "btn"
-    # It sits within a span, we'll access the href via a Text widget
-    table = SatTable(
-        locator='table#domains_list',
+    title = Text("//h1[text()='Domains']")
+    new = Text("//a[contains(@href, '/domains/new')]")
+    table = Table(
+        './/table',
         column_widgets={
             'Description': Text("./a"),
             'Hosts': Text("./a"),
-            'Actions': Text(".//a[@data-method='delete']")  # delete button
+            'Actions': Text(".//a[@data-method='delete']")
         }
     )
-    create_button = Text(".//a[@href='/domains/new']")
 
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(
-            self.table, exception=False) is not None
+            self.title, exception=False) is not None
 
 
 class DomainCreateView(BaseLoggedInView):
-    # Use 'Text' to make submit_button clickable
+    breadcrumb = BreadCrumb()
     submit_button = Text(".//input[@name='commit']")
     cancel_button = Text(".//a[@href='/domains']")
 
@@ -54,14 +53,23 @@ class DomainCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        locator = 'form#new_domain'
-        return self.browser.wait_for_element(
-            locator, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Domains'
+            and self.breadcrumb.read() == 'Create Domain'
+        )
 
 
 class DomainEditView(DomainCreateView):
+
     @property
     def is_displayed(self):
-        locator = "//form[contains(@id, 'edit_domain_')]"
-        return self.browser.wait_for_element(
-            locator, exception=False) is not None
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Domains'
+            and self.breadcrumb.read().startswith('Edit ')
+        )

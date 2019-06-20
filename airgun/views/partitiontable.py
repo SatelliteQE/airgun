@@ -1,6 +1,7 @@
 from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
+    Table,
     Text,
     TextInput,
     View,
@@ -19,7 +20,6 @@ from airgun.widgets import (
     FilteredDropdown,
     MultiSelect,
     RemovableWidgetsItemsListView,
-    SatTable
 )
 
 
@@ -27,7 +27,7 @@ class PartitionTablesView(BaseLoggedInView, SearchableViewMixin):
 
     title = Text("//h1[text()='Partition Tables']")
     new = Button("Create Partition Table")
-    table = SatTable(
+    table = Table(
         './/table',
         column_widgets={
             'Name': Text('./a'),

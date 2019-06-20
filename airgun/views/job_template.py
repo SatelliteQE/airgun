@@ -1,6 +1,7 @@
 from widgetastic.widget import (
     Checkbox,
     Select,
+    Table,
     Text,
     TextInput,
     View,
@@ -10,7 +11,6 @@ from widgetastic_patternfly import BreadCrumb
 from airgun.views.common import (
     BaseLoggedInView,
     SatTab,
-    SatTable,
     SearchableViewMixin,
     TemplateEditor,
     TemplateInputItem,
@@ -28,7 +28,7 @@ class JobTemplatesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[contains(., 'Job Templates')]")
     import_template = Text("//a[text()='Import']")
     new = Text("//a[contains(@href, '/job_templates/new')]")
-    table = SatTable(
+    table = Table(
         './/table',
         column_widgets={
             'Name': Text('./a'),

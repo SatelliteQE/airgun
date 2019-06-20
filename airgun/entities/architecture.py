@@ -12,6 +12,7 @@ from airgun.views.architecture import (
 class ArchitectureEntity(BaseEntity):
 
     def create(self, values):
+        """Create new architecture entity"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
@@ -19,14 +20,17 @@ class ArchitectureEntity(BaseEntity):
         view.flash.dismiss()
 
     def search(self, value):
+        """Search for architecture entity"""
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
     def read(self, entity_name, widget_names=None):
+        """Read all values for created architecture entity"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
+        """Update necessary values for architecture"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
@@ -34,6 +38,7 @@ class ArchitectureEntity(BaseEntity):
         view.flash.dismiss()
 
     def delete(self, entity_name):
+        """Remove existing architecture entity"""
         view = self.navigate_to(self, 'All')
         view.searchbox.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.click(
@@ -44,15 +49,16 @@ class ArchitectureEntity(BaseEntity):
 
 @navigator.register(ArchitectureEntity, 'All')
 class ShowAllArchitectures(NavigateStep):
+    """Navigate to All Architectures page"""
     VIEW = ArchitecturesView
 
     def step(self, *args, **kwargs):
-        # TODO: No prereq yet
         self.view.menu.select('Hosts', 'Architectures')
 
 
 @navigator.register(ArchitectureEntity, 'New')
 class AddNewArchitecture(NavigateStep):
+    """Navigate to Create Architecture page"""
     VIEW = ArchitectureCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -63,6 +69,11 @@ class AddNewArchitecture(NavigateStep):
 
 @navigator.register(ArchitectureEntity, 'Edit')
 class EditArchitecture(NavigateStep):
+    """Navigate to Edit Architecture page
+
+    Args:
+        entity_name: name of the architecture
+    """
     VIEW = ArchitectureDetailsView
 
     def prerequisite(self, *args, **kwargs):

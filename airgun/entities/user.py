@@ -8,6 +8,7 @@ from airgun.views.user import UserCreateView, UserDetailsView, UsersView
 class UserEntity(BaseEntity):
 
     def create(self, values):
+        """Create new user entity"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
@@ -15,14 +16,17 @@ class UserEntity(BaseEntity):
         view.flash.dismiss()
 
     def search(self, value):
+        """Search for user entity"""
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
     def read(self, entity_name, widget_names=None):
+        """Read all values for created user entity"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
+        """Update necessary values for user"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
@@ -30,6 +34,7 @@ class UserEntity(BaseEntity):
         view.flash.dismiss()
 
     def delete(self, entity_name):
+        """Remove existing user entity"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(username=entity_name)['Actions'].widget.click(
@@ -40,6 +45,7 @@ class UserEntity(BaseEntity):
 
 @navigator.register(UserEntity, 'All')
 class ShowAllUsers(NavigateStep):
+    """Navigate to All Users page"""
     VIEW = UsersView
 
     def step(self, *args, **kwargs):
@@ -48,6 +54,7 @@ class ShowAllUsers(NavigateStep):
 
 @navigator.register(UserEntity, 'New')
 class AddNewUser(NavigateStep):
+    """Navigate to Create User page"""
     VIEW = UserCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -58,6 +65,11 @@ class AddNewUser(NavigateStep):
 
 @navigator.register(UserEntity, 'Edit')
 class EditUser(NavigateStep):
+    """Navigate to Edit User page
+
+    Args:
+        entity_name: name of the user
+    """
     VIEW = UserDetailsView
 
     def prerequisite(self, *args, **kwargs):

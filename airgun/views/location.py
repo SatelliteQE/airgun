@@ -1,4 +1,4 @@
-from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic.widget import Checkbox, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
@@ -12,14 +12,13 @@ from airgun.widgets import (
     CustomParameter,
     FilteredDropdown,
     MultiSelect,
-    SatTable,
 )
 
 
 class LocationsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Locations']")
     new = Text("//a[contains(@href, '/locations/new')]")
-    table = SatTable(
+    table = Table(
         './/table',
         column_widgets={
             'Name': Text('./a'),
@@ -45,9 +44,9 @@ class LocationCreateView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Locations'
-                and self.breadcrumb.read() == 'New Location'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Locations'
+            and self.breadcrumb.read() == 'New Location'
         )
 
 
@@ -61,9 +60,9 @@ class LocationsEditView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Locations'
-                and self.breadcrumb.read().startswith('Edit ')
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Locations'
+            and self.breadcrumb.read().startswith('Edit ')
         )
 
     @View.nested

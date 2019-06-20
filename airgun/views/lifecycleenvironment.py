@@ -1,6 +1,7 @@
 from widgetastic.widget import (
     ParametrizedView,
     ParametrizedLocator,
+    Table,
     Text,
     TextInput,
     View,
@@ -13,7 +14,6 @@ from airgun.widgets import (
     EditableEntryCheckbox,
     ReadOnlyEntry,
     SatSelect,
-    SatTable,
     Search,
 )
 
@@ -53,7 +53,7 @@ class LCEView(BaseLoggedInView, ParametrizedView):
         LAST_ENV = "//div[@ng-repeat='path in paths']//table//th[last()]"
         current_env = Text(ParametrizedLocator(
             ".//a[normalize-space(.)='{lce_name}']"))
-        envs_table = SatTable(locator=".//table")
+        envs_table = Table(locator=".//table")
         new_child = Text(".//a[contains(@href, '/lifecycle_environments/')]")
 
         @classmethod
@@ -131,14 +131,14 @@ class LCEEditView(BaseLoggedInView):
     @View.nested
     class content_views(SatTab, SearchableViewMixin):
         TAB_NAME = 'Content Views'
-        resources = SatTable(locator=".//table")
+        resources = Table(locator=".//table")
 
     @View.nested
     class packages(SatTab):
         cv_filter = SatSelect(".//select[@ng-model='contentView']")
         repo_filter = SatSelect(".//select[@ng-model='repository']")
         searchbox = Search()
-        table = SatTable(locator=".//table")
+        table = Table(locator=".//table")
 
         def search(self, query, cv=None, repo=None):
             """Apply available filters before proceeding with searching.
@@ -162,7 +162,7 @@ class LCEEditView(BaseLoggedInView):
 
         cv_filter = SatSelect(".//select[@ng-model='contentView']")
         searchbox = Search()
-        table = SatTable(locator=".//table")
+        table = Table(locator=".//table")
 
         def search(self, query, cv=None):
             """Apply available filters before proceeding with searching.
@@ -184,7 +184,7 @@ class LCEEditView(BaseLoggedInView):
         cv_filter = SatSelect(".//select[@ng-model='contentView']")
         repo_filter = SatSelect(".//select[@ng-model='repository']")
         searchbox = Search()
-        table = SatTable(".//table")
+        table = Table(".//table")
 
         def search(self, query, cv=None, repo=None):
             """Apply available filters before proceeding with searching.

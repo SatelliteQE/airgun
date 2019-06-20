@@ -1,4 +1,4 @@
-from widgetastic.widget import Text, TextInput, View
+from widgetastic.widget import Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
@@ -6,7 +6,6 @@ from airgun.widgets import (
     CustomParameter,
     FilteredDropdown,
     MultiSelect,
-    SatTable,
 )
 
 
@@ -64,9 +63,9 @@ class TemplatesList(View):
 
 
 class OperatingSystemsView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Operating systems']")
+    title = Text("//h1[text()='Operating Systems']")
     new = Text("//a[contains(@href, '/operatingsystems/new')]")
-    table = SatTable(
+    table = Table(
         './/table',
         column_widgets={
             'Title': Text('./a'),
@@ -89,9 +88,9 @@ class OperatingSystemEditView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Operatingsystems'
-                and self.breadcrumb.read() == 'Edit Operating System'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Operating Systems'
+            and self.breadcrumb.read().startswith('Edit ')
         )
 
     @View.nested
@@ -134,6 +133,6 @@ class OperatingSystemCreateView(OperatingSystemEditView):
             self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Operatingsystems'
+            and self.breadcrumb.locations[0] == 'Operating Systems'
             and self.breadcrumb.read() == 'Create Operating System'
         )

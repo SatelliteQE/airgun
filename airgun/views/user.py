@@ -1,14 +1,14 @@
-from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic.widget import Checkbox, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
-from airgun.widgets import FilteredDropdown, MultiSelect, SatTable
+from airgun.widgets import FilteredDropdown, MultiSelect
 
 
 class UsersView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Users']")
     new = Text("//a[contains(@href, '/users/new')]")
-    table = SatTable(
+    table = Table(
         './/table',
         column_widgets={
             'Username': Text('./a'),
@@ -31,9 +31,9 @@ class UserDetailsView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Users'
-                and self.breadcrumb.read().startswith('Edit ')
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Users'
+            and self.breadcrumb.read().startswith('Edit ')
         )
 
     @View.nested
@@ -70,7 +70,7 @@ class UserCreateView(UserDetailsView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Users'
-                and self.breadcrumb.read() == 'Create User'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Users'
+            and self.breadcrumb.read() == 'Create User'
         )

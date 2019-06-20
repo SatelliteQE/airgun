@@ -1,14 +1,14 @@
-from widgetastic.widget import Text, TextInput, View
+from widgetastic.widget import Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
-from airgun.widgets import FilteredDropdown, MultiSelect, SatTable
+from airgun.widgets import FilteredDropdown, MultiSelect
 
 
 class MediumView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Installation Media']")
     new = Text("//a[contains(@href, '/media/new')]")
-    table = SatTable(
+    table = Table(
         './/table',
         column_widgets={
             'Name': Text('./a'),
