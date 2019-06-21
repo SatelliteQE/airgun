@@ -1,5 +1,5 @@
 from navmazing import NavigateToSibling
-from widgetastic.exceptions import RowNotFound
+from widgetastic.exceptions import RowNotFound, NoSuchElementException
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -32,7 +32,7 @@ class LDAPAuthenticationEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         try:
             row_value = view.table.row(name=entity_name).read()
-        except RowNotFound:
+        except (RowNotFound, NoSuchElementException):
             row_value = None
         return row_value
 
