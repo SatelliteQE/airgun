@@ -97,6 +97,8 @@ class HostCollectionEntity(BaseEntity):
         view.apply_action(action, action_via=action_via)
         view.flash.assert_no_error()
         view.flash.dismiss()
+        if action_via == 'via Katello Agent':
+            view.done.click()
         if action_via == 'via remote execution - customize first':
             # After this step the user is redirected to remote execution job
             # create view.
