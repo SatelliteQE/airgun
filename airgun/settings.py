@@ -46,6 +46,7 @@ class SeleniumSettings(object):
         self.screenshots_path = None
         self.webdriver = None
         self.webdriver_binary = None
+        self.command_executor = None
 
 
 class WebdriverCapabilitiesSettings(object):

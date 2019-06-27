@@ -83,10 +83,10 @@ class SeleniumBrowserFactory(object):
         values.
 
         :param str optional provider: Browser provider name. One of
-            ('selenium', 'docker', 'saucelabs'). If none specified -
+            ('selenium', 'docker', 'saucelabs', 'remote'). If none specified -
             :attr:`settings.selenium.browser` is used.
         :param str optional browser: Browser name. One of ('chrome', 'firefox',
-            'ie', 'edge', 'phantomjs', 'remote'). Not required for ``docker``
+            'ie', 'edge', 'phantomjs'). Not required for ``docker``
             provider as it currently supports firefox only. If none specified -
             :attr:`settings.selenium.webdriver` is used.
         :param str optional test_name: Name of the test using this factory. It
@@ -113,10 +113,15 @@ class SeleniumBrowserFactory(object):
             return self._get_saucelabs_browser()
         elif self.provider == 'docker':
             return self._get_docker_browser()
+        elif self.provider == 'remote':
+            return self._get_remote_browser()
         else:
             raise ValueError(
                 '"{}" browser is not supported. Please use one of {}'
-                .format(self.provider, ('selenium', 'saucelabs', 'docker'))
+                .format(
+                    self.provider,
+                    ('selenium', 'saucelabs', 'docker', 'remote')
+                )
             )
 
     def post_init(self):
@@ -147,7 +152,7 @@ class SeleniumBrowserFactory(object):
             or not. Is only used for ``saucelabs`` provider.
         :return: None
         """
-        if self.provider == 'selenium':
+        if self.provider == 'selenium' or self.provider == 'remote':
             self._webdriver.quit()
             return
         elif self.provider == 'saucelabs':
@@ -194,17 +199,12 @@ class SeleniumBrowserFactory(object):
         elif self.browser == 'phantomjs':
             self._webdriver = webdriver.PhantomJS(
                 service_args=['--ignore-ssl-errors=true'])
-        elif self.browser == 'remote':
-            capabilities = vars(settings.webdriver_desired_capabilities)
-            self._webdriver = webdriver.Remote(
-                desired_capabilities=capabilities
-            )
         if self._webdriver is None:
             raise ValueError(
                 '"{}" webdriver is not supported. Please use one of {}'
                 .format(
-                    self.provider,
-                    ('chrome', 'firefox', 'ie', 'edge', 'phantomjs', 'remote')
+                    self.browser,
+                    ('chrome', 'firefox', 'ie', 'edge', 'phantomjs')
                 )
             )
         return self._webdriver
@@ -216,49 +216,12 @@ class SeleniumBrowserFactory(object):
 
         :raises: ValueError: If wrong ``browser`` specified.
         """
-        if self.browser == 'chrome':
-            desired_capabilities = webdriver.DesiredCapabilities.CHROME.copy()
-            enable_downloading = {
-                'chromeOptions': {
-                    'args': ['disable-web-security'],
-                    'prefs': {'download.prompt_for_download': False}
-                }
-            }
-            desired_capabilities.update(enable_downloading)
-            if settings.webdriver_desired_capabilities:
-                desired_capabilities.update(
-                    vars(settings.webdriver_desired_capabilities))
-        elif self.browser == 'firefox':
-            desired_capabilities = webdriver.DesiredCapabilities.FIREFOX.copy()
-            if settings.webdriver_desired_capabilities:
-                desired_capabilities.update(
-                    vars(settings.webdriver_desired_capabilities))
-        elif self.browser == 'ie':
-            desired_capabilities = (
-                webdriver.DesiredCapabilities.INTERNETEXPLORER.copy())
-            if settings.webdriver_desired_capabilities:
-                desired_capabilities.update(
-                    vars(settings.webdriver_desired_capabilities))
-        elif self.browser == 'edge':
-            desired_capabilities = webdriver.DesiredCapabilities.EDGE.copy()
-            desired_capabilities['acceptSslCerts'] = True
-            desired_capabilities['javascriptEnabled'] = True
-            if settings.webdriver_desired_capabilities:
-                desired_capabilities.update(
-                    vars(settings.webdriver_desired_capabilities))
-        else:
-            raise ValueError(
-                '"{}" webdriver on saucelabs is currently not supported. '
-                'Please use one of {}'
-                .format(self.provider, ('chrome', 'firefox', 'ie', 'edge'))
-            )
-
         self._webdriver = webdriver.Remote(
             command_executor=_sauce_ondemand_url(
                 settings.selenium.saucelabs_user,
                 settings.selenium.saucelabs_key
             ),
-            desired_capabilities=desired_capabilities
+            desired_capabilities=self._get_webdriver_capabilities()
         )
         idle_timeout = settings.webdriver_desired_capabilities.idleTimeout
         if idle_timeout:
@@ -289,7 +252,7 @@ class SeleniumBrowserFactory(object):
             raise ValueError(
                 '"{}" webdriver in docker container is currently not'
                 'supported. Please use one of {}'
-                .format(self.provider, ('chrome', 'firefox'))
+                .format(self.browser, ('chrome', 'firefox'))
             )
         if settings.webdriver_desired_capabilities:
             self._docker._capabilities.update(
@@ -297,6 +260,57 @@ class SeleniumBrowserFactory(object):
         self._docker.start()
         self._webdriver = self._docker.webdriver
         return self._webdriver
+
+    def _get_remote_browser(self):
+        """Returns remote webdriver instance of selected ``browser``.
+
+        Note: should not be called directly, use :meth:`get_browser` instead.
+        """
+        self._webdriver = webdriver.Remote(
+            command_executor=settings.selenium.command_executor,
+            desired_capabilities=self._get_webdriver_capabilities()
+        )
+        idle_timeout = settings.webdriver_desired_capabilities.idleTimeout
+        if idle_timeout:
+            self._webdriver.command_executor.set_timeout(int(idle_timeout))
+        return self._webdriver
+
+    def _get_webdriver_capabilities(self):
+        """Returns webdriver capabilities of selected ``browser``.
+
+        Note: should not be called directly, use :meth:`_get_remote_browser`
+        or :meth:`_get_saucelabs_browser` instead.
+
+        :raises: ValueError: If wrong ``browser`` specified.
+        """
+        if self.browser == 'chrome':
+            desired_capabilities = webdriver.DesiredCapabilities.CHROME.copy()
+            enable_downloading = {
+                'chromeOptions': {
+                    'args': ['disable-web-security'],
+                    'prefs': {'download.prompt_for_download': False}
+                }
+            }
+            desired_capabilities.update(enable_downloading)
+        elif self.browser == 'firefox':
+            desired_capabilities = webdriver.DesiredCapabilities.FIREFOX.copy()
+        elif self.browser == 'ie':
+            desired_capabilities = (
+                webdriver.DesiredCapabilities.INTERNETEXPLORER.copy())
+        elif self.browser == 'edge':
+            desired_capabilities = webdriver.DesiredCapabilities.EDGE.copy()
+            desired_capabilities['acceptSslCerts'] = True
+            desired_capabilities['javascriptEnabled'] = True
+        else:
+            raise ValueError(
+                '"{}" webdriver capabilities is currently not supported. '
+                'Please use one of {}'
+                .format(self.browser, ('chrome', 'firefox', 'ie', 'edge'))
+            )
+        if settings.webdriver_desired_capabilities:
+            desired_capabilities.update(
+                vars(settings.webdriver_desired_capabilities))
+        return desired_capabilities
 
     def _finalize_saucelabs_browser(self, passed):
         """SauceLabs has no way to determine whether test passed or failed
@@ -734,10 +748,7 @@ class AirgunBrowser(Browser):
         )
         if not file_uri:
             file_uri = files[0]
-        if (
-                not save_path
-                and settings.selenium.browser == 'selenium'
-                and settings.selenium.webdriver != 'remote'):
+        if (not save_path and settings.selenium.browser == 'selenium'):
             # if test is running locally, there's no need to save the file once
             # again except when explicitly asked to
             file_path = urllib.parse.unquote(
