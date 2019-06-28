@@ -18,9 +18,6 @@ def get_project_root():
         os.pardir,
     ))
 
-# todo: probably should use properties instead of class attributes
-# and use setters for validation
-
 
 class AirgunSettings(object):
 

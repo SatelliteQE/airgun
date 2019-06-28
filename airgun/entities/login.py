@@ -11,7 +11,6 @@ class LoginEntity(BaseEntity):
         view.submit.click()
 
     def logout(self):
-        # fixme: not implemented
         pass
 
 
@@ -20,7 +19,7 @@ class NavigateToLogin(NavigateStep):
     VIEW = LoginView
 
     def step(self, *args, **kwargs):
-        # fixme: logout() if logged_in
+        # logout() if logged_in?
         pass
 
     def am_i_here(self, *args, **kwargs):
