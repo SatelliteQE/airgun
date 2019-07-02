@@ -77,13 +77,21 @@ class VirtwhoConfigureCreateView(BaseLoggedInView):
 
     @filtering_content.register('Whitelist')
     class FilterWhitelistForm(View):
-        filter_hosts = TextInput(id='foreman_virt_who_configure_config_whitelist')
-        filter_host_parents = TextInput(id='foreman_virt_who_configure_config_filter_host_parents')
+        filter_hosts = TextInput(
+            id='foreman_virt_who_configure_config_whitelist'
+        )
+        filter_host_parents = TextInput(
+            id='foreman_virt_who_configure_config_filter_host_parents'
+        )
 
     @filtering_content.register('Blacklist')
     class FilterBlacklistForm(View):
-        exclude_hosts = TextInput(id='foreman_virt_who_configure_config_blacklist')
-        exclude_host_parents = TextInput(id='foreman_virt_who_configure_config_exclude_host_parents')
+        exclude_hosts = TextInput(
+            id='foreman_virt_who_configure_config_blacklist'
+        )
+        exclude_host_parents = TextInput(
+            id='foreman_virt_who_configure_config_exclude_host_parents'
+        )
 
     @property
     def is_displayed(self):
