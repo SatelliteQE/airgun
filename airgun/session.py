@@ -73,6 +73,7 @@ from airgun.entities.syncplan import SyncPlanEntity
 from airgun.entities.sync_status import SyncStatusEntity
 from airgun.entities.user import UserEntity
 from airgun.entities.usergroup import UserGroupEntity
+from airgun.entities.virtwho_configure import VirtwhoConfigureEntity
 from airgun.navigation import navigator
 
 LOGGER = logging.getLogger(__name__)
@@ -553,3 +554,8 @@ class Session(object):
     def usergroup(self):
         """Instance of User Group entity."""
         return UserGroupEntity(self.browser)
+
+    @cached_property
+    def virtwho_configure(self):
+        """Instance of Virtwho Configure entity."""
+        return VirtwhoConfigureEntity(self.browser)
