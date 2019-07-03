@@ -98,9 +98,9 @@ class VirtwhoConfigureCreateView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(
             self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Virt-who configurations'
-                and self.breadcrumb.read() == 'Create Config'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Satellite Virt Who Configure Configs'
+            and self.breadcrumb.read() == 'New Virt-who Config'
         )
 
 
@@ -112,13 +112,15 @@ class VirtwhoConfigureEditView(VirtwhoConfigureCreateView):
             self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Virt-who Configurations'
+            and self.breadcrumb.locations[0] == 'Configurations'
             and self.breadcrumb.read().startswith('Edit ')
         )
 
 
 class VirtwhoConfigureDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    edit = Text("//a[text()='Edit']")
+    delete = Text("//a[text()='Delete']")
 
     @property
     def is_displayed(self):
@@ -130,12 +132,8 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
                 and self.breadcrumb.read() != 'Create Config'
         )
 
-    edit = Text("//a[text()='Edit']")
-    delete = Text("//a[text()='Delete']")
-
     @View.nested
     class overview(SatTab):
-        TAB_NAME = 'Overview'
         status = Text('.//span[contains(@class,"virt-who-config-report-status")]')
         hypervisor_type = Text('.//span[contains(@class,"config-hypervisor_type")]')
         hypervisor_server = Text('.//span[contains(@class,"config-hypervisor_server")]')
@@ -148,6 +146,5 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
 
     @View.nested
     class deploy(SatTab):
-        TAB_NAME = 'Deploy'
         command = Text("//pre[@id='config_command']")
         script = Text("//pre[@id='config_script']")
