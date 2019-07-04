@@ -12,9 +12,24 @@ from airgun.views.virtwho_configure import (
 
 class VirtwhoConfigureEntity(BaseEntity):
 
+    def reset_values(self, values):
+        mapping = {
+            'esx': 'VMware vSphere / vCenter (esx)',
+            'xen': 'XenServer (xen)',
+            'hyperv': 'Microsoft Hyper-V (hyperv)',
+            'rhevm': 'Red Hat Virtualization Hypervisor (rhevm)',
+            'libvirt': 'libvirt',
+            'kubevirt': 'Container-native virtualization',
+        }
+        if 'hypervisor_type' in values:
+            hypervisor_value = values['hypervisor_type']
+            values['hypervisor_type'] = mapping[hypervisor_value]
+        return values
+
     def create(self, values):
         """Create new virtwho configure entity"""
         view = self.navigate_to(self, 'New')
+        values = self.reset_values(values)
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
@@ -28,6 +43,7 @@ class VirtwhoConfigureEntity(BaseEntity):
     def edit(self, name, values):
         """Edit specific virtwho configure values"""
         view = self.navigate_to(self, 'Edit', entity_name=name)
+        values = self.reset_values(values)
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
