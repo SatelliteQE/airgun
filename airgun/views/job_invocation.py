@@ -126,7 +126,6 @@ class JobInvocationCreateView(BaseLoggedInView):
 
         @repeats_content.register('weekly')
         class RepeatWeeklyForm(View):
-            # todo implement checkbox group widget here
             at_hours = FilteredDropdown(id='triggering_time_time_4i')
             at_minutes = FilteredDropdown(id='triggering_time_time_5i')
 

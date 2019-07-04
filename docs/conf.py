@@ -53,12 +53,6 @@ nitpick_ignore = [
     ('py:meth', 'Widget.is_displayed'),
     ('py:obj', 'widgetastic.widget.View')
 ]
-# FIXME: No idea why I need these in the ignore list above (looks good to
-# my eyes in the code):
-#    ('py:meth', 'current_org'),
-#    ('py:meth', 'current_loc'),
-#    ('py:meth', 'select'),
-#    ('py:meth', 'fill_with'),
 intersphinx_mapping = {
     'python': ('http://docs.python.org/3.6', None),
     # 'widgetastic':
