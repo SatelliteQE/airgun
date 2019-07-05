@@ -13,6 +13,16 @@ from airgun.widgets import (
 )
 
 
+class TableWithNoRowsMessage(Table):
+    no_rows_message = Text("//span[contains(@data-block, 'no-rows-message')]")
+
+    def read(self):
+        if self.no_rows_message.is_displayed:
+            return self.no_rows_message.text
+        else:
+            self.parent.read()
+
+
 class ContentCredentialsTableView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Content Credentials')]")
     new = Text("//button[contains(@href, '/content_credentials/new')]")
@@ -68,7 +78,7 @@ class ContentCredentialEditView(BaseLoggedInView):
 
     @View.nested
     class products(SatTab, SearchableViewMixin):
-        table = Table(
+        table = TableWithNoRowsMessage(
             './/table',
             column_widgets={'Name': Text('./a')}
         )
