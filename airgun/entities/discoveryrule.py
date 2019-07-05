@@ -129,7 +129,7 @@ class ShowAllDiscoveryRules(NavigateStep):
     VIEW = DiscoveryRulesView
 
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Discovery rules')
+        self.view.menu.select('Configure', 'Discovery Rules')
 
 
 @navigator.register(DiscoveryRuleEntity, 'New')

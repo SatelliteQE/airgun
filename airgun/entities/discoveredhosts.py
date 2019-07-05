@@ -126,7 +126,7 @@ class ShowAllDiscoveredHosts(NavigateStep):
     VIEW = DiscoveredHostsView
 
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Discovered hosts')
+        self.view.menu.select('Hosts', 'Discovered Hosts')
 
 
 @navigator.register(DiscoveredHostsEntity, 'Details')
