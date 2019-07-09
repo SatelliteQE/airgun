@@ -33,7 +33,7 @@ class SmartClassParameterContent(View):
         locator=".//input[contains(@name, '[puppetclass_id]')]")
     override = Checkbox(
         locator=".//input[contains(@name, '[override]') and @type!='hidden']")
-    key_type = Select(locator=".//select[contains(@name, '[key_type]')]")
+    parameter_type = Select(locator=".//select[contains(@name, '[parameter_type]')]")
     default_value = TextInputHidden(
         locator=".//textarea[contains(@name, '[default_value]')]")
     omit = Checkbox(

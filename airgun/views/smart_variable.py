@@ -28,7 +28,7 @@ class SmartVariableContent(View):
     description = TextInput(
         locator=".//textarea[contains(@name, '[description]')]")
     puppet_class = FilteredDropdown(id='variable_lookup_key_puppetclass_id')
-    key_type = Select(locator=".//select[contains(@name, '[key_type]')]")
+    parameter_type = Select(locator=".//select[contains(@name, '[parameter_type]')]")
     default_value = TextInputHidden(
         locator=".//textarea[contains(@name, '[default_value]')]")
     hidden = Checkbox(locator=".//input[contains(@name, '[hidden_value]')]")
