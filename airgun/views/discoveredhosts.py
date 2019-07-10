@@ -150,7 +150,7 @@ class DiscoveredHostsActionDialog(BaseLoggedInView):
     """Common dialog view for all discovered hosts actions"""
     title = None
     table = SatTable("//div[@class='modal-body']//table")
-    submit = Text("//button[@onclick='submit_modal_form()']")
+    submit = Text("//button[@onclick='tfm.hosts.table.submitModalForm()']")
 
     @property
     def is_displayed(self):
