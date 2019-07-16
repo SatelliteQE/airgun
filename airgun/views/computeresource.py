@@ -187,7 +187,7 @@ class ResourceProviderEditView(ResourceProviderCreateView):
 class ResourceProviderDetailView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     submit = Text('//input[@name="commit"]')
-    create_image = Text("//a[contains(@data-id, 'images_new')]")
+    create_image = Text("//a[contains(@class,'btn-primary')]")
 
     @property
     def is_displayed(self):
