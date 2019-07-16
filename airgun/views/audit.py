@@ -12,7 +12,7 @@ class AuditEntry(View):
     resource_type = Text(".//div[@class='list-view-pf-additional-info-item'][1]")
     resource_name = Text(".//div[@class='list-view-pf-additional-info-item'][2]")
     created_at = Text(".//div[@class='list-view-pf-actions']/span")
-    expander = Text(".//div[@class='list-view-pf-expand']/span")
+    expander = Text(".//div[contains(@class, 'list-view-pf-expand')]/span")
     affected_organization = Text(
         ".//div[normalize-space(.) = 'Affected Organizations']/following-sibling::div")
     affected_location = Text(
