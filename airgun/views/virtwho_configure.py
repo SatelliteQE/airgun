@@ -49,7 +49,6 @@ class StatusIcon(GenericLocatorWidget):
             'rgb(63, 156, 53)': 'green',
             'rgb(54, 54, 54)': 'gray',
         }
-        print(self.browser.element(self, parent=self.parent).value_of_css_property('color'))
         return colors.get(
             self.browser.element(self, parent=self.parent).value_of_css_property('color'),
             'unknown'
