@@ -17,6 +17,7 @@ from airgun.widgets import (
     ActionsDropdown,
     FilteredDropdown,
     MultiSelect,
+    RadioGroup,
     SatTable,
 )
 
@@ -64,8 +65,18 @@ class SCAPPolicyCreateView(BaseLoggedInView):
         )
 
     @View.nested
-    class create_policy(BaseLoggedInView):
-        TAB_NAME = 'Create policy'
+    class deployment_options(BaseLoggedInView):
+        TAB_NAME = 'Deployment Options'
+        next_step = Text("//input[contains(@value, 'Next')]")
+        deploy_by_ = RadioGroup(
+            locator="//div[contains(@id, 'deploy_by')]")
+
+        def after_fill(self, was_change):
+            self.next_step.click()
+
+    @View.nested
+    class policy_attributes(BaseLoggedInView):
+        TAB_NAME = 'Policy Attributes'
         next_step = Text("//input[contains(@value, 'Next')]")
         name = TextInput(id='policy_name')
         description = TextInput(id='policy_description')
