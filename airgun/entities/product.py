@@ -1,4 +1,3 @@
-from wait_for import wait_for
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
@@ -39,13 +38,6 @@ class ProductEntity(BaseEntity):
         view.dialog.confirm()
         view.flash.assert_no_error()
         view.flash.dismiss()
-        view = self.navigate_to(self, 'All')
-        wait_for(
-            lambda: view.search('name = "{0}"'.format(entity_name)) == [],
-            timeout=30,
-            delay=2,
-            logger=view.logger
-        )
 
     def search(self, value):
         """Search for specific product"""
