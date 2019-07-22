@@ -21,42 +21,37 @@ from airgun.widgets import (
 )
 
 
-class StatusIcon(GenericLocatorWidget):
-    """The status for virtwho configure can be: green, gray.
-
-    green: The virt-who report has not arrived within the interval,
+class VirtwhoConfigureStatus(GenericLocatorWidget):
+    """The status for virtwho configure can be: ok, info, warning.
+    ok: The virt-who report has not arrived within the interval,
          which indicates there was no change on hypervisor
-    gray: The configuration was not deployed yet or the virt-who was
+    info: The configuration was not deployed yet or the virt-who was
         unable to report the status
+    warning: The configuration is invalid and not available.
     """
 
-    def __init__(self, parent, locator=None, logger=None):
-        """Provide default locator value if it wasn't passed"""
-        if not locator:
-            locator = ".//span[contains(@class, 'virt-who-config-report-status')]"
-        Widget.__init__(self, parent, logger=logger)
-        self.locator = locator
+    STATUS_ICON = ".//span[contains(@class, 'virt-who-config-report-status')]"
 
     @property
-    def color(self):
-        """Returns string representing icon color: 'gray', 'green' or'unknown'.
-        rgba is created for chrome.
-        rbg is created for firefox.
+    def status(self):
+        """The attributes for the element is such as:
+        virt-who-config-report-status pficon-ok status-ok
+        virt-who-config-report-status pficon-info status-info
         """
-        colors = {
-            'rgba(54, 54, 54, 1)': 'gray',
-            'rgba(63, 156, 53, 1)': 'green',
-            'rgb(63, 156, 53)': 'green',
-            'rgb(54, 54, 54)': 'gray',
-        }
-        return colors.get(
-            self.browser.element(self, parent=self.parent).value_of_css_property('color'),
-            'unknown'
-        )
+        element = self.browser.element(self.STATUS_ICON)
+        attrs = self.browser.get_attribute('class', element)
+        if 'status-ok' in attrs:
+            return 'ok'
+        elif 'status-info' in attrs:
+            return 'info'
+        elif 'status-warn' in attrs:
+            return 'warning'
+        else:
+            return 'unknown'
 
     def read(self):
-        """Returns current icon color"""
-        return self.color
+        """Returns current status"""
+        return self.status
 
 
 class VirtwhoConfiguresView(BaseLoggedInView, SearchableViewMixin):
@@ -66,7 +61,7 @@ class VirtwhoConfiguresView(BaseLoggedInView, SearchableViewMixin):
         './/table',
         column_widgets={
             'Name': Text('./a'),
-            'Status': StatusIcon(),
+            'Status': VirtwhoConfigureStatus('.'),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         }
     )
@@ -175,7 +170,7 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
 
     @View.nested
     class overview(SatTab):
-        status = StatusIcon()
+        status = VirtwhoConfigureStatus('.')
         hypervisor_type = Text('.//span[contains(@class,"config-hypervisor_type")]')
         hypervisor_server = Text('.//span[contains(@class,"config-hypervisor_server")]')
         hypervisor_username = Text('.//span[contains(@class,"config-hypervisor_username")]')
