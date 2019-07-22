@@ -239,12 +239,6 @@ class ContentViewEntity(BaseEntity):
         view.confirm_remove.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        result = view.versions.search(version_name)
-        if completely and not result:
-            return
-        view.versions.table.row(
-            version=version_name)['Status'].widget.wait_for_result()
 
 
 @navigator.register(ContentViewEntity, 'All')
