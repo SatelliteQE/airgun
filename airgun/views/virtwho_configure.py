@@ -8,7 +8,6 @@ from widgetastic.widget import (
     Text,
     TextInput,
     View,
-    Widget,
 )
 from airgun.views.common import (
     BaseLoggedInView,
