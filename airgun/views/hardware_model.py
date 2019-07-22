@@ -11,7 +11,7 @@ class HardwareModelsView(BaseLoggedInView, SearchableViewMixin):
     table = SatTable(
         './/table',
         column_widgets={
-            'Name': Text('./a'),
+            'Name': Text('.//a'),
             'Actions': Text('.//a[@data-method="delete"]'),
         }
     )
