@@ -15,7 +15,7 @@ class TaskReadOnlyEntry(ReadOnlyEntry):
 class TasksView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Tasks']")
     table = SatTable(
-        './/table',
+        ".//div[@id='tasks-table']/table",
         column_widgets={
             'Action': Text('./a'),
         }
