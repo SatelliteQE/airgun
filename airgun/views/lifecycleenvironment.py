@@ -177,6 +177,23 @@ class LCEEditView(BaseLoggedInView):
             self.searchbox.search(query)
             return self.table.read()
 
+        def read(self):
+            """Returns puppet modules are available for each content view.
+
+               We get dictionary in next format:
+
+                   {
+                       'CV1': [{'Name': 'httpd', 'Version': '0.2' },]
+                       'CV2': [{'Name': 'Nginx', 'Version': '1.2' },]
+                   }
+
+               """
+            result = {}
+            for option in self.cv_filter.all_options:
+                self.cv_filter.fill(option.text)
+                result[option.text] = self.table.read()
+            return result
+
     @View.nested
     class module_streams(SatTab):
         TAB_NAME = 'Module Streams'
