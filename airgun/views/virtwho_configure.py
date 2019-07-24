@@ -8,6 +8,7 @@ from widgetastic.widget import (
     Text,
     TextInput,
     View,
+    Widget,
 )
 from airgun.views.common import (
     BaseLoggedInView,
@@ -57,7 +58,7 @@ class VirtwhoConfigureStatus(GenericLocatorWidget):
         raise ReadOnlyWidgetError('Status widget is read only')
 
 
-class VirtwhoConfigureScript(GenericLocatorWidget):
+class VirtwhoConfigureScript(Widget):
     """Return the virtwho configure script by innerHTML.
     It will preserve the line break and whitespace.
     """
@@ -206,5 +207,5 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
     @View.nested
     class deploy(SatTab):
         command = Text("//pre[@id='config_command']")
-        script = VirtwhoConfigureScript('.')
+        script = VirtwhoConfigureScript()
         download = Text("//a[text()='Download the script']")
