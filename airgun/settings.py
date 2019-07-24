@@ -44,6 +44,7 @@ class SeleniumSettings(object):
         self.webdriver = None
         self.webdriver_binary = None
         self.command_executor = None
+        self.browseroptions = None
 
 
 class WebdriverCapabilitiesSettings(object):

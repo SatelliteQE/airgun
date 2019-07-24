@@ -170,6 +170,7 @@ class SeleniumBrowserFactory(object):
         """
         kwargs = {}
         binary = settings.selenium.webdriver_binary
+        browseroptions = settings.selenium.browseroptions
 
         if self.browser == 'chrome':
             if binary:
@@ -178,6 +179,9 @@ class SeleniumBrowserFactory(object):
             prefs = {'download.prompt_for_download': False}
             options.add_experimental_option("prefs", prefs)
             options.add_argument('disable-web-security')
+            if browseroptions:
+                for opt in browseroptions.split(';'):
+                    options.add_argument(opt)
             kwargs.update({'options': options})
             self._webdriver = webdriver.Chrome(**kwargs)
         elif self.browser == 'firefox':
