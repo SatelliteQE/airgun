@@ -18,6 +18,7 @@ from airgun.widgets import (
     ActionsDropdown,
     FilteredDropdown,
 )
+from airgun.exceptions import ReadOnlyWidgetError
 
 
 class VirtwhoConfigureStatus(GenericLocatorWidget):
@@ -51,6 +52,29 @@ class VirtwhoConfigureStatus(GenericLocatorWidget):
     def read(self):
         """Returns current status"""
         return self.status
+
+    def fill(self, value):
+        raise ReadOnlyWidgetError('Status widget is read only')
+
+
+class VirtwhoConfigureScript(GenericLocatorWidget):
+    """Return the virtwho configure script by innerHTML.
+    It will preserve the line break and whitespace.
+    """
+
+    SCRIPT_PRE = ".//pre[@id='config_script']"
+
+    @property
+    def content(self):
+        element = self.browser.element(self.SCRIPT_PRE)
+        return element.get_attribute('innerHTML')
+
+    def read(self):
+        """Returns the script content"""
+        return self.content
+
+    def fill(self, value):
+        raise ReadOnlyWidgetError('Script widget is read only')
 
 
 class VirtwhoConfiguresView(BaseLoggedInView, SearchableViewMixin):
@@ -182,4 +206,5 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
     @View.nested
     class deploy(SatTab):
         command = Text("//pre[@id='config_command']")
-        script = Text("//pre[@id='config_script']")
+        script = VirtwhoConfigureScript('.')
+        download = Text("//a[text()='Download the script']")
