@@ -313,6 +313,9 @@ class SeleniumBrowserFactory(object):
         if settings.webdriver_desired_capabilities:
             desired_capabilities.update(
                 vars(settings.webdriver_desired_capabilities))
+
+        desired_capabilities.update({'name': self.test_name})
+
         return desired_capabilities
 
     def _finalize_saucelabs_browser(self, passed):
