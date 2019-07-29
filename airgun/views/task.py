@@ -2,7 +2,7 @@ from widgetastic.widget import Text, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
-from airgun.widgets import ProgressBar, ReadOnlyEntry, SatTable
+from airgun.widgets import ProgressBar, ReadOnlyEntry, Table
 
 
 class TaskReadOnlyEntry(ReadOnlyEntry):
@@ -14,8 +14,8 @@ class TaskReadOnlyEntry(ReadOnlyEntry):
 
 class TasksView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Tasks']")
-    table = SatTable(
-        './/table',
+    table = Table(
+        ".//div[@id='content']/table",
         column_widgets={
             'Action': Text('./a'),
         }
