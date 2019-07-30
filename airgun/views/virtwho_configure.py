@@ -2,11 +2,13 @@ from widgetastic_patternfly import BreadCrumb
 
 from widgetastic.widget import (
     Checkbox,
+    GenericLocatorWidget,
     ConditionalSwitchableView,
     Table,
     Text,
     TextInput,
     View,
+    Widget,
 )
 from airgun.views.common import (
     BaseLoggedInView,
@@ -17,6 +19,63 @@ from airgun.widgets import (
     ActionsDropdown,
     FilteredDropdown,
 )
+from airgun.exceptions import ReadOnlyWidgetError
+
+
+class VirtwhoConfigureStatus(GenericLocatorWidget):
+    """The status for virtwho configure can be: ok, info, warning.
+    ok: The virt-who report has not arrived within the interval,
+         which indicates there was no change on hypervisor
+    info: The configuration was not deployed yet or the virt-who was
+        unable to report the status
+    warning: The configuration is invalid and not available.
+    """
+
+    STATUS_ICON = ".//span[contains(@class, 'virt-who-config-report-status')]"
+
+    @property
+    def status(self):
+        """The attributes for the element is such as:
+        virt-who-config-report-status pficon-ok status-ok
+        virt-who-config-report-status pficon-info status-info
+        """
+        element = self.browser.element(self.STATUS_ICON)
+        attrs = self.browser.get_attribute('class', element)
+        if 'status-ok' in attrs:
+            return 'ok'
+        elif 'status-info' in attrs:
+            return 'info'
+        elif 'status-warn' in attrs:
+            return 'warning'
+        else:
+            return 'unknown'
+
+    def read(self):
+        """Returns current status"""
+        return self.status
+
+    def fill(self, value):
+        raise ReadOnlyWidgetError('Status widget is read only')
+
+
+class VirtwhoConfigureScript(Widget):
+    """Return the virtwho configure script by innerHTML.
+    It will preserve the line break and whitespace.
+    """
+
+    SCRIPT_PRE = ".//pre[@id='config_script']"
+
+    @property
+    def content(self):
+        element = self.browser.element(self.SCRIPT_PRE)
+        return element.get_attribute('innerHTML')
+
+    def read(self):
+        """Returns the script content"""
+        return self.content
+
+    def fill(self, value):
+        raise ReadOnlyWidgetError('Script widget is read only')
 
 
 class VirtwhoConfiguresView(BaseLoggedInView, SearchableViewMixin):
@@ -26,6 +85,7 @@ class VirtwhoConfiguresView(BaseLoggedInView, SearchableViewMixin):
         './/table',
         column_widgets={
             'Name': Text('./a'),
+            'Status': VirtwhoConfigureStatus('.'),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         }
     )
@@ -134,7 +194,7 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
 
     @View.nested
     class overview(SatTab):
-        status = Text('.//span[contains(@class,"virt-who-config-report-status")]')
+        status = VirtwhoConfigureStatus('.')
         hypervisor_type = Text('.//span[contains(@class,"config-hypervisor_type")]')
         hypervisor_server = Text('.//span[contains(@class,"config-hypervisor_server")]')
         hypervisor_username = Text('.//span[contains(@class,"config-hypervisor_username")]')
@@ -147,4 +207,5 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
     @View.nested
     class deploy(SatTab):
         command = Text("//pre[@id='config_command']")
-        script = Text("//pre[@id='config_script']")
+        script = VirtwhoConfigureScript()
+        download = Text("//a[text()='Download the script']")
