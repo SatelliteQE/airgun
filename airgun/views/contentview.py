@@ -46,6 +46,7 @@ class ContentViewCreateView(BaseLoggedInView):
     label = TextInput(id='label')
     description = TextInput(id='description')
     composite_view = Checkbox(id='composite')
+    solve_dependencies = Checkbox(id='solve_dependencies')
     auto_publish = Checkbox(id='auto_publish')
     submit = Text("//button[contains(@ng-click, 'handleSave')]")
 
@@ -128,6 +129,7 @@ class ContentViewEditView(BaseLoggedInView):
         description = EditableEntry(name='Description')
         composite = ReadOnlyEntry(name='Composite?')
         force_puppet = EditableEntryCheckbox(name='Force Puppet Environment')
+        solve_dependencies = EditableEntryCheckbox(name='Solve Dependencies')
 
     @View.nested
     class versions(SatTab):
