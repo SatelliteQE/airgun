@@ -650,6 +650,9 @@ class Search(Widget):
         ".//button[contains(@type,'submit') or contains(@class, 'search-btn') "
         "or @ng-click='table.search(table.searchTerm)']"
     )
+    clear_button = Text(
+        ".//span[contains(@class,'autocomplete-clear-button')]"
+    )
     actions = ActionsDropdown(".//*[self::div or self::span][contains(@class, 'input-group-btn')]")
 
     def fill(self, value):
@@ -662,7 +665,10 @@ class Search(Widget):
         """Clears search field value and re-trigger search to remove all
         filters.
         """
-        self.browser.clear(self.search_field)
+        if self.clear_button.is_displayed:
+            self.clear_button.click()
+        else:
+            self.browser.clear(self.search_field)
         if self.search_button.is_displayed:
             self.search_button.click()
 
@@ -670,6 +676,7 @@ class Search(Widget):
         if hasattr(self.parent, 'flash'):
             # large flash messages may hide the search button
             self.parent.flash.dismiss()
+        self.clear()
         self.fill(value)
         if self.search_button.is_displayed:
             self.search_button.click()
