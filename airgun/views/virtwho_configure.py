@@ -1,4 +1,5 @@
 from widgetastic_patternfly import BreadCrumb
+from widgetastic.exceptions import NoSuchElementException
 
 from widgetastic.widget import (
     Checkbox,
@@ -76,6 +77,31 @@ class VirtwhoConfigureScript(Widget):
 
     def fill(self, value):
         raise ReadOnlyWidgetError('Script widget is read only')
+
+
+class VirtwhoConfiguresDebug(Widget):
+    """Return the virtwho configure debug status.
+    """
+
+    DEBUG = ".//span[contains(@class,'config-debug')]"
+    STATUS = ".//span[contains(@class,'fa-check')]"
+
+    @property
+    def status(self):
+        debug = self.browser.element(self.DEBUG)
+        try:
+            self.browser.element(self.STATUS, parent=debug)
+            checkbox = True
+        except NoSuchElementException:
+            checkbox = False
+        return checkbox
+
+    def read(self):
+        """Returns the debug status"""
+        return self.status
+
+    def fill(self, value):
+        raise ReadOnlyWidgetError('Debug status widget is read only')
 
 
 class VirtwhoConfiguresView(BaseLoggedInView, SearchableViewMixin):
@@ -195,6 +221,7 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
     @View.nested
     class overview(SatTab):
         status = VirtwhoConfigureStatus('.')
+        debug = VirtwhoConfiguresDebug()
         hypervisor_type = Text('.//span[contains(@class,"config-hypervisor_type")]')
         hypervisor_server = Text('.//span[contains(@class,"config-hypervisor_server")]')
         hypervisor_username = Text('.//span[contains(@class,"config-hypervisor_username")]')
@@ -202,7 +229,13 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
         satellite_url = Text('.//span[contains(@class,"config-satellite_url")]')
         hypervisor_id = Text('.//span[contains(@class,"config-hypervisor_id")]')
         filtering = Text('.//span[contains(@class,"config-listing_mode")]')
-        debug = Text('.//span[contains(@class,"config-debug")]')
+        filter_hosts = Text('.//span[contains(@class,"config-whitelist")]')
+        filter_host_parents = Text('.//span[contains(@class,"config-filter_host_parents")]')
+        exclude_hosts = Text('.//span[contains(@class,"config-blacklist")]')
+        exclude_host_parents = Text('.//span[contains(@class,"config-exclude_host_parents")]')
+        proxy = Text('.//span[contains(@class,"config-proxy")]')
+        no_proxy = Text('.//span[contains(@class,"config-no_proxy")]')
+        kubeconfig_path = Text('.//span[contains(@class,"config-kubeconfig_path")]')
 
     @View.nested
     class deploy(SatTab):
