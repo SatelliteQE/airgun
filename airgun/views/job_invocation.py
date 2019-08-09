@@ -126,6 +126,13 @@ class JobInvocationCreateView(BaseLoggedInView):
 
         @repeats_content.register('weekly')
         class RepeatWeeklyForm(View):
+            on_mon = Checkbox(id='triggering_days_of_week_1')
+            on_tue = Checkbox(id='triggering_days_of_week_2')
+            on_wed = Checkbox(id='triggering_days_of_week_3')
+            on_thu = Checkbox(id='triggering_days_of_week_4')
+            on_fri = Checkbox(id='triggering_days_of_week_5')
+            on_sat = Checkbox(id='triggering_days_of_week_6')
+            on_sun = Checkbox(id='triggering_days_of_week_7')
             at_hours = FilteredDropdown(id='triggering_time_time_4i')
             at_minutes = FilteredDropdown(id='triggering_time_time_5i')
 
