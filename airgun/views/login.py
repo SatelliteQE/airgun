@@ -4,7 +4,7 @@ from widgetastic.widget import ClickableMixin, Text, TextInput, View
 class LoginView(View, ClickableMixin):
     username = TextInput(id='login_login')
     password = TextInput(id='login_password')
-    submit = Text('//input[@name="commit"]')
+    submit = Text('//button[@type="submit"]')
 
     @property
     def is_displayed(self):
