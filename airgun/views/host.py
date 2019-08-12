@@ -110,6 +110,11 @@ class ComputeResourceLibvirtProfileStorageItem(GenericRemovableWidgetItem):
     storage_type = FilteredDropdown(id="format_type")
 
 
+class ComputeResourceGoogleProfileStorageItem(GenericRemovableWidgetItem):
+    """Google Compute Resource profile "Storage" item widget"""
+    size = TextInput(locator=".//input[contains(@id, 'size')]")
+
+
 class HostInterface(View):
     ROOT = ".//div[@id='interfaceModal']"
     title = Text(".//h4[contains(., 'Interface')]")
@@ -292,6 +297,22 @@ class HostCreateView(BaseLoggedInView):
                 ITEMS = "./div/div[contains(@class, 'removable-item')]"
                 ITEM_WIDGET_CLASS = ComputeResourceLibvirtProfileStorageItem
 
+    @provider_content.register('Google')
+    class GoogleResourceForm(View):
+
+        @View.nested
+        class virtual_machine(SatTab):
+            TAB_NAME = 'Virtual Machine'
+            machine_type = FilteredDropdown(id='s2id_host_compute_attributes_machine_type')
+            network = FilteredDropdown(id='s2id_host_compute_attributes_network')
+            external_ip = Checkbox(id='host_compute_attributes_associate_external_ip')
+
+            @View.nested
+            class storage(RemovableWidgetsItemsListView):
+                ROOT = "//fieldset[@id='storage_volumes']"
+                ITEMS = "./div/div[contains(@class, 'removable-item')]"
+                ITEM_WIDGET_CLASS = ComputeResourceGoogleProfileStorageItem
+
     @View.nested
     class operating_system(SatTab):
         TAB_NAME = 'Operating System'
@@ -299,6 +320,7 @@ class HostCreateView(BaseLoggedInView):
         architecture = FilteredDropdown(id='host_architecture')
         operating_system = FilteredDropdown(id='host_operatingsystem')
         build = Checkbox(id='host_build')
+        image = FilteredDropdown(id='host_compute_attributes_image')
         media_type = RadioGroup(
             locator="//div[label[contains(., 'Media Selection')]]")
         media = FilteredDropdown(id='host_medium')

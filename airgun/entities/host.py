@@ -29,7 +29,8 @@ class HostEntity(BaseEntity):
         """Create new host entity"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
-        view.submit.click()
+        self.browser.click(view.submit, ignore_ajax=True)
+        self.browser.plugin.ensure_page_safe(timeout='600s')
         host_view = HostDetailsView(self.browser)
         wait_for(
             lambda: host_view.is_displayed is True,
