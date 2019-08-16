@@ -83,10 +83,10 @@ class ResourceProviderCreateView(BaseLoggedInView):
         google_project_id = TextInput(id='compute_resource_project')
         client_email = TextInput(id='compute_resource_email')
         certificate_path = TextInput(id='compute_resource_key_path')
-        load_zones = Text("//*[contains(@id,'test_connection_button')]")
 
         @View.nested
         class zone(View):
+            load_zones = Text("//a[contains(@id,'test_connection_button')]")
             value = FilteredDropdown(id='s2id_compute_resource_zone')
 
             def before_fill(self, values=None):
