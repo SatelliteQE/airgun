@@ -1,4 +1,5 @@
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -81,6 +82,12 @@ class ReportTemplateEntity(BaseEntity):
         view = self.navigate_to(self, 'Generate', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
+        # wait for the report to be generated
+        wait_for(
+            lambda: "has been completed." in view.generating.text,
+            timeout=300,
+            delay=1,
+        )
         view.flash.assert_no_error()
         return self.browser.save_downloaded_file()
 
