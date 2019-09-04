@@ -9,6 +9,9 @@ from airgun.views.job_invocation import (
     JobInvocationCreateView,
     JobInvocationStatusView,
 )
+from airgun.views.errata import (
+    ErrataTaskDetailsView,
+)
 
 
 class ContentHostEntity(BaseEntity):
@@ -127,8 +130,8 @@ class ContentHostEntity(BaseEntity):
         else:
             view.errata.apply_selected.fill('Apply Selected')
             view.dialog.confirm()
-        view = JobInvocationStatusView(view.browser)
-        view.wait_for_result()
+        view = ErrataTaskDetailsView(view.browser)
+        view.progressbar.wait_for_result()
         return view.read()
 
     def search_errata(self, entity_name, errata_id, environment=None):
@@ -182,7 +185,6 @@ class ShowAllContentHosts(NavigateStep):
 @navigator.register(ContentHostEntity, 'Edit')
 class EditContentHost(NavigateStep):
     """Navigate to Content Host details screen.
-
     Args:
         entity_name: name of content host
     """
