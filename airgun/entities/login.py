@@ -1,5 +1,6 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
+from airgun.views.common import BaseLoggedInView
 from airgun.views.login import LoginView
 
 
@@ -11,7 +12,10 @@ class LoginEntity(BaseEntity):
         view.submit.click()
 
     def logout(self):
-        pass
+        view = BaseLoggedInView(self.browser)
+        view.taxonomies.select_logout()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
 
 
 @navigator.register(LoginEntity)
