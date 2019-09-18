@@ -29,6 +29,14 @@ class RedHatRepositoryEntity(BaseEntity):
             entity_data['items'] = view.available.items(name=entity_name)[0].read_items()
         return entity_data
 
+    def recommended_repos(self):
+        """Click on 'Recommended Repositories'
+        and read RH Repositories values.
+        """
+        view = self.navigate_to(self, 'All')
+        view.recommended_repos.click()
+        return view.available.read()
+
     def enable(self, entity_name, arch, version=None):
         """Enable a redhat repository.
 

@@ -211,6 +211,7 @@ class RedHatRepositoriesView(BaseLoggedInView):
     search_box = TextInput(id='downshift-0-input')
     search_button = Text(".//button[text() = 'Search']")
     search_types = RepositorySearchTypes(".//div[button[@data-id='formControlsSelectMultiple']]")
+    recommended_repos = Text(".//span[@class='bootstrap-switch-label']")
 
     @View.nested
     class available(RepositoryCategoryView):
