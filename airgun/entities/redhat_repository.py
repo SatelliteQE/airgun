@@ -17,13 +17,22 @@ class RedHatRepositoryEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value, category=category, types=types)
 
-    def read(self, entity_name, category='Available', widget_names=None):
+    def read(self, entity_name=None, category='Available', recommended_repo=None):
         """Read RH Repositories values.
 
         :param entity_name: The repository name
         :param category: The repository category to search, options: Available, Enabled
+        :param recommended_repo: on/off RH recommended repositories
         """
         view = self.navigate_to(self, 'All')
+
+        if recommended_repo:
+            current_value = self.browser.get_attribute('class',
+                                                       locator=view.recommended_repos.locator)
+            if recommended_repo not in current_value:
+                view.recommended_repos.click()
+            return view.available.read()
+
         entity_data = view.search('name = "{0}"'.format(entity_name), category=category)[0]
         if category == 'Available':
             entity_data['items'] = view.available.items(name=entity_name)[0].read_items()
