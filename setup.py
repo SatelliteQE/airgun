@@ -16,11 +16,11 @@ setup(
     install_requires=[
         'cached_property',
         'fauxfactory',
-        'navmazing==1.1.4',
+        'navmazing',
         'pytest',
         'wait_for',
-        'widgetastic.core==0.33',
-        'widgetastic.patternfly==0.0.38'
+        'widgetastic.core',
+        'widgetastic.patternfly'
     ],
     packages=find_packages(exclude=['tests*']),
     package_data={'': ['LICENSE']},
