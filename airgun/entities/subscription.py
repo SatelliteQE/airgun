@@ -1,5 +1,5 @@
 from navmazing import NavigateToSibling
-from wait_for import wait_for
+from wait_for import TimedOutError, wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -43,8 +43,14 @@ class SubscriptionEntity(BaseEntity):
     def has_manifest(self):
         """Is there manifest present in current organization?
         :return: boolean value indicating whether manifest is present
+            May be None if user can't verify reliably if manifest is
+            uploaded or not due to missing permissions
         """
         view = self.navigate_to(self, 'All')
+        try:
+            view.add_button.wait_displayed()
+        except TimedOutError:
+            return None
         return not view.add_button.disabled
 
     def add_manifest(self, manifest_file, ignore_error_messages=None):
