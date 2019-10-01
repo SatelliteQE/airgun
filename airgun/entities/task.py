@@ -10,15 +10,31 @@ class TaskEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def read_all(self):
-        """Read all tasks widgets values from the title page"""
+    def read_all(self, widget_names=None):
+        """Read all tasks widgets values from the title page.
+        Or read specific widgets by adding 'widget_names' parameter
+        """
         view = self.navigate_to(self, 'All')
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def read(self, entity_name, widget_names=None):
         """Read specific task values from details page"""
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
         return view.read(widget_names=widget_names)
+
+    def set_chart_filter(self, chart_name, index=None):
+        """Remove filter from searchbox and set filter from specific chart
+
+        :param index: index in 'StoppedChart' table,
+            dict with 'row' number and 'focus' as column name
+        """
+        view = self.navigate_to(self, 'All')
+        chart = getattr(view, chart_name)
+        view.searchbox.clear()
+        if chart_name == 'StoppedChart' and index:
+            chart.table[index['row']][index['focus']].click()
+        else:
+            chart.name.click()
 
 
 @navigator.register(TaskEntity, 'All')

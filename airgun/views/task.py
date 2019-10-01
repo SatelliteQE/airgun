@@ -2,7 +2,15 @@ from widgetastic.widget import Text, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
-from airgun.widgets import ProgressBar, ReadOnlyEntry, SatTable
+from airgun.widgets import (
+    ProgressBar,
+    ReadOnlyEntry,
+    SatTable,
+    Table,
+    ActionsDropdown,
+    PieChart,
+    Pagination
+)
 
 
 class TaskReadOnlyEntry(ReadOnlyEntry):
@@ -14,17 +22,50 @@ class TaskReadOnlyEntry(ReadOnlyEntry):
 
 class TasksView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Tasks']")
+    focus = ActionsDropdown(
+        "//div[./button[@id='tasks-dashboard-time-period-dropdown']]"
+    )
     table = SatTable(
         ".//div[@id='tasks-table']/table",
         column_widgets={
             'Action': Text('./a'),
         }
     )
+    pagination = Pagination()
 
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.title, exception=False) is not None
+
+    @View.nested
+    class RunningChart(View):
+        ROOT = ".//div[@id='running-tasks-card']"
+        name = Text("./h2")
+        total = PieChart("./div[@class='card-pf-body']")
+
+    @View.nested
+    class PausedChart(View):
+        ROOT = ".//div[@id='paused-tasks-card']"
+        name = Text("./h2")
+        total = PieChart("./div[@class='card-pf-body']")
+
+    @View.nested
+    class StoppedChart(View):
+        ROOT = ".//div[@id='stopped-tasks-card']"
+        name = Text("./h2")
+        table = Table(
+            locator='.//table',
+            column_widgets={
+                'Total': Text('./button'),
+            }
+        )
+
+    @View.nested
+    class ScheduledChart(View):
+        ROOT = ".//div[@id='scheduled-tasks-card']"
+        name = Text("./h2")
+        total = Text(".//div[@class='scheduled-data']")
 
 
 class TaskDetailsView(BaseLoggedInView):
