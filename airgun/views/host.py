@@ -614,6 +614,10 @@ class HostsAssignCompliancePolicy(HostsActionCommonDialog):
 
 class HostsDeleteActionDialog(HostsActionCommonDialog):
     title = Text("//h4[text()='Delete Hosts - The following hosts are about to be changed']")
+    deleting_result = Text(
+        "//span[contains(., 'Result') and contains(@class, 'param-name')]"
+        "/following-sibling::span"
+    )
 
 
 class HostsJobInvocationCreateView(JobInvocationCreateView):

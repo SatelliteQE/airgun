@@ -125,6 +125,11 @@ class HostEntity(BaseEntity):
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
+        wait_for(
+            lambda: "success" in view.deleting_result.text,
+            timeout=60,
+            delay=1,
+        )
         view.flash.dismiss()
 
     def export(self):
