@@ -670,7 +670,13 @@ class AirgunBrowser(Browser):
         el = self.element(locator, *args, **kwargs)
         self.execute_script(
             "arguments[0].scrollIntoView(false);", el, silent=True)
-        ActionChains(self.selenium).move_to_element(el).perform()
+        try:
+            ActionChains(self.selenium).move_to_element(el).perform()
+        except selenium.common.exceptions.JavascriptException as e:
+            if "javascript error: Cannot read property 'left' of undefined" in e.msg:
+                self.logger.debug("Ignoring 'Cannot read property left of undefined' exception")
+            else:
+                raise(e)
         return el
 
     def get_downloads_list(self):
