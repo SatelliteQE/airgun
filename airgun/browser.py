@@ -693,7 +693,7 @@ class AirgunBrowser(Browser):
         return self.execute_script("""
             return downloads.Manager.get().items_
               .filter(e => e.state === "COMPLETE")
-              .map(e => e.file_url);
+              .map(e => e.file_url || e.fileUrl);
         """)
 
     def get_file_content(self, uri):
