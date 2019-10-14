@@ -1,3 +1,5 @@
+from wait_for import wait_for
+
 from airgun.entities.base import BaseEntity
 from airgun.entities.rhai.base import InsightsNavigateStep
 from airgun.navigation import NavigateStep, navigator
@@ -21,6 +23,7 @@ class InventoryHostEntity(BaseEntity):
     def read(self, entity_name, widget_names=None):
         """Read host details, optionally read only the widgets in widget_names."""
         view = self.navigate_to(self, "Details", entity_name=entity_name)
+        wait_for(lambda: view.is_displayed)
         values = view.read(widget_names=widget_names)
         # close the view dialog, as will break next entities navigation
         view.close.click()

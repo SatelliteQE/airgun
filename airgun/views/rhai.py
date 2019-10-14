@@ -75,7 +75,7 @@ class InventoryHostDetails(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.hostname.is_displayed and self.close.is_displayed
+        return self.hostname.is_displayed and self.close.is_displayed and self.rules.is_displayed
 
 
 class OverviewDetailsView(BaseLoggedInView):
