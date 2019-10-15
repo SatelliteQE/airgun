@@ -1,3 +1,5 @@
+from wait_for import wait_for
+
 from widgetastic.widget import Text, View
 from widgetastic_patternfly import BreadCrumb
 
@@ -95,3 +97,15 @@ class TaskDetailsView(BaseLoggedInView):
         progressbar = ProgressBar()
         output = TaskReadOnlyEntry(name='Output')
         errors = TaskReadOnlyEntry(name='Errors')
+
+    def wait_for_result(self, timeout=60, delay=1):
+        """Wait for invocation job to finish"""
+        wait_for(
+            lambda: (self.is_displayed and self.task.progressbar.is_displayed
+                     and self.task.result.read() == 'success'
+                     and ('0 fail' in self.task.output.read())
+                     and self.task.state.read() == 'State: stopped'),
+            timeout=timeout,
+            delay=delay,
+            logger=self.logger,
+        )

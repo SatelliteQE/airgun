@@ -17,6 +17,7 @@ from widgetastic_patternfly import BreadCrumb, Button
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
 from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
+from airgun.views.task import TaskDetailsView
 from airgun.widgets import (
     ActionsDropdown,
     CheckboxWithAlert,
@@ -614,10 +615,10 @@ class HostsAssignCompliancePolicy(HostsActionCommonDialog):
 
 class HostsDeleteActionDialog(HostsActionCommonDialog):
     title = Text("//h4[text()='Delete Hosts - The following hosts are about to be changed']")
-    deleting_result = Text(
-        "//span[contains(., 'Result') and contains(@class, 'param-name')]"
-        "/following-sibling::span"
-    )
+
+
+class HostsDeleteTaskDetailsView(TaskDetailsView):
+    """Hosts Delete Task Details View"""
 
 
 class HostsJobInvocationCreateView(JobInvocationCreateView):
