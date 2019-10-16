@@ -15,6 +15,7 @@ from airgun.views.host import (
     HostsChangeGroup,
     HostsChangeEnvironment,
     HostsDeleteActionDialog,
+    HostsDeleteTaskDetailsView,
     HostsJobInvocationCreateView,
     HostsJobInvocationStatusView,
     HostsView,
@@ -166,6 +167,17 @@ class HostEntity(BaseEntity):
         :returns: The job invocation status view values
         """
         status_view = self._select_action('Play Ansible roles', entities_list)
+        if wait_for_results:
+            status_view.wait_for_result(timeout=timeout)
+        return status_view.read()
+
+    def delete_hosts(self, entities_list, timeout=60, wait_for_results=True):
+        """Delete all hosts from entities list"""
+        view = self._select_action('Delete Hosts', entities_list)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+        status_view = HostsDeleteTaskDetailsView(self.browser)
         if wait_for_results:
             status_view.wait_for_result(timeout=timeout)
         return status_view.read()
