@@ -102,9 +102,7 @@ class TaskDetailsView(BaseLoggedInView):
         """Wait for invocation job to finish"""
         wait_for(
             lambda: (self.is_displayed and self.task.progressbar.is_displayed
-                     and self.task.result.read() == 'success'
-                     and ('0 fail' in self.task.output.read())
-                     and self.task.state.read() == 'State: stopped'),
+                     and self.task.result.read() == 'success'),
             timeout=timeout,
             delay=delay,
             logger=self.logger,
