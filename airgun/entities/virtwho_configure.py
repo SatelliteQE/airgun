@@ -27,6 +27,30 @@ class VirtwhoConfigureEntity(BaseEntity):
             vals.update({'hypervisor_type': mapping[hypervisor_value]})
         return vals
 
+    def can_view(self):
+        """Assert if can navigate to virtwhopage"""
+        try:
+            self.navigate_to(self, 'All')
+        except Exception:
+            return False
+        else:
+            return True
+
+    def can_create(self):
+        """Assert if the config can create"""
+        view = self.navigate_to(self, 'All')
+        return view.new.is_displayed
+
+    def can_delete(self, entity_name):
+        """Assert if the config can delete"""
+        view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        return view.delete.is_displayed
+
+    def can_edit(self, entity_name):
+        """Assert if the the config can edit"""
+        view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        return view.edit.is_displayed
+
     def create(self, values):
         """Create new virtwho configure entity"""
         view = self.navigate_to(self, 'New')
