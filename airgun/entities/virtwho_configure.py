@@ -27,29 +27,24 @@ class VirtwhoConfigureEntity(BaseEntity):
             vals.update({'hypervisor_type': mapping[hypervisor_value]})
         return vals
 
-    def can_view(self):
-        """Assert if can navigate to virtwhopage"""
+    def permissions(self):
+        """Assert if the config can be viewed/created"""
         try:
-            self.navigate_to(self, 'All')
+            view = self.navigate_to(self, 'All')
         except Exception:
-            return False
-        else:
-            return True
+            return {"can_view": False, "can_create": False}
+        return {
+            "can_view": True,
+            "can_create": view.new.is_displayed
+        }
 
-    def can_create(self):
-        """Assert if the config can create"""
-        view = self.navigate_to(self, 'All')
-        return view.new.is_displayed
-
-    def can_delete(self, entity_name):
-        """Assert if the config can delete"""
+    def permissions_on(self, entity_name=None):
+        """Assert if the config can be deleted/edited"""
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
-        return view.delete.is_displayed
-
-    def can_edit(self, entity_name):
-        """Assert if the the config can edit"""
-        view = self.navigate_to(self, 'Details', entity_name=entity_name)
-        return view.edit.is_displayed
+        return {
+            "can_delete": view.delete.is_displayed,
+            "can_edit": view.edit.is_displayed
+        }
 
     def create(self, values):
         """Create new virtwho configure entity"""
