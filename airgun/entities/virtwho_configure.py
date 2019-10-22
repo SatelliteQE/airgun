@@ -27,8 +27,8 @@ class VirtwhoConfigureEntity(BaseEntity):
             vals.update({'hypervisor_type': mapping[hypervisor_value]})
         return vals
 
-    def permissions(self):
-        """Assert if the config can be viewed/created"""
+    def check_create_permission(self):
+        """Check if the config can be viewed/created"""
         try:
             view = self.navigate_to(self, 'All')
         except Exception:
@@ -38,8 +38,8 @@ class VirtwhoConfigureEntity(BaseEntity):
             "can_create": view.new.is_displayed
         }
 
-    def permissions_on(self, entity_name=None):
-        """Assert if the config can be deleted/edited"""
+    def check_update_permission(self, entity_name=None):
+        """Check if the config can be deleted/edited"""
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
         return {
             "can_delete": view.delete.is_displayed,
