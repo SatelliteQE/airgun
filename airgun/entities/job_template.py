@@ -52,7 +52,7 @@ class JobTemplateEntity(BaseEntity):
     def delete(self, entity_name):
         """Delete job template"""
         view = self.navigate_to(self, 'All')
-        view.search(entity_name)
+        view.search('name="{}"'.format(entity_name))
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
         view.flash.assert_no_error()
@@ -93,7 +93,7 @@ class EditTemplate(NavigateStep):
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
-        self.parent.search(entity_name)
+        self.parent.search('name="{}"'.format(entity_name))
         self.parent.table.row(name=entity_name)['Name'].widget.click()
 
 
@@ -126,5 +126,5 @@ class CloneTemplate(NavigateStep):
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
-        self.parent.search(entity_name)
+        self.parent.search('name="{}"'.format(entity_name))
         self.parent.table.row(name=entity_name)['Actions'].widget.fill('Clone')
