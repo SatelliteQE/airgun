@@ -219,6 +219,25 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
         )
 
     @View.nested
+    class options(View):
+        status = Text("//strong[text()='Status']")
+        hypervisor_type = Text("//strong[text()='Hypervisor Type']")
+        hypervisor_server = Text("//strong[text()='Hypervisor Server']")
+        hypervisor_username = Text("//strong[text()='Hypervisor Username']")
+        interval = Text("//strong[text()='Interval']")
+        satellite_url = Text("//strong[text()='Satellite server FQDN']")
+        hypervisor_id = Text("//strong[text()='Hypervisor ID']")
+        filtering = Text("//strong[text()='Filtering']")
+        filter_hosts = Text("//strong[text()='Filter Hosts']")
+        filter_host_parents = Text("//strong[text()='Filter Host Parents']")
+        exclude_hosts = Text("//strong[text()='Exclude Hosts']")
+        exclude_host_parents = Text("//strong[text()='Exclude Host Parents']")
+        debug = Text("//strong[text()='Enable debugging output?']")
+        proxy = Text("//strong[text()='HTTP Proxy']")
+        no_proxy = Text("//strong[text()='Ignore Proxy']")
+        kubeconfig_path = Text("//strong[text()='Kubeconfig Path']")
+
+    @View.nested
     class overview(SatTab):
         status = VirtwhoConfigureStatus('.')
         debug = VirtwhoConfiguresDebug()
