@@ -219,25 +219,6 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
         )
 
     @View.nested
-    class options(View):
-        status = Text("//strong[text()='Status']")
-        hypervisor_type = Text("//strong[text()='Hypervisor Type']")
-        hypervisor_server = Text("//strong[text()='Hypervisor Server']")
-        hypervisor_username = Text("//strong[text()='Hypervisor Username']")
-        interval = Text("//strong[text()='Interval']")
-        satellite_url = Text("//strong[text()='Satellite server FQDN']")
-        hypervisor_id = Text("//strong[text()='Hypervisor ID']")
-        filtering = Text("//strong[text()='Filtering']")
-        filter_hosts = Text("//strong[text()='Filter Hosts']")
-        filter_host_parents = Text("//strong[text()='Filter Host Parents']")
-        exclude_hosts = Text("//strong[text()='Exclude Hosts']")
-        exclude_host_parents = Text("//strong[text()='Exclude Host Parents']")
-        debug = Text("//strong[text()='Enable debugging output?']")
-        proxy = Text("//strong[text()='HTTP Proxy']")
-        no_proxy = Text("//strong[text()='Ignore Proxy']")
-        kubeconfig_path = Text("//strong[text()='Kubeconfig Path']")
-
-    @View.nested
     class overview(SatTab):
         status = VirtwhoConfigureStatus('.')
         debug = VirtwhoConfiguresDebug()
@@ -255,6 +236,24 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
         proxy = Text('.//span[contains(@class,"config-proxy")]')
         no_proxy = Text('.//span[contains(@class,"config-no_proxy")]')
         kubeconfig_path = Text('.//span[contains(@class,"config-kubeconfig_path")]')
+
+        __label_template = "//span[contains(@class, '{class_name}')]/../preceding-sibling::div/strong"
+        status_label = Text(__label_template.format(class_name="config-status"))
+        debug_label = Text(__label_template.format(class_name="config-debug"))
+        hypervisor_type_label = Text(__label_template.format(class_name="config-hypervisor_type"))
+        hypervisor_server_label = Text(__label_template.format(class_name="config-hypervisor_server"))
+        hypervisor_username_label = Text(__label_template.format(class_name="config-hypervisor_username"))
+        interval_label = Text(__label_template.format(class_name="config-interval"))
+        satellite_url_label = Text(__label_template.format(class_name="config-satellite_url"))
+        hypervisor_id_label = Text(__label_template.format(class_name="config-hypervisor_id"))
+        filtering_label = Text(__label_template.format(class_name="config-listing_mode"))
+        filter_hosts_label = Text(__label_template.format(class_name="config-whitelist"))
+        filter_host_parents_label = Text(__label_template.format(class_name="config-filter_host_parents"))
+        exclude_hosts_label = Text(__label_template.format(class_name="config-blacklist"))
+        exclude_host_parents_label = Text(__label_template.format(class_name="config-exclude_host_parents"))
+        proxy_label = Text(__label_template.format(class_name="config-proxy"))
+        no_proxy_label = Text(__label_template.format(class_name="config-no_proxy"))
+        kubeconfig_path_label = Text(__label_template.format(class_name="config-kubeconfig_path"))
 
     @View.nested
     class deploy(SatTab):
