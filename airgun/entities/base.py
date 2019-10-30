@@ -46,3 +46,14 @@ class BaseEntity(object):
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
+
+    def navigate_to_all(self, path_url):
+        """This is a helper method for the browser to navigate to directly
+        to all entity page
+        :param str path_url: pass relative path url to navigate
+
+        """
+        if path_url:
+            navigating_url = "window.location = \'{}/{}'".\
+                format(self.browser.url, self.path_url)
+            self.browser.execute_script(navigating_url)

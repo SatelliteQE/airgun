@@ -147,7 +147,7 @@ class Session(object):
 
     """
 
-    def __init__(self, session_name=None, user=None, password=None):
+    def __init__(self, session_name=None, user=None, password=None, relative_path=None):
         """Stores provided values, doesn't perform any actions.
 
         :param str optional session_name: string representing session name.
@@ -164,6 +164,7 @@ class Session(object):
         self._user = user or settings.satellite.username
         self._password = password or settings.satellite.password
         self._factory = None
+        self._relative_path = relative_path or ""
         self.browser = None
 
     def __enter__(self):
@@ -178,7 +179,7 @@ class Session(object):
             selenium_browser = self._factory.get_browser()
             self.browser = AirgunBrowser(selenium_browser, self)
 
-            self.browser.url = 'https://' + settings.satellite.hostname
+            self.browser.url = 'https://' + settings.satellite.hostname + '/' + self._relative_path
             self._factory.post_init()
 
             # Navigator
