@@ -147,7 +147,7 @@ class Session(object):
 
     """
 
-    def __init__(self, session_name=None, user=None, password=None):
+    def __init__(self, session_name=None, user=None, password=None, session_cookie=None):
         """Stores provided values, doesn't perform any actions.
 
         :param str optional session_name: string representing session name.
@@ -159,10 +159,13 @@ class Session(object):
             beused.
         :param str optional password: password for provided user. If None is
             passed - default one from settings will be used.
+        :param requests.sessions.Session optional session_cookie: session object to be used
+            to bypass login
         """
         self.name = session_name or gen_string('alphanumeric')
         self._user = user or settings.satellite.username
         self._password = password or settings.satellite.password
+        self._session_cookie = session_cookie
         self._factory = None
         self.browser = None
 
@@ -171,9 +174,15 @@ class Session(object):
         browser tweaks, initializes navigator and UI entities, and logs in to
         satellite.
         """
-        LOGGER.info(
-            u'Starting UI session %r for user %r', self.name, self._user)
-        self._factory = SeleniumBrowserFactory(test_name=self.name)
+        if self._session_cookie:
+            LOGGER.info(u'Starting UI session id: %r from a session cookie',
+                        self._session_cookie.cookies.get_dict()['_session_id'])
+        else:
+            LOGGER.info(u'Starting UI session %r for user %r', self.name, self._user)
+        self._factory = SeleniumBrowserFactory(
+            test_name=self.name,
+            session_cookie=self._session_cookie
+        )
         try:
             selenium_browser = self._factory.get_browser()
             self.browser = AirgunBrowser(selenium_browser, self)
@@ -184,9 +193,9 @@ class Session(object):
             # Navigator
             self.navigator = copy.deepcopy(navigator)
             self.navigator.browser = self.browser
-
-            self.login.login({
-                'username': self._user, 'password': self._password})
+            if self._session_cookie is None:
+                self.login.login({
+                    'username': self._user, 'password': self._password})
         except Exception as exception:
             self.__exit__(*sys.exc_info())
             raise exception
