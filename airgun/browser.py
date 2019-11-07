@@ -78,7 +78,7 @@ class SeleniumBrowserFactory(object):
 
     """
 
-    def __init__(self, provider=None, browser=None, test_name=None):
+    def __init__(self, provider=None, browser=None, test_name=None, session_cookie=None):
         """Initializes factory with either specified or fetched from settings
         values.
 
@@ -93,10 +93,13 @@ class SeleniumBrowserFactory(object):
             is useful for `saucelabs` provider to update saucelabs job name, or
             for `docker` provider to create container with meaningful name, not
             used otherwise.
+        :param requests.sessions.Session optional session_cookie: session object to be used
+            to bypass login
         """
         self.provider = provider or settings.selenium.browser
         self.browser = browser or settings.selenium.webdriver
         self.test_name = test_name
+        self._session = session_cookie
         self._docker = None
         self._webdriver = None
 
@@ -161,6 +164,17 @@ class SeleniumBrowserFactory(object):
         elif self.provider == 'docker':
             return self._finalize_docker_browser()
 
+    def _set_session_cookie(self):
+        """Add the session cookie (if provided) to the webdriver
+        """
+        if self._session:
+            # webdriver doesn't allow to add cookies unless we land on the target domain
+            # let's navigate to its invalid page to get it loaded ASAP
+            self._webdriver.get('https://{0}/404'.format(settings.satellite.hostname))
+            self._webdriver.add_cookie(
+                {'name': '_session_id', 'value': self._session.cookies.get_dict()['_session_id']}
+            )
+
     def _get_selenium_browser(self):
         """Returns selenium webdriver instance of selected ``browser``.
 
@@ -211,6 +225,7 @@ class SeleniumBrowserFactory(object):
                     ('chrome', 'firefox', 'ie', 'edge', 'phantomjs')
                 )
             )
+        self._set_session_cookie()
         return self._webdriver
 
     def _get_saucelabs_browser(self):
@@ -227,6 +242,7 @@ class SeleniumBrowserFactory(object):
             ),
             desired_capabilities=self._get_webdriver_capabilities()
         )
+        self._set_session_cookie()
         idle_timeout = settings.webdriver_desired_capabilities.idleTimeout
         if idle_timeout:
             self._webdriver.command_executor.set_timeout(int(idle_timeout))
@@ -262,6 +278,7 @@ class SeleniumBrowserFactory(object):
                 vars(settings.webdriver_desired_capabilities))
         self._docker.start()
         self._webdriver = self._docker.webdriver
+        self._set_session_cookie()
         return self._webdriver
 
     def _get_remote_browser(self):
@@ -273,6 +290,8 @@ class SeleniumBrowserFactory(object):
             command_executor=settings.selenium.command_executor,
             desired_capabilities=self._get_webdriver_capabilities()
         )
+        self._set_session_cookie()
+
         idle_timeout = settings.webdriver_desired_capabilities.idleTimeout
         if idle_timeout:
             self._webdriver.command_executor.set_timeout(int(idle_timeout))
