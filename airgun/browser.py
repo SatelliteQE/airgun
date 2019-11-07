@@ -23,14 +23,6 @@ except ImportError:
     # Let it fail later if not installed
     docker = None
 
-try:
-    import sauceclient
-except ImportError:
-    # Optional requirement, airgun will report results back to saucelabs if
-    # installed
-    sauceclient = None
-
-
 LOGGER = logging.getLogger(__name__)
 
 
@@ -147,20 +139,14 @@ class SeleniumBrowserFactory(object):
                 self.browser == 'chrome'):
             self._webdriver.maximize_window()
 
-    def finalize(self, passed=True):
-        """Finalize browser - close browser window, report results to saucelabs
-        or close docker container if needed.
+    def finalize(self):
+        """Finalize browser - close browser window or close docker container if needed.
 
-        :param bool passed: Boolean value indicating whether test passed
-            or not. Is only used for ``saucelabs`` provider.
         :return: None
         """
-        if self.provider == 'selenium' or self.provider == 'remote':
+        if self.provider in ['selenium', 'remote', 'saucelabs']:
             self._webdriver.quit()
             return
-        elif self.provider == 'saucelabs':
-            self._webdriver.quit()
-            return self._finalize_saucelabs_browser(passed)
         elif self.provider == 'docker':
             return self._finalize_docker_browser()
 
@@ -336,28 +322,6 @@ class SeleniumBrowserFactory(object):
         desired_capabilities.update({'name': self.test_name})
 
         return desired_capabilities
-
-    def _finalize_saucelabs_browser(self, passed):
-        """SauceLabs has no way to determine whether test passed or failed
-        automatically, so we explicitly 'tell' it.
-
-        Note: should not be called directly, use :meth:`finalize` instead.
-
-        :param bool passed: Bool value indicating whether test passed or not.
-        """
-        client = sauceclient.SauceClient(
-            settings.selenium.saucelabs_user, settings.selenium.saucelabs_key)
-        LOGGER.debug(
-            'Updating SauceLabs job "%s": name "%s" and status "%s"',
-            self._webdriver.session_id,
-            self.test_name,
-            'passed' if passed else 'failed'
-        )
-        kwargs = {'passed': passed}
-        # do not pass test name if it's not set
-        if self.test_name:
-            kwargs.update({'name': self.test_name})
-        client.jobs.update_job(self._webdriver.session_id, **kwargs)
 
     def _finalize_docker_browser(self):
         """Stops docker container.
