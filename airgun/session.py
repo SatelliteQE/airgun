@@ -17,7 +17,6 @@ from airgun.entities.bookmark import BookmarkEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.computeresource import ComputeResourceEntity
 from airgun.entities.configgroup import ConfigGroupEntity
-from airgun.entities.container import ContainerEntity
 from airgun.entities.containerimagetag import ContainerImageTagEntity
 from airgun.entities.contentcredential import ContentCredentialEntity
 from airgun.entities.contenthost import ContentHostEntity
@@ -325,11 +324,6 @@ class Session(object):
     def configgroup(self):
         """Instance of Config Group entity."""
         return self._open(ConfigGroupEntity)
-
-    @cached_property
-    def container(self):
-        """Instance of Container entity."""
-        return self._open(ContainerEntity)
 
     @cached_property
     def containerimagetag(self):
