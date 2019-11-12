@@ -4,6 +4,7 @@ from airgun.views.contenthost import (
     ContentHostDetailsView,
     ContentHostsView,
     ContentHostTaskDetailsView,
+    ErrataDetailsView,
 )
 from airgun.views.job_invocation import (
     JobInvocationCreateView,
@@ -141,6 +142,19 @@ class ContentHostEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.errata.search(errata_id, lce=environment)
         return view.errata.table.read()
+
+    def read_errata_details(self, entity_name, errata_id, environment=None):
+        """Read Details for specific errata applicable for content host.
+
+        :param str entity_name: the content hosts name.
+        :param str errata_id: errata id or title, e.g. 'RHEA-2012:0055'
+        :param str optional environment: lifecycle environment to filter by.
+        """
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.errata.search(errata_id, lce=environment)
+        view.errata.table.row(id=errata_id)['Id'].widget.click()
+        view = ErrataDetailsView(self.browser)
+        return view.read()
 
     def export(self):
         """Export content hosts list.

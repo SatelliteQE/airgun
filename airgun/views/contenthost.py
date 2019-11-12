@@ -342,3 +342,17 @@ class ContentHostTaskDetailsView(TaskDetailsView):
                 and self.breadcrumb.locations[0] == 'Content Hosts'
                 and len(self.breadcrumb.locations) > 2
         )
+
+
+class ErrataDetailsView(BaseLoggedInView):
+
+    advisory = Text("//h3")
+    type = ReadOnlyEntry(name='Type')
+    title = ReadOnlyEntry(name='Title')
+    issued = ReadOnlyEntry(name='Issued')
+    updated = ReadOnlyEntry(name='Updated')
+    description = ReadOnlyEntry(name='Description')
+    last_updated_on = ReadOnlyEntry(name='Last Updated On')
+    reboot_suggested = ReadOnlyEntry(name='Reboot Suggested')
+    packages = ReadOnlyEntry(name='Packages')
+    module_streams = ReadOnlyEntry(name='Module Streams')
