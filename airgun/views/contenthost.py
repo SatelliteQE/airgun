@@ -346,6 +346,7 @@ class ContentHostTaskDetailsView(TaskDetailsView):
 
 class ErrataDetailsView(BaseLoggedInView):
 
+    breadcrumb = BreadCrumb()
     advisory = Text("//h3")
     type = ReadOnlyEntry(name='Type')
     title = ReadOnlyEntry(name='Title')
@@ -356,3 +357,13 @@ class ErrataDetailsView(BaseLoggedInView):
     reboot_suggested = ReadOnlyEntry(name='Reboot Suggested')
     packages = ReadOnlyEntry(name='Packages')
     module_streams = ReadOnlyEntry(name='Module Streams')
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False)
+        return (
+                breadcrumb_loaded
+                and self.breadcrumb.locations[1] == 'Errata'
+                and len(self.breadcrumb.locations) > 3
+        )
