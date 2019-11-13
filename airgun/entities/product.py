@@ -13,6 +13,7 @@ from airgun.views.product import (
 
 
 class ProductEntity(BaseEntity):
+    endpoint_path = '/products'
 
     def create(self, values, sync_plan_values=None):
         """Creates new product from UI.

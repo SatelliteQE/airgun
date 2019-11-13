@@ -10,6 +10,7 @@ from airgun.views.subnet import (
 
 
 class SubnetEntity(BaseEntity):
+    endpoint_path = '/subnets'
 
     def create(self, values):
         """Create new subnet"""

@@ -167,38 +167,14 @@ class Session(object):
         self._password = password or settings.satellite.password
         self._session_cookie = session_cookie
         self._factory = None
+        self.navigator = None
         self.browser = None
 
     def __enter__(self):
-        """Starts the browser, navigates to satellite, performs post-init
-        browser tweaks, initializes navigator and UI entities, and logs in to
-        satellite.
+        """Just a shim to make it compatible with context manager
+        protocol. The real work is done by _open the first time
+        any entity is requested.
         """
-        if self._session_cookie:
-            LOGGER.info(u'Starting UI session id: %r from a session cookie',
-                        self._session_cookie.cookies.get_dict()['_session_id'])
-        else:
-            LOGGER.info(u'Starting UI session %r for user %r', self.name, self._user)
-        self._factory = SeleniumBrowserFactory(
-            test_name=self.name,
-            session_cookie=self._session_cookie
-        )
-        try:
-            selenium_browser = self._factory.get_browser()
-            self.browser = AirgunBrowser(selenium_browser, self)
-
-            self.browser.url = 'https://' + settings.satellite.hostname
-            self._factory.post_init()
-
-            # Navigator
-            self.navigator = copy.deepcopy(navigator)
-            self.navigator.browser = self.browser
-            if self._session_cookie is None:
-                self.login.login({
-                    'username': self._user, 'password': self._password})
-        except Exception as exception:
-            self.__exit__(*sys.exc_info())
-            raise exception
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -220,6 +196,49 @@ class Session(object):
             LOGGER.exception(err)
         finally:
             self._factory.finalize(passed)
+
+    def _open(self, entity):
+        """Initializes requested entity. If this is first time session
+        requests an entity, also initialize and prepare browser.
+        """
+        if self.browser is None:
+            endpoint = getattr(entity, 'endpoint_path', '/')
+            full_url = f"https://{settings.satellite.hostname}{endpoint}"
+            self._prepare_browser(full_url)
+
+        return entity(self.browser)
+
+    def _prepare_browser(self, url):
+        """Starts the browser, navigates to satellite, performs post-init
+        browser tweaks, initializes navigator and UI entities, and logs in to
+        satellite.
+        """
+        if self._session_cookie:
+            LOGGER.info('Starting UI session id: %r from a session cookie',
+                        self._session_cookie.cookies.get_dict()['_session_id'])
+        else:
+            LOGGER.info('Starting UI session %r for user %r', self.name, self._user)
+        self._factory = SeleniumBrowserFactory(
+            test_name=self.name,
+            session_cookie=self._session_cookie
+        )
+        try:
+            selenium_browser = self._factory.get_browser()
+            self.browser = AirgunBrowser(selenium_browser, self)
+
+            self.browser.url = url
+
+            self._factory.post_init()
+
+            # Navigator
+            self.navigator = copy.deepcopy(navigator)
+            self.navigator.browser = self.browser
+            if self._session_cookie is None:
+                self.login.login({
+                    'username': self._user, 'password': self._password})
+        except Exception as exception:
+            self.__exit__(*sys.exc_info())
+            raise exception
 
     def take_screenshot(self):
         """Take screen shot from the current browser window.
@@ -253,318 +272,318 @@ class Session(object):
     @cached_property
     def activationkey(self):
         """Instance of Activation Key entity."""
-        return ActivationKeyEntity(self.browser)
+        return self._open(ActivationKeyEntity)
 
     @cached_property
     def architecture(self):
         """Instance of Architecture entity."""
-        return ArchitectureEntity(self.browser)
+        return self._open(ArchitectureEntity)
 
     @cached_property
     def audit(self):
         """Instance of Audit entity."""
-        return AuditEntity(self.browser)
+        return self._open(AuditEntity)
 
     @cached_property
     def bookmark(self):
         """Instance of Bookmark entity."""
-        return BookmarkEntity(self.browser)
+        return self._open(BookmarkEntity)
 
     @cached_property
     def computeprofile(self):
         """Instance of Compute Profile entity."""
-        return ComputeProfileEntity(self.browser)
+        return self._open(ComputeProfileEntity)
 
     @cached_property
     def configgroup(self):
         """Instance of Config Group entity."""
-        return ConfigGroupEntity(self.browser)
+        return self._open(ConfigGroupEntity)
 
     @cached_property
     def container(self):
         """Instance of Container entity."""
-        return ContainerEntity(self.browser)
+        return self._open(ContainerEntity)
 
     @cached_property
     def containerimagetag(self):
         """Instance of Container Image Tags entity."""
-        return ContainerImageTagEntity(self.browser)
+        return self._open(ContainerImageTagEntity)
 
     @cached_property
     def contentcredential(self):
         """Instance of Content Credential entity."""
-        return ContentCredentialEntity(self.browser)
+        return self._open(ContentCredentialEntity)
 
     @cached_property
     def contenthost(self):
         """Instance of Content Host entity."""
-        return ContentHostEntity(self.browser)
+        return self._open(ContentHostEntity)
 
     @cached_property
     def computeresource(self):
         """Instance of ComputeResource entity."""
-        return ComputeResourceEntity(self.browser)
+        return self._open(ComputeResourceEntity)
 
     @cached_property
     def contentview(self):
         """Instance of Content View entity."""
-        return ContentViewEntity(self.browser)
+        return self._open(ContentViewEntity)
 
     @cached_property
     def contentviewfilter(self):
         """Instance of Content View Filter entity."""
-        return ContentViewFilterEntity(self.browser)
+        return self._open(ContentViewFilterEntity)
 
     @cached_property
     def dashboard(self):
         """Instance of Dashboard entity."""
-        return DashboardEntity(self.browser)
+        return self._open(DashboardEntity)
 
     @cached_property
     def discoveredhosts(self):
-        return DiscoveredHostsEntity(self.browser)
+        return self._open(DiscoveredHostsEntity)
 
     @cached_property
     def discoveryrule(self):
         """Instance of Discovery Rule entity."""
-        return DiscoveryRuleEntity(self.browser)
+        return self._open(DiscoveryRuleEntity)
 
     @cached_property
     def domain(self):
         """Instance of domain entity."""
-        return DomainEntity(self.browser)
+        return self._open(DomainEntity)
 
     @cached_property
     def errata(self):
         """Instance of Errata entity."""
-        return ErrataEntity(self.browser)
+        return self._open(ErrataEntity)
 
     @cached_property
     def filter(self):
         """Instance of Filter entity."""
-        return FilterEntity(self.browser)
+        return self._open(FilterEntity)
 
     @cached_property
     def hardwaremodel(self):
         """Instance of Hardware Model entity."""
-        return HardwareModelEntity(self.browser)
+        return self._open(HardwareModelEntity)
 
     @cached_property
     def host(self):
         """Instance of Host entity."""
-        return HostEntity(self.browser)
+        return self._open(HostEntity)
 
     @cached_property
     def hostcollection(self):
         """Instance of Host Collection entity."""
-        return HostCollectionEntity(self.browser)
+        return self._open(HostCollectionEntity)
 
     @cached_property
     def hostgroup(self):
         """Instance of Host Group entity."""
-        return HostGroupEntity(self.browser)
+        return self._open(HostGroupEntity)
 
     @cached_property
     def insightsaction(self):
         """Instance of RHAI Action entity."""
-        return ActionEntity(self.browser)
+        return self._open(ActionEntity)
 
     @cached_property
     def insightsinventory(self):
         """Instance of RHAI Inventory entity."""
-        return InventoryHostEntity(self.browser)
+        return self._open(InventoryHostEntity)
 
     @cached_property
     def insightsoverview(self):
         """Instance of RHAI Overview entity."""
-        return OverviewEntity(self.browser)
+        return self._open(OverviewEntity)
 
     @cached_property
     def insightsplan(self):
         """Instance of RHAI Plan entity."""
-        return PlanEntity(self.browser)
+        return self._open(PlanEntity)
 
     @cached_property
     def insightsrule(self):
         """Instance of RHAI Rule entity."""
-        return RuleEntity(self.browser)
+        return self._open(RuleEntity)
 
     @cached_property
     def jobinvocation(self):
         """Instance of Job Invocation entity."""
-        return JobInvocationEntity(self.browser)
+        return self._open(JobInvocationEntity)
 
     @cached_property
     def insightsmanage(self):
         """Instance of RHAI Manage entity."""
-        return ManageEntity(self.browser)
+        return self._open(ManageEntity)
 
     @cached_property
     def jobtemplate(self):
         """Instance of Job Template entity."""
-        return JobTemplateEntity(self.browser)
+        return self._open(JobTemplateEntity)
 
     @cached_property
     def ldapauthentication(self):
         """Instance of LDAP Authentication entity."""
-        return LDAPAuthenticationEntity(self.browser)
+        return self._open(LDAPAuthenticationEntity)
 
     @cached_property
     def lifecycleenvironment(self):
         """Instance of LCE entity."""
-        return LCEEntity(self.browser)
+        return self._open(LCEEntity)
 
     @cached_property
     def location(self):
         """Instance of Location entity."""
-        return LocationEntity(self.browser)
+        return self._open(LocationEntity)
 
     @cached_property
     def login(self):
         """Instance of Login entity."""
-        return LoginEntity(self.browser)
+        return self._open(LoginEntity)
 
     @cached_property
     def operatingsystem(self):
         """Instance of Operating System entity."""
-        return OperatingSystemEntity(self.browser)
+        return self._open(OperatingSystemEntity)
 
     @cached_property
     def organization(self):
         """Instance of Organization entity."""
-        return OrganizationEntity(self.browser)
+        return self._open(OrganizationEntity)
 
     @cached_property
     def oscapcontent(self):
         """Instance of OSCAP Content entity."""
-        return OSCAPContentEntity(self.browser)
+        return self._open(OSCAPContentEntity)
 
     @cached_property
     def oscappolicy(self):
         """Instance of OSCAP Policy entity."""
-        return OSCAPPolicyEntity(self.browser)
+        return self._open(OSCAPPolicyEntity)
 
     @cached_property
     def oscaptailoringfile(self):
         """Instance of OSCAP Tailoring File entity."""
-        return OSCAPTailoringFileEntity(self.browser)
+        return self._open(OSCAPTailoringFileEntity)
 
     @cached_property
     def package(self):
         """Instance of Packge entity."""
-        return PackageEntity(self.browser)
+        return self._open(PackageEntity)
 
     @cached_property
     def media(self):
         """Instance of Media entity."""
-        return MediaEntity(self.browser)
+        return self._open(MediaEntity)
 
     @cached_property
     def modulestream(self):
         """Instance of Module Stream entity."""
-        return ModuleStreamEntity(self.browser)
+        return self._open(ModuleStreamEntity)
 
     @cached_property
     def partitiontable(self):
         """Instance of Partition Table entity."""
-        return PartitionTableEntity(self.browser)
+        return self._open(PartitionTableEntity)
 
     @cached_property
     def puppetclass(self):
         """Instance of Puppet Class entity."""
-        return PuppetClassEntity(self.browser)
+        return self._open(PuppetClassEntity)
 
     @cached_property
     def puppetenvironment(self):
         """Instance of Puppet Environment entity."""
-        return PuppetEnvironmentEntity(self.browser)
+        return self._open(PuppetEnvironmentEntity)
 
     @cached_property
     def product(self):
         """Instance of Product entity."""
-        return ProductEntity(self.browser)
+        return self._open(ProductEntity)
 
     @cached_property
     def provisioningtemplate(self):
         """Instance of Provisioning Template entity."""
-        return ProvisioningTemplateEntity(self.browser)
+        return self._open(ProvisioningTemplateEntity)
 
     @cached_property
     def reporttemplate(self):
         """Instance of Report Template entity."""
-        return ReportTemplateEntity(self.browser)
+        return self._open(ReportTemplateEntity)
 
     @cached_property
     def redhatrepository(self):
         """Instance of Red Hat Repository entity."""
-        return RedHatRepositoryEntity(self.browser)
+        return self._open(RedHatRepositoryEntity)
 
     @cached_property
     def repository(self):
         """Instance of Repository entity."""
-        return RepositoryEntity(self.browser)
+        return self._open(RepositoryEntity)
 
     @cached_property
     def role(self):
         """Instance of Role entity."""
-        return RoleEntity(self.browser)
+        return self._open(RoleEntity)
 
     @cached_property
     def settings(self):
         """Instance of Settings entity."""
-        return SettingsEntity(self.browser)
+        return self._open(SettingsEntity)
 
     @cached_property
     def sc_parameter(self):
         """Instance of Smart Class Parameter entity."""
-        return SmartClassParameterEntity(self.browser)
+        return self._open(SmartClassParameterEntity)
 
     @cached_property
     def smartvariable(self):
         """Instance of Smart Variable entity."""
-        return SmartVariableEntity(self.browser)
+        return self._open(SmartVariableEntity)
 
     @cached_property
     def subnet(self):
         """Instance of Subnet entity."""
-        return SubnetEntity(self.browser)
+        return self._open(SubnetEntity)
 
     @cached_property
     def subscription(self):
         """Instance of Subscription entity."""
-        return SubscriptionEntity(self.browser)
+        return self._open(SubscriptionEntity)
 
     @cached_property
     def syncplan(self):
         """Instance of Sync Plan entity."""
-        return SyncPlanEntity(self.browser)
+        return self._open(SyncPlanEntity)
 
     @cached_property
     def sync_status(self):
         """Instance of Sync Status entity"""
-        return SyncStatusEntity(self.browser)
+        return self._open(SyncStatusEntity)
 
     @cached_property
     def task(self):
         """Instance of Task entity."""
-        return TaskEntity(self.browser)
+        return self._open(TaskEntity)
 
     @cached_property
     def trend(self):
         """Instance of Trend entity."""
-        return TrendEntity(self.browser)
+        return self._open(TrendEntity)
 
     @cached_property
     def user(self):
         """Instance of User entity."""
-        return UserEntity(self.browser)
+        return self._open(UserEntity)
 
     @cached_property
     def usergroup(self):
         """Instance of User Group entity."""
-        return UserGroupEntity(self.browser)
+        return self._open(UserGroupEntity)
 
     @cached_property
     def virtwho_configure(self):
         """Instance of Virtwho Configure entity."""
-        return VirtwhoConfigureEntity(self.browser)
+        return self._open(VirtwhoConfigureEntity)

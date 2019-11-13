@@ -19,6 +19,7 @@ from airgun.views.contentview import (
 
 
 class ContentViewEntity(BaseEntity):
+    endpoint_path = '/content_views'
 
     def create(self, values):
         """Create a new content view"""

@@ -10,6 +10,7 @@ from airgun.views.hardware_model import (
 
 
 class HardwareModelEntity(BaseEntity):
+    endpoint_path = '/hardware_models'
 
     def create(self, values):
         """Create new hardware model"""

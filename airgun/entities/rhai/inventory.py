@@ -7,6 +7,7 @@ from airgun.views.rhai import InventoryAllHosts, InventoryHostDetails
 
 
 class InventoryHostEntity(BaseEntity):
+    endpoint_path = '/redhat_access/insights/inventory'
 
     @property
     def total_systems(self):

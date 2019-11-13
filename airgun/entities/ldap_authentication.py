@@ -11,6 +11,7 @@ from airgun.views.ldapauthentication import (
 
 
 class LDAPAuthenticationEntity(BaseEntity):
+    endpoint_path = '/auth_source_ldaps'
 
     def create(self, values):
         """Create new LDAP Authentication source"""

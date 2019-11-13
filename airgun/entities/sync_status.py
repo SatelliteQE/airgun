@@ -5,6 +5,7 @@ from airgun.views.sync_status import SyncStatusView
 
 
 class SyncStatusEntity(BaseEntity):
+    endpoint_path = '/katello/sync_management'
 
     def read(self, widget_names=None):
         """Read all widgets at Sync status entity"""

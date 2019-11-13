@@ -6,6 +6,7 @@ from airgun.views.user import UserCreateView, UserDetailsView, UsersView
 
 
 class UserEntity(BaseEntity):
+    endpoint_path = '/users'
 
     def create(self, values):
         """Create new user entity"""

@@ -6,7 +6,7 @@ from airgun.views.package import PackagesView, PackageDetailsView
 
 
 class PackageEntity(BaseEntity):
-    """Package entity"""
+    endpoint_path = '/packages'
 
     def search(self, query, repository='All Repositories', applicable=False,
                upgradable=False):

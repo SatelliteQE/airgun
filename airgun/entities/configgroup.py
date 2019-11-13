@@ -10,6 +10,7 @@ from airgun.views.configgroup import (
 
 
 class ConfigGroupEntity(BaseEntity):
+    endpoint_path = '/config_groups'
 
     def create(self, values):
         """Create new config group"""

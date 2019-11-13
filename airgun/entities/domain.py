@@ -10,6 +10,8 @@ from airgun.views.domain import (
 
 
 class DomainEntity(BaseEntity):
+    endpoint_path = '/domains'
+
     def create(self, values):
         """Create a new domain."""
         view = self.navigate_to(self, 'New')

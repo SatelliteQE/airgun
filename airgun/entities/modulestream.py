@@ -7,7 +7,7 @@ from wait_for import wait_for
 
 
 class ModuleStreamEntity(BaseEntity):
-    """Module Stream entity"""
+    endpoint_path = '/module_streams'
 
     def search(self, query):
         """Search for module stream

@@ -13,6 +13,7 @@ from airgun.views.rhai import (
 
 
 class PlanEntity(BaseEntity):
+    endpoint_path = '/redhat_access/insights/planner'
 
     def create(self, name, rules):
         """Create a new RHAI Plan entity."""

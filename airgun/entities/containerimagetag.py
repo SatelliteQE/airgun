@@ -7,6 +7,7 @@ from airgun.views.containerimagetag import (
 
 
 class ContainerImageTagEntity(BaseEntity):
+    endpoint_path = '/docker_tags'
 
     def search(self, value):
         """Search for specific Container Image Tag

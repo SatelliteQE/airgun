@@ -13,6 +13,8 @@ from airgun.views.subscription import (
 
 
 class SubscriptionEntity(BaseEntity):
+    endpoint_path = '/subscriptions'
+
     def _wait_for_process_to_finish(self, name, has_manifest=False, timeout=600,
                                     ignore_error_messages=None):
         """Helper ensuring that task (upload / delete manifest / subscription)

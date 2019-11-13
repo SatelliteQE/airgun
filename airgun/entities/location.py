@@ -12,6 +12,7 @@ from airgun.views.location import (
 
 
 class LocationEntity(BaseEntity):
+    endpoint_path = '/locations'
 
     def create(self, values):
         """Create new location entity"""

@@ -11,6 +11,7 @@ from airgun.views.oscappolicy import (
 
 
 class OSCAPPolicyEntity(BaseEntity):
+    endpoint_path = '/compliance/policies'
 
     def create(self, values):
         """Creates new OSCAP Policy

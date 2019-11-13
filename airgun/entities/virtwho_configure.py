@@ -11,6 +11,7 @@ from airgun.views.virtwho_configure import (
 
 
 class VirtwhoConfigureEntity(BaseEntity):
+    endpoint_path = '/foreman_virt_who_configure/configs'
 
     def _reset_values(self, values):
         mapping = {

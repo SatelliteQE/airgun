@@ -12,6 +12,7 @@ from airgun.views.job_invocation import (
 
 
 class ContentHostEntity(BaseEntity):
+    endpoint_path = '/content_hosts'
 
     def delete(self, entity_name):
         """Delete existing content host"""

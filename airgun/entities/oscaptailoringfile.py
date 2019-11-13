@@ -10,6 +10,7 @@ from airgun.views.oscaptailoringfile import (
 
 
 class OSCAPTailoringFileEntity(BaseEntity):
+    endpoint_path = '/compliance/tailoring_files'
 
     def create(self, values):
         """Creates new SCAP Tailoring File

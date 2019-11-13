@@ -6,6 +6,7 @@ from airgun.views.role import RoleCloneView, RoleCreateView, RoleEditView, Roles
 
 
 class RoleEntity(BaseEntity):
+    endpoint_path = '/roles'
 
     def create(self, values):
         """Create new role"""

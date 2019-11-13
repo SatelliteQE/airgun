@@ -10,6 +10,7 @@ from airgun.views.hostgroup import (
 
 
 class HostGroupEntity(BaseEntity):
+    endpoint_path = '/hostgroups'
 
     def create(self, values):
         """Create new host group entity"""

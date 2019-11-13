@@ -23,6 +23,7 @@ from airgun.views.host import (
 
 
 class HostEntity(BaseEntity):
+    endpoint_path = '/hosts'
 
     HELPER_CLASS = HostHelper
 

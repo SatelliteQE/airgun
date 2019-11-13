@@ -10,6 +10,7 @@ from airgun.views.lifecycleenvironment import (
 
 
 class LCEEntity(BaseEntity):
+    endpoint_path = '/lifecycle_environments'
 
     def create_environment_path(self, values):
         view = self.navigate_to(self, 'New Path')
