@@ -152,7 +152,8 @@ class ContentHostEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'Errata Details',
                                 entity_name=entity_name,
-                                errata_id=errata_id)
+                                errata_id=errata_id,
+                                environment=environment)
         return view.read()
 
     def export(self):
@@ -226,5 +227,6 @@ class NavigateToErrataDetails(NavigateStep):
 
     def step(self, *args, **kwargs):
         errata_id = kwargs.get('errata_id')
-        self.parent.errata.search(errata_id)
+        environment = kwargs.get('environment')
+        self.parent.errata.search(errata_id, lce=environment)
         self.parent.errata.table.row(id=errata_id)['Id'].widget.click()
