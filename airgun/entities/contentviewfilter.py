@@ -270,6 +270,23 @@ class ContentViewFilterEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def add_module_stream(
+            self, cv_name, filter_name, module_stream_query):
+        """Add module stream to module stream content view filter.
+
+        :param str cv_name: content view name
+        :param str filter_name: content view filter name
+        :param str module_stream_query: module stream query with name and stream version
+        """
+        view = self.navigate_to(
+            self, 'Edit',
+            cv_name=cv_name,
+            filter_name=filter_name,
+        )
+        view.content_tabs.add(module_stream_query)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
 
 @navigator.register(ContentViewFilterEntity, 'All')
 class ShowAllContentViewFilters(NavigateStep):

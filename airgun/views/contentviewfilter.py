@@ -329,6 +329,11 @@ class EditYumFilterView(BaseLoggedInView):
     class package_group_filter(AddRemoveResourcesView):
         pass
 
+    @content_tabs.register(
+        lambda filter_type: filter_type.endswith('Module Streams'))
+    class module_streams_filter(AddRemoveResourcesView):
+        pass
+
     @View.nested
     class affected_repositories(AffectedRepositoriesTab):
         filter_toggle = RadioGroup(".//div[@class='col-sm-8']")
