@@ -4,6 +4,7 @@ from airgun.views.contenthost import (
     ContentHostDetailsView,
     ContentHostsView,
     ContentHostTaskDetailsView,
+    ErrataDetailsView,
 )
 from airgun.views.job_invocation import (
     JobInvocationCreateView,
@@ -142,6 +143,19 @@ class ContentHostEntity(BaseEntity):
         view.errata.search(errata_id, lce=environment)
         return view.errata.table.read()
 
+    def read_errata_details(self, entity_name, errata_id, environment=None):
+        """Read Details for specific errata applicable for content host.
+
+        :param str entity_name: the content hosts name.
+        :param str errata_id: errata id or title, e.g. 'RHEA-2012:0055'
+        :param str optional environment: lifecycle environment to filter by.
+        """
+        view = self.navigate_to(self, 'Errata Details',
+                                entity_name=entity_name,
+                                errata_id=errata_id,
+                                environment=environment)
+        return view.read()
+
     def export(self):
         """Export content hosts list.
 
@@ -195,3 +209,24 @@ class EditContentHost(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+
+@navigator.register(ContentHostEntity, 'Errata Details')
+class NavigateToErrataDetails(NavigateStep):
+    """Navigate to Errata details screen.
+
+    Args:
+        entity_name: name of content host
+        errata_id: id of errata
+    """
+    VIEW = ErrataDetailsView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(
+            self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
+
+    def step(self, *args, **kwargs):
+        errata_id = kwargs.get('errata_id')
+        environment = kwargs.get('environment')
+        self.parent.errata.search(errata_id, lce=environment)
+        self.parent.errata.table.row(id=errata_id)['Id'].widget.click()
