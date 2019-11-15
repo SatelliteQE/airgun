@@ -187,7 +187,7 @@ class ContentHostDetailsView(BaseLoggedInView):
         host_group = ReadOnlyEntry(name='Host Group')
 
     @View.nested
-    class subscriptions(SatTabWithDropdown):
+    class subscriptions(SatTab):
         SUB_ITEM = 'Subscriptions'
 
         status = ReadOnlyEntry(name='Status')
