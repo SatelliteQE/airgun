@@ -147,7 +147,8 @@ class Session(object):
 
     """
 
-    def __init__(self, session_name=None, user=None, password=None, session_cookie=None):
+    def __init__(self, session_name=None, user=None, password=None,
+                 session_cookie=None, url=None):
         """Stores provided values, doesn't perform any actions.
 
         :param str optional session_name: string representing session name.
@@ -161,14 +162,33 @@ class Session(object):
             passed - default one from settings will be used.
         :param requests.sessions.Session optional session_cookie: session object to be used
             to bypass login
+        :param str optional url: URL path to open when starting session (without protocol
+            and hostname)
         """
         self.name = session_name or gen_string('alphanumeric')
         self._user = user or settings.satellite.username
         self._password = password or settings.satellite.password
         self._session_cookie = session_cookie
         self._factory = None
+        self._url = None
         self.navigator = None
         self.browser = None
+
+    def __call__(self, user=None, password=None, session_cookie=None, url=None):
+        """Stores provided values. This allows tests to provide additional
+        value when Session object is returned from fixture and used as
+        context manager. Arguments are the same as when initializing
+        Session object, except session_name.
+        """
+        if user is not None:
+            self._user = user
+        if password is not None:
+            self._password = password
+        if session_cookie is not None:
+            self._session_cookie = session_cookie
+        if url is not None:
+            self._url = url
+        return self
 
     def __enter__(self):
         """Just a shim to make it compatible with context manager
@@ -184,6 +204,9 @@ class Session(object):
         NOTE: exceptions during logout or saving screenshot are just logged and
             not risen not to shadow real session result.
         """
+        if self.browser is None:
+            # browser was never started, don't do anything
+            return
         LOGGER.info(
             u'Stopping UI session %r for user %r', self.name, self._user)
         passed = True if exc_type is None else False
@@ -202,7 +225,10 @@ class Session(object):
         requests an entity, also initialize and prepare browser.
         """
         if self.browser is None:
-            endpoint = getattr(entity, 'endpoint_path', '/')
+            if self._url:
+                endpoint = self._url
+            else:
+                endpoint = getattr(entity, 'endpoint_path', '/')
             full_url = f"https://{settings.satellite.hostname}{endpoint}"
             self._prepare_browser(full_url)
 
