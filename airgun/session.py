@@ -170,7 +170,7 @@ class Session(object):
         self._password = password or settings.satellite.password
         self._session_cookie = session_cookie
         self._factory = None
-        self._url = None
+        self._url = url
         self.navigator = None
         self.browser = None
 
