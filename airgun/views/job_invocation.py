@@ -85,8 +85,7 @@ class JobInvocationCreateView(BaseLoggedInView):
         sudo_password = TextInput(id='job_invocation_sudo_password')
         concurrency_level = TextInput(id='job_invocation_concurrency_level')
         time_span = TextInput(id='job_invocation_time_span')
-        query_type = RadioGroup(
-            locator="//div[label[contains(., 'Type of query')]]")
+        execution_order = RadioGroup(locator="//div[label[contains(., 'Execution ordering')]]")
 
         def __init__(self, parent, logger=None):
             """Expand advanced options section once we get to run job page.
@@ -97,6 +96,7 @@ class JobInvocationCreateView(BaseLoggedInView):
                 self.expander.click()
                 self.browser.wait_for_element(self.effective_user, visible=True, exception=False)
 
+    query_type = RadioGroup(locator="//div[label[contains(., 'Type of query')]]")
     schedule = RadioGroup(locator="//div[label[text()='Schedule']]")
     schedule_content = ConditionalSwitchableView(reference='schedule')
 
@@ -203,6 +203,7 @@ class JobInvocationStatusView(BaseLoggedInView):
             "//div[@id='job_invocations_chart_container']"
             "//*[name()='tspan'][contains(@class,'donut-title-big-pf')]"
         )
+        execution_order = Text("//p[contains(., 'Execution order:')]")
         hosts_table = SatTable(
             './/table',
             column_widgets={
