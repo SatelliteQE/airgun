@@ -21,6 +21,7 @@ from airgun.views.job_invocation import (
 
 
 class HostCollectionEntity(BaseEntity):
+    endpoint_path = '/host_collections'
 
     def create(self, values):
         """Create a host collection"""

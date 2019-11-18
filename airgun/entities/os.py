@@ -10,6 +10,7 @@ from airgun.views.os import (
 
 
 class OperatingSystemEntity(BaseEntity):
+    endpoint_path = '/operatingsystems'
 
     def create(self, values):
         """Create new operating system entity"""

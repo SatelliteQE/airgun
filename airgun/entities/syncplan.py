@@ -10,6 +10,7 @@ from airgun.views.syncplan import (
 
 
 class SyncPlanEntity(BaseEntity):
+    endpoint_path = '/sync_plans'
 
     def create(self, values):
         """Create new sync plan"""

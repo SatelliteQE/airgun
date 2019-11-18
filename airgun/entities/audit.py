@@ -4,6 +4,7 @@ from airgun.views.audit import AuditsView
 
 
 class AuditEntity(BaseEntity):
+    endpoint_path = '/audits'
 
     def search(self, value):
         """Search for audit entry in logs and return first one from the list"""

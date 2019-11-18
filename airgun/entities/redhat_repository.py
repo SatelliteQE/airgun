@@ -5,6 +5,7 @@ from airgun.views.redhat_repository import RedHatRepositoriesView
 
 
 class RedHatRepositoryEntity(BaseEntity):
+    endpoint_path = '/redhat_repositories'
 
     def search(self, value, category='Available', types=None):
         """Search RH repositories.

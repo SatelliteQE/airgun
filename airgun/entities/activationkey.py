@@ -11,6 +11,7 @@ from airgun.views.activationkey import (
 
 
 class ActivationKeyEntity(BaseEntity):
+    endpoint_path = '/activation_keys'
 
     def create(self, values):
         """Create new activation key entity"""

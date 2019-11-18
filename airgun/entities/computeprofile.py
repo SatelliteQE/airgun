@@ -11,6 +11,7 @@ from airgun.views.computeprofile import (
 
 
 class ComputeProfileEntity(BaseEntity):
+    endpoint_path = '/compute_profiles'
 
     def create(self, values):
         """Create new compute profile entity"""

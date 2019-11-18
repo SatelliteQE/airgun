@@ -4,6 +4,8 @@ from airgun.views.settings import SettingsView
 
 
 class SettingsEntity(BaseEntity):
+    endpoint_path = '/settings'
+
     def search(self, value):
         """Search for necessary settings entry"""
         view = self.navigate_to(self, 'All')

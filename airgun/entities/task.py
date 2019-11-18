@@ -4,6 +4,7 @@ from airgun.views.task import TaskDetailsView, TasksView
 
 
 class TaskEntity(BaseEntity):
+    endpoint_path = '/foreman_tasks/tasks'
 
     def search(self, value):
         """Search for specific task"""

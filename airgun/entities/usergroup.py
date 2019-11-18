@@ -10,6 +10,7 @@ from airgun.views.usergroup import (
 
 
 class UserGroupEntity(BaseEntity):
+    endpoint_path = '/usergroups'
 
     def create(self, values):
         """Create new user group entity"""

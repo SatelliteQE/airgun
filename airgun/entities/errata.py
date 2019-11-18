@@ -11,6 +11,7 @@ from airgun.views.errata import (
 
 
 class ErrataEntity(BaseEntity):
+    endpoint_path = '/errata'
 
     def search(self, value, applicable=True, installable=False, repo=None):
         """Search for specific errata.

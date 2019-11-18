@@ -10,6 +10,7 @@ from airgun.views.architecture import (
 
 
 class ArchitectureEntity(BaseEntity):
+    endpoint_path = '/architectures'
 
     def create(self, values):
         """Create new architecture entity"""

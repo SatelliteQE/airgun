@@ -10,6 +10,7 @@ from airgun.views.puppet_environment import (
 
 
 class PuppetEnvironmentEntity(BaseEntity):
+    endpoint_path = '/environments'
 
     def create(self, values):
         """Create puppet environment entity"""

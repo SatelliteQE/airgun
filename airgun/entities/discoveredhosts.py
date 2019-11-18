@@ -16,6 +16,7 @@ from airgun.views.discoveredhosts import (
 
 
 class DiscoveredHostsEntity(BaseEntity):
+    endpoint_path = '/discovered_hosts'
 
     def wait_for_entity(self, entity_name):
         """Wait for a host to be discovered providing the expected entity_name

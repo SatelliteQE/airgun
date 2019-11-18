@@ -11,6 +11,7 @@ from airgun.views.job_invocation import (
 
 
 class JobInvocationEntity(BaseEntity):
+    endpoint_path = '/job_invocations'
 
     def run(self, values):
         """Run specific job"""

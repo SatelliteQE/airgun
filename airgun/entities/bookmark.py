@@ -17,6 +17,7 @@ def _gen_queries(entity_name, controller=None):
 
 
 class BookmarkEntity(BaseEntity):
+    endpoint_path = '/bookmarks'
 
     # Note: creation procedure takes place on specific entity page, generic
     # helper is implemented inside :class:`BaseEntity`.

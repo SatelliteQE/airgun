@@ -10,6 +10,7 @@ from airgun.views.oscapcontent import (
 
 
 class OSCAPContentEntity(BaseEntity):
+    endpoint_path = '/compliance/scap_contents'
 
     def create(self, values):
         """Create new SCAP Conent

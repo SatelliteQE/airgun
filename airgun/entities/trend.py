@@ -11,6 +11,7 @@ from airgun.views.trend import (
 
 
 class TrendEntity(BaseEntity):
+    endpoint_path = '/trends'
 
     def create(self, values):
         """Create new trend in the system

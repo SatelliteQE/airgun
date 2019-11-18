@@ -12,6 +12,7 @@ from airgun.views.host import HostsView
 
 
 class DiscoveryRuleEntity(BaseEntity):
+    endpoint_path = '/discovery_rules'
 
     def create(self, values):
         """Create new Discovery rule

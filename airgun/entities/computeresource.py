@@ -17,6 +17,7 @@ from airgun.views.computeresource import (
 
 
 class ComputeResourceEntity(BaseEntity):
+    endpoint_path = '/compute_resources'
 
     def create(self, values):
         """Create new compute resource entity"""

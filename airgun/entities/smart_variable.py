@@ -10,6 +10,7 @@ from airgun.views.smart_variable import (
 
 
 class SmartVariableEntity(BaseEntity):
+    endpoint_path = '/variable_lookup_keys'
 
     def create(self, values):
         """Create new smart variable entity"""

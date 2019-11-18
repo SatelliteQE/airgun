@@ -5,6 +5,7 @@ from airgun.views.rhai import ActionsDetailsView
 
 
 class ActionEntity(BaseEntity):
+    endpoint_path = '/redhat_access/insights/actions'
 
     def read(self, widget_names=None):
         """Read the content of the view."""

@@ -10,6 +10,7 @@ from airgun.views.partitiontable import (
 
 
 class PartitionTableEntity(BaseEntity):
+    endpoint_path = '/templates/ptables'
 
     def create(self, values,):
         """Create new partition table entity"""

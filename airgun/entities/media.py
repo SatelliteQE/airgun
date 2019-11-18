@@ -10,6 +10,7 @@ from airgun.views.media import (
 
 
 class MediaEntity(BaseEntity):
+    endpoint_path = '/media'
 
     def create(self, values):
         """Create new media"""

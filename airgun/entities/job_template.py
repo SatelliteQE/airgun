@@ -10,6 +10,7 @@ from airgun.views.job_template import (
 
 
 class JobTemplateEntity(BaseEntity):
+    endpoint_path = '/job_templates'
 
     def create(self, values):
         """Create new job template"""

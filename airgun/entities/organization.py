@@ -13,6 +13,7 @@ from airgun.views.organization import (
 
 
 class OrganizationEntity(BaseEntity):
+    endpoint_path = '/organizations'
 
     def create(self, values):
         """Create new organization entity"""

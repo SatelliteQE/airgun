@@ -13,6 +13,7 @@ from airgun.views.report_template import (
 
 
 class ReportTemplateEntity(BaseEntity):
+    endpoint_path = '/templates/report_templates'
 
     def create(self, values):
         """Create new report template"""

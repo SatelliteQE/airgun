@@ -11,6 +11,7 @@ from airgun.views.product import ProductEditView
 
 
 class ContentCredentialEntity(BaseEntity):
+    endpoint_path = '/content_credentials'
 
     def create(self, values):
         """Create new content credentials entity"""
