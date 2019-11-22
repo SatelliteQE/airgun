@@ -2143,7 +2143,7 @@ class Link(Text):
 
 
 class PopOverWidget(Widget):
-    """Popover-content UI widget which contains header, drop_down or input_box and
+    """Popover-content UI widget which contains header, drop_down, input_box, or textarea and
     submit button. This is associated within a table.
 
     Example html representation::
@@ -2169,19 +2169,23 @@ class PopOverWidget(Widget):
     ROOT = '.'
     column_value = Text(".//span[contains(@class, 'editable-click')]")
     header = Text(".//h3[contains(@class, 'popover-title')]")
-    input_box = TextInput(locator=".//input[contains(@class, 'form-control input-sm') or "
-                                  "contains(@class, 'form-control input-large')]")
+    input_box = TextInput(locator=".//input[contains(@class, 'form-control input-sm')]")
+    textarea = TextInput(locator=".//textarea[contains(@class, 'form-control input-large')]")
     drop_down = Select(".//select[contains(@class,'form-control input-sm')]")
     submit = Text(".//button[@type='submit']")
 
     def fill(self, item):
-        """Selects value from drop_down if exist otherwise write into input_box"""
+        """Selects value from drop_down if exist otherwise write into input_box or textarea"""
         self.column_value.click()
+
         if self.header.is_displayed:
-            if self.drop_down.is_displayed:
-                self.drop_down.fill(item)
-            else:
-                self.input_box.fill(item)
+            for widget_name in ('input_box', 'textarea', 'drop_down'):
+                widget = getattr(self, widget_name)
+                if widget.is_displayed:
+                    widget.fill(item)
+                    break
+        else:
+            raise ReadOnlyWidgetError(f'This field setting is read-only')
         self.submit.click()
 
     def read(self):
