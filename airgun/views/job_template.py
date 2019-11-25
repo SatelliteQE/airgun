@@ -74,6 +74,7 @@ class JobTemplateCreateView(BaseLoggedInView):
         name = TextInput(id='job_template_name')
         default = Checkbox(id='job_template_default')
         template_editor = View.nested(TemplateEditor)
+        description = TextInput(id='job_template_description')
         audit = TextInput(id='job_template_audit_comment')
 
     @View.nested
