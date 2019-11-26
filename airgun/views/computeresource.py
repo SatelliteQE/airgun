@@ -56,13 +56,6 @@ class ResourceProviderCreateView(BaseLoggedInView):
     provider = FilteredDropdown(id='s2id_compute_resource_provider')
     provider_content = ConditionalSwitchableView(reference='provider')
 
-    @provider_content.register('Docker')
-    class DockerProviderForm(View):
-        url = TextInput(id='compute_resource_url')
-        user = TextInput(id='compute_resource_user')
-        password = TextInput(id='compute_resource_password')
-        email = TextInput(id='compute_resource_email')
-
     @provider_content.register('EC2')
     class EC2ProviderForm(View):
         http_proxy = TextInput(id='compute_resource_http_proxy_id')
@@ -234,16 +227,6 @@ class ResourceProviderDetailView(BaseLoggedInView):
             './/table',
             column_widgets={
                 'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
-            }
-        )
-
-    @View.nested
-    class containers(SatTab, SearchableViewMixin):
-        table = Table(
-            './/table',
-            column_widgets={
-                'Name': Text('./a'),
-                'Action': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
             }
         )
 

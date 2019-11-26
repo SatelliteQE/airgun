@@ -142,17 +142,6 @@ class ComputeResourceEntity(BaseEntity):
         view = self.navigate_to(self, 'Detail', entity_name=entity_name)
         return view.images.search(value)
 
-    def search_container(self, entity_name, value):
-        """Search for compute resource container.
-
-        :param str entity_name: The compute resource name.
-        :param str value: The value to put in containers tab search box.
-
-        :return: The Compute resource containers table rows values.
-        """
-        view = self.navigate_to(self, 'Detail', entity_name=entity_name)
-        return view.containers.search(value)
-
     def read_image(self, entity_name, image_name, widget_names=None):
         """Read from compute resource image edit view.
 
