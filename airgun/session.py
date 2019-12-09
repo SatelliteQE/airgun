@@ -31,6 +31,7 @@ from airgun.entities.hardware_model import HardwareModelEntity
 from airgun.entities.host import HostEntity
 from airgun.entities.hostcollection import HostCollectionEntity
 from airgun.entities.hostgroup import HostGroupEntity
+from airgun.entities.http_proxy import HTTPProxyEntity
 from airgun.entities.job_invocation import JobInvocationEntity
 from airgun.entities.job_template import JobTemplateEntity
 from airgun.entities.filter import FilterEntity
@@ -403,6 +404,11 @@ class Session(object):
     def hostgroup(self):
         """Instance of Host Group entity."""
         return self._open(HostGroupEntity)
+
+    @cached_property
+    def http_proxy(self):
+        """Instance of HTTP Proxy entity."""
+        return self._open(HTTPProxyEntity)
 
     @cached_property
     def insightsaction(self):
