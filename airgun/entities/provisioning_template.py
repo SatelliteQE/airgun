@@ -11,7 +11,7 @@ from airgun.views.provisioning_template import (
 
 
 class ProvisioningTemplateEntity(BaseEntity):
-    endpoint_path = '/provisioning_templates'
+    endpoint_path = '/templates/provisioning_templates'
 
     def create(self, values):
         """Create new provisioning template"""
