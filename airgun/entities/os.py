@@ -24,8 +24,7 @@ class OperatingSystemEntity(BaseEntity):
         """Remove existing operating system entity"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(
-            title=entity_name)['Actions'].widget.click(handle_alert=True)
+        view.table.row(title__endswith=entity_name)['Actions'].widget.click(handle_alert=True)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -83,4 +82,4 @@ class EditOperatingSystem(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
-        self.parent.table.row(title=entity_name)['Title'].widget.click()
+        self.parent.table.row(title__endswith=entity_name)['Title'].widget.click()
