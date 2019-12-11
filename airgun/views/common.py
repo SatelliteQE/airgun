@@ -16,6 +16,7 @@ from airgun.widgets import (
     ACEEditor,
     ContextSelector,
     GenericRemovableWidgetItem,
+    ItemsList,
     LCESelector,
     ProgressBar,
     ReadOnlyEntry,
@@ -25,8 +26,6 @@ from airgun.widgets import (
     SatTable,
     SatVerticalNavigation,
     Search,
-    Select,
-    ToggleRadioGroup,
     ValidationErrors,
 )
 
@@ -385,12 +384,10 @@ class TemplateEditor(View):
         editor = View.nested(TemplateEditor)
 
     """
-    ROOT = ".//div[@class='editor-container']"
-    rendering_options = ToggleRadioGroup(".//div[@class='btn-group']")
-    import_template = Text(".//a[normalize-space(.)='Import']")
-    fullscreen = Text(".//a[normalize-space(.)='Fullscreen']")
-    syntax_type = Select(id='mode')
-    key_binding = Select(id='keybinding')
+    ROOT = ".//div[@id='editor-container']"
+    rendering_options = ItemsList(".//div[contains(@class,'navbar-editor')]/ul")
+    import_template = Button(id='import-btn')
+    fullscreen = Button(id='fullscreen-btn')
     editor = ACEEditor()
 
 
