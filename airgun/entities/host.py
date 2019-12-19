@@ -160,6 +160,8 @@ class HostEntity(BaseEntity):
 
     def play_ansible_roles(self, entities_list, timeout=60, wait_for_results=True):
         """Play Ansible Roles on hosts names in entities_list
+           If keyword 'All' is supplied instead of list, all hosts are selected
+           using the checkbox from table header
 
         :param entities_list: The host names to play the ansible roles on.
         :param timeout: The time to wait for the job to finish.
@@ -173,7 +175,10 @@ class HostEntity(BaseEntity):
         return status_view.read()
 
     def delete_hosts(self, entities_list, timeout=60, wait_for_results=True):
-        """Delete all hosts from entities list"""
+        """Delete all hosts from entities list
+           If keyword 'All' is supplied instead of list, all hosts are selected
+           using the checkbox from table header
+        """
         view = self._select_action('Delete Hosts', entities_list)
         view.submit.click()
         view.flash.assert_no_error()
@@ -295,6 +300,9 @@ class HostsSelectAction(NavigateStep):
             raise ValueError('Please provide a valid action name.'
                              ' action_name: "{0}" not found.')
         entities_list = kwargs.get('entities_list')
-        for entity in entities_list:
-            self.parent.table.row(name=entity)[0].widget.fill(True)
+        if entities_list == "All":
+            self.parent.select_all.fill(True)
+        else:
+            for entity in entities_list:
+                self.parent.table.row(name=entity)[0].widget.fill(True)
         self.parent.actions.fill(action_name)
