@@ -206,6 +206,15 @@ class HostEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def open_webconsole(self, entity_name):
+        """Navigate to host's webconsole
+
+        :param str entity_name: The host name for which to set the parameter value.
+        """
+        view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        view.webconsole.click()
+        view.validations.assert_no_errors()
+
 
 @navigator.register(HostEntity, 'All')
 class ShowAllHosts(NavigateStep):

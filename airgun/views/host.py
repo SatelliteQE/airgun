@@ -475,6 +475,7 @@ class HostDetailsView(BaseLoggedInView):
         "[contains(., 'Schedule')][not(*[self::div])]"
     )
     back = Text("//a[text()='Back']")
+    webconsole = Text("//a[text()='Web Console']")
     edit = Text("//a[@id='edit-button']")
     clone = Text("//a[@id='clone-button']")
     build = Text("//a[@id='build-review']")
