@@ -1,7 +1,6 @@
 """Tools to help getting selenium and widgetastic browser instance to run UI
 tests.
 """
-import base64
 import logging
 import os
 import selenium
@@ -723,31 +722,8 @@ class AirgunBrowser(Browser):
         """
         if settings.selenium.webdriver != 'chrome':
             raise NotImplementedError('Currently only chrome is supported')
-        result = self.selenium.execute_async_script("""
-            function _arrayBufferToBase64(buffer) {
-                var binary = '';
-                var bytes = new Uint8Array(buffer);
-                var len = bytes.byteLength;
-                for (var i = 0; i < len; i++) {
-                    binary += String.fromCharCode(bytes[i]);
-                }
-                return window.btoa(binary);
-            }
-            var uri = arguments[0];
-            var callback = arguments[1];
-            var xhr = new XMLHttpRequest();
-            xhr.responseType = 'arraybuffer';
-            xhr.onload = function(){
-                callback(_arrayBufferToBase64(xhr.response))
-            };
-            xhr.onerror = function(){ callback(xhr.status) };
-            xhr.open('GET', uri);
-            xhr.send();
-        """, uri)
-        if isinstance(result, int):
-            raise Exception(
-                'Failed to get file content. Status code {}'.format(result))
-        return base64.b64decode(result)
+        self.url = uri
+        return bytes(self.selenium.find_elements_by_tag_name('pre')[0].text, "utf-8")
 
     def save_downloaded_file(self, file_uri=None, save_path=None):
         """Save local or remote browser's automatically downloaded file to
@@ -792,6 +768,7 @@ class AirgunBrowser(Browser):
             with open(os.path.join(save_path, filename), 'wb') as f:
                 f.write(content)
             file_path = os.path.join(save_path, filename)
+        self.selenium.back()
         self.selenium.back()
         self.plugin.ensure_page_safe()
         return file_path
