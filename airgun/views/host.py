@@ -199,6 +199,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixin):
     export = Text(
         ".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text("//a[contains(@href, '/hosts/new')]")
+    select_all = Checkbox(locator="//input[@id='check_all']")
     table = SatTable(
         './/table',
         column_widgets={
