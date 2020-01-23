@@ -211,6 +211,7 @@ class RedHatRepositoriesView(BaseLoggedInView):
     search_box = TextInput(id='downshift-0-input')
     search_button = Text(".//button[text() = 'Search']")
     search_types = RepositorySearchTypes(".//div[button[@data-id='formControlsSelectMultiple']]")
+    search_clear = Text(".//span[@class = 'fa fa-times']")
     recommended_repos = Text(".//div[contains(@class, 'bootstrap-switch wrapper')]")
 
     @View.nested
@@ -237,6 +238,8 @@ class RedHatRepositoriesView(BaseLoggedInView):
         if category not in supported_categories:
             raise ValueError('category "{0}" not supported, please choose from {1}'.format(
                 category, supported_categories))
+        if self.search_clear.is_displayed:
+            self.search_clear.click()
         self.search_category.fill(category)
         self.search_types.fill(types)
         self.search_box.fill(value)
