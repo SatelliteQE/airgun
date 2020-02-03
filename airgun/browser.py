@@ -721,33 +721,32 @@ class AirgunBrowser(Browser):
         :return: bytearray representing file content
         :raises Exception: when error code instead of file content received
         """
+        # See https://stackoverflow.com/a/47164044/3552063
         if settings.selenium.webdriver != 'chrome':
             raise NotImplementedError('Currently only chrome is supported')
-        result = self.selenium.execute_async_script("""
-            function _arrayBufferToBase64(buffer) {
-                var binary = '';
-                var bytes = new Uint8Array(buffer);
-                var len = bytes.byteLength;
-                for (var i = 0; i < len; i++) {
-                    binary += String.fromCharCode(bytes[i]);
-                }
-                return window.btoa(binary);
-            }
-            var uri = arguments[0];
-            var callback = arguments[1];
-            var xhr = new XMLHttpRequest();
-            xhr.responseType = 'arraybuffer';
-            xhr.onload = function(){
-                callback(_arrayBufferToBase64(xhr.response))
-            };
-            xhr.onerror = function(){ callback(xhr.status) };
-            xhr.open('GET', uri);
-            xhr.send();
-        """, uri)
-        if isinstance(result, int):
-            raise Exception(
-                'Failed to get file content. Status code {}'.format(result))
-        return base64.b64decode(result)
+        elem = self.selenium.execute_script(
+            "var input = window.document.createElement('INPUT'); "
+            "input.setAttribute('type', 'file'); "
+            "input.onchange = function (e) { e.stopPropagation() }; "
+            "return window.document.documentElement.appendChild(input); "
+        )
+
+        # it must be local absolute path, without protocol
+        elem.send_keys(uri[7:])
+
+        result = self.selenium.execute_async_script(
+            "var input = arguments[0], callback = arguments[1]; "
+            "var reader = new FileReader(); "
+            "reader.onload = function (ev) { callback(reader.result) }; "
+            "reader.onerror = function (ex) { callback(ex.message) }; "
+            "reader.readAsDataURL(input.files[0]); "
+            "input.remove(); ",
+            elem)
+
+        if not result.startswith('data:'):
+            raise Exception("Failed to get file content: %s" % result)
+
+        return base64.b64decode(result[result.find('base64,') + 7:])
 
     def save_downloaded_file(self, file_uri=None, save_path=None):
         """Save local or remote browser's automatically downloaded file to
@@ -772,6 +771,7 @@ class AirgunBrowser(Browser):
             used in case of remote session or just path to saved file in case
             local one.
         """
+        current_url = self.url
         files, _ = wait_for(
             self.browser.get_downloads_list,
             timeout=60,
@@ -792,6 +792,6 @@ class AirgunBrowser(Browser):
             with open(os.path.join(save_path, filename), 'wb') as f:
                 f.write(content)
             file_path = os.path.join(save_path, filename)
-        self.selenium.back()
+        self.url = current_url
         self.plugin.ensure_page_safe()
         return file_path
