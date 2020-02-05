@@ -14,17 +14,17 @@ from airgun.views.common import (
 from airgun.widgets import (
     ActionsDropdown,
     MultiSelect,
-    SatTable,
+    Table,
 )
 
 
 class SCAPTailoringFilesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Tailoring Files']")
     new = Text("//a[contains(@href, 'tailoring_files/new')]")
-    table = SatTable(
+    table = Table(
         './/table',
         column_widgets={
-            'Title': Text('./a'),
+            'Name': Text("./a[contains(@href, '/compliance/tailoring_files')]"),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         }
     )
