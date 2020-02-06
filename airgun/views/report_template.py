@@ -10,6 +10,7 @@ from airgun.views.common import (
 )
 from airgun.widgets import (
     ActionsDropdown,
+    FilteredDropdown,
     MultiSelect,
     RemovableWidgetsItemsListView,
     TextInputsGroup,
@@ -94,6 +95,7 @@ class ReportTemplateGenerateView(BaseLoggedInView):
     email = Checkbox(id='report_template_report_send_mail')
     email_to = TextInput(id='report_template_report_mail_to')
     inputs = TextInputsGroup(locator='.//form')
+    output_format = FilteredDropdown(id='s2id_report_template_report_format')
     submit = Text('//input[@name="commit"]')
     generating = Text('//div[@id="template_generator"]/div/span[2]')
 
