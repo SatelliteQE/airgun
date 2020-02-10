@@ -11,7 +11,6 @@ import urllib
 from datetime import datetime
 from fauxfactory import gen_string
 from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
 from urllib.parse import unquote
 from wait_for import wait_for
 from widgetastic.browser import Browser, DefaultPlugin
@@ -673,31 +672,6 @@ class AirgunBrowser(Browser):
         )
         client_datetime = self.execute_script(script)
         return datetime.strptime(client_datetime, '%Y-%m-%d : %H:%M')
-
-    def move_to_element(self, locator, *args, **kwargs):
-        """Overridden :meth:`widgetastic.browser.Browser.move_to_element` with
-        satellite-specific approach of scrolling to element.
-
-        Satellite's header menu is hovering from the top and it's not taken
-        into account when scrolling to element by either `scrollIntoView` JS or
-        ActionChains move, thus when scrolling bottom-up the element may appear
-        covered by top menu.
-        To prevent this, executing `scrollIntoView` script for element every
-        single time with `alignToTop` set to 'false' - this way the bottom of
-        the element will be aligned to the bottom of the visible area.
-        """
-        self.logger.debug('move_to_element: %r', locator)
-        el = self.element(locator, *args, **kwargs)
-        self.execute_script(
-            "arguments[0].scrollIntoView(false);", el, silent=True)
-        try:
-            ActionChains(self.selenium).move_to_element(el).perform()
-        except selenium.common.exceptions.JavascriptException as e:
-            if "javascript error: Cannot read property 'left' of undefined" in e.msg:
-                self.logger.debug("Ignoring 'Cannot read property left of undefined' exception")
-            else:
-                raise(e)
-        return el
 
     def get_downloads_list(self):
         """Open browser's downloads screen and return a list of downloaded

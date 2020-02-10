@@ -13,11 +13,11 @@ class NavigateStep(navmazing.NavigateStep):
 
     VIEW = None
 
-    def __init__(self, obj, navigate_obj):
+    def __init__(self, obj, navigate_obj, logger=None):
         """Adding shortcut for navigate object to make easier calls to its
         navigate method
         """
-        super(NavigateStep, self).__init__(obj, navigate_obj)
+        super(NavigateStep, self).__init__(obj, navigate_obj, logger=logger)
         self.navigate_to = self.navigate_obj.navigate
 
     @cached_property

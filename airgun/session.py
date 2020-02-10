@@ -1,5 +1,4 @@
 """Session controller which manages UI session"""
-import copy
 import logging
 import os
 import sys
@@ -74,7 +73,7 @@ from airgun.entities.sync_status import SyncStatusEntity
 from airgun.entities.user import UserEntity
 from airgun.entities.usergroup import UserGroupEntity
 from airgun.entities.virtwho_configure import VirtwhoConfigureEntity
-from airgun.navigation import navigator
+from airgun.navigation import navigator, Navigate
 
 LOGGER = logging.getLogger(__name__)
 
@@ -258,8 +257,8 @@ class Session(object):
             self._factory.post_init()
 
             # Navigator
-            self.navigator = copy.deepcopy(navigator)
-            self.navigator.browser = self.browser
+            self.navigator = Navigate(self.browser)
+            self.navigator.dest_dict = navigator.dest_dict.copy()
             if self._session_cookie is None:
                 self.login.login({
                     'username': self._user, 'password': self._password})
