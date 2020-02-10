@@ -11,6 +11,7 @@ import urllib
 from datetime import datetime
 from fauxfactory import gen_string
 from selenium import webdriver
+from urllib.parse import unquote
 from wait_for import wait_for
 from widgetastic.browser import Browser, DefaultPlugin
 
@@ -706,7 +707,7 @@ class AirgunBrowser(Browser):
         )
 
         # it must be local absolute path, without protocol
-        elem.send_keys(uri[7:])
+        elem.send_keys(unquote(uri[7:]))
 
         result = self.selenium.execute_async_script(
             "var input = arguments[0], callback = arguments[1]; "
