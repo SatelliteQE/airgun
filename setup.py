@@ -19,6 +19,7 @@ setup(
         'fauxfactory',
         'navmazing',
         'pytest',
+        'selenium',
         'wait_for',
         'widgetastic.core',
         'widgetastic.patternfly'

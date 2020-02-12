@@ -2,4 +2,4 @@
 =====================
 
 .. automodule:: airgun.browser
-   :members:
+    :members:

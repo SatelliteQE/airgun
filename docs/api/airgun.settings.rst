@@ -2,4 +2,4 @@
 ======================
 
 .. automodule:: airgun.settings
-   :members:
+    :members:

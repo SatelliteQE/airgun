@@ -2,4 +2,4 @@
 ========================
 
 .. automodule:: airgun.navigation
-   :members:
+    :members:

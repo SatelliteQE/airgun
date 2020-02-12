@@ -2,4 +2,4 @@
 ======================
 
 .. automodule:: airgun.fixtures
-   :members:
+    :members:
