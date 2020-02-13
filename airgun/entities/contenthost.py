@@ -110,7 +110,8 @@ class ContentHostEntity(BaseEntity):
         :param name: content host name to apply errata on
         :param errata_id: errata id or title, e.g. 'RHEA-2012:0055'
         :param str install_via: via which mean to install errata. Available
-        options: "katello", "rex", "rex_customize"
+            options: "katello", "rex", "rex_customize"
+
         :return: Returns a dict containing task status details
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)

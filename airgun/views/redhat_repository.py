@@ -227,7 +227,7 @@ class RedHatRepositoriesView(BaseLoggedInView):
 
         :param str value: The string to search by.
         :param str category: The repository category to search, options: Available, Enabled, Both
-        :param List[str] types: (optional) The repository content types to refine the search
+        :param list[str] types: (optional) The repository content types to refine the search
         :return:
         """
         if types is None:

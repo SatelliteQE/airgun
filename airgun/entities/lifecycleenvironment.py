@@ -25,9 +25,9 @@ class LCEEntity(BaseEntity):
     def create(self, values, prior_entity_name=None,):
         """Create new lifecycle environment
         :param values: Parameters to be assigned to lce, at least name should
-            be provided
+        be provided
         :param prior_entity_name: Specify entity name which should be a parent
-            to lifecycle environment that created in a chain
+        to lifecycle environment that created in a chain
         """
         if prior_entity_name is not None:
             self.create_environment(values, prior_entity_name)

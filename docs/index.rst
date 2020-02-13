@@ -18,7 +18,7 @@ More in-depth coverage is provided in other sections.
     :maxdepth: 1
 
     build-docs
-    api/index
+    autoapi/index
     examples
 
 
@@ -51,7 +51,7 @@ web UI) to these defined by Widgetastic (like generic `Text`). Widgets allows
 you to interact with various UI elements and are used in views.
 
 And finally tests. Tests are not part of AirGun repository. You can contribute
-tests to the Robottelo, ``tests/foreman/`` `ui_airgun`_ folder (see "Quick
+tests to the Robottelo, ``tests/foreman/`` `ui`_ folder (see "Quick
 start guide" below).
 
 
@@ -78,11 +78,11 @@ reuse already existing properties file since no changes were introduced there)
     cp robottelo.properties.sample robottelo.properties
     vim robottelo.properties
 
-4. Run airgun tests from Robottelo's ``tests/foreman/ui_airgun/`` folder
+4. Run airgun tests from Robottelo's ``tests/foreman/ui/`` folder
 
 .. code-block:: bash
 
-    pytest tests/foreman/ui_airgun/test_architecture.py
+    pytest tests/foreman/ui/test_architecture.py
 
 
 Contributing
@@ -123,7 +123,7 @@ As of now, `only chromedriver`_ is supported.
 
 .. _Widgetastic: https://github.com/RedHatQE/widgetastic.core
 .. _navmazing: https://github.com/RedhatQE/navmazing/
-.. _ui_airgun: https://github.com/SatelliteQE/robottelo/tree/master/tests/foreman/ui_airgun
+.. _ui: https://github.com/SatelliteQE/robottelo/tree/master/tests/foreman/ui
 .. _GitHub flow: https://help.github.com/articles/github-flow/
 .. _good first issue: https://github.com/SatelliteQE/airgun/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
 .. _chromedriver: https://sites.google.com/a/chromium.org/chromedriver/downloads

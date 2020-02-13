@@ -13,14 +13,14 @@ from airgun.widgets import Search
 class ItemValueList(Widget):
     """List of name-value pairs. Each name element from every pair is clickable
 
-     Example html representation::
+    Example html representation::
 
-    <ul>
-        <li>
-            <a class="dashboard-links"...>Hosts with no reports</a>
-            <h4>5</h4>
-        </li>
-     """
+        <ul>
+            <li>
+                <a class="dashboard-links"...>Hosts with no reports</a>
+                <h4>5</h4>
+            </li>
+    """
     LABELS = ".//li/a[@class='dashboard-links']"
     LABEL = ".//li/a[@class='dashboard-links'][normalize-space(.)='{}']"
     VALUE = ".//h4[preceding-sibling::a[contains(., '{}')]]"

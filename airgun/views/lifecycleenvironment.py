@@ -67,7 +67,7 @@ class LCEView(BaseLoggedInView, ParametrizedView):
         def read(self):
             """Returns content views and count hosts count per each available
             lifecycle environment
-            We get dictionary in next format:
+            We get dictionary in next format::
 
                 {
                     'LCE_1': {'Content Views': 0, 'Content Hosts': 1},

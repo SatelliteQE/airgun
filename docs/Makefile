@@ -48,10 +48,7 @@ help:
 clean:
 	rm -rf $(BUILDDIR)/*
 
-gen-api-docs:
-	cd ..; ./scripts/gen_api_docs.sh
-
-html: gen-api-docs
+html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."

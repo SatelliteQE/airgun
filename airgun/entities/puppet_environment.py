@@ -3,8 +3,8 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
-from airgun.views.puppet_environment import ImportPuppetEnvironmentView
 from airgun.views.puppet_environment import PuppetEnvironmentCreateView
+from airgun.views.puppet_environment import PuppetEnvironmentImportView
 from airgun.views.puppet_environment import PuppetEnvironmentTableView
 
 
@@ -94,7 +94,7 @@ class EditPuppetEnvironmentView(NavigateStep):
 @navigator.register(PuppetEnvironmentEntity, 'Import')
 class ImportPuppetEnvironmentView(NavigateStep):
     """Navigate to Import Puppet Environment screen."""
-    VIEW = ImportPuppetEnvironmentView
+    VIEW = PuppetEnvironmentImportView
 
     prerequisite = NavigateToSibling('All')
 
