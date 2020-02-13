@@ -18,7 +18,7 @@ class ContentHostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)[0].widget.fill(True)
-        view.actions.fill('Remove Hosts')
+        view.actions.fill('Delete Hosts')
         view.dialog.confirm()
         view.flash.assert_no_error()
         view.flash.dismiss()
