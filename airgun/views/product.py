@@ -242,7 +242,7 @@ class ProductSyncPlanView(SyncPlanCreateView):
 
 class ProductManageHttpProxy(BaseLoggedInView):
     """Represents Http Proxy Management page for Products."""
-    title = Text("//h4[text()='Assign Compliance Policy]")
+    title = Text("//h4[text()='Http Proxy Management']")
     http_proxy_policy = Select(id="http_proxy_policy")
     proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
     update = Text('//button[@ng-click="update()"]')
@@ -251,6 +251,7 @@ class ProductManageHttpProxy(BaseLoggedInView):
     class ExistingProductForm(View):
         http_proxy = Select(id="http_proxy")
 
-
-class ProductSyncSelected(BaseLoggedInView):
-    """Sync selected products."""
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None

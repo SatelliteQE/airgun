@@ -10,7 +10,6 @@ from airgun.views.product import (
     ProductsTableView,
     ProductSyncPlanView,
     ProductManageHttpProxy,
-    ProductSyncSelected
 )
 
 
@@ -77,28 +76,6 @@ class ProductEntity(BaseEntity):
         view.progressbar.wait_for_result()
         return view.read()
 
-    def _select_action(self, action_name, entities_list, values=None):
-        """Navigate to all entities, select the entities, and returns the view
-        of the selected action name from main entity select action dropdown.
-        """
-        return self.navigate_to(
-            self,
-            'Select Action',
-            action_name=action_name,
-            entities_list=entities_list,
-            values=values
-        )
-
-    def apply_action(self, action_name, entities_list, values=None):
-        """Apply action name for product/products"""
-        view = self._select_action(action_name, entities_list, values=None)
-        if values['http_proxy_policy'] == "Global Default":
-            values['http_proxy_policy'] = view.http_proxy_policy.all_options[0][0]
-        view.fill(values)
-        view.update.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
-
     def manage_http_proxy(self, entities_list, values):
         """Manage HTTP Proxy for product/products
 
@@ -107,20 +84,16 @@ class ProductEntity(BaseEntity):
             eg: {'http_proxy_policy': 'No HTTP Proxy'}, {'http_proxy_policy': 'Global Default'},
             {'http_proxy_policy': 'Use specific HTTP Proxy', 'http_proxy': 'proxy_name'}
         """
-        view = self._select_action('Manage HTTP Proxy', entities_list, values=None)
+        view = self.navigate_to(
+            self,
+            'Select Action',
+            action_name='Manage HTTP Proxy',
+            entities_list=entities_list,
+        )
         if values['http_proxy_policy'] == "Global Default":
             values['http_proxy_policy'] = view.http_proxy_policy.all_options[0][0]
         view.fill(values)
         view.update.click()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
-
-    def sync_selected(self, entities_list):
-        """Apply Sync Selected action on products listed in entities_list
-
-        :param entities_list: The product names to perform sync operation.
-        """
-        view = self._select_action('Sync Selected', entities_list)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -186,7 +159,6 @@ class ProductsSelectAction(NavigateStep):
     """
     ACTIONS_VIEWS = {
         'Manage HTTP Proxy': ProductManageHttpProxy,
-        'Sync Selected': ProductSyncSelected,
     }
 
     def prerequisite(self, *args, **kwargs):
@@ -199,9 +171,6 @@ class ProductsSelectAction(NavigateStep):
             raise ValueError('Please provide a valid action name.'
                              ' action_name: "{0}" not found.')
         entities_list = kwargs.get('entities_list')
-        if entities_list == "All":
-            self.parent.select_all.click()
-        else:
-            for entity in entities_list:
-                self.parent.table.row(name=entity)[0].click()
+        for entity in entities_list:
+            self.parent.table.row(name=entity)[0].click()
         self.parent.actions.fill(action_name)
