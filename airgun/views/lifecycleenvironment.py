@@ -1,21 +1,20 @@
-from widgetastic.widget import (
-    ParametrizedView,
-    ParametrizedLocator,
-    Table,
-    Text,
-    TextInput,
-    View,
-)
-from widgetastic_patternfly import BreadCrumb, Button
+from widgetastic.widget import ParametrizedLocator
+from widgetastic.widget import ParametrizedView
+from widgetastic.widget import Table
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
+from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import Button
 
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
-from airgun.widgets import (
-    EditableEntry,
-    EditableEntryCheckbox,
-    ReadOnlyEntry,
-    SatSelect,
-    Search,
-)
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
+from airgun.widgets import EditableEntry
+from airgun.widgets import EditableEntryCheckbox
+from airgun.widgets import ReadOnlyEntry
+from airgun.widgets import SatSelect
+from airgun.widgets import Search
 
 
 class LCEView(BaseLoggedInView, ParametrizedView):

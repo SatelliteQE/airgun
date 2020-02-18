@@ -1,12 +1,10 @@
 from cached_property import cached_property
-from widgetastic.widget import Checkbox
 from widgetastic.exceptions import NoSuchElementException
+from widgetastic.widget import Checkbox
 
-from airgun.views.common import (
-    BaseLoggedInView,
-    SatTable,
-    Text,
-)
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTable
+from airgun.views.common import Text
 
 
 class ParentNodeNotFoundError(Exception):

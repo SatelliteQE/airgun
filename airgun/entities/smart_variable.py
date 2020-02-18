@@ -1,12 +1,11 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.smart_variable import (
-    SmartVariableCreateView,
-    SmartVariableEditView,
-    SmartVariablesTableView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.smart_variable import SmartVariableCreateView
+from airgun.views.smart_variable import SmartVariableEditView
+from airgun.views.smart_variable import SmartVariablesTableView
 
 
 class SmartVariableEntity(BaseEntity):

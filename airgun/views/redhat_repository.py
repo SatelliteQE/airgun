@@ -1,10 +1,8 @@
 from wait_for import wait_for
-from widgetastic.widget import (
-    GenericLocatorWidget,
-    Text,
-    TextInput,
-    View,
-)
+from widgetastic.widget import GenericLocatorWidget
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import (

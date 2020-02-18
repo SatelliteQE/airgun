@@ -1,15 +1,15 @@
 from navmazing import NavigateToSibling
-from wait_for import TimedOutError, wait_for
+from wait_for import TimedOutError
+from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.subscription import (
-    AddSubscriptionView,
-    DeleteManifestConfirmationView,
-    ManageManifestView,
-    SubscriptionDetailsView,
-    SubscriptionListView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.subscription import AddSubscriptionView
+from airgun.views.subscription import DeleteManifestConfirmationView
+from airgun.views.subscription import ManageManifestView
+from airgun.views.subscription import SubscriptionDetailsView
+from airgun.views.subscription import SubscriptionListView
 
 
 class SubscriptionEntity(BaseEntity):

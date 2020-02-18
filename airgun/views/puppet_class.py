@@ -1,10 +1,17 @@
-from widgetastic.widget import Text, TextInput, View
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
 
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
 from airgun.views.smart_class_parameter import SmartClassParameterContent
 from airgun.views.smart_variable import SmartVariableContent
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
-from airgun.widgets import FilteredDropdown, ItemsList, MultiSelect, SatTable
+from airgun.widgets import FilteredDropdown
+from airgun.widgets import ItemsList
+from airgun.widgets import MultiSelect
+from airgun.widgets import SatTable
 
 
 class PuppetClassesView(BaseLoggedInView, SearchableViewMixin):

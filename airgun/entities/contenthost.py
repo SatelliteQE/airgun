@@ -1,15 +1,12 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.contenthost import (
-    ContentHostDetailsView,
-    ContentHostsView,
-    ContentHostTaskDetailsView,
-    ErrataDetailsView,
-)
-from airgun.views.job_invocation import (
-    JobInvocationCreateView,
-    JobInvocationStatusView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.contenthost import ContentHostDetailsView
+from airgun.views.contenthost import ContentHostsView
+from airgun.views.contenthost import ContentHostTaskDetailsView
+from airgun.views.contenthost import ErrataDetailsView
+from airgun.views.job_invocation import JobInvocationCreateView
+from airgun.views.job_invocation import JobInvocationStatusView
 
 
 class ContentHostEntity(BaseEntity):

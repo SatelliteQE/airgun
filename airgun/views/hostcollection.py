@@ -1,32 +1,26 @@
-from widgetastic.widget import (
-    Checkbox,
-    Text,
-    TextInput,
-    ParametrizedView,
-    Select,
-    View,
-)
+from widgetastic.widget import Checkbox
+from widgetastic.widget import ParametrizedView
+from widgetastic.widget import Select
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import (
-    AddRemoveResourcesView,
-    BaseLoggedInView,
-    LCESelectorGroup,
-    SatTab,
-    SearchableViewMixin,
-    TaskDetailsView,
-)
+from airgun.views.common import AddRemoveResourcesView
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import LCESelectorGroup
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
+from airgun.views.common import TaskDetailsView
 from airgun.views.job_invocation import JobInvocationCreateView
-from airgun.widgets import (
-    ActionsDropdown,
-    ActionDropdownWithCheckbox,
-    ConfirmationDialog,
-    EditableEntry,
-    EditableLimitEntry,
-    RadioGroup,
-    ReadOnlyEntry,
-    SatTable,
-)
+from airgun.widgets import ActionDropdownWithCheckbox
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import ConfirmationDialog
+from airgun.widgets import EditableEntry
+from airgun.widgets import EditableLimitEntry
+from airgun.widgets import RadioGroup
+from airgun.widgets import ReadOnlyEntry
+from airgun.widgets import SatTable
 
 
 class HostCollectionsView(BaseLoggedInView, SearchableViewMixin):

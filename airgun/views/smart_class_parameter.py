@@ -1,15 +1,15 @@
-from widgetastic.widget import (
-    Checkbox,
-    ParametrizedLocator,
-    Select,
-    Text,
-    TextInput,
-    View,
-)
+from widgetastic.widget import Checkbox
+from widgetastic.widget import ParametrizedLocator
+from widgetastic.widget import Select
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import SatTable, TextInputHidden
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SearchableViewMixin
+from airgun.widgets import SatTable
+from airgun.widgets import TextInputHidden
 
 
 class MatcherAttribute(View):

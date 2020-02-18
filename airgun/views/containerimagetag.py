@@ -1,13 +1,12 @@
-from widgetastic.widget import Text, View
+from widgetastic.widget import Text
+from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import (
-    BaseLoggedInView,
-    ReadOnlyEntry,
-    SatTab,
-    SearchableViewMixin,
-    TaskDetailsView,
-)
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import ReadOnlyEntry
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
+from airgun.views.common import TaskDetailsView
 from airgun.widgets import SatTable
 
 

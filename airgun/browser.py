@@ -4,16 +4,17 @@ tests.
 import base64
 import logging
 import os
-import selenium
 import time
 import urllib
-
 from datetime import datetime
+from urllib.parse import unquote
+
+import selenium
 from fauxfactory import gen_string
 from selenium import webdriver
-from urllib.parse import unquote
 from wait_for import wait_for
-from widgetastic.browser import Browser, DefaultPlugin
+from widgetastic.browser import Browser
+from widgetastic.browser import DefaultPlugin
 
 from airgun import settings
 

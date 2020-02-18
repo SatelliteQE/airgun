@@ -1,19 +1,13 @@
-from widgetastic.widget import (
-    Text,
-    TextInput,
-    View,
-)
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import (
-    BaseLoggedInView,
-    SatTab,
-    SearchableViewMixin,
-)
-from airgun.widgets import (
-    MultiSelect,
-    Table,
-)
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
+from airgun.widgets import MultiSelect
+from airgun.widgets import Table
 
 
 class HTTPProxyView(BaseLoggedInView, SearchableViewMixin):

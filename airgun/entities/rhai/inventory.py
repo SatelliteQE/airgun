@@ -2,8 +2,10 @@ from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.entities.rhai.base import InsightsNavigateStep
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.rhai import InventoryAllHosts, InventoryHostDetails
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.rhai import InventoryAllHosts
+from airgun.views.rhai import InventoryHostDetails
 
 
 class InventoryHostEntity(BaseEntity):

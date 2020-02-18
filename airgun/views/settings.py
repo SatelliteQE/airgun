@@ -1,8 +1,10 @@
 from wait_for import wait_for
 from widgetastic.widget import Text
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import PopOverWidget, Table
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SearchableViewMixin
+from airgun.widgets import PopOverWidget
+from airgun.widgets import Table
 
 
 class SettingsView(BaseLoggedInView, SearchableViewMixin):

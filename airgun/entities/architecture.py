@@ -1,12 +1,11 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.architecture import (
-    ArchitectureCreateView,
-    ArchitectureDetailsView,
-    ArchitecturesView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.architecture import ArchitectureCreateView
+from airgun.views.architecture import ArchitectureDetailsView
+from airgun.views.architecture import ArchitecturesView
 
 
 class ArchitectureEntity(BaseEntity):

@@ -1,9 +1,8 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.containerimagetag import (
-    ContainerImageTagDetailsView,
-    ContainerImageTagsView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.containerimagetag import ContainerImageTagDetailsView
+from airgun.views.containerimagetag import ContainerImageTagsView
 
 
 class ContainerImageTagEntity(BaseEntity):

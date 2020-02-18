@@ -1,33 +1,33 @@
-from widgetastic.widget import (
-    Checkbox,
-    ConditionalSwitchableView,
-    do_not_read_this_widget,
-    ParametrizedLocator,
-    ParametrizedView,
-    Text,
-    TextInput,
-    View,
-    WTMixin,
-)
-from widgetastic_patternfly import BreadCrumb, Button, Tab, TabWithDropdown
+from widgetastic.widget import Checkbox
+from widgetastic.widget import ConditionalSwitchableView
+from widgetastic.widget import do_not_read_this_widget
+from widgetastic.widget import ParametrizedLocator
+from widgetastic.widget import ParametrizedView
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
+from widgetastic.widget import WTMixin
+from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import Button
+from widgetastic_patternfly import Tab
+from widgetastic_patternfly import TabWithDropdown
 
-from airgun.utils import get_widget_by_name, normalize_dict_values
-from airgun.widgets import (
-    ACEEditor,
-    ContextSelector,
-    GenericRemovableWidgetItem,
-    ItemsList,
-    LCESelector,
-    ProgressBar,
-    ReadOnlyEntry,
-    SatFlashMessages,
-    SatSelect,
-    SatSubscriptionsTable,
-    SatTable,
-    SatVerticalNavigation,
-    Search,
-    ValidationErrors,
-)
+from airgun.utils import get_widget_by_name
+from airgun.utils import normalize_dict_values
+from airgun.widgets import ACEEditor
+from airgun.widgets import ContextSelector
+from airgun.widgets import GenericRemovableWidgetItem
+from airgun.widgets import ItemsList
+from airgun.widgets import LCESelector
+from airgun.widgets import ProgressBar
+from airgun.widgets import ReadOnlyEntry
+from airgun.widgets import SatFlashMessages
+from airgun.widgets import SatSelect
+from airgun.widgets import SatSubscriptionsTable
+from airgun.widgets import SatTable
+from airgun.widgets import SatVerticalNavigation
+from airgun.widgets import Search
+from airgun.widgets import ValidationErrors
 
 
 class BaseLoggedInView(View):

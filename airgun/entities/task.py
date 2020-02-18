@@ -1,6 +1,8 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.task import TaskDetailsView, TasksView
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.task import TaskDetailsView
+from airgun.views.task import TasksView
 
 
 class TaskEntity(BaseEntity):

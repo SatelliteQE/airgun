@@ -1,32 +1,27 @@
-from widgetastic.widget import (
-    Checkbox,
-    ParametrizedView,
-    Table,
-    Text,
-    TextInput,
-    View,
-)
-from widgetastic_patternfly import BreadCrumb, Button
+from widgetastic.widget import Checkbox
+from widgetastic.widget import ParametrizedView
+from widgetastic.widget import Table
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
+from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import Button
 
-from airgun.views.common import (
-    AddRemoveResourcesView,
-    BaseLoggedInView,
-    LCESelectorGroup,
-    SatSecondaryTab,
-    SatTab,
-    SatTabWithDropdown,
-    SearchableViewMixin,
-)
-from airgun.widgets import (
-    ActionsDropdown,
-    ConfirmationDialog,
-    EditableEntry,
-    EditableEntryCheckbox,
-    PublishPromoteProgressBar,
-    ReadOnlyEntry,
-    SatSelect,
-    Search,
-)
+from airgun.views.common import AddRemoveResourcesView
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import LCESelectorGroup
+from airgun.views.common import SatSecondaryTab
+from airgun.views.common import SatTab
+from airgun.views.common import SatTabWithDropdown
+from airgun.views.common import SearchableViewMixin
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import ConfirmationDialog
+from airgun.widgets import EditableEntry
+from airgun.widgets import EditableEntryCheckbox
+from airgun.widgets import PublishPromoteProgressBar
+from airgun.widgets import ReadOnlyEntry
+from airgun.widgets import SatSelect
+from airgun.widgets import Search
 
 
 class ContentViewTableView(BaseLoggedInView, SearchableViewMixin):

@@ -1,39 +1,34 @@
 import re
 
-from widgetastic.widget import (
-    Checkbox,
-    GenericLocatorWidget,
-    ParametrizedView,
-    Select,
-    Text,
-    TextInput,
-    View,
-    Widget,
-)
-from widgetastic_patternfly import BreadCrumb, Button
+from widgetastic.widget import Checkbox
+from widgetastic.widget import GenericLocatorWidget
+from widgetastic.widget import ParametrizedView
+from widgetastic.widget import Select
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
+from widgetastic.widget import Widget
+from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import Button
 
-from airgun.views.common import (
-    AddRemoveResourcesView,
-    AddRemoveSubscriptionsView,
-    BaseLoggedInView,
-    LCESelectorGroup,
-    SatTab,
-    SatTabWithDropdown,
-    SatTable,
-    SearchableViewMixin,
-    TaskDetailsView,
-)
-from airgun.widgets import (
-    ActionsDropdown,
-    ActionDropdownWithCheckbox,
-    ConfirmationDialog,
-    EditableEntry,
-    EditableEntryCheckbox,
-    EditableEntryMultiCheckbox,
-    EditableEntrySelect,
-    ReadOnlyEntry,
-    Search,
-)
+from airgun.views.common import AddRemoveResourcesView
+from airgun.views.common import AddRemoveSubscriptionsView
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import LCESelectorGroup
+from airgun.views.common import SatTab
+from airgun.views.common import SatTable
+from airgun.views.common import SatTabWithDropdown
+from airgun.views.common import SearchableViewMixin
+from airgun.views.common import TaskDetailsView
+from airgun.widgets import ActionDropdownWithCheckbox
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import ConfirmationDialog
+from airgun.widgets import EditableEntry
+from airgun.widgets import EditableEntryCheckbox
+from airgun.widgets import EditableEntryMultiCheckbox
+from airgun.widgets import EditableEntrySelect
+from airgun.widgets import ReadOnlyEntry
+from airgun.widgets import Search
 
 
 class StatusIcon(GenericLocatorWidget):

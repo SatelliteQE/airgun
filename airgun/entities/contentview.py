@@ -1,21 +1,20 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.contentview import (
-    AddNewPuppetModuleView,
-    ContentViewCopyView,
-    ContentViewCreateView,
-    ContentViewEditView,
-    ContentViewRemoveView,
-    ContentViewTableView,
-    ContentViewVersionDetailsView,
-    ContentViewVersionPromoteView,
-    ContentViewVersionPublishView,
-    ContentViewVersionRemoveConfirmationView,
-    ContentViewVersionRemoveView,
-    SelectPuppetModuleVersionView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.contentview import AddNewPuppetModuleView
+from airgun.views.contentview import ContentViewCopyView
+from airgun.views.contentview import ContentViewCreateView
+from airgun.views.contentview import ContentViewEditView
+from airgun.views.contentview import ContentViewRemoveView
+from airgun.views.contentview import ContentViewTableView
+from airgun.views.contentview import ContentViewVersionDetailsView
+from airgun.views.contentview import ContentViewVersionPromoteView
+from airgun.views.contentview import ContentViewVersionPublishView
+from airgun.views.contentview import ContentViewVersionRemoveConfirmationView
+from airgun.views.contentview import ContentViewVersionRemoveView
+from airgun.views.contentview import SelectPuppetModuleVersionView
 
 
 class ContentViewEntity(BaseEntity):

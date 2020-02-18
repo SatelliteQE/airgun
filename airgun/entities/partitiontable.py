@@ -1,12 +1,11 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.partitiontable import (
-    PartitionTableCreateView,
-    PartitionTableEditView,
-    PartitionTablesView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.partitiontable import PartitionTableCreateView
+from airgun.views.partitiontable import PartitionTableEditView
+from airgun.views.partitiontable import PartitionTablesView
 
 
 class PartitionTableEntity(BaseEntity):

@@ -1,12 +1,11 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.puppet_environment import (
-    ImportPuppetEnvironmentView,
-    PuppetEnvironmentCreateView,
-    PuppetEnvironmentTableView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.puppet_environment import ImportPuppetEnvironmentView
+from airgun.views.puppet_environment import PuppetEnvironmentCreateView
+from airgun.views.puppet_environment import PuppetEnvironmentTableView
 
 
 class PuppetEnvironmentEntity(BaseEntity):

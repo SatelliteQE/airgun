@@ -1,31 +1,25 @@
 import re
 
-from widgetastic.widget import (
-    Checkbox,
-    ConditionalSwitchableView,
-    Select,
-    Text,
-    TextInput,
-    View,
-    Table,
-)
+from widgetastic.widget import Checkbox
+from widgetastic.widget import ConditionalSwitchableView
+from widgetastic.widget import Select
+from widgetastic.widget import Table
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import (
-    BaseLoggedInView,
-    SearchableViewMixin,
-    SatTab,
-)
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
 from airgun.views.host import HostCreateView
-from airgun.widgets import (
-    ActionsDropdown,
-    FilteredDropdown,
-    GenericRemovableWidgetItem,
-    MultiSelect,
-    RadioGroup,
-    RemovableWidgetsItemsListView,
-    SatTable,
-)
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import FilteredDropdown
+from airgun.widgets import GenericRemovableWidgetItem
+from airgun.widgets import MultiSelect
+from airgun.widgets import RadioGroup
+from airgun.widgets import RemovableWidgetsItemsListView
+from airgun.widgets import SatTable
 
 
 class ComputeResourcesView(BaseLoggedInView, SearchableViewMixin):
