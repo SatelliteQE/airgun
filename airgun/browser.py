@@ -440,7 +440,7 @@ class DockerBrowser(object):
                         self.container['HostPort']),
                     desired_capabilities=self._capabilities
                 )
-            except Exception as err:  # pylint: disable=broad-except
+            except Exception as err:
                 # Capture the raised exception for later usage and wait
                 # a few for the next attempt.
                 exception = err
