@@ -1,33 +1,26 @@
 from wait_for import wait_for
-
-from widgetastic.widget import (
-    Checkbox,
-    ConditionalSwitchableView,
-    Select,
-    Table,
-    Text,
-    TextInput,
-    View,
-)
+from widgetastic.widget import Checkbox
+from widgetastic.widget import ConditionalSwitchableView
+from widgetastic.widget import Select
+from widgetastic.widget import Table
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import (
-    BaseLoggedInView,
-    SatTab,
-    SearchableViewMixin,
-    TaskDetailsView,
-)
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
+from airgun.views.common import TaskDetailsView
 from airgun.views.syncplan import SyncPlanCreateView
-from airgun.widgets import (
-    ActionsDropdown,
-    ConfirmationDialog,
-    EditableEntry,
-    EditableEntrySelect,
-    ReadOnlyEntry,
-    SatSelect,
-    SatTable,
-    Search,
-)
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import ConfirmationDialog
+from airgun.widgets import EditableEntry
+from airgun.widgets import EditableEntrySelect
+from airgun.widgets import ReadOnlyEntry
+from airgun.widgets import SatSelect
+from airgun.widgets import SatTable
+from airgun.widgets import Search
 
 
 class CreateDiscoveredReposView(View):

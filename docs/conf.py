@@ -4,8 +4,8 @@ The full set of configuration options is listed on the Sphinx website:
 http://sphinx-doc.org/config.html
 
 """
-import sys
 import os
+import sys
 
 
 # Add the AirGun root directory to the system path. This allows references

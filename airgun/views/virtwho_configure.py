@@ -1,26 +1,20 @@
-from widgetastic_patternfly import BreadCrumb
 from widgetastic.exceptions import NoSuchElementException
+from widgetastic.widget import Checkbox
+from widgetastic.widget import ConditionalSwitchableView
+from widgetastic.widget import GenericLocatorWidget
+from widgetastic.widget import Table
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
+from widgetastic.widget import Widget
+from widgetastic_patternfly import BreadCrumb
 
-from widgetastic.widget import (
-    Checkbox,
-    GenericLocatorWidget,
-    ConditionalSwitchableView,
-    Table,
-    Text,
-    TextInput,
-    View,
-    Widget,
-)
-from airgun.views.common import (
-    BaseLoggedInView,
-    SearchableViewMixin,
-    SatTab,
-)
-from airgun.widgets import (
-    ActionsDropdown,
-    FilteredDropdown,
-)
 from airgun.exceptions import ReadOnlyWidgetError
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import FilteredDropdown
 
 
 class VirtwhoConfigureStatus(GenericLocatorWidget):

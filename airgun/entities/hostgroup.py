@@ -1,12 +1,11 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.hostgroup import (
-    HostGroupCreateView,
-    HostGroupEditView,
-    HostGroupsView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.hostgroup import HostGroupCreateView
+from airgun.views.hostgroup import HostGroupEditView
+from airgun.views.hostgroup import HostGroupsView
 
 
 class HostGroupEntity(BaseEntity):

@@ -8,7 +8,8 @@ from cached_property import cached_property
 from fauxfactory import gen_string
 
 from airgun import settings
-from airgun.browser import AirgunBrowser, SeleniumBrowserFactory
+from airgun.browser import AirgunBrowser
+from airgun.browser import SeleniumBrowserFactory
 from airgun.entities.activationkey import ActivationKeyEntity
 from airgun.entities.architecture import ArchitectureEntity
 from airgun.entities.audit import AuditEntity
@@ -26,6 +27,7 @@ from airgun.entities.discoveredhosts import DiscoveredHostsEntity
 from airgun.entities.discoveryrule import DiscoveryRuleEntity
 from airgun.entities.domain import DomainEntity
 from airgun.entities.errata import ErrataEntity
+from airgun.entities.filter import FilterEntity
 from airgun.entities.hardware_model import HardwareModelEntity
 from airgun.entities.host import HostEntity
 from airgun.entities.hostcollection import HostCollectionEntity
@@ -33,7 +35,6 @@ from airgun.entities.hostgroup import HostGroupEntity
 from airgun.entities.http_proxy import HTTPProxyEntity
 from airgun.entities.job_invocation import JobInvocationEntity
 from airgun.entities.job_template import JobTemplateEntity
-from airgun.entities.filter import FilterEntity
 from airgun.entities.ldap_authentication import LDAPAuthenticationEntity
 from airgun.entities.lifecycleenvironment import LCEEntity
 from airgun.entities.location import LocationEntity
@@ -47,10 +48,12 @@ from airgun.entities.oscappolicy import OSCAPPolicyEntity
 from airgun.entities.oscaptailoringfile import OSCAPTailoringFileEntity
 from airgun.entities.package import PackageEntity
 from airgun.entities.partitiontable import PartitionTableEntity
+from airgun.entities.product import ProductEntity
+from airgun.entities.provisioning_template import ProvisioningTemplateEntity
 from airgun.entities.puppet_class import PuppetClassEntity
 from airgun.entities.puppet_environment import PuppetEnvironmentEntity
-from airgun.entities.product import ProductEntity
 from airgun.entities.redhat_repository import RedHatRepositoryEntity
+from airgun.entities.report_template import ReportTemplateEntity
 from airgun.entities.repository import RepositoryEntity
 from airgun.entities.rhai.action import ActionEntity
 from airgun.entities.rhai.inventory import InventoryHostEntity
@@ -59,21 +62,20 @@ from airgun.entities.rhai.overview import OverviewEntity
 from airgun.entities.rhai.plan import PlanEntity
 from airgun.entities.rhai.rule import RuleEntity
 from airgun.entities.role import RoleEntity
-from airgun.entities.task import TaskEntity
-from airgun.entities.trend import TrendEntity
-from airgun.entities.provisioning_template import ProvisioningTemplateEntity
-from airgun.entities.report_template import ReportTemplateEntity
 from airgun.entities.settings import SettingsEntity
 from airgun.entities.smart_class_parameter import SmartClassParameterEntity
 from airgun.entities.smart_variable import SmartVariableEntity
 from airgun.entities.subnet import SubnetEntity
 from airgun.entities.subscription import SubscriptionEntity
-from airgun.entities.syncplan import SyncPlanEntity
 from airgun.entities.sync_status import SyncStatusEntity
+from airgun.entities.syncplan import SyncPlanEntity
+from airgun.entities.task import TaskEntity
+from airgun.entities.trend import TrendEntity
 from airgun.entities.user import UserEntity
 from airgun.entities.usergroup import UserGroupEntity
 from airgun.entities.virtwho_configure import VirtwhoConfigureEntity
-from airgun.navigation import navigator, Navigate
+from airgun.navigation import Navigate
+from airgun.navigation import navigator
 
 LOGGER = logging.getLogger(__name__)
 

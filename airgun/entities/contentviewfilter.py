@@ -1,12 +1,11 @@
 from airgun.entities.base import BaseEntity
 from airgun.entities.contentview import ContentViewEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.contentviewfilter import (
-    ACTIONS_COLUMN,
-    ContentViewFiltersView,
-    CreateYumFilterView,
-    EditYumFilterView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.contentviewfilter import ACTIONS_COLUMN
+from airgun.views.contentviewfilter import ContentViewFiltersView
+from airgun.views.contentviewfilter import CreateYumFilterView
+from airgun.views.contentviewfilter import EditYumFilterView
 
 
 class ContentViewFilterEntity(BaseEntity):

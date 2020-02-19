@@ -1,24 +1,18 @@
 from wait_for import wait_for
-from widgetastic.widget import (
-    Checkbox,
-    Select,
-    TableColumn,
-    TableRow,
-    Text,
-)
+from widgetastic.widget import Checkbox
+from widgetastic.widget import Select
+from widgetastic.widget import TableColumn
+from widgetastic.widget import TableRow
+from widgetastic.widget import Text
 
-from airgun.views.common import (
-    BaseLoggedInView,
-    BreadCrumb,
-    SearchableViewMixin,
-    SatTable,
-)
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import BreadCrumb
+from airgun.views.common import SatTable
+from airgun.views.common import SearchableViewMixin
 from airgun.views.host import HostCreateView
-from airgun.widgets import (
-    ActionsDropdown,
-    FilteredDropdown,
-    SatTableWithoutHeaders,
-)
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import FilteredDropdown
+from airgun.widgets import SatTableWithoutHeaders
 
 
 class DiscoveredHostsViewTable(SatTable):

@@ -2,12 +2,11 @@ from navmazing import NavigateToSibling
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.job_invocation import (
-    JobInvocationCreateView,
-    JobInvocationStatusView,
-    JobInvocationsView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.job_invocation import JobInvocationCreateView
+from airgun.views.job_invocation import JobInvocationStatusView
+from airgun.views.job_invocation import JobInvocationsView
 
 
 class JobInvocationEntity(BaseEntity):

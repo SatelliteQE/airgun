@@ -1,13 +1,12 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.computeprofile import (
-    ComputeProfileCreateView,
-    ComputeProfileRenameView,
-    ComputeProfilesView,
-    ComputeProfileDetailView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.computeprofile import ComputeProfileCreateView
+from airgun.views.computeprofile import ComputeProfileDetailView
+from airgun.views.computeprofile import ComputeProfileRenameView
+from airgun.views.computeprofile import ComputeProfilesView
 
 
 class ComputeProfileEntity(BaseEntity):

@@ -1,29 +1,24 @@
-from widgetastic.widget import (
-    Checkbox,
-    ConditionalSwitchableView,
-    ParametrizedLocator,
-    Select,
-    Table,
-    Text,
-    TextInput,
-    View,
-)
-from widgetastic_patternfly import BreadCrumb, Button
+from widgetastic.widget import Checkbox
+from widgetastic.widget import ConditionalSwitchableView
+from widgetastic.widget import ParametrizedLocator
+from widgetastic.widget import Select
+from widgetastic.widget import Table
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
+from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import Button
 
-from airgun.views.common import (
-    AddRemoveResourcesView,
-    AddTab,
-    BaseLoggedInView,
-    SatSecondaryTab,
-    SearchableViewMixin,
-)
-from airgun.widgets import (
-    DatePickerInput,
-    EditableEntry,
-    RadioGroup,
-    SatSelect,
-    SatTable,
-)
+from airgun.views.common import AddRemoveResourcesView
+from airgun.views.common import AddTab
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatSecondaryTab
+from airgun.views.common import SearchableViewMixin
+from airgun.widgets import DatePickerInput
+from airgun.widgets import EditableEntry
+from airgun.widgets import RadioGroup
+from airgun.widgets import SatSelect
+from airgun.widgets import SatTable
 
 ACTIONS_COLUMN = 4
 

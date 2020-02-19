@@ -1,12 +1,11 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.domain import (
-    DomainCreateView,
-    DomainEditView,
-    DomainListView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.domain import DomainCreateView
+from airgun.views.domain import DomainEditView
+from airgun.views.domain import DomainListView
 
 
 class DomainEntity(BaseEntity):

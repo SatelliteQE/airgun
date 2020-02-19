@@ -1,13 +1,11 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-
-from airgun.views.provisioning_template import (
-    ProvisioningTemplateCreateView,
-    ProvisioningTemplateDetailsView,
-    ProvisioningTemplatesView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.provisioning_template import ProvisioningTemplateCreateView
+from airgun.views.provisioning_template import ProvisioningTemplateDetailsView
+from airgun.views.provisioning_template import ProvisioningTemplatesView
 
 
 class ProvisioningTemplateEntity(BaseEntity):

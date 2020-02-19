@@ -1,7 +1,10 @@
-from widgetastic.widget import Text, View
+from widgetastic.widget import Text
+from widgetastic.widget import View
+
 from airgun.exceptions import ReadOnlyWidgetError
 from airgun.views.common import BaseLoggedInView
-from airgun.widgets import Search, SatTableWithoutHeaders
+from airgun.widgets import SatTableWithoutHeaders
+from airgun.widgets import Search
 
 
 class AuditEntry(View):

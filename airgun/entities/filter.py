@@ -1,11 +1,10 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
 from airgun.entities.role import RoleEntity
-from airgun.views.filter import (
-    FilterCreateView,
-    FilterDetailsView,
-    FiltersView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.filter import FilterCreateView
+from airgun.views.filter import FilterDetailsView
+from airgun.views.filter import FiltersView
 
 
 class FilterEntity(BaseEntity):

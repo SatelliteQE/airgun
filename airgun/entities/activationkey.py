@@ -1,13 +1,11 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.activationkey import (
-    ActivationKeyCreateView,
-    ActivationKeyEditView,
-    ActivationKeysView,
-
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.activationkey import ActivationKeyCreateView
+from airgun.views.activationkey import ActivationKeyEditView
+from airgun.views.activationkey import ActivationKeysView
 
 
 class ActivationKeyEntity(BaseEntity):

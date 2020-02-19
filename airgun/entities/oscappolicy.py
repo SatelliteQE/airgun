@@ -1,13 +1,12 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.oscappolicy import (
-    SCAPPoliciesView,
-    SCAPPolicyCreateView,
-    SCAPPolicyDetailsView,
-    SCAPPolicyEditView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.oscappolicy import SCAPPoliciesView
+from airgun.views.oscappolicy import SCAPPolicyCreateView
+from airgun.views.oscappolicy import SCAPPolicyDetailsView
+from airgun.views.oscappolicy import SCAPPolicyEditView
 
 
 class OSCAPPolicyEntity(BaseEntity):

@@ -1,12 +1,11 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.os import (
-    OperatingSystemCreateView,
-    OperatingSystemEditView,
-    OperatingSystemsView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.os import OperatingSystemCreateView
+from airgun.views.os import OperatingSystemEditView
+from airgun.views.os import OperatingSystemsView
 
 
 class OperatingSystemEntity(BaseEntity):

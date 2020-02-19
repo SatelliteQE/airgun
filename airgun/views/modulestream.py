@@ -1,17 +1,14 @@
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
+from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import Button
 
-from widgetastic.widget import (
-    Text,
-    TextInput,
-    View,
-)
-from widgetastic_patternfly import BreadCrumb, Button
-
-from airgun.views.common import (
-    BaseLoggedInView,
-    SatTab,
-    SatTable,
-)
-from airgun.widgets import Search, SatTableWithUnevenStructure
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SatTable
+from airgun.widgets import SatTableWithUnevenStructure
+from airgun.widgets import Search
 
 
 class CustomSearch(Search):

@@ -1,8 +1,11 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.user import UserCreateView, UserDetailsView, UsersView
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.user import UserCreateView
+from airgun.views.user import UserDetailsView
+from airgun.views.user import UsersView
 
 
 class UserEntity(BaseEntity):

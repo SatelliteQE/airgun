@@ -1,14 +1,12 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
 from airgun.views.common import BaseLoggedInView
-
-from airgun.views.location import (
-    LocationCreateView,
-    LocationsEditView,
-    LocationsView,
-)
+from airgun.views.location import LocationCreateView
+from airgun.views.location import LocationsEditView
+from airgun.views.location import LocationsView
 
 
 class LocationEntity(BaseEntity):

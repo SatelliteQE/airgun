@@ -1,12 +1,11 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.media import (
-    MediaCreateView,
-    MediaEditView,
-    MediumView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.media import MediaCreateView
+from airgun.views.media import MediaEditView
+from airgun.views.media import MediumView
 
 
 class MediaEntity(BaseEntity):

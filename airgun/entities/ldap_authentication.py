@@ -1,13 +1,13 @@
 from navmazing import NavigateToSibling
-from widgetastic.exceptions import RowNotFound, NoSuchElementException
+from widgetastic.exceptions import NoSuchElementException
+from widgetastic.exceptions import RowNotFound
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.ldapauthentication import (
-    LDAPAuthenticationCreateView,
-    LDAPAuthenticationEditView,
-    LDAPAuthenticationsView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.ldapauthentication import LDAPAuthenticationCreateView
+from airgun.views.ldapauthentication import LDAPAuthenticationEditView
+from airgun.views.ldapauthentication import LDAPAuthenticationsView
 
 
 class LDAPAuthenticationEntity(BaseEntity):

@@ -1,12 +1,11 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.oscaptailoringfile import (
-    SCAPTailoringFileCreateView,
-    SCAPTailoringFileEditView,
-    SCAPTailoringFilesView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.oscaptailoringfile import SCAPTailoringFileCreateView
+from airgun.views.oscaptailoringfile import SCAPTailoringFileEditView
+from airgun.views.oscaptailoringfile import SCAPTailoringFilesView
 
 
 class OSCAPTailoringFileEntity(BaseEntity):

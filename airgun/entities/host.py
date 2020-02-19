@@ -1,25 +1,24 @@
-from wait_for import wait_for
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 
-from airgun.helpers.host import HostHelper
 from airgun.entities.base import BaseEntity
 from airgun.exceptions import DisabledWidgetError
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.host import (
-    HostCreateView,
-    HostDetailsView,
-    HostEditView,
-    HostsAssignCompliancePolicy,
-    HostsAssignLocation,
-    HostsAssignOrganization,
-    HostsChangeGroup,
-    HostsChangeEnvironment,
-    HostsDeleteActionDialog,
-    HostsDeleteTaskDetailsView,
-    HostsJobInvocationCreateView,
-    HostsJobInvocationStatusView,
-    HostsView,
-)
+from airgun.helpers.host import HostHelper
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.host import HostCreateView
+from airgun.views.host import HostDetailsView
+from airgun.views.host import HostEditView
+from airgun.views.host import HostsAssignCompliancePolicy
+from airgun.views.host import HostsAssignLocation
+from airgun.views.host import HostsAssignOrganization
+from airgun.views.host import HostsChangeEnvironment
+from airgun.views.host import HostsChangeGroup
+from airgun.views.host import HostsDeleteActionDialog
+from airgun.views.host import HostsDeleteTaskDetailsView
+from airgun.views.host import HostsJobInvocationCreateView
+from airgun.views.host import HostsJobInvocationStatusView
+from airgun.views.host import HostsView
 
 
 class HostEntity(BaseEntity):
