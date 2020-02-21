@@ -94,7 +94,7 @@ class TaskDetailsView(BaseLoggedInView):
         ended_at = TaskReadOnlyEntry(name='Ended at')
         start_before = TaskReadOnlyEntry(name='Start before')
         state = Text("//div[contains(@class, 'progress-description')]")
-        progressbar = ProgressBar()
+        progressbar = ProgressBar(locator='//div[contains(@class,"progress-bar")]')
         output = TaskReadOnlyEntry(name='Output')
         errors = TaskReadOnlyEntry(name='Errors')
 
