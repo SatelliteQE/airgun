@@ -73,6 +73,7 @@ from airgun.entities.sync_status import SyncStatusEntity
 from airgun.entities.user import UserEntity
 from airgun.entities.usergroup import UserGroupEntity
 from airgun.entities.virtwho_configure import VirtwhoConfigureEntity
+from airgun.entities.rhsso_login import RHSSOLoginEntity
 from airgun.navigation import navigator, Navigate
 
 LOGGER = logging.getLogger(__name__)
@@ -229,11 +230,14 @@ class Session(object):
             else:
                 endpoint = getattr(entity, 'endpoint_path', '/')
             full_url = f"https://{settings.satellite.hostname}{endpoint}"
-            self._prepare_browser(full_url)
+            if entity.__name__ == "RHSSOLoginEntity":
+                self._prepare_browser(full_url, login_type="RHSSO")
+            else:
+                self._prepare_browser(full_url)
 
         return entity(self.browser)
 
-    def _prepare_browser(self, url):
+    def _prepare_browser(self, url, login_type=None):
         """Starts the browser, navigates to satellite, performs post-init
         browser tweaks, initializes navigator and UI entities, and logs in to
         satellite.
@@ -259,7 +263,7 @@ class Session(object):
             # Navigator
             self.navigator = Navigate(self.browser)
             self.navigator.dest_dict = navigator.dest_dict.copy()
-            if self._session_cookie is None:
+            if self._session_cookie is None and login_type is None:
                 self.login.login({
                     'username': self._user, 'password': self._password})
         except Exception as exception:
@@ -613,3 +617,8 @@ class Session(object):
     def virtwho_configure(self):
         """Instance of Virtwho Configure entity."""
         return self._open(VirtwhoConfigureEntity)
+
+    @cached_property
+    def rhsso_login(self):
+        """Instance of RHSSOLoginEntity entity."""
+        return self._open(RHSSOLoginEntity)
