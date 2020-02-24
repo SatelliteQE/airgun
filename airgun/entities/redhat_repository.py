@@ -1,6 +1,6 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
 from airgun.views.redhat_repository import RedHatRepositoriesView
 
 

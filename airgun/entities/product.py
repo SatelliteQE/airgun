@@ -1,15 +1,15 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.product import (
-    ProductCreateView,
-    ProductEditView,
-    ProductRepoDiscoveryView,
-    ProductTaskDetailsView,
-    ProductsTableView,
-    ProductSyncPlanView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.product import ProductCreateView
+from airgun.views.product import ProductEditView
+from airgun.views.product import ProductManageHttpProxy
+from airgun.views.product import ProductRepoDiscoveryView
+from airgun.views.product import ProductsTableView
+from airgun.views.product import ProductSyncPlanView
+from airgun.views.product import ProductTaskDetailsView
 
 
 class ProductEntity(BaseEntity):
@@ -75,6 +75,27 @@ class ProductEntity(BaseEntity):
         view.progressbar.wait_for_result()
         return view.read()
 
+    def manage_http_proxy(self, entities_list, values):
+        """Manage HTTP Proxy for product/products
+
+        :param entities_list: The product names to perform Manage HTTP Proxy action.
+        :param values: dict containing http_proxy_policy and http_proxy values.
+            eg: {'http_proxy_policy': 'No HTTP Proxy'}, {'http_proxy_policy': 'Global Default'},
+            {'http_proxy_policy': 'Use specific HTTP Proxy', 'http_proxy': 'proxy_name'}
+        """
+        view = self.navigate_to(
+            self,
+            'Select Action',
+            action_name='Manage HTTP Proxy',
+            entities_list=entities_list,
+        )
+        if values['http_proxy_policy'] == "Global Default":
+            values['http_proxy_policy'] = view.http_proxy_policy.all_options[0][0]
+        view.fill(values)
+        view.update.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
 
 @navigator.register(ProductEntity, 'All')
 class ShowAllProducts(NavigateStep):
@@ -124,3 +145,31 @@ class ProductRepoDiscovery(NavigateStep):
 
     def step(self, *args, **kwargs):
         self.parent.repo_discovery.click()
+
+
+@navigator.register(ProductEntity, 'Select Action')
+class ProductsSelectAction(NavigateStep):
+    """Navigate to Action page by selecting checkboxes for necessary Products and
+     then clicking on the action name button in 'Select Action' dropdown.
+
+    Args:
+        action_name: the action name to select from dropdown button
+        entities_list: list of Products that need to be modified
+    """
+    ACTIONS_VIEWS = {
+        'Manage HTTP Proxy': ProductManageHttpProxy,
+    }
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        action_name = kwargs.get('action_name')
+        self.VIEW = self.ACTIONS_VIEWS.get(action_name)
+        if not self.VIEW:
+            raise ValueError('Please provide a valid action name.'
+                             ' action_name: "{0}" not found.')
+        entities_list = kwargs.get('entities_list')
+        for entity in entities_list:
+            self.parent.table.row(name=entity)[0].click()
+        self.parent.actions.fill(action_name)

@@ -1,13 +1,12 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.virtwho_configure import (
-    VirtwhoConfigureCreateView,
-    VirtwhoConfigureEditView,
-    VirtwhoConfiguresView,
-    VirtwhoConfigureDetailsView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.virtwho_configure import VirtwhoConfigureCreateView
+from airgun.views.virtwho_configure import VirtwhoConfigureDetailsView
+from airgun.views.virtwho_configure import VirtwhoConfigureEditView
+from airgun.views.virtwho_configure import VirtwhoConfiguresView
 
 
 class VirtwhoConfigureEntity(BaseEntity):

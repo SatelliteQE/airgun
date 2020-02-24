@@ -1,18 +1,17 @@
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.discoveredhosts import (
-    DiscoveredHostEditProvisioningView,
-    DiscoveredHostDetailsView,
-    DiscoveredHostProvisionDialog,
-    DiscoveredHostsAssignLocationDialog,
-    DiscoveredHostsAssignOrganizationDialog,
-    DiscoveredHostsAutoProvisionDialog,
-    DiscoveredHostsDeleteDialog,
-    DiscoveredHostsRebootDialog,
-    DiscoveredHostsView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.discoveredhosts import DiscoveredHostDetailsView
+from airgun.views.discoveredhosts import DiscoveredHostEditProvisioningView
+from airgun.views.discoveredhosts import DiscoveredHostProvisionDialog
+from airgun.views.discoveredhosts import DiscoveredHostsAssignLocationDialog
+from airgun.views.discoveredhosts import DiscoveredHostsAssignOrganizationDialog
+from airgun.views.discoveredhosts import DiscoveredHostsAutoProvisionDialog
+from airgun.views.discoveredhosts import DiscoveredHostsDeleteDialog
+from airgun.views.discoveredhosts import DiscoveredHostsRebootDialog
+from airgun.views.discoveredhosts import DiscoveredHostsView
 
 
 class DiscoveredHostsEntity(BaseEntity):

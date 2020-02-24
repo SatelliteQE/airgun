@@ -1,21 +1,17 @@
-from widgetastic_patternfly import Button
 from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import (
-    Checkbox,
-    ParametrizedView,
-    Table,
-    Text,
-    TextInput,
-    View
-)
+from widgetastic.widget import Checkbox
+from widgetastic.widget import ParametrizedView
+from widgetastic.widget import Table
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
+from widgetastic_patternfly import Button
 
 from airgun.views.common import BaseLoggedInView
-from airgun.widgets import (
-    ActionsDropdown,
-    SatTable,
-    GenericRemovableWidgetItem,
-    RemovableWidgetsItemsListView,
-)
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import GenericRemovableWidgetItem
+from airgun.widgets import RemovableWidgetsItemsListView
+from airgun.widgets import SatTable
 
 
 class InsightsOrganizationErrorView(BaseLoggedInView):

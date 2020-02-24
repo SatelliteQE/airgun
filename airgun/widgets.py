@@ -1,32 +1,27 @@
 from cached_property import cached_property
 from jsmin import jsmin
 from wait_for import wait_for
-from widgetastic.exceptions import (
-    NoSuchElementException,
-    WidgetOperationFailed,
-)
+from widgetastic.exceptions import NoSuchElementException
+from widgetastic.exceptions import WidgetOperationFailed
 from widgetastic.utils import retry_stale_element
-from widgetastic.widget import (
-    Checkbox,
-    do_not_read_this_widget,
-    GenericLocatorWidget,
-    ParametrizedLocator,
-    Select,
-    Table,
-    Text,
-    TextInput,
-    View,
-    Widget,
-)
+from widgetastic.widget import Checkbox
+from widgetastic.widget import do_not_read_this_widget
+from widgetastic.widget import GenericLocatorWidget
+from widgetastic.widget import ParametrizedLocator
+from widgetastic.widget import Select
+from widgetastic.widget import Table
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
+from widgetastic.widget import Widget
 from widgetastic.xpath import quote
-from widgetastic_patternfly import (
-    Button,
-    FlashMessage,
-    FlashMessages,
-    VerticalNavigation,
-)
+from widgetastic_patternfly import Button
+from widgetastic_patternfly import FlashMessage
+from widgetastic_patternfly import FlashMessages
+from widgetastic_patternfly import VerticalNavigation
 
-from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
+from airgun.exceptions import DisabledWidgetError
+from airgun.exceptions import ReadOnlyWidgetError
 from airgun.utils import get_widget_by_name
 
 

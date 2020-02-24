@@ -1,6 +1,8 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.bookmark import BookmarkEditView, BookmarksView
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.bookmark import BookmarkEditView
+from airgun.views.bookmark import BookmarksView
 
 
 def _gen_queries(entity_name, controller=None):

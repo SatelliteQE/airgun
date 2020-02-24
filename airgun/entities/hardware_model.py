@@ -1,12 +1,11 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.hardware_model import (
-    HardwareModelCreateView,
-    HardwareModelEditView,
-    HardwareModelsView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.hardware_model import HardwareModelCreateView
+from airgun.views.hardware_model import HardwareModelEditView
+from airgun.views.hardware_model import HardwareModelsView
 
 
 class HardwareModelEntity(BaseEntity):

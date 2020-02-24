@@ -1,13 +1,12 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
 from airgun.views.discoveredhosts import DiscoveredHostsView
-from airgun.views.discoveryrule import (
-    DiscoveryRuleCreateView,
-    DiscoveryRuleEditView,
-    DiscoveryRulesView,
-)
+from airgun.views.discoveryrule import DiscoveryRuleCreateView
+from airgun.views.discoveryrule import DiscoveryRuleEditView
+from airgun.views.discoveryrule import DiscoveryRulesView
 from airgun.views.host import HostsView
 
 

@@ -1,4 +1,7 @@
-from widgetastic.widget import ClickableMixin, Text, TextInput, View
+from widgetastic.widget import ClickableMixin
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
 
 
 class LoginView(View, ClickableMixin):

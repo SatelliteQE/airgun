@@ -1,18 +1,18 @@
 from wait_for import wait_for
-
-from widgetastic.widget import Text, View
+from widgetastic.widget import Text
+from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
-from airgun.widgets import (
-    ProgressBar,
-    ReadOnlyEntry,
-    SatTable,
-    Table,
-    ActionsDropdown,
-    PieChart,
-    Pagination
-)
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import Pagination
+from airgun.widgets import PieChart
+from airgun.widgets import ProgressBar
+from airgun.widgets import ReadOnlyEntry
+from airgun.widgets import SatTable
+from airgun.widgets import Table
 
 
 class TaskReadOnlyEntry(ReadOnlyEntry):
@@ -94,7 +94,7 @@ class TaskDetailsView(BaseLoggedInView):
         ended_at = TaskReadOnlyEntry(name='Ended at')
         start_before = TaskReadOnlyEntry(name='Start before')
         state = Text("//div[contains(@class, 'progress-description')]")
-        progressbar = ProgressBar()
+        progressbar = ProgressBar(locator='//div[contains(@class,"progress-bar")]')
         output = TaskReadOnlyEntry(name='Output')
         errors = TaskReadOnlyEntry(name='Errors')
 

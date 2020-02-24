@@ -2,14 +2,12 @@ from navmazing import NavigateToSibling
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-
-from airgun.views.report_template import (
-    ReportTemplateCreateView,
-    ReportTemplateDetailsView,
-    ReportTemplateGenerateView,
-    ReportTemplatesView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.report_template import ReportTemplateCreateView
+from airgun.views.report_template import ReportTemplateDetailsView
+from airgun.views.report_template import ReportTemplateGenerateView
+from airgun.views.report_template import ReportTemplatesView
 
 
 class ReportTemplateEntity(BaseEntity):

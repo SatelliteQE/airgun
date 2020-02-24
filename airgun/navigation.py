@@ -1,6 +1,5 @@
 """AirGun's implementation of base navigation and navigate steps."""
 import navmazing
-
 from cached_property import cached_property
 from selenium.common.exceptions import NoSuchElementException
 

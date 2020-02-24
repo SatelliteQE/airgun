@@ -1,33 +1,26 @@
 from wait_for import wait_for
-
-from widgetastic.widget import (
-    Checkbox,
-    ConditionalSwitchableView,
-    Select,
-    Table,
-    Text,
-    TextInput,
-    View,
-)
+from widgetastic.widget import Checkbox
+from widgetastic.widget import ConditionalSwitchableView
+from widgetastic.widget import Select
+from widgetastic.widget import Table
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import (
-    BaseLoggedInView,
-    SatTab,
-    SearchableViewMixin,
-    TaskDetailsView,
-)
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
+from airgun.views.common import TaskDetailsView
 from airgun.views.syncplan import SyncPlanCreateView
-from airgun.widgets import (
-    ActionsDropdown,
-    ConfirmationDialog,
-    EditableEntry,
-    EditableEntrySelect,
-    ReadOnlyEntry,
-    SatSelect,
-    SatTable,
-    Search,
-)
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import ConfirmationDialog
+from airgun.widgets import EditableEntry
+from airgun.widgets import EditableEntrySelect
+from airgun.widgets import ReadOnlyEntry
+from airgun.widgets import SatSelect
+from airgun.widgets import SatTable
+from airgun.widgets import Search
 
 
 class CreateDiscoveredReposView(View):
@@ -233,6 +226,23 @@ class ProductTaskDetailsView(TaskDetailsView):
 class ProductSyncPlanView(SyncPlanCreateView):
     title = Text("//h4[contains(., 'New Sync Plan')]")
     submit = Text("//button[contains(@ng-click, 'ok(syncPlan)')]")
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.title, exception=False) is not None
+
+
+class ProductManageHttpProxy(BaseLoggedInView):
+    """Represents Http Proxy Management page for Products."""
+    title = Text("//h4[text()='Http Proxy Management']")
+    http_proxy_policy = Select(id="http_proxy_policy")
+    proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+    update = Text('//button[@ng-click="update()"]')
+
+    @proxy_policy.register('Use specific HTTP Proxy')
+    class ExistingProductForm(View):
+        http_proxy = Select(id="http_proxy")
 
     @property
     def is_displayed(self):

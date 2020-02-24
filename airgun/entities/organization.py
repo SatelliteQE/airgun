@@ -2,14 +2,13 @@ from navmazing import NavigateToSibling
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.common import BaseLoggedInView, WrongContextAlert
-
-from airgun.views.organization import (
-    OrganizationCreateView,
-    OrganizationEditView,
-    OrganizationsView
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import WrongContextAlert
+from airgun.views.organization import OrganizationCreateView
+from airgun.views.organization import OrganizationEditView
+from airgun.views.organization import OrganizationsView
 
 
 class OrganizationEntity(BaseEntity):

@@ -1,15 +1,19 @@
-from widgetastic.widget import ConditionalSwitchableView, Table, Text, TextInput, View
+from widgetastic.widget import ConditionalSwitchableView
+from widgetastic.widget import Table
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
-from airgun.widgets import (
-    ActionsDropdown,
-    ConfigGroupMultiSelect,
-    FilteredDropdown,
-    MultiSelect,
-    PuppetClassesMultiSelect,
-    RadioGroup,
-)
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import ConfigGroupMultiSelect
+from airgun.widgets import FilteredDropdown
+from airgun.widgets import MultiSelect
+from airgun.widgets import PuppetClassesMultiSelect
+from airgun.widgets import RadioGroup
 
 
 class HostGroupsView(BaseLoggedInView, SearchableViewMixin):

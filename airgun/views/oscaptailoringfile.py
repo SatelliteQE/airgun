@@ -1,30 +1,24 @@
-from widgetastic.widget import (
-    FileInput,
-    Text,
-    TextInput,
-    View,
-)
+from widgetastic.widget import FileInput
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import (
-    BaseLoggedInView,
-    SatTab,
-    SearchableViewMixin,
-)
-from airgun.widgets import (
-    ActionsDropdown,
-    MultiSelect,
-    SatTable,
-)
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import MultiSelect
+from airgun.widgets import Table
 
 
 class SCAPTailoringFilesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Tailoring Files']")
     new = Text("//a[contains(@href, 'tailoring_files/new')]")
-    table = SatTable(
+    table = Table(
         './/table',
         column_widgets={
-            'Title': Text('./a'),
+            'Name': Text("./a[contains(@href, '/compliance/tailoring_files')]"),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         }
     )

@@ -1,8 +1,8 @@
-
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-
-from airgun.views.package import PackagesView, PackageDetailsView
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.package import PackageDetailsView
+from airgun.views.package import PackagesView
 
 
 class PackageEntity(BaseEntity):

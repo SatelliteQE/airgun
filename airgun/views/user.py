@@ -1,8 +1,15 @@
-from widgetastic.widget import Checkbox, Table, Text, TextInput, View
+from widgetastic.widget import Checkbox
+from widgetastic.widget import Table
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
-from airgun.widgets import FilteredDropdown, MultiSelect
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
+from airgun.widgets import FilteredDropdown
+from airgun.widgets import MultiSelect
 
 
 class UsersView(BaseLoggedInView, SearchableViewMixin):

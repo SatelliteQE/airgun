@@ -1,39 +1,39 @@
 import re
+
 from wait_for import wait_for
+from widgetastic.widget import Checkbox
+from widgetastic.widget import ConditionalSwitchableView
+from widgetastic.widget import GenericLocatorWidget
+from widgetastic.widget import NoSuchElementException
+from widgetastic.widget import Select
+from widgetastic.widget import Table
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
+from widgetastic.widget import Widget
+from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import Button
 
-from widgetastic.widget import (
-    Checkbox,
-    ConditionalSwitchableView,
-    GenericLocatorWidget,
-    NoSuchElementException,
-    Select,
-    Text,
-    Table,
-    TextInput,
-    View,
-    Widget,
-)
-from widgetastic_patternfly import BreadCrumb, Button
-
-from airgun.views.common import BaseLoggedInView, SearchableViewMixin, SatTab
-from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
+from airgun.views.job_invocation import JobInvocationCreateView
+from airgun.views.job_invocation import JobInvocationStatusView
 from airgun.views.task import TaskDetailsView
-from airgun.widgets import (
-    ActionsDropdown,
-    CheckboxWithAlert,
-    ConfigGroupMultiSelect,
-    CustomParameter,
-    FilteredDropdown,
-    GenericRemovableWidgetItem,
-    Link,
-    MultiSelect,
-    PuppetClassesMultiSelect,
-    RadioGroup,
-    RemovableWidgetsItemsListView,
-    SatTableWithUnevenStructure,
-    SatTable,
-    ToggleButton,
-)
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import CheckboxWithAlert
+from airgun.widgets import ConfigGroupMultiSelect
+from airgun.widgets import CustomParameter
+from airgun.widgets import FilteredDropdown
+from airgun.widgets import GenericRemovableWidgetItem
+from airgun.widgets import Link
+from airgun.widgets import MultiSelect
+from airgun.widgets import PuppetClassesMultiSelect
+from airgun.widgets import RadioGroup
+from airgun.widgets import RemovableWidgetsItemsListView
+from airgun.widgets import SatTable
+from airgun.widgets import SatTableWithUnevenStructure
+from airgun.widgets import ToggleButton
 
 
 class TableActions(View):

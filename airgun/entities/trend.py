@@ -2,12 +2,11 @@ from navmazing import NavigateToSibling
 from widgetastic.exceptions import RowNotFound
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.trend import (
-    TrendCreateView,
-    TrendEditView,
-    TrendsView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.trend import TrendCreateView
+from airgun.views.trend import TrendEditView
+from airgun.views.trend import TrendsView
 
 
 class TrendEntity(BaseEntity):

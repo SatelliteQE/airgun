@@ -1,27 +1,21 @@
-from widgetastic.widget import (
-    Checkbox,
-    Select,
-    Table,
-    Text,
-    TextInput,
-    View,
-)
+from widgetastic.widget import Checkbox
+from widgetastic.widget import Select
+from widgetastic.widget import Table
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import (
-    BaseLoggedInView,
-    SatTab,
-    SearchableViewMixin,
-    TemplateEditor,
-    TemplateInputItem,
-)
-from airgun.widgets import (
-    ActionsDropdown,
-    FilteredDropdown,
-    GenericRemovableWidgetItem,
-    MultiSelect,
-    RemovableWidgetsItemsListView,
-)
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
+from airgun.views.common import TemplateEditor
+from airgun.views.common import TemplateInputItem
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import FilteredDropdown
+from airgun.widgets import GenericRemovableWidgetItem
+from airgun.widgets import MultiSelect
+from airgun.widgets import RemovableWidgetsItemsListView
 
 
 class JobTemplatesView(BaseLoggedInView, SearchableViewMixin):

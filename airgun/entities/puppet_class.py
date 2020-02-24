@@ -1,6 +1,8 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.puppet_class import PuppetClassDetailsView, PuppetClassesView
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.puppet_class import PuppetClassDetailsView
+from airgun.views.puppet_class import PuppetClassesView
 
 
 class PuppetClassEntity(BaseEntity):

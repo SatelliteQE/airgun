@@ -2,22 +2,19 @@ from navmazing import NavigateToSibling
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.hostcollection import (
-    HostCollectionActionRemoteExecutionJobCreate,
-    HostCollectionActionTaskDetailsView,
-    HostCollectionChangeAssignedContentView,
-    HostCollectionCreateView,
-    HostCollectionEditView,
-    HostCollectionInstallErrataView,
-    HostCollectionManagePackagesView,
-    HostCollectionManageModuleStreamsView,
-    HostCollectionsView,
-)
-from airgun.views.job_invocation import (
-    JobInvocationCreateView,
-    JobInvocationStatusView,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.hostcollection import HostCollectionActionRemoteExecutionJobCreate
+from airgun.views.hostcollection import HostCollectionActionTaskDetailsView
+from airgun.views.hostcollection import HostCollectionChangeAssignedContentView
+from airgun.views.hostcollection import HostCollectionCreateView
+from airgun.views.hostcollection import HostCollectionEditView
+from airgun.views.hostcollection import HostCollectionInstallErrataView
+from airgun.views.hostcollection import HostCollectionManageModuleStreamsView
+from airgun.views.hostcollection import HostCollectionManagePackagesView
+from airgun.views.hostcollection import HostCollectionsView
+from airgun.views.job_invocation import JobInvocationCreateView
+from airgun.views.job_invocation import JobInvocationStatusView
 
 
 class HostCollectionEntity(BaseEntity):

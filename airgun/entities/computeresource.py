@@ -1,19 +1,18 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.views.computeresource import (
-    ComputeResourcesView,
-    ResourceProviderCreateView,
-    ResourceProviderEditView,
-    ResourceProviderDetailView,
-    ComputeResourceRHVImageCreateView,
-    ComputeResourceRHVImageEditView,
-    ComputeResourceVMwareImageCreateView,
-    ComputeResourceVMwareImageEditView,
-    ResourceProviderProfileView,
-    ResourceProviderVMImport,
-)
+from airgun.navigation import NavigateStep
+from airgun.navigation import navigator
+from airgun.views.computeresource import ComputeResourceRHVImageCreateView
+from airgun.views.computeresource import ComputeResourceRHVImageEditView
+from airgun.views.computeresource import ComputeResourcesView
+from airgun.views.computeresource import ComputeResourceVMwareImageCreateView
+from airgun.views.computeresource import ComputeResourceVMwareImageEditView
+from airgun.views.computeresource import ResourceProviderCreateView
+from airgun.views.computeresource import ResourceProviderDetailView
+from airgun.views.computeresource import ResourceProviderEditView
+from airgun.views.computeresource import ResourceProviderProfileView
+from airgun.views.computeresource import ResourceProviderVMImport
 
 
 class ComputeResourceEntity(BaseEntity):
