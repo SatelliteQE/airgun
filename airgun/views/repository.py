@@ -60,7 +60,12 @@ class RepositoryCreateView(BaseLoggedInView):
         verify_ssl = Checkbox(id='verify_ssl_on_sync')
         upstream_username = TextInput(id='upstream_username')
         upstream_password = TextInput(id='upstream_password')
-        ignore_global_proxy = TextInput(id='ignore_global_proxy')
+        http_proxy_policy = Select(id="http_proxy_policy")
+        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+
+        @proxy_policy.register('Use specific HTTP Proxy')
+        class SpecificHttpProxy(View):
+            http_proxy = Select(id="http_proxy")
 
     @repo_content.register('file')
     class FileRepository(View):
@@ -68,8 +73,13 @@ class RepositoryCreateView(BaseLoggedInView):
         verify_ssl = Checkbox(id='verify_ssl_on_sync')
         upstream_username = TextInput(id='upstream_username')
         upstream_password = TextInput(id='upstream_password')
-        ignore_global_proxy = TextInput(id='ignore_global_proxy')
         publish_via_http = Checkbox(id='unprotected')
+        http_proxy_policy = Select(id="http_proxy_policy")
+        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+
+        @proxy_policy.register('Use specific HTTP Proxy')
+        class SpecificHttpProxy(View):
+            http_proxy = Select(id="http_proxy")
 
     @repo_content.register('ostree')
     class OstreeRepository(View):
@@ -79,7 +89,12 @@ class RepositoryCreateView(BaseLoggedInView):
         verify_ssl = Checkbox(id='verify_ssl_on_sync')
         upstream_username = TextInput(id='upstream_username')
         upstream_password = TextInput(id='upstream_password')
-        ignore_global_proxy = TextInput(id='ignore_global_proxy')
+        http_proxy_policy = Select(id="http_proxy_policy")
+        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+
+        @proxy_policy.register('Use specific HTTP Proxy')
+        class SpecificHttpProxy(View):
+            http_proxy = Select(id="http_proxy")
 
     @repo_content.register('puppet')
     class PuppetRepository(View):
@@ -88,8 +103,13 @@ class RepositoryCreateView(BaseLoggedInView):
         upstream_username = TextInput(id='upstream_username')
         upstream_password = TextInput(id='upstream_password')
         mirror_on_sync = Checkbox(id='mirror_on_sync')
-        ignore_global_proxy = TextInput(id='ignore_global_proxy')
         publish_via_http = Checkbox(id='unprotected')
+        http_proxy_policy = Select(id="http_proxy_policy")
+        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+
+        @proxy_policy.register('Use specific HTTP Proxy')
+        class SpecificHttpProxy(View):
+            http_proxy = Select(id="http_proxy")
 
     @repo_content.register('yum')
     class YumRepository(View):
@@ -100,13 +120,18 @@ class RepositoryCreateView(BaseLoggedInView):
         upstream_password = TextInput(id='upstream_password')
         download_policy = Select(id='download_policy')
         mirror_on_sync = Checkbox(id='mirror_on_sync')
-        ignore_global_proxy = TextInput(id='ignore_global_proxy')
         checksum_type = Select(id='checksum_type')
         publish_via_http = Checkbox(id='unprotected')
         gpg_key = Select(id='gpg_key_id')
         ssl_ca_cert = Select(id='ssl_ca_cert_id')
         ssl_client_cert = Select(id='ssl_client_cert_id')
         ssl_client_key = Select(id='ssl_client_key_id')
+        http_proxy_policy = Select(id="http_proxy_policy")
+        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+
+        @proxy_policy.register('Use specific HTTP Proxy')
+        class SpecificHttpProxy(View):
+            http_proxy = Select(id="http_proxy")
 
     @property
     def is_displayed(self):
@@ -159,9 +184,13 @@ class RepositoryEditView(BaseLoggedInView):
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
         upstream_authorization = AuthorizationEntry(
             name='Upstream Authorization')
-        ignore_global_proxy = EditableEntryCheckbox(
-            name='Ignore Global HTTP Proxy')
         publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
+        http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
+        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+
+        @proxy_policy.register(True, default=True)
+        class NoSpecificHttpProxy(View):
+            pass
 
     @repo_content.register('yum')
     class YumRepository(View):
@@ -172,13 +201,17 @@ class RepositoryEditView(BaseLoggedInView):
             name='Upstream Authorization')
         metadata_type = EditableEntrySelect(name='Yum Metadata Checksum')
         mirror_on_sync = EditableEntryCheckbox(name='Mirror on Sync')
-        ignore_global_proxy = EditableEntryCheckbox(
-            name='Ignore Global HTTP Proxy')
         publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
         gpg_key = EditableEntrySelect(name='GPG Key')
         download_policy = EditableEntrySelect(name='Download Policy')
         upload_content = FileInput(name='content[]')
         upload = Text("//button[contains(., 'Upload')]")
+        http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
+        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+
+        @proxy_policy.register(True, default=True)
+        class NoSpecificHttpProxy(View):
+            pass
 
     @repo_content.register('puppet')
     class PuppetRepository(View):
@@ -187,13 +220,17 @@ class RepositoryEditView(BaseLoggedInView):
         upstream_authorization = AuthorizationEntry(
             name='Upstream Authorization')
         mirror_on_sync = EditableEntryCheckbox(name='Mirror on Sync')
-        ignore_global_proxy = EditableEntryCheckbox(
-            name='Ignore Global HTTP Proxy')
         publish_via_https = ReadOnlyEntry(name='Publish via HTTPS')
         publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
         published_at = ReadOnlyEntry(name='Published At')
         upload_content = FileInput(name='content[]')
         upload = Text("//button[contains(., 'Upload')]")
+        http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
+        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+
+        @proxy_policy.register(True, default=True)
+        class NoSpecificHttpProxy(View):
+            pass
 
     @repo_content.register('ostree')
     class OstreeRepository(View):
@@ -201,10 +238,14 @@ class RepositoryEditView(BaseLoggedInView):
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
         upstream_authorization = AuthorizationEntry(
             name='Upstream Authorization')
-        ignore_global_proxy = EditableEntryCheckbox(
-            name='Ignore Global HTTP Proxy')
         publish_via_https = ReadOnlyEntry(name='Publish via HTTPS')
         published_at = ReadOnlyEntry(name='Published At')
+        http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
+        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+
+        @proxy_policy.register(True, default=True)
+        class NoSpecificHttpProxy(View):
+            pass
 
     @property
     def is_displayed(self):
