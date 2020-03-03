@@ -132,7 +132,8 @@ class ContentHostDetailsView(BaseLoggedInView):
     class details(SatTab):
         # Basic information
         name = EditableEntry(name='Name')
-        uuid = ReadOnlyEntry(name='UUID')
+        uuid = ReadOnlyEntry(name='Subscription UUID')
+        bios_uuid = ReadOnlyEntry(name='BIOS UUID')
         description = EditableEntry(name='Description')
         type = ReadOnlyEntry(name='Type')
         katello_agent = ReadOnlyEntry(name='Katello Agent')
@@ -150,7 +151,9 @@ class ContentHostDetailsView(BaseLoggedInView):
         role = EditableEntrySelect(name='Role')
         addons = EditableEntryMultiCheckbox(name='Add ons')
         # Content Host Properties
-        os = ReadOnlyEntry(name='OS')
+        os = ReadOnlyEntry(
+            locator=".//dt[.='OS']/following-sibling::dd[not(contains(@class, 'ng-hide'))]"
+            )
         architecture = ReadOnlyEntry(name='Architecture')
         number_of_cpus = ReadOnlyEntry(name='Number of CPUs')
         sockets = ReadOnlyEntry(name='Sockets')
