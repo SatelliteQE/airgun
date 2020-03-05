@@ -61,6 +61,7 @@ from airgun.entities.rhai.manage import ManageEntity
 from airgun.entities.rhai.overview import OverviewEntity
 from airgun.entities.rhai.plan import PlanEntity
 from airgun.entities.rhai.rule import RuleEntity
+from airgun.entities.rhsso_login import RHSSOLoginEntity
 from airgun.entities.role import RoleEntity
 from airgun.entities.settings import SettingsEntity
 from airgun.entities.smart_class_parameter import SmartClassParameterEntity
@@ -149,7 +150,7 @@ class Session(object):
     """
 
     def __init__(self, session_name=None, user=None, password=None,
-                 session_cookie=None, url=None):
+                 session_cookie=None, url=None, login=True):
         """Stores provided values, doesn't perform any actions.
 
         :param str optional session_name: string representing session name.
@@ -174,8 +175,9 @@ class Session(object):
         self._url = url
         self.navigator = None
         self.browser = None
+        self._login = login
 
-    def __call__(self, user=None, password=None, session_cookie=None, url=None):
+    def __call__(self, user=None, password=None, session_cookie=None, url=None, login=None):
         """Stores provided values. This allows tests to provide additional
         value when Session object is returned from fixture and used as
         context manager. Arguments are the same as when initializing
@@ -189,6 +191,8 @@ class Session(object):
             self._session_cookie = session_cookie
         if url is not None:
             self._url = url
+        if login is not None:
+            self._login = login
         return self
 
     def __enter__(self):
@@ -261,7 +265,7 @@ class Session(object):
             # Navigator
             self.navigator = Navigate(self.browser)
             self.navigator.dest_dict = navigator.dest_dict.copy()
-            if self._session_cookie is None:
+            if self._session_cookie is None and self._login:
                 self.login.login({
                     'username': self._user, 'password': self._password})
         except Exception as exception:
@@ -555,6 +559,11 @@ class Session(object):
     def role(self):
         """Instance of Role entity."""
         return self._open(RoleEntity)
+
+    @cached_property
+    def rhsso_login(self):
+        """Instance of RHSSOLoginEntity entity."""
+        return self._open(RHSSOLoginEntity)
 
     @cached_property
     def settings(self):
