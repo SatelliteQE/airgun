@@ -177,7 +177,7 @@ class Session(object):
         self.browser = None
         self._login = True
 
-    def __call__(self, user=None, password=None, session_cookie=None, url=None, login=None):
+    def __call__(self, user=None, password=None, session_cookie=None, url=None, login=True):
         """Stores provided values. This allows tests to provide additional
         value when Session object is returned from fixture and used as
         context manager. Arguments are the same as when initializing
