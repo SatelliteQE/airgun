@@ -150,7 +150,7 @@ class Session(object):
     """
 
     def __init__(self, session_name=None, user=None, password=None,
-                 session_cookie=None, url=None, login=None):
+                 session_cookie=None, url=None, login=True):
         """Stores provided values, doesn't perform any actions.
 
         :param str optional session_name: string representing session name.
@@ -175,9 +175,9 @@ class Session(object):
         self._url = url
         self.navigator = None
         self.browser = None
-        self._login = True
+        self._login = login
 
-    def __call__(self, user=None, password=None, session_cookie=None, url=None, login=True):
+    def __call__(self, user=None, password=None, session_cookie=None, url=None, login=None):
         """Stores provided values. This allows tests to provide additional
         value when Session object is returned from fixture and used as
         context manager. Arguments are the same as when initializing
