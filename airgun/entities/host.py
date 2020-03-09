@@ -210,7 +210,7 @@ class HostEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def has_working_webconsole(self, entity_name):
+    def get_webconsole_content(self, entity_name):
         """Navigate to host's webconsole and return the hostname from the cockpit page
 
         :param str entity_name: The host name for which to set the parameter value.
@@ -220,15 +220,15 @@ class HostEntity(BaseEntity):
         view.validations.assert_no_errors()
         # the remote host content is loaded in an iframe, let's switch to it
         self.browser.selenium.switch_to.frame(0)
-        webconsole_view = self.browser.selenium.find_elements_by_id(
+        hostname_button_view = self.browser.selenium.find_elements_by_id(
             'system_information_hostname_button'
         )
         wait_for(
-            lambda: webconsole_view[0].text != '',
+            lambda: hostname_button_view[0].text != '',
             handle_exception=True, timeout=10,
             logger=view.logger
         )
-        return webconsole_view
+        return hostname_button_view
 
 
 @navigator.register(HostEntity, 'All')
