@@ -229,7 +229,7 @@ class LCESelectorGroup(ParametrizedView):
 
     def read(self):
         """Shortcut which returns value of included ``lce``
-        :class:`LCESelector` widget.
+        :class:`airgun.widgets.LCESelector` widget.
 
         Note that returned result will be wrapped in extra dict due to
         :class:`widgetastic.widget.ParametrizedView` nature::
@@ -396,7 +396,7 @@ class SearchableViewMixin(WTMixin):
     :meth:`search` to your view. It's useful for _most_ entities list views
     where searchbox and results table are present.
 
-    Note that class which uses this mixin should have :attr:`table` attribute.
+    Note that class which uses this mixin should have :attr: `table` attribute.
     """
     searchbox = Search()
     welcome_message = Text("//div[@class='blank-slate-pf' or @id='welcome']")

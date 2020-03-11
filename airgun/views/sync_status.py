@@ -1,10 +1,10 @@
 from cached_property import cached_property
 from widgetastic.exceptions import NoSuchElementException
 from widgetastic.widget import Checkbox
+from widgetastic.widget import Text
 
 from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTable
-from airgun.views.common import Text
+from airgun.widgets import SatTable
 
 
 class ParentNodeNotFoundError(Exception):
@@ -246,7 +246,7 @@ class SyncStatusTable(SatTable):
 
         :param node_path: a list or tuple representing the path to a node, for
             example: ('product1', 'repo1')
-        :return SyncStatusTableNode
+        :return: SyncStatusTableNode
         """
         parent_node = self.nodes
         node = None

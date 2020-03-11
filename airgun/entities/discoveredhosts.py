@@ -107,7 +107,7 @@ class DiscoveredHostsEntity(BaseEntity):
         :param str action_name: The action name to apply, available:
             'Assign Location', 'Assign Organization', 'Auto Provision',
             'Delete', 'Reboot'
-        :param List[str] entities_list: Discovered hosts name list.
+        :param list str entities_list: Discovered hosts name list.
         :param dict values: The values to fill the action form dialog with.
         """
         if values is None:

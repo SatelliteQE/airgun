@@ -97,17 +97,19 @@ class HostCollectionEditView(BaseLoggedInView):
 class HostCollectionPackageContentRadioGroup(RadioGroup):
     """Handle an HTML non normalized Radio group according to the current
     architecture.
+
     Note: This is a temporary solution, a fix will be issued upstream,
         when the fix will be available downstream we should replace the
         implementation with RadioGroup.
+
     Example html representation::
 
-        <div >
+        <div>
             <input type="radio" id="package" ...>
             <label>Package</label>
             <input type="radio" id="package_group" ...>
             <label>Package Group</label>
-      """
+    """
     # a mapping between button name and the id, see the implementation in
     # HostsAssignOrganization and HostsAssignLocation hereafter.
     buttons_name_id_map = {

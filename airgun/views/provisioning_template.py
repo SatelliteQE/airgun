@@ -1,4 +1,5 @@
 from widgetastic.widget import Checkbox
+from widgetastic.widget import Select
 from widgetastic.widget import Table
 from widgetastic.widget import Text
 from widgetastic.widget import TextInput
@@ -16,7 +17,6 @@ from airgun.widgets import FilteredDropdown
 from airgun.widgets import GenericRemovableWidgetItem
 from airgun.widgets import MultiSelect
 from airgun.widgets import RemovableWidgetsItemsListView
-from airgun.widgets import Select
 
 
 class TemplateHostEnvironmentAssociation(GenericRemovableWidgetItem):

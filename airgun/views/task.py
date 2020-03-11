@@ -1,4 +1,5 @@
 from wait_for import wait_for
+from widgetastic.widget import Table
 from widgetastic.widget import Text
 from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
@@ -12,7 +13,6 @@ from airgun.widgets import PieChart
 from airgun.widgets import ProgressBar
 from airgun.widgets import ReadOnlyEntry
 from airgun.widgets import SatTable
-from airgun.widgets import Table
 
 
 class TaskReadOnlyEntry(ReadOnlyEntry):

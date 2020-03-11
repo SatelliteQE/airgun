@@ -19,10 +19,13 @@ from airgun.widgets import FilteredDropdown
 
 class VirtwhoConfigureStatus(GenericLocatorWidget):
     """The status for virtwho configure can be: ok, info, warning.
+
     ok: The virt-who report has not arrived within the interval,
-         which indicates there was no change on hypervisor
+        which indicates there was no change on hypervisor
+
     info: The configuration was not deployed yet or the virt-who was
         unable to report the status
+
     warning: The configuration is invalid and not available.
     """
 

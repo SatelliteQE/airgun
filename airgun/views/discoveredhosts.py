@@ -4,14 +4,14 @@ from widgetastic.widget import Select
 from widgetastic.widget import TableColumn
 from widgetastic.widget import TableRow
 from widgetastic.widget import Text
+from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
-from airgun.views.common import BreadCrumb
-from airgun.views.common import SatTable
 from airgun.views.common import SearchableViewMixin
 from airgun.views.host import HostCreateView
 from airgun.widgets import ActionsDropdown
 from airgun.widgets import FilteredDropdown
+from airgun.widgets import SatTable
 from airgun.widgets import SatTableWithoutHeaders
 
 

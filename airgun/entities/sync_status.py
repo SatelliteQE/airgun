@@ -22,7 +22,7 @@ class SyncStatusEntity(BaseEntity):
             a list or tuple.
         :param timeout: time to wait for all repositories to be synchronized.
 
-        Example usage:
+        Example usage::
 
              synchronize([
                 ('product1', 'repo1'),
@@ -33,7 +33,8 @@ class SyncStatusEntity(BaseEntity):
                 ('Red Hat Satellite Capsule',
                 'Red Hat Satellite Capsule 6.2 for RHEL 7 Server RPMs x86_64')
              ])
-        :return the results text in RESULT columns
+
+        :return: the results text in RESULT columns
         """
         view = self.navigate_to(self, 'All')
         repo_nodes = [view.table.get_node_from_path(repo_path)

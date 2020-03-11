@@ -134,7 +134,7 @@ class HostCollectionEntity(BaseEntity):
             When install_via is: "via remote execution - customize first",
             the new remote execution job form is opened and we can set custom
             values.
-        :returns Task details view values when install "via kattelo agent" else
+        :return: Task details view values when install "via kattelo agent" else
             returns job status view values.
         """
         if job_values is None:
@@ -181,14 +181,15 @@ class HostCollectionEntity(BaseEntity):
         """ Manage module streams
         :param str entity_name:  The host collection name.
         :param action_type: remote action to execute on content host. Action value can be one of
-            them e.g. 'Enable', 'Disable', 'Install', 'Update', 'Remove', 'Reset'
+        them e.g. 'Enable', 'Disable', 'Install', 'Update', 'Remove', 'Reset'
+
         :param str module_name: Module Stream name to remotely
             install/upgrade/remove (depending on `action_type`)
         :param str stream_version:  String with Stream Version of Module
         :param customize: Boolean indicating if additional custom action should be called
         :param customize_values: Dict with custom actions to run. Mandatory if customize is True
 
-        :returns Returns a dict containing job status details
+        :return: Returns a dict containing job status details
         """
         if customize_values is None:
             customize_values = {}
@@ -213,7 +214,7 @@ class HostCollectionEntity(BaseEntity):
         :param str entity_name:  The host collection name.
         :param str lce:  Lifecycle environment name.
         :param str content_view:  Content view name.
-        :returns task details view values
+        :return: task details view values
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.details.change_assigned_content.click()

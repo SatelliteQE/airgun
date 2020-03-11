@@ -40,7 +40,7 @@ class PuppetEnvironmentTableView(BaseLoggedInView, SearchableViewMixin):
             self.title, exception=False) is not None
 
 
-class ImportPuppetEnvironmentView(BaseLoggedInView, SearchableViewMixin):
+class PuppetEnvironmentImportView(BaseLoggedInView, SearchableViewMixin):
     """
     View after clicking Configure -> Environments -> import environments with
     toggles New, Updated, Obsolete. Button update and cancel
