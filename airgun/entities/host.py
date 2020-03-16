@@ -228,7 +228,9 @@ class HostEntity(BaseEntity):
             handle_exception=True, timeout=10,
             logger=view.logger
         )
-        return hostname_button_view
+        hostname = hostname_button_view[0].text
+        self.browser.switch_to_main_frame()
+        return hostname
 
 
 @navigator.register(HostEntity, 'All')
