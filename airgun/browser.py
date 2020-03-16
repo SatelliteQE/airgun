@@ -194,6 +194,7 @@ class SeleniumBrowserFactory(object):
             prefs = {'download.prompt_for_download': False}
             options.add_experimental_option("prefs", prefs)
             options.add_argument('disable-web-security')
+            options.add_argument('ignore-certificate-errors')
             if browseroptions:
                 for opt in browseroptions.split(';'):
                     options.add_argument(opt)
@@ -310,7 +311,7 @@ class SeleniumBrowserFactory(object):
             desired_capabilities = webdriver.DesiredCapabilities.CHROME.copy()
             enable_downloading = {
                 'chromeOptions': {
-                    'args': ['disable-web-security'],
+                    'args': ['disable-web-security', 'ignore-certificate-errors'],
                     'prefs': {'download.prompt_for_download': False}
                 }
             }
