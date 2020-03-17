@@ -638,7 +638,6 @@ class ActionDropdownWithCheckbox(ActionsDropdown):
 
 
 class Search(Widget):
-    """Searchbar for table filtering"""
     search_field = TextInput(locator=(
         ".//input[@id='search' or contains(@placeholder, 'Filter') or "
         "@ng-model='table.searchTerm' or contains(@ng-model, 'Filter')]"))
@@ -835,6 +834,8 @@ class ContextSelector(Widget):
     CURRENT_LOC = '//li[@id="location-dropdown"]/a'
     ORG_LOCATOR = '//li[@id="organization-dropdown"]/ul/li/a[contains(.,{})]'
     LOC_LOCATOR = '//li[@id="location-dropdown"]/ul/li/a[contains(.,{})]'
+    ACCOUNT_MENU = Text("//a[@id='account_menu']")
+    LOGOUT = Text("//a[@href='/users/logout']")
 
     def select_org(self, org_name):
         self.logger.info('Selecting Organization %r' % org_name)
@@ -867,6 +868,10 @@ class ContextSelector(Widget):
     @property
     def current_loc(self):
         return self.browser.text(self.CURRENT_LOC)
+
+    def select_logout(self):
+        self.ACCOUNT_MENU.click()
+        self.LOGOUT.click()
 
     def read(self):
         """As reading organization and location is not atomic operation: needs
