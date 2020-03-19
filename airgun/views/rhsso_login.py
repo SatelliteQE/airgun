@@ -15,7 +15,7 @@ class RhssoLoginView(View, ClickableMixin):
             self.username, exception=False) is not None
 
 
-class RhssoExtLogoutView(View, ClickableMixin):
+class RhssoExternalLogoutView(View, ClickableMixin):
     login_again = Text('//a[@href="/users/extlogin"]')
     logo = Text('//a[@alt="logo')
 
