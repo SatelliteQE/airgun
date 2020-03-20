@@ -38,13 +38,13 @@ class BaseLoggedInView(View):
         locator='//div[@class="toast-notifications-list-pf"]')
     validations = ValidationErrors()
     current_user = Text("//a[@id='account_menu']")
-    ACCOUNT_MENU = Text("//a[@id='account_menu']")
-    LOGOUT = Text("//a[@href='/users/logout']")
+    account_menu = Text("//a[@id='account_menu']")
+    logout = Text("//a[@href='/users/logout']")
 
     def select_logout(self):
         """logout from satellite"""
-        self.ACCOUNT_MENU.click()
-        self.LOGOUT.click()
+        self.account_menu.click()
+        self.logout.click()
 
     def read(self, widget_names=None):
         """Reads the contents of the view and presents them as a dictionary.
