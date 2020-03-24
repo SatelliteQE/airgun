@@ -27,6 +27,7 @@ from airgun.widgets import EditableEntry
 from airgun.widgets import EditableEntryCheckbox
 from airgun.widgets import EditableEntryMultiCheckbox
 from airgun.widgets import EditableEntrySelect
+from airgun.widgets import Pagination
 from airgun.widgets import ReadOnlyEntry
 from airgun.widgets import Search
 
@@ -106,6 +107,7 @@ class ContentHostsView(BaseLoggedInView, SearchableViewMixin):
             'Installable Updates': InstallableUpdatesCellView(),
         }
     )
+    pagination = Pagination()
 
     @property
     def is_displayed(self):

@@ -27,10 +27,12 @@ class ContentHostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def read_all(self):
-        """Read all values from content host title page"""
+    def read_all(self, widget_names=None):
+        """Read all values from content host title page.
+        Optionally, read only the widgets in widget_names.
+        """
         view = self.navigate_to(self, 'All')
-        return view.read()
+        return view.read(widget_names=widget_names)
 
     def read(self, entity_name, widget_names=None):
         """Read content host details, optionally read only the widgets in widget_names."""

@@ -1505,7 +1505,7 @@ class Pagination(Widget):
     last_page_button = Text(".//li[a[span[contains(@class, 'angle-double-right')]]]")
     page = TextInput(locator=".//input[contains(@class, 'pagination-pf-page')]")
     pages = Text(".//span[contains(@class, 'pagination-pf-pages')]")
-    total_items = Text(".//span[@class='pagination-pf-items-total']")
+    total_items = Text(".//span[contains(@class, 'pagination-pf-items-total')]")
 
     @cached_property
     def per_page(self):
