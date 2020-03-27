@@ -329,8 +329,7 @@ class HostCreateView(BaseLoggedInView):
             password = TextInput(id='host_compute_attributes_password')
             ssh_key = TextInput(id='host_compute_attributes_ssh_key_data')
             premium_os_disk = Checkbox(id='host_compute_attributes_premium_os_disk')
-            os_disk_caching = FilteredDropdown(
-                locator="//div[@id='compute_resource']/div[9]//b[@role='presentation']")
+            os_disk_caching = FilteredDropdown(id="s2id_host_compute_attributes_os_disk_caching")
             custom_script_command = TextInput(id="host_compute_attributes_script_command")
             file_uris = TextInput(id="host_compute_attributes_script_uris")
 
