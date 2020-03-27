@@ -240,6 +240,7 @@ class HostCreateView(BaseLoggedInView):
         inherit_deploy_option = ToggleButton(
             locator=".//div[label[@for='compute_resource_id']]//button")
         deploy = FilteredDropdown(id='host_compute_resource')
+        compute_profile = FilteredDropdown(id='s2id_host_compute_profile_id')
         lce = FilteredDropdown(id='host_lifecycle_environment')
         content_view = FilteredDropdown(id='host_content_view')
         content_source = FilteredDropdown(id='s2id_content_source_id')
@@ -314,6 +315,32 @@ class HostCreateView(BaseLoggedInView):
                 ROOT = "//fieldset[@id='storage_volumes']"
                 ITEMS = "./div/div[contains(@class, 'removable-item')]"
                 ITEM_WIDGET_CLASS = ComputeResourceGoogleProfileStorageItem
+
+    @provider_content.register('Azure Resource Manager')
+    class AzureRmResourceForm(View):
+
+        @View.nested
+        class virtual_machine(SatTab):
+            TAB_NAME = 'Virtual Machine'
+            resource_group = FilteredDropdown(id='s2id_azure_rm_rg')
+            vm_size = FilteredDropdown(id='s2id_azure_rm_size')
+            platform = FilteredDropdown(id='s2id_host_compute_attributes_platform')
+            username = TextInput(id='host_compute_attributes_username')
+            password = TextInput(id='host_compute_attributes_password')
+            ssh_key = TextInput(id='host_compute_attributes_ssh_key_data')
+            premium_os_disk = Checkbox(id='host_compute_attributes_premium_os_disk')
+            os_disk_caching = FilteredDropdown(id="s2id_host_compute_attributes_os_disk_caching")
+            custom_script_command = TextInput(id="host_compute_attributes_script_command")
+            file_uris = TextInput(id="host_compute_attributes_script_uris")
+
+        @View.nested
+        class operating_system(SatTab):
+            TAB_NAME = 'Operating System'
+
+            architecture = FilteredDropdown(id='s2id_host_architecture_id')
+            operating_system = FilteredDropdown(id='s2id_host_operatingsystem_id')
+            image = FilteredDropdown(id='s2id_azure_rm_image_id')
+            root_password = TextInput(id='host_root_pass')
 
     @View.nested
     class operating_system(SatTab):
