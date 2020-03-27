@@ -337,8 +337,8 @@ class HostCreateView(BaseLoggedInView):
         class operating_system(SatTab):
             TAB_NAME = 'Operating System'
 
-            architecture = FilteredDropdown(id='host_architecture')
-            operating_system = FilteredDropdown(id='host_operatingsystem')
+            architecture = FilteredDropdown(id='s2id_host_architecture_id')
+            operating_system = FilteredDropdown(id='s2id_host_operatingsystem_id')
             image = FilteredDropdown(id='s2id_azure_rm_image_id')
             root_password = TextInput(id='host_root_pass')
 
