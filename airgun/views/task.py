@@ -28,7 +28,7 @@ class TasksView(BaseLoggedInView, SearchableViewMixin):
         "//div[./button[@id='tasks-dashboard-time-period-dropdown']]"
     )
     table = SatTable(
-        ".//div[@id='tasks-table']/table",
+        ".//div[@class='tasks-table']//table",
         column_widgets={
             'Action': Text('./a'),
         }
