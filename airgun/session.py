@@ -69,6 +69,7 @@ from airgun.entities.smart_variable import SmartVariableEntity
 from airgun.entities.subnet import SubnetEntity
 from airgun.entities.subscription import SubscriptionEntity
 from airgun.entities.sync_status import SyncStatusEntity
+from airgun.entities.sync_templates import SyncTemplatesEntity
 from airgun.entities.syncplan import SyncPlanEntity
 from airgun.entities.task import TaskEntity
 from airgun.entities.trend import TrendEntity
@@ -597,6 +598,11 @@ class Session(object):
     def sync_status(self):
         """Instance of Sync Status entity"""
         return self._open(SyncStatusEntity)
+
+    @cached_property
+    def sync_template(self):
+        """Instance of Sync Templates entity"""
+        return self._open(SyncTemplatesEntity)
 
     @cached_property
     def task(self):
