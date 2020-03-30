@@ -792,7 +792,8 @@ class ValidationErrors(Widget):
         "not(contains(@style,'display:none'))]"
     )
     ERROR_MESSAGES = (
-        ".//*[(contains(@class,'error-msg-block') "
+        ".//*[(contains(@class, 'alert base in fade alert-danger')"
+        "or contains(@class,'error-msg-block')"
         "or contains(@class,'error-message') "
         "or contains(@class,'editable-error-block')) "
         "and not(contains(@style,'display:none'))]"
@@ -2192,7 +2193,7 @@ class PopOverWidget(Widget):
                     widget.fill(item)
                     break
         else:
-            raise ReadOnlyWidgetError(f'This field setting is read-only')
+            raise ReadOnlyWidgetError('This field setting is read-only')
         self.submit.click()
 
     def read(self):
