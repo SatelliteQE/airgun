@@ -26,6 +26,10 @@ class SettingsEntity(BaseEntity):
         view.validations.assert_no_errors()
         view.wait_for_update()
 
+    def read_title(self):
+        """Read settings title"""
+        return self.browser.title
+
 
 @navigator.register(SettingsEntity, 'All')
 class ShowAllSettings(NavigateStep):
