@@ -1,18 +1,23 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.views.common import BaseLoggedInView
 from airgun.views.login import LoginView
 
 
 class LoginEntity(BaseEntity):
-
     def login(self, values):
-        view = self.navigate_to(self, 'NavigateToLogin')
+        view = self.navigate_to(self, "NavigateToLogin")
         view.fill(values)
         view.submit.click()
 
     def logout(self):
-        pass
+        view = BaseLoggedInView(self.browser)
+        view.select_logout()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+        view = LoginView(self.browser)
+        return view.read()
 
 
 @navigator.register(LoginEntity)
