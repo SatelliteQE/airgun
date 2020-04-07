@@ -216,9 +216,7 @@ class Session(object):
             u'Stopping UI session %r for user %r', self.name, self._user)
         passed = True if exc_type is None else False
         try:
-            if passed:
-                self.login.logout()
-            else:
+            if not passed:
                 self.take_screenshot()
         except Exception as err:
             LOGGER.exception(err)
