@@ -1,8 +1,10 @@
 from wait_for import wait_for
 from widgetastic.widget import Table
 from widgetastic.widget import Text
+from widgetastic_patternfly import Button
 
 from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
 from airgun.views.common import SearchableViewMixin
 from airgun.widgets import PopOverWidget
 
@@ -15,6 +17,10 @@ class SettingsView(BaseLoggedInView, SearchableViewMixin):
             'Value': PopOverWidget()
         },
     )
+
+    @SatTab.nested
+    class Email(SatTab):
+        test_email_button = Button(id="test_mail_button")
 
     @property
     def is_displayed(self):

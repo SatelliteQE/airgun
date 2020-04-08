@@ -26,6 +26,13 @@ class SettingsEntity(BaseEntity):
         view.validations.assert_no_errors()
         view.wait_for_update()
 
+    def send_test_mail(self, property_name):
+        """Send the mail to the recipient"""
+        view = self.navigate_to(self, 'All')
+        view.search(property_name)
+        view.Email.test_email_button.click()
+        return view.flash.read()
+
 
 @navigator.register(SettingsEntity, 'All')
 class ShowAllSettings(NavigateStep):
