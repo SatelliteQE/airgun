@@ -22,6 +22,10 @@ class TaskReadOnlyEntry(ReadOnlyEntry):
     )
 
 
+class TaskPagination(Pagination):
+    PER_PAGE_BUTTON_DROPDOWN = ".//div[button[@id='tasks-table-dropdown']]"
+
+
 class TasksView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Tasks']")
     focus = ActionsDropdown(
@@ -33,7 +37,7 @@ class TasksView(BaseLoggedInView, SearchableViewMixin):
             'Action': Text('./a'),
         }
     )
-    pagination = Pagination()
+    pagination = TaskPagination()
 
     @property
     def is_displayed(self):
