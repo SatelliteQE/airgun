@@ -1,3 +1,5 @@
+from time import sleep
+
 from navmazing import NavigateToSibling
 from wait_for import wait_for
 
@@ -179,6 +181,7 @@ class HostEntity(BaseEntity):
            using the checkbox from table header
         """
         view = self._select_action('Delete Hosts', entities_list)
+        sleep(1)
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
