@@ -12,6 +12,7 @@ from airgun.views.dashboard import TotalCount
 from airgun.widgets import ActionsDropdown
 from airgun.widgets import FilteredDropdown
 from airgun.widgets import MultiSelect
+from airgun.widgets import RadioGroup
 from airgun.widgets import SatTable
 
 
@@ -30,6 +31,28 @@ class SCAPPoliciesView(BaseLoggedInView, SearchableViewMixin):
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.title, exception=False) is not None
+
+
+class ScapPolicyRadioGroup(RadioGroup):
+    """Handle an HTML non normalized Radio group according to the current
+    architecture.
+
+    Note: This is a temporary solution, a fix will be issued upstream,
+        when the fix will be available downstream we should replace the
+        implementation with RadioGroup.
+
+    Example html representation::
+
+        <div>
+        <input type="radio" value="ansible" name="policy[deploy_by]" id="policy_deploy_by_ansible">
+    """
+    @property
+    def button_names(self):
+        return ['ansible', 'puppet', 'manual']
+
+    def _get_parent_label(self, name):
+        """Get radio group label for specific button"""
+        return self.browser.wait_for_element(f".//input[@id='policy_deploy_by_{name}']/..")
 
 
 class SCAPPolicyCreateView(BaseLoggedInView):
@@ -58,8 +81,17 @@ class SCAPPolicyCreateView(BaseLoggedInView):
         )
 
     @View.nested
-    class create_policy(BaseLoggedInView):
-        TAB_NAME = 'Create policy'
+    class deployment_options(BaseLoggedInView):
+        TAB_NAME = 'Deployment Options'
+        next_step = Text("//input[contains(@value, 'Next')]")
+        deploy_by = ScapPolicyRadioGroup("//div[contains(@id, 'deploy_by')]")
+
+        def after_fill(self, was_change):
+            self.next_step.click()
+
+    @View.nested
+    class policy_attributes(BaseLoggedInView):
+        TAB_NAME = 'Policy Attributes'
         next_step = Text("//input[contains(@value, 'Next')]")
         name = TextInput(id='policy_name')
         description = TextInput(id='policy_description')
@@ -142,6 +174,11 @@ class SCAPPolicyEditView(BaseLoggedInView):
         )
 
     @View.nested
+    class deployment_options(BaseLoggedInView):
+        next_step = Text("//input[contains(@value, 'Next')]")
+        deploy_by = ScapPolicyRadioGroup("//div[contains(@id, 'deployment')]")
+
+    @View.nested
     class general(SatTab):
         name = TextInput(id='policy_name')
         description = Text('//textarea[@id="policy_description"]')
@@ -206,4 +243,4 @@ class SCAPPolicyDetailsView(BaseLoggedInView):
         """Refer to information from the middle of the chart in Oscap Policy
         Details View
         """
-        hosts_breakdown = Text('//div[@id="overview"]/span[@id="pieLabel3"]')
+        hosts_breakdown = Text("//div[@id='policy-breakdown-chart']")
