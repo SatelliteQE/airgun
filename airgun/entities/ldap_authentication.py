@@ -11,7 +11,7 @@ from airgun.views.ldapauthentication import LDAPAuthenticationsView
 
 
 class LDAPAuthenticationEntity(BaseEntity):
-    endpoint_path = '/auth_source_ldaps'
+    endpoint_path = '/auth_sources'
 
     def create(self, values):
         """Create new LDAP Authentication source"""
@@ -60,7 +60,7 @@ class ShowAllLDAPSources(NavigateStep):
     VIEW = LDAPAuthenticationsView
 
     def step(self, *args, **kwargs):
-        self.view.menu.select('Administer', 'LDAP Authentication')
+        self.view.menu.select('Administer', 'Authentication sources')
 
 
 @navigator.register(LDAPAuthenticationEntity, 'New')
