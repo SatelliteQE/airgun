@@ -34,8 +34,7 @@ class BaseLoggedInView(View):
     menu = SatVerticalNavigation(
         './/div[@id="vertical-nav" or contains(@class, "nav-pf-vertical")]/ul')
     taxonomies = ContextSelector()
-    flash = SatFlashMessages(
-        locator='//div[@class="toast-notifications-list-pf"]')
+    flash = SatFlashMessages()
     validations = ValidationErrors()
     current_user = Text("//a[@id='account_menu']")
     account_menu = Text("//a[@id='account_menu']")

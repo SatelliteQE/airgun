@@ -683,62 +683,6 @@ class SatVerticalNavigation(VerticalNavigation):
     CURRENTLY_SELECTED = './/li[contains(@class, "active")]/a/span'
 
 
-class SatFlashMessages(FlashMessages):
-    """Satellite version of Patternfly's alerts section. The only difference is
-    overridden ``messages`` property which returns :class:`SatFlashMessage`.
-
-    Example html representation::
-
-        <div class="toast-notifications-list-pf">
-            <div class="alert toast-pf alert-success alert-dismissable">
-                <button ... type="button" class="close close-default">
-                    <span ... class="pficon pficon-close"></span></button>
-                <span aria-hidden="true" class="pficon pficon-ok"></span>
-                <span><span>Sample message</span></span></div>
-            </div>
-        </div>
-
-    Locator example::
-
-        //div[@class="toast-notifications-list-pf"]
-
-    """
-
-    @property
-    def messages(self):
-        result = []
-        try:
-            for flash_div in self.browser.elements(
-                    './div[contains(@class, "alert")]', parent=self,
-                    check_visibility=True):
-                result.append(
-                    SatFlashMessage(self, flash_div, logger=self.logger))
-        except NoSuchElementException:
-            pass
-        return result
-
-    @retry_stale_element
-    def assert_no_error(self, ignore_messages=None):
-        if ignore_messages is None:
-            ignore_messages = []
-        self.logger.info('asserting there are no error messages')
-        for message in self.messages:
-            message_text = message.text
-            if message.type not in {'success', 'info', 'warning'}:
-                if message_text in ignore_messages:
-                    self.logger.info('ERROR MESSAGE IGNORED %s: %r', message.type, message_text)
-                    continue
-                self.logger.error('%s: %r', message.type, message_text)
-                raise AssertionError(
-                    'assert_no_error: {}: {!r}'.format(message.type, message_text))
-            else:
-                self.logger.info('%s: %r', message.type, message_text)
-
-    @retry_stale_element
-    def dismiss(self):
-        return super().dismiss()
-
-
 class SatFlashMessage(FlashMessage):
     """Satellite version of Patternfly alert. It doesn't contain ``<strong>``
     tag and all the text is inside 2 ``<span>``.
@@ -762,6 +706,52 @@ class SatFlashMessage(FlashMessage):
     @property
     def text(self):
         return self.browser.text('./span[text()]', parent=self)
+
+
+class SatFlashMessages(FlashMessages):
+    """Satellite version of Patternfly's alerts section. The only difference is
+    overridden ``messages`` property which returns :class:`SatFlashMessage`.
+
+    Example html representation::
+
+        <div class="toast-notifications-list-pf">
+            <div class="alert toast-pf alert-success alert-dismissable">
+                <button ... type="button" class="close close-default">
+                    <span ... class="pficon pficon-close"></span></button>
+                <span aria-hidden="true" class="pficon pficon-ok"></span>
+                <span><span>Sample message</span></span></div>
+            </div>
+        </div>
+
+    Locator example::
+
+        //div[@class="toast-notifications-list-pf"]
+
+    """
+    ROOT = '//div[@class="toast-notifications-list-pf"]'
+    MSG_LOCATOR = f'{ROOT}/div[contains(@class, "alert")]'
+    msg_class = SatFlashMessage
+
+    @retry_stale_element
+    def assert_no_error(self, ignore_messages=None):
+        if ignore_messages is None:
+            ignore_messages = []
+        self.logger.info('asserting there are no error messages')
+        for message in self.messages():
+            message_text = message.text
+            if message.type not in {'success', 'info', 'warning'}:
+                if message_text in ignore_messages:
+                    self.logger.info('ERROR MESSAGE IGNORED %s: %r', message.type, message_text)
+                    continue
+                self.logger.error('%s: %r', message.type, message_text)
+                raise AssertionError(
+                    'assert_no_error: {}: {!r}'.format(message.type, message_text))
+            else:
+                self.logger.info('%s: %r', message.type, message_text)
+
+    @retry_stale_element
+    def dismiss(self):
+        return super().dismiss()
 
 
 class ValidationErrors(Widget):
