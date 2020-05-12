@@ -90,6 +90,14 @@ class ReportTemplateEntity(BaseEntity):
         view.flash.assert_no_error()
         return self.browser.save_downloaded_file()
 
+    def schedule(self, entity_name, values={}):
+        """Schedule report template
+        """
+        view = self.navigate_to(self, 'Generate', entity_name=entity_name)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+
     def update(self, entity_name, values):
         """Update report template"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
