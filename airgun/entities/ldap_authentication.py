@@ -53,6 +53,18 @@ class LDAPAuthenticationEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def read_auth_source_counts(self, auth_source_type):
+        """Read values for corresponding auth source card count"""
+        view = self.navigate_to(self, 'All')
+        if auth_source_type.lower() == 'internal':
+            return view.internal.count
+        elif auth_source_type.lower() == 'external':
+            return view.external.count
+        elif auth_source_type.lower() == 'ldap':
+            return view.ldap.count
+        else:
+            raise ValueError('Provide the correct auth_source_type')
+
 
 @navigator.register(LDAPAuthenticationEntity, 'All')
 class ShowAllLDAPSources(NavigateStep):

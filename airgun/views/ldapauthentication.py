@@ -6,6 +6,7 @@ from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
+from airgun.widgets import AuthSourceAggregateCard
 from airgun.widgets import FilteredDropdown
 from airgun.widgets import MultiSelect
 from airgun.widgets import SatTable
@@ -16,6 +17,12 @@ class LDAPAuthenticationsView(BaseLoggedInView):
         "//h1[text()='LDAP authentication sources' or "
         "text()='LDAP Authentication']"
     )
+    internal = AuthSourceAggregateCard(locator=".//h2[contains(text(), 'Internal')]/parent::div",
+                                       name="Internal")
+    external = AuthSourceAggregateCard(locator=".//h2[contains(text(), 'External')]/parent::div",
+                                       name="External")
+    ldap = AuthSourceAggregateCard(locator=".//h2[contains(text(), 'LDAP')]/parent::div",
+                                   name="LDAP")
     new = Text("//a[contains(@href, '/auth_source_ldaps/new')]")
     table = SatTable(
         './/table',
