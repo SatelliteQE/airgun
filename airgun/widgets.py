@@ -2194,23 +2194,25 @@ class PopOverWidget(Widget):
 
 class AuthSourceAggregateCard(AggregateStatusCard):
     """This is a customizable card widget which is has the title, count and kebab widget
-    <div class="card-pf-body">
-        <div class="dropdown pull-right dropdown-kebab-pf">
-              <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropupKebabRight2">
-                  <li><a href="/auth_source_externals/3/edit">Edit</a></li>
-              </ul>
-        </div>
-        <h2 class="card-pf-title text-center">
-                External
-        </h2>
-              <div class="card-pf-items text-center">
-                    <div class="card-pf-item">
-                      <span class="pficon pficon-users"></span>
-                      <span class="card-pf-item-text"><a href="">10</a></span>
-                    </div>
-              </div>
-    </div>
 
+    Example html representation::
+
+        <div class="card-pf-body">
+            <div class="dropdown pull-right dropdown-kebab-pf">
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropupKebabRight2">
+                    <li><a href="/auth_source_externals/3/edit">Edit</a></li>
+                </ul>
+            </div>
+            <h2 class="card-pf-title text-center">
+                    External
+            </h2>
+            <div class="card-pf-items text-center">
+                <div class="card-pf-item">
+                    <span class="pficon pficon-users"></span>
+                    <span class="card-pf-item-text"><a href="">10</a></span>
+                </div>
+            </div>
+        </div>
     """
     select_kebab = Kebab(locator="./div[contains(@class, 'dropdown-kebab-pf')]")
     COUNT = ".//span[@class='card-pf-item-text']"
@@ -2218,9 +2220,7 @@ class AuthSourceAggregateCard(AggregateStatusCard):
     @property
     def count(self):
         """ count in available in the card
-
-        Returns:
-            None if no count element is found int count from the element
+        :return int: None if no count element is found int count from the element
         """
         try:
             return int(
