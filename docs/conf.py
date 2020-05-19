@@ -67,6 +67,7 @@ nitpick_ignore = [
     ('py:class', 'widgetastic.widget.View'),
     ('py:class', 'widgetastic.widget.Widget'),
     ('py:class', 'widgetastic.widget.WTMixin'),
+    ('py:class', 'widgetastic_patternfly.AggregateStatusCard'),
     ('py:class', 'widgetastic_patternfly.Button'),
     ('py:class', 'widgetastic_patternfly.FlashMessage'),
     ('py:class', 'widgetastic_patternfly.FlashMessages'),

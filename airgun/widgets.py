@@ -2214,6 +2214,8 @@ class AuthSourceAggregateCard(AggregateStatusCard):
             </div>
         </div>
     """
+
+    ROOT = ParametrizedLocator('.//h2[contains(text(), {@name|quote})]/parent::div')
     select_kebab = Kebab(locator="./div[contains(@class, 'dropdown-kebab-pf')]")
     COUNT = ".//span[@class='card-pf-item-text']"
 
