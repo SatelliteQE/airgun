@@ -2193,7 +2193,7 @@ class PopOverWidget(Widget):
 
 
 class AuthSourceAggregateCard(AggregateStatusCard):
-    """This is a customizable card widget which is has the title, count and kebab widget
+    """This is a customizable card widget which has the title, count and kebab widget
 
     Example html representation::
 
