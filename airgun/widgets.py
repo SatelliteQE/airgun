@@ -2221,7 +2221,7 @@ class AuthSourceAggregateCard(AggregateStatusCard):
 
     @property
     def count(self):
-        """ count in available in the card
+        """ Count of sources
         :return int: None if no count element is found, otherwise integer count of sources in the card
         """
         try:
