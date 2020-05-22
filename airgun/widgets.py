@@ -15,9 +15,11 @@ from widgetastic.widget import TextInput
 from widgetastic.widget import View
 from widgetastic.widget import Widget
 from widgetastic.xpath import quote
+from widgetastic_patternfly import AggregateStatusCard
 from widgetastic_patternfly import Button
 from widgetastic_patternfly import FlashMessage
 from widgetastic_patternfly import FlashMessages
+from widgetastic_patternfly import Kebab
 from widgetastic_patternfly import VerticalNavigation
 
 from airgun.exceptions import DisabledWidgetError
@@ -2188,3 +2190,45 @@ class PopOverWidget(Widget):
     def read(self):
         """read column updated value"""
         return self.column_value.read()
+
+
+class AuthSourceAggregateCard(AggregateStatusCard):
+    """This is a customizable card widget which has the title, count and kebab widget
+
+    Example html representation::
+
+        <div class="card-pf-body">
+            <div class="dropdown pull-right dropdown-kebab-pf">
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropupKebabRight2">
+                    <li><a href="/auth_source_externals/3/edit">Edit</a></li>
+                </ul>
+            </div>
+            <h2 class="card-pf-title text-center">
+                    External
+            </h2>
+            <div class="card-pf-items text-center">
+                <div class="card-pf-item">
+                    <span class="pficon pficon-users"></span>
+                    <span class="card-pf-item-text"><a href="">10</a></span>
+                </div>
+            </div>
+        </div>
+    """
+
+    ROOT = ParametrizedLocator('.//h2[contains(text(), {@name|quote})]/parent::div')
+    select_kebab = Kebab(locator="./div[contains(@class, 'dropdown-kebab-pf')]")
+    COUNT = ".//span[@class='card-pf-item-text']"
+
+    @property
+    def count(self):
+        """ Count of sources
+        :return int: None if no count element is found, otherwise count of sources in the card
+        """
+        try:
+            return int(
+                self.browser.text(
+                    self.browser.element(self.COUNT)
+                )
+            )
+        except NoSuchElementException:
+            return None
