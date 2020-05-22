@@ -2184,7 +2184,7 @@ class PopOverWidget(Widget):
                     widget.fill(item)
                     break
         else:
-            raise ReadOnlyWidgetError(f'This field setting is read-only')
+            raise ReadOnlyWidgetError('This field setting is read-only')
         self.submit.click()
 
     def read(self):

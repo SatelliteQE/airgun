@@ -59,6 +59,13 @@ class LDAPAuthenticationEntity(BaseEntity):
         if auth_source_type.lower() in ('internal', 'external', 'ldap'):
             return getattr(view, auth_source_type.lower()).count
 
+    def test_connection(self, values):
+        """Testing FQDN for test connection"""
+        view = self.navigate_to(self, 'New')
+        view.fill(values)
+        view.ldap_server.text_connection.click()
+        view.flash.assert_no_error()
+
 
 @navigator.register(LDAPAuthenticationEntity, 'All')
 class ShowAllLDAPSources(NavigateStep):
