@@ -170,7 +170,7 @@ class HostEntity(BaseEntity):
 
         :returns: The job invocation status view values
         """
-        status_view = self._select_action('Play Ansible roles', entities_list)
+        status_view = self._select_action('Run all Ansible roles', entities_list)
         if wait_for_results:
             status_view.wait_for_result(timeout=timeout)
         return status_view.read()
@@ -311,7 +311,7 @@ class HostsSelectAction(NavigateStep):
         'Assign Organization': HostsAssignOrganization,
         'Delete Hosts': HostsDeleteActionDialog,
         'Schedule Remote Job': HostsJobInvocationCreateView,
-        'Play Ansible roles': HostsJobInvocationStatusView,
+        'Run all Ansible roles': HostsJobInvocationStatusView,
     }
 
     def prerequisite(self, *args, **kwargs):
