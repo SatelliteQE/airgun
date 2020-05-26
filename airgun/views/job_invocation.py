@@ -5,6 +5,7 @@ from widgetastic.widget import Text
 from widgetastic.widget import TextInput
 from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import Button
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
@@ -183,8 +184,8 @@ class JobInvocationStatusView(BaseLoggedInView):
     rerun = Text("//a[text()='Rerun']")
     rerun_failed = Text("//a[text()='Rerun failed']")
     job_task = Text("//a[text()='Job Task']")
-    cancel_job = Text("//a[text()='Cancel Job']")
-    abort_job = Text("//a[text()='Abort Job']")
+    cancel_job = Button(value='Cancel Job')
+    abort_job = Button(value='Abort Job')
 
     @View.nested
     class overview(SatTab):
