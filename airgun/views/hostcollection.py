@@ -207,7 +207,7 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
 class HostCollectionInstallErrataView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h4[contains(., 'Content Host Errata Management')]")
     search = TextInput(
-        locator=".//input[@type='text' and @ng-model='errataFilter']")
+        locator=".//input[@type='text' and @ng-model='table.searchTerm']")
     refresh = Text(locator=".//button[@ng-click='fetchErrata()']")
     install = ActionsDropdown(
             "//span[contains(@class, 'btn-group')]"
