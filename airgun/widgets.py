@@ -1261,7 +1261,7 @@ class EditableEntry(GenericLocatorWidget):
     """
     edit_button = Text(".//span[contains(@ng-hide, 'editMode')]")
     edit_field = TextInput(locator=".//*[self::input or self::textarea]")
-    save_button = Text(".//button[span[text()='Save']]")
+    save_button = Text(".//button[text()='Save']")
     cancel_button = Text(".//button[span[text()='Cancel']]")
     entry_value = Text(".//span[contains(@class, 'editable-value')]")
 
