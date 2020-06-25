@@ -647,7 +647,7 @@ class Search(Widget):
         "or @ng-click='table.search(table.searchTerm)']"
     )
     clear_button = Text(
-        ".//span[contains(@class,'autocomplete-clear-button')]"
+        ".//span[contains(@class,'autocomplete-clear-button') or contains(@class,'fa-close')]"
     )
     actions = ActionsDropdown(".//*[self::div or self::span][contains(@class, 'input-group-btn')]")
 
