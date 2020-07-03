@@ -34,7 +34,7 @@ class JobInvocationCreateView(BaseLoggedInView):
     job_template = FilteredDropdown(
         locator="//div[contains(@class, 'job_template_selector')]")
     bookmark = FilteredDropdown(id='targeting_bookmark')
-    search_query = TextInput(id='targeting_search_query')
+    search_query = TextInput(name='targeting[search_query]')
     template_content = ConditionalSwitchableView(reference='job_template')
 
     @template_content.register('Run Command - SSH Default', default=True)
