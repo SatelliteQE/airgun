@@ -1,4 +1,5 @@
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
@@ -14,6 +15,11 @@ class JobTemplateEntity(BaseEntity):
     def create(self, values):
         """Create new job template"""
         view = self.navigate_to(self, 'New')
+        wait_for(
+            lambda: JobTemplateCreateView(self.browser).is_displayed is True,
+            timeout=60,
+            delay=1,
+        )
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()

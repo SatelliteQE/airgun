@@ -59,7 +59,7 @@ class JobTemplateCreateView(BaseLoggedInView):
             self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Templates'
+            and self.breadcrumb.locations[0] == 'Job templates'
             and self.breadcrumb.read() == 'New Job Template'
         )
 
