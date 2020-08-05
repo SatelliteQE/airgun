@@ -23,3 +23,12 @@ class RhssoExternalLogoutView(View, ClickableMixin):
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.login_again, exception=False) is not None
+
+
+class RhssoTwoFactorSuccessView(View, ClickableMixin):
+    code = TextInput(id='code')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.code, exception=False) is not None
