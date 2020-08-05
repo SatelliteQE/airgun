@@ -52,7 +52,6 @@ class ResourceProviderCreateView(BaseLoggedInView):
 
     @provider_content.register('EC2')
     class EC2ProviderForm(View):
-        http_proxy = TextInput(id='compute_resource_http_proxy_id')
         access_key = TextInput(id='compute_resource_user')
         secret_key = TextInput(id='compute_resource_password')
 
@@ -64,6 +63,10 @@ class ResourceProviderCreateView(BaseLoggedInView):
 
             def before_fill(self, values=None):
                 self.load_regions.click()
+
+        @View.nested
+        class http_proxy(View):
+            value = FilteredDropdown(id='compute_resource_http_proxy_id')
 
     @provider_content.register('Google')
     class GCEProviderForm(View):
@@ -78,6 +81,10 @@ class ResourceProviderCreateView(BaseLoggedInView):
 
             def before_fill(self, values=None):
                 self.load_zones.click()
+
+        @View.nested
+        class http_proxy(View):
+            value = FilteredDropdown(id='compute_resource_http_proxy_id')
 
     @provider_content.register('Libvirt')
     class LibvirtProviderForm(View):
