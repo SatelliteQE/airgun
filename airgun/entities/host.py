@@ -16,10 +16,12 @@ from airgun.views.host import HostsAssignLocation
 from airgun.views.host import HostsAssignOrganization
 from airgun.views.host import HostsChangeEnvironment
 from airgun.views.host import HostsChangeGroup
+from airgun.views.host import HostsChangeOpenscapCapsule
 from airgun.views.host import HostsDeleteActionDialog
 from airgun.views.host import HostsDeleteTaskDetailsView
 from airgun.views.host import HostsJobInvocationCreateView
 from airgun.views.host import HostsJobInvocationStatusView
+from airgun.views.host import HostsUnassignCompliancePolicy
 from airgun.views.host import HostsView
 
 
@@ -307,6 +309,8 @@ class HostsSelectAction(NavigateStep):
         'Change Environment': HostsChangeEnvironment,
         'Change Group': HostsChangeGroup,
         'Assign Compliance Policy': HostsAssignCompliancePolicy,
+        'Unassign Compliance Policy': HostsUnassignCompliancePolicy,
+        'Change OpenSCAP Capsule': HostsChangeOpenscapCapsule,
         'Assign Location': HostsAssignLocation,
         'Assign Organization': HostsAssignOrganization,
         'Delete Hosts': HostsDeleteActionDialog,
