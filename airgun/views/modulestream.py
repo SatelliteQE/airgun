@@ -13,6 +13,7 @@ from airgun.widgets import Search
 
 class CustomSearch(Search):
     search_field = TextInput(locator=".//input[@role='combobox']")
+    clear_button = Text(".//span[contains(@class,'fa-times')]")
     search_button = Button('Search')
 
 
