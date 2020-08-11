@@ -642,6 +642,20 @@ class HostsAssignCompliancePolicy(HostsActionCommonDialog):
     policy = Select(id='policy_id')
 
 
+class HostsUnassignCompliancePolicy(HostsActionCommonDialog):
+    title = Text(
+        "//h4[text()='Unassign Compliance Policy"
+        " - The following hosts are about to be changed']")
+    policy = Select(id='policy_id')
+
+
+class HostsChangeOpenscapCapsule(HostsActionCommonDialog):
+    title = Text(
+        "//h4[text()='Change OpenSCAP Capsule"
+        " - The following hosts are about to be changed']")
+    policy = Select(id='smart_proxy_id')
+
+
 class HostsDeleteActionDialog(HostsActionCommonDialog):
     title = Text("//h4[text()='Delete Hosts - The following hosts are about to be changed']")
 
