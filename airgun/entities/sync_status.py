@@ -37,6 +37,7 @@ class SyncStatusEntity(BaseEntity):
         :return: the results text in RESULT columns
         """
         view = self.navigate_to(self, 'All')
+        view.browser.refresh()
         repo_nodes = [view.table.get_node_from_path(repo_path)
                       for repo_path in repository_paths]
         for repo_node in repo_nodes:
