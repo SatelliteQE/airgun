@@ -124,13 +124,13 @@ class ContentHostEntity(BaseEntity):
             'rex': 'via remote execution',
             'rex_customize': 'via remote execution - customize first',
         }
-        if install_via is not None:
-            view.errata.apply_selected.fill(install_via_dict[install_via])
+        view.errata.apply_selected.fill(install_via_dict[install_via])
+        if install_via == 'katello':
+            view = ContentHostTaskDetailsView(view.browser)
+            view.progressbar.wait_for_result()
         else:
-            view.errata.apply_selected.fill('Apply Selected')
-            view.dialog.confirm()
-        view = JobInvocationStatusView(view.browser)
-        view.wait_for_result()
+            view = JobInvocationStatusView(view.browser)
+            view.wait_for_result()
         return view.read()
 
     def search_errata(self, entity_name, errata_id, environment=None):
