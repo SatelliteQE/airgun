@@ -35,14 +35,14 @@ class SubscriptionEntity(BaseEntity):
             timeout=timeout,
             logger=view.progressbar.logger,
         )
+        view.flash.assert_no_error(ignore_messages=ignore_error_messages)
+        view.flash.dismiss()
         wait_for(
             lambda: self.has_manifest == has_manifest,
             handle_exception=True,
             timeout=10,
             logger=view.logger,
         )
-        view.flash.assert_no_error(ignore_messages=ignore_error_messages)
-        view.flash.dismiss()
 
     @property
     def has_manifest(self):
@@ -51,12 +51,13 @@ class SubscriptionEntity(BaseEntity):
         May be None if user can't verify reliably if manifest is
         uploaded or not due to missing permissions
         """
-        view = self.navigate_to(self, 'All')
         try:
-            view.add_button.wait_displayed()
+            view = self.navigate_to(self, 'Manage Manifest')
+            result = "http" in view.manifest.red_hat_cdn_url.value
+            view.close_button.click()
+            return result
         except TimedOutError:
             return None
-        return not view.add_button.disabled
 
     def add_manifest(self, manifest_file, ignore_error_messages=None):
         """Upload manifest file
