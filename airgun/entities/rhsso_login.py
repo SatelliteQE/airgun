@@ -4,6 +4,7 @@ from airgun.navigation import navigator
 from airgun.views.common import BaseLoggedInView
 from airgun.views.rhsso_login import RhssoExternalLogoutView
 from airgun.views.rhsso_login import RhssoLoginView
+from airgun.views.rhsso_login import RhssoTwoFactorSuccessView
 
 
 class RHSSOLoginEntity(BaseEntity):
@@ -23,6 +24,12 @@ class RHSSOLoginEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
         view = RhssoExternalLogoutView(self.browser)
+        return view.read()
+
+    def get_two_factor_login_code(self, values, url):
+        self.browser.selenium.get(url)
+        self.login(values)
+        view = RhssoTwoFactorSuccessView(self.browser)
         return view.read()
 
 
