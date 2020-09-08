@@ -6,7 +6,7 @@ from airgun.navigation import navigator
 from airgun.views.user import UserCreateView
 from airgun.views.user import UserDetailsView
 from airgun.views.user import UsersView
-
+from wait_for import wait_for
 
 class UserEntity(BaseEntity):
     endpoint_path = '/users'
@@ -14,6 +14,11 @@ class UserEntity(BaseEntity):
     def create(self, values):
         """Create new user entity"""
         view = self.navigate_to(self, 'New')
+        wait_for(
+            lambda: UserCreateView(self.browser).is_displayed is True,
+            timeout=60,
+            delay=1,
+        )
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
