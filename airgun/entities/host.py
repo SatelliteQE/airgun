@@ -218,18 +218,24 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
         view.webconsole.click()
         view.validations.assert_no_errors()
+        # switch to the last opened tab,
+        self.browser.switch_to_window(self.browser.window_handles[-1])
+        self.browser.wait_for_element(
+            locator='//div[@id="index-brand"]', exception=True
+        )
         # the remote host content is loaded in an iframe, let's switch to it
-        self.browser.selenium.switch_to.frame(0)
+        self.browser.switch_to_frame(locator='//div[@id="content"]/iframe')
+
+        self.browser.wait_for_element(
+            locator='//a[@id="system_information_hostname_button"]', exception=True, visible=True
+        )
         hostname_button_view = self.browser.selenium.find_elements_by_id(
             'system_information_hostname_button'
         )
-        wait_for(
-            lambda: hostname_button_view[0].text != '',
-            handle_exception=True, timeout=10,
-            logger=view.logger
-        )
         hostname = hostname_button_view[0].text
         self.browser.switch_to_main_frame()
+        self.browser.switch_to_window(self.browser.window_handles[0])
+        self.browser.close_window(self.browser.window_handles[-1])
         return hostname
 
 
