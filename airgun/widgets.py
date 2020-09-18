@@ -2097,14 +2097,30 @@ class GenericRemovableWidgetItem(GenericLocatorWidget):
 
 class AutoCompleteTextInput(TextInput):
     """Autocomplete Search input field, We must remove the focus from this widget after fill to
-    force the auto-completion list to be hidden.
+    force the auto-completion list to be hidden. Since this is a react component, calling browser
+    clear method directly on the field has no effect, thus we need to clear the field using the 
+    clear button attached to the input
     """
 
+    clear_button = Text(
+        locator="//span[contains(@class,'autocomplete-clear-button') or "
+                "contains(@class,'fa-close')]"
+    )
+
+    def clear(self):
+        """Clears search field value and re-trigger search to remove all
+        filters.
+        """
+        if self.clear_button.is_displayed:
+            self.clear_button.click()
+
     def fill(self, value):
-        changes = super().fill(value)
+        old_value = self.value
+        self.clear()
+        super().fill(value)
         self.browser.plugin.ensure_page_safe()
         self.browser.execute_script('arguments[0].blur();', self.__element__())
-        return changes
+        return self.value != old_value
 
 
 class ToggleButton(Button):
