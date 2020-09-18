@@ -14,6 +14,7 @@ from airgun.entities.activationkey import ActivationKeyEntity
 from airgun.entities.architecture import ArchitectureEntity
 from airgun.entities.audit import AuditEntity
 from airgun.entities.bookmark import BookmarkEntity
+from airgun.entities.cloud_inventory import CloudInventoryEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.computeresource import ComputeResourceEntity
 from airgun.entities.configgroup import ConfigGroupEntity
@@ -318,6 +319,11 @@ class Session(object):
     def bookmark(self):
         """Instance of Bookmark entity."""
         return self._open(BookmarkEntity)
+
+    @cached_property
+    def cloudinventory(self):
+        """Instance of RH Cloud Inventory Upload entity."""
+        return self._open(CloudInventoryEntity)
 
     @cached_property
     def computeprofile(self):
