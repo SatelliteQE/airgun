@@ -49,7 +49,7 @@ class DiscoveryRuleCreateView(BaseLoggedInView):
     @View.nested
     class primary(SatTab):
         name = TextInput(id='discovery_rule_name')
-        search = AutoCompleteTextInput(id='search')
+        search = AutoCompleteTextInput(name='discovery_rule[search]')
         host_group = FilteredDropdown(id='discovery_rule_hostgroup_id')
         hostname = TextInput(id='discovery_rule_hostname')
         hosts_limit = TextInput(id='discovery_rule_max_count')
