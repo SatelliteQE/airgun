@@ -196,7 +196,13 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
         verify_ssl = Checkbox(id='verify_ssl')
         run_procedure = Text(
             "//button[contains(., 'Run Repository Creation')]")
-        create_repos_table = SatTable('//table')
+        create_repos_table = Table(
+                locator='//table',
+                column_widgets={
+                    'Repository Name': TextInput(locator=".//input[@name='repo_name']"),
+                    'Repository Label': TextInput(locator=".//input[@name='repo_label']"),
+                },
+        )
 
         def wait_repo_created(self):
             wait_for(
