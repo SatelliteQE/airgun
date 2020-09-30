@@ -57,6 +57,18 @@ class SyncPlanEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def remove_product(self, entity_name, products_list):
+        """Remove product from sync plan
+
+        :param str entity_name: sync plan name
+        :param products_list: either one or list of products
+        """
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.products.resources.remove(products_list)
+        assert view.flash.is_displayed
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
 
 @navigator.register(SyncPlanEntity, 'All')
 class ShowAllSyncPlans(NavigateStep):
