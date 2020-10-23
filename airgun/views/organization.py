@@ -22,13 +22,12 @@ class OrganizationsView(BaseLoggedInView, SearchableViewMixin):
         column_widgets={
             'Name': Text('./a'),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class OrganizationCreateView(BaseLoggedInView):
@@ -40,8 +39,7 @@ class OrganizationCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Organizations'
@@ -57,8 +55,7 @@ class OrganizationCreateSelectHostsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Organizations'
@@ -73,8 +70,7 @@ class OrganizationEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Organizations'
@@ -106,21 +102,18 @@ class OrganizationEditView(BaseLoggedInView):
     @View.nested
     class compute_resources(SatVerticalTab):
         TAB_NAME = 'Compute Resources'
-        all_resources = Checkbox(
-            id='organization_ignore_types_computeresource')
+        all_resources = Checkbox(id='organization_ignore_types_computeresource')
         resources = MultiSelect(id='ms-organization_compute_resource_ids')
 
     @View.nested
     class media(SatVerticalTab):
-        all_medias = Checkbox(
-            id='organization_ignore_types_medium')
+        all_medias = Checkbox(id='organization_ignore_types_medium')
         resources = MultiSelect(id='ms-organization_medium_ids')
 
     @View.nested
     class provisioning_templates(SatVerticalTab):
         TAB_NAME = 'Provisioning Templates'
-        all_templates = Checkbox(
-            id='organization_ignore_types_provisioningtemplate')
+        all_templates = Checkbox(id='organization_ignore_types_provisioningtemplate')
         resources = MultiSelect(id='ms-organization_provisioning_template_ids')
 
     @View.nested

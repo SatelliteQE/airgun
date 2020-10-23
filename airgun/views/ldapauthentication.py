@@ -25,13 +25,12 @@ class LDAPAuthenticationsView(BaseLoggedInView):
         column_widgets={
             'Name': Text('./a'),
             'Actions': Text('.//a[@data-method="delete"]'),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class LDAPAuthenticationCreateView(BaseLoggedInView):
@@ -40,12 +39,11 @@ class LDAPAuthenticationCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Auth source ldaps'
-                and self.breadcrumb.read() == 'Create LDAP Auth Source'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Auth source ldaps'
+            and self.breadcrumb.read() == 'Create LDAP Auth Source'
         )
 
     @View.nested
@@ -90,13 +88,11 @@ class LDAPAuthenticationCreateView(BaseLoggedInView):
 
 
 class LDAPAuthenticationEditView(LDAPAuthenticationCreateView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Auth source ldaps'
-                and self.breadcrumb.read().startswith('Edit LDAP-')
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Auth source ldaps'
+            and self.breadcrumb.read().startswith('Edit LDAP-')
         )

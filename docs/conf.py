@@ -10,7 +10,7 @@ import sys
 
 def skip_data(app, what, name, obj, skip, options):
     """Skip double generating docs for airgun.settings"""
-    if(what == 'data' and name == 'airgun.settings'):
+    if what == 'data' and name == 'airgun.settings':
         return True
     return None
 
@@ -21,13 +21,7 @@ def setup(app):
 
 # Add the AirGun root directory to the system path. This allows references
 # such as :mod:`airgun.browser` to be processed correctly.
-sys.path.insert(
-    0,
-    os.path.abspath(os.path.join(
-        os.path.dirname(__file__),
-        os.path.pardir
-    ))
-)
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
 # Project Information ---------------------------------------------------------
 

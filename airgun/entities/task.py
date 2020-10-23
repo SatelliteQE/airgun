@@ -43,6 +43,7 @@ class TaskEntity(BaseEntity):
 @navigator.register(TaskEntity, 'All')
 class ShowAllTasks(NavigateStep):
     """Navigate to All Tasks page"""
+
     VIEW = TasksView
 
     def step(self, *args, **kwargs):
@@ -53,9 +54,10 @@ class ShowAllTasks(NavigateStep):
 class TaskDetails(NavigateStep):
     """Navigate to Task Details screen.
 
-         Args:
-            entity_name: name of the task
+    Args:
+       entity_name: name of the task
     """
+
     VIEW = TaskDetailsView
 
     def prerequisite(self, *args, **kwargs):

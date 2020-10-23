@@ -71,6 +71,7 @@ class OSCAPContentEntity(BaseEntity):
 @navigator.register(OSCAPContentEntity, 'All')
 class ShowAllSCAPContents(NavigateStep):
     """Navigate to All SCAP Contents screen."""
+
     VIEW = SCAPContentsView
 
     def step(self, *args, **kwargs):
@@ -80,6 +81,7 @@ class ShowAllSCAPContents(NavigateStep):
 @navigator.register(OSCAPContentEntity, 'New')
 class UploadNewSCAPContent(NavigateStep):
     """Navigate to upload new SCAP Content page."""
+
     VIEW = SCAPContentCreateView
 
     def am_i_here(self, *args, **kwargs):
@@ -94,6 +96,7 @@ class UploadNewSCAPContent(NavigateStep):
 @navigator.register(OSCAPContentEntity, 'Edit')
 class EditSCAPContent(NavigateStep):
     """Navigate to edit existing SCAP Content page."""
+
     VIEW = SCAPContentEditView
 
     def prerequisite(self, *args, **kwargs):

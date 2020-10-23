@@ -25,32 +25,26 @@ class JobInvocationEntity(BaseEntity):
 
     def read(self, entity_name, host_name, widget_names=None):
         """Read values for scheduled or already executed job"""
-        view = self.navigate_to(
-            self,
-            'Job Status',
-            entity_name=entity_name,
-            host_name=host_name
-        )
+        view = self.navigate_to(self, 'Job Status', entity_name=entity_name, host_name=host_name)
         return view.read(widget_names=widget_names)
 
-    def wait_job_invocation_state(
-            self, entity_name, host_name, expected_state='succeeded'):
+    def wait_job_invocation_state(self, entity_name, host_name, expected_state='succeeded'):
         """Check job invocation state from table view"""
         view = self.navigate_to(self, 'All')
-        view.search('host = {}'.format(host_name))
+        view.search(f'host = {host_name}')
         wait_for(
-            lambda: view.table.row(
-                description=entity_name)['Status'].read() == expected_state,
+            lambda: view.table.row(description=entity_name)['Status'].read() == expected_state,
             timeout=300,
             delay=10,
             fail_func=view.browser.refresh,
-            logger=view.logger
+            logger=view.logger,
         )
 
 
 @navigator.register(JobInvocationEntity, 'All')
 class ShowAllJobs(NavigateStep):
     """Navigate to All Job Invocations screen."""
+
     VIEW = JobInvocationsView
 
     def step(self, *args, **kwargs):
@@ -60,6 +54,7 @@ class ShowAllJobs(NavigateStep):
 @navigator.register(JobInvocationEntity, 'Run')
 class RunNewJob(NavigateStep):
     """Navigate to Create new Job Invocation screen."""
+
     VIEW = JobInvocationCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -72,10 +67,11 @@ class RunNewJob(NavigateStep):
 class JobStatus(NavigateStep):
     """Navigate to Job Invocation status screen.
 
-         Args:
-            entity_name: name of the job
-            host_name: name of the host to which job was applied
+    Args:
+       entity_name: name of the job
+       host_name: name of the host to which job was applied
     """
+
     VIEW = JobInvocationStatusView
 
     def prerequisite(self, *args, **kwargs):
@@ -83,6 +79,4 @@ class JobStatus(NavigateStep):
 
     def step(self, *args, **kwargs):
         self.parent.search('host = {}'.format(kwargs.get('host_name')))
-        self.parent.table.row(
-            description=kwargs.get('entity_name')
-        )['Description'].widget.click()
+        self.parent.table.row(description=kwargs.get('entity_name'))['Description'].widget.click()

@@ -100,6 +100,7 @@ class ProductEntity(BaseEntity):
 @navigator.register(ProductEntity, 'All')
 class ShowAllProducts(NavigateStep):
     """Navigate to the page that contains all Products"""
+
     VIEW = ProductsTableView
 
     def step(self, *args, **kwargs):
@@ -109,6 +110,7 @@ class ShowAllProducts(NavigateStep):
 @navigator.register(ProductEntity, 'New')
 class AddNewProduct(NavigateStep):
     """Navigate to Create New Product page"""
+
     VIEW = ProductCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -124,6 +126,7 @@ class EditProduct(NavigateStep):
     Args:
         entity_name: name of the product to be updated
     """
+
     VIEW = ProductEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -138,6 +141,7 @@ class EditProduct(NavigateStep):
 @navigator.register(ProductEntity, 'Discovery')
 class ProductRepoDiscovery(NavigateStep):
     """Navigate to Repo Discovery page for Product entity."""
+
     VIEW = ProductRepoDiscoveryView
 
     def prerequisite(self, *args, **kwargs):
@@ -156,6 +160,7 @@ class ProductsSelectAction(NavigateStep):
         action_name: the action name to select from dropdown button
         entities_list: list of Products that need to be modified
     """
+
     ACTIONS_VIEWS = {
         'Manage HTTP Proxy': ProductManageHttpProxy,
     }
@@ -167,8 +172,9 @@ class ProductsSelectAction(NavigateStep):
         action_name = kwargs.get('action_name')
         self.VIEW = self.ACTIONS_VIEWS.get(action_name)
         if not self.VIEW:
-            raise ValueError('Please provide a valid action name.'
-                             ' action_name: "{0}" not found.')
+            raise ValueError(
+                'Please provide a valid action name.' ' action_name: "{0}" not found.'
+            )
         entities_list = kwargs.get('entities_list')
         for entity in entities_list:
             self.parent.table.row(name=entity)[0].click()

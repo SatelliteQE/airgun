@@ -16,6 +16,7 @@ class ActionEntity(BaseEntity):
 @navigator.register(ActionEntity, "Details")
 class ActionDetails(InsightsNavigateStep):
     """Navigate to Red Hat Access Insights Actions screen."""
+
     VIEW = ActionsDetailsView
 
     def step(self, *args, **kwargs):

@@ -8,7 +8,6 @@ if TYPE_CHECKING:
 
 
 class BaseEntityHelper:
-
     def __init__(self, entity):
         # type: (BaseEntity) -> None
         self._entity = entity
@@ -17,8 +16,9 @@ class BaseEntityHelper:
     def entity(self):
         return self._entity
 
-    def read_filled_view(self, navigation_name, navigation_kwargs=None, values=None,
-                         read_widget_names=None):
+    def read_filled_view(
+        self, navigation_name, navigation_kwargs=None, values=None, read_widget_names=None
+    ):
         # type: (str, Dict, Dict[str, Any], List[str]) -> Dict[str, Any]
         """Navigate to a form using 'navigation_name' and with parameters from 'navigation_kwargs',
         fill the form with values and then read values for widgets from 'read_widget_names' list if

@@ -22,25 +22,23 @@ class FiltersView(BaseLoggedInView):
         ".//table",
         column_widgets={
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Roles'
-                and self.breadcrumb.read().endswith(' filters')
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Roles'
+            and self.breadcrumb.read().endswith(' filters')
         )
 
     def search(self, query):
         value = self.searchbox.read()
         role_id = [int(s) for s in value.split() if s.isdigit()]
         if len(role_id) > 0:
-            query = 'role_id = {} and resource = "{}"'.format(
-                role_id[0], query)
+            query = 'role_id = {} and resource = "{}"'.format(role_id[0], query)
         self.searchbox.search(query)
         return self.table.read()
 
@@ -56,12 +54,11 @@ class FilterDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Roles'
-                and self.breadcrumb.read().startswith('Edit filter for ')
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Roles'
+            and self.breadcrumb.read().startswith('Edit filter for ')
         )
 
     taxonomies_tabs = ConditionalSwitchableView(reference='override')
@@ -82,13 +79,11 @@ class FilterDetailsView(BaseLoggedInView):
 
 
 class FilterCreateView(FilterDetailsView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Roles'
-                and self.breadcrumb.read() == 'Create Filter'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Roles'
+            and self.breadcrumb.read() == 'Create Filter'
         )

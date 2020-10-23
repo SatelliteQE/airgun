@@ -30,6 +30,7 @@ class ContainerImageTagEntity(BaseEntity):
 @navigator.register(ContainerImageTagEntity, 'All')
 class ShowAllContainerImageTags(NavigateStep):
     """Navigate to All Container Image Tags screen."""
+
     VIEW = ContainerImageTagsView
 
     def step(self, *args, **kwargs):
@@ -40,9 +41,10 @@ class ShowAllContainerImageTags(NavigateStep):
 class ContainerImageTagDetails(NavigateStep):
     """Navigate to Container Image Tag details page
 
-        Args:
-        entity_name: name of Container Image Tag
+    Args:
+    entity_name: name of Container Image Tag
     """
+
     VIEW = ContainerImageTagDetailsView
 
     def prerequisite(self, *args, **kwargs):

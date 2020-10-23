@@ -2,17 +2,18 @@
 from setuptools import find_packages
 from setuptools import setup
 
-with open('README.rst', 'r') as f:
+with open('README.rst') as f:
     README = f.read()
 
 setup(
     name='airgun',
-    version='0.0.1',   # Should be identical to the version in docs/conf.py!
+    version='0.0.1',  # Should be identical to the version in docs/conf.py!
     description=(
         'A library which is build over Widgetastic and navmazing to make '
-        'Satellite 6 UI testing easier.'),
+        'Satellite 6 UI testing easier.'
+    ),
     long_description=README,
-    author=u'RedHat QE Team',
+    author='RedHat QE Team',
     url='https://github.com/SatelliteQE/airgun',
     install_requires=[
         'cached_property',
@@ -22,7 +23,7 @@ setup(
         'selenium',
         'wait_for',
         'widgetastic.core',
-        'widgetastic.patternfly'
+        'widgetastic.patternfly',
     ],
     packages=find_packages(exclude=['tests*']),
     package_data={'': ['LICENSE']},
@@ -34,8 +35,7 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
-        'Operating System :: POSIX :: Linux'
-        'Programming Language :: Python',
+        'Operating System :: POSIX :: Linux' 'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
     ),

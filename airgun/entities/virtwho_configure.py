@@ -33,18 +33,12 @@ class VirtwhoConfigureEntity(BaseEntity):
             view = self.navigate_to(self, 'All')
         except Exception:
             return {"can_view": False, "can_create": False}
-        return {
-            "can_view": True,
-            "can_create": view.new.is_displayed
-        }
+        return {"can_view": True, "can_create": view.new.is_displayed}
 
     def check_update_permission(self, entity_name=None):
         """Check if the config can be deleted/edited"""
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
-        return {
-            "can_delete": view.delete.is_displayed,
-            "can_edit": view.edit.is_displayed
-        }
+        return {"can_delete": view.delete.is_displayed, "can_edit": view.edit.is_displayed}
 
     def create(self, values):
         """Create new virtwho configure entity"""
@@ -87,6 +81,7 @@ class VirtwhoConfigureEntity(BaseEntity):
 @navigator.register(VirtwhoConfigureEntity, 'All')
 class ShowAllVirtwhoConfigures(NavigateStep):
     """Navigate to All Activation Keys page"""
+
     VIEW = VirtwhoConfiguresView
 
     def step(self, *args, **kwargs):
@@ -96,6 +91,7 @@ class ShowAllVirtwhoConfigures(NavigateStep):
 @navigator.register(VirtwhoConfigureEntity, 'New')
 class AddNewVirtwhoConfigure(NavigateStep):
     """Navigate to New Virtwho Configure page"""
+
     VIEW = VirtwhoConfigureCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -111,6 +107,7 @@ class EditExistingVirtwhoConfigure(NavigateStep):
     Args:
         entity_name: name of the virtwho configure
     """
+
     VIEW = VirtwhoConfigureEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -129,6 +126,7 @@ class DetailsVirtwhoConfigure(NavigateStep):
     Args:
         entity_name: name of the configure
     """
+
     VIEW = VirtwhoConfigureDetailsView
 
     def prerequisite(self, *args, **kwargs):

@@ -8,7 +8,6 @@ from airgun.views.filter import FiltersView
 
 
 class FilterEntity(BaseEntity):
-
     def create(self, role_name, values):
         """Create new filter for specific role"""
         view = self.navigate_to(self, 'New', role_name=role_name)
@@ -24,8 +23,7 @@ class FilterEntity(BaseEntity):
 
     def read(self, role_name, entity_name, widget_names=None):
         """Read values for specific filter"""
-        view = self.navigate_to(
-            self, 'Edit', role_name=role_name, entity_name=entity_name)
+        view = self.navigate_to(self, 'Edit', role_name=role_name, entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def read_all(self, role_name):
@@ -48,8 +46,7 @@ class FilterEntity(BaseEntity):
 
     def update(self, role_name, entity_name, values):
         """Update filter values"""
-        view = self.navigate_to(
-            self, 'Edit', role_name=role_name, entity_name=entity_name)
+        view = self.navigate_to(self, 'Edit', role_name=role_name, entity_name=entity_name)
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
@@ -73,15 +70,14 @@ class ShowAllFilters(NavigateStep):
     Args:
         role_name: name of role
     """
+
     VIEW = FiltersView
 
     def am_i_here(self, *args, **kwargs):
         role_name = kwargs.get('role_name')
-        return (
-            self.view.is_displayed
-            and self.view.breadcrumb.locations[1] in (
-                role_name,
-                '{} filters'.format(role_name))
+        return self.view.is_displayed and self.view.breadcrumb.locations[1] in (
+            role_name,
+            f'{role_name} filters',
         )
 
     def prerequisite(self, *args, **kwargs):
@@ -101,6 +97,7 @@ class AddNewFilter(NavigateStep):
         role_name: name of role
         entity_name: name of filter
     """
+
     VIEW = FilterCreateView
 
     def prerequisite(self, *args, **kwargs):
@@ -118,15 +115,14 @@ class EditFilter(NavigateStep):
         role_name: name of role
         entity_name: name of filter
     """
+
     VIEW = FilterDetailsView
 
     def am_i_here(self, *args, **kwargs):
         role_name = kwargs.get('role_name')
-        return (
-            self.view.is_displayed
-            and self.view.breadcrumb.locations[1] in (
-                role_name,
-                'Edit filter for {} filters'.format(role_name))
+        return self.view.is_displayed and self.view.breadcrumb.locations[1] in (
+            role_name,
+            f'Edit filter for {role_name} filters',
         )
 
     def prerequisite(self, *args, **kwargs):
@@ -135,5 +131,4 @@ class EditFilter(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
-        self.parent.table.row(
-            resource=entity_name)['Actions'].widget.fill('Edit')
+        self.parent.table.row(resource=entity_name)['Actions'].widget.fill('Edit')

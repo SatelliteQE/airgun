@@ -18,16 +18,19 @@ class InsightsOrganizationErrorView(BaseLoggedInView):
     """View displayed when no Organization is selected or when the current organization has no
     manifest
     """
+
     title = Text("//article[@id='content']/section/h1")
     message = Text("//article[@id='content']/section/p")
 
     @property
     def is_displayed(self):
-        return (self.browser.wait_for_element(self.title, exception=False) is not None
-                and self.browser.wait_for_element(self.message, exception=False) is not None)
+        return (
+            self.browser.wait_for_element(self.title, exception=False) is not None
+            and self.browser.wait_for_element(self.message, exception=False) is not None
+        )
 
     def read(self, widget_names=None):
-        return '{0}: {1}'.format(self.title.read(), self.message.read())
+        return f'{self.title.read()}: {self.message.read()}'
 
 
 class AllRulesView(BaseLoggedInView):
@@ -44,8 +47,7 @@ class InventoryAllHosts(BaseLoggedInView):
     search = TextInput(locator=".//input[@placeholder='Find a system']")
     actions = ActionsDropdown(".//div[contains(@class, 'dropdown')]")
     systems_count = Text(".//h3[@class='system-count']")
-    table = SatTable(".//table",
-                     column_widgets={"System Name": Text(".//a")})
+    table = SatTable(".//table", column_widgets={"System Name": Text(".//a")})
 
     @property
     def is_displayed(self):
@@ -54,6 +56,7 @@ class InventoryAllHosts(BaseLoggedInView):
 
 class InventoryHostRule(GenericRemovableWidgetItem):
     """Insights inventory host rule widget"""
+
     # There is no remove button in this widget
     remove_button = None
     title = Text(".//h3[@class='title']")
@@ -85,9 +88,9 @@ class OverviewDetailsView(BaseLoggedInView):
     @property
     def is_displayed(self):
         return (
-            self.title.is_displayed and
-            self.inventory_link.is_displayed and
-            self.actions_link.is_displayed
+            self.title.is_displayed
+            and self.inventory_link.is_displayed
+            and self.actions_link.is_displayed
         )
 
 
@@ -113,10 +116,11 @@ class AllPlansView(BaseLoggedInView):
 
     @ParametrizedView.nested
     class plan(ParametrizedView):
-        PARAMETERS = ("plan_name", )
+        PARAMETERS = ("plan_name",)
         ROOT = ParametrizedLocator(
             ".//h2[contains(normalize-space(.), {plan_name|quote})]/"
-            "ancestor::div[contains(@id, 'maintenance-plan')]")
+            "ancestor::div[contains(@id, 'maintenance-plan')]"
+        )
 
         title = Text(".")
         delete = Text(".//i[@tooltip='Delete this plan']")
@@ -145,10 +149,9 @@ class AddPlanView(BaseLoggedInView):
     name = TextInput(name="name")
     actions = SatTable(
         ".//div[contains(@class, 'maintenance-plan')]//table",
-        column_widgets={0: Checkbox(locator=".//input")}
+        column_widgets={0: Checkbox(locator=".//input")},
     )
-    rules_filter = TextInput(
-        locator=".//input[@placeholder='Filter by rule name']")
+    rules_filter = TextInput(locator=".//input[@placeholder='Filter by rule name']")
     cancel = Button("Cancel")
     save = Button("Save")
 

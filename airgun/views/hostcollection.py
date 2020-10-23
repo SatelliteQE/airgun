@@ -30,8 +30,7 @@ class HostCollectionsView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class HostCollectionCreateView(BaseLoggedInView):
@@ -44,12 +43,11 @@ class HostCollectionCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Host Collections'
-                and self.breadcrumb.read() == 'New Host Collection'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Host Collections'
+            and self.breadcrumb.read() == 'New Host Collection'
         )
 
 
@@ -60,12 +58,11 @@ class HostCollectionEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Host Collections'
-                and self.breadcrumb.read() != 'New Host Collection'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Host Collections'
+            and self.breadcrumb.read() != 'New Host Collection'
         )
 
     @View.nested
@@ -73,8 +70,10 @@ class HostCollectionEditView(BaseLoggedInView):
         name = EditableEntry(name='Name')
         description = EditableEntry(name='Description')
         content_hosts = ReadOnlyEntry(
-            locator=(".//dt[contains(., 'Content Hosts')]/following-sibling"
-                     "::dd/a[not(contains(@class, 'ng-hide'))][1]")
+            locator=(
+                ".//dt[contains(., 'Content Hosts')]/following-sibling"
+                "::dd/a[not(contains(@class, 'ng-hide'))][1]"
+            )
         )
         content_host_limit = EditableLimitEntry(name='Content Host Limit')
         # Package Installation, Removal, and Update
@@ -84,8 +83,7 @@ class HostCollectionEditView(BaseLoggedInView):
         # Module Stream Installation, Removal, and Update
         manage_module_streams = Text(".//a[@ng-click='openModuleStreamsModal()']")
         # Change assigned Lifecycle Environment or Content View
-        change_assigned_content = Text(
-            ".//a[@ng-click='openEnvironmentModal()']")
+        change_assigned_content = Text(".//a[@ng-click='openEnvironmentModal()']")
 
     @View.nested
     class hosts(SatTab):
@@ -110,6 +108,7 @@ class HostCollectionPackageContentRadioGroup(RadioGroup):
             <input type="radio" id="package_group" ...>
             <label>Package Group</label>
     """
+
     # a mapping between button name and the id, see the implementation in
     # HostsAssignOrganization and HostsAssignLocation hereafter.
     buttons_name_id_map = {
@@ -121,7 +120,7 @@ class HostCollectionPackageContentRadioGroup(RadioGroup):
         input_id = self.buttons_name_id_map.get(name)
         if input_id:
             return self.browser.wait_for_element(
-                ".//input[@id='{0}']".format(self.buttons_name_id_map[name])
+                ".//input[@id='{}']".format(self.buttons_name_id_map[name])
             )
         return None
 
@@ -151,36 +150,30 @@ class HostCollectionPackageContentRadioGroup(RadioGroup):
 class HostCollectionManagePackagesView(BaseLoggedInView):
     title = Text("//h4[contains(., 'Update Packages')]")
     update_all = ActionsDropdown(
-        "//span[contains(@class, 'input-group')]"
-        "[button[contains(@ng-click, 'update all')]]"
+        "//span[contains(@class, 'input-group')]" "[button[contains(@ng-click, 'update all')]]"
     )
-    content_type = HostCollectionPackageContentRadioGroup(
-        "//div[@name='systemContentForm']/div")
+    content_type = HostCollectionPackageContentRadioGroup("//div[@name='systemContentForm']/div")
 
     packages = TextInput(
-        locator=("//input[@type='text' and "
-                 "contains(@ng-model, 'content.content')]")
+        locator=("//input[@type='text' and " "contains(@ng-model, 'content.content')]")
     )
     install = ActionsDropdown(
-        "//span[contains(@class, 'input-group')]"
-        "[button[contains(@ng-click, 'install')]]"
+        "//span[contains(@class, 'input-group')]" "[button[contains(@ng-click, 'install')]]"
     )
     update = ActionsDropdown(
-            "//span[contains(@class, 'input-group')]"
-            "[button[contains(@ng-click, 'update') "
-            "and not(contains(@ng-click, 'update all'))]]"
+        "//span[contains(@class, 'input-group')]"
+        "[button[contains(@ng-click, 'update') "
+        "and not(contains(@ng-click, 'update all'))]]"
     )
     remove = ActionsDropdown(
-        "//span[contains(@class, 'input-group')]"
-        "[button[contains(@ng-click, 'remove')]]"
+        "//span[contains(@class, 'input-group')]" "[button[contains(@ng-click, 'remove')]]"
     )
     done = Text("//button[@ng-click='ok()']")
 
     @property
     def is_displayed(self):
         """The view is displayed when it's title exists"""
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
     @View.nested
     class dialog(ConfirmationDialog):
@@ -192,8 +185,7 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
         """Return an action button by it's name"""
         action_button = getattr(self, name)
         if not isinstance(action_button, ActionsDropdown):
-            raise ValueError(
-                'Action with name: "{0}" does not exists'.format(name))
+            raise ValueError(f'Action with name: "{name}" does not exists')
         return action_button
 
     def apply_action(self, name, action_via='via Katello Agent'):
@@ -206,29 +198,26 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
 
 class HostCollectionInstallErrataView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h4[contains(., 'Content Host Errata Management')]")
-    search = TextInput(
-        locator=".//input[@type='text' and @ng-model='table.searchTerm']")
+    search = TextInput(locator=".//input[@type='text' and @ng-model='table.searchTerm']")
     refresh = Text(locator=".//button[@ng-click='fetchErrata()']")
     install = ActionsDropdown(
-            "//span[contains(@class, 'btn-group')]"
-            "[button[contains(@class, 'btn') "
-            "and contains(@ng-click, 'showConfirm')]]"
+        "//span[contains(@class, 'btn-group')]"
+        "[button[contains(@class, 'btn') "
+        "and contains(@ng-click, 'showConfirm')]]"
     )
     table = SatTable(
         ".//table",
         column_widgets={
-            0: Checkbox(
-                locator=".//input[@ng-model='erratum.selected']"),
+            0: Checkbox(locator=".//input[@ng-model='erratum.selected']"),
             'Id': Text(locator="./a[@ng-click='transitionToErrata(erratum)']"),
-        }
+        },
     )
     dialog = ConfirmationDialog()
 
     @property
     def is_displayed(self):
         """The view is displayed when it's title exists"""
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class HostCollectionManageModuleStreamsView(BaseLoggedInView, SearchableViewMixin):
@@ -237,31 +226,26 @@ class HostCollectionManageModuleStreamsView(BaseLoggedInView, SearchableViewMixi
         locator='//table',
         column_widgets={
             'Name': Text('.//a'),
-            'Actions': ActionDropdownWithCheckbox(".//div[contains(@class, 'dropdown')]")
+            'Actions': ActionDropdownWithCheckbox(".//div[contains(@class, 'dropdown')]"),
         },
     )
 
     @property
     def is_displayed(self):
         """The view is displayed when it's title exists"""
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class HostCollectionChangeAssignedContentView(BaseLoggedInView):
     title = Text("//h4[contains(., 'Content Host Bulk Content')]")
     lce = ParametrizedView.nested(LCESelectorGroup)
-    content_view = Select(
-        locator=".//select[@ng-model='selected.contentView']")
-    assign = Text(
-        locator=".//form/button[contains(@ng-click, 'showConfirm')]")
+    content_view = Select(locator=".//select[@ng-model='selected.contentView']")
+    assign = Text(locator=".//form/button[contains(@ng-click, 'showConfirm')]")
 
     @View.nested
     class dialog(ConfirmationDialog):
         ROOT = ".//div[@ng-show='showConfirm']"
-        confirm_dialog = Text(
-            ".//button[contains(@ng-click, 'performAction')]"
-        )
+        confirm_dialog = Text(".//button[contains(@ng-click, 'performAction')]")
         cancel_dialog = Text(
             ".//button[contains(@ng-click, 'showConfirm')"
             " and not(contains(@ng-click, 'performAction'))]"
@@ -270,8 +254,7 @@ class HostCollectionChangeAssignedContentView(BaseLoggedInView):
     @property
     def is_displayed(self):
         """The view is displayed when it's title exists"""
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class HostCollectionActionTaskDetailsView(TaskDetailsView):
@@ -281,16 +264,13 @@ class HostCollectionActionTaskDetailsView(TaskDetailsView):
     @property
     def is_displayed(self):
         """The view is displayed when it's title exists"""
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class HostCollectionActionRemoteExecutionJobCreate(JobInvocationCreateView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Remote Executions'

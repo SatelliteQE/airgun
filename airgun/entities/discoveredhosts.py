@@ -35,14 +35,14 @@ class DiscoveredHostsEntity(BaseEntity):
             timeout=300,
             delay=10,
             fail_func=view.browser.refresh,
-            logger=view.logger
+            logger=view.logger,
         )
         result = wait_for(
-            lambda: view.search('name = "{0}"'.format(entity_name)),
+            lambda: view.search(f'name = "{entity_name}"'),
             fail_condition=[],
             timeout=300,
             delay=10,
-            logger=view.logger
+            logger=view.logger,
         )
         return result.out[0]
 
@@ -63,8 +63,9 @@ class DiscoveredHostsEntity(BaseEntity):
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
-    def provision(self, entity_name, host_group, organization, location,
-                  quick=True, host_values=None):
+    def provision(
+        self, entity_name, host_group, organization, location, quick=True, host_values=None
+    ):
         """Provision a discovered host with name entity_name.
 
         :param str entity_name: The discovered host name.
@@ -83,20 +84,20 @@ class DiscoveredHostsEntity(BaseEntity):
             host_values = {}
 
         view = self.navigate_to(self, 'Provision', entity_name=entity_name)
-        view.fill(dict(
-            host_group=host_group,
-            organization=organization,
-            location=location,
-        ))
+        view.fill(
+            dict(
+                host_group=host_group,
+                organization=organization,
+                location=location,
+            )
+        )
         if quick:
             view.quick_create.click()
         else:
             view.customize_create.click()
-            discovered_host_edit_view = DiscoveredHostEditProvisioningView(
-                self.browser)
+            discovered_host_edit_view = DiscoveredHostEditProvisioningView(self.browser)
             discovered_host_edit_view.fill(host_values)
-            self.browser.click(
-                discovered_host_edit_view.submit, ignore_ajax=True)
+            self.browser.click(discovered_host_edit_view.submit, ignore_ajax=True)
             self.browser.plugin.ensure_page_safe(timeout='120s')
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -112,8 +113,9 @@ class DiscoveredHostsEntity(BaseEntity):
         """
         if values is None:
             values = {}
-        view = self.navigate_to(self, 'Select Action', action_name=action_name,
-                                entities_list=entities_list)
+        view = self.navigate_to(
+            self, 'Select Action', action_name=action_name, entities_list=entities_list
+        )
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
@@ -123,6 +125,7 @@ class DiscoveredHostsEntity(BaseEntity):
 @navigator.register(DiscoveredHostsEntity, 'All')
 class ShowAllDiscoveredHosts(NavigateStep):
     """Navigate to All Discovered hosts screen."""
+
     VIEW = DiscoveredHostsView
 
     def step(self, *args, **kwargs):
@@ -132,6 +135,7 @@ class ShowAllDiscoveredHosts(NavigateStep):
 @navigator.register(DiscoveredHostsEntity, 'Details')
 class ShowDiscoveredHostDetailsView(NavigateStep):
     """Navigate to Discovered Host details screen."""
+
     VIEW = DiscoveredHostDetailsView
 
     def prerequisite(self, *args, **kwargs):
@@ -139,9 +143,8 @@ class ShowDiscoveredHostDetailsView(NavigateStep):
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
-        self.parent.search('name = {0}'.format(entity_name))
-        self.parent.table.row_by_cell_or_widget_value(
-            'Name', entity_name)['Name'].widget.click()
+        self.parent.search(f'name = {entity_name}')
+        self.parent.table.row_by_cell_or_widget_value('Name', entity_name)['Name'].widget.click()
 
 
 @navigator.register(DiscoveredHostsEntity, 'Select Action')
@@ -154,12 +157,13 @@ class DiscoveredHostsSelectAction(NavigateStep):
         action_name: the action name to select from dropdown button
         entities_list: list of discovered hosts that need to apply action on.
     """
+
     ACTIONS_VIEWS = {
         'Assign Location': DiscoveredHostsAssignLocationDialog,
         'Assign Organization': DiscoveredHostsAssignOrganizationDialog,
         'Auto Provision': DiscoveredHostsAutoProvisionDialog,
         'Delete': DiscoveredHostsDeleteDialog,
-        'Reboot': DiscoveredHostsRebootDialog
+        'Reboot': DiscoveredHostsRebootDialog,
     }
 
     def prerequisite(self, *args, **kwargs):
@@ -169,14 +173,14 @@ class DiscoveredHostsSelectAction(NavigateStep):
         action_name = kwargs.get('action_name')
         self.VIEW = self.ACTIONS_VIEWS.get(action_name)
         if not self.VIEW:
-            raise ValueError('Please provide a valid action name.'
-                             ' action_name: "{0}" not found.')
+            raise ValueError(
+                'Please provide a valid action name.' ' action_name: "{0}" not found.'
+            )
         entities_list = kwargs.get('entities_list')
         if not isinstance(entities_list, (list, tuple)):
             entities_list = [entities_list]
         for entity_name in entities_list:
-            self.parent.table.row_by_cell_or_widget_value(
-                'Name', entity_name)[0].widget.click()
+            self.parent.table.row_by_cell_or_widget_value('Name', entity_name)[0].widget.click()
         self.parent.actions.fill(action_name)
 
 

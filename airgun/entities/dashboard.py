@@ -5,7 +5,6 @@ from airgun.views.dashboard import DashboardView
 
 
 class DashboardEntity(BaseEntity):
-
     def search(self, value):
         """Initiate search procedure that applied on all dashboard widgets.
         Return widgets values as a result
@@ -36,6 +35,7 @@ class DashboardEntity(BaseEntity):
 @navigator.register(DashboardEntity, 'All')
 class OpenDashboard(NavigateStep):
     """Navigate to Dashboard page"""
+
     VIEW = DashboardView
 
     def step(self, *args, **kwargs):

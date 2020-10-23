@@ -21,8 +21,7 @@ class ContentCredentialsTableView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ContentCredentialCreateView(BaseLoggedInView):
@@ -35,12 +34,11 @@ class ContentCredentialCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Content Credential'
-                and self.breadcrumb.read() == 'New Content Credential'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Credential'
+            and self.breadcrumb.read() == 'New Content Credential'
         )
 
 
@@ -51,12 +49,11 @@ class ContentCredentialEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Content Credential'
-                and self.breadcrumb.read() != 'New Content Credential'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Credential'
+            and self.breadcrumb.read() != 'New Content Credential'
         )
 
     @View.nested
@@ -69,14 +66,8 @@ class ContentCredentialEditView(BaseLoggedInView):
 
     @View.nested
     class products(SatTab, SearchableViewMixin):
-        table = Table(
-            './/table',
-            column_widgets={'Name': Text('./a')}
-        )
+        table = Table('.//table', column_widgets={'Name': Text('./a')})
 
     @View.nested
     class repositories(SatTab, SearchableViewMixin):
-        table = Table(
-            './/table',
-            column_widgets={'Name': Text('./a')}
-        )
+        table = Table('.//table', column_widgets={'Name': Text('./a')})

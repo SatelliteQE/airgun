@@ -27,13 +27,12 @@ class ReportTemplatesView(BaseLoggedInView, SearchableViewMixin):
             'Name': Text('./a'),
             'Locked': Text('.'),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ReportTemplateDetailsView(BaseLoggedInView):
@@ -42,8 +41,7 @@ class ReportTemplateDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Report Templates'
@@ -69,21 +67,17 @@ class ReportTemplateDetailsView(BaseLoggedInView):
 
     @View.nested
     class locations(SatTab):
-        resources = MultiSelect(
-            id='ms-report_template_location_ids')
+        resources = MultiSelect(id='ms-report_template_location_ids')
 
     @View.nested
     class organizations(SatTab):
-        resources = MultiSelect(
-            id='ms-report_template_organization_ids')
+        resources = MultiSelect(id='ms-report_template_organization_ids')
 
 
 class ReportTemplateCreateView(ReportTemplateDetailsView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Report Templates'
@@ -103,8 +97,7 @@ class ReportTemplateGenerateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Report Templates'

@@ -60,8 +60,15 @@ class ContentHostEntity(BaseEntity):
         view.progressbar.wait_for_result()
         return view.read()
 
-    def execute_module_stream_action(self, entity_name, action_type, module_name, stream_version,
-                                     customize=False, customize_values=None):
+    def execute_module_stream_action(
+        self,
+        entity_name,
+        action_type,
+        module_name,
+        stream_version,
+        customize=False,
+        customize_values=None,
+    ):
         """Execute remote module_stream action on a content
 
         :param entity_name: content host name
@@ -78,10 +85,11 @@ class ContentHostEntity(BaseEntity):
         if customize_values is None:
             customize_values = {}
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.module_streams.search('name = {} and stream = {}'.format(module_name, stream_version))
+        view.module_streams.search(f'name = {module_name} and stream = {stream_version}')
         action_type = dict(is_customize=customize, action=action_type)
-        view.module_streams.table.row(
-            name=module_name, stream=stream_version)['Actions'].fill(action_type)
+        view.module_streams.table.row(name=module_name, stream=stream_version)['Actions'].fill(
+            action_type
+        )
         if customize:
             view = JobInvocationCreateView(view.browser)
             view.fill(customize_values)
@@ -102,7 +110,7 @@ class ContentHostEntity(BaseEntity):
         if stream_version is None:
             query = module_name
         else:
-            query = 'name = {} and stream = {}'.format(module_name, stream_version)
+            query = f'name = {module_name} and stream = {stream_version}'
         view.module_streams.search(query, status)
         return view.module_streams.table.read()
 
@@ -151,10 +159,13 @@ class ContentHostEntity(BaseEntity):
         :param str errata_id: errata id or title, e.g. 'RHEA-2012:0055'
         :param str optional environment: lifecycle environment to filter by.
         """
-        view = self.navigate_to(self, 'Errata Details',
-                                entity_name=entity_name,
-                                errata_id=errata_id,
-                                environment=environment)
+        view = self.navigate_to(
+            self,
+            'Errata Details',
+            entity_name=entity_name,
+            errata_id=errata_id,
+            environment=environment,
+        )
         return view.read()
 
     def export(self):
@@ -188,6 +199,7 @@ class ContentHostEntity(BaseEntity):
 @navigator.register(ContentHostEntity, 'All')
 class ShowAllContentHosts(NavigateStep):
     """Navigate to All Content Hosts screen."""
+
     VIEW = ContentHostsView
 
     def step(self, *args, **kwargs):
@@ -201,6 +213,7 @@ class EditContentHost(NavigateStep):
     Args:
         entity_name: name of content host
     """
+
     VIEW = ContentHostDetailsView
 
     def prerequisite(self, *args, **kwargs):
@@ -220,11 +233,11 @@ class NavigateToErrataDetails(NavigateStep):
         entity_name: name of content host
         errata_id: id of errata
     """
+
     VIEW = ErrataDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(
-            self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
+        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
 
     def step(self, *args, **kwargs):
         errata_id = kwargs.get('errata_id')

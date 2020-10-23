@@ -15,13 +15,12 @@ class BookmarksView(BaseLoggedInView, SearchableViewMixin):
         column_widgets={
             'Name': Text('./a'),
             'Actions': Text("./span/a"),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class BookmarkEditView(BaseLoggedInView):
@@ -34,10 +33,9 @@ class BookmarkEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Bookmarks'
-                and self.breadcrumb.read().startswith('Edit')
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Bookmarks'
+            and self.breadcrumb.read().startswith('Edit')
         )

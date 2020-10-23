@@ -19,13 +19,12 @@ class HTTPProxyView(BaseLoggedInView, SearchableViewMixin):
             'Name': Text('./a'),
             'URL': Text('./a'),
             'Actions': Text(".//a[@data-method='delete']"),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class HTTPProxyCreateView(BaseLoggedInView):
@@ -35,12 +34,11 @@ class HTTPProxyCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'HTTP Proxies'
-                and self.breadcrumb.read() == 'New HTTP Proxy'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'HTTP Proxies'
+            and self.breadcrumb.read() == 'New HTTP Proxy'
         )
 
     @View.nested
@@ -63,11 +61,9 @@ class HTTPProxyCreateView(BaseLoggedInView):
 
 
 class HTTPProxyEditView(HTTPProxyCreateView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Http Proxies'

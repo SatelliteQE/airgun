@@ -20,13 +20,12 @@ class UsersView(BaseLoggedInView, SearchableViewMixin):
         column_widgets={
             'Username': Text('./a'),
             'Actions': Text('.//a[@data-method="delete"]'),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class UserDetailsView(BaseLoggedInView):
@@ -35,8 +34,7 @@ class UserDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Users'
@@ -71,11 +69,9 @@ class UserDetailsView(BaseLoggedInView):
 
 
 class UserCreateView(UserDetailsView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Users'

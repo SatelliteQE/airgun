@@ -37,6 +37,7 @@ class SettingsEntity(BaseEntity):
 @navigator.register(SettingsEntity, 'All')
 class ShowAllSettings(NavigateStep):
     """Navigate to All Settings page"""
+
     VIEW = SettingsView
 
     def step(self, *args, **kwargs):

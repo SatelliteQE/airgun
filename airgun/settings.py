@@ -12,29 +12,28 @@ def get_project_root():
     :return: A directory path.
     :rtype: str
     """
-    return os.path.realpath(os.path.join(
-        os.path.dirname(__file__),
-        os.pardir,
-    ))
+    return os.path.realpath(
+        os.path.join(
+            os.path.dirname(__file__),
+            os.pardir,
+        )
+    )
 
 
-class AirgunSettings(object):
-
+class AirgunSettings:
     def __init__(self):
         self.verbosity = None
         self.tmp_dir = None
 
 
-class SatelliteSettings(object):
-
+class SatelliteSettings:
     def __init__(self):
         self.hostname = None
         self.username = None
         self.password = None
 
 
-class SeleniumSettings(object):
-
+class SeleniumSettings:
     def __init__(self):
         self.browser = None
         self.saucelabs_key = None
@@ -46,8 +45,7 @@ class SeleniumSettings(object):
         self.browseroptions = None
 
 
-class WebdriverCapabilitiesSettings(object):
-
+class WebdriverCapabilitiesSettings:
     def __init__(self):
         self.platform = None
         self.version = None
@@ -60,8 +58,7 @@ class WebdriverCapabilitiesSettings(object):
         self.tags = None
 
 
-class Settings(object):
-
+class Settings:
     def __init__(self):
         self.configured = False
         self.airgun = AirgunSettings()
@@ -74,7 +71,7 @@ class Settings(object):
         logging.basicConfig(
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S',
-            level=self.airgun.verbosity
+            level=self.airgun.verbosity,
         )
         logging.getLogger('airgun').setLevel(self.airgun.verbosity)
 
@@ -94,8 +91,7 @@ class Settings(object):
                 for key, value in settings[section].items():
                     config.set(section, key, str(value))
         else:
-            settings_path = os.path.join(
-                get_project_root(), SETTINGS_FILE_NAME)
+            settings_path = os.path.join(get_project_root(), SETTINGS_FILE_NAME)
             config.read(settings_path)
 
         for section in config.sections():

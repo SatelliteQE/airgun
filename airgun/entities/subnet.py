@@ -41,13 +41,13 @@ class SubnetEntity(BaseEntity):
         """Delete subnet"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.click(
-            handle_alert=True)
+        view.table.row(name=entity_name)['Actions'].widget.click(handle_alert=True)
 
 
 @navigator.register(SubnetEntity, 'All')
 class ShowAllSubnets(NavigateStep):
     """Navigate to All Subnets screen."""
+
     VIEW = SubnetsView
 
     def step(self, *args, **kwargs):
@@ -57,6 +57,7 @@ class ShowAllSubnets(NavigateStep):
 @navigator.register(SubnetEntity, 'New')
 class AddNewSubnet(NavigateStep):
     """Navigate to Create new Subnet screen."""
+
     VIEW = SubnetCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -69,9 +70,10 @@ class AddNewSubnet(NavigateStep):
 class EditSubnet(NavigateStep):
     """Navigate to Edit Subnet screen.
 
-         Args:
-            entity_name: name of subnet
+    Args:
+       entity_name: name of subnet
     """
+
     VIEW = SubnetEditView
 
     def prerequisite(self, *args, **kwargs):

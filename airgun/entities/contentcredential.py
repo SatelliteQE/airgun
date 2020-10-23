@@ -60,6 +60,7 @@ class ContentCredentialEntity(BaseEntity):
 @navigator.register(ContentCredentialEntity, 'All')
 class ShowAllContentCredentials(NavigateStep):
     """Navigate to All Content Credentials page"""
+
     VIEW = ContentCredentialsTableView
 
     def step(self, *args, **kwargs):
@@ -69,6 +70,7 @@ class ShowAllContentCredentials(NavigateStep):
 @navigator.register(ContentCredentialEntity, 'New')
 class AddNewContentCredential(NavigateStep):
     """Navigate to Create Content Credential page"""
+
     VIEW = ContentCredentialCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -81,9 +83,10 @@ class AddNewContentCredential(NavigateStep):
 class EditContentCredential(NavigateStep):
     """Navigate to Content Credential details screen.
 
-        Args:
-            entity_name: name of content credential to edit
+    Args:
+        entity_name: name of content credential to edit
     """
+
     VIEW = ContentCredentialEditView
 
     def prerequisite(self, *args, **kwargs):

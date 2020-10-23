@@ -28,8 +28,7 @@ class ActivationKeysView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ActivationKeyCreateView(BaseLoggedInView):
@@ -43,12 +42,11 @@ class ActivationKeyCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Activation Keys'
-                and self.breadcrumb.read() == 'New Activation Key'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Activation Keys'
+            and self.breadcrumb.read() == 'New Activation Key'
         )
 
 
@@ -59,8 +57,7 @@ class ActivationKeyEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Activation Keys'

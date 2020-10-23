@@ -22,13 +22,12 @@ class PuppetClassesView(BaseLoggedInView, SearchableViewMixin):
         column_widgets={
             'Class name': Text('./a'),
             'Actions': Text('.//a[@data-method="delete"]'),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class PuppetClassDetailsView(BaseLoggedInView):
@@ -37,8 +36,7 @@ class PuppetClassDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Puppetclasses'
@@ -60,18 +58,15 @@ class PuppetClassDetailsView(BaseLoggedInView):
         filter = TextInput(locator="//input[@placeholder='Filter by name']")
         environment_filter = FilteredDropdown(id='environment_filter')
         parameter_list = ItemsList(
-            "//div[@id='smart_class_param']"
-            "//ul[contains(@class, 'smart-var-tabs')]"
+            "//div[@id='smart_class_param']" "//ul[contains(@class, 'smart-var-tabs')]"
         )
         parameter = SmartClassParameterContent(
-            locator="//div[@id='smart_class_param']"
-                    "//div[@class='tab-pane fields active']"
+            locator="//div[@id='smart_class_param']" "//div[@class='tab-pane fields active']"
         )
 
     @View.nested
     class smart_variables(SatTab):
         TAB_NAME = 'Smart Variables'
         variable = SmartVariableContent(
-            locator="//div[@id='smart_vars']"
-                    "//div[@class='tab-pane fields active']"
+            locator="//div[@id='smart_vars']" "//div[@class='tab-pane fields active']"
         )

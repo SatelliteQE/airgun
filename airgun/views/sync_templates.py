@@ -21,20 +21,15 @@ class SyncTemplatesView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.browser.wait_for_element(self.title, exception=False) is not None)
+            breadcrumb_loaded
+            and self.browser.wait_for_element(self.title, exception=False) is not None
+        )
 
     def before_fill(self, values):
         """Wait for Sync Type Radio Button to be displayed"""
-        wait_for(
-            lambda: self.sync_type.is_displayed,
-            timeout=10,
-            delay=1,
-            logger=self.logger
-        )
+        wait_for(lambda: self.sync_type.is_displayed, timeout=10, delay=1, logger=self.logger)
 
     @template.register('Import')
     class ImportTemplates(View):
@@ -65,6 +60,9 @@ class TemplatesReportView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return all([
-            self.browser.wait_for_element(self.title, exception=False),
-            self.browser.elements(self.REPORTS)])
+        return all(
+            [
+                self.browser.wait_for_element(self.title, exception=False),
+                self.browser.elements(self.REPORTS),
+            ]
+        )

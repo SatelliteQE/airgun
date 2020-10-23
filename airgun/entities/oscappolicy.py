@@ -82,6 +82,7 @@ class OSCAPPolicyEntity(BaseEntity):
 @navigator.register(OSCAPPolicyEntity, 'All')
 class ShowAllSCAPPolicies(NavigateStep):
     """Navigate to All SCAP Policies screen."""
+
     VIEW = SCAPPoliciesView
 
     def step(self, *args, **kwargs):
@@ -91,6 +92,7 @@ class ShowAllSCAPPolicies(NavigateStep):
 @navigator.register(OSCAPPolicyEntity, 'New')
 class NewSCAPPolicy(NavigateStep):
     """Navigate to upload new SCAP Policies page."""
+
     VIEW = SCAPPolicyCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -103,9 +105,10 @@ class NewSCAPPolicy(NavigateStep):
 class EditSCAPPolicy(NavigateStep):
     """Navigate to edit existing SCAP Policy page.
 
-        Args:
-        entity_name: name of SCAP policy
+    Args:
+    entity_name: name of SCAP policy
     """
+
     VIEW = SCAPPolicyEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -121,9 +124,10 @@ class EditSCAPPolicy(NavigateStep):
 class DetailsSCAPPolicy(NavigateStep):
     """To get data from SCAPPolicyDetail view
 
-        Args:
-        entity_name: name of SCAP policy
+    Args:
+    entity_name: name of SCAP policy
     """
+
     VIEW = SCAPPolicyDetailsView
 
     def prerequisite(self, *args, **kwargs):

@@ -17,21 +17,18 @@ class MatcherAttribute(View):
     """Represent smart variable matcher attribute pair. Usually, it looks like
     as two fields separated by '=' mark
     """
-    matcher_attribute_type = Select(
-        ".//select[contains(@class, 'matcher_key')]")
-    matcher_attribute_value = TextInput(
-        locator=".//input[contains(@class, 'matcher_value')]")
+
+    matcher_attribute_type = Select(".//select[contains(@class, 'matcher_key')]")
+    matcher_attribute_value = TextInput(locator=".//input[contains(@class, 'matcher_value')]")
 
 
 class SmartVariableContent(View):
     ROOT = ParametrizedLocator('{@locator}')
     key = TextInput(locator=".//input[contains(@name, '[key]')]")
-    description = TextInput(
-        locator=".//textarea[contains(@name, '[description]')]")
+    description = TextInput(locator=".//textarea[contains(@name, '[description]')]")
     puppet_class = FilteredDropdown(id='variable_lookup_key_puppetclass_id')
     parameter_type = Select(locator=".//select[contains(@name, '[parameter_type]')]")
-    default_value = TextInputHidden(
-        locator=".//textarea[contains(@name, '[default_value]')]")
+    default_value = TextInputHidden(locator=".//textarea[contains(@name, '[default_value]')]")
     hidden = Checkbox(locator=".//input[contains(@name, '[hidden_value]')]")
 
     def __init__(self, parent, locator, logger=None):
@@ -40,29 +37,22 @@ class SmartVariableContent(View):
 
     @View.nested
     class optional_input_validators(View):
-        expander = Text(
-            ".//h2[contains(@data-target, '#optional_input_validators_')]")
-        validator_type = Select(
-            locator=".//select[contains(@name, '[validator_type]')]")
-        validator_rule = TextInput(
-            locator=".//input[contains(@name, '[validator_rule]')]")
+        expander = Text(".//h2[contains(@data-target, '#optional_input_validators_')]")
+        validator_type = Select(locator=".//select[contains(@name, '[validator_type]')]")
+        validator_rule = TextInput(locator=".//input[contains(@name, '[validator_rule]')]")
 
         def __init__(self, parent, logger=None):
             View.__init__(self, parent, logger=logger)
             if 'collapsed' in self.browser.classes(self.expander):
                 self.expander.click()
-                self.browser.wait_for_element(
-                    self.validator_type, visible=True)
+                self.browser.wait_for_element(self.validator_type, visible=True)
 
     @View.nested
     class prioritize_attribute_order(View):
         order = TextInput(locator="//textarea[@id='order']")
-        merge_overrides = Checkbox(
-            locator=".//input[contains(@id, 'merge_overrides')]")
-        merge_default = Checkbox(
-            locator=".//input[contains(@id, 'merge_default')]")
-        avoid_duplicates = Checkbox(
-            locator=".//input[contains(@id, 'avoid_duplicates')]")
+        merge_overrides = Checkbox(locator=".//input[contains(@id, 'merge_overrides')]")
+        merge_default = Checkbox(locator=".//input[contains(@id, 'merge_default')]")
+        avoid_duplicates = Checkbox(locator=".//input[contains(@id, 'avoid_duplicates')]")
 
     @View.nested
     class matchers(View):
@@ -70,12 +60,10 @@ class SmartVariableContent(View):
             ".//table[contains(@class, 'white-header')]",
             column_widgets={
                 'Attribute type': MatcherAttribute(),
-                'Value': TextInputHidden(
-                    locator=".//textarea[contains(@id, 'value')]"),
-            }
+                'Value': TextInputHidden(locator=".//textarea[contains(@id, 'value')]"),
+            },
         )
-        add_new_matcher = Text(
-            ".//a[contains(@data-original-title, 'add a new matcher')]")
+        add_new_matcher = Text(".//a[contains(@data-original-title, 'add a new matcher')]")
 
         def fill(self, values):
             """Add and fill all matchers provided
@@ -115,13 +103,12 @@ class SmartVariablesTableView(BaseLoggedInView, SearchableViewMixin):
             'Variable': Text('./a'),
             'Puppet Class': Text("./a[contains(@href, '/puppetclasses')]"),
             'Actions': Text('.//a[@data-method="delete"]'),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class SmartVariableCreateView(BaseLoggedInView):
@@ -131,8 +118,7 @@ class SmartVariableCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Smart variables'
@@ -141,11 +127,9 @@ class SmartVariableCreateView(BaseLoggedInView):
 
 
 class SmartVariableEditView(SmartVariableCreateView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Smart variables'

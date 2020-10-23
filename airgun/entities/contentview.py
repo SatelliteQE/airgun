@@ -29,9 +29,10 @@ class ContentViewEntity(BaseEntity):
     def delete(self, entity_name):
         """Delete existing content view"""
         view = self.navigate_to(self, 'Delete', entity_name=entity_name)
-        assert not view.conflicts_present, (
-            'Unable to delete content view. '
-            'Following conflicts are present: {}'.format(view.table.read())
+        assert (
+            not view.conflicts_present
+        ), 'Unable to delete content view. ' 'Following conflicts are present: {}'.format(
+            view.table.read()
         )
         view.remove.click()
         view.flash.assert_no_error()
@@ -80,10 +81,10 @@ class ContentViewEntity(BaseEntity):
     def add_cv(self, entity_name, cv_name):
         """Add content view to selected composite content view."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        assert view.content_views.is_displayed, (
-            'Could not find "Content Views" tab. '
-            'Make sure {} is composite content view'
-            .format(entity_name)
+        assert (
+            view.content_views.is_displayed
+        ), 'Could not find "Content Views" tab. ' 'Make sure {} is composite content view'.format(
+            entity_name
         )
         view.content_views.resources.add(cv_name)
         view.flash.assert_no_error()
@@ -99,9 +100,7 @@ class ContentViewEntity(BaseEntity):
             'author' or by 'version'.
         """
         view = self.navigate_to(
-            self, 'SelectPuppetModuleVersion',
-            entity_name=entity_name,
-            module_name=module_name
+            self, 'SelectPuppetModuleVersion', entity_name=entity_name, module_name=module_name
         )
         if filter_term:
             view.search(filter_term)
@@ -148,7 +147,8 @@ class ContentViewEntity(BaseEntity):
             like 'Version', 'Status', 'Environments' etc.
         """
         view = self.navigate_to(
-            self, 'Promote',
+            self,
+            'Promote',
             entity_name=entity_name,
             version_name=version_name,
         )
@@ -156,8 +156,7 @@ class ContentViewEntity(BaseEntity):
         view.promote.click()
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.versions.search(version_name)
-        view.versions.table.row(
-            version=version_name)['Status'].widget.wait_for_result()
+        view.versions.table.row(version=version_name)['Status'].widget.wait_for_result()
         view.flash.assert_no_error()
         view.flash.dismiss()
         return view.versions.table.row(version=version_name).read()
@@ -165,7 +164,8 @@ class ContentViewEntity(BaseEntity):
     def read_version(self, entity_name, version_name, widget_names=None):
         """Read content view version values"""
         view = self.navigate_to(
-            self, 'Version',
+            self,
+            'Version',
             entity_name=entity_name,
             version_name=version_name,
         )
@@ -176,8 +176,7 @@ class ContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.versions.search(query)
 
-    def search_version_package(
-            self, entity_name, version_name, query, repo=None):
+    def search_version_package(self, entity_name, version_name, query, repo=None):
         """Search for a package inside content view version
 
         :param str entity_name: content view name
@@ -186,14 +185,14 @@ class ContentViewEntity(BaseEntity):
         :param str optional repo: repository name to filter by
         """
         view = self.navigate_to(
-            self, 'Version',
+            self,
+            'Version',
             entity_name=entity_name,
             version_name=version_name,
         )
         return view.rpm_packages.search(query, repo=repo)
 
-    def search_version_module_stream(
-            self, entity_name, version_name, query, repo=None):
+    def search_version_module_stream(self, entity_name, version_name, query, repo=None):
         """Search for a module stream inside content view version
 
         :param str entity_name: content view name
@@ -202,14 +201,14 @@ class ContentViewEntity(BaseEntity):
         :param str optional repo: repository name to filter by
         """
         view = self.navigate_to(
-            self, 'Version',
+            self,
+            'Version',
             entity_name=entity_name,
             version_name=version_name,
         )
         return view.module_streams.search(query, repo=repo)
 
-    def remove_version(self, entity_name, version_name, completely=True,
-                       lces=None):
+    def remove_version(self, entity_name, version_name, completely=True, lces=None):
         """Remove content view version.
 
         :param str entity_name: content view name
@@ -220,7 +219,8 @@ class ContentViewEntity(BaseEntity):
             select on content view version removal screen
         """
         view = self.navigate_to(
-            self, 'Remove Version',
+            self,
+            'Remove Version',
             entity_name=entity_name,
             version_name=version_name,
         )
@@ -234,8 +234,9 @@ class ContentViewEntity(BaseEntity):
         view.completely.fill(completely)
         view.next.click()
         view = ContentViewVersionRemoveConfirmationView(self.browser)
-        assert 'Activation Keys using Version' not in view.message_title.text, (
-            'Activation Key is assigned to content view version')
+        assert (
+            'Activation Keys using Version' not in view.message_title.text
+        ), 'Activation Key is assigned to content view version'
         view.confirm_remove.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -243,13 +244,13 @@ class ContentViewEntity(BaseEntity):
         result = view.versions.search(version_name)
         if completely and result[0]['Version'] != version_name:
             return
-        view.versions.table.row(
-            version=version_name)['Status'].widget.wait_for_result()
+        view.versions.table.row(version=version_name)['Status'].widget.wait_for_result()
 
 
 @navigator.register(ContentViewEntity, 'All')
 class ShowAllContentViews(NavigateStep):
     """Navigate to All Content Views screen."""
+
     VIEW = ContentViewTableView
 
     def step(self, *args, **kwargs):
@@ -259,6 +260,7 @@ class ShowAllContentViews(NavigateStep):
 @navigator.register(ContentViewEntity, 'New')
 class AddNewContentView(NavigateStep):
     """Navigate to New Content View screen."""
+
     VIEW = ContentViewCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -274,6 +276,7 @@ class EditContentView(NavigateStep):
     Args:
         entity_name: name of content view
     """
+
     VIEW = ContentViewEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -293,6 +296,7 @@ class DeleteContentView(NavigateStep):
     Args:
         entity_name: name of content view
     """
+
     VIEW = ContentViewRemoveView
 
     def prerequisite(self, *args, **kwargs):
@@ -311,11 +315,11 @@ class CopyContentView(NavigateStep):
     Args:
         entity_name: name of content view
     """
+
     VIEW = ContentViewCopyView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(
-            self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
+        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
 
     def step(self, *args, **kwargs):
         self.parent.actions.fill('Copy Content View')
@@ -328,11 +332,11 @@ class AddNewPuppetModule(NavigateStep):
     Args:
         entity_name: name of content view
     """
+
     VIEW = AddNewPuppetModuleView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(
-            self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
+        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
 
     def step(self, *args, **kwargs):
         self.parent.puppet_modules.add_new_module.click()
@@ -346,11 +350,11 @@ class SelectPuppetModuleVersion(NavigateStep):
         entity_name: name of content view
         module_name: name of puppet module
     """
+
     VIEW = SelectPuppetModuleVersionView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(
-            self.obj, 'AddPuppetModule', entity_name=kwargs.get('entity_name'))
+        return self.navigate_to(self.obj, 'AddPuppetModule', entity_name=kwargs.get('entity_name'))
 
     def step(self, *args, **kwargs):
         module_name = kwargs.get('module_name')
@@ -365,12 +369,12 @@ class PublishContentViewVersion(NavigateStep):
     Args:
         entity_name: name of content view
     """
+
     VIEW = ContentViewVersionPublishView
 
     def prerequisite(self, *args, **kwargs):
         """Open Content View first."""
-        return self.navigate_to(
-            self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
+        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
 
     def step(self, *args, **kwargs):
         """Dismiss alerts if present to uncover 'Publish' button, then click
@@ -388,17 +392,16 @@ class PromoteContentViewVersion(NavigateStep):
         entity_name: name of content view
         version_name: name of content view version to promote
     """
+
     VIEW = ContentViewVersionPromoteView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(
-            self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
+        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
 
     def step(self, *args, **kwargs):
         version_name = kwargs.get('version_name')
         self.parent.versions.search(version_name)
-        self.parent.versions.table.row(
-            version=version_name)['Actions'].fill('Promote')
+        self.parent.versions.table.row(version=version_name)['Actions'].fill('Promote')
 
 
 @navigator.register(ContentViewEntity, 'Version')
@@ -409,11 +412,11 @@ class ContentViewVersionDetails(NavigateStep):
         entity_name: name of content view
         version_name: name of content view version
     """
+
     VIEW = ContentViewVersionDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(
-            self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
+        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
 
     def am_i_here(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
@@ -422,16 +425,15 @@ class ContentViewVersionDetails(NavigateStep):
         # ``Version 1.0``, updating ``version_name`` accordingly.
         version_name = '{} {}'.format(entity_name, version_name.split()[-1])
         return (
-                self.view.is_displayed
-                and self.view.breadcrumb.locations[1] == entity_name
-                and self.view.breadcrumb.locations[3] == version_name
+            self.view.is_displayed
+            and self.view.breadcrumb.locations[1] == entity_name
+            and self.view.breadcrumb.locations[3] == version_name
         )
 
     def step(self, *args, **kwargs):
         version_name = kwargs.get('version_name')
         self.parent.versions.search(version_name)
-        self.parent.versions.table.row(
-            version=version_name)['Version'].widget.click()
+        self.parent.versions.table.row(version=version_name)['Version'].widget.click()
 
 
 @navigator.register(ContentViewEntity, 'Remove Version')
@@ -443,14 +445,13 @@ class RemoveContentViewVersion(NavigateStep):
         entity_name: name of content view
         version_name: name of content view version to remove
     """
+
     VIEW = ContentViewVersionRemoveView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(
-            self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
+        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
 
     def step(self, *args, **kwargs):
         version_name = kwargs.get('version_name')
         self.parent.versions.search(version_name)
-        self.parent.versions.table.row(
-            version=version_name)['Actions'].fill('Remove')
+        self.parent.versions.table.row(version=version_name)['Actions'].fill('Remove')

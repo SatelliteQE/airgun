@@ -38,10 +38,7 @@ class HostEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe(timeout='600s')
         host_view = HostDetailsView(self.browser)
         wait_for(
-            lambda: host_view.is_displayed is True,
-            timeout=60,
-            delay=1,
-            logger=host_view.logger
+            lambda: host_view.is_displayed is True, timeout=60, delay=1, logger=host_view.logger
         )
         host_view.flash.assert_no_error()
         host_view.flash.dismiss()
@@ -94,8 +91,9 @@ class HostEntity(BaseEntity):
         :param interface_id: The network interface identifier.
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        delete_button = view.interfaces.interfaces_list.row(
-            identifier=interface_id)['Actions'].widget.delete
+        delete_button = view.interfaces.interfaces_list.row(identifier=interface_id)[
+            'Actions'
+        ].widget.delete
         if delete_button.disabled:
             raise DisabledWidgetError('Interface Delete button is disabled')
         delete_button.click()
@@ -116,10 +114,7 @@ class HostEntity(BaseEntity):
         of the selected action name from main entity select action dropdown.
         """
         return self.navigate_to(
-            self,
-            'Select Action',
-            action_name=action_name,
-            entities_list=entities_list
+            self, 'Select Action', action_name=action_name, entities_list=entities_list
         )
 
     def apply_action(self, action_name, entities_list, values=None):
@@ -135,7 +130,7 @@ class HostEntity(BaseEntity):
     def export(self):
         """Export hosts list.
 
-         :return str: path to saved file
+        :return str: path to saved file
         """
         view = self.navigate_to(self, 'All')
         view.export.click()
@@ -179,8 +174,8 @@ class HostEntity(BaseEntity):
 
     def delete_hosts(self, entities_list, timeout=60, wait_for_results=True):
         """Delete all hosts from entities list
-           If keyword 'All' is supplied instead of list, all hosts are selected
-           using the checkbox from table header
+        If keyword 'All' is supplied instead of list, all hosts are selected
+        using the checkbox from table header
         """
         view = self._select_action('Delete Hosts', entities_list)
         sleep(1)
@@ -225,9 +220,7 @@ class HostEntity(BaseEntity):
         view.validations.assert_no_errors()
         # switch to the last opened tab,
         self.browser.switch_to_window(self.browser.window_handles[-1])
-        self.browser.wait_for_element(
-            locator='//div[@id="index-brand"]', exception=True
-        )
+        self.browser.wait_for_element(locator='//div[@id="index-brand"]', exception=True)
         # the remote host content is loaded in an iframe, let's switch to it
         self.browser.switch_to_frame(locator='//div[@id="content"]/iframe')
 
@@ -247,6 +240,7 @@ class HostEntity(BaseEntity):
 @navigator.register(HostEntity, 'All')
 class ShowAllHosts(NavigateStep):
     """Navigate to All Hosts page"""
+
     VIEW = HostsView
 
     def step(self, *args, **kwargs):
@@ -256,6 +250,7 @@ class ShowAllHosts(NavigateStep):
 @navigator.register(HostEntity, 'New')
 class AddNewHost(NavigateStep):
     """Navigate to Create Host page"""
+
     VIEW = HostCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -272,6 +267,7 @@ class ShowHostDetails(NavigateStep):
     Args:
         entity_name: name of the host
     """
+
     VIEW = HostDetailsView
 
     def prerequisite(self, *args, **kwargs):
@@ -291,6 +287,7 @@ class EditHost(NavigateStep):
     Args:
         entity_name: name of the host
     """
+
     VIEW = HostEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -311,6 +308,7 @@ class HostsSelectAction(NavigateStep):
         action_name: the action name to select from dropdown button
         entities_list: list of hosts that need to be modified
     """
+
     ACTIONS_VIEWS = {
         'Change Environment': HostsChangeEnvironment,
         'Change Group': HostsChangeGroup,
@@ -331,8 +329,9 @@ class HostsSelectAction(NavigateStep):
         action_name = kwargs.get('action_name')
         self.VIEW = self.ACTIONS_VIEWS.get(action_name)
         if not self.VIEW:
-            raise ValueError('Please provide a valid action name.'
-                             ' action_name: "{0}" not found.')
+            raise ValueError(
+                'Please provide a valid action name.' ' action_name: "{0}" not found.'
+            )
         entities_list = kwargs.get('entities_list')
         if entities_list == "All":
             self.parent.select_all.fill(True)

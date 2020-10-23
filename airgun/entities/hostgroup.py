@@ -55,6 +55,7 @@ class HostGroupEntity(BaseEntity):
 @navigator.register(HostGroupEntity, 'All')
 class ShowAllHostGroups(NavigateStep):
     """Navigate to All Host Groups page"""
+
     VIEW = HostGroupsView
 
     def step(self, *args, **kwargs):
@@ -64,6 +65,7 @@ class ShowAllHostGroups(NavigateStep):
 @navigator.register(HostGroupEntity, 'New')
 class AddNewHostGroup(NavigateStep):
     """Navigate to Create Host Group page"""
+
     VIEW = HostGroupCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -79,6 +81,7 @@ class EditHostGroup(NavigateStep):
     Args:
         entity_name: name of the host group
     """
+
     VIEW = HostGroupEditView
 
     def prerequisite(self, *args, **kwargs):

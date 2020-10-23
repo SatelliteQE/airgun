@@ -5,12 +5,11 @@ from airgun.views.rhai import InsightsOrganizationErrorView
 
 class InsightsOrganizationPageError(Exception):
     """Raised when navigating to insight plugin pages and the organization is not selected
-     or the current selected organization has no manifest.
+    or the current selected organization has no manifest.
     """
 
 
 class InsightsNavigateStep(NavigateStep):
-
     def post_navigate(self, _tries, *args, **kwargs):
         """Raise Error if Destination view is not displayed or Organization Error page
         is displayed.
@@ -20,6 +19,5 @@ class InsightsNavigateStep(NavigateStep):
             if org_err_page_view.is_displayed:
                 raise InsightsOrganizationPageError(org_err_page_view.read())
             raise DestinationNotReachedError(
-                'Navigation destination view "{0}" not reached'.format(
-                    self.view.__class__.__name__)
+                f'Navigation destination view "{self.view.__class__.__name__}" not reached'
             )

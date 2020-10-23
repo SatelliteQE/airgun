@@ -55,6 +55,7 @@ class LocationEntity(BaseEntity):
 @navigator.register(LocationEntity, 'All')
 class ShowAllLocations(NavigateStep):
     """Navigate to All Locations page"""
+
     VIEW = LocationsView
 
     def step(self, *args, **kwargs):
@@ -64,6 +65,7 @@ class ShowAllLocations(NavigateStep):
 @navigator.register(LocationEntity, 'New')
 class AddNewLocation(NavigateStep):
     """Navigate to Create Location page"""
+
     VIEW = LocationCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -79,6 +81,7 @@ class EditLocation(NavigateStep):
     Args:
         entity_name: name of the location
     """
+
     VIEW = LocationsEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -97,6 +100,7 @@ class SelectLocationContext(NavigateStep):
     Args:
         loc_name: name of the location
     """
+
     VIEW = BaseLoggedInView
 
     def am_i_here(self, *args, **kwargs):

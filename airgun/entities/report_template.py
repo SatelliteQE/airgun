@@ -60,13 +60,14 @@ class ReportTemplateEntity(BaseEntity):
         """Check if report template is locked for editing"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        return "This template is locked for editing." in view.table.row(
-            name=entity_name)['Locked'].widget.browser.element('.').get_property('innerHTML')
+        return "This template is locked for editing." in view.table.row(name=entity_name)[
+            'Locked'
+        ].widget.browser.element('.').get_property('innerHTML')
 
     def export(self, entity_name):
         """Export report template.
 
-         :return str: path to saved file
+        :return str: path to saved file
         """
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
@@ -76,7 +77,7 @@ class ReportTemplateEntity(BaseEntity):
     def generate(self, entity_name, values={}):
         """Generate report template
 
-         :return str: path to saved file
+        :return str: path to saved file
         """
         view = self.navigate_to(self, 'Generate', entity_name=entity_name)
         view.fill(values)
@@ -91,8 +92,7 @@ class ReportTemplateEntity(BaseEntity):
         return self.browser.save_downloaded_file()
 
     def schedule(self, entity_name, values={}):
-        """Schedule report template
-        """
+        """Schedule report template"""
         view = self.navigate_to(self, 'Generate', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
@@ -119,6 +119,7 @@ class ReportTemplateEntity(BaseEntity):
 @navigator.register(ReportTemplateEntity, 'All')
 class ShowAllReportTemplates(NavigateStep):
     """Navigate to all Report Templates screen."""
+
     VIEW = ReportTemplatesView
 
     def step(self, *args, **kwargs):
@@ -128,6 +129,7 @@ class ShowAllReportTemplates(NavigateStep):
 @navigator.register(ReportTemplateEntity, 'New')
 class AddNewReportTemplate(NavigateStep):
     """Navigate to Create new Report Template screen."""
+
     VIEW = ReportTemplateCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -140,9 +142,10 @@ class AddNewReportTemplate(NavigateStep):
 class EditReportTemplate(NavigateStep):
     """Navigate to Edit Report Template screen.
 
-        Args:
-            entity_name: name of report template to edit
+    Args:
+        entity_name: name of report template to edit
     """
+
     VIEW = ReportTemplateDetailsView
 
     def prerequisite(self, *args, **kwargs):
@@ -158,9 +161,10 @@ class EditReportTemplate(NavigateStep):
 class CloneReportTemplate(NavigateStep):
     """Navigate to Create Report Template screen for cloned entity
 
-        Args:
-            entity_name: name of report template to clone
+    Args:
+        entity_name: name of report template to clone
     """
+
     VIEW = ReportTemplateCreateView
 
     def prerequisite(self, *args, **kwargs):
@@ -175,6 +179,7 @@ class CloneReportTemplate(NavigateStep):
 @navigator.register(ReportTemplateEntity, 'Generate')
 class GenerateReportTemplate(NavigateStep):
     """Navigate to Generate a Report Template."""
+
     VIEW = ReportTemplateGenerateView
 
     def prerequisite(self, *args, **kwargs):

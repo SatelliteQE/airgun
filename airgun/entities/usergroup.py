@@ -41,8 +41,7 @@ class UserGroupEntity(BaseEntity):
         """Remove existing user group entity"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.click(
-            handle_alert=True)
+        view.table.row(name=entity_name)['Actions'].widget.click(handle_alert=True)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -57,6 +56,7 @@ class UserGroupEntity(BaseEntity):
 @navigator.register(UserGroupEntity, 'All')
 class ShowAllUserGroups(NavigateStep):
     """Navigate to All User Groups page"""
+
     VIEW = UserGroupsView
 
     def step(self, *args, **kwargs):
@@ -66,6 +66,7 @@ class ShowAllUserGroups(NavigateStep):
 @navigator.register(UserGroupEntity, 'New')
 class AddNewUserGroup(NavigateStep):
     """Navigate to Create User Group page"""
+
     VIEW = UserGroupCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -81,6 +82,7 @@ class EditUserGroup(NavigateStep):
     Args:
         entity_name: name of the user group
     """
+
     VIEW = UserGroupDetailsView
 
     def prerequisite(self, *args, **kwargs):

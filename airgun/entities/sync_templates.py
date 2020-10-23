@@ -18,13 +18,14 @@ class SyncTemplatesEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe()
         if view.validations.messages:
             raise AssertionError(
-                f'Validation Errors are present on Page. Messages are {view.validations.messages}')
+                f'Validation Errors are present on Page. Messages are {view.validations.messages}'
+            )
         reports_view = TemplatesReportView(self.browser)
         wait_for(
             lambda: reports_view.is_displayed is True,
             timeout=60,
             delay=1,
-            logger=reports_view.logger
+            logger=reports_view.logger,
         )
         return reports_view.title.read()
 
@@ -32,6 +33,7 @@ class SyncTemplatesEntity(BaseEntity):
 @navigator.register(SyncTemplatesEntity, 'Main')
 class SyncMainPageNavigation(NavigateStep):
     """Navigate to Import/Export Templates page"""
+
     VIEW = SyncTemplatesView
 
     def step(self, *args, **kwargs):
@@ -41,6 +43,7 @@ class SyncMainPageNavigation(NavigateStep):
 @navigator.register(SyncTemplatesEntity, 'Sync')
 class SyncTemplatesActionNavigation(NavigateStep):
     """Navigate to Import/Export Templates page"""
+
     VIEW = SyncTemplatesView
 
     def prerequisite(self, *args, **kwargs):

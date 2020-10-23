@@ -73,6 +73,7 @@ class SyncPlanEntity(BaseEntity):
 @navigator.register(SyncPlanEntity, 'All')
 class ShowAllSyncPlans(NavigateStep):
     """Navigate to All Sync Plans screen."""
+
     VIEW = SyncPlansView
 
     def step(self, *args, **kwargs):
@@ -82,6 +83,7 @@ class ShowAllSyncPlans(NavigateStep):
 @navigator.register(SyncPlanEntity, 'New')
 class AddNewSyncPlan(NavigateStep):
     """Navigate to New Sync Plan screen."""
+
     VIEW = SyncPlanCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -97,6 +99,7 @@ class EditSyncPlan(NavigateStep):
     Args:
         entity_name: name of sync plan
     """
+
     VIEW = SyncPlanEditView
 
     def prerequisite(self, *args, **kwargs):

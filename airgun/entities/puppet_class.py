@@ -22,8 +22,7 @@ class PuppetClassEntity(BaseEntity):
         """Read smart class parameter values for specific puppet class"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.smart_class_parameter.filter.fill(parameter_name)
-        view.smart_class_parameter.parameter_list.fill(
-            parameter_name.replace('_', ' '))
+        view.smart_class_parameter.parameter_list.fill(parameter_name.replace('_', ' '))
         return view.smart_class_parameter.parameter.read()
 
     def update(self, entity_name, values):
@@ -38,8 +37,7 @@ class PuppetClassEntity(BaseEntity):
         """Delete puppet class entity"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(class_name=entity_name)['Actions'].widget.click(
-            handle_alert=True)
+        view.table.row(class_name=entity_name)['Actions'].widget.click(handle_alert=True)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -47,6 +45,7 @@ class PuppetClassEntity(BaseEntity):
 @navigator.register(PuppetClassEntity, 'All')
 class ShowAllPuppetClasses(NavigateStep):
     """Navigate to All Puppet Classes screen."""
+
     VIEW = PuppetClassesView
 
     def step(self, *args, **kwargs):
@@ -57,9 +56,10 @@ class ShowAllPuppetClasses(NavigateStep):
 class EditPuppetClass(NavigateStep):
     """Navigate to Edit Puppet Class screen.
 
-        Args:
-            entity_name: name of puppet class
+    Args:
+        entity_name: name of puppet class
     """
+
     VIEW = PuppetClassDetailsView
 
     def prerequisite(self, *args, **kwargs):
@@ -68,5 +68,4 @@ class EditPuppetClass(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
-        self.parent.table.row(
-            class_name=entity_name)['Class name'].widget.click()
+        self.parent.table.row(class_name=entity_name)['Class name'].widget.click()

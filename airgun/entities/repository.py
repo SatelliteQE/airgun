@@ -14,7 +14,6 @@ from airgun.views.repository import RepositoryPuppetModulesView
 
 
 class RepositoryEntity(BaseEntity):
-
     def _find_default_http_proxy(self, values):
         """ Finds the global proxy name and returns updated values accordingly."""
         proxy = SettingsEntity(self.browser)
@@ -22,8 +21,7 @@ class RepositoryEntity(BaseEntity):
         global_proxy_name = result.split()[0]
         if global_proxy_name == 'no':
             global_proxy_name = 'None'
-        values["repo_content.http_proxy_policy"] = 'Global Default ({})'.format(
-            global_proxy_name)
+        values["repo_content.http_proxy_policy"] = f'Global Default ({global_proxy_name})'
         return values
 
     def create(self, product_name, values):
@@ -43,32 +41,30 @@ class RepositoryEntity(BaseEntity):
 
     def read(self, product_name, entity_name, widget_names=None):
         """Read values for repository"""
-        view = self.navigate_to(
-            self, 'Edit', product_name=product_name, entity_name=entity_name)
+        view = self.navigate_to(self, 'Edit', product_name=product_name, entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def update(self, product_name, entity_name, values):
         """Update product repository values"""
         if values.get("repo_content.http_proxy_policy") == "Global Default":
             values = self._find_default_http_proxy(values)
-        view = self.navigate_to(
-            self, 'Edit', product_name=product_name, entity_name=entity_name)
+        view = self.navigate_to(self, 'Edit', product_name=product_name, entity_name=entity_name)
         view.fill(values)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
     def upload_content(self, product_name, entity_name, file_name):
         """Upload a new content to existing repository"""
-        view = self.navigate_to(
-            self, 'Edit', product_name=product_name, entity_name=entity_name)
+        view = self.navigate_to(self, 'Edit', product_name=product_name, entity_name=entity_name)
         view.repo_content.upload_content.fill(file_name)
         view.repo_content.upload.click()
         wait_for(
             lambda: view.flash.assert_message(
-                "Successfully uploaded content: {}".format(file_name.rpartition('/')[-1])),
+                "Successfully uploaded content: {}".format(file_name.rpartition('/')[-1])
+            ),
             handle_exception=True,
             timeout=120,
-            logger=view.flash.logger
+            logger=view.flash.logger,
         )
         view.flash.dismiss()
 
@@ -82,16 +78,15 @@ class RepositoryEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
         wait_for(
-            lambda: view.search('name = "{0}"'.format(entity_name)) == [],
+            lambda: view.search(f'name = "{entity_name}"') == [],
             timeout=30,
             delay=2,
-            logger=view.logger
+            logger=view.logger,
         )
 
     def synchronize(self, product_name, entity_name):
         """Synchronize repository"""
-        view = self.navigate_to(
-            self, 'Sync', product_name=product_name, entity_name=entity_name)
+        view = self.navigate_to(self, 'Sync', product_name=product_name, entity_name=entity_name)
         view.progressbar.wait_for_result()
         return view.read()
 
@@ -103,8 +98,7 @@ class RepositoryEntity(BaseEntity):
             product_name=product_name,
             entity_name=entity_name,
         )
-        max_per_page = max([
-            int(el.text) for el in view.items_per_page.all_options])
+        max_per_page = max([int(el.text) for el in view.items_per_page.all_options])
         view.items_per_page.fill(str(max_per_page))
         for _ in range(int(view.total_packages.text) // max_per_page + 1):
             view.select_all.fill(True)
@@ -113,8 +107,7 @@ class RepositoryEntity(BaseEntity):
             view.flash.assert_no_error()
             view.flash.dismiss()
         if view.total_packages.text != '0':
-            raise AssertionError(
-                'Unable to remove all packages from {}'.format(entity_name))
+            raise AssertionError(f'Unable to remove all packages from {entity_name}')
 
     def remove_all_puppet_modules(self, product_name, entity_name):
         """Remove all puppet modules from repository"""
@@ -124,21 +117,16 @@ class RepositoryEntity(BaseEntity):
             product_name=product_name,
             entity_name=entity_name,
         )
-        max_per_page = max([
-            int(el.text) for el in view.items_per_page.all_options])
+        max_per_page = max([int(el.text) for el in view.items_per_page.all_options])
         view.items_per_page.fill(str(max_per_page))
-        for _ in range(
-                int(view.total_puppet_modules.text) // max_per_page + 1):
+        for _ in range(int(view.total_puppet_modules.text) // max_per_page + 1):
             view.select_all.fill(True)
             view.remove_packages.click()
             view.dialog.confirm()
             view.flash.assert_no_error()
             view.flash.dismiss()
         if view.total_puppet_modules.text != '0':
-            raise AssertionError(
-                'Unable to remove all puppet modules from {}'
-                .format(entity_name)
-            )
+            raise AssertionError(f'Unable to remove all puppet modules from {entity_name}')
 
 
 @navigator.register(RepositoryEntity, 'All')
@@ -149,18 +137,16 @@ class ShowAllRepositories(NavigateStep):
     Args:
         product_name: name of product
     """
+
     VIEW = RepositoriesView
 
     def am_i_here(self, *args, **kwargs):
         product_name = kwargs.get('product_name')
-        return (
-            self.view.is_displayed
-            and self.view.breadcrumb.locations[1] == product_name)
+        return self.view.is_displayed and self.view.breadcrumb.locations[1] == product_name
 
     def prerequisite(self, *args, **kwargs):
         product_name = kwargs.get('product_name')
-        return self.navigate_to(
-            ProductEntity, 'Edit', entity_name=product_name)
+        return self.navigate_to(ProductEntity, 'Edit', entity_name=product_name)
 
     def step(self, *args, **kwargs):
         self.parent.repositories.click()
@@ -173,6 +159,7 @@ class AddNewRepository(NavigateStep):
     Args:
         product_name: name of product
     """
+
     VIEW = RepositoryCreateView
 
     def prerequisite(self, *args, **kwargs):
@@ -190,6 +177,7 @@ class EditRepository(NavigateStep):
         product_name: name of product
         entity_name: name of repository
     """
+
     VIEW = RepositoryEditView
 
     def am_i_here(self, *args, **kwargs):
@@ -219,14 +207,12 @@ class SyncRepository(NavigateStep):
         product_name: name of product
         entity_name: name of repository
     """
+
     VIEW = ProductTaskDetailsView
 
     def am_i_here(self, *args, **kwargs):
         prod_name = kwargs.get('product_name')
-        return (
-            self.view.is_displayed
-            and self.view.breadcrumb.locations[1] == prod_name
-        )
+        return self.view.is_displayed and self.view.breadcrumb.locations[1] == prod_name
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All', **kwargs)
@@ -247,6 +233,7 @@ class RepositoryPackages(NavigateStep):
         product_name: name of product
         entity_name: name of repository
     """
+
     VIEW = RepositoryPackagesView
 
     def am_i_here(self, *args, **kwargs):
@@ -274,6 +261,7 @@ class RepositoryPuppetModules(NavigateStep):
         product_name: name of product
         entity_name: name of repository
     """
+
     VIEW = RepositoryPuppetModulesView
 
     def am_i_here(self, *args, **kwargs):

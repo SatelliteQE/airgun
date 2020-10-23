@@ -70,6 +70,7 @@ class OSCAPTailoringFileEntity(BaseEntity):
 @navigator.register(OSCAPTailoringFileEntity, 'All')
 class ShowAllSCAPTailoringFiles(NavigateStep):
     """Navigate to All SCAP Tailoring File screen."""
+
     VIEW = SCAPTailoringFilesView
 
     def step(self, *args, **kwargs):
@@ -79,6 +80,7 @@ class ShowAllSCAPTailoringFiles(NavigateStep):
 @navigator.register(OSCAPTailoringFileEntity, 'New')
 class UploadNewSCAPTailoringFile(NavigateStep):
     """Navigate to upload new SCAP Tailoring File page."""
+
     VIEW = SCAPTailoringFileCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -90,6 +92,7 @@ class UploadNewSCAPTailoringFile(NavigateStep):
 @navigator.register(OSCAPTailoringFileEntity, 'Edit')
 class EditSCAPTailoringFile(NavigateStep):
     """Navigate to edit existing SCAP Tailoring File page."""
+
     VIEW = SCAPTailoringFileEditView
 
     def prerequisite(self, *args, **kwargs):

@@ -31,8 +31,7 @@ class DiscoveryRuleEntity(BaseEntity):
         :param str entity_name: name of the corresponding discovery rule
         """
         view = self.navigate_to(self, 'All')
-        view.table.row(
-            name=entity_name)['Actions'].widget.fill('Delete')
+        view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -97,10 +96,7 @@ class DiscoveryRuleEntity(BaseEntity):
         :return: The discovered hosts view properties
         """
         view = self.navigate_to(
-            self,
-            'Hosts',
-            action_name='Discovered Hosts',
-            entity_name=entity_name
+            self, 'Hosts', action_name='Discovered Hosts', entity_name=entity_name
         )
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -113,10 +109,7 @@ class DiscoveryRuleEntity(BaseEntity):
         :return: The hosts view properties
         """
         view = self.navigate_to(
-            self,
-            'Hosts',
-            action_name='Associated Hosts',
-            entity_name=entity_name
+            self, 'Hosts', action_name='Associated Hosts', entity_name=entity_name
         )
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -126,6 +119,7 @@ class DiscoveryRuleEntity(BaseEntity):
 @navigator.register(DiscoveryRuleEntity, 'All')
 class ShowAllDiscoveryRules(NavigateStep):
     """Navigate to All Discovery rules screen."""
+
     VIEW = DiscoveryRulesView
 
     def step(self, *args, **kwargs):
@@ -135,6 +129,7 @@ class ShowAllDiscoveryRules(NavigateStep):
 @navigator.register(DiscoveryRuleEntity, 'New')
 class AddNewDiscoveryRule(NavigateStep):
     """Navigate to Create Discovery rule page."""
+
     VIEW = DiscoveryRuleCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -147,9 +142,10 @@ class AddNewDiscoveryRule(NavigateStep):
 class EditDiscoveryRule(NavigateStep):
     """Navigate to Edit Discovery rule page.
 
-        Args:
-            entity_name: name of the discovery rule
+    Args:
+        entity_name: name of the discovery rule
     """
+
     VIEW = DiscoveryRuleEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -169,10 +165,8 @@ class DiscoveredRuleHosts(NavigateStep):
             action_name: the action name to select from dropdown button.
             entity_name: name of the discovery rule entity.
     """
-    ACTIONS_VIEWS = {
-        'Associated Hosts': HostsView,
-        'Discovered Hosts': DiscoveredHostsView
-    }
+
+    ACTIONS_VIEWS = {'Associated Hosts': HostsView, 'Discovered Hosts': DiscoveredHostsView}
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
@@ -181,8 +175,8 @@ class DiscoveredRuleHosts(NavigateStep):
         action_name = kwargs.get('action_name')
         self.VIEW = self.ACTIONS_VIEWS.get(action_name)
         if not self.VIEW:
-            raise ValueError('Please provide a valid action name.'
-                             ' action_name: "{0}" not found.')
+            raise ValueError(
+                'Please provide a valid action name.' ' action_name: "{0}" not found.'
+            )
         entity_name = kwargs.get('entity_name')
-        self.parent.table.row(name=entity_name)['Actions'].widget.fill(
-            action_name)
+        self.parent.table.row(name=entity_name)['Actions'].widget.fill(action_name)

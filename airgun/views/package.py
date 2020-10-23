@@ -14,6 +14,7 @@ from airgun.widgets import Search
 
 class PackagesView(BaseLoggedInView):
     """Main Packages view"""
+
     title = Text("//h2[contains(., 'Packages')]")
     table = SatTable('.//table', column_widgets={'RPM': Text("./a")})
 
@@ -22,8 +23,7 @@ class PackagesView(BaseLoggedInView):
     upgradable = Checkbox(locator=".//input[@ng-model='showUpgradable']")
     search_box = Search()
 
-    def search(self, query, repository='All Repositories', applicable=False,
-               upgradable=False):
+    def search(self, query, repository='All Repositories', applicable=False, upgradable=False):
         """Perform search using search box on the page and return table
         contents.
 
@@ -48,8 +48,7 @@ class PackagesView(BaseLoggedInView):
     @property
     def is_displayed(self):
         """The view is displayed when it's title exists"""
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class PackageDetailsView(BaseLoggedInView):
@@ -57,13 +56,9 @@ class PackageDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
 
-        return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Packages'
-        )
+        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Packages'
 
     @View.nested
     class details(SatTab):
@@ -88,5 +83,4 @@ class PackageDetailsView(BaseLoggedInView):
 
     @View.nested
     class files(SatTab):
-        package_files = ItemsListReadOnly(
-            locator=".//div[@data-block='content']//ul")
+        package_files = ItemsListReadOnly(locator=".//div[@data-block='content']//ul")

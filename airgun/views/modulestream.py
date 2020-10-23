@@ -19,6 +19,7 @@ class CustomSearch(Search):
 
 class ModuleStreamView(BaseLoggedInView):
     """Main Module_Streams view"""
+
     title = Text("//h2[contains(., 'Module Streams')]")
     table = SatTable('.//table', column_widgets={'Name': Text("./a")})
 
@@ -39,8 +40,7 @@ class ModuleStreamView(BaseLoggedInView):
     @property
     def is_displayed(self):
         """The view is displayed when it's title exists"""
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ModuleStreamsDetailsView(BaseLoggedInView):
@@ -52,19 +52,13 @@ class ModuleStreamsDetailsView(BaseLoggedInView):
     @property
     def is_displayed(self):
         """The view is displayed when it's details ta exists"""
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
 
-        return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Module Streams'
-        )
+        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Module Streams'
 
     @View.nested
     class details(SatTab):
-        details_table = SatTableWithUnevenStructure(
-            locator='.//table',
-            column_locator='./*')
+        details_table = SatTableWithUnevenStructure(locator='.//table', column_locator='./*')
 
     @View.nested
     class repositories(SatTab):
@@ -72,5 +66,5 @@ class ModuleStreamsDetailsView(BaseLoggedInView):
             locator=".//table",
             column_widgets={
                 'Name': Text("./a"),
-            }
+            },
         )

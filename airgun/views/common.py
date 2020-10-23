@@ -32,7 +32,8 @@ from airgun.widgets import ValidationErrors
 
 class BaseLoggedInView(View):
     menu = SatVerticalNavigation(
-        './/div[@id="vertical-nav" or contains(@class, "nav-pf-vertical")]/ul')
+        './/div[@id="vertical-nav" or contains(@class, "nav-pf-vertical")]/ul'
+    )
     taxonomies = ContextSelector()
     flash = SatFlashMessages()
     validations = ValidationErrors()
@@ -68,6 +69,7 @@ class WrongContextAlert(View):
     """Alert screen which appears when switching organization while organization-specific entity is
     opened.
     """
+
     message = Text(
         "//div[contains(@class, 'alert-warning')]"
         "[span[text()='Please try to update your request']]"
@@ -99,9 +101,10 @@ class SatTab(Tab):
             pass
 
     """
+
     ROOT = ParametrizedLocator(
-        './/div[contains(@class, "page-content") or '
-        'contains(@class, "tab-content")]')
+        './/div[contains(@class, "page-content") or ' 'contains(@class, "tab-content")]'
+    )
 
     @property
     def is_displayed(self):
@@ -124,9 +127,9 @@ class SatVerticalTab(SatTab):
         class mytab(SatVerticalTab):
             TAB_NAME = 'My Tab'
     """
+
     TAB_LOCATOR = ParametrizedLocator(
-        ".//ul[@data-tabs='pills']"
-        "/li[./a[normalize-space(.)={@tab_name|quote}]]"
+        ".//ul[@data-tabs='pills']" "/li[./a[normalize-space(.)={@tab_name|quote}]]"
     )
 
 
@@ -140,9 +143,10 @@ class SatTabWithDropdown(TabWithDropdown):
             TAB_NAME = 'My Tab'
             SUB_ITEM = 'My Tab Dropdown Item'
     """
+
     ROOT = ParametrizedLocator(
-        './/div[contains(@class, "page-content") or '
-        'contains(@class, "tab-content")]')
+        './/div[contains(@class, "page-content") or ' 'contains(@class, "tab-content")]'
+    )
 
     @property
     def is_displayed(self):
@@ -165,8 +169,8 @@ class SatSecondaryTab(SatTab):
         class listremove(SatSecondaryTab):
             TAB_NAME = 'List/Remove'
     """
-    ROOT = ParametrizedLocator(
-        './/nav[@class="ng-scope" or not(@*)]/following-sibling::div')
+
+    ROOT = ParametrizedLocator('.//nav[@class="ng-scope" or not(@*)]/following-sibling::div')
 
     TAB_LOCATOR = ParametrizedLocator(
         './/nav[@class="ng-scope" or not(@*)]/ul[contains(@class, "nav-tabs")]'
@@ -188,16 +192,19 @@ class LCESelectorGroup(ParametrizedView):
         class lce(LCESelectorGroup):
             pass
     """
-    ROOT = (".//*[self::div or self::span][@path-selector='environments' or "
-            "@path-selector='availableEnvironments']")
+
+    ROOT = (
+        ".//*[self::div or self::span][@path-selector='environments' or "
+        "@path-selector='availableEnvironments']"
+    )
 
     PARAMETERS = ('lce_name',)
 
     LAST_ENV = ".//div[contains(@class, 'path-selector')]/ul/li[last()]"
     lce = LCESelector(
         locator=ParametrizedLocator(
-            "./div[contains(@class, 'path-selector')]/ul"
-            "[li[normalize-space(.)='{lce_name}']]")
+            "./div[contains(@class, 'path-selector')]/ul" "[li[normalize-space(.)='{lce_name}']]"
+        )
     )
 
     @classmethod
@@ -252,15 +259,14 @@ class LCESelectorGroup(ParametrizedView):
 
 class ListRemoveTab(SatSecondaryTab):
     """'List/Remove' tab, part of :class:`AddRemoveResourcesView`."""
+
     TAB_NAME = 'List/Remove'
     searchbox = Search()
     remove_button = Text(
-        './/div[@data-block="list-actions"]'
-        '//button[contains(@ng-click, "remove")]'
+        './/div[@data-block="list-actions"]' '//button[contains(@ng-click, "remove")]'
     )
     table = SatTable(
-        locator=".//table",
-        column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+        locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
     )
 
     def search(self, value):
@@ -289,13 +295,9 @@ class ListRemoveTab(SatSecondaryTab):
 class AddTab(SatSecondaryTab):
     TAB_NAME = 'Add'
     searchbox = Search()
-    add_button = Text(
-        './/div[@data-block="list-actions"]'
-        '//button[contains(@ng-click, "add")]'
-    )
+    add_button = Text('.//div[@data-block="list-actions"]' '//button[contains(@ng-click, "add")]')
     table = SatTable(
-        locator=".//table",
-        column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+        locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
     )
 
     def search(self, value):
@@ -332,6 +334,7 @@ class AddRemoveResourcesView(View):
         class resources(AddRemoveResourcesView): pass
 
     """
+
     list_remove_tab = View.nested(ListRemoveTab)
     add_tab = View.nested(AddTab)
 
@@ -364,18 +367,17 @@ class AddRemoveSubscriptionsView(AddRemoveResourcesView):
     Subscriptions table has different structure - entity label is located in
     separate row apart from checkbox and other cells.
     """
+
     @View.nested
     class list_remove_tab(ListRemoveTab):
         table = SatSubscriptionsTable(
-            locator=".//table",
-            column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+            locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
         )
 
     @View.nested
     class add_tab(AddTab):
         table = SatSubscriptionsTable(
-            locator=".//table",
-            column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+            locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
         )
 
 
@@ -390,6 +392,7 @@ class TemplateEditor(View):
         editor = View.nested(TemplateEditor)
 
     """
+
     ROOT = ".//div[@id='editor-container']"
     rendering_options = ItemsList(".//div[contains(@class,'navbar-editor')]/ul")
     import_template = Button(id='import-btn')
@@ -404,6 +407,7 @@ class SearchableViewMixin(WTMixin):
 
     Note that class which uses this mixin should have :attr: `table` attribute.
     """
+
     searchbox = Search()
     welcome_message = Text("//div[@class='blank-slate-pf' or @id='welcome']")
 
@@ -412,8 +416,7 @@ class SearchableViewMixin(WTMixin):
         That means that we have search field present on the page and that page
         is not a welcome one
         """
-        if (not self.searchbox.search_field.is_displayed
-                and self.welcome_message.is_displayed):
+        if not self.searchbox.search_field.is_displayed and self.welcome_message.is_displayed:
             return False
         return True
 
@@ -430,8 +433,9 @@ class SearchableViewMixin(WTMixin):
             raise AttributeError(
                 'Class {} does not have attribute "table". SearchableViewMixin'
                 ' only works with views, which have table for results. Please '
-                'define table or use custom search implementation instead'
-                .format(self.__class__.__name__)
+                'define table or use custom search implementation instead'.format(
+                    self.__class__.__name__
+                )
             )
         if not self.is_searchable():
             return None
@@ -444,6 +448,7 @@ class TaskDetailsView(BaseLoggedInView):
     """Common view for task details screen. Can be found for most of tasks for
     various entities like Products, Repositories, Errata etc.
     """
+
     breadcrumb = BreadCrumb()
     action_type = ReadOnlyEntry(name='Action Type')
     user = ReadOnlyEntry(name='User')
@@ -463,6 +468,7 @@ class BookmarkCreateView(BaseLoggedInView):
     Has slightly different style for katello and foreman pages, thus some
     widgets have special locators.
     """
+
     ROOT = ".//div[contains(@class, 'modal-dialog')]"
 
     title = Text(
@@ -472,8 +478,7 @@ class BookmarkCreateView(BaseLoggedInView):
     )
     name = TextInput(name='name')
     query = TextInput(name='query')
-    public = Checkbox(
-        locator="//input[@type='checkbox'][@name='public' or @name='publik']")
+    public = Checkbox(locator="//input[@type='checkbox'][@name='public' or @name='publik']")
     # text can be either 'Submit' or 'Save'
     submit = Text(".//button[@type='submit' or @ng-click='ok()']")
     # may contain <span> inside, using normalize-space
@@ -481,49 +486,39 @@ class BookmarkCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class TemplateInputItem(GenericRemovableWidgetItem):
     """Template Input item view"""
+
     remove_button = Text(".//a[@class='remove_nested_fields']")
     name = TextInput(locator=".//input[contains(@name, '[name]')]")
     required = Checkbox(locator=".//input[contains(@id, 'required')]")
-    input_type = SatSelect(
-        locator=".//select[contains(@name, '[input_type]')]")
+    input_type = SatSelect(locator=".//select[contains(@name, '[input_type]')]")
 
     input_content = ConditionalSwitchableView(reference='input_type')
 
     @input_content.register('User input')
     class UserInputForm(View):
-        advanced = Checkbox(
-            locator=".//input[contains(@id, 'advanced')]")
-        options = TextInput(
-            locator=".//textarea[contains(@name, '[options]')]")
-        description = TextInput(
-            locator=".//textarea[contains(@name, '[description]')]")
+        advanced = Checkbox(locator=".//input[contains(@id, 'advanced')]")
+        options = TextInput(locator=".//textarea[contains(@name, '[options]')]")
+        description = TextInput(locator=".//textarea[contains(@name, '[description]')]")
 
     @input_content.register('Fact value')
     class FactValueForm(View):
-        fact_name = TextInput(
-            locator=".//input[contains(@name, '[fact_name]')]")
-        description = TextInput(
-            locator=".//textarea[contains(@name, '[description]')]")
+        fact_name = TextInput(locator=".//input[contains(@name, '[fact_name]')]")
+        description = TextInput(locator=".//textarea[contains(@name, '[description]')]")
 
     @input_content.register('Variable')
     class VariableValueForm(View):
-        variable_name = TextInput(
-            locator=".//input[contains(@name, '[variable_name]')]")
-        description = TextInput(
-            locator=".//textarea[contains(@name, '[description]')]")
+        variable_name = TextInput(locator=".//input[contains(@name, '[variable_name]')]")
+        description = TextInput(locator=".//textarea[contains(@name, '[description]')]")
 
     @input_content.register('Puppet parameter')
     class PuppetParameterForm(View):
-        puppet_class_name = TextInput(
-            locator=".//input[contains(@name, '[puppet_class_name]')]")
+        puppet_class_name = TextInput(locator=".//input[contains(@name, '[puppet_class_name]')]")
         puppet_parameter_name = TextInput(
-            locator=".//input[contains("
-                    "@name, '[puppet_parameter_name]')]")
-        description = TextInput(
-            locator=".//textarea[contains(@name, '[description]')]")
+            locator=".//input[contains(" "@name, '[puppet_parameter_name]')]"
+        )
+        description = TextInput(locator=".//textarea[contains(@name, '[description]')]")

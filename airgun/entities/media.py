@@ -41,13 +41,13 @@ class MediaEntity(BaseEntity):
         """Delete media"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.click(
-            handle_alert=True)
+        view.table.row(name=entity_name)['Actions'].widget.click(handle_alert=True)
 
 
 @navigator.register(MediaEntity, 'All')
 class ShowAllMedium(NavigateStep):
     """Navigate to All Medium screen."""
+
     VIEW = MediumView
 
     def step(self, *args, **kwargs):
@@ -57,6 +57,7 @@ class ShowAllMedium(NavigateStep):
 @navigator.register(MediaEntity, 'New')
 class AddNewMedia(NavigateStep):
     """Navigate to Create new Media screen."""
+
     VIEW = MediaCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -69,9 +70,10 @@ class AddNewMedia(NavigateStep):
 class EditMedia(NavigateStep):
     """Navigate to Edit Media screen.
 
-         Args:
-            entity_name: name of media
+    Args:
+       entity_name: name of media
     """
+
     VIEW = MediaEditView
 
     def prerequisite(self, *args, **kwargs):

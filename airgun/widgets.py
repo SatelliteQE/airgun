@@ -31,7 +31,9 @@ class SatSelect(Select):
     """Represent basic select element except our custom implementation remove
     html tags from select option values
     """
-    SELECTED_OPTIONS_TEXT = jsmin('''\
+
+    SELECTED_OPTIONS_TEXT = jsmin(
+        '''\
             var result_arr = [];
             var opt_elements = arguments[0].selectedOptions;
             for(var i = 0; i < opt_elements.length; i++){
@@ -40,13 +42,15 @@ class SatSelect(Select):
                 result_arr.push(parsed_value);
             }
             return result_arr;
-        ''')
+        '''
+    )
 
 
 class CheckboxWithAlert(Checkbox):
     """Represent basic checkbox element, but able to handle alert message
     which can appear after you perform action for that widget
     """
+
     def fill(self, value):
         value = bool(value)
         current_value = self.selected
@@ -55,8 +59,7 @@ class CheckboxWithAlert(Checkbox):
         else:
             self.click(handle_alert=True)
             if self.selected != value:
-                raise WidgetOperationFailed(
-                    'Failed to set the checkbox to requested value.')
+                raise WidgetOperationFailed('Failed to set the checkbox to requested value.')
             return True
 
 
@@ -80,35 +83,29 @@ class RadioGroup(GenericLocatorWidget):
         //div/label[input[@type='radio']][contains(., 'IPv4')]
 
     """
+
     LABELS = './/label[input[@type="radio"]]'
     BUTTON = './/input[@type="radio"]'
 
     @property
     def button_names(self):
         """Return all radio group labels"""
-        return [
-            self.browser.text(btn)
-            for btn
-            in self.browser.elements(self.LABELS)
-        ]
+        return [self.browser.text(btn) for btn in self.browser.elements(self.LABELS)]
 
     def _get_parent_label(self, name):
         """Get radio group label for specific button"""
         try:
             return next(
-                btn for btn in self.browser.elements(self.LABELS)
-                if self.browser.text(btn) == name
+                btn for btn in self.browser.elements(self.LABELS) if self.browser.text(btn) == name
             )
         except StopIteration:
-            raise NoSuchElementException(
-                "RadioButton {name} is absent on page".format(name=name))
+            raise NoSuchElementException(f"RadioButton {name} is absent on page")
 
     @property
     def selected(self):
         """Return name of a button that is currently selected in the group"""
         for name in self.button_names:
-            btn = self.browser.element(
-                self.BUTTON, parent=self._get_parent_label(name))
+            btn = self.browser.element(self.BUTTON, parent=self._get_parent_label(name))
             if btn.get_attribute('checked') is not None:
                 return name
         else:
@@ -120,8 +117,7 @@ class RadioGroup(GenericLocatorWidget):
     def select(self, name):
         """Select specific radio button in the group"""
         if self.selected != name:
-            self.browser.element(
-                self.BUTTON, parent=self._get_parent_label(name)).click()
+            self.browser.element(self.BUTTON, parent=self._get_parent_label(name)).click()
             return True
         return False
 
@@ -156,6 +152,7 @@ class ToggleRadioGroup(RadioGroup):
         //div[@class='btn-group']
 
     """
+
     @property
     def selected(self):
         """Return name of a button that is currently selected in the group"""
@@ -200,6 +197,7 @@ class DateTime(Widget):
         We don't need to pass locator here as widget seems has one structure
         across all applications that use paternfly pattern
     """
+
     start_date = TextInput(id='startDate')
     hours = TextInput(locator=".//input[@ng-model='hours']")
     minutes = TextInput(locator=".//input[@ng-model='minutes']")
@@ -254,27 +252,23 @@ class DatePickerInput(TextInput):
 
         ".//input[@ng-model='rule.start_date']"
     """
+
     CALENDAR_POPUP = (
-        "./parent::div/div[@ng-model='date']"
-        "/ul[contains(@class, 'datepicker-popup')]"
+        "./parent::div/div[@ng-model='date']" "/ul[contains(@class, 'datepicker-popup')]"
     )
-    calendar_button = Text(
-        "./parent::div//button[i[contains(@class, 'fa-calendar')]]")
-    clear_button = Text(
-        "{}//button[@ng-click='select(null, $event)']".format(CALENDAR_POPUP))
-    done_button = Text(
-        "{}//button[@ng-click='close($event)']".format(CALENDAR_POPUP)
-    )
+    calendar_button = Text("./parent::div//button[i[contains(@class, 'fa-calendar')]]")
+    clear_button = Text(f"{CALENDAR_POPUP}//button[@ng-click='select(null, $event)']")
+    done_button = Text(f"{CALENDAR_POPUP}//button[@ng-click='close($event)']")
 
     @property
     def is_open(self):
         """Bool value whether the calendar is opened or not"""
-        return self.browser.wait_for_element(
-            self.CALENDAR_POPUP,
-            parent=self,
-            timeout=1,
-            exception=False
-        ) is not None
+        return (
+            self.browser.wait_for_element(
+                self.CALENDAR_POPUP, parent=self, timeout=1, exception=False
+            )
+            is not None
+        )
 
     def clear(self):
         """Clear input value. Opens calendar popup if it's closed and pushes
@@ -316,23 +310,21 @@ class ItemsList(GenericLocatorWidget):
         //ul[@class='ms-list']
 
     """
-    ITEM = ("./li[not(contains(@style, 'display: none'))]"
-            "[normalize-space(.)='%s']")
+
+    ITEM = "./li[not(contains(@style, 'display: none'))]" "[normalize-space(.)='%s']"
     ITEMS = "./li[not(contains(@style, 'display: none'))]"
 
     def read(self):
         """Return a list of strings representing elements in the
         :class:`ItemsList`."""
-        return [
-            el.text for el in self.browser.elements(self.ITEMS, parent=self)]
+        return [el.text for el in self.browser.elements(self.ITEMS, parent=self)]
 
     def fill(self, value):
         """Clicks on element inside the list.
 
         :param value: string with element name
         """
-        self.browser.click(
-            self.browser.element(self.ITEM % value, parent=self))
+        self.browser.click(self.browser.element(self.ITEM % value, parent=self))
 
 
 class AddRemoveItemsList(GenericLocatorWidget):
@@ -355,22 +347,21 @@ class AddRemoveItemsList(GenericLocatorWidget):
         //ul[@id='selected_config_groups']
 
     """
+
     ITEM_BUTTON = "./li[not(contains(@style, 'display: none'))][contains(., '%s')]/a"
     ITEMS = "./li[not(contains(@style, 'display: none'))]/span/a"
 
     def read(self):
         """Return a list of strings representing elements in the
         :class:`AddRemoveItemsList`."""
-        return [
-            el.text for el in self.browser.elements(self.ITEMS, parent=self)]
+        return [el.text for el in self.browser.elements(self.ITEMS, parent=self)]
 
     def fill(self, value):
         """Clicks on whether Add or Remove button for necessary element from the list.
 
         :param value: string with element name
         """
-        self.browser.click(
-            self.browser.element(self.ITEM_BUTTON % value, parent=self))
+        self.browser.click(self.browser.element(self.ITEM_BUTTON % value, parent=self))
 
 
 class ItemsListGroup(GenericLocatorWidget):
@@ -404,6 +395,7 @@ class ItemsListGroup(GenericLocatorWidget):
         //div[contains(@class, 'available_classes')]/div[@class='row']
 
     """
+
     ITEM = (
         "./div/ul/li/ul/li[not(contains(@style, 'display: none'))]"
         "[normalize-space(.)='%s']/span/a"
@@ -415,8 +407,7 @@ class ItemsListGroup(GenericLocatorWidget):
     )
 
     def read(self):
-        return [
-            el.text for el in self.browser.elements(self.ITEMS, parent=self)]
+        return [el.text for el in self.browser.elements(self.ITEMS, parent=self)]
 
     def fill(self, value):
         if not self.browser.is_displayed(self.ITEM % value):
@@ -425,7 +416,6 @@ class ItemsListGroup(GenericLocatorWidget):
 
 
 class ItemsListReadOnly(ItemsList):
-
     def fill(self, value):
         raise ReadOnlyWidgetError('Widget is read only, fill is prohibited')
 
@@ -450,6 +440,7 @@ class MultiSelect(GenericLocatorWidget):
         id='ms-operatingsystem_architecture_ids'
 
     """
+
     filter = TextInput(locator=".//input[contains(@class,'ms-filter')]")
     unassigned = ItemsList("./div[@class='ms-selectable']/ul")
     assigned = ItemsList("./div[@class='ms-selection']/ul")
@@ -458,8 +449,8 @@ class MultiSelect(GenericLocatorWidget):
         """Supports initialization via ``locator=`` or ``id=``"""
         if locator and id or not locator and not id:
             raise TypeError('Please specify either locator or id')
-        locator = locator or ".//div[@id='{}']".format(id)
-        super(MultiSelect, self).__init__(parent, locator, logger)
+        locator = locator or f".//div[@id='{id}']"
+        super().__init__(parent, locator, logger)
 
     def fill(self, values):
         """Read current values, find the difference between current and passed
@@ -469,15 +460,9 @@ class MultiSelect(GenericLocatorWidget):
             containing list of strings, representing item names
         """
         current = self.read()
-        to_add = [
-            res
-            for res in values.get('assigned', ())
-            if res not in current['assigned']
-        ]
+        to_add = [res for res in values.get('assigned', ()) if res not in current['assigned']]
         to_remove = [
-            res
-            for res in values.get('unassigned', ())
-            if res not in current['unassigned']
+            res for res in values.get('unassigned', ()) if res not in current['unassigned']
         ]
         if not to_add and not to_remove:
             return False
@@ -531,10 +516,10 @@ class PuppetClassesMultiSelect(MultiSelect):
         Usually it is empty locator, because it is impossible to build relative path
 
     """
+
     filter = TextInput(locator=".//input[@placeholder='Filter classes']")
     assigned = ItemsList(".//ul[@id='selected_classes']")
-    unassigned = ItemsListGroup(
-        ".//div[contains(@class, 'available_classes')]/div[@class='row']")
+    unassigned = ItemsListGroup(".//div[contains(@class, 'available_classes')]/div[@class='row']")
 
 
 class ConfigGroupMultiSelect(MultiSelect):
@@ -542,6 +527,7 @@ class ConfigGroupMultiSelect(MultiSelect):
     appearance and there is no filter field for available classes. Usually specific for config
     group functionality.
     """
+
     filter = None
     assigned = AddRemoveItemsList(".//ul[@id='selected_config_groups']")
     unassigned = AddRemoveItemsList(".//ul[@class='config_group_group']")
@@ -573,13 +559,16 @@ class ActionsDropdown(GenericLocatorWidget):
         //div[contains(@class, 'btn-group')]
 
     """
+
     dropdown = Text(
         ".//*[self::a or self::button][contains(@class, 'dropdown-toggle') or "
         "contains(@ng-click, 'toggleDropdown')][contains(@class, 'btn')]"
-        "[*[self::span or self::i][contains(@class, 'caret')]]")
+        "[*[self::span or self::i][contains(@class, 'caret')]]"
+    )
     button = Text(
         ".//*[self::button or self::span][contains(@class, 'btn')]"
-        "[not(*[self::span or self::i][contains(@class, 'caret')])]")
+        "[not(*[self::span or self::i][contains(@class, 'caret')])]"
+    )
     ITEMS_LOCATOR = './/ul/li/a'
     ITEM_LOCATOR = './/ul/li/a[normalize-space(.)="{}"]'
 
@@ -597,20 +586,18 @@ class ActionsDropdown(GenericLocatorWidget):
     def items(self):
         """Returns a list of all dropdown items as strings."""
         return [
-            self.browser.text(el) for el in
-            self.browser.elements(self.ITEMS_LOCATOR, parent=self)]
+            self.browser.text(el) for el in self.browser.elements(self.ITEMS_LOCATOR, parent=self)
+        ]
 
     def select(self, item):
         """Selects item from dropdown."""
         if item in self.items:
             self.open()
-            self.browser.element(
-                self.ITEM_LOCATOR.format(item), parent=self).click()
+            self.browser.element(self.ITEM_LOCATOR.format(item), parent=self).click()
         else:
             raise ValueError(
                 'Specified action "{}" not found in actions list. Available'
-                ' actions are {}'
-                .format(item, self.items)
+                ' actions are {}'.format(item, self.items)
             )
 
     def fill(self, item):
@@ -628,6 +615,7 @@ class ActionsDropdown(GenericLocatorWidget):
 
 class ActionDropdownWithCheckbox(ActionsDropdown):
     """Custom drop down which contains the checkbox inside in drop down."""
+
     customize_check_box = Checkbox(id="customize")
 
     def fill(self, item):
@@ -641,9 +629,13 @@ class ActionDropdownWithCheckbox(ActionsDropdown):
 
 class Search(Widget):
     """Searchbar for table filtering"""
-    search_field = TextInput(locator=(
-        ".//input[@id='search' or contains(@placeholder, 'Filter') or "
-        "@ng-model='table.searchTerm' or contains(@ng-model, 'Filter')]"))
+
+    search_field = TextInput(
+        locator=(
+            ".//input[@id='search' or contains(@placeholder, 'Filter') or "
+            "@ng-model='table.searchTerm' or contains(@ng-model, 'Filter')]"
+        )
+    )
     search_button = Text(
         ".//button[contains(@type,'submit') or contains(@class, 'search-btn') "
         "or @ng-click='table.search(table.searchTerm)']"
@@ -682,6 +674,7 @@ class Search(Widget):
 
 class SatVerticalNavigation(VerticalNavigation):
     """The Patternfly Vertical navigation."""
+
     CURRENTLY_SELECTED = './/li[contains(@class, "active")]/a/span'
 
 
@@ -730,6 +723,7 @@ class SatFlashMessages(FlashMessages):
         //div[@class="toast-notifications-list-pf"]
 
     """
+
     ROOT = '//div[@class="toast-notifications-list-pf"]'
     MSG_LOCATOR = f'{ROOT}/div[contains(@class, "alert")]'
     msg_class = SatFlashMessage
@@ -746,8 +740,7 @@ class SatFlashMessages(FlashMessages):
                     self.logger.info('ERROR MESSAGE IGNORED %s: %r', message.type, message_text)
                     continue
                 self.logger.error('%s: %r', message.type, message_text)
-                raise AssertionError(
-                    'assert_no_error: {}: {!r}'.format(message.type, message_text))
+                raise AssertionError(f'assert_no_error: {message.type}: {message_text!r}')
             else:
                 self.logger.info('%s: %r', message.type, message_text)
 
@@ -779,9 +772,9 @@ class ValidationErrors(Widget):
         No locator accepted as widget should look through entire view.
 
     """
+
     ERROR_ELEMENTS = (
-        ".//*[contains(@class,'has-error') and "
-        "not(contains(@style,'display:none'))]"
+        ".//*[contains(@class,'has-error') and " "not(contains(@style,'display:none'))]"
     )
     ERROR_MESSAGES = (
         ".//*[(contains(@class, 'alert base in fade alert-danger')"
@@ -804,10 +797,7 @@ class ValidationErrors(Widget):
         fields. Example: ["can't be blank"]
         """
         error_msgs = self.browser.elements(self.ERROR_MESSAGES)
-        return [
-            self.browser.text(error_msg)
-            for error_msg in error_msgs
-        ]
+        return [self.browser.text(error_msg) for error_msg in error_msgs]
 
     def assert_no_errors(self):
         """Assert current view has no validation messages, otherwise rise
@@ -815,8 +805,7 @@ class ValidationErrors(Widget):
         """
         if self.has_errors:
             raise AssertionError(
-                "Validation errors present on page, displayed messages: {}"
-                .format(self.messages)
+                f"Validation errors present on page, displayed messages: {self.messages}"
             )
 
     def read(self, *args, **kwargs):
@@ -886,21 +875,21 @@ class FilteredDropdown(GenericLocatorWidget):
         id=s2id_subnet_ipam
 
     """
+
     selected_value = Text("./a/span[contains(@class, 'chosen')]")
     open_filter = Text("./a/span[contains(@class, 'arrow')]")
     clear_filter = Text("./a/abbr")
     filter_criteria = TextInput(locator="//div[@id='select2-drop']//input")
     filter_content = ItemsList(
-        "//div[not(contains(@style, 'display: none')) and "
-        "@id='select2-drop']/ul"
+        "//div[not(contains(@style, 'display: none')) and " "@id='select2-drop']/ul"
     )
 
     def __init__(self, parent, id=None, locator=None, logger=None):
         """Supports initialization via ``id=`` or ``locator=``"""
         if locator and id or not locator and not id:
             raise ValueError('Please specify either locator or id')
-        locator = locator or ".//div[contains(@id, '{}')]".format(id)
-        super(FilteredDropdown, self).__init__(parent, locator, logger)
+        locator = locator or f".//div[contains(@id, '{id}')]"
+        super().__init__(parent, locator, logger)
 
     def read(self):
         """Return drop-down selected item value"""
@@ -942,25 +931,21 @@ class CustomParameter(Table):
         //textarea[@placeholder='Value']
 
     """
+
     add_new_value = Text("..//a[contains(text(),'+ Add Parameter')]")
 
     def __init__(self, parent, locator=None, id=None, logger=None):
         """Supports initialization via ``locator=`` or ``id=``"""
         if locator and id or not locator and not id:
             raise ValueError('Please specify either locator or id')
-        locator = locator or ".//table[@id='{}']".format(id)
+        locator = locator or f".//table[@id='{id}']"
 
         column_widgets = {
             'Name': TextInput(locator=".//input[@placeholder='Name']"),
             'Value': TextInput(locator=".//textarea[@placeholder='Value']"),
-            'Actions': Text(
-                locator=".//a[@data-original-title='Remove Parameter']"
-            )
+            'Actions': Text(locator=".//a[@data-original-title='Remove Parameter']"),
         }
-        super(CustomParameter, self).__init__(parent,
-                                              locator=locator,
-                                              logger=logger,
-                                              column_widgets=column_widgets)
+        super().__init__(parent, locator=locator, logger=logger, column_widgets=column_widgets)
 
     def read(self):
         """Return a list of dictionaries. Each dictionary consists of name and
@@ -1067,21 +1052,15 @@ class ConfirmationDialog(Widget):
         //div[@class='modal-content']
 
     """
+
     ROOT = ".//div[@class='modal-content']"
     confirm_dialog = Text(".//button[contains(@ng-click, 'ok')]")
-    cancel_dialog = Text(
-        ".//button[contains(@ng-click, 'cancel') and contains(@class, 'btn')]")
-    discard_dialog = Text(
-        ".//button[contains(@ng-click, 'cancel') and @class='close']")
+    cancel_dialog = Text(".//button[contains(@ng-click, 'cancel') and contains(@class, 'btn')]")
+    discard_dialog = Text(".//button[contains(@ng-click, 'cancel') and @class='close']")
 
     def _check_is_displayed(self, elem):
         """ This is to check if dialog is displayed """
-        wait_for(
-            lambda: elem.is_displayed,
-            timeout=10,
-            delay=1,
-            logger=self.logger
-        )
+        wait_for(lambda: elem.is_displayed, timeout=10, delay=1, logger=self.logger)
 
     def confirm(self):
         """Clicks on the positive outcome button like 'Remove', 'Ok', 'Yes'"""
@@ -1117,11 +1096,10 @@ class LCESelector(GenericLocatorWidget):
         //ul[@class='path-list']
 
     """
+
     ROOT = ParametrizedLocator("{@locator}")
     LABELS = "./li/label[contains(@class, path-list-item-label)]"
-    CHECKBOX = (
-        './/input[@ng-model="item.selected"][parent::label[contains(., "{}")]]'
-    )
+    CHECKBOX = './/input[@ng-model="item.selected"][parent::label[contains(., "{}")]]'
 
     def __init__(self, parent, locator=None, logger=None):
         """Allow to specify ``locator`` if needed or use default one otherwise.
@@ -1129,15 +1107,12 @@ class LCESelector(GenericLocatorWidget):
         typically as a part of :class:`airgun.views.common.LCESelectorGroup`.
         """
         if locator is None:
-            locator = (
-                ".//div[contains(@class, 'path-selector')]"
-                "//ul[@class='path-list']")
-        super(LCESelector, self).__init__(parent, locator, logger=logger)
+            locator = ".//div[contains(@class, 'path-selector')]" "//ul[@class='path-list']"
+        super().__init__(parent, locator, logger=logger)
 
     def checkbox_selected(self, locator):
         """Identify whether specific checkbox is selected or not"""
-        return 'ng-not-empty' in self.browser.get_attribute(
-            'class', locator, parent=self)
+        return 'ng-not-empty' in self.browser.get_attribute('class', locator, parent=self)
 
     def select(self, locator, value):
         """Select or deselect checkbox depends on the value passed"""
@@ -1147,8 +1122,7 @@ class LCESelector(GenericLocatorWidget):
             return False
         self.browser.click(locator, parent=self)
         if self.checkbox_selected(locator) != value:
-            raise WidgetOperationFailed(
-                'Failed to set the checkbox to requested value.')
+            raise WidgetOperationFailed('Failed to set the checkbox to requested value.')
         return True
 
     def read(self):
@@ -1196,13 +1170,14 @@ class LimitInput(Widget):
         if needed.
 
     """
+
     unlimited = Checkbox(
         locator=(
             ".//input[@type='checkbox'][contains(@ng-required, 'unlimited') "
-            "or contains(@ng-model, 'unlimited')]"))
-    limit = TextInput(
-        locator=(
-            ".//input[@type='number'][contains(@ng-required, 'unlimited')]"))
+            "or contains(@ng-model, 'unlimited')]"
+        )
+    )
+    limit = TextInput(locator=(".//input[@type='number'][contains(@ng-required, 'unlimited')]"))
 
     def fill(self, value):
         """Handle 'Unlimited' checkbox before trying to fill text input.
@@ -1259,6 +1234,7 @@ class EditableEntry(GenericLocatorWidget):
         //dt[contains(., 'test')]/following-sibling::dd/input
 
     """
+
     edit_button = Text(".//span[contains(@ng-hide, 'editMode')]")
     edit_field = TextInput(locator=".//*[self::input or self::textarea]")
     save_button = Text(".//button[text()='Save']")
@@ -1269,12 +1245,10 @@ class EditableEntry(GenericLocatorWidget):
         """Supports initialization via ``locator=`` or ``name=``"""
         if locator and name or not locator and not name:
             raise TypeError('Please specify either locator or name')
-        locator = (
-            locator or
-            ".//dt[normalize-space(.)='{}']"
-            "/following-sibling::dd[1]".format(name)
+        locator = locator or ".//dt[normalize-space(.)='{}']" "/following-sibling::dd[1]".format(
+            name
         )
-        super(EditableEntry, self).__init__(parent, locator, logger)
+        super().__init__(parent, locator, logger)
 
     def fill(self, value):
         """Fill widget with necessary value
@@ -1299,6 +1273,7 @@ class EditableEntrySelect(EditableEntry):
     """Should be used in case :class:`EditableEntry` widget represented not by
     a field, but by select list.
     """
+
     edit_field = Select(locator=".//select")
 
 
@@ -1306,6 +1281,7 @@ class EditableEntryCheckbox(EditableEntry):
     """Should be used in case :class:`EditableEntry` widget represented not by
     a field, but by checkbox.
     """
+
     edit_field = Checkbox(locator=".//input[@type='checkbox']")
 
 
@@ -1313,26 +1289,20 @@ class CheckboxGroup(GenericLocatorWidget):
     """
     A set of checkboxes of the same property type
     """
+
     ITEMS_LOCATOR = './/p'
     CHECKBOX_LOCATOR = './/p[normalize-space(.)="{}"]/input'
 
     @cached_property
     def checkboxes(self):
-        labels = [
-            line.text
-            for line in self.browser.elements(self.ITEMS_LOCATOR, parent=self)
-        ]
+        labels = [line.text for line in self.browser.elements(self.ITEMS_LOCATOR, parent=self)]
         return {
-            label: Checkbox(self, locator=self.CHECKBOX_LOCATOR.format(label))
-            for label in labels
+            label: Checkbox(self, locator=self.CHECKBOX_LOCATOR.format(label)) for label in labels
         }
 
     def read(self):
         """Read values of checkboxes"""
-        return {
-            name: checkbox.read()
-            for name, checkbox in self.checkboxes.items()
-        }
+        return {name: checkbox.read() for name, checkbox in self.checkboxes.items()}
 
     def fill(self, values):
         """Check or uncheck one of the checkboxes
@@ -1348,6 +1318,7 @@ class EditableEntryMultiCheckbox(EditableEntry):
     """Should be used in case :class:`EditableEntry` widget represented not by
     a field, but by a set of checkboxes.
     """
+
     edit_field = CheckboxGroup(locator='.//form')
 
 
@@ -1355,16 +1326,16 @@ class TextInputsGroup(GenericLocatorWidget):
     """
     A set of text inputs
     """
+
     FIELD_LABELS = './/div[contains(@id,"template-input-")]//label'
-    TEXTINPUT_LOCATOR = './/div[contains(@id,"template-input-")]//'\
-                        'label[normalize-space(.)="{}"]/following-sibling::div//input'
+    TEXTINPUT_LOCATOR = (
+        './/div[contains(@id,"template-input-")]//'
+        'label[normalize-space(.)="{}"]/following-sibling::div//input'
+    )
 
     @cached_property
     def labels(self):
-        return [
-            line.text
-            for line in self.browser.elements(self.FIELD_LABELS, parent=self)
-        ]
+        return [line.text for line in self.browser.elements(self.FIELD_LABELS, parent=self)]
 
     @cached_property
     def textinputs(self):
@@ -1375,10 +1346,7 @@ class TextInputsGroup(GenericLocatorWidget):
 
     def read(self):
         """Read values of text inputs"""
-        return {
-            name: textinput.read()
-            for name, textinput in self.textinputs.items()
-        }
+        return {name: textinput.read() for name, textinput in self.textinputs.items()}
 
     def fill(self, values):
         """Fill one of the text inputs
@@ -1394,12 +1362,14 @@ class TextInputsGroup(GenericLocatorWidget):
 class EditableLimitEntry(EditableEntry):
     """Should be used in case :class:`EditableEntry` widget represented not by
     a field, but by :class:`LimitInput` widget."""
+
     edit_field = LimitInput()
 
 
 class EditableDateTime(EditableEntry):
     """Should be used in case :class:`EditableEntry` widget represented not by
     a field, but by :class:`DateTime` widget."""
+
     edit_field = DateTime()
 
 
@@ -1423,21 +1393,18 @@ class ReadOnlyEntry(GenericLocatorWidget):
 
 
     """
+
     entry_value = Text(".")
     BASE_LOCATOR = (
-        ".//dt[contains(., '{}')]/following-sibling::dd[not(contains("
-        "@class, 'ng-hide'))][1]"
+        ".//dt[contains(., '{}')]/following-sibling::dd[not(contains(" "@class, 'ng-hide'))][1]"
     )
 
     def __init__(self, parent, locator=None, name=None, logger=None):
         """Supports initialization via ``locator=`` or ``name=``"""
         if locator and name or not locator and not name:
             raise TypeError('Please specify either locator or name')
-        locator = (
-            locator or
-            self.BASE_LOCATOR.format(name)
-        )
-        super(ReadOnlyEntry, self).__init__(parent, locator, logger)
+        locator = locator or self.BASE_LOCATOR.format(name)
+        super().__init__(parent, locator, logger)
 
     def read(self):
         """Returns string with current widget value"""
@@ -1462,6 +1429,7 @@ class ACEEditor(Widget):
         There is no need to provide any locators to that widget
 
     """
+
     ROOT = "//div[contains(@class, 'ace_editor')]"
 
     def __init__(self, parent, logger=None):
@@ -1476,18 +1444,19 @@ class ACEEditor(Widget):
             procedure
         """
         self.browser.execute_script(
-            "ace.edit('{0}').setValue(arguments[0])".format(self.ace_edit_id), value)
+            f"ace.edit('{self.ace_edit_id}').setValue(arguments[0])", value
+        )
 
     def read(self):
         """Returns string with current widget value"""
-        return self.browser.execute_script(
-            "return ace.edit('{0}').getValue();".format(self.ace_edit_id))
+        return self.browser.execute_script(f"return ace.edit('{self.ace_edit_id}').getValue();")
 
 
 class Pagination(Widget):
     """Represents Paginator widget that includes per page selector, First/Last/Next/Prev buttons
     and current page index/overall amount of pages. Mainly used with Table widget.
     """
+
     ROOT = "//form[contains(@class, 'content-view-pf-pagination')]"
     # Kattelo views use per_page with select, foreman use a per_page with Button DropDown.
     PER_PAGE_BUTTON_DROPDOWN = ".//div[button[@id='pagination-row-dropdown']]"
@@ -1503,23 +1472,31 @@ class Pagination(Widget):
     @cached_property
     def per_page(self):
         """Return the per page widget"""
-        if self.browser.wait_for_element(
-                self.PER_PAGE_SELECT, parent=self, timeout=1, exception=False) is not None:
+        if (
+            self.browser.wait_for_element(
+                self.PER_PAGE_SELECT, parent=self, timeout=1, exception=False
+            )
+            is not None
+        ):
             return Select(self, self.PER_PAGE_SELECT)
         return ActionsDropdown(self, self.PER_PAGE_BUTTON_DROPDOWN)
 
     @property
     def is_displayed(self):
         """Check whether this Pagination widget exists and visible"""
-        return self.browser.wait_for_element(
-            self.pages, parent=self, visible=True, timeout=1, exception=False) is not None
+        return (
+            self.browser.wait_for_element(
+                self.pages, parent=self, visible=True, timeout=1, exception=False
+            )
+            is not None
+        )
 
     def _click_button(self, pager_button):
         """Click on the pager button if enabled."""
         if "disabled" not in self.browser.classes(pager_button):
             pager_button.click()
         else:
-            raise DisabledWidgetError('Button {0} is not enabled'.format(pager_button))
+            raise DisabledWidgetError(f'Button {pager_button} is not enabled')
 
     def first_page(self):
         """Goto first page by clicking on first page button"""
@@ -1549,8 +1526,10 @@ class Pagination(Widget):
 
     def read(self):
         """Read the basic sub widgets of this pagination widget"""
-        return {attr: getattr(self, attr).read() for attr in (
-            'per_page', 'page', 'pages', 'total_items')}
+        return {
+            attr: getattr(self, attr).read()
+            for attr in ('per_page', 'page', 'pages', 'total_items')
+        }
 
     def fill(self, values):
         """Fill sub widgets with the supplied values"""
@@ -1594,9 +1573,11 @@ class SatTable(Table):
         .//table
 
     """
+
     no_rows_message = (
         ".//td/span[contains(@data-block, 'no-rows-message') or "
-        "contains(@data-block, 'no-search-results-message')]")
+        "contains(@data-block, 'no-search-results-message')]"
+    )
     tbody_row = Text('./tbody/tr')
     pagination = Pagination()
 
@@ -1616,11 +1597,11 @@ class SatTable(Table):
     def read(self):
         """Return empty list in case table is empty"""
         if not self.has_rows:
-            self.logger.debug('Table {} is empty'.format(self.locator))
+            self.logger.debug(f'Table {self.locator} is empty')
             return []
         if self.pagination.is_displayed:
             return self._read_all()
-        return super(SatTable, self).read()
+        return super().read()
 
     def _read_all(self):
         """Return all available table values with using pagination navigation."""
@@ -1633,7 +1614,7 @@ class SatTable(Table):
                 lambda: self.pagination.current_page == page_number,
                 timeout=30,
                 delay=1,
-                logger=self.logger
+                logger=self.logger,
             )
         while page_number <= self.pagination.total_pages:
             page_table_rows = super().read()
@@ -1648,7 +1629,7 @@ class SatTable(Table):
                 lambda: self.pagination.current_page == page_number,
                 timeout=30,
                 delay=1,
-                logger=self.logger
+                logger=self.logger,
             )
         return table_rows
 
@@ -1697,8 +1678,7 @@ class SatSubscriptionsTable(SatTable):
         """Split list of all the rows into 'content' rows and 'title' rows.
         Return content rows only.
         """
-        rows = super(
-            SatSubscriptionsTable, self).rows(*extra_filters, **filters)
+        rows = super().rows(*extra_filters, **filters)
         if self.has_rows:
             rows = list(rows)
             self.title_rows = rows[0:][::2]
@@ -1707,7 +1687,7 @@ class SatSubscriptionsTable(SatTable):
 
     def read(self):
         """Return content rows with 1 extra column 'Repository Name' in it."""
-        read_rows = super(SatSubscriptionsTable, self).read()
+        read_rows = super().read()
         if self.has_rows:
             titles = iter(column[1].read() for column in self.title_rows)
             for row in read_rows:
@@ -1742,6 +1722,7 @@ class SatTableWithoutHeaders(Table):
 
         //table[@id='audit_table']
     """
+
     ROWS = './tbody/tr'
     COLUMNS = './tbody/tr[1]/td'
     ROW_AT_INDEX = './tbody/tr[{0}]'
@@ -1758,7 +1739,7 @@ class SatTableWithoutHeaders(Table):
     def headers(self):
         result = []
         for index, _ in enumerate(self.browser.elements(self.COLUMNS, parent=self)):
-            result.append('column{}'.format(index))
+            result.append(f'column{index}')
 
         return tuple(result)
 
@@ -1820,15 +1801,8 @@ class SatTableWithUnevenStructure(SatTable):
         """Defining locator to find a table on a page and widget that is going
         to be used to work with data in a second column
         """
-        column_widgets = {
-            1: Text(locator=column_locator)
-        }
-        super().__init__(
-            parent,
-            locator=locator,
-            logger=logger,
-            column_widgets=column_widgets
-        )
+        column_widgets = {1: Text(locator=column_locator)}
+        super().__init__(parent, locator=locator, logger=logger, column_widgets=column_widgets)
 
     def read(self):
         """Returns a dict with {column1: column2} values, and only for rows
@@ -1866,6 +1840,7 @@ class ProgressBar(GenericLocatorWidget):
         .//div[contains(@class, "progress progress-striped")]
 
     """
+
     PROGRESSBAR = './/div[contains(@class,"progress-bar")]'
 
     def __init__(self, parent, locator=None, logger=None):
@@ -1887,8 +1862,7 @@ class ProgressBar(GenericLocatorWidget):
     @property
     def progress(self):
         """String value with current flow rate in percent."""
-        return self.browser.get_attribute(
-            'aria-valuetext', self.PROGRESSBAR, check_safe=False)
+        return self.browser.get_attribute('aria-valuetext', self.PROGRESSBAR, check_safe=False)
 
     @property
     def is_completed(self):
@@ -1904,17 +1878,12 @@ class ProgressBar(GenericLocatorWidget):
         :param timeout: integer value for timeout in seconds
         :param delay: float value for delay between attempts in seconds
         """
-        wait_for(
-            lambda: self.is_displayed,
-            timeout=30,
-            delay=delay,
-            logger=self.logger
-        )
+        wait_for(lambda: self.is_displayed, timeout=30, delay=delay, logger=self.logger)
         wait_for(
             lambda: self.is_completed is True or not self.is_displayed,
             timeout=timeout,
             delay=delay,
-            logger=self.logger
+            logger=self.logger,
         )
 
     def read(self):
@@ -1950,6 +1919,7 @@ class PublishPromoteProgressBar(ProgressBar):
         .//div[contains(@class, "progress progress-striped")]
 
     """
+
     ROOT = '.'
     TASK = Text('.//a[contains(@ng-href, "/foreman_tasks/")]')
     MESSAGE = Text('.//span[@ng-show="hideProgress(version)"]')
@@ -1978,13 +1948,12 @@ class PieChart(GenericLocatorWidget):
     """Default Pie Chart that can be found across application. At that moment
     only return values that displayed inside of the chart
     """
+
     chart_title_text = Text(
-        ".//*[name()='svg']//*[name()='tspan']"
-        "[contains(@class,'donut-title-small-pf')]"
+        ".//*[name()='svg']//*[name()='tspan']" "[contains(@class,'donut-title-small-pf')]"
     )
     chart_title_value = Text(
-        ".//*[name()='svg']//*[name()='tspan']"
-        "[contains(@class,'donut-title-big-pf')]"
+        ".//*[name()='svg']//*[name()='tspan']" "[contains(@class,'donut-title-big-pf')]"
     )
 
     def read(self):
@@ -2006,6 +1975,7 @@ class RemovableWidgetsItemsListView(View):
             ITEMS = "./div/div[contains(@class, 'removable-item')]"
             ITEM_WIDGET_CLASS = ComputeResourceRHVProfileStorageItem
     """
+
     ITEMS = "./div[contains(@class, 'removable-item')]"
     ITEM_WIDGET_CLASS = None
     ITEM_REMOVE_BUTTON_ATTR = 'remove_button'
@@ -2013,7 +1983,7 @@ class RemovableWidgetsItemsListView(View):
 
     def _get_item_locator(self, index):
         """Return the item locator located at index position"""
-        return '{0}[{1}]'.format(self.ITEMS, index + 1)
+        return '{}[{}]'.format(self.ITEMS, index + 1)
 
     def get_item_at_index(self, index):
         """Return the item widget instance at index"""
@@ -2069,7 +2039,8 @@ class RemovableWidgetsItemsListView(View):
 class GenericRemovableWidgetItem(GenericLocatorWidget):
     """Generic Item widget (to be inherited) and to be used as Widget Item for
     `RemovableWidgetsItemsListView`.
-     """
+    """
+
     remove_button = Text(".//div[@class='remove-button']/a")
 
     # Context is needed to support ConditionalSwitchableView in derived classes
@@ -2104,7 +2075,7 @@ class AutoCompleteTextInput(TextInput):
 
     clear_button = Text(
         locator="//span[contains(@class,'autocomplete-clear-button') or "
-                "contains(@class,'fa-close')]"
+        "contains(@class,'fa-close')]"
     )
 
     def clear(self):
@@ -2150,8 +2121,7 @@ class ToggleButton(Button):
 
 
 class Link(Text):
-    """A link representation that we can read/click via the standard view functions read/fill.
-    """
+    """A link representation that we can read/click via the standard view functions read/fill."""
 
     def fill(self, value):
         if value:
@@ -2182,6 +2152,7 @@ class PopOverWidget(Widget):
 
         //div[contains(@class, 'editable-open')]
     """
+
     ROOT = '.'
     column_value = Text(".//span[contains(@class, 'editable-click')]")
     header = Text(".//h3[contains(@class, 'popover-title')]")
@@ -2238,14 +2209,10 @@ class AuthSourceAggregateCard(AggregateStatusCard):
 
     @property
     def count(self):
-        """ Count of sources
+        """Count of sources
         :return int: None if no count element is found, otherwise count of sources in the card
         """
         try:
-            return int(
-                self.browser.text(
-                    self.browser.element(self.COUNT)
-                )
-            )
+            return int(self.browser.text(self.browser.element(self.COUNT)))
         except NoSuchElementException:
             return None
