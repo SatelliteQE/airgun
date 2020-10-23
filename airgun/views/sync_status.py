@@ -215,7 +215,7 @@ class SyncStatusTable(SatTable):
                     # We have not found a parent for this node,
                     # this has not to happen, but in any case raise exception
                     raise ParentNodeNotFoundError(
-                        'Parent node for row ' 'index = {} not found'.format(row_index)
+                        f'Parent node for row index = {row_index} not found'
                     )
         return nodes
 

@@ -98,8 +98,8 @@ class CVFEditableEntry(EditableEntry):
             raise TypeError('Please specify either locator or name')
         locator = (
             locator
-            or ".//span[contains(@class, 'info-label')][normalize-space(.)='{}']"
-            "/following-sibling::span[contains(@class, 'info-value')]".format(name)
+            or f".//span[contains(@class, 'info-label')][normalize-space(.)='{name}']"
+            "/following-sibling::span[contains(@class, 'info-value')]"
         )
         super(EditableEntry, self).__init__(parent, locator, logger)
 

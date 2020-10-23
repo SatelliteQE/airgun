@@ -299,10 +299,10 @@ class Session:
         )
         if not os.path.exists(path):
             os.makedirs(path)
-        filename = '{}-screenshot-{}.png'.format(
-            self.name.replace(' ', '_'), now.strftime('%Y-%m-%d_%H_%M_%S')
+        path = os.path.join(
+            path,
+            f'{self.name.replace(" ", "_")}-screenshot-{now.strftime("%Y-%m-%d_%H_%M_%S")}.png',
         )
-        path = os.path.join(path, filename)
         LOGGER.debug('Saving screenshot %s', path)
         self.browser.selenium.save_screenshot(path)
 

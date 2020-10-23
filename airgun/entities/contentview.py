@@ -31,9 +31,7 @@ class ContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'Delete', entity_name=entity_name)
         assert (
             not view.conflicts_present
-        ), 'Unable to delete content view. ' 'Following conflicts are present: {}'.format(
-            view.table.read()
-        )
+        ), f'Unable to delete content view. Following conflicts are present: {view.table.read()}'
         view.remove.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -83,9 +81,7 @@ class ContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         assert (
             view.content_views.is_displayed
-        ), 'Could not find "Content Views" tab. ' 'Make sure {} is composite content view'.format(
-            entity_name
-        )
+        ), f'Could not find "Content Views" tab. Make sure {entity_name} is composite content view'
         view.content_views.resources.add(cv_name)
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -423,7 +419,7 @@ class ContentViewVersionDetails(NavigateStep):
         version_name = kwargs.get('version_name')
         # Breadcrumb contains version name like ``content_view 1.0`` instead of
         # ``Version 1.0``, updating ``version_name`` accordingly.
-        version_name = '{} {}'.format(entity_name, version_name.split()[-1])
+        version_name = f'{entity_name} {version_name.split()[-1]}'
         return (
             self.view.is_displayed
             and self.view.breadcrumb.locations[1] == entity_name

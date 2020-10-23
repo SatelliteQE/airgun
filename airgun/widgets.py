@@ -596,8 +596,8 @@ class ActionsDropdown(GenericLocatorWidget):
             self.browser.element(self.ITEM_LOCATOR.format(item), parent=self).click()
         else:
             raise ValueError(
-                'Specified action "{}" not found in actions list. Available'
-                ' actions are {}'.format(item, self.items)
+                f'Specified action "{item}" not found in actions list. '
+                f'Available actions are {self.items}'
             )
 
     def fill(self, item):
@@ -1245,9 +1245,7 @@ class EditableEntry(GenericLocatorWidget):
         """Supports initialization via ``locator=`` or ``name=``"""
         if locator and name or not locator and not name:
             raise TypeError('Please specify either locator or name')
-        locator = locator or ".//dt[normalize-space(.)='{}']" "/following-sibling::dd[1]".format(
-            name
-        )
+        locator = locator or f".//dt[normalize-space(.)='{name}']/following-sibling::dd[1]"
         super().__init__(parent, locator, logger)
 
     def fill(self, value):
@@ -1983,7 +1981,7 @@ class RemovableWidgetsItemsListView(View):
 
     def _get_item_locator(self, index):
         """Return the item locator located at index position"""
-        return '{}[{}]'.format(self.ITEMS, index + 1)
+        return f'{self.ITEMS}[{index + 1}]'
 
     def get_item_at_index(self, index):
         """Return the item widget instance at index"""

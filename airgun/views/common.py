@@ -431,11 +431,9 @@ class SearchableViewMixin(WTMixin):
         """
         if not hasattr(self.__class__, 'table'):
             raise AttributeError(
-                'Class {} does not have attribute "table". SearchableViewMixin'
-                ' only works with views, which have table for results. Please '
-                'define table or use custom search implementation instead'.format(
-                    self.__class__.__name__
-                )
+                f'Class {self.__class__.__name__} does not have attribute "table". '
+                'SearchableViewMixin only works with views, which have table for results. '
+                'Please define table or use custom search implementation instead'
             )
         if not self.is_searchable():
             return None

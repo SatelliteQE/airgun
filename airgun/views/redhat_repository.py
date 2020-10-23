@@ -85,7 +85,7 @@ class AvailableRepositorySetWidget(GenericLocatorWidget):
         if self.ITEM:
             self.expand()
             return [
-                AvailableRepositoryItem(self, '{}[{}]'.format(self.ITEMS, index + 1))
+                AvailableRepositoryItem(self, f'{self.ITEMS}[{index + 1}]')
                 for index, _ in enumerate(self.browser.elements(self.ITEMS, parent=self))
             ]
         return []
@@ -196,7 +196,7 @@ class RepositoryCategoryView(View):
     def items(self, name=None, label=None):
         items = []
         for index, _ in enumerate(self.browser.elements(self.ITEMS, parent=self)):
-            item = self.ITEM_WIDGET(self, '{}[{}]'.format(self.ITEMS, index + 1))
+            item = self.ITEM_WIDGET(self, f'{self.ITEMS}[{index + 1}]')
             if name is not None and item.name != name or label is not None and item.label != label:
                 continue
             items.append(item)
@@ -240,9 +240,7 @@ class RedHatRepositoriesView(BaseLoggedInView):
         supported_categories = ['Available', 'Enabled', 'Both']
         if category not in supported_categories:
             raise ValueError(
-                'category "{}" not supported, please choose from {}'.format(
-                    category, supported_categories
-                )
+                f'category "{category}" not supported, please choose from {supported_categories}'
             )
         if self.search_clear.is_displayed:
             self.search_clear.click()

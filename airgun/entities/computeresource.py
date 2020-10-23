@@ -278,9 +278,7 @@ class ComputeResourceImageProvider(NavigateStep):
         view = self.PROVIDER_VIEWS.get(provider)
         if not view:
             raise ValueError(
-                'Provider type "{}" for class "{}" not implemented'.format(
-                    provider, self.__class__.__name__
-                )
+                f'Provider type "{provider}" for class "{self.__class__.__name__}" not implemented'
             )
         self.VIEW = view
         return parent_view

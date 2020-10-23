@@ -147,7 +147,7 @@ class DashboardView(BaseLoggedInView):
         def fill(self, values):
             if 'type' not in values:
                 raise ValueError('You need provide subscription task type')
-            self.subscriptions.row((0, 'contains', '{}'.format(values['type'])))[0].widget.click()
+            self.subscriptions.row((0, 'contains', str(values['type'])))[0].widget.click()
 
     @View.nested
     class SubscriptionStatus(View):

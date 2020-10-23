@@ -120,9 +120,8 @@ class SeleniumBrowserFactory:
             return self._get_remote_browser()
         else:
             raise ValueError(
-                '"{}" browser is not supported. Please use one of {}'.format(
-                    self.provider, ('selenium', 'saucelabs', 'docker', 'remote')
-                )
+                f'"{self.provider}" browser is not supported. '
+                f'Please use one of {("selenium", "saucelabs", "docker", "remote")}'
             )
 
     def post_init(self):
@@ -213,9 +212,8 @@ class SeleniumBrowserFactory:
             self._webdriver = webdriver.PhantomJS(service_args=['--ignore-ssl-errors=true'])
         if self._webdriver is None:
             raise ValueError(
-                '"{}" webdriver is not supported. Please use one of {}'.format(
-                    self.browser, ('chrome', 'firefox', 'ie', 'edge', 'phantomjs')
-                )
+                f'"{self.browser}" webdriver is not supported. '
+                f'Please use one of {("chrome", "firefox", "ie", "edge", "phantomjs")}'
             )
         self._set_session_cookie()
         return self._webdriver
@@ -258,8 +256,8 @@ class SeleniumBrowserFactory:
             self._docker._capabilities = webdriver.DesiredCapabilities.FIREFOX.copy()
         else:
             raise ValueError(
-                '"{}" webdriver in docker container is currently not'
-                'supported. Please use one of {}'.format(self.browser, ('chrome', 'firefox'))
+                f'"{self.browser}" webdriver in docker container is currently not'
+                f'supported. Please use one of {("chrome", "firefox")}'
             )
         if settings.webdriver_desired_capabilities:
             self._docker._capabilities.update(vars(settings.webdriver_desired_capabilities))
@@ -311,8 +309,8 @@ class SeleniumBrowserFactory:
             desired_capabilities['javascriptEnabled'] = True
         else:
             raise ValueError(
-                '"{}" webdriver capabilities is currently not supported. '
-                'Please use one of {}'.format(self.browser, ('chrome', 'firefox', 'ie', 'edge'))
+                f'"{self.browser}" webdriver capabilities is currently not supported. '
+                f'Please use one of {("chrome", "firefox", "ie", "edge")}'
             )
         if settings.webdriver_desired_capabilities:
             desired_capabilities.update(vars(settings.webdriver_desired_capabilities))
@@ -419,9 +417,7 @@ class DockerBrowser:
         for _ in range(20):
             try:
                 self.webdriver = webdriver.Remote(
-                    command_executor='http://127.0.0.1:{}/wd/hub'.format(
-                        self.container['HostPort']
-                    ),
+                    command_executor=f'http://127.0.0.1:{self.container["HostPort"]}/wd/hub',
                     desired_capabilities=self._capabilities,
                 )
             except Exception as err:
@@ -487,9 +483,7 @@ class DockerBrowser:
                 )
         # Grab only the test name, get rid of square brackets from parametrize
         # and add some random chars. E.g. 'test_positive_create_0_abc'
-        container_name = '{}_{}'.format(
-            self._name.split('.')[-1].replace('[', '_').strip(']'), gen_string('alphanumeric', 3)
-        )
+        name_for_container = self._name.split('.')[-1].replace('[', '_').strip(']')
         self.container = self._client.create_container(
             detach=True,
             environment={
@@ -498,7 +492,7 @@ class DockerBrowser:
             },
             host_config=self._client.create_host_config(publish_all_ports=True),
             image=self._get_image_name(image_version),
-            name=container_name,
+            name=f'{name_for_container}_{gen_string("alphanumeric", 3)}',
             ports=[4444],
         )
         LOGGER.debug('Starting container with ID "%s"', self.container['Id'])
@@ -638,14 +632,14 @@ class AirgunBrowser(Browser):
             on a client
         """
         script = (
-            'var currentdate = new Date(); return ({} + "-" + {} + '
-            '"-" + {} + " : " + {} + ":" + {});'
-        ).format(
-            'currentdate.getFullYear()',
-            '(currentdate.getMonth()+1)',
-            'currentdate.getDate()',
-            'currentdate.getHours()',
-            'currentdate.getMinutes()',
+            'var currentdate = new Date(); '
+            'return ('
+            'currentdate.getFullYear() + "-" '
+            '+ (currentdate.getMonth()+1) + "-" '
+            '+ currentdate.getDate() + " : " '
+            '+ currentdate.getHours() + ":" '
+            '+ currentdate.getMinutes()'
+            ');'
         )
         client_datetime = self.execute_script(script)
         return datetime.strptime(client_datetime, '%Y-%m-%d : %H:%M')

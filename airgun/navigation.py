@@ -25,7 +25,7 @@ class NavigateStep(navmazing.NavigateStep):
         for current navigate step by ``VIEW`` class attribute.
         """
         if self.VIEW is None:
-            raise AttributeError('{} does not have VIEW specified'.format(type(self).__name__))
+            raise AttributeError(f'{type(self).__name__} does not have VIEW specified')
         return self.create_view(self.VIEW, additional_context={'entity': self.obj})
 
     def create_view(self, view_class, additional_context=None):

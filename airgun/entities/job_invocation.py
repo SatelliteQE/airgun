@@ -78,5 +78,5 @@ class JobStatus(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
-        self.parent.search('host = {}'.format(kwargs.get('host_name')))
+        self.parent.search(f'host = {kwargs.get("host_name")}')
         self.parent.table.row(description=kwargs.get('entity_name'))['Description'].widget.click()

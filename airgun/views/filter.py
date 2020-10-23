@@ -38,7 +38,7 @@ class FiltersView(BaseLoggedInView):
         value = self.searchbox.read()
         role_id = [int(s) for s in value.split() if s.isdigit()]
         if len(role_id) > 0:
-            query = 'role_id = {} and resource = "{}"'.format(role_id[0], query)
+            query = f'role_id = {role_id[0]} and resource = "{query}"'
         self.searchbox.search(query)
         return self.table.read()
 

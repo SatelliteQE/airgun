@@ -33,8 +33,8 @@ class BaseEntity:
             raise KeyError(f'{self.__class__.__name__} does not have searchbox')
         if not view.searchbox.actions.is_displayed:
             raise NoSuchElementException(
-                'Unable to create a bookmark - {} has a searchbox with no'
-                'actions dropdown'.format(self.__class__.__name__)
+                f'Unable to create a bookmark - {self.__class__.__name__} '
+                'has a searchbox with no actions dropdown'
             )
         if search_query:
             view.searchbox.search_field.fill(search_query)

@@ -66,7 +66,7 @@ class DiscoveredHostDetailsTableColumn(TableColumn):
 
     def __locator__(self):
         return self.browser.element(
-            './*[self::th or self::td][{}]'.format(self.position + 1), parent=self.parent
+            f'./*[self::th or self::td][{self.position + 1}]', parent=self.parent
         )
 
 

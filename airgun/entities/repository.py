@@ -60,7 +60,7 @@ class RepositoryEntity(BaseEntity):
         view.repo_content.upload.click()
         wait_for(
             lambda: view.flash.assert_message(
-                "Successfully uploaded content: {}".format(file_name.rpartition('/')[-1])
+                f'Successfully uploaded content: {file_name.rpartition("/")[-1]}'
             ),
             handle_exception=True,
             timeout=120,

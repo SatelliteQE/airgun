@@ -120,7 +120,7 @@ class HostCollectionPackageContentRadioGroup(RadioGroup):
         input_id = self.buttons_name_id_map.get(name)
         if input_id:
             return self.browser.wait_for_element(
-                ".//input[@id='{}']".format(self.buttons_name_id_map[name])
+                f".//input[@id='{self.buttons_name_id_map[name]}']"
             )
         return None
 

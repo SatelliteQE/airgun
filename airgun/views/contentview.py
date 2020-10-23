@@ -143,7 +143,7 @@ class ContentViewEditView(BaseLoggedInView):
             """
             search_phrase = version_name
             if version_name.startswith('V') and '.' in version_name:
-                search_phrase = 'version = {}'.format(version_name.split()[1].split('.')[0])
+                search_phrase = f'version = {version_name.split()[1].split(".")[0]}'
             self.searchbox.search(search_phrase)
             return self.table.read()
 
