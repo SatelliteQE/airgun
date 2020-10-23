@@ -31,6 +31,8 @@ from airgun.widgets import ValidationErrors
 
 
 class BaseLoggedInView(View):
+    """Base view for Satellite pages"""
+
     menu = SatVerticalNavigation(
         './/div[@id="vertical-nav" or contains(@class, "nav-pf-vertical")]/ul'
     )
@@ -49,11 +51,10 @@ class BaseLoggedInView(View):
     def read(self, widget_names=None):
         """Reads the contents of the view and presents them as a dictionary.
 
-        widget_names: If specified , will read only the widgets which names is in the list.
+        :param widget_names: If specified , will read only the widgets which names is in the list.
 
-        Returns:
-            A :py:class:`dict` of ``widget_name: widget_read_value`` where the values are retrieved
-            using the :py:meth:`Widget.read`.
+        :return: A :py:class:`dict` of ``widget_name: widget_read_value``
+            where the values are retrieved using the :py:meth:`Widget.read`.
         """
         if widget_names is None:
             return super().read()
@@ -89,17 +90,15 @@ class SatTab(Tab):
         @View.nested
         class mytab(SatTab):
             TAB_NAME = 'My Tab'
-
-    Note that ``TAB_NAME`` is optional and if it's absent - capitalized class
-    name is used instead, which is useful for simple tab names like
-    'Subscriptions'::
-
         @View.nested
         class subscriptions(SatTab):
             # no need to specify 'TAB_NAME', it will be set to 'Subscriptions'
             # automatically
             pass
 
+    Note that ``TAB_NAME`` is optional and if it's absent - capitalized class
+    name is used instead, which is useful for simple tab names like
+    'Subscriptions'
     """
 
     ROOT = ParametrizedLocator(
@@ -217,22 +216,21 @@ class LCESelectorGroup(ParametrizedView):
 
     def fill(self, values=None):
         """Shortcut to pass the value to included ``lce``
+
         :class:`airgun.widgets.LCESelector` widget. Usage remains the same as
         :class:`airgun.widgets.LCESelector` and
         :class:`widgetastic.widget.ParametrizedView` required param is filled
         automatically from passed lifecycle environment's name.
 
-        Example::
+        Usage::
 
             my_view.lce.fill({'PROD': True})
+            my_view.lce.fill({'PROD': 'Library'})
 
         Value ``True`` or ``False`` means to set corresponding checkbox value
         to the last checkbox available in widget (last lifecycle environment).
         If you want to select different lifecycle environment within the same
-        route - pass its name as a value instead::
-
-            my_view.lce.fill({'PROD': 'Library'})
-
+        route - pass its name as a value instead
         """
         if values in (True, False):
             values = {self.context['lce_name']: values}
@@ -242,6 +240,7 @@ class LCESelectorGroup(ParametrizedView):
 
     def read(self):
         """Shortcut which returns value of included ``lce``
+
         :class:`airgun.widgets.LCESelector` widget.
 
         Note that returned result will be wrapped in extra dict due to
@@ -402,7 +401,7 @@ class TemplateEditor(View):
 
 class SearchableViewMixin(WTMixin):
     """Mixin which adds :class:`airgun.widgets.Search` widget and
-    :meth:`search` to your view. It's useful for _most_ entities list views
+    :meth:`airgun.widgets.Search.search` to your view. It's useful for _most_ entities list views
     where searchbox and results table are present.
 
     Note that class which uses this mixin should have :attr: `table` attribute.

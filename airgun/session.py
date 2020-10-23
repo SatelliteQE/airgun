@@ -103,12 +103,7 @@ class Session:
     Usage::
 
         def test_foo():
-            # steps executed before starting UI session
-            # [...]
-
-            # start of UI session
             with Session('test_foo') as session:
-                # steps executed during UI session. For example:
                 session.architecture.create({'name': 'bar'})
                 [...]
 

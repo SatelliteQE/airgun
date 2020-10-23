@@ -163,6 +163,8 @@ class CloudInventoryListView(BaseLoggedInView):
 
     @View.nested
     class inventory_list(ItemsList):
+        """Nested view for the inventory list widgets"""
+
         item_class = InventoryItem
 
         @property

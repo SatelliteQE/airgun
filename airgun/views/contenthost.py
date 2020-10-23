@@ -143,7 +143,6 @@ class ContentHostDetailsView(BaseLoggedInView):
         subscription_status = ReadOnlyEntry(name='Subscription Status')
         details = ReadOnlyEntry(name='Details')
         auto_attach = EditableEntryCheckbox(name='Auto-Attach')
-        service_level = EditableEntrySelect(name='Service Level')
         # System Purpose
         system_purpose_status = ReadOnlyEntry(name='System Purpose Status')
         service_level = EditableEntrySelect(name='Service Level (SLA)')

@@ -42,6 +42,8 @@ class LCEView(BaseLoggedInView, ParametrizedView):
 
     @View.nested
     class lce(ParametrizedView):
+        """Parametrized view for the lifecycle environement, takes an LCE name on instantiation"""
+
         ROOT = ParametrizedLocator(
             ".//div[@ng-repeat='path in paths']" "[table//th/a[normalize-space(.)='{lce_name}']]"
         )

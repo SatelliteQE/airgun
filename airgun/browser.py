@@ -65,13 +65,11 @@ class SeleniumBrowserFactory:
         selenium_browser = factory.get_browser()
 
         # navigate to desired url
-        # [...]
 
         # perform post-init steps (e.g. skipping certificate error screen)
         factory.post_init()
 
         # perform your test steps
-        # [...]
 
         # perform factory clean-up
         factory.finalize(passed)
@@ -357,12 +355,12 @@ class DockerBrowser:
 
         # either as context manager
         with DockerBrowser() as browser:
-            # [...]
+            # testing!
 
         # or with manual :meth:`start` and :meth:`stop` calls.
         docker_browser = DockerBrowser()
         docker_browser.start()
-        # [...]
+        # testing!
         docker_browser.stop()
 
     """

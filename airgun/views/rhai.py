@@ -116,6 +116,8 @@ class AllPlansView(BaseLoggedInView):
 
     @ParametrizedView.nested
     class plan(ParametrizedView):
+        """Parametrized view for a nested plan view. Takes plan name on instantiation"""
+
         PARAMETERS = ("plan_name",)
         ROOT = ParametrizedLocator(
             ".//h2[contains(normalize-space(.), {plan_name|quote})]/"

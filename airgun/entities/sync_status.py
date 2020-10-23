@@ -17,22 +17,19 @@ class SyncStatusEntity(BaseEntity):
     def synchronize(self, repository_paths, timeout=3600):
         """Synchronize repositories
 
-        :param list repository_paths: A list of repositories to synchronize
-            where each element of the list is path to repository represented by
-            a list or tuple.
+        :param repository_paths: A list of repositories to synchronize
+            where each element of the list is path to repository represented by a list or tuple.
         :param timeout: time to wait for all repositories to be synchronized.
 
-        Example usage::
+        Usage::
 
-             synchronize([
-                ('product1', 'repo1'),
-                ('product1', 'repo2'),
-                ('product2', 'repo2'),
-                ('Red Hat Enterprise Linux Server', '7.5', 'x86_64',
-                 'Red Hat Enterprise Linux 7 Server RPMs x86_64 7.5'),
-                ('Red Hat Satellite Capsule',
-                'Red Hat Satellite Capsule 6.2 for RHEL 7 Server RPMs x86_64')
-             ])
+            synchronize([('product1', 'repo1'),
+                         ('product1', 'repo2'),
+                         ('product2', 'repo2'),
+                         ('Red Hat Enterprise Linux Server', '7.5', 'x86_64',
+                          'Red Hat Enterprise Linux 7 Server RPMs x86_64 7.5'),
+                         ('Red Hat Satellite Capsule',
+                          'Red Hat Satellite Capsule 6.2 for RHEL 7 Server RPMs x86_64')])
 
         :return: the results text in RESULT columns
         """

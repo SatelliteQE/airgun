@@ -22,6 +22,8 @@ from airgun.widgets import LimitInput
 
 
 class ActivationKeysView(BaseLoggedInView, SearchableViewMixin):
+    """View for the ActivationKeys page"""
+
     title = Text("//h2[contains(., 'Activation Keys')]")
     new = Text("//button[contains(@href, '/activation_keys/new')]")
     table = Table('.//table', column_widgets={'Name': Text('./a')})
@@ -32,6 +34,8 @@ class ActivationKeysView(BaseLoggedInView, SearchableViewMixin):
 
 
 class ActivationKeyCreateView(BaseLoggedInView):
+    """View for the ActivationKeys Create page"""
+
     breadcrumb = BreadCrumb()
     name = TextInput(id='name')
     hosts_limit = LimitInput()
@@ -51,6 +55,8 @@ class ActivationKeyCreateView(BaseLoggedInView):
 
 
 class ActivationKeyEditView(BaseLoggedInView):
+    """View for the ActivationKeys Edit page"""
+
     breadcrumb = BreadCrumb()
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()

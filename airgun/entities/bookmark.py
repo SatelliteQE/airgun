@@ -64,12 +64,7 @@ class ShowAllBookmarks(NavigateStep):
 
 @navigator.register(BookmarkEntity, 'Edit')
 class EditBookmark(NavigateStep):
-    """Navigate to Edit Bookmark screen.
-
-    Args:
-        entity_name: name of bookmark
-        (optional) controller: name of controller for bookmark
-    """
+    """Navigate to Edit Bookmark screen."""
 
     VIEW = BookmarkEditView
 
@@ -77,6 +72,11 @@ class EditBookmark(NavigateStep):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
+        """Using a given entity_name, navigate to edit page from prerequisite
+
+        :param entity_name: name of bookmark
+        :param controller: (optional) name of controller for bookmark
+        """
         entity_name = kwargs.get('entity_name')
         controller = kwargs.get('controller')
         query, row_query = _gen_queries(entity_name, controller)
