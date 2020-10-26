@@ -121,7 +121,8 @@ class AllPlansView(BaseLoggedInView):
         title = Text(".")
         delete = Text(".//i[@tooltip='Delete this plan']")
         edit = Text(".//i[@tooltip='Click to edit this plan']")
-        run_playbook = Button("Run Playbook")
+        ansible_actions = ActionsDropdown(
+            "//div[contains(@class, 'btn-group')][@ng-if='ansibleRunner']")
         export_csv = Button("Export CSV")
         add_actions = Button("Add actions")
 
