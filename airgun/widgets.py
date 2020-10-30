@@ -2098,7 +2098,7 @@ class GenericRemovableWidgetItem(GenericLocatorWidget):
 class AutoCompleteTextInput(TextInput):
     """Autocomplete Search input field, We must remove the focus from this widget after fill to
     force the auto-completion list to be hidden. Since this is a react component, calling browser
-    clear method directly on the field has no effect, thus we need to clear the field using the 
+    clear method directly on the field has no effect, thus we need to clear the field using the
     clear button attached to the input
     """
 
