@@ -13,9 +13,7 @@ from airgun.widgets import SatTable
 
 
 class LDAPAuthenticationsView(BaseLoggedInView):
-    title = Text(
-        "//h1[text()='Authentication Sources' or text()='LDAP authentication sources']"
-    )
+    title = Text("//h1[text()='Authentication Sources' or text()='LDAP authentication sources']")
     internal = AuthSourceAggregateCard(name="Internal")
     external = AuthSourceAggregateCard(name="External")
     ldap = AuthSourceAggregateCard(name="LDAP")

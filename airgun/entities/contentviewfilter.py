@@ -77,7 +77,7 @@ class ContentViewFilterEntity(BaseEntity):
             )
             return
         view.affected_repositories.filter_toggle.fill(
-            'This filter applies only to a subset of repositories in the ' 'content view.'
+            'This filter applies only to a subset of repositories in the content view.'
         )
         # deselect all repositories
         view.affected_repositories.select_all.fill(True)

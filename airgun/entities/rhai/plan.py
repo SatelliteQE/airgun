@@ -52,8 +52,7 @@ class PlanEntity(BaseEntity):
         if customize:
             action_name = 'Customize Playbook Run'
 
-        view = self.navigate_to(
-            self, "Details", entity_name=entity_name).plan(entity_name)
+        view = self.navigate_to(self, "Details", entity_name=entity_name).plan(entity_name)
         view.ansible_actions.fill(action_name)
         if customize:
             view = JobInvocationCreateView(self.browser)
@@ -68,8 +67,7 @@ class PlanEntity(BaseEntity):
 
         :param str entity_name: Name of plan
         """
-        view = self.navigate_to(
-            self, "Details", entity_name=entity_name).plan(entity_name)
+        view = self.navigate_to(self, "Details", entity_name=entity_name).plan(entity_name)
         view.ansible_actions.fill('Download Playbook')
         self.browser.plugin.ensure_page_safe()
         return self.browser.save_downloaded_file()
@@ -79,8 +77,7 @@ class PlanEntity(BaseEntity):
 
         :param str entity_name: Name of plan
         """
-        view = self.navigate_to(
-            self, "Details", entity_name=entity_name).plan(entity_name)
+        view = self.navigate_to(self, "Details", entity_name=entity_name).plan(entity_name)
         view.export_csv.click()
         self.browser.plugin.ensure_page_safe()
         return self.browser.save_downloaded_file()

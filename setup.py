@@ -35,7 +35,7 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
-        'Operating System :: POSIX :: Linux' 'Programming Language :: Python',
+        'Operating System :: POSIX :: LinuxProgramming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',

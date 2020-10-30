@@ -173,7 +173,7 @@ class ProductsSelectAction(NavigateStep):
         self.VIEW = self.ACTIONS_VIEWS.get(action_name)
         if not self.VIEW:
             raise ValueError(
-                'Please provide a valid action name.' ' action_name: "{0}" not found.'
+                f'Please provide a valid action name. action_name: "{action_name}" not found.'
             )
         entities_list = kwargs.get('entities_list')
         for entity in entities_list:

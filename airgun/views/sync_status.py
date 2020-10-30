@@ -23,7 +23,7 @@ class SyncStatusTableNode:
     """Table row interface to implement a sync status table row tree node"""
 
     CHECKBOX = "./td/input[@type='checkbox']"
-    RESULT_LINK = ".//a[not(contains(@class, 'hidden'))]" "[not(contains(@class, 'progress'))]"
+    RESULT_LINK = ".//a[not(contains(@class, 'hidden'))][not(contains(@class, 'progress'))]"
     RESULT_PROGRESS = ".//a[contains(@class, 'progress')]"
     SECTION_EXPANDER = "./td/span[contains(@class, 'expander')]"
 

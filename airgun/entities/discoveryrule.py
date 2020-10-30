@@ -176,7 +176,7 @@ class DiscoveredRuleHosts(NavigateStep):
         self.VIEW = self.ACTIONS_VIEWS.get(action_name)
         if not self.VIEW:
             raise ValueError(
-                'Please provide a valid action name.' ' action_name: "{0}" not found.'
+                f'Please provide a valid action name. action_name: "{action_name}" not found.'
             )
         entity_name = kwargs.get('entity_name')
         self.parent.table.row(name=entity_name)['Actions'].widget.fill(action_name)

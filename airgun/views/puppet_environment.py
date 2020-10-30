@@ -22,7 +22,7 @@ class PuppetEnvironmentTableView(BaseLoggedInView, SearchableViewMixin):
     title = Text(".//h1[contains(., 'Puppet Environments')]")
     new = Text(".//a[contains(@href, '/environments/new')]")
     import_environments = Text(
-        ".//span[contains(@class, 'btn')]" "/a[contains(@href, 'import_environments')]"
+        ".//span[contains(@class, 'btn')]/a[contains(@href, 'import_environments')]"
     )
     table = SatTable(
         locator='.//table',

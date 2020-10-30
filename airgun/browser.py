@@ -133,7 +133,7 @@ class SeleniumBrowserFactory:
             'Certificate Error' in self._webdriver.title or 'Login' not in self._webdriver.title
         ):
             self._webdriver.get(
-                "javascript:document.getElementById('invalidcert_continue')" ".click()"
+                "javascript:document.getElementById('invalidcert_continue').click()"
             )
         # Workaround maximize_window() not working with chrome in docker
         if not (self.provider == 'docker' and self.browser == 'chrome'):
@@ -374,7 +374,7 @@ class DockerBrowser:
         """
         if docker is None:
             raise DockerBrowserError(
-                'Package docker-py is not installed. Install it in order to ' 'use DockerBrowser.'
+                'Package docker-py is not installed. Install it in order to use DockerBrowser.'
             )
         self.webdriver = None
         self._capabilities = capabilities
@@ -429,7 +429,7 @@ class DockerBrowser:
         else:
             # Reraise the captured exception.
             raise DockerBrowserError(
-                'Failed to connect the webdriver to the containerized ' 'selenium.'
+                'Failed to connect the webdriver to the containerized selenium.'
             ) from exception
 
     def _quit_webdriver(self):
@@ -470,14 +470,14 @@ class DockerBrowser:
         image_version = selenium.__version__
         if not self._client.images(name=self._get_image_name(image_version)):
             LOGGER.warning(
-                'Could not find docker-image for your' 'selium-version "%s"; trying with "latest"',
+                'Could not find docker-image for your selenium-version "%s"; trying with "latest"',
                 self._get_image_name(image_version),
             )
             image_version = 'latest'
             if not self._client.images(name=self._get_image_name(image_version)):
                 raise DockerBrowserError(
-                    'Could not find docker-image "%s"; please pull it'
-                    % self._get_image_name(image_version)
+                    f'Could not find docker-image "{self._get_image_name(image_version)}";'
+                    ' please pull it'
                 )
         # Grab only the test name, get rid of square brackets from parametrize
         # and add some random chars. E.g. 'test_positive_create_0_abc'
@@ -691,7 +691,7 @@ class AirgunBrowser(Browser):
         )
 
         if not result.startswith('data:'):
-            raise Exception("Failed to get file content: %s" % result)
+            raise Exception(f"Failed to get file content: {result}")
         result_index = int(result.find('base64,')) + 7
         return base64.b64decode(result[result_index:])
 

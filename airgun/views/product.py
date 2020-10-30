@@ -51,7 +51,7 @@ class ProductsTableView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Products')]")
     new = Text("//button[contains(@href, '/products/new')]")
     edit = Text(
-        "//td/a[contains(@ui-sref, 'product.repositories') and " "contains(@href, 'products')]"
+        "//td/a[contains(@ui-sref, 'product.repositories') and contains(@href, 'products')]"
     )
     repo_discovery = Text("//button[contains(.,'Repo Discovery')]")
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
@@ -173,7 +173,7 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
         @product_content.register('Existing Product')
         class ExistingProductForm(View):
             product_name = Select(
-                locator="//select[@ng-model=" "'createRepoChoices.existingProductId']"
+                locator="//select[@ng-model='createRepoChoices.existingProductId']"
             )
 
         @product_content.register('New Product')

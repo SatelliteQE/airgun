@@ -58,15 +58,15 @@ class PuppetClassDetailsView(BaseLoggedInView):
         filter = TextInput(locator="//input[@placeholder='Filter by name']")
         environment_filter = FilteredDropdown(id='environment_filter')
         parameter_list = ItemsList(
-            "//div[@id='smart_class_param']" "//ul[contains(@class, 'smart-var-tabs')]"
+            "//div[@id='smart_class_param']//ul[contains(@class, 'smart-var-tabs')]"
         )
         parameter = SmartClassParameterContent(
-            locator="//div[@id='smart_class_param']" "//div[@class='tab-pane fields active']"
+            locator="//div[@id='smart_class_param']//div[@class='tab-pane fields active']"
         )
 
     @View.nested
     class smart_variables(SatTab):
         TAB_NAME = 'Smart Variables'
         variable = SmartVariableContent(
-            locator="//div[@id='smart_vars']" "//div[@class='tab-pane fields active']"
+            locator="//div[@id='smart_vars']//div[@class='tab-pane fields active']"
         )

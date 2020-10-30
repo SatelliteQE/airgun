@@ -388,9 +388,7 @@ class HostCreateView(BaseLoggedInView):
                 column_widgets = {
                     'Name': Text(locator=".//span[starts-with(@id, 'name_')]"),
                     'Value': TextInput(locator=".//textarea[@data-property='value']"),
-                    'Actions': Text(
-                        locator=(".//a[@data-original-title" "='Override this value']")
-                    ),
+                    'Actions': Text(locator=(".//a[@data-original-title='Override this value']")),
                 }
                 SatTable.__init__(self, parent, locator, column_widgets=column_widgets, **kwargs)
 
@@ -479,10 +477,10 @@ class HostDetailsView(BaseLoggedInView):
         )
 
     boot_disk = ActionsDropdown(
-        "//div[contains(@class, 'btn-group')]" "[contains(., 'Boot')][not(*[self::div])]"
+        "//div[contains(@class, 'btn-group')][contains(., 'Boot')][not(*[self::div])]"
     )
     schedule_remote_job = ActionsDropdown(
-        "//div[contains(@class, 'btn-group')]" "[contains(., 'Schedule')][not(*[self::div])]"
+        "//div[contains(@class, 'btn-group')][contains(., 'Schedule')][not(*[self::div])]"
     )
     back = Text("//a[text()='Back']")
     webconsole = Text("//a[text()='Web Console']")
@@ -530,14 +528,12 @@ class HostsActionCommonDialog(BaseLoggedInView):
 
 
 class HostsChangeGroup(HostsActionCommonDialog):
-    title = Text("//h4[text()='Change Group - The" " following hosts are about to be changed']")
+    title = Text("//h4[text()='Change Group - The following hosts are about to be changed']")
     host_group = Select(id='hostgroup_id')
 
 
 class HostsChangeEnvironment(HostsActionCommonDialog):
-    title = Text(
-        "//h4[text()='Change Environment - The" " following hosts are about to be changed']"
-    )
+    title = Text("//h4[text()='Change Environment - The following hosts are about to be changed']")
     environment = Select(id='environment_id')
 
 
@@ -593,21 +589,21 @@ class HostsTaxonomyMismatchRadioGroup(GenericLocatorWidget):
 
 class HostsAssignOrganization(HostsActionCommonDialog):
     title = Text(
-        "//h4[text()='Assign Organization" " - The following hosts are about to be changed']"
+        "//h4[text()='Assign Organization - The following hosts are about to be changed']"
     )
     organization = Select(id='organization_id')
     on_mismatch = HostsTaxonomyMismatchRadioGroup(taxonomy='Organization')
 
 
 class HostsAssignLocation(HostsActionCommonDialog):
-    title = Text("//h4[text()='Assign Location" " - The following hosts are about to be changed']")
+    title = Text("//h4[text()='Assign Location - The following hosts are about to be changed']")
     location = Select(id='location_id')
     on_mismatch = HostsTaxonomyMismatchRadioGroup(taxonomy='Location')
 
 
 class HostsAssignCompliancePolicy(HostsActionCommonDialog):
     title = Text(
-        "//h4[text()='Assign Compliance Policy" " - The following hosts are about to be changed']"
+        "//h4[text()='Assign Compliance Policy - The following hosts are about to be changed']"
     )
     policy = Select(id='policy_id')
 
@@ -622,7 +618,7 @@ class HostsUnassignCompliancePolicy(HostsActionCommonDialog):
 
 class HostsChangeOpenscapCapsule(HostsActionCommonDialog):
     title = Text(
-        "//h4[text()='Change OpenSCAP Capsule" " - The following hosts are about to be changed']"
+        "//h4[text()='Change OpenSCAP Capsule - The following hosts are about to be changed']"
     )
     policy = Select(id='smart_proxy_id')
 

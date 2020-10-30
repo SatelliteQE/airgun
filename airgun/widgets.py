@@ -253,9 +253,7 @@ class DatePickerInput(TextInput):
         ".//input[@ng-model='rule.start_date']"
     """
 
-    CALENDAR_POPUP = (
-        "./parent::div/div[@ng-model='date']" "/ul[contains(@class, 'datepicker-popup')]"
-    )
+    CALENDAR_POPUP = "./parent::div/div[@ng-model='date']/ul[contains(@class, 'datepicker-popup')]"
     calendar_button = Text("./parent::div//button[i[contains(@class, 'fa-calendar')]]")
     clear_button = Text(f"{CALENDAR_POPUP}//button[@ng-click='select(null, $event)']")
     done_button = Text(f"{CALENDAR_POPUP}//button[@ng-click='close($event)']")
@@ -311,7 +309,7 @@ class ItemsList(GenericLocatorWidget):
 
     """
 
-    ITEM = "./li[not(contains(@style, 'display: none'))]" "[normalize-space(.)='%s']"
+    ITEM = "./li[not(contains(@style, 'display: none'))][normalize-space(.)='{}']"
     ITEMS = "./li[not(contains(@style, 'display: none'))]"
 
     def read(self):
@@ -324,7 +322,7 @@ class ItemsList(GenericLocatorWidget):
 
         :param value: string with element name
         """
-        self.browser.click(self.browser.element(self.ITEM % value, parent=self))
+        self.browser.click(self.browser.element(self.ITEM.format(value), parent=self))
 
 
 class AddRemoveItemsList(GenericLocatorWidget):
@@ -348,7 +346,7 @@ class AddRemoveItemsList(GenericLocatorWidget):
 
     """
 
-    ITEM_BUTTON = "./li[not(contains(@style, 'display: none'))][contains(., '%s')]/a"
+    ITEM_BUTTON = "./li[not(contains(@style, 'display: none'))][contains(., '{}')]/a"
     ITEMS = "./li[not(contains(@style, 'display: none'))]/span/a"
 
     def read(self):
@@ -361,7 +359,7 @@ class AddRemoveItemsList(GenericLocatorWidget):
 
         :param value: string with element name
         """
-        self.browser.click(self.browser.element(self.ITEM_BUTTON % value, parent=self))
+        self.browser.click(self.browser.element(self.ITEM_BUTTON.format(value), parent=self))
 
 
 class ItemsListGroup(GenericLocatorWidget):
@@ -398,21 +396,21 @@ class ItemsListGroup(GenericLocatorWidget):
 
     ITEM = (
         "./div/ul/li/ul/li[not(contains(@style, 'display: none'))]"
-        "[normalize-space(.)='%s']/span/a"
+        "[normalize-space(.)='{}']/span/a"
     )
     ITEMS = "./div/ul/li/ul/li[not(contains(@style, 'display: none'))]"
     EXPAND = (
         "./div/ul/li/ul/li[not(contains(@style, 'display: none'))]"
-        "[normalize-space(.)='%s']/../preceding-sibling::a"
+        "[normalize-space(.)='{}']/../preceding-sibling::a"
     )
 
     def read(self):
         return [el.text for el in self.browser.elements(self.ITEMS, parent=self)]
 
     def fill(self, value):
-        if not self.browser.is_displayed(self.ITEM % value):
-            self.browser.element(self.EXPAND % value, parent=self).click()
-        self.browser.element(self.ITEM % value, parent=self).click()
+        if not self.browser.is_displayed(self.ITEM.format(value)):
+            self.browser.element(self.EXPAND.format(value), parent=self).click()
+        self.browser.element(self.ITEM.format(value), parent=self).click()
 
 
 class ItemsListReadOnly(ItemsList):
@@ -773,9 +771,7 @@ class ValidationErrors(Widget):
 
     """
 
-    ERROR_ELEMENTS = (
-        ".//*[contains(@class,'has-error') and " "not(contains(@style,'display:none'))]"
-    )
+    ERROR_ELEMENTS = ".//*[contains(@class,'has-error') and not(contains(@style,'display:none'))]"
     ERROR_MESSAGES = (
         ".//*[(contains(@class, 'alert base in fade alert-danger')"
         "or contains(@class,'error-msg-block')"
@@ -819,7 +815,7 @@ class ContextSelector(Widget):
     LOC_LOCATOR = '//li[@id="location-dropdown"]/ul/li/a[contains(.,{})]'
 
     def select_org(self, org_name):
-        self.logger.info('Selecting Organization %r' % org_name)
+        self.logger.info('Selecting Organization %r', org_name)
         l1e = self.browser.element(self.CURRENT_ORG)
         self.browser.move_to_element(l1e)
         self.browser.click(l1e)
@@ -835,7 +831,7 @@ class ContextSelector(Widget):
         return self.browser.text(self.CURRENT_ORG)
 
     def select_loc(self, loc_name):
-        self.logger.info('Selecting Location %r' % loc_name)
+        self.logger.info('Selecting Location %r', loc_name)
         l1e = self.browser.element(self.CURRENT_LOC)
         self.browser.move_to_element(l1e)
         self.browser.click(l1e)
@@ -881,7 +877,7 @@ class FilteredDropdown(GenericLocatorWidget):
     clear_filter = Text("./a/abbr")
     filter_criteria = TextInput(locator="//div[@id='select2-drop']//input")
     filter_content = ItemsList(
-        "//div[not(contains(@style, 'display: none')) and " "@id='select2-drop']/ul"
+        "//div[not(contains(@style, 'display: none')) and @id='select2-drop']/ul"
     )
 
     def __init__(self, parent, id=None, locator=None, logger=None):
@@ -1107,7 +1103,7 @@ class LCESelector(GenericLocatorWidget):
         typically as a part of :class:`airgun.views.common.LCESelectorGroup`.
         """
         if locator is None:
-            locator = ".//div[contains(@class, 'path-selector')]" "//ul[@class='path-list']"
+            locator = ".//div[contains(@class, 'path-selector')]//ul[@class='path-list']"
         super().__init__(parent, locator, logger=logger)
 
     def checkbox_selected(self, locator):
@@ -1394,7 +1390,7 @@ class ReadOnlyEntry(GenericLocatorWidget):
 
     entry_value = Text(".")
     BASE_LOCATOR = (
-        ".//dt[contains(., '{}')]/following-sibling::dd[not(contains(" "@class, 'ng-hide'))][1]"
+        ".//dt[contains(., '{}')]/following-sibling::dd[not(contains(@class, 'ng-hide'))][1]"
     )
 
     def __init__(self, parent, locator=None, name=None, logger=None):
@@ -1948,10 +1944,10 @@ class PieChart(GenericLocatorWidget):
     """
 
     chart_title_text = Text(
-        ".//*[name()='svg']//*[name()='tspan']" "[contains(@class,'donut-title-small-pf')]"
+        ".//*[name()='svg']//*[name()='tspan'][contains(@class,'donut-title-small-pf')]"
     )
     chart_title_value = Text(
-        ".//*[name()='svg']//*[name()='tspan']" "[contains(@class,'donut-title-big-pf')]"
+        ".//*[name()='svg']//*[name()='tspan'][contains(@class,'donut-title-big-pf')]"
     )
 
     def read(self):

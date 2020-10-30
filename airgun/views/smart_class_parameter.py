@@ -31,7 +31,7 @@ class SmartClassParameterContent(View):
     parameter_type = Select(locator=".//select[contains(@name, '[parameter_type]')]")
     default_value = TextInputHidden(locator=".//textarea[contains(@name, '[default_value]')]")
     omit = Checkbox(locator=".//input[contains(@name, '[omit]') and @type!='hidden']")
-    hidden = Checkbox(locator=".//input[contains(@name, '[hidden_value]') and " "@type!='hidden']")
+    hidden = Checkbox(locator=".//input[contains(@name, '[hidden_value]') and @type!='hidden']")
 
     def __init__(self, parent, locator, logger=None):
         View.__init__(self, parent, logger=logger)
@@ -40,9 +40,7 @@ class SmartClassParameterContent(View):
     @View.nested
     class optional_input_validators(View):
         expander = Text(".//h2[contains(@data-target, '#optional_input_validators_')]")
-        required = Checkbox(
-            locator=".//input[contains(@name, '[required]') and " "@type!='hidden']"
-        )
+        required = Checkbox(locator=".//input[contains(@name, '[required]') and @type!='hidden']")
         validator_type = Select(locator=".//select[contains(@name, '[validator_type]')]")
         validator_rule = TextInput(locator=".//input[contains(@name, '[validator_rule]')]")
 
@@ -67,7 +65,7 @@ class SmartClassParameterContent(View):
                 'Attribute type': MatcherAttribute(),
                 'Value': TextInputHidden(locator=".//textarea[contains(@id, 'value')]"),
                 'Omit': Checkbox(
-                    locator=".//input[contains(@name, '[omit]') and " "@type!='hidden']"
+                    locator=".//input[contains(@name, '[omit]') and @type!='hidden']"
                 ),
             },
         )

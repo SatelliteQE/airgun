@@ -77,7 +77,7 @@ class SubscriptionEntity(BaseEntity):
         view.manifest.refresh_button.click()
         org_name = view.taxonomies.current_org
         self._wait_for_process_to_finish(
-            f'Refresh Manifest organization \'{org_name}\'', has_manifest=True, timeout=1200
+            f'Refresh Manifest organization "{org_name}"', has_manifest=True, timeout=1200
         )
 
     def delete_manifest(self, ignore_error_messages=None):

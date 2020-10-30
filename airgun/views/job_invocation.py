@@ -195,7 +195,7 @@ class JobInvocationStatusView(BaseLoggedInView):
             },
         )
         total_hosts = Text(
-            "//h2[contains(., 'Total hosts')]" "/span[@class='card-pf-aggregate-status-count']"
+            "//h2[contains(., 'Total hosts')]/span[@class='card-pf-aggregate-status-count']"
         )
 
     def wait_for_result(self, timeout=600, delay=1):

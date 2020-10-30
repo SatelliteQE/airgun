@@ -152,7 +152,7 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
 
 
 class ManageManifestView(BaseLoggedInView):
-    ROOT = '//div[@role="dialog" and @tabindex]' '[div//h4[text()="Manage Manifest"]]'
+    ROOT = '//div[@role="dialog" and @tabindex][div//h4[text()="Manage Manifest"]]'
     close_button = Button('Close')
 
     @View.nested
@@ -186,7 +186,7 @@ class ManageManifestView(BaseLoggedInView):
 
 
 class DeleteManifestConfirmationView(BaseLoggedInView):
-    ROOT = '//div[@role="dialog" and @tabindex]' '[div//h4[text()="Confirm delete manifest"]]'
+    ROOT = '//div[@role="dialog" and @tabindex][div//h4[text()="Confirm delete manifest"]]'
     message = Text('.//div[@class="modal-body"]')
     delete_button = Button('Delete')
     cancel_button = Button('Cancel')

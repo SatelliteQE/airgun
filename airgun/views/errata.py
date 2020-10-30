@@ -27,9 +27,7 @@ class ErratumView(BaseLoggedInView):
     repo_filter = SatSelect(".//select[@ng-model='repository']")
     applicable_filter = Checkbox(locator=".//input[@ng-model='showApplicable']")
     installable_filter = Checkbox(locator=".//input[@ng-model='showInstallable']")
-    apply_errata = Text(
-        ".//button[contains(@class, 'btn-primary')]" "[@ng-click='goToNextStep()']"
-    )
+    apply_errata = Text(".//button[contains(@class, 'btn-primary')][@ng-click='goToNextStep()']")
     searchbox = Search()
 
     def search(self, query, applicable=True, installable=False, repo=None):

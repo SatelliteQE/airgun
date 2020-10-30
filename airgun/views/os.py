@@ -33,7 +33,7 @@ class TemplatesList(View):
     """
 
     SELECT = (
-        "//label[@for='provisioning_template_id'][contains(.,'%s')]"
+        "//label[@for='provisioning_template_id'][contains(.,'{}')]"
         "/following-sibling::div/div[contains(@id, 'default_templates')]"
     )
     TITLES = "//label[@for='provisioning_template_id']"
@@ -44,7 +44,7 @@ class TemplatesList(View):
         selects = {}
         for title in self.browser.elements(self.TITLES, check_visibility=True):
             selects[title.text] = FilteredDropdown(
-                self, locator=self.SELECT % title.text, logger=self.logger
+                self, locator=self.SELECT.format(title.text), logger=self.logger
             )
         return selects
 

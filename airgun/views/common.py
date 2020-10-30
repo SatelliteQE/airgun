@@ -102,7 +102,7 @@ class SatTab(Tab):
     """
 
     ROOT = ParametrizedLocator(
-        './/div[contains(@class, "page-content") or ' 'contains(@class, "tab-content")]'
+        './/div[contains(@class, "page-content") or contains(@class, "tab-content")]'
     )
 
     @property
@@ -128,7 +128,7 @@ class SatVerticalTab(SatTab):
     """
 
     TAB_LOCATOR = ParametrizedLocator(
-        ".//ul[@data-tabs='pills']" "/li[./a[normalize-space(.)={@tab_name|quote}]]"
+        ".//ul[@data-tabs='pills']/li[./a[normalize-space(.)={@tab_name|quote}]]"
     )
 
 
@@ -144,7 +144,7 @@ class SatTabWithDropdown(TabWithDropdown):
     """
 
     ROOT = ParametrizedLocator(
-        './/div[contains(@class, "page-content") or ' 'contains(@class, "tab-content")]'
+        './/div[contains(@class, "page-content") or contains(@class, "tab-content")]'
     )
 
     @property
@@ -202,7 +202,7 @@ class LCESelectorGroup(ParametrizedView):
     LAST_ENV = ".//div[contains(@class, 'path-selector')]/ul/li[last()]"
     lce = LCESelector(
         locator=ParametrizedLocator(
-            "./div[contains(@class, 'path-selector')]/ul" "[li[normalize-space(.)='{lce_name}']]"
+            "./div[contains(@class, 'path-selector')]/ul[li[normalize-space(.)='{lce_name}']]"
         )
     )
 
@@ -262,7 +262,7 @@ class ListRemoveTab(SatSecondaryTab):
     TAB_NAME = 'List/Remove'
     searchbox = Search()
     remove_button = Text(
-        './/div[@data-block="list-actions"]' '//button[contains(@ng-click, "remove")]'
+        './/div[@data-block="list-actions"]//button[contains(@ng-click, "remove")]'
     )
     table = SatTable(
         locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
@@ -294,7 +294,7 @@ class ListRemoveTab(SatSecondaryTab):
 class AddTab(SatSecondaryTab):
     TAB_NAME = 'Add'
     searchbox = Search()
-    add_button = Text('.//div[@data-block="list-actions"]' '//button[contains(@ng-click, "add")]')
+    add_button = Text('.//div[@data-block="list-actions"]//button[contains(@ng-click, "add")]')
     table = SatTable(
         locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
     )
@@ -516,6 +516,6 @@ class TemplateInputItem(GenericRemovableWidgetItem):
     class PuppetParameterForm(View):
         puppet_class_name = TextInput(locator=".//input[contains(@name, '[puppet_class_name]')]")
         puppet_parameter_name = TextInput(
-            locator=".//input[contains(" "@name, '[puppet_parameter_name]')]"
+            locator=".//input[contains(@name, '[puppet_parameter_name]')]"
         )
         description = TextInput(locator=".//textarea[contains(@name, '[description]')]")

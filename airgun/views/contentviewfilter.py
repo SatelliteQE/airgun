@@ -190,7 +190,7 @@ class EditYumFilterView(BaseLoggedInView):
             TAB_NAME = 'RPMs'
 
             exclude_no_errata = Checkbox(
-                locator=".//input[@type='checkbox']" "[@ng-model='filter.original_packages']"
+                locator=".//input[@type='checkbox'][@ng-model='filter.original_packages']"
             )
             add_rule = Text(".//button[@ng-click='addRule()']")
             remove_rule = Text(".//button[@ng-click='removeRules(filter)']")

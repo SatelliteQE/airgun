@@ -150,15 +150,15 @@ class HostCollectionPackageContentRadioGroup(RadioGroup):
 class HostCollectionManagePackagesView(BaseLoggedInView):
     title = Text("//h4[contains(., 'Update Packages')]")
     update_all = ActionsDropdown(
-        "//span[contains(@class, 'input-group')]" "[button[contains(@ng-click, 'update all')]]"
+        "//span[contains(@class, 'input-group')][button[contains(@ng-click, 'update all')]]"
     )
     content_type = HostCollectionPackageContentRadioGroup("//div[@name='systemContentForm']/div")
 
     packages = TextInput(
-        locator=("//input[@type='text' and " "contains(@ng-model, 'content.content')]")
+        locator=("//input[@type='text' and contains(@ng-model, 'content.content')]")
     )
     install = ActionsDropdown(
-        "//span[contains(@class, 'input-group')]" "[button[contains(@ng-click, 'install')]]"
+        "//span[contains(@class, 'input-group')][button[contains(@ng-click, 'install')]]"
     )
     update = ActionsDropdown(
         "//span[contains(@class, 'input-group')]"
@@ -166,7 +166,7 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
         "and not(contains(@ng-click, 'update all'))]]"
     )
     remove = ActionsDropdown(
-        "//span[contains(@class, 'input-group')]" "[button[contains(@ng-click, 'remove')]]"
+        "//span[contains(@class, 'input-group')][button[contains(@ng-click, 'remove')]]"
     )
     done = Text("//button[@ng-click='ok()']")
 

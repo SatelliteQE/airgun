@@ -24,16 +24,16 @@ class LCEView(BaseLoggedInView, ParametrizedView):
         "and contains(@href, 'new') and contains(@class, 'btn-primary')]"
     )
     edit_parent_env = Text(
-        "//table[contains(@class, 'info-blocks')]" "//a[contains(@ui-sref, 'environment.details')]"
+        "//table[contains(@class, 'info-blocks')]//a[contains(@ui-sref, 'environment.details')]"
     )
     parent_env_cvs_count = Text(
-        "//table[contains(@class, 'info-blocks')]" "//td[span[contains(., 'Content Views')]]/div"
+        "//table[contains(@class, 'info-blocks')]//td[span[contains(., 'Content Views')]]/div"
     )
     parent_env_products_count = Text(
-        "//table[contains(@class, 'info-blocks')]" "//td[span[contains(., 'Products')]]/div"
+        "//table[contains(@class, 'info-blocks')]//td[span[contains(., 'Products')]]/div"
     )
     parent_env_products_errata = Text(
-        "//table[contains(@class, 'info-blocks')]" "//td[span[contains(., 'Errata')]]/div"
+        "//table[contains(@class, 'info-blocks')]//td[span[contains(., 'Errata')]]/div"
     )
 
     @property
@@ -45,7 +45,7 @@ class LCEView(BaseLoggedInView, ParametrizedView):
         """Parametrized view for the lifecycle environement, takes an LCE name on instantiation"""
 
         ROOT = ParametrizedLocator(
-            ".//div[@ng-repeat='path in paths']" "[table//th/a[normalize-space(.)='{lce_name}']]"
+            ".//div[@ng-repeat='path in paths'][table//th/a[normalize-space(.)='{lce_name}']]"
         )
         PARAMETERS = ('lce_name',)
         LAST_ENV = "//div[@ng-repeat='path in paths']//table//th[last()]"
