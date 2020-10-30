@@ -5,6 +5,8 @@ from airgun.entities.base import BaseEntity
 from airgun.entities.rhai.base import InsightsNavigateStep
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.views.job_invocation import JobInvocationCreateView
+from airgun.views.job_invocation import JobInvocationStatusView
 from airgun.views.rhai import AddPlanView
 from airgun.views.rhai import AllPlansView
 from airgun.views.rhai import PlanEditView
@@ -39,6 +41,51 @@ class PlanEntity(BaseEntity):
         view.edit.click()
         view = PlanEditView(self.session.browser)
         view.fill_with(values, on_change=view.save.click)
+
+    def run_playbook(self, entity_name, customize=False, customize_values=None):
+        """Run Ansible playbook associated with given plan
+
+        :param str entity_name: Name of plan
+        :param bool customize: Whether remote job should be customized first
+        :param dict customize_values: Values to fill on customize remote job
+            screen
+        """
+        action_name = 'Run Playbook'
+        if customize:
+            action_name = 'Customize Playbook Run'
+
+        view = self.navigate_to(
+            self, "Details", entity_name=entity_name).plan(entity_name)
+        view.ansible_actions.fill(action_name)
+        if customize:
+            view = JobInvocationCreateView(self.browser)
+            view.fill(customize_values)
+            view.submit.click()
+        view = JobInvocationStatusView(self.browser)
+        view.wait_for_result()
+        return view.read()
+
+    def download_playbook(self, entity_name):
+        """Download Ansible playbook associated with given plan
+
+        :param str entity_name: Name of plan
+        """
+        view = self.navigate_to(
+            self, "Details", entity_name=entity_name).plan(entity_name)
+        view.ansible_actions.fill('Download Playbook')
+        self.browser.plugin.ensure_page_safe()
+        return self.browser.save_downloaded_file()
+
+    def export_csv(self, entity_name):
+        """Download CSV file with details of given plan
+
+        :param str entity_name: Name of plan
+        """
+        view = self.navigate_to(
+            self, "Details", entity_name=entity_name).plan(entity_name)
+        view.export_csv.click()
+        self.browser.plugin.ensure_page_safe()
+        return self.browser.save_downloaded_file()
 
 
 @navigator.register(PlanEntity, "All")
