@@ -17,12 +17,15 @@ class LCEEntity(BaseEntity):
         view.submit.click()
 
     def create_environment(self, values, entity_name):
-        view = self.navigate_to(
-            self, 'New Environment', entity_name=entity_name)
+        view = self.navigate_to(self, 'New Environment', entity_name=entity_name)
         view.fill(values)
         view.submit.click()
 
-    def create(self, values, prior_entity_name=None,):
+    def create(
+        self,
+        values,
+        prior_entity_name=None,
+    ):
         """Create new lifecycle environment
         :param values: Parameters to be assigned to lce, at least name should
         be provided
@@ -83,6 +86,7 @@ class LCEEntity(BaseEntity):
 @navigator.register(LCEEntity, 'All')
 class ShowAllLCE(NavigateStep):
     """Navigate to All Lifecycle Environments page"""
+
     VIEW = LCEView
 
     def step(self, *args, **kwargs):
@@ -92,6 +96,7 @@ class ShowAllLCE(NavigateStep):
 @navigator.register(LCEEntity, 'New Path')
 class AddNewLCEPath(NavigateStep):
     """Navigate to New Lifecycle Environment Path page"""
+
     VIEW = LCECreateView
 
     prerequisite = NavigateToSibling('All')
@@ -103,6 +108,7 @@ class AddNewLCEPath(NavigateStep):
 @navigator.register(LCEEntity, 'New Environment')
 class AddNewLCE(NavigateStep):
     """Navigate to New Lifecycle Environment page"""
+
     VIEW = LCECreateView
 
     def prerequisite(self, *args, **kwargs):
@@ -119,6 +125,7 @@ class EditLCE(NavigateStep):
     Args:
         entity_name: name of the lifecycle environment
     """
+
     VIEW = LCEEditView
 
     def prerequisite(self, *args, **kwargs):

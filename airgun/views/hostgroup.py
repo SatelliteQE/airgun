@@ -17,25 +17,21 @@ from airgun.widgets import RadioGroup
 
 
 class HostGroupsView(BaseLoggedInView, SearchableViewMixin):
-    title = Text(
-        "//h1[contains(., 'Host Group Configuration') or text()='Host Groups']"
-    )
+    title = Text("//h1[contains(., 'Host Group Configuration') or text()='Host Groups']")
     new = Text("//a[contains(@href, '/hostgroups/new')]")
     table = Table(
         './/table',
         column_widgets={
             'Name': Text("./a"),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return (
-            self.browser.wait_for_element(
-                self.title, exception=False) is not None
-            and self.browser.url.endswith('hostgroups')
-        )
+        return self.browser.wait_for_element(
+            self.title, exception=False
+        ) is not None and self.browser.url.endswith('hostgroups')
 
 
 class HostGroupCreateView(BaseLoggedInView):
@@ -44,8 +40,7 @@ class HostGroupCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Host Groups'
@@ -91,8 +86,7 @@ class HostGroupCreateView(BaseLoggedInView):
 
         architecture = FilteredDropdown(id='hostgroup_architecture')
         operating_system = FilteredDropdown(id='hostgroup_operatingsystem')
-        media_type = RadioGroup(
-            locator="//div[label[contains(., 'Media Selection')]]")
+        media_type = RadioGroup(locator="//div[label[contains(., 'Media Selection')]]")
         media_content = ConditionalSwitchableView(reference='media_type')
 
         @media_content.register('All Media')
@@ -130,8 +124,7 @@ class HostGroupEditView(HostGroupCreateView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Host Groups'

@@ -27,17 +27,16 @@ class CreateDiscoveredReposView(View):
     """View which represent Discovered Repository section in Repository
     Discovery procedure.
     """
+
     searchbox = Search()
     table = SatTable(
         locator=".//table",
-        column_widgets={
-            0: Checkbox(locator=".//input[@ng-change='itemSelected(urlRow)']")}
+        column_widgets={0: Checkbox(locator=".//input[@ng-change='itemSelected(urlRow)']")},
     )
     create_action = Text("//button[contains(., 'Create Selected')]")
 
     def fill(self, values):
-        """Select necessary repo/repos to be added to new or existing product
-        """
+        """Select necessary repo/repos to be added to new or existing product"""
         if not isinstance(values, list):
             values = list((values,))
         for value in values:
@@ -52,8 +51,7 @@ class ProductsTableView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Products')]")
     new = Text("//button[contains(@href, '/products/new')]")
     edit = Text(
-        "//td/a[contains(@ui-sref, 'product.repositories') and "
-        "contains(@href, 'products')]"
+        "//td/a[contains(@ui-sref, 'product.repositories') and contains(@href, 'products')]"
     )
     repo_discovery = Text("//button[contains(.,'Repo Discovery')]")
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
@@ -62,8 +60,7 @@ class ProductsTableView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ProductCreateView(BaseLoggedInView):
@@ -81,8 +78,7 @@ class ProductCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Products'
@@ -97,13 +93,11 @@ class ProductEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Products'
-            and self.breadcrumb.read() not in (
-                'New Product', 'Discover Repositories')
+            and self.breadcrumb.read() not in ('New Product', 'Discover Repositories')
             and len(self.breadcrumb.locations) <= 3
         )
 
@@ -126,10 +120,9 @@ class ProductEditView(BaseLoggedInView):
         table = SatTable(
             locator=".//table",
             column_widgets={
-                0: Checkbox(
-                    locator="./input[@ng-change='itemSelected(repository)']"),
+                0: Checkbox(locator="./input[@ng-change='itemSelected(repository)']"),
                 'Name': Text("./a"),
-            }
+            },
         )
 
 
@@ -140,8 +133,7 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Products'
@@ -165,7 +157,7 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
                 lambda: self.cancel_discovery.is_displayed is False,
                 timeout=300,
                 delay=1,
-                logger=self.logger
+                logger=self.logger,
             )
 
     @View.nested
@@ -174,53 +166,49 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
         product or use existing one we use different sets of fields that need
         to be filled
         """
-        product_type = SatSelect(
-            locator="//select[@ng-model='createRepoChoices.newProduct']")
+
+        product_type = SatSelect(locator="//select[@ng-model='createRepoChoices.newProduct']")
         product_content = ConditionalSwitchableView(reference='product_type')
 
         @product_content.register('Existing Product')
         class ExistingProductForm(View):
             product_name = Select(
-                locator="//select[@ng-model="
-                        "'createRepoChoices.existingProductId']"
+                locator="//select[@ng-model='createRepoChoices.existingProductId']"
             )
 
         @product_content.register('New Product')
         class NewProductForm(View):
             product_name = TextInput(id='productName')
             label = TextInput(id='productLabel')
-            gpg_key = Select(
-                locator="//select[contains(@ng-model,'gpg_key_id')]")
+            gpg_key = Select(locator="//select[contains(@ng-model,'gpg_key_id')]")
 
         serve_via_http = Checkbox(id='unprotected')
         verify_ssl = Checkbox(id='verify_ssl')
-        run_procedure = Text(
-            "//button[contains(., 'Run Repository Creation')]")
+        run_procedure = Text("//button[contains(., 'Run Repository Creation')]")
         create_repos_table = Table(
-                locator='//table',
-                column_widgets={
-                    'Repository Name': TextInput(locator=".//input[@name='repo_name']"),
-                    'Repository Label': TextInput(locator=".//input[@name='repo_label']"),
-                },
+            locator='//table',
+            column_widgets={
+                'Repository Name': TextInput(locator=".//input[@name='repo_name']"),
+                'Repository Label': TextInput(locator=".//input[@name='repo_label']"),
+            },
         )
 
         def wait_repo_created(self):
             wait_for(
                 lambda: self.create_repos_table.row(
                     create_status__contains='Repository created'
-                ).is_displayed is True,
+                ).is_displayed
+                is True,
                 timeout=300,
                 delay=1,
-                logger=self.logger
+                logger=self.logger,
             )
 
 
 class ProductTaskDetailsView(TaskDetailsView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Products'
@@ -235,12 +223,12 @@ class ProductSyncPlanView(SyncPlanCreateView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ProductManageHttpProxy(BaseLoggedInView):
     """Represents Http Proxy Management page for Products."""
+
     title = Text("//h4[text()='Http Proxy Management']")
     http_proxy_policy = Select(id="http_proxy_policy")
     proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
@@ -252,5 +240,4 @@ class ProductManageHttpProxy(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None

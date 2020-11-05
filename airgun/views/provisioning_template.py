@@ -21,11 +21,10 @@ from airgun.widgets import RemovableWidgetsItemsListView
 
 class TemplateHostEnvironmentAssociation(GenericRemovableWidgetItem):
     """Provisioning Template Foreign Input Set Item widget"""
+
     remove_button = Text(".//a[@title='Remove Combination']")
-    host_group = Select(
-        locator=".//select[contains(@name, '[hostgroup_id]')]")
-    environment = Select(
-        locator=".//select[contains(@name, '[environment_id]')]")
+    host_group = Select(locator=".//select[contains(@name, '[hostgroup_id]')]")
+    environment = Select(locator=".//select[contains(@name, '[environment_id]')]")
 
 
 class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixin):
@@ -37,13 +36,12 @@ class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixin):
         column_widgets={
             'Name': Text('./a'),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ProvisioningTemplateDetailsView(BaseLoggedInView):
@@ -52,8 +50,7 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Provisioning Templates'
@@ -76,13 +73,11 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
     @View.nested
     class type(SatTab):
         snippet = Checkbox(id='provisioning_template_snippet')
-        template_type = FilteredDropdown(
-            id='provisioning_template_template_kind')
+        template_type = FilteredDropdown(id='provisioning_template_template_kind')
 
     @View.nested
     class association(SatTab):
-        applicable_os = MultiSelect(
-            id='ms-provisioning_template_operatingsystem_ids')
+        applicable_os = MultiSelect(id='ms-provisioning_template_operatingsystem_ids')
 
         @View.nested
         class hg_environment_combination(RemovableWidgetsItemsListView):
@@ -93,21 +88,17 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
 
     @View.nested
     class locations(SatTab):
-        resources = MultiSelect(
-            id='ms-provisioning_template_location_ids')
+        resources = MultiSelect(id='ms-provisioning_template_location_ids')
 
     @View.nested
     class organizations(SatTab):
-        resources = MultiSelect(
-            id='ms-provisioning_template_organization_ids')
+        resources = MultiSelect(id='ms-provisioning_template_organization_ids')
 
 
 class ProvisioningTemplateCreateView(ProvisioningTemplateDetailsView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Provisioning Templates'

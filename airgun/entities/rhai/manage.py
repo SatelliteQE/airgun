@@ -30,6 +30,7 @@ class ManageEntity(BaseEntity):
 @navigator.register(ManageEntity, "Details")
 class ManageDetails(InsightsNavigateStep):
     """Navigate to Red Hat Access Insights Manage screen."""
+
     VIEW = ManageDetailsView
 
     def step(self, *args, **kwargs):

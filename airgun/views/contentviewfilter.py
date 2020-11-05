@@ -27,6 +27,7 @@ class CVFRuleActions(View):
     """'Actions' column for content view filter rules. Can contain either
     'Edit' button or 'Save' and 'Cancel'.
     """
+
     edit = Text(".//button[contains(@ng-click, 'rule.editMode')]")
     save = Text(".//button[contains(@ng-click, 'handleSave()')]")
     cancel = Text(".//button[contains(@ng-click, 'handleCancel()')]")
@@ -36,10 +37,10 @@ class CVFRuleVersion(View):
     """'Version' column for content view filter rule. Depending on type (e.g.
     'Equal To', 'Greater Than' etc) can have different set of inputs.
     """
+
     rule_type = SatSelect(locator=".//select[@ng-model='rule.type']")
     rule = ConditionalSwitchableView(reference='rule_type')
-    version_text = Text(
-        ".//span[@ng-hide='rule.editMode']//descendant::span[last()]")
+    version_text = Text(".//span[@ng-hide='rule.editMode']//descendant::span[last()]")
 
     @rule.register('All Versions')
     class all_versions(View):
@@ -75,8 +76,7 @@ class CVFRuleVersion(View):
         was_change = self.rule_type.fill(values[0])
         if len(values) == 1:
             return was_change
-        widgets_list = [
-            'rule.{}'.format(name) for name in self.rule.widget_names]
+        widgets_list = [f'rule.{name}' for name in self.rule.widget_names]
         values = dict(zip(widgets_list, values[1:]))
         return super().fill(values) or was_change
 
@@ -97,10 +97,9 @@ class CVFEditableEntry(EditableEntry):
         if locator and name or not locator and not name:
             raise TypeError('Please specify either locator or name')
         locator = (
-            locator or
-            ".//span[contains(@class, 'info-label')][normalize-space(.)='{}']"
+            locator
+            or f".//span[contains(@class, 'info-label')][normalize-space(.)='{name}']"
             "/following-sibling::span[contains(@class, 'info-value')]"
-            .format(name)
         )
         super(EditableEntry, self).__init__(parent, locator, logger)
 
@@ -110,6 +109,7 @@ class AffectedRepositoriesTab(SatSecondaryTab):
     making it impossible to rely on exact string value. Using ``starts-with``
     instead.
     """
+
     TAB_NAME = 'Affected Repositories'
     TAB_LOCATOR = ParametrizedLocator(
         './/nav[@class="ng-scope" or not(@*)]/ul[contains(@class, "nav-tabs")]'
@@ -133,12 +133,11 @@ class ContentViewFiltersView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Content Views'
-                and self.breadcrumb.read() == 'Yum Filters'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Views'
+            and self.breadcrumb.read() == 'Yum Filters'
         )
 
 
@@ -155,8 +154,7 @@ class CreateYumFilterView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'
@@ -172,8 +170,7 @@ class EditYumFilterView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and len(self.breadcrumb.locations) > 3
@@ -188,14 +185,12 @@ class EditYumFilterView(BaseLoggedInView):
 
     @content_tabs.register(lambda filter_type: filter_type.endswith('RPM'))
     class rpm_filter(View):
-
         @View.nested
         class rpms(SatSecondaryTab, SearchableViewMixin):
             TAB_NAME = 'RPMs'
 
             exclude_no_errata = Checkbox(
-                locator=".//input[@type='checkbox']"
-                        "[@ng-model='filter.original_packages']"
+                locator=".//input[@type='checkbox'][@ng-model='filter.original_packages']"
             )
             add_rule = Text(".//button[@ng-click='addRule()']")
             remove_rule = Text(".//button[@ng-click='removeRules(filter)']")
@@ -221,18 +216,12 @@ class EditYumFilterView(BaseLoggedInView):
         @View.nested
         class add_tab(AddTab):
             security = Checkbox(locator=".//input[@ng-model='types.security']")
-            enhancement = Checkbox(
-                locator=".//input[@ng-model='types.enhancement']")
-            bugfix = Checkbox(
-                locator=".//input[@ng-model='types.bugfix']")
-            date_type = RadioGroup(
-                ".//div[label[contains(@class, 'radio-inline')]]")
-            start_date = DatePickerInput(
-                locator=".//input[@ng-model='rule.start_date']")
-            end_date = DatePickerInput(
-                locator=".//input[@ng-model='rule.end_date']")
-            select_all = Checkbox(
-                locator=".//table//th[@class='row-select']/input")
+            enhancement = Checkbox(locator=".//input[@ng-model='types.enhancement']")
+            bugfix = Checkbox(locator=".//input[@ng-model='types.bugfix']")
+            date_type = RadioGroup(".//div[label[contains(@class, 'radio-inline')]]")
+            start_date = DatePickerInput(locator=".//input[@ng-model='rule.start_date']")
+            end_date = DatePickerInput(locator=".//input[@ng-model='rule.end_date']")
+            select_all = Checkbox(locator=".//table//th[@class='row-select']/input")
 
             def search(self, query=None, filters=None):
                 """Custom search which supports all errata filters.
@@ -262,11 +251,10 @@ class EditYumFilterView(BaseLoggedInView):
                 """
                 query = None
                 if errata_id:
-                    query = 'errata_id = {}'.format(errata_id)
+                    query = f'errata_id = {errata_id}'
                 self.search(query, filters)
                 if errata_id:
-                    self.table.row((
-                        'Errata ID', errata_id))[0].widget.fill(True)
+                    self.table.row(('Errata ID', errata_id))[0].widget.fill(True)
                 else:
                     self.select_all.fill(True)
                 self.add_button.click()
@@ -279,16 +267,11 @@ class EditYumFilterView(BaseLoggedInView):
             TAB_NAME = 'Erratum Date Range'
 
             security = Checkbox(locator=".//input[@ng-model='types.security']")
-            enhancement = Checkbox(
-                locator=".//input[@ng-model='types.enhancement']")
-            bugfix = Checkbox(
-                locator=".//input[@ng-model='types.bugfix']")
-            date_type = RadioGroup(
-                ".//div[label[contains(@class, 'radio-inline')]]")
-            start_date = DatePickerInput(
-                locator=".//input[@ng-model='rule.start_date']")
-            end_date = DatePickerInput(
-                locator=".//input[@ng-model='rule.end_date']")
+            enhancement = Checkbox(locator=".//input[@ng-model='types.enhancement']")
+            bugfix = Checkbox(locator=".//input[@ng-model='types.bugfix']")
+            date_type = RadioGroup(".//div[label[contains(@class, 'radio-inline')]]")
+            start_date = DatePickerInput(locator=".//input[@ng-model='rule.start_date']")
+            end_date = DatePickerInput(locator=".//input[@ng-model='rule.end_date']")
 
             save = Text('//button[contains(@ng-click, "handleSave()")]')
             cancel = Text('//button[contains(@ng-click, "handleCancel()")]')
@@ -319,13 +302,11 @@ class EditYumFilterView(BaseLoggedInView):
                 'unassigned': self.add_tab.read(),
             }
 
-    @content_tabs.register(
-        lambda filter_type: filter_type.endswith('Package Groups'))
+    @content_tabs.register(lambda filter_type: filter_type.endswith('Package Groups'))
     class package_group_filter(AddRemoveResourcesView):
         pass
 
-    @content_tabs.register(
-        lambda filter_type: filter_type.endswith('Module Streams'))
+    @content_tabs.register(lambda filter_type: filter_type.endswith('Module Streams'))
     class module_streams_filter(AddRemoveResourcesView):
         pass
 
@@ -335,8 +316,7 @@ class EditYumFilterView(BaseLoggedInView):
         product_filter = Select(locator=".//select[@ng-model='product']")
         searchbox = TextInput(locator=".//input[@ng-model='repositorySearch']")
         update_repositories = Button('Update Repositories')
-        select_all = Checkbox(
-            locator=".//table//th[@class='row-select']/input")
+        select_all = Checkbox(locator=".//table//th[@class='row-select']/input")
         table = SatTable(
             locator='.//table',
             column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")},

@@ -20,6 +20,7 @@ class InventoryTab(Tab):
     This is lightweight subclass needed because Cloud Inventory Upload
     tabs contain icons, and widgetastic_patternfly Tab looks for exact match.
     """
+
     TAB_LOCATOR = ParametrizedLocator(
         './/ul[contains(@class, "nav-tabs")]/'
         'li[./a[contains(normalize-space(.), {@tab_name|quote})]]'
@@ -27,16 +28,11 @@ class InventoryTab(Tab):
 
     def child_widget_accessed(self, widget):
         super().child_widget_accessed(widget)
-        wait_for(
-            lambda: widget.parent.is_displayed,
-            timeout=5,
-            delay=1,
-            logger=widget.logger
-        )
+        wait_for(lambda: widget.parent.is_displayed, timeout=5, delay=1, logger=widget.logger)
 
 
 class InventoryBootstrapSwitch(Widget):
-    """ Checkbox-like Switch control, representing On and Off state. But with
+    """Checkbox-like Switch control, representing On and Off state. But with
     fancy UI and without any <form> elements.
     There's also BootstrapSwitch widget in widgetastic_patternfly, but we don't
     inherit from it as it uses completely different HTML structure than this one
@@ -64,7 +60,7 @@ class InventoryBootstrapSwitch(Widget):
 
     @property
     def _clickable_el(self):
-        """ In automation, you need to click on exact toggle element to trigger action
+        """In automation, you need to click on exact toggle element to trigger action
 
         Returns: selenium webelement
         """
@@ -88,6 +84,7 @@ class InventoryBootstrapSwitch(Widget):
 
 class InventoryItem(ListItem):
     """Item related to one organization on Cloud Inventory Upload page."""
+
     ROOT = ParametrizedLocator(
         './/div[contains(concat(" ",@class," "), " list-group-item ") and position()={index}]'
     )
@@ -158,6 +155,7 @@ class InventoryItem(ListItem):
 
 class CloudInventoryListView(BaseLoggedInView):
     """Main RH Cloud Inventory Upload view."""
+
     title = Text("//h1[@class='inventory_title']")
     searchbox = Search()
     allow_auto_upload = InventoryBootstrapSwitch(class_name='auto_upload_switcher')
@@ -165,6 +163,8 @@ class CloudInventoryListView(BaseLoggedInView):
 
     @View.nested
     class inventory_list(ItemsList):
+        """Nested view for the inventory list widgets"""
+
         item_class = InventoryItem
 
         @property
@@ -172,12 +172,8 @@ class CloudInventoryListView(BaseLoggedInView):
             return [item.description for item in self.items()]
 
         def read(self):
-            return {
-                item.description: item.read()
-                for item in self.items()
-            }
+            return {item.description: item.read() for item in self.items()}
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None

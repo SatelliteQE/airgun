@@ -41,8 +41,7 @@ class ArchitectureEntity(BaseEntity):
         """Remove existing architecture entity"""
         view = self.navigate_to(self, 'All')
         view.searchbox.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.click(
-            handle_alert=True)
+        view.table.row(name=entity_name)['Actions'].widget.click(handle_alert=True)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -50,6 +49,7 @@ class ArchitectureEntity(BaseEntity):
 @navigator.register(ArchitectureEntity, 'All')
 class ShowAllArchitectures(NavigateStep):
     """Navigate to All Architectures page"""
+
     VIEW = ArchitecturesView
 
     def step(self, *args, **kwargs):
@@ -59,6 +59,7 @@ class ShowAllArchitectures(NavigateStep):
 @navigator.register(ArchitectureEntity, 'New')
 class AddNewArchitecture(NavigateStep):
     """Navigate to Create Architecture page"""
+
     VIEW = ArchitectureCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -74,6 +75,7 @@ class EditArchitecture(NavigateStep):
     Args:
         entity_name: name of the architecture
     """
+
     VIEW = ArchitectureDetailsView
 
     def prerequisite(self, *args, **kwargs):

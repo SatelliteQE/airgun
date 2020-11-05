@@ -51,6 +51,7 @@ class SmartVariableEntity(BaseEntity):
 @navigator.register(SmartVariableEntity, 'All')
 class ShowAllSmartVariables(NavigateStep):
     """Navigate to All Smart Variables screen."""
+
     VIEW = SmartVariablesTableView
 
     def step(self, *args, **kwargs):
@@ -60,6 +61,7 @@ class ShowAllSmartVariables(NavigateStep):
 @navigator.register(SmartVariableEntity, 'New')
 class AddNewSmartVariable(NavigateStep):
     """Navigate to Create Smart Variable screen."""
+
     VIEW = SmartVariableCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -72,9 +74,10 @@ class AddNewSmartVariable(NavigateStep):
 class EditSmartVariable(NavigateStep):
     """Navigate to Edit Smart Variable screen.
 
-        Args:
-            entity_name: name of smart variable
+    Args:
+        entity_name: name of smart variable
     """
+
     VIEW = SmartVariableEditView
 
     def prerequisite(self, *args, **kwargs):

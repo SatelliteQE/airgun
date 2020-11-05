@@ -10,10 +10,9 @@ def _gen_queries(entity_name, controller=None):
     controller if passed.
     """
     row_query = {'name': entity_name}
-    search_query = 'name = "{}"'.format(entity_name)
+    search_query = f'name = "{entity_name}"'
     if controller:
-        search_query = '{} and controller = "{}"'.format(
-            search_query, controller)
+        search_query = f'{search_query} and controller = "{controller}"'
         row_query['controller'] = controller
     return search_query, row_query
 
@@ -40,14 +39,12 @@ class BookmarkEntity(BaseEntity):
 
     def read(self, entity_name, controller=None, widget_names=None):
         """Read bookmark values"""
-        view = self.navigate_to(
-            self, 'Edit', entity_name=entity_name, controller=controller)
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name, controller=controller)
         return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values, controller=None):
         """Update existing bookmark"""
-        view = self.navigate_to(
-            self, 'Edit', entity_name=entity_name, controller=controller)
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name, controller=controller)
         result = view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
@@ -58,6 +55,7 @@ class BookmarkEntity(BaseEntity):
 @navigator.register(BookmarkEntity, 'All')
 class ShowAllBookmarks(NavigateStep):
     """Navigate to All Bookmarks screen."""
+
     VIEW = BookmarksView
 
     def step(self, *args, **kwargs):
@@ -66,18 +64,19 @@ class ShowAllBookmarks(NavigateStep):
 
 @navigator.register(BookmarkEntity, 'Edit')
 class EditBookmark(NavigateStep):
-    """Navigate to Edit Bookmark screen.
+    """Navigate to Edit Bookmark screen."""
 
-    Args:
-        entity_name: name of bookmark
-        (optional) controller: name of controller for bookmark
-    """
     VIEW = BookmarkEditView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
+        """Using a given entity_name, navigate to edit page from prerequisite
+
+        :param entity_name: name of bookmark
+        :param controller: (optional) name of controller for bookmark
+        """
         entity_name = kwargs.get('entity_name')
         controller = kwargs.get('controller')
         query, row_query = _gen_queries(entity_name, controller)

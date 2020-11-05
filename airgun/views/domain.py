@@ -14,6 +14,7 @@ from airgun.widgets import MultiSelect
 
 class DomainListView(BaseLoggedInView, SearchableViewMixin):
     """List of all domains."""
+
     title = Text("//h1[text()='Domains']")
     new = Text("//a[contains(@href, '/domains/new')]")
     table = Table(
@@ -21,14 +22,13 @@ class DomainListView(BaseLoggedInView, SearchableViewMixin):
         column_widgets={
             'Description': Text("./a"),
             'Hosts': Text("./a"),
-            'Actions': Text(".//a[@data-method='delete']")
-        }
+            'Actions': Text(".//a[@data-method='delete']"),
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class DomainCreateView(BaseLoggedInView):
@@ -56,8 +56,7 @@ class DomainCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Domains'
@@ -66,11 +65,9 @@ class DomainCreateView(BaseLoggedInView):
 
 
 class DomainEditView(DomainCreateView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Domains'

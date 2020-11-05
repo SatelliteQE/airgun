@@ -58,6 +58,7 @@ class RoleEntity(BaseEntity):
 @navigator.register(RoleEntity, 'All')
 class ShowAllRoles(NavigateStep):
     """Navigate to All Roles page"""
+
     VIEW = RolesView
 
     def step(self, *args, **kwargs):
@@ -67,6 +68,7 @@ class ShowAllRoles(NavigateStep):
 @navigator.register(RoleEntity, 'New')
 class AddNewRole(NavigateStep):
     """Navigate to Create New Role page"""
+
     VIEW = RoleCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -82,6 +84,7 @@ class EditRole(NavigateStep):
     Args:
         entity_name: name of role
     """
+
     VIEW = RoleEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -96,6 +99,7 @@ class EditRole(NavigateStep):
 @navigator.register(RoleEntity, 'Clone')
 class CloneRole(NavigateStep):
     """Navigate to Clone Role page"""
+
     VIEW = RoleCloneView
 
     def prerequisite(self, *args, **kwargs):

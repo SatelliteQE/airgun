@@ -41,8 +41,7 @@ class ConfigGroupEntity(BaseEntity):
         """Delete config group"""
         view = self.navigate_to(self, 'All')
         view.searchbox.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.click(
-            handle_alert=True)
+        view.table.row(name=entity_name)['Actions'].widget.click(handle_alert=True)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -50,6 +49,7 @@ class ConfigGroupEntity(BaseEntity):
 @navigator.register(ConfigGroupEntity, 'All')
 class ShowAllConfigGroups(NavigateStep):
     """Navigate to All Config Groups screen."""
+
     VIEW = ConfigGroupsView
 
     def step(self, *args, **kwargs):
@@ -59,6 +59,7 @@ class ShowAllConfigGroups(NavigateStep):
 @navigator.register(ConfigGroupEntity, 'New')
 class AddNewConfigGroup(NavigateStep):
     """Navigate to Create new Config Group screen."""
+
     VIEW = ConfigGroupCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -71,9 +72,10 @@ class AddNewConfigGroup(NavigateStep):
 class EditConfigGroup(NavigateStep):
     """Navigate to Edit Config Group screen.
 
-        Args:
-            entity_name: name of config group
+    Args:
+        entity_name: name of config group
     """
+
     VIEW = ConfigGroupEditView
 
     def prerequisite(self, *args, **kwargs):

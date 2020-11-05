@@ -53,6 +53,7 @@ class ComputeProfileEntity(BaseEntity):
 @navigator.register(ComputeProfileEntity, 'All')
 class ShowAllComputeProfiles(NavigateStep):
     """Navigate to All Compute Profiles page"""
+
     VIEW = ComputeProfilesView
 
     def step(self, *args, **kwargs):
@@ -62,6 +63,7 @@ class ShowAllComputeProfiles(NavigateStep):
 @navigator.register(ComputeProfileEntity, 'New')
 class AddNewComputeProfile(NavigateStep):
     """Navigate to Create Compute Profile page"""
+
     VIEW = ComputeProfileCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -77,6 +79,7 @@ class RenameComputeProfile(NavigateStep):
     Args:
         entity_name: name of the compute profile to be renamed
     """
+
     VIEW = ComputeProfileRenameView
 
     def am_i_here(self, *args, **kwargs):
@@ -88,8 +91,7 @@ class RenameComputeProfile(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
-        self.parent.table.row(
-            name=entity_name)['Actions'].widget.fill('Rename')
+        self.parent.table.row(name=entity_name)['Actions'].widget.fill('Rename')
 
 
 @navigator.register(ComputeProfileEntity, 'List')

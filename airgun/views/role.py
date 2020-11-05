@@ -17,13 +17,12 @@ class RolesView(BaseLoggedInView, SearchableViewMixin):
         column_widgets={
             'Name': Text('./span/a'),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class RoleEditView(BaseLoggedInView):
@@ -36,25 +35,22 @@ class RoleEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Roles'
-                and self.breadcrumb.read().startswith('Edit ')
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Roles'
+            and self.breadcrumb.read().startswith('Edit ')
         )
 
 
 class RoleCreateView(RoleEditView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Roles'
-                and self.breadcrumb.read() == 'Create Role'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Roles'
+            and self.breadcrumb.read() == 'Create Role'
         )
 
 

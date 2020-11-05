@@ -8,7 +8,6 @@ from airgun.views.rhsso_login import RhssoTwoFactorSuccessView
 
 
 class RHSSOLoginEntity(BaseEntity):
-
     def login(self, values, external_login=False):
         if external_login:
             view = RhssoExternalLogoutView(self.browser)

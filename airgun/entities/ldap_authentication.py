@@ -48,8 +48,7 @@ class LDAPAuthenticationEntity(BaseEntity):
     def delete(self, entity_name):
         """Delete corresponding LDAP Authentication source"""
         view = self.navigate_to(self, 'All')
-        view.table.row(name=entity_name)['Actions'].widget.click(
-            handle_alert=True)
+        view.table.row(name=entity_name)['Actions'].widget.click(handle_alert=True)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -70,6 +69,7 @@ class LDAPAuthenticationEntity(BaseEntity):
 @navigator.register(LDAPAuthenticationEntity, 'All')
 class ShowAllLDAPSources(NavigateStep):
     """Navigate to All LDAP Authentication sources screen."""
+
     VIEW = LDAPAuthenticationsView
 
     def step(self, *args, **kwargs):
@@ -79,6 +79,7 @@ class ShowAllLDAPSources(NavigateStep):
 @navigator.register(LDAPAuthenticationEntity, 'New')
 class AddNewLDAPSource(NavigateStep):
     """Navigate to Create LDAP Authentication screen."""
+
     VIEW = LDAPAuthenticationCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -91,9 +92,10 @@ class AddNewLDAPSource(NavigateStep):
 class EditLDAPSource(NavigateStep):
     """Navigate to Edit LDAP Authentication screen.
 
-        Args:
-            entity_name: name of LDAP Authenication source
+    Args:
+        entity_name: name of LDAP Authenication source
     """
+
     VIEW = LDAPAuthenticationEditView
 
     def prerequisite(self, *args, **kwargs):

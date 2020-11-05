@@ -23,15 +23,17 @@ class ErrataEntity(BaseEntity):
         :rtype: list
         """
         view = self.navigate_to(self, 'All')
-        return view.search(
-            value,
-            applicable=applicable,
-            installable=installable,
-            repo=repo
-        )
+        return view.search(value, applicable=applicable, installable=installable, repo=repo)
 
-    def read(self, entity_name, applicable=False, installable=False, repo=None,
-             environment=None, widget_names=None):
+    def read(
+        self,
+        entity_name,
+        applicable=False,
+        installable=False,
+        repo=None,
+        environment=None,
+        widget_names=None,
+    ):
         """Read errata details.
 
         :param str entity_name: errata id or title
@@ -100,6 +102,7 @@ class ErrataEntity(BaseEntity):
 @navigator.register(ErrataEntity, 'All')
 class ShowAllErratum(NavigateStep):
     """Navigate to All Erratum screen."""
+
     VIEW = ErratumView
 
     def step(self, *args, **kwargs):
@@ -110,14 +113,15 @@ class ShowAllErratum(NavigateStep):
 class ErrataDetails(NavigateStep):
     """Navigate to Errata details page.
 
-        Args:
-            entity_name: id or title of errata
+    Args:
+        entity_name: id or title of errata
 
-        Optional Args:
-            applicable: whether to filter errata by only applicable ones
-            installable: whether to filter errata by only installable ones
-            repo: name of repository to filter errata by
+    Optional Args:
+        applicable: whether to filter errata by only applicable ones
+        installable: whether to filter errata by only installable ones
+        repo: name of repository to filter errata by
     """
+
     VIEW = ErrataDetailsView
 
     def prerequisite(self, *args, **kwargs):
@@ -128,12 +132,7 @@ class ErrataDetails(NavigateStep):
         applicable = kwargs.get('applicable')
         installable = kwargs.get('installable')
         repo = kwargs.get('repo')
-        self.parent.search(
-            entity_name,
-            applicable=applicable,
-            installable=installable,
-            repo=repo
-        )
+        self.parent.search(entity_name, applicable=applicable, installable=installable, repo=repo)
         row_filter = {'title': entity_name}
         if re.search(r'\w{3,4}[:-]\d{4}[-:]\d{4}', entity_name):
             row_filter = {'errata_id': entity_name}

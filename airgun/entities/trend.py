@@ -71,6 +71,7 @@ class TrendEntity(BaseEntity):
 @navigator.register(TrendEntity, 'All')
 class ShowAllTrends(NavigateStep):
     """Navigate to All Trends screen."""
+
     VIEW = TrendsView
 
     def step(self, *args, **kwargs):
@@ -80,6 +81,7 @@ class ShowAllTrends(NavigateStep):
 @navigator.register(TrendEntity, 'New')
 class AddNewTrend(NavigateStep):
     """Navigate to Create new Trend screen."""
+
     VIEW = TrendCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -92,9 +94,10 @@ class AddNewTrend(NavigateStep):
 class EditTrend(NavigateStep):
     """Navigate to Edit Trend screen.
 
-        Args:
-            entity_name: name of the trend
+    Args:
+        entity_name: name of the trend
     """
+
     VIEW = TrendEditView
 
     def prerequisite(self, *args, **kwargs):

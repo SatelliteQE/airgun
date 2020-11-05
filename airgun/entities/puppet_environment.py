@@ -56,6 +56,7 @@ class PuppetEnvironmentEntity(BaseEntity):
 @navigator.register(PuppetEnvironmentEntity, 'All')
 class ShowAllPuppetEnvironmentsView(NavigateStep):
     """Navigate to All Puppet Environment screen."""
+
     VIEW = PuppetEnvironmentTableView
 
     def step(self, *args, **kwargs):
@@ -65,6 +66,7 @@ class ShowAllPuppetEnvironmentsView(NavigateStep):
 @navigator.register(PuppetEnvironmentEntity, 'New')
 class AddNewPuppetEnvironmentView(NavigateStep):
     """Navigate to Create Puppet Environment screen."""
+
     VIEW = PuppetEnvironmentCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -77,9 +79,10 @@ class AddNewPuppetEnvironmentView(NavigateStep):
 class EditPuppetEnvironmentView(NavigateStep):
     """Navigate to Edit Puppet Environment screen.
 
-        Args:
-            entity_name: name of puppet environment
+    Args:
+        entity_name: name of puppet environment
     """
+
     VIEW = PuppetEnvironmentCreateView
 
     def prerequisite(self, *args, **kwargs):
@@ -94,6 +97,7 @@ class EditPuppetEnvironmentView(NavigateStep):
 @navigator.register(PuppetEnvironmentEntity, 'Import')
 class ImportPuppetEnvironmentView(NavigateStep):
     """Navigate to Import Puppet Environment screen."""
+
     VIEW = PuppetEnvironmentImportView
 
     prerequisite = NavigateToSibling('All')

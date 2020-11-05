@@ -21,6 +21,7 @@ class ItemValueList(Widget):
                 <h4>5</h4>
             </li>
     """
+
     LABELS = ".//li/a[@class='dashboard-links']"
     LABEL = ".//li/a[@class='dashboard-links'][normalize-space(.)='{}']"
     VALUE = ".//h4[preceding-sibling::a[contains(., '{}')]]"
@@ -38,14 +39,14 @@ class ItemValueList(Widget):
 
     def fill(self, value):
         """Click on specific criteria from the widget list"""
-        self.browser.click(
-            self.browser.element(self.LABEL.format(value)))
+        self.browser.click(self.browser.element(self.LABEL.format(value)))
 
 
 class TotalCount(Widget):
     """Return total hosts count from Host Configuration Status type of
     widgets
     """
+
     total_count = Text(".//h4[@class='total']")
 
     def read(self):
@@ -58,12 +59,15 @@ class TotalCount(Widget):
 
 class AutoRefresh(Widget):
     """Widget refer to auto refresh functionality on dashboard"""
+
     AUTO_REFRESH = "//a[contains(@href, '/?auto_refresh')]"
 
     def read(self):
         """Return whether functionality is enabled or disabled"""
-        if self.browser.element(self.AUTO_REFRESH).get_attribute(
-                'data-original-title') == 'Auto refresh on':
+        if (
+            self.browser.element(self.AUTO_REFRESH).get_attribute('data-original-title')
+            == 'Auto refresh on'
+        ):
             return True
         return False
 
@@ -81,8 +85,7 @@ class DashboardView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
     def search(self, query):
         """Return whole dashboard view as a result of a search
@@ -116,12 +119,10 @@ class DashboardView(BaseLoggedInView):
 
         def fill(self, values):
             if 'state' not in values or 'result' not in values:
-                raise ValueError(
-                    'both state and result values have to be provided')
-            self.states.row(
-                state=values['state'],
-                result=values['result']
-            )['No. of Tasks'].widget.click()
+                raise ValueError('both state and result values have to be provided')
+            self.states.row(state=values['state'], result=values['result'])[
+                'No. of Tasks'
+            ].widget.click()
 
     @View.nested
     class HostConfigurationChart(View):
@@ -131,10 +132,7 @@ class DashboardView(BaseLoggedInView):
     @View.nested
     class ContentViews(View):
         ROOT = ".//li[@data-name='Content Views']"
-        content_views = SatTable(
-            './/table',
-            column_widgets={'Content View': Text('./a')}
-        )
+        content_views = SatTable('.//table', column_widgets={'Content View': Text('./a')})
 
     @View.nested
     class SyncOverview(View):
@@ -144,16 +142,12 @@ class DashboardView(BaseLoggedInView):
     @View.nested
     class HostSubscription(View):
         ROOT = ".//li[@data-name='Host Subscription Status']"
-        subscriptions = SatTable(
-            './/table',
-            column_widgets={0: Text('./a')}
-        )
+        subscriptions = SatTable('.//table', column_widgets={0: Text('./a')})
 
         def fill(self, values):
             if 'type' not in values:
                 raise ValueError('You need provide subscription task type')
-            self.subscriptions.row((
-                0, 'contains', '{}'.format(values['type'])))[0].widget.click()
+            self.subscriptions.row((0, 'contains', str(values['type'])))[0].widget.click()
 
     @View.nested
     class SubscriptionStatus(View):
@@ -178,16 +172,12 @@ class DashboardView(BaseLoggedInView):
     @View.nested
     class LatestFailedTasks(View):
         ROOT = ".//li[@data-name='Latest Warning/Error Tasks']"
-        tasks = SatTable(
-            './/table',
-            column_widgets={'Name': Text('./a')}
-        )
+        tasks = SatTable('.//table', column_widgets={'Name': Text('./a')})
 
         def fill(self, values):
             if 'name' not in values:
                 raise ValueError('You need provide name of the task')
-            self.tasks.row(
-                name=values['name'])['Name'].widget.click()
+            self.tasks.row(name=values['name'])['Name'].widget.click()
 
     @View.nested
     class VirtWhoConfigStatus(View):

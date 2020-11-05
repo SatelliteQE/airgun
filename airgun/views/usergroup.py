@@ -16,17 +16,16 @@ class UserGroupsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='User Groups']")
     new = Text("//a[contains(@href, '/usergroups/new')]")
     table = Table(
-            './/table',
-            column_widgets={
-                'Name': Text('./a'),
-                'Actions': Text('.//a[@data-method="delete"]'),
-            }
+        './/table',
+        column_widgets={
+            'Name': Text('./a'),
+            'Actions': Text('.//a[@data-method="delete"]'),
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-                self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class UserGroupDetailsView(BaseLoggedInView):
@@ -35,8 +34,7 @@ class UserGroupDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-                self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'User Groups'
@@ -63,7 +61,7 @@ class UserGroupDetailsView(BaseLoggedInView):
             './/table',
             column_widgets={
                 'Actions': Text('.//a[contains(@href, "refresh")]'),
-            }
+            },
         )
 
         add_external_user_group = Text('.//a[@data-association="external_usergroups"]')
@@ -85,11 +83,9 @@ class UserGroupDetailsView(BaseLoggedInView):
 
 
 class UserGroupCreateView(UserGroupDetailsView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-                self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'User Groups'

@@ -13,16 +13,17 @@ from airgun.widgets import (
 def _wait_for_spinner(widget):
     """Wait for any spinner to disappear from widget"""
     wait_for(
-        lambda: widget.is_displayed and not widget.browser.elements(
-            ".//div[contains(@class, 'spinner')]", parent=widget),
+        lambda: widget.is_displayed
+        and not widget.browser.elements(".//div[contains(@class, 'spinner')]", parent=widget),
         timeout=60,
         delay=1,
-        logger=widget.logger
+        logger=widget.logger,
     )
 
 
 class AvailableRepositoryItem(GenericLocatorWidget):
     """The widget representation of Available repository item of an Available repository set."""
+
     ENABLE_BUTTON = './/button'
     TEXT = './/span'
 
@@ -45,6 +46,7 @@ class AvailableRepositoryItem(GenericLocatorWidget):
 
 class AvailableRepositorySetWidget(GenericLocatorWidget):
     """The widget representation of Available repository set item."""
+
     ITEM = AvailableRepositoryItem
     EXPAND_BUTTON = ".//div[contains(@class, 'expand')]"
     NAME = ".//div[contains(@class, 'item-heading')]"
@@ -83,7 +85,7 @@ class AvailableRepositorySetWidget(GenericLocatorWidget):
         if self.ITEM:
             self.expand()
             return [
-                AvailableRepositoryItem(self, '{0}[{1}]'.format(self.ITEMS, index + 1))
+                AvailableRepositoryItem(self, f'{self.ITEMS}[{index + 1}]')
                 for index, _ in enumerate(self.browser.elements(self.ITEMS, parent=self))
             ]
         return []
@@ -107,12 +109,12 @@ class AvailableRepositorySetWidget(GenericLocatorWidget):
                 arch_version_item.enable()
                 break
         else:
-            raise ValueError(
-                'Repository "{0}" was not found in repository set "{1}"'.format(item, self.name))
+            raise ValueError(f'Repository "{item}" was not found in repository set "{self.name}"')
 
 
 class EnabledRepositoryWidget(AvailableRepositorySetWidget):
     """The widget representation of Enabled repository item."""
+
     ITEM = None
     DISABLE_BUTTON = ".//button"
 
@@ -124,6 +126,7 @@ class EnabledRepositoryWidget(AvailableRepositorySetWidget):
 
 class RepositorySearchCategory(ActionsDropdown):
     """The category search selector, eg: Available, Enabled or Both."""
+
     button = Text("./button")
 
     def fill(self, item):
@@ -134,6 +137,7 @@ class RepositorySearchCategory(ActionsDropdown):
 
 class RepositorySearchTypes(ActionsDropdown):
     """Repository content types dropdown for repository search."""
+
     button = Text("./button")
 
     def close(self):
@@ -159,10 +163,10 @@ class RepositorySearchTypes(ActionsDropdown):
         available_items = self.items
         self.open()
         for item in available_items:
-            if ((item in items and item not in selected_items)
-                    or (item not in items and item in selected_items)):
-                self.browser.element(
-                    self.ITEM_LOCATOR.format(item), parent=self).click()
+            if (item in items and item not in selected_items) or (
+                item not in items and item in selected_items
+            ):
+                self.browser.element(self.ITEM_LOCATOR.format(item), parent=self).click()
         self.close()
 
     def fill(self, items):
@@ -185,15 +189,15 @@ class RepositoryCategoryView(View):
                 </div>
             </div>
     """
+
     ITEMS = "./div/div[contains(@class, 'list-group-item')]"
     ITEM_WIDGET = None
 
     def items(self, name=None, label=None):
         items = []
         for index, _ in enumerate(self.browser.elements(self.ITEMS, parent=self)):
-            item = self.ITEM_WIDGET(self, '{0}[{1}]'.format(self.ITEMS, index + 1))
-            if (name is not None and item.name != name
-                    or label is not None and item.label != label):
+            item = self.ITEM_WIDGET(self, f'{self.ITEMS}[{index + 1}]')
+            if name is not None and item.name != name or label is not None and item.label != label:
                 continue
             items.append(item)
         return items
@@ -204,6 +208,7 @@ class RepositoryCategoryView(View):
 
 class RedHatRepositoriesView(BaseLoggedInView):
     """The main Red Hat repositories view."""
+
     title = Text("//h1[contains(., 'Red Hat Repositories')]")
     search_category = RepositorySearchCategory(".//div[button[@id='search-list-select']]")
     search_box = TextInput(id='downshift-0-input')
@@ -234,8 +239,9 @@ class RedHatRepositoriesView(BaseLoggedInView):
             types = []
         supported_categories = ['Available', 'Enabled', 'Both']
         if category not in supported_categories:
-            raise ValueError('category "{0}" not supported, please choose from {1}'.format(
-                category, supported_categories))
+            raise ValueError(
+                f'category "{category}" not supported, please choose from {supported_categories}'
+            )
         if self.search_clear.is_displayed:
             self.search_clear.click()
         self.search_category.fill(category)
@@ -251,5 +257,4 @@ class RedHatRepositoriesView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None

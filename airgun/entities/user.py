@@ -47,8 +47,7 @@ class UserEntity(BaseEntity):
         """Remove existing user entity"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(username=entity_name)['Actions'].widget.click(
-            handle_alert=True)
+        view.table.row(username=entity_name)['Actions'].widget.click(handle_alert=True)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -56,6 +55,7 @@ class UserEntity(BaseEntity):
 @navigator.register(UserEntity, 'All')
 class ShowAllUsers(NavigateStep):
     """Navigate to All Users page"""
+
     VIEW = UsersView
 
     def step(self, *args, **kwargs):
@@ -65,6 +65,7 @@ class ShowAllUsers(NavigateStep):
 @navigator.register(UserEntity, 'New')
 class AddNewUser(NavigateStep):
     """Navigate to Create User page"""
+
     VIEW = UserCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -80,6 +81,7 @@ class EditUser(NavigateStep):
     Args:
         entity_name: name of the user
     """
+
     VIEW = UserDetailsView
 
     def prerequisite(self, *args, **kwargs):

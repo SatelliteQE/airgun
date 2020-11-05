@@ -23,24 +23,14 @@ class CloudInventoryEntity(BaseEntity):
         view.searchbox.search(entity_name)
         entity_item = next(view.inventory_list[entity_name])
         entity_item.browser.click(entity_item.generating.restart, ignore_ajax=True)
-        wait_for(
-            lambda: entity_item.status == 'idle',
-            timeout=180,
-            delay=1,
-            logger=view.logger
-        )
+        wait_for(lambda: entity_item.status == 'idle', timeout=180, delay=1, logger=view.logger)
 
     def download_report(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.searchbox.search(entity_name)
         entity_item = next(view.inventory_list[entity_name])
         entity_item.browser.click(entity_item.uploading.download_report, ignore_ajax=True)
-        wait_for(
-            lambda: entity_item.status == 'idle',
-            timeout=180,
-            delay=1,
-            logger=view.logger
-        )
+        wait_for(lambda: entity_item.status == 'idle', timeout=180, delay=1, logger=view.logger)
         return self.browser.save_downloaded_file()
 
     def update(self, values):
@@ -52,6 +42,7 @@ class CloudInventoryEntity(BaseEntity):
 @navigator.register(CloudInventoryEntity, 'All')
 class ShowCloudInventoryListView(NavigateStep):
     """Navigate to main Inventory Upload page"""
+
     VIEW = CloudInventoryListView
 
     def step(self, *args, **kwargs):

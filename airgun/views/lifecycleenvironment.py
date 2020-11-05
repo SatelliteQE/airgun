@@ -24,34 +24,32 @@ class LCEView(BaseLoggedInView, ParametrizedView):
         "and contains(@href, 'new') and contains(@class, 'btn-primary')]"
     )
     edit_parent_env = Text(
-        "//table[contains(@class, 'info-blocks')]"
-        "//a[contains(@ui-sref, 'environment.details')]"
+        "//table[contains(@class, 'info-blocks')]//a[contains(@ui-sref, 'environment.details')]"
     )
     parent_env_cvs_count = Text(
-        "//table[contains(@class, 'info-blocks')]"
-        "//td[span[contains(., 'Content Views')]]/div")
+        "//table[contains(@class, 'info-blocks')]//td[span[contains(., 'Content Views')]]/div"
+    )
     parent_env_products_count = Text(
-        "//table[contains(@class, 'info-blocks')]"
-        "//td[span[contains(., 'Products')]]/div")
+        "//table[contains(@class, 'info-blocks')]//td[span[contains(., 'Products')]]/div"
+    )
     parent_env_products_errata = Text(
-        "//table[contains(@class, 'info-blocks')]"
-        "//td[span[contains(., 'Errata')]]/div")
+        "//table[contains(@class, 'info-blocks')]//td[span[contains(., 'Errata')]]/div"
+    )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
     @View.nested
     class lce(ParametrizedView):
+        """Parametrized view for the lifecycle environement, takes an LCE name on instantiation"""
+
         ROOT = ParametrizedLocator(
-            ".//div[@ng-repeat='path in paths']"
-            "[table//th/a[normalize-space(.)='{lce_name}']]"
+            ".//div[@ng-repeat='path in paths'][table//th/a[normalize-space(.)='{lce_name}']]"
         )
         PARAMETERS = ('lce_name',)
         LAST_ENV = "//div[@ng-repeat='path in paths']//table//th[last()]"
-        current_env = Text(ParametrizedLocator(
-            ".//a[normalize-space(.)='{lce_name}']"))
+        current_env = Text(ParametrizedLocator(".//a[normalize-space(.)='{lce_name}']"))
         envs_table = Table(locator=".//table")
         new_child = Text(".//a[contains(@href, '/lifecycle_environments/')]")
 
@@ -61,8 +59,7 @@ class LCEView(BaseLoggedInView, ParametrizedView):
             LCE names (last available environment is used as a name). It's
             required for :meth:`read` to work properly.
             """
-            return [
-                (element.text,) for element in browser.elements(cls.LAST_ENV)]
+            return [(element.text,) for element in browser.elements(cls.LAST_ENV)]
 
         def read(self):
             """Returns content views and count hosts count per each available
@@ -79,8 +76,7 @@ class LCEView(BaseLoggedInView, ParametrizedView):
             available_envs = self.envs_table.headers[1:]
             lce_metric_names = [row[0].text for row in self.envs_table]
             for column_name in available_envs:
-                metric_values = (
-                    int(row[column_name].text) for row in self.envs_table)
+                metric_values = (int(row[column_name].text) for row in self.envs_table)
                 result[column_name] = {}
                 for row_name in lce_metric_names:
                     result[column_name][row_name] = next(metric_values)
@@ -96,12 +92,11 @@ class LCECreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Environments List'
-                and self.breadcrumb.read() == 'New Environment'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Environments List'
+            and self.breadcrumb.read() == 'New Environment'
         )
 
 
@@ -111,12 +106,11 @@ class LCEEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Environments'
-                and self.breadcrumb.read() != 'New Environment'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Environments'
+            and self.breadcrumb.read() != 'New Environment'
         )
 
     @View.nested

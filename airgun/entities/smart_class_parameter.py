@@ -32,6 +32,7 @@ class SmartClassParameterEntity(BaseEntity):
 @navigator.register(SmartClassParameterEntity, 'All')
 class ShowAllSmartClassParameters(NavigateStep):
     """Navigate to All Smart Class Parameter screen."""
+
     VIEW = SmartClassParametersView
 
     def step(self, *args, **kwargs):
@@ -42,9 +43,10 @@ class ShowAllSmartClassParameters(NavigateStep):
 class EditSmartClassParameter(NavigateStep):
     """Navigate to Edit Smart Class Parameter screen.
 
-        Args:
-            entity_name: name of smart class parameter
+    Args:
+        entity_name: name of smart class parameter
     """
+
     VIEW = SmartClassParameterEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -53,5 +55,4 @@ class EditSmartClassParameter(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
-        self.parent.table.row(
-            parameter=entity_name)['Parameter'].widget.click()
+        self.parent.table.row(parameter=entity_name)['Parameter'].widget.click()

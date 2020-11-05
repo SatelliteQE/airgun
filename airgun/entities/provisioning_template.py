@@ -75,6 +75,7 @@ class ProvisioningTemplateEntity(BaseEntity):
 @navigator.register(ProvisioningTemplateEntity, 'All')
 class ShowAllProvisioningTemplates(NavigateStep):
     """Navigate to all Provisioning Templates screen."""
+
     VIEW = ProvisioningTemplatesView
 
     def step(self, *args, **kwargs):
@@ -84,6 +85,7 @@ class ShowAllProvisioningTemplates(NavigateStep):
 @navigator.register(ProvisioningTemplateEntity, 'New')
 class AddNewProvisioningTemplate(NavigateStep):
     """Navigate to Create new Provisioning Template screen."""
+
     VIEW = ProvisioningTemplateCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -96,9 +98,10 @@ class AddNewProvisioningTemplate(NavigateStep):
 class EditProvisioningTemplate(NavigateStep):
     """Navigate to Edit Provisioning Template screen.
 
-        Args:
-            entity_name: name of provisioning template to edit
+    Args:
+        entity_name: name of provisioning template to edit
     """
+
     VIEW = ProvisioningTemplateDetailsView
 
     def prerequisite(self, *args, **kwargs):
@@ -114,9 +117,10 @@ class EditProvisioningTemplate(NavigateStep):
 class CloneProvisioningTemplate(NavigateStep):
     """Navigate to Create Provisioning Template screen for cloned entity
 
-        Args:
-            entity_name: name of provisioning template to clone
+    Args:
+        entity_name: name of provisioning template to clone
     """
+
     VIEW = ProvisioningTemplateCreateView
 
     def prerequisite(self, *args, **kwargs):

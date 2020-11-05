@@ -20,13 +20,12 @@ class SCAPContentsView(BaseLoggedInView, SearchableViewMixin):
         column_widgets={
             'Title': Text('./a'),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class SCAPContentCreateView(BaseLoggedInView):
@@ -50,8 +49,7 @@ class SCAPContentCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.create_form, exception=False) is not None
+        return self.browser.wait_for_element(self.create_form, exception=False) is not None
 
 
 class SCAPContentEditView(SCAPContentCreateView):
@@ -62,15 +60,10 @@ class SCAPContentEditView(SCAPContentCreateView):
     class file_upload(SatTab):
         TAB_NAME = 'File Upload'
         title = TextInput(id='scap_content_title')
-        uploaded_scap_file = Text(
-            locator="//label[@for='scap_file']/following-sibling::div/b")
+        uploaded_scap_file = Text(locator="//label[@for='scap_file']/following-sibling::div/b")
         scap_file = FileInput(id='scap_content_scap_file')
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
-        return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Scap Contents'
-        )
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Scap Contents'

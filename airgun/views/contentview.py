@@ -31,8 +31,7 @@ class ContentViewTableView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ContentViewCreateView(BaseLoggedInView):
@@ -47,8 +46,7 @@ class ContentViewCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'
@@ -64,8 +62,7 @@ class ContentViewCopyView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'
@@ -80,8 +77,7 @@ class ContentViewRemoveView(BaseLoggedInView):
     conflicts = Text("//div[@ng-show='conflictingVersions.length > 0']")
     table = Table('.//table')
     remove = Text(".//button[@ng-click='delete()']")
-    cancel = Text(
-        ".//a[contains(@class, 'btn')][@ui-sref='content-view.versions']")
+    cancel = Text(".//a[contains(@class, 'btn')][@ui-sref='content-view.versions']")
 
     @property
     def conflicts_present(self):
@@ -89,8 +85,7 @@ class ContentViewRemoveView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'
@@ -108,8 +103,7 @@ class ContentViewEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and len(self.breadcrumb.locations) <= 3
@@ -134,8 +128,7 @@ class ContentViewEditView(BaseLoggedInView):
             column_widgets={
                 'Version': Text('.//a'),
                 'Status': PublishPromoteProgressBar(),
-                'Actions': ActionsDropdown(
-                    './div[contains(@class, "btn-group")]')
+                'Actions': ActionsDropdown('./div[contains(@class, "btn-group")]'),
             },
         )
 
@@ -150,8 +143,7 @@ class ContentViewEditView(BaseLoggedInView):
             """
             search_phrase = version_name
             if version_name.startswith('V') and '.' in version_name:
-                search_phrase = 'version = {}'.format(
-                    version_name.split()[1].split('.')[0])
+                search_phrase = f'version = {version_name.split()[1].split(".")[0]}'
             self.searchbox.search(search_phrase)
             return self.table.read()
 
@@ -188,8 +180,7 @@ class ContentViewEditView(BaseLoggedInView):
     class puppet_modules(SatTab):
         TAB_NAME = 'Puppet Modules'
 
-        add_new_module = Text(
-            './/button[@ui-sref="content-view.puppet-modules.names"]')
+        add_new_module = Text('.//button[@ui-sref="content-view.puppet-modules.names"]')
         table = Table('.//table')
 
     @View.nested
@@ -210,15 +201,12 @@ class AddNewPuppetModuleView(BaseLoggedInView, SearchableViewMixin):
     breadcrumb = BreadCrumb()
     table = Table(
         locator='.//table',
-        column_widgets={
-            'Actions': Text('./button[@ng-click="selectVersion(item.name)"]')
-        }
+        column_widgets={'Actions': Text('./button[@ng-click="selectVersion(item.name)"]')},
     )
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'
@@ -230,15 +218,12 @@ class SelectPuppetModuleVersionView(BaseLoggedInView, SearchableViewMixin):
     breadcrumb = BreadCrumb()
     table = Table(
         locator='.//table',
-        column_widgets={
-            'Actions': Text('./button[@ng-click="selectVersion(item)"]')
-        }
+        column_widgets={'Actions': Text('./button[@ng-click="selectVersion(item)"]')},
     )
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'
@@ -256,8 +241,7 @@ class ContentViewVersionPublishView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'
@@ -289,8 +273,7 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and len(self.breadcrumb.locations) > 3
@@ -318,10 +301,7 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
 
     @View.nested
     class errata(SatSecondaryTab, SearchableViewMixin):
-        table = Table(
-            locator='.//table',
-            column_widgets={'Title': Text('./a')}
-        )
+        table = Table(locator='.//table', column_widgets={'Title': Text('./a')})
 
     @View.nested
     class puppet_modules(SatSecondaryTab, SearchableViewMixin):
@@ -340,13 +320,11 @@ class ContentViewVersionPromoteView(BaseLoggedInView):
     description = TextInput(id='description')
     force_metadata_regeneration = Checkbox(id='forceMetadataRegeneration')
     promote = Text('//button[contains(@ng-click, "verifySelection()")]')
-    cancel = Text(
-        '//a[contains(@class, "btn")][@ui-sref="content-view.versions"]')
+    cancel = Text('//a[contains(@class, "btn")][@ui-sref="content-view.versions"]')
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'
@@ -361,17 +339,15 @@ class ContentViewVersionRemoveView(BaseLoggedInView):
         locator='.//table',
         column_widgets={
             0: Checkbox(locator="./input[@type='checkbox']"),
-        }
+        },
     )
-    completely = Checkbox(
-        locator=".//input[@ng-model='deleteOptions.deleteArchive']")
+    completely = Checkbox(locator=".//input[@ng-model='deleteOptions.deleteArchive']")
     next = Text(".//button[@ng-click='processSelection()']")
     cancel = Text(".//button[normalize-space(.)='Cancel']")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'
@@ -391,8 +367,7 @@ class ContentViewVersionRemoveConfirmationView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'

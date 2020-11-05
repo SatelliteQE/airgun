@@ -31,18 +31,21 @@ class TemplatesList(View):
                      <span>Kickstart default PXEGrub2</span>
 
     """
-    SELECT = "//label[@for='provisioning_template_id'][contains(.,'%s')]" \
-             "/following-sibling::div/div[contains(@id, 'default_templates')]"
+
+    SELECT = (
+        "//label[@for='provisioning_template_id'][contains(.,'{}')]"
+        "/following-sibling::div/div[contains(@id, 'default_templates')]"
+    )
     TITLES = "//label[@for='provisioning_template_id']"
 
     @property
     def selects(self):
         """Get dictionary of currently assigned templates for OS"""
         selects = {}
-        for title in self.browser.elements(
-                self.TITLES, check_visibility=True):
+        for title in self.browser.elements(self.TITLES, check_visibility=True):
             selects[title.text] = FilteredDropdown(
-                self, locator=self.SELECT % title.text, logger=self.logger)
+                self, locator=self.SELECT.format(title.text), logger=self.logger
+            )
         return selects
 
     def read(self):
@@ -73,13 +76,12 @@ class OperatingSystemsView(BaseLoggedInView, SearchableViewMixin):
         column_widgets={
             'Title': Text('./a'),
             'Actions': Text('.//a[@data-method="delete"]'),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class OperatingSystemEditView(BaseLoggedInView):
@@ -88,8 +90,7 @@ class OperatingSystemEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Operating Systems'
@@ -102,8 +103,7 @@ class OperatingSystemEditView(BaseLoggedInView):
         name = TextInput(locator=".//input[@id='operatingsystem_name']")
         major = TextInput(locator=".//input[@id='operatingsystem_major']")
         minor = TextInput(locator=".//input[@id='operatingsystem_minor']")
-        description = TextInput(
-            locator=".//input[@id='operatingsystem_description']")
+        description = TextInput(locator=".//input[@id='operatingsystem_description']")
         family = FilteredDropdown(id='operatingsystem_family')
         password_hash = FilteredDropdown(id='operatingsystem_password_hash')
         architectures = MultiSelect(id='ms-operatingsystem_architecture_ids')
@@ -129,11 +129,9 @@ class OperatingSystemEditView(BaseLoggedInView):
 
 
 class OperatingSystemCreateView(OperatingSystemEditView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Operating Systems'

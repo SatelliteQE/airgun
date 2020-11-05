@@ -38,7 +38,8 @@ class JobTemplateEntity(BaseEntity):
         :param widget_names: Read only the widgets in widget_names (Optional)
         """
         view = self.navigate_to(
-            self, 'Read', entity_name=entity_name, editor_view_option=editor_view_option)
+            self, 'Read', entity_name=entity_name, editor_view_option=editor_view_option
+        )
         return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
@@ -58,7 +59,7 @@ class JobTemplateEntity(BaseEntity):
     def delete(self, entity_name):
         """Delete job template"""
         view = self.navigate_to(self, 'All')
-        view.search('name="{}"'.format(entity_name))
+        view.search(f'name="{entity_name}"')
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
         view.flash.assert_no_error()
@@ -68,6 +69,7 @@ class JobTemplateEntity(BaseEntity):
 @navigator.register(JobTemplateEntity, 'All')
 class ShowAllTemplates(NavigateStep):
     """Navigate to All Job Templates screen."""
+
     VIEW = JobTemplatesView
 
     def step(self, *args, **kwargs):
@@ -77,6 +79,7 @@ class ShowAllTemplates(NavigateStep):
 @navigator.register(JobTemplateEntity, 'New')
 class AddNewTemplate(NavigateStep):
     """Navigate to Create new Job Template screen."""
+
     VIEW = JobTemplateCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -89,9 +92,10 @@ class AddNewTemplate(NavigateStep):
 class EditTemplate(NavigateStep):
     """Navigate to Edit Job Template screen.
 
-         Args:
-            entity_name: name of job template
+    Args:
+       entity_name: name of job template
     """
+
     VIEW = JobTemplateEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -99,7 +103,7 @@ class EditTemplate(NavigateStep):
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
-        self.parent.search('name="{}"'.format(entity_name))
+        self.parent.search(f'name="{entity_name}"')
         self.parent.table.row(name=entity_name)['Name'].widget.click()
 
 
@@ -107,10 +111,10 @@ class EditTemplate(NavigateStep):
 class ReadTemplate(EditTemplate):
     """Navigate to Read Job Template screen.
 
-         Args:
-            entity_name: name of job template
-            editor_view_option: The edit view option to set.
-        """
+    Args:
+       entity_name: name of job template
+       editor_view_option: The edit view option to set.
+    """
 
     def post_navigate(self, _tries, *args, **kwargs):
         editor_view_option = kwargs.get('editor_view_option')
@@ -122,9 +126,10 @@ class ReadTemplate(EditTemplate):
 class CloneTemplate(NavigateStep):
     """Navigate to Clone Job Template screen.
 
-         Args:
-            entity_name: name of job template to be cloned
+    Args:
+       entity_name: name of job template to be cloned
     """
+
     VIEW = JobTemplateCreateView
 
     def prerequisite(self, *args, **kwargs):
@@ -132,5 +137,5 @@ class CloneTemplate(NavigateStep):
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
-        self.parent.search('name="{}"'.format(entity_name))
+        self.parent.search(f'name="{entity_name}"')
         self.parent.table.row(name=entity_name)['Actions'].widget.fill('Clone')

@@ -22,17 +22,20 @@ from airgun.widgets import LimitInput
 
 
 class ActivationKeysView(BaseLoggedInView, SearchableViewMixin):
+    """View for the ActivationKeys page"""
+
     title = Text("//h2[contains(., 'Activation Keys')]")
     new = Text("//button[contains(@href, '/activation_keys/new')]")
     table = Table('.//table', column_widgets={'Name': Text('./a')})
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ActivationKeyCreateView(BaseLoggedInView):
+    """View for the ActivationKeys Create page"""
+
     breadcrumb = BreadCrumb()
     name = TextInput(id='name')
     hosts_limit = LimitInput()
@@ -43,24 +46,24 @@ class ActivationKeyCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Activation Keys'
-                and self.breadcrumb.read() == 'New Activation Key'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Activation Keys'
+            and self.breadcrumb.read() == 'New Activation Key'
         )
 
 
 class ActivationKeyEditView(BaseLoggedInView):
+    """View for the ActivationKeys Edit page"""
+
     breadcrumb = BreadCrumb()
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Activation Keys'

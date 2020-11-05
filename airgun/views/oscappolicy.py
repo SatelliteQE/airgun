@@ -24,13 +24,12 @@ class SCAPPoliciesView(BaseLoggedInView, SearchableViewMixin):
         column_widgets={
             'Name': Text('./a'),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ScapPolicyRadioGroup(RadioGroup):
@@ -46,6 +45,7 @@ class ScapPolicyRadioGroup(RadioGroup):
         <div>
         <input type="radio" value="ansible" name="policy[deploy_by]" id="policy_deploy_by_ansible">
     """
+
     @property
     def button_names(self):
         return ['ansible', 'puppet', 'manual']
@@ -63,8 +63,7 @@ class SCAPPolicyCreateView(BaseLoggedInView):
         the creation process even, if no location or organization was selected,
         by adding the SCAP policy to Default Location or Organization."""
         if not values.get('organizations.resources.assigned'):
-            values[
-                'organizations.resources.assigned'] = ['Default Organization']
+            values['organizations.resources.assigned'] = ['Default Organization']
 
         if not values.get('locations.resources.assigned'):
             values['locations.resources.assigned'] = ['Default Location']
@@ -72,8 +71,7 @@ class SCAPPolicyCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Policies'
@@ -103,13 +101,10 @@ class SCAPPolicyCreateView(BaseLoggedInView):
     class scap_content(BaseLoggedInView):
         TAB_NAME = 'SCAP Content'
         next_step = Text("//input[contains(@value, 'Next')]")
-        scap_content_resource = FilteredDropdown(
-            id='s2id_policy_scap_content_id')
-        xccdf_profile = FilteredDropdown(
-            id='s2id_policy_scap_content_profile_id')
+        scap_content_resource = FilteredDropdown(id='s2id_policy_scap_content_id')
+        xccdf_profile = FilteredDropdown(id='s2id_policy_scap_content_profile_id')
         tailoring_file = FilteredDropdown(id='s2id_policy_tailoring_file_id')
-        xccdf_profile_tailoring_file = FilteredDropdown(
-            id='s2id_policy_tailoring_file_profile_id')
+        xccdf_profile_tailoring_file = FilteredDropdown(id='s2id_policy_tailoring_file_profile_id')
 
         def after_fill(self, was_change):
             self.next_step.click()
@@ -165,8 +160,7 @@ class SCAPPolicyEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Policies'
@@ -187,11 +181,9 @@ class SCAPPolicyEditView(BaseLoggedInView):
     class scap_content(SatTab):
         TAB_NAME = 'SCAP Content'
         scap_content = FilteredDropdown(id='s2id_policy_scap_content_id')
-        xccdf_profile = FilteredDropdown(
-            id='s2id_policy_scap_content_profile_id')
+        xccdf_profile = FilteredDropdown(id='s2id_policy_scap_content_profile_id')
         tailoring_file = FilteredDropdown(id='s2id_policy_tailoring_file_id')
-        xccdf_profile_tailoring_file = FilteredDropdown(
-            id='s2id_policy_tailoring_file_profile_id')
+        xccdf_profile_tailoring_file = FilteredDropdown(id='s2id_policy_tailoring_file_profile_id')
 
     @View.nested
     class schedule(SatTab):
@@ -229,8 +221,7 @@ class SCAPPolicyDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
     @View.nested
     class HostsBreakdownStatus(View):
@@ -243,4 +234,5 @@ class SCAPPolicyDetailsView(BaseLoggedInView):
         """Refer to information from the middle of the chart in Oscap Policy
         Details View
         """
+
         hosts_breakdown = Text("//div[@id='policy-breakdown-chart']")

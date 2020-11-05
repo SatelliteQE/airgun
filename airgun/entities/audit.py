@@ -16,6 +16,7 @@ class AuditEntity(BaseEntity):
 @navigator.register(AuditEntity, 'All')
 class ShowAllAuditEntries(NavigateStep):
     """Navigate to Audit screen that contains all log entries"""
+
     VIEW = AuditsView
 
     def step(self, *args, **kwargs):

@@ -74,8 +74,7 @@ class DomainEntity(BaseEntity):
         """Delete existing domain entity"""
         view = self.navigate_to(self, 'All')
         self.search(entity_name)
-        view.table.row(description=entity_name)['Actions'].widget.click(
-            handle_alert=True)
+        view.table.row(description=entity_name)['Actions'].widget.click(handle_alert=True)
         view.validations.assert_no_errors()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -84,6 +83,7 @@ class DomainEntity(BaseEntity):
 @navigator.register(DomainEntity, 'All')
 class ShowAllDomains(NavigateStep):
     """Navigate to All Domains page"""
+
     VIEW = DomainListView
 
     def step(self, *args, **kwargs):
@@ -93,6 +93,7 @@ class ShowAllDomains(NavigateStep):
 @navigator.register(DomainEntity, 'New')
 class AddNewDomain(NavigateStep):
     """Navigate to Create Domain page"""
+
     VIEW = DomainCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -108,6 +109,7 @@ class EditDomain(NavigateStep):
     Args:
         entity_name: name of the domain
     """
+
     VIEW = DomainEditView
 
     def prerequisite(self, *args, **kwargs):

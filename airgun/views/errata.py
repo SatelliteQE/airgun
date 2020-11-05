@@ -22,17 +22,12 @@ class ErratumView(BaseLoggedInView):
         column_widgets={
             0: Checkbox(locator=".//input[@type='checkbox']"),
             'Errata ID': Text("./a"),
-        }
+        },
     )
     repo_filter = SatSelect(".//select[@ng-model='repository']")
-    applicable_filter = Checkbox(
-        locator=".//input[@ng-model='showApplicable']")
-    installable_filter = Checkbox(
-        locator=".//input[@ng-model='showInstallable']")
-    apply_errata = Text(
-        ".//button[contains(@class, 'btn-primary')]"
-        "[@ng-click='goToNextStep()']"
-    )
+    applicable_filter = Checkbox(locator=".//input[@ng-model='showApplicable']")
+    installable_filter = Checkbox(locator=".//input[@ng-model='showInstallable']")
+    apply_errata = Text(".//button[contains(@class, 'btn-primary')][@ng-click='goToNextStep()']")
     searchbox = Search()
 
     def search(self, query, applicable=True, installable=False, repo=None):
@@ -54,15 +49,14 @@ class ErratumView(BaseLoggedInView):
             self.repo_filter.fill(repo)
 
         if re.search(r'\w{3,4}[:-]\d{4}[-:]\d{4}', query):
-            query = 'id = {}'.format(query)
+            query = f'id = {query}'
         self.searchbox.search(query)
 
         return self.table.read()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ErrataDetailsView(BaseLoggedInView):
@@ -93,8 +87,7 @@ class ErrataDetailsView(BaseLoggedInView):
     @View.nested
     class content_hosts(SatTab):
         TAB_NAME = 'Content Hosts'
-        environment_filter = SatSelect(
-            ".//select[@ng-model='environmentFilter']")
+        environment_filter = SatSelect(".//select[@ng-model='environmentFilter']")
         searchbox = Search()
         apply = Text(".//button[@ng-click='goToNextStep()']")
         table = SatTable(
@@ -102,7 +95,7 @@ class ErrataDetailsView(BaseLoggedInView):
             column_widgets={
                 0: Checkbox(locator="./input[@type='checkbox']"),
                 'Name': Text("./a"),
-            }
+            },
         )
 
         def search(self, query, environment=None):
@@ -128,7 +121,7 @@ class ErrataDetailsView(BaseLoggedInView):
             column_widgets={
                 'Name': Text("./a"),
                 'Product': Text("./a"),
-            }
+            },
         )
 
         def search(self, query, lce=None, cv=None):
@@ -150,25 +143,25 @@ class ErrataDetailsView(BaseLoggedInView):
     @View.nested
     class packages(SatTab):
         independent_packages = ItemsList(
-            ".//h3[contains(., 'Independent Packages')]/following-sibling::ul")
+            ".//h3[contains(., 'Independent Packages')]/following-sibling::ul"
+        )
         module_stream_packages = ItemsList(
-            ".//h3[contains(., 'Module Stream Packages')]/following-sibling::ul")
+            ".//h3[contains(., 'Module Stream Packages')]/following-sibling::ul"
+        )
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Errata'
-                and len(self.breadcrumb.locations) > 1
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Errata'
+            and len(self.breadcrumb.locations) > 1
         )
 
 
 class ApplyErrataView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    environment_filter = SatSelect(
-        ".//select[@ng-model='environmentFilter']")
+    environment_filter = SatSelect(".//select[@ng-model='environmentFilter']")
     searchbox = Search()
     next_button = Text(".//button[@ng-click='goToNextStep()']")
     table = SatTable(
@@ -176,7 +169,7 @@ class ApplyErrataView(BaseLoggedInView):
         column_widgets={
             0: Checkbox(locator="./input[@type='checkbox']"),
             'Name': Text("./a"),
-        }
+        },
     )
 
     def search(self, query, environment=None):
@@ -194,12 +187,11 @@ class ApplyErrataView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Errata'
-                and self.breadcrumb.read() == 'Select Content Host(s)'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Errata'
+            and self.breadcrumb.read() == 'Select Content Host(s)'
         )
 
 
@@ -209,13 +201,11 @@ class ErrataInstallationConfirmationView(BaseLoggedInView):
 
 
 class ErrataTaskDetailsView(TaskDetailsView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Errata'
-                and len(self.breadcrumb.locations) > 2
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Errata'
+            and len(self.breadcrumb.locations) > 2
         )

@@ -11,7 +11,10 @@ from airgun.views.partitiontable import PartitionTablesView
 class PartitionTableEntity(BaseEntity):
     endpoint_path = '/templates/ptables'
 
-    def create(self, values,):
+    def create(
+        self,
+        values,
+    ):
         """Create new partition table entity"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
@@ -75,6 +78,7 @@ class PartitionTableEntity(BaseEntity):
 @navigator.register(PartitionTableEntity, 'All')
 class ShowAllPartitionTables(NavigateStep):
     """Navigate to All Partition Tables page"""
+
     VIEW = PartitionTablesView
 
     def step(self, *args, **kwargs):
@@ -84,6 +88,7 @@ class ShowAllPartitionTables(NavigateStep):
 @navigator.register(PartitionTableEntity, 'New')
 class AddNewPartitionTable(NavigateStep):
     """Navigate to Create Partition Table page"""
+
     VIEW = PartitionTableCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -99,6 +104,7 @@ class EditPartitionTable(NavigateStep):
     Args:
         entity_name: name of the partition table
     """
+
     VIEW = PartitionTableEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -117,6 +123,7 @@ class ClonePartitionTable(NavigateStep):
     Args:
         entity_name: name of the partition table to be cloned
     """
+
     VIEW = PartitionTableCreateView
 
     def prerequisite(self, *args, **kwargs):

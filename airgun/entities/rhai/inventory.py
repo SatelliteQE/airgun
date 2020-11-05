@@ -36,6 +36,7 @@ class InventoryHostEntity(BaseEntity):
 @navigator.register(InventoryHostEntity, "All")
 class AllHosts(InsightsNavigateStep):
     """Navigate to Insights Inventory screen."""
+
     VIEW = InventoryAllHosts
 
     def step(self, *args, **kwargs):
@@ -49,6 +50,7 @@ class HostDetails(NavigateStep):
     Args:
         entity_name: hostname
     """
+
     VIEW = InventoryHostDetails
 
     def prerequisite(self, *args, **kwargs):
@@ -57,5 +59,6 @@ class HostDetails(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search.fill(entity_name)
-        self.parent.table.row_by_cell_or_widget_value(
-            "System Name", entity_name)["System Name"].widget.click()
+        self.parent.table.row_by_cell_or_widget_value("System Name", entity_name)[
+            "System Name"
+        ].widget.click()

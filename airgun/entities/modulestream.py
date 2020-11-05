@@ -26,13 +26,15 @@ class ModuleStreamEntity(BaseEntity):
         :param str stream_version: stream version of module.
         """
         view = self.navigate_to(
-            self, 'Details', entity_name=entity_name, stream_version=stream_version)
+            self, 'Details', entity_name=entity_name, stream_version=stream_version
+        )
         return view.read(widget_names=widget_names)
 
 
 @navigator.register(ModuleStreamEntity, 'All')
 class ShowAllModuleStreams(NavigateStep):
     """navigate to Module Streams Page"""
+
     VIEW = ModuleStreamView
 
     def step(self, *args, **kwargs):
@@ -48,6 +50,7 @@ class ShowModuleStreamsDetails(NavigateStep):
         entity_name: The module name.
         module_version: The version of module stream.
     """
+
     VIEW = ModuleStreamsDetailsView
 
     def prerequisite(self, *args, **kwargs):
@@ -56,8 +59,7 @@ class ShowModuleStreamsDetails(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         stream_version = kwargs.get('stream_version')
-        self.parent.search(
-            'name = {0} and stream = {1}'.format(entity_name, stream_version))
+        self.parent.search(f'name = {entity_name} and stream = {stream_version}')
         self.parent.table.row(name=entity_name, stream=stream_version)['Name'].widget.click()
 
     def post_navigate(self, _tries, *args, **kwargs):
@@ -66,12 +68,9 @@ class ShowModuleStreamsDetails(NavigateStep):
             timeout=30,
             delay=1,
             handle_exception=True,
-            logger=self.view.logger
+            logger=self.view.logger,
         )
 
     def am_i_here(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
-        return (
-                self.view.is_displayed
-                and self.view.breadcrumb.locations[1].startswith(entity_name)
-        )
+        return self.view.is_displayed and self.view.breadcrumb.locations[1].startswith(entity_name)

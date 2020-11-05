@@ -20,13 +20,12 @@ class SCAPTailoringFilesView(BaseLoggedInView, SearchableViewMixin):
         column_widgets={
             'Name': Text("./a[contains(@href, '/compliance/tailoring_files')]"),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class SCAPTailoringFileCreateView(BaseLoggedInView):
@@ -36,12 +35,11 @@ class SCAPTailoringFileCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Tailoring files'
-                and self.breadcrumb.read() == 'Upload new Tailoring File'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Tailoring files'
+            and self.breadcrumb.read() == 'Upload new Tailoring File'
         )
 
     @View.nested
@@ -60,23 +58,20 @@ class SCAPTailoringFileCreateView(BaseLoggedInView):
 
 
 class SCAPTailoringFileEditView(SCAPTailoringFileCreateView):
-    scap_file_name = Text(
-        '//label[contains(., "Scap File")]/following-sibling::div/b')
+    scap_file_name = Text('//label[contains(., "Scap File")]/following-sibling::div/b')
 
     @View.nested
     class file_upload(SatTab):
         TAB_NAME = 'File Upload'
         name = TextInput(id='tailoring_file_name')
-        uploaded_scap_file = Text(
-            locator="//label[@for='scap_file']/following-sibling::div/b")
+        uploaded_scap_file = Text(locator="//label[@for='scap_file']/following-sibling::div/b")
         scap_file = FileInput(id='tailoring_file_scap_file')
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Tailoring files'
-                and self.breadcrumb.read() != 'Upload new Tailoring File'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Tailoring files'
+            and self.breadcrumb.read() != 'Upload new Tailoring File'
         )

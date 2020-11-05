@@ -12,6 +12,7 @@ settings.ini
 
 # Generated documentation
 /docs/_build/
+/docs/autoapi/
 
 # common venv name
 .airgun/

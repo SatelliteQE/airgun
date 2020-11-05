@@ -19,20 +19,17 @@ from airgun.widgets import RadioGroup
 class JobInvocationsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[contains(., 'Job') and contains(., 'nvocations')]")
     new = Text("//a[contains(@href, '/job_invocations/new')]")
-    table = SatTable(
-        './/table', column_widgets={'Description': Text('./a')})
+    table = SatTable('.//table', column_widgets={'Description': Text('./a')})
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class JobInvocationCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     job_category = FilteredDropdown(id='job_invocation_job_category')
-    job_template = FilteredDropdown(
-        locator="//div[contains(@class, 'job_template_selector')]")
+    job_template = FilteredDropdown(locator="//div[contains(@class, 'job_template_selector')]")
     bookmark = FilteredDropdown(id='targeting_bookmark')
     search_query = TextInput(name='targeting[search_query]')
     template_content = ConditionalSwitchableView(reference='job_template')
@@ -58,22 +55,16 @@ class JobInvocationCreateView(BaseLoggedInView):
     @View.nested
     class advanced_options(View):
         expander = Text(".//a[text()='Display advanced fields']")
-        effective_user = TextInput(
-            locator=".//input[contains(@name, '[effective_user]')]")
-        description = TextInput(
-            locator=".//input[contains(@name, '[description]')]")
+        effective_user = TextInput(locator=".//input[contains(@name, '[effective_user]')]")
+        description = TextInput(locator=".//input[contains(@name, '[description]')]")
         use_default = Checkbox(id="description_format_override")
-        description_content = ConditionalSwitchableView(
-            reference='use_default')
+        description_content = ConditionalSwitchableView(reference='use_default')
 
         @description_content.register(False)
         class DescriptionTemplateForm(View):
-            description_template = TextInput(
-                id='job_invocation_description_format')
+            description_template = TextInput(id='job_invocation_description_format')
 
-        timeout = TextInput(
-            locator=".//input[contains(@name, '[execution_timeout_interval]')]"
-        )
+        timeout = TextInput(locator=".//input[contains(@name, '[execution_timeout_interval]')]")
         password = TextInput(id='job_invocation_password')
         passphrase = TextInput(id='job_invocation_key_passphrase')
         sudo_password = TextInput(id='job_invocation_sudo_password')
@@ -159,12 +150,11 @@ class JobInvocationCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Jobs'
-                and self.breadcrumb.read() == 'Job invocation'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Jobs'
+            and self.breadcrumb.read() == 'Job invocation'
         )
 
 
@@ -173,8 +163,7 @@ class JobInvocationStatusView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Jobs'
@@ -202,28 +191,31 @@ class JobInvocationStatusView(BaseLoggedInView):
             './/table',
             column_widgets={
                 'Host': Text('./a'),
-                'Actions': ActionsDropdown(
-                    "./div[contains(@class, 'btn-group')]"),
-            }
+                'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            },
         )
         total_hosts = Text(
-            "//h2[contains(., 'Total hosts')]"
-            "/span[@class='card-pf-aggregate-status-count']"
+            "//h2[contains(., 'Total hosts')]/span[@class='card-pf-aggregate-status-count']"
         )
 
     def wait_for_result(self, timeout=600, delay=1):
         """Wait for invocation job to finish"""
         wait_for(
-            lambda: (self.is_displayed and self.overview.job_status.is_displayed
-                     and self.overview.job_status_progress.is_displayed),
+            lambda: (
+                self.is_displayed
+                and self.overview.job_status.is_displayed
+                and self.overview.job_status_progress.is_displayed
+            ),
             timeout=timeout,
             delay=delay,
             logger=self.logger,
         )
         wait_for(
-            lambda: (self.overview.job_status.read() != 'Pending'
-                     and self.overview.job_status_progress.read() == '100%'),
+            lambda: (
+                self.overview.job_status.read() != 'Pending'
+                and self.overview.job_status_progress.read() == '100%'
+            ),
             timeout=timeout,
             delay=1,
-            logger=self.logger
+            logger=self.logger,
         )

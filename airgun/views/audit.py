@@ -17,9 +17,11 @@ class AuditEntry(View):
     created_at = Text(".//div[@class='list-view-pf-actions']/span")
     expander = Text(".//div[contains(@class, 'list-view-pf-expand')]/span")
     affected_organization = Text(
-        ".//div[normalize-space(.) = 'Affected Organizations']/following-sibling::div")
+        ".//div[normalize-space(.) = 'Affected Organizations']/following-sibling::div"
+    )
     affected_location = Text(
-        ".//div[normalize-space(.) = 'Affected Locations']/following-sibling::div")
+        ".//div[normalize-space(.) = 'Affected Locations']/following-sibling::div"
+    )
     action_summary = SatTableWithoutHeaders('.//table')
     comment = Text(".//p[@class='comment-desc']")
 
@@ -43,8 +45,7 @@ class AuditsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
     def search(self, query):
         self.searchbox.search(query)

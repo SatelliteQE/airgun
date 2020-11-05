@@ -83,7 +83,7 @@ from airgun.navigation import navigator
 LOGGER = logging.getLogger(__name__)
 
 
-class Session(object):
+class Session:
     """A session context manager which is a key controller in airgun.
 
     It is responsible for initializing and starting
@@ -103,12 +103,7 @@ class Session(object):
     Usage::
 
         def test_foo():
-            # steps executed before starting UI session
-            # [...]
-
-            # start of UI session
             with Session('test_foo') as session:
-                # steps executed during UI session. For example:
                 session.architecture.create({'name': 'bar'})
                 [...]
 
@@ -151,8 +146,15 @@ class Session(object):
 
     """
 
-    def __init__(self, session_name=None, user=None, password=None,
-                 session_cookie=None, url=None, login=True):
+    def __init__(
+        self,
+        session_name=None,
+        user=None,
+        password=None,
+        session_cookie=None,
+        url=None,
+        login=True,
+    ):
         """Stores provided values, doesn't perform any actions.
 
         :param str optional session_name: string representing session name.
@@ -214,8 +216,7 @@ class Session(object):
         if self.browser is None:
             # browser was never started, don't do anything
             return
-        LOGGER.info(
-            u'Stopping UI session %r for user %r', self.name, self._user)
+        LOGGER.info('Stopping UI session %r for user %r', self.name, self._user)
         passed = True if exc_type is None else False
         try:
             if not passed:
@@ -245,13 +246,14 @@ class Session(object):
         satellite.
         """
         if self._session_cookie:
-            LOGGER.info('Starting UI session id: %r from a session cookie',
-                        self._session_cookie.cookies.get_dict()['_session_id'])
+            LOGGER.info(
+                'Starting UI session id: %r from a session cookie',
+                self._session_cookie.cookies.get_dict()['_session_id'],
+            )
         else:
             LOGGER.info('Starting UI session %r for user %r', self.name, self._user)
         self._factory = SeleniumBrowserFactory(
-            test_name=self.name,
-            session_cookie=self._session_cookie
+            test_name=self.name, session_cookie=self._session_cookie
         )
         try:
             selenium_browser = self._factory.get_browser()
@@ -266,8 +268,7 @@ class Session(object):
             self.navigator = Navigate(self.browser)
             self.navigator.dest_dict = navigator.dest_dict.copy()
             if self._session_cookie is None and self._login:
-                self.login.login({
-                    'username': self._user, 'password': self._password})
+                self.login.login({'username': self._user, 'password': self._password})
         except Exception as exception:
             self.__exit__(*sys.exc_info())
             raise exception
@@ -293,11 +294,10 @@ class Session(object):
         )
         if not os.path.exists(path):
             os.makedirs(path)
-        filename = '{0}-screenshot-{1}.png'.format(
-            self.name.replace(' ', '_'),
-            now.strftime('%Y-%m-%d_%H_%M_%S')
+        path = os.path.join(
+            path,
+            f'{self.name.replace(" ", "_")}-screenshot-{now.strftime("%Y-%m-%d_%H_%M_%S")}.png',
         )
-        path = os.path.join(path, filename)
         LOGGER.debug('Saving screenshot %s', path)
         self.browser.selenium.save_screenshot(path)
 

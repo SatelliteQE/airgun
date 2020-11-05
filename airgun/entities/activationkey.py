@@ -82,6 +82,7 @@ class ActivationKeyEntity(BaseEntity):
 @navigator.register(ActivationKeyEntity, 'All')
 class ShowAllActivationKeys(NavigateStep):
     """Navigate to All Activation Keys page"""
+
     VIEW = ActivationKeysView
 
     def step(self, *args, **kwargs):
@@ -91,6 +92,7 @@ class ShowAllActivationKeys(NavigateStep):
 @navigator.register(ActivationKeyEntity, 'New')
 class AddNewActivationKey(NavigateStep):
     """Navigate to New Activation Key page"""
+
     VIEW = ActivationKeyCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -106,6 +108,7 @@ class EditExistingActivationKey(NavigateStep):
     Args:
         entity_name: name of the activation key
     """
+
     VIEW = ActivationKeyEditView
 
     def prerequisite(self, *args, **kwargs):

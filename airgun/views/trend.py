@@ -17,13 +17,12 @@ class TrendsView(BaseLoggedInView):
         column_widgets={
             'Name': Text('./a'),
             'Action': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class TrendCreateView(BaseLoggedInView):
@@ -35,8 +34,7 @@ class TrendCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Trends'
@@ -50,14 +48,13 @@ class TrendEditView(BaseLoggedInView):
         './/table',
         column_widgets={
             'Display Name': TextInput(locator=".//input[@type='text']"),
-        }
+        },
     )
     submit = Text('//input[@name="commit"]')
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Trends'

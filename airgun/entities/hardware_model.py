@@ -41,8 +41,7 @@ class HardwareModelEntity(BaseEntity):
         """Delete hardware model"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.click(
-            handle_alert=True)
+        view.table.row(name=entity_name)['Actions'].widget.click(handle_alert=True)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -50,6 +49,7 @@ class HardwareModelEntity(BaseEntity):
 @navigator.register(HardwareModelEntity, 'All')
 class ShowAllHardwareModels(NavigateStep):
     """Navigate to All Hardware Model screen."""
+
     VIEW = HardwareModelsView
 
     def step(self, *args, **kwargs):
@@ -59,6 +59,7 @@ class ShowAllHardwareModels(NavigateStep):
 @navigator.register(HardwareModelEntity, 'New')
 class AddNewHardwareModel(NavigateStep):
     """Navigate to Create new Hardware Model screen."""
+
     VIEW = HardwareModelCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -71,9 +72,10 @@ class AddNewHardwareModel(NavigateStep):
 class EditHardwareModel(NavigateStep):
     """Navigate to Edit Hardware Model screen.
 
-         Args:
-            entity_name: name of hardware model
+    Args:
+       entity_name: name of hardware model
     """
+
     VIEW = HardwareModelEditView
 
     def prerequisite(self, *args, **kwargs):

@@ -28,16 +28,14 @@ class RepositoriesView(BaseLoggedInView, SearchableViewMixin):
     table = SatTable(
         locator=".//table",
         column_widgets={
-            0: Checkbox(
-                locator=".//input[@ng-change='itemSelected(repository)']"),
+            0: Checkbox(locator=".//input[@ng-change='itemSelected(repository)']"),
             'Name': Text("./a[contains(@ui-sref, 'product.repository.info')]"),
-        }
+        },
     )
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Products'
@@ -135,8 +133,7 @@ class RepositoryCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Products'
@@ -147,8 +144,7 @@ class RepositoryCreateView(BaseLoggedInView):
 
 class AuthorizationEntry(EditableEntry):
 
-    clear_button = Text(
-        ".//span[contains(@ng-hide, 'editMode')]/i[@ng-show='deletable']")
+    clear_button = Text(".//span[contains(@ng-hide, 'editMode')]/i[@ng-show='deletable']")
 
     @View.nested
     class edit_field(View):
@@ -172,8 +168,7 @@ class RepositoryEditView(BaseLoggedInView):
     repo_type = ReadOnlyEntry(name='Type')
     repo_content = ConditionalSwitchableView(reference='repo_type')
     content_counts = SatTableWithUnevenStructure(
-        locator='.//table[//th[normalize-space(.)="Content Type"]]',
-        column_locator='./*'
+        locator='.//table[//th[normalize-space(.)="Content Type"]]', column_locator='./*'
     )
 
     @repo_content.register('docker')
@@ -182,8 +177,7 @@ class RepositoryEditView(BaseLoggedInView):
         upstream_repo_name = EditableEntry(name='Upstream Repository')
         repo_name = ReadOnlyEntry(name='Name')
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
-        upstream_authorization = AuthorizationEntry(
-            name='Upstream Authorization')
+        upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
         publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
         http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
@@ -197,8 +191,7 @@ class RepositoryEditView(BaseLoggedInView):
         arch_restrict = EditableEntrySelect(name='Restrict to architecture')
         upstream_url = EditableEntry(name='Upstream URL')
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
-        upstream_authorization = AuthorizationEntry(
-            name='Upstream Authorization')
+        upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
         metadata_type = EditableEntrySelect(name='Yum Metadata Checksum')
         mirror_on_sync = EditableEntryCheckbox(name='Mirror on Sync')
         publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
@@ -217,8 +210,7 @@ class RepositoryEditView(BaseLoggedInView):
     class PuppetRepository(View):
         upstream_url = EditableEntry(name='Upstream URL')
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
-        upstream_authorization = AuthorizationEntry(
-            name='Upstream Authorization')
+        upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
         mirror_on_sync = EditableEntryCheckbox(name='Mirror on Sync')
         publish_via_https = ReadOnlyEntry(name='Publish via HTTPS')
         publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
@@ -236,8 +228,7 @@ class RepositoryEditView(BaseLoggedInView):
     class OstreeRepository(View):
         upstream_url = EditableEntry(name='Upstream URL')
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
-        upstream_authorization = AuthorizationEntry(
-            name='Upstream Authorization')
+        upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
         publish_via_https = ReadOnlyEntry(name='Publish via HTTPS')
         published_at = ReadOnlyEntry(name='Published At')
         http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
@@ -249,8 +240,7 @@ class RepositoryEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Products'
@@ -269,22 +259,17 @@ class RepositoryPackagesView(BaseLoggedInView, SearchableViewMixin):
     table = SatTable(
         locator=".//table",
         column_widgets={
-            0: Checkbox(
-                locator=".//input[@ng-change='itemSelected(package)']"),
-        }
+            0: Checkbox(locator=".//input[@ng-change='itemSelected(package)']"),
+        },
     )
-    select_all = Checkbox(
-        locator=".//input[@type='checkbox'][@ng-change='allSelected()']")
-    items_per_page = Select(
-        locator=".//select[@ng-model='table.params.per_page']")
-    total_packages = Text(
-        "//span[@class='pagination-pf-items-total ng-binding']")
+    select_all = Checkbox(locator=".//input[@type='checkbox'][@ng-change='allSelected()']")
+    items_per_page = Select(locator=".//select[@ng-model='table.params.per_page']")
+    total_packages = Text("//span[@class='pagination-pf-items-total ng-binding']")
     remove_packages = Text(".//button[@ng-click='openModal()']")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Products'
@@ -299,22 +284,17 @@ class RepositoryPuppetModulesView(BaseLoggedInView, SearchableViewMixin):
     table = SatTable(
         locator=".//table",
         column_widgets={
-            0: Checkbox(
-                locator=".//input[@ng-change='itemSelected(item)']"),
-        }
+            0: Checkbox(locator=".//input[@ng-change='itemSelected(item)']"),
+        },
     )
-    select_all = Checkbox(
-        locator=".//input[@type='checkbox'][@ng-change='allSelected()']")
-    items_per_page = Select(
-        locator=".//select[@ng-model='table.params.per_page']")
-    total_puppet_modules = Text(
-        "//span[@class='pagination-pf-items-total ng-binding']")
+    select_all = Checkbox(locator=".//input[@type='checkbox'][@ng-change='allSelected()']")
+    items_per_page = Select(locator=".//select[@ng-model='table.params.per_page']")
+    total_puppet_modules = Text("//span[@class='pagination-pf-items-total ng-binding']")
     remove_packages = Text(".//button[@ng-click='openModal()']")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Products'

@@ -22,8 +22,7 @@ from airgun.widgets import Search
 # Search field and button on Subscriptions page uses different locators,
 # so subclass it and use it in our custom SearchableViewMixin
 class SubscriptionSearch(Search):
-    search_field = TextInput(locator=(
-        ".//input[starts-with(@id, 'downshift-')]"))
+    search_field = TextInput(locator=(".//input[starts-with(@id, 'downshift-')]"))
     search_button = Button('Search')
 
 
@@ -43,11 +42,10 @@ class SatSubscriptionsViewTable(SatTable):
     Not to be confused with SatSubscriptionsTable, which is not used on
     that page
     """
+
     @property
     def has_rows(self):
-        return (self.tbody_row.read()
-                != "No subscriptions match your search criteria."
-                )
+        return self.tbody_row.read() != "No subscriptions match your search criteria."
 
 
 class ProductContentItemsList(GenericLocatorWidget):
@@ -63,13 +61,10 @@ class ProductContentItemsList(GenericLocatorWidget):
 
     @property
     def has_items(self):
-        return (self.browser.text(self.ROOT)
-                != 'No products are enabled.')
+        return self.browser.text(self.ROOT) != 'No products are enabled.'
 
     def read(self):
-        result = wait_for(lambda: self.has_items,
-                          timeout=5,
-                          silent_failure=True)
+        result = wait_for(lambda: self.has_items, timeout=5, silent_failure=True)
         if not result:
             return []
         return [elem.text for elem in self.browser.elements(self.ITEMS)]
@@ -98,22 +93,15 @@ class SubscriptionColumnsFilter(GenericLocatorWidget):
             self.click()
 
     def checkboxes(self):
-        labels = [
-            line.text
-            for line in self.browser.elements(self.ITEMS_LOCATOR)
-        ]
+        labels = [line.text for line in self.browser.elements(self.ITEMS_LOCATOR)]
         return {
-            label: Checkbox(self, locator=self.CHECKBOX_LOCATOR.format(label))
-            for label in labels
+            label: Checkbox(self, locator=self.CHECKBOX_LOCATOR.format(label)) for label in labels
         }
 
     def read(self):
         """Read values of checkboxes"""
         self.open()
-        values = {
-            name: checkbox.read()
-            for name, checkbox in self.checkboxes.items()
-        }
+        values = {name: checkbox.read() for name, checkbox in self.checkboxes.items()}
         self.close()
         return values
 
@@ -128,12 +116,13 @@ class SubscriptionColumnsFilter(GenericLocatorWidget):
 
 class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
     """List of all subscriptions."""
+
     table = SatSubscriptionsViewTable(
         locator='//div[@id="subscriptions-table"]//table',
         column_widgets={
             'Select all rows': Checkbox(locator=".//input[@type='checkbox']"),
             'Name': Text("./a"),
-        }
+        },
     )
 
     add_button = Button(href='subscriptions/add')
@@ -143,12 +132,15 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
     progressbar = ProgressBar('//div[contains(@class,"progress-bar-striped")]')
     confirm_deletion = DeleteSubscriptionConfirmationDialog()
     columns_filter_checkboxes = SubscriptionColumnsFilter(
-        ".//form[div[contains(@class, 'filter')]]/div/i")
+        ".//form[div[contains(@class, 'filter')]]/div/i"
+    )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            'div#subscriptions-table', timeout=10, exception=False) is not None
+        return (
+            self.browser.wait_for_element('div#subscriptions-table', timeout=10, exception=False)
+            is not None
+        )
 
     def is_searchable(self):
         """Customized is_searchable"""
@@ -160,8 +152,7 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
 
 
 class ManageManifestView(BaseLoggedInView):
-    ROOT = ('//div[@role="dialog" and @tabindex]'
-            '[div//h4[text()="Manage Manifest"]]')
+    ROOT = '//div[@role="dialog" and @tabindex][div//h4[text()="Manage Manifest"]]'
     close_button = Button('Close')
 
     @View.nested
@@ -175,63 +166,61 @@ class ManageManifestView(BaseLoggedInView):
     class manifest_history(SatTab):
         TAB_NAME = "Manifest History"
         table = SatTable(
-                locator='//div[@id="manifest-history-tabs"]//table',
-                column_widgets={
-                    'Status': Text(),
-                    'Message': Text(),
-                    'Timestamp': Text()
-                }
+            locator='//div[@id="manifest-history-tabs"]//table',
+            column_widgets={'Status': Text(), 'Message': Text(), 'Timestamp': Text()},
         )
 
     @property
     def is_displayed(self):
-        return (self.browser.wait_for_element(
-                self.close_button, visible=True, exception=False) is not None
-                and 'in' in self.browser.classes(self))
+        return self.browser.wait_for_element(
+            self.close_button, visible=True, exception=False
+        ) is not None and 'in' in self.browser.classes(self)
 
     def wait_animation_end(self):
         wait_for(
-                lambda: 'in' in self.browser.classes(self),
-                handle_exception=True, logger=self.logger, timeout=10
+            lambda: 'in' in self.browser.classes(self),
+            handle_exception=True,
+            logger=self.logger,
+            timeout=10,
         )
 
 
 class DeleteManifestConfirmationView(BaseLoggedInView):
-    ROOT = ('//div[@role="dialog" and @tabindex]'
-            '[div//h4[text()="Confirm delete manifest"]]')
+    ROOT = '//div[@role="dialog" and @tabindex][div//h4[text()="Confirm delete manifest"]]'
     message = Text('.//div[@class="modal-body"]')
     delete_button = Button('Delete')
     cancel_button = Button('Cancel')
 
     @property
     def is_displayed(self):
-        return (self.browser.wait_for_element(
-                self.delete_button, visible=True, exception=False) is not None
-                and 'in' in self.browser.classes(self))
+        return self.browser.wait_for_element(
+            self.delete_button, visible=True, exception=False
+        ) is not None and 'in' in self.browser.classes(self)
 
     def wait_animation_end(self):
         wait_for(
-                lambda: 'in' in self.browser.classes(self),
-                handle_exception=True, logger=self.logger, timeout=10
+            lambda: 'in' in self.browser.classes(self),
+            handle_exception=True,
+            logger=self.logger,
+            timeout=10,
         )
 
 
 class AddSubscriptionView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     table = SatTable(
-            locator='.//table',
-            column_widgets={
-                'Subscription Name': Text('.//a'),
-                'Quantity to Allocate': TextInput(locator='.//input'),
-            }
+        locator='.//table',
+        column_widgets={
+            'Subscription Name': Text('.//a'),
+            'Quantity to Allocate': TextInput(locator='.//input'),
+        },
     )
     submit_button = Button('Submit')
     cancel_button = Button('Cancel')
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-                self.table, visible=True, exception=False) is not None
+        return self.browser.wait_for_element(self.table, visible=True, exception=False) is not None
 
 
 class SubscriptionDetailsView(BaseLoggedInView):
@@ -244,11 +233,10 @@ class SubscriptionDetailsView(BaseLoggedInView):
             locator=".//div[h2[text()='Associations']]/table",
             column_widgets={
                 'Quantity': Text('.//a'),
-            }
+            },
         )
 
-        provided_products = ItemsListReadOnly(
-                (".//h2[text()='Provided Products']/following::ul"))
+        provided_products = ItemsListReadOnly(".//h2[text()='Provided Products']/following::ul")
 
     @View.nested
     class product_content(SatTab):
@@ -258,5 +246,7 @@ class SubscriptionDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-                self.breadcrumb, visible=True, exception=False) is not None
+        return (
+            self.browser.wait_for_element(self.breadcrumb, visible=True, exception=False)
+            is not None
+        )

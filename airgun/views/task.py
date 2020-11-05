@@ -28,21 +28,18 @@ class TaskPagination(Pagination):
 
 class TasksView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Tasks']")
-    focus = ActionsDropdown(
-        "//div[./button[@id='tasks-dashboard-time-period-dropdown']]"
-    )
+    focus = ActionsDropdown("//div[./button[@id='tasks-dashboard-time-period-dropdown']]")
     table = SatTable(
         ".//div[@class='tasks-table']//table",
         column_widgets={
             'Action': Text('./a'),
-        }
+        },
     )
     pagination = TaskPagination()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
     @View.nested
     class RunningChart(View):
@@ -64,7 +61,7 @@ class TasksView(BaseLoggedInView, SearchableViewMixin):
             locator='.//table',
             column_widgets={
                 'Total': Text('./button'),
-            }
+            },
         )
 
     @View.nested
@@ -79,12 +76,11 @@ class TaskDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Tasks'
-                and len(self.breadcrumb.locations) == 2
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Tasks'
+            and len(self.breadcrumb.locations) == 2
         )
 
     @View.nested
@@ -105,8 +101,11 @@ class TaskDetailsView(BaseLoggedInView):
     def wait_for_result(self, timeout=60, delay=1):
         """Wait for invocation job to finish"""
         wait_for(
-            lambda: (self.is_displayed and self.task.progressbar.is_displayed
-                     and self.task.result.read() == 'success'),
+            lambda: (
+                self.is_displayed
+                and self.task.progressbar.is_displayed
+                and self.task.result.read() == 'success'
+            ),
             timeout=timeout,
             delay=delay,
             logger=self.logger,

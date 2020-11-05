@@ -64,8 +64,14 @@ class HostCollectionEntity(BaseEntity):
         view.flash.dismiss()
 
     def manage_packages(
-            self, entity_name, content_type='Package', packages=None,
-            action='install', action_via='via Katello Agent', job_values=None):
+        self,
+        entity_name,
+        content_type='Package',
+        packages=None,
+        action='install',
+        action_via='via Katello Agent',
+        job_values=None,
+    ):
         """Manage host collection packages.
 
         :param str entity_name:  The host collection name.
@@ -100,29 +106,27 @@ class HostCollectionEntity(BaseEntity):
         if action_via == 'via remote execution - customize first':
             # After this step the user is redirected to remote execution job
             # create view.
-            job_create_view = HostCollectionActionRemoteExecutionJobCreate(
-                view.browser)
+            job_create_view = HostCollectionActionRemoteExecutionJobCreate(view.browser)
             job_create_view.fill(job_values)
             job_create_view.submit.click()
 
-        if action_via in ('via remote execution',
-                          'via remote execution - customize first'):
+        if action_via in ('via remote execution', 'via remote execution - customize first'):
             # After this step the user is redirected to job status view.
             job_status_view = JobInvocationStatusView(view.browser)
             wait_for(
                 lambda: (
-                        job_status_view.overview.job_status.read() != 'Pending'
-                        and job_status_view.overview.job_status_progress.read()
-                        == '100%'
+                    job_status_view.overview.job_status.read() != 'Pending'
+                    and job_status_view.overview.job_status_progress.read() == '100%'
                 ),
                 timeout=300,
                 delay=10,
-                logger=view.logger
+                logger=view.logger,
             )
             return job_status_view.overview.read()
 
-    def install_errata(self, entity_name, errata_id,
-                       install_via='via Katello agent', job_values=None):
+    def install_errata(
+        self, entity_name, errata_id, install_via='via Katello agent', job_values=None
+    ):
         """Install host collection errata
 
         :param str entity_name:  The host collection name.
@@ -152,8 +156,7 @@ class HostCollectionEntity(BaseEntity):
         if install_via == 'via remote execution - customize first':
             # After this step the user is redirected to remote execution job
             # create view.
-            job_create_view = HostCollectionActionRemoteExecutionJobCreate(
-                view.browser)
+            job_create_view = HostCollectionActionRemoteExecutionJobCreate(view.browser)
             job_create_view.fill(job_values)
             job_create_view.submit.click()
 
@@ -166,19 +169,25 @@ class HostCollectionEntity(BaseEntity):
             job_status_view = JobInvocationStatusView(view.browser)
             wait_for(
                 lambda: (
-                        job_status_view.overview.job_status.read() != 'Pending'
-                        and job_status_view.overview.job_status_progress.read()
-                        == '100%'
+                    job_status_view.overview.job_status.read() != 'Pending'
+                    and job_status_view.overview.job_status_progress.read() == '100%'
                 ),
                 timeout=300,
                 delay=10,
-                logger=view.logger
+                logger=view.logger,
             )
             return job_status_view.overview.read()
 
-    def manage_module_streams(self, entity_name, action_type, module_name,
-                              stream_version, customize=False, customize_values=None):
-        """ Manage module streams
+    def manage_module_streams(
+        self,
+        entity_name,
+        action_type,
+        module_name,
+        stream_version,
+        customize=False,
+        customize_values=None,
+    ):
+        """Manage module streams
         :param str entity_name:  The host collection name.
         :param action_type: remote action to execute on content host. Action value can be one of
         them e.g. 'Enable', 'Disable', 'Install', 'Update', 'Remove', 'Reset'
@@ -196,10 +205,9 @@ class HostCollectionEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.details.manage_module_streams.click()
         view = HostCollectionManageModuleStreamsView(view.browser)
-        view.search('name = {} and stream = {}'.format(module_name, stream_version))
+        view.search(f'name = {module_name} and stream = {stream_version}')
         action_type = dict(is_customize=customize, action=action_type)
-        view.table.row(
-            name=module_name, stream=stream_version)['Actions'].fill(action_type)
+        view.table.row(name=module_name, stream=stream_version)['Actions'].fill(action_type)
         if customize:
             view = JobInvocationCreateView(view.browser)
             view.fill(customize_values)

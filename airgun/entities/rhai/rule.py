@@ -16,6 +16,7 @@ class RuleEntity(BaseEntity):
 @navigator.register(RuleEntity, "All")
 class RulesDetails(InsightsNavigateStep):
     """Navigate to Red Hat Access Insights Rules screen."""
+
     VIEW = AllRulesView
 
     def step(self, *args, **kwargs):

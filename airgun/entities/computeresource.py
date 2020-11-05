@@ -92,18 +92,14 @@ class ComputeResourceEntity(BaseEntity):
 
     def vm_import(self, entity_name, vm_name, hostgroup, location):
         """Imports the specified VM"""
-        view = self.navigate_to(self, 'VMImport',
-                                entity_name=entity_name, vm_name=vm_name)
+        view = self.navigate_to(self, 'VMImport', entity_name=entity_name, vm_name=vm_name)
         view.fill({'host.hostgroup': hostgroup, 'host.location': location})
         view.submit.click()
 
     def update_computeprofile(self, entity_name, compute_profile, values):
         """Update specific compute profile attributes through CR detail view"""
         view = self.navigate_to(
-            self,
-            'Profile',
-            entity_name=entity_name,
-            compute_profile=compute_profile
+            self, 'Profile', entity_name=entity_name, compute_profile=compute_profile
         )
         view.fill(values)
         view.submit.click()
@@ -111,10 +107,7 @@ class ComputeResourceEntity(BaseEntity):
     def read_computeprofile(self, entity_name, compute_profile, widget_names=None):
         """Read specific compute profile attributes through CR detail view"""
         view = self.navigate_to(
-            self,
-            'Profile',
-            entity_name=entity_name,
-            compute_profile=compute_profile
+            self, 'Profile', entity_name=entity_name, compute_profile=compute_profile
         )
         return view.read(widget_names=widget_names)
 
@@ -207,8 +200,7 @@ class EditExistingComputeResource(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
-        self.parent.table.row(
-            name=entity_name)['Actions'].widget.fill('Edit')
+        self.parent.table.row(name=entity_name)['Actions'].widget.fill('Edit')
 
     def post_navigate(self, _tries, *args, **kwargs):
         """Select Compute resource tab for initialization"""
@@ -217,9 +209,9 @@ class EditExistingComputeResource(NavigateStep):
     def am_i_here(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         return (
-                self.view.is_displayed
-                and self.view.breadcrumb.locations[0] == 'Compute Resources'
-                and self.view.breadcrumb.read() == 'Edit {}'.format(entity_name)
+            self.view.is_displayed
+            and self.view.breadcrumb.locations[0] == 'Compute Resources'
+            and self.view.breadcrumb.read() == f'Edit {entity_name}'
         )
 
 
@@ -238,9 +230,9 @@ class ComputeResourceDetail(NavigateStep):
     def am_i_here(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         return (
-                self.view.is_displayed
-                and self.view.breadcrumb.locations[0] == 'Compute Resources'
-                and self.view.breadcrumb.read() == entity_name
+            self.view.is_displayed
+            and self.view.breadcrumb.locations[0] == 'Compute Resources'
+            and self.view.breadcrumb.read() == entity_name
         )
 
 
@@ -254,7 +246,8 @@ class ComputeResourceProfileDetail(NavigateStep):
     def step(self, *args, **kwargs):
         compute_profile = kwargs.get('compute_profile')
         self.parent.compute_profiles.table.row(compute_profile=compute_profile)[
-            'Compute profile'].widget.click()
+            'Compute profile'
+        ].widget.click()
 
 
 @navigator.register(ComputeResourceEntity, 'VMImport')
@@ -275,6 +268,7 @@ class ComputeResourceImageProvider(NavigateStep):
     """Base class for image create and edit views, that need to dynamically define the view type
     (that depend from compute resource provider) before reaching navigation destination.
     """
+
     PROVIDER_VIEWS = dict()
 
     def prerequisite(self, *args, **kwargs):
@@ -283,8 +277,9 @@ class ComputeResourceImageProvider(NavigateStep):
         provider = parent_view.compute_resource.table.row(property='Provider')['Value'].read()
         view = self.PROVIDER_VIEWS.get(provider)
         if not view:
-            raise ValueError('Provider type "{0}" for class "{1}" not implemented'.format(
-                provider, self.__class__.__name__))
+            raise ValueError(
+                f'Provider type "{provider}" for class "{self.__class__.__name__}" not implemented'
+            )
         self.VIEW = view
         return parent_view
 

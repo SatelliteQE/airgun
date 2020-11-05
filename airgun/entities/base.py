@@ -4,7 +4,7 @@ from airgun.helpers.base import BaseEntityHelper
 from airgun.views.common import BookmarkCreateView
 
 
-class BaseEntity(object):
+class BaseEntity:
 
     HELPER_CLASS = BaseEntityHelper
 
@@ -30,13 +30,11 @@ class BaseEntity(object):
         # navigate step for every single entity
         view = self.navigate_to(self, 'All')
         if not hasattr(view, 'searchbox'):
-            raise KeyError(
-                '{} does not have searchbox'.format(self.__class__.__name__))
+            raise KeyError(f'{self.__class__.__name__} does not have searchbox')
         if not view.searchbox.actions.is_displayed:
             raise NoSuchElementException(
-                'Unable to create a bookmark - {} has a searchbox with no'
-                'actions dropdown'
-                .format(self.__class__.__name__)
+                f'Unable to create a bookmark - {self.__class__.__name__} '
+                'has a searchbox with no actions dropdown'
             )
         if search_query:
             view.searchbox.search_field.fill(search_query)

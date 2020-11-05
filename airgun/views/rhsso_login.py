@@ -11,8 +11,7 @@ class RhssoLoginView(View, ClickableMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.username, exception=False) is not None
+        return self.browser.wait_for_element(self.username, exception=False) is not None
 
 
 class RhssoExternalLogoutView(View, ClickableMixin):
@@ -21,8 +20,7 @@ class RhssoExternalLogoutView(View, ClickableMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.login_again, exception=False) is not None
+        return self.browser.wait_for_element(self.login_again, exception=False) is not None
 
 
 class RhssoTwoFactorSuccessView(View, ClickableMixin):
@@ -30,5 +28,4 @@ class RhssoTwoFactorSuccessView(View, ClickableMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.code, exception=False) is not None
+        return self.browser.wait_for_element(self.code, exception=False) is not None

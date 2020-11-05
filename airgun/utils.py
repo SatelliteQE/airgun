@@ -1,5 +1,3 @@
-
-
 def merge_dict(values, new_values):
     """Update dict values with new values from new_values dict
 
@@ -21,11 +19,11 @@ def merge_dict(values, new_values):
 def normalize_dict_values(values):
     """Transform a widget path:value dict to a regular View read values format.
 
-     This function transform a dictionary from:
-        {'a.b': 1, 'a.z': 10, 'a.c.k': 2, 'a.c.z': 5, 'x.y': 3, 'c': 4}
-     to:
-        {'a': {'b': 1, 'z': 10, 'c': {'k': 2, 'z': 5}}, 'x': {'y': 3}, 'c': 4}
-     """
+    This function transform a dictionary from:
+       {'a.b': 1, 'a.z': 10, 'a.c.k': 2, 'a.c.z': 5, 'x.y': 3, 'c': 4}
+    to:
+       {'a': {'b': 1, 'z': 10, 'c': {'k': 2, 'z': 5}}, 'x': {'y': 3}, 'c': 4}
+    """
     new_values = {}
     for key, value in values.items():
         keys = key.split('.')
@@ -34,8 +32,11 @@ def normalize_dict_values(values):
             new_key_value = normalize_dict_values({'.'.join(keys): value})
         else:
             new_key_value = value
-        if (new_key in new_values and isinstance(new_values[new_key], dict)
-                and isinstance(new_key_value, dict)):
+        if (
+            new_key in new_values
+            and isinstance(new_values[new_key], dict)
+            and isinstance(new_key_value, dict)
+        ):
             # merge in place the new_values with new_key_value
             merge_dict(new_values[new_key], new_key_value)
         else:
@@ -63,7 +64,8 @@ def get_widget_by_name(widget_root, widget_name):
             name = name.replace(' ', '_')
             name = name.lower()
             if name not in widget.widget_names:
-                raise AttributeError('Object <{0}> has no widget name "{1}"'.format(
-                    widget.__class__, sub_widget_name))
+                raise AttributeError(
+                    f'Object <{widget.__class__}> has no widget name "{sub_widget_name}"'
+                )
         widget = getattr(widget, name)
     return widget

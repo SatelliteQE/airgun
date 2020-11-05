@@ -40,6 +40,7 @@ class TableActions(View):
     """Interface table has Action column that contains only two buttons,
     without any extra controls, so we cannot re-use any existing widgets
     """
+
     edit = Button('Edit')
     delete = Button('Delete')
 
@@ -49,9 +50,11 @@ class PuppetClassParameterValue(Widget):
     Parameters tab. That field can be interacted with as usual text input, but
     also it can be overridden with new value
     """
+
     ROOT = ".//div[@class='input-group']"
     value = TextInput(
-        locator=".//*[self::textarea or self::input][contains(@name, 'lookup_values_attributes')]")
+        locator=".//*[self::textarea or self::input][contains(@name, 'lookup_values_attributes')]"
+    )
     override_button = Text(".//a[@data-tag='override']")
     remove_override_button = Text(".//a[@data-tag='remove']")
     hide_button = Text(".//a[contains(@class, 'btn-hide')]")
@@ -72,8 +75,12 @@ class PuppetClassParameterValue(Widget):
 
     def read(self):
         """Return smart variable widget values"""
-        return {'value': self.value.read(), 'overridden': self.overridden, 'hidden': self.hidden,
-                'hidden_value': self.hidden_value}
+        return {
+            'value': self.value.read(),
+            'overridden': self.overridden,
+            'hidden': self.hidden,
+            'hidden_value': self.hidden_value,
+        }
 
     def fill(self, value):
         """Set smart variable widget values"""
@@ -106,6 +113,7 @@ class PuppetClassParameterValue(Widget):
 
 class ComputeResourceLibvirtProfileStorageItem(GenericRemovableWidgetItem):
     """Libvirt Compute Resource profile "Storage" item widget"""
+
     storage_pool = FilteredDropdown(id="pool_name")
     size = TextInput(locator=".//input[contains(@id, 'capacity')]")
     storage_type = FilteredDropdown(id="format_type")
@@ -113,6 +121,7 @@ class ComputeResourceLibvirtProfileStorageItem(GenericRemovableWidgetItem):
 
 class ComputeResourceGoogleProfileStorageItem(GenericRemovableWidgetItem):
     """Google Compute Resource profile "Storage" item widget"""
+
     size = TextInput(locator=".//input[contains(@id, 'size')]")
 
 
@@ -122,8 +131,7 @@ class HostInterface(View):
     submit = Text(".//button[contains(@onclick, 'save_interface_modal')]")
     interface_type = FilteredDropdown(id='_type')
     mac = TextInput(locator=".//input[contains(@id, '_mac')]")
-    device_identifier = TextInput(
-        locator=".//input[contains(@id, '_identifier')]")
+    device_identifier = TextInput(locator=".//input[contains(@id, '_identifier')]")
     dns = TextInput(locator=".//input[contains(@id, '_name')]")
     domain = FilteredDropdown(id='_domain_id')
     subnet = FilteredDropdown(id='_subnet_id')
@@ -132,27 +140,21 @@ class HostInterface(View):
     ipv6 = TextInput(locator=".//input[contains(@id, '_ip6')]")
     managed = Checkbox(locator=".//input[contains(@id, '_managed')]")
     primary = CheckboxWithAlert(locator=".//input[contains(@id, '_primary')]")
-    provision = CheckboxWithAlert(
-        locator=".//input[contains(@id, '_provision')]")
-    remote_execution = Checkbox(
-        locator=".//input[contains(@id, '_execution')]")
+    provision = CheckboxWithAlert(locator=".//input[contains(@id, '_provision')]")
+    remote_execution = Checkbox(locator=".//input[contains(@id, '_execution')]")
     # when interface type is selected, some additional controls will appear on
     # the page
-    interface_additional_data = ConditionalSwitchableView(
-        reference='interface_type')
+    interface_additional_data = ConditionalSwitchableView(reference='interface_type')
 
     @interface_additional_data.register('Interface')
     class InterfaceForm(View):
-        virtual_nic = Checkbox(
-            locator=".//input[contains(@id, '_virtual')]")
-        virtual_attributes = ConditionalSwitchableView(
-            reference='virtual_nic')
+        virtual_nic = Checkbox(locator=".//input[contains(@id, '_virtual')]")
+        virtual_attributes = ConditionalSwitchableView(reference='virtual_nic')
 
         @virtual_attributes.register(True, default=True)
         class VirtualAttributesForm(View):
             tag = TextInput(locator=".//input[contains(@id, '_tag')]")
-            attached_to = TextInput(
-                locator=".//input[contains(@id, '_attached_to')]")
+            attached_to = TextInput(locator=".//input[contains(@id, '_attached_to')]")
 
     @interface_additional_data.register('BMC')
     class BMCForm(View):
@@ -163,15 +165,12 @@ class HostInterface(View):
     @interface_additional_data.register('Bond')
     class BondForm(View):
         mode = FilteredDropdown(id='_mode')
-        attached_devices = TextInput(
-            locator=".//input[contains(@id, '_attached_devices')]")
-        bond_options = TextInput(
-            locator=".//input[contains(@id, '_bond_options')]")
+        attached_devices = TextInput(locator=".//input[contains(@id, '_attached_devices')]")
+        bond_options = TextInput(locator=".//input[contains(@id, '_bond_options')]")
 
     @interface_additional_data.register('Bridge')
     class BridgeForm(View):
-        attached_devices = TextInput(
-            locator=".//input[contains(@id, '_attached_devices')]")
+        attached_devices = TextInput(locator=".//input[contains(@id, '_attached_devices')]")
 
     # Compute resource attributes
     network_type = FilteredDropdown(id='_compute_attributes_type')
@@ -182,39 +181,32 @@ class HostInterface(View):
         """Submit the dialog data once all necessary view widgets filled"""
         self.submit.click()
         wait_for(
-            lambda: self.submit.is_displayed is False,
-            timeout=300,
-            delay=1,
-            logger=self.logger
+            lambda: self.submit.is_displayed is False, timeout=300, delay=1, logger=self.logger
         )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, visible=True, exception=False) is not None
+        return self.browser.wait_for_element(self.title, visible=True, exception=False) is not None
 
 
 class HostsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Hosts']")
-    export = Text(
-        ".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
+    export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text("//a[contains(@href, '/hosts/new')]")
     select_all = Checkbox(locator="//input[@id='check_all']")
     table = SatTable(
         './/table',
         column_widgets={
-            0: Checkbox(
-                locator=".//input[@class='host_select_boxes']"),
+            0: Checkbox(locator=".//input[@class='host_select_boxes']"),
             'Name': Text("./a"),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
-        }
+        },
     )
     actions = ActionsDropdown("//div[@id='submit_multiple']")
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class HostCreateView(BaseLoggedInView):
@@ -223,8 +215,7 @@ class HostCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'All Hosts'
@@ -238,7 +229,8 @@ class HostCreateView(BaseLoggedInView):
         location = FilteredDropdown(id='host_location')
         hostgroup = FilteredDropdown(id='host_hostgroup')
         inherit_deploy_option = ToggleButton(
-            locator=".//div[label[@for='compute_resource_id']]//button")
+            locator=".//div[label[@for='compute_resource_id']]//button"
+        )
         deploy = FilteredDropdown(id='host_compute_resource')
         compute_profile = FilteredDropdown(id='s2id_host_compute_profile_id')
         lce = FilteredDropdown(id='host_lifecycle_environment')
@@ -246,7 +238,8 @@ class HostCreateView(BaseLoggedInView):
         content_source = FilteredDropdown(id='s2id_content_source_id')
         reset_puppet_environment = Link(".//a[@id='reset_puppet_environment']")
         inherit_puppet_environment = ToggleButton(
-            locator=".//div[label[@for='environment_id']]//button")
+            locator=".//div[label[@for='environment_id']]//button"
+        )
         puppet_environment = FilteredDropdown(id='host_environment')
         puppet_master = FilteredDropdown(id='host_puppet_proxy')
         puppet_ca = FilteredDropdown(id='host_puppet_ca_proxy')
@@ -285,7 +278,6 @@ class HostCreateView(BaseLoggedInView):
 
     @provider_content.register('Libvirt')
     class LibvirtResourceForm(View):
-
         @View.nested
         class virtual_machine(SatTab):
             TAB_NAME = 'Virtual Machine'
@@ -302,7 +294,6 @@ class HostCreateView(BaseLoggedInView):
 
     @provider_content.register('Google')
     class GoogleResourceForm(View):
-
         @View.nested
         class virtual_machine(SatTab):
             TAB_NAME = 'Virtual Machine'
@@ -318,7 +309,6 @@ class HostCreateView(BaseLoggedInView):
 
     @provider_content.register('Azure Resource Manager')
     class AzureRmResourceForm(View):
-
         @View.nested
         class virtual_machine(SatTab):
             TAB_NAME = 'Virtual Machine'
@@ -350,8 +340,7 @@ class HostCreateView(BaseLoggedInView):
         operating_system = FilteredDropdown(id='host_operatingsystem')
         build = Checkbox(id='host_build')
         image = FilteredDropdown(id='host_compute_attributes_image')
-        media_type = RadioGroup(
-            locator="//div[label[contains(., 'Media Selection')]]")
+        media_type = RadioGroup(locator="//div[label[contains(., 'Media Selection')]]")
         media = FilteredDropdown(id='host_medium')
         ptable = FilteredDropdown(id='host_ptable')
         disk = TextInput(id='host_disk')
@@ -361,8 +350,7 @@ class HostCreateView(BaseLoggedInView):
     class interfaces(SatTab):
         interface = HostInterface()
         interfaces_list = SatTable(
-            ".//table[@id='interfaceList']",
-            column_widgets={'Actions': TableActions()}
+            ".//table[@id='interfaceList']", column_widgets={'Actions': TableActions()}
         )
         add_new_interface = Text("//button[@id='addInterface']")
 
@@ -375,7 +363,7 @@ class HostCreateView(BaseLoggedInView):
                 lambda: self.interface.is_displayed is True,
                 timeout=30,
                 delay=1,
-                logger=self.logger
+                logger=self.logger,
             )
 
     @View.nested
@@ -387,28 +375,22 @@ class HostCreateView(BaseLoggedInView):
     @View.nested
     class parameters(SatTab):
         """Host parameters tab"""
+
         puppet_class_parameters = Table(
             ".//table[@id='inherited_puppetclasses_parameters']",
-            column_widgets={'Value': PuppetClassParameterValue()}
+            column_widgets={'Value': PuppetClassParameterValue()},
         )
 
         @View.nested
         class global_params(SatTable):
-
             def __init__(self, parent, **kwargs):
                 locator = ".//table[@id='inherited_parameters']"
                 column_widgets = {
-                    'Name': Text(
-                        locator=".//span[starts-with(@id, 'name_')]"),
-                    'Value': TextInput(
-                        locator=".//textarea[@data-property='value']"),
-                    'Actions': Text(
-                        locator=(".//a[@data-original-title"
-                                 "='Override this value']")
-                    )
+                    'Name': Text(locator=".//span[starts-with(@id, 'name_')]"),
+                    'Value': TextInput(locator=".//textarea[@data-property='value']"),
+                    'Actions': Text(locator=(".//a[@data-original-title='Override this value']")),
                 }
-                SatTable.__init__(self, parent, locator,
-                                  column_widgets=column_widgets, **kwargs)
+                SatTable.__init__(self, parent, locator, column_widgets=column_widgets, **kwargs)
 
             def read(self):
                 """Return a list of dictionaries. Each dictionary consists of
@@ -416,11 +398,13 @@ class HostCreateView(BaseLoggedInView):
                 """
                 parameters = []
                 for row in self.rows():
-                    parameters.append({
-                        'name': row['Name'].widget.read(),
-                        'value': row['Value'].widget.read(),
-                        'overridden': not row['Actions'].widget.is_displayed
-                    })
+                    parameters.append(
+                        {
+                            'name': row['Name'].widget.read(),
+                            'value': row['Value'].widget.read(),
+                            'overridden': not row['Actions'].widget.is_displayed,
+                        }
+                    )
                 return parameters
 
             def override(self, name):
@@ -429,8 +413,7 @@ class HostCreateView(BaseLoggedInView):
                 :param str name: The name of the global parameter to override.
                 """
                 for row in self.rows():
-                    if (row['Name'].widget.read() == name
-                            and row['Actions'].widget.is_displayed):
+                    if row['Name'].widget.read() == name and row['Actions'].widget.is_displayed:
                         row['Actions'].widget.click()  # click 'Override'
                         break
 
@@ -486,21 +469,18 @@ class HostDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'All Hosts'
-                and self.breadcrumb.read() != 'Create Host'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'All Hosts'
+            and self.breadcrumb.read() != 'Create Host'
         )
 
     boot_disk = ActionsDropdown(
-        "//div[contains(@class, 'btn-group')]"
-        "[contains(., 'Boot')][not(*[self::div])]"
+        "//div[contains(@class, 'btn-group')][contains(., 'Boot')][not(*[self::div])]"
     )
     schedule_remote_job = ActionsDropdown(
-        "//div[contains(@class, 'btn-group')]"
-        "[contains(., 'Schedule')][not(*[self::div])]"
+        "//div[contains(@class, 'btn-group')][contains(., 'Schedule')][not(*[self::div])]"
     )
     back = Text("//a[text()='Back']")
     webconsole = Text("//a[text()='Web Console']")
@@ -516,8 +496,7 @@ class HostDetailsView(BaseLoggedInView):
 
     @View.nested
     class properties(SatTab):
-        properties_table = SatTableWithUnevenStructure(
-            locator="//table[@id='properties_table']")
+        properties_table = SatTableWithUnevenStructure(locator="//table[@id='properties_table']")
 
 
 class HostEditView(HostCreateView):
@@ -527,17 +506,17 @@ class HostEditView(HostCreateView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'All Hosts'
-                and self.breadcrumb.read().startswith('Edit ')
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'All Hosts'
+            and self.breadcrumb.read().startswith('Edit ')
         )
 
 
 class HostsActionCommonDialog(BaseLoggedInView):
     """Common base class Dialog for Hosts Actions"""
+
     title = None
     table = SatTable("//div[@class='modal-body']//table")
     keep_selected = Checkbox(id='keep_selected')
@@ -545,21 +524,16 @@ class HostsActionCommonDialog(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class HostsChangeGroup(HostsActionCommonDialog):
-    title = Text(
-        "//h4[text()='Change Group - The"
-        " following hosts are about to be changed']")
+    title = Text("//h4[text()='Change Group - The following hosts are about to be changed']")
     host_group = Select(id='hostgroup_id')
 
 
 class HostsChangeEnvironment(HostsActionCommonDialog):
-    title = Text(
-        "//h4[text()='Change Environment - The"
-        " following hosts are about to be changed']")
+    title = Text("//h4[text()='Change Environment - The following hosts are about to be changed']")
     environment = Select(id='environment_id')
 
 
@@ -578,22 +552,17 @@ class HostsTaxonomyMismatchRadioGroup(GenericLocatorWidget):
              Fail on Mismatch
         </form>
     """
+
     taxonomy = None
     fix_mismatch = Text("//input[contains(@id, 'optimistic_import_yes')]")
-    fail_on_mismatch = Text(
-        "//input[contains(@id, 'optimistic_import_no')]")
+    fail_on_mismatch = Text("//input[contains(@id, 'optimistic_import_no')]")
     buttons_text = dict(
-        fix_mismatch='Fix {taxonomy} on Mismatch',
-        fail_on_mismatch='Fail on Mismatch'
+        fix_mismatch='Fix {taxonomy} on Mismatch', fail_on_mismatch='Fail on Mismatch'
     )
 
     def __init__(self, parent, **kwargs):
         self.taxonomy = kwargs.pop('taxonomy')
-        super(HostsTaxonomyMismatchRadioGroup, self).__init__(
-            parent,
-            "//div[@class='modal-body']//div[@id='content']/form",
-            **kwargs
-        )
+        super().__init__(parent, "//div[@class='modal-body']//div[@id='content']/form", **kwargs)
 
     def _is_checked(self, widget):
         """Returns whether the widget is checked"""
@@ -615,44 +584,42 @@ class HostsTaxonomyMismatchRadioGroup(GenericLocatorWidget):
 
     @property
     def is_displayed(self):
-        return (self.fix_mismatch.is_displayed
-                and self.fail_on_mismatch.is_displayed)
+        return self.fix_mismatch.is_displayed and self.fail_on_mismatch.is_displayed
 
 
 class HostsAssignOrganization(HostsActionCommonDialog):
     title = Text(
-        "//h4[text()='Assign Organization"
-        " - The following hosts are about to be changed']")
+        "//h4[text()='Assign Organization - The following hosts are about to be changed']"
+    )
     organization = Select(id='organization_id')
     on_mismatch = HostsTaxonomyMismatchRadioGroup(taxonomy='Organization')
 
 
 class HostsAssignLocation(HostsActionCommonDialog):
-    title = Text(
-        "//h4[text()='Assign Location"
-        " - The following hosts are about to be changed']")
+    title = Text("//h4[text()='Assign Location - The following hosts are about to be changed']")
     location = Select(id='location_id')
     on_mismatch = HostsTaxonomyMismatchRadioGroup(taxonomy='Location')
 
 
 class HostsAssignCompliancePolicy(HostsActionCommonDialog):
     title = Text(
-        "//h4[text()='Assign Compliance Policy"
-        " - The following hosts are about to be changed']")
+        "//h4[text()='Assign Compliance Policy - The following hosts are about to be changed']"
+    )
     policy = Select(id='policy_id')
 
 
 class HostsUnassignCompliancePolicy(HostsActionCommonDialog):
     title = Text(
         "//h4[text()='Unassign Compliance Policy"
-        " - The following hosts are about to be changed']")
+        " - The following hosts are about to be changed']"
+    )
     policy = Select(id='policy_id')
 
 
 class HostsChangeOpenscapCapsule(HostsActionCommonDialog):
     title = Text(
-        "//h4[text()='Change OpenSCAP Capsule"
-        " - The following hosts are about to be changed']")
+        "//h4[text()='Change OpenSCAP Capsule - The following hosts are about to be changed']"
+    )
     policy = Select(id='smart_proxy_id')
 
 

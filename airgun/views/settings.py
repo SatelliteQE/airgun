@@ -13,9 +13,7 @@ class SettingsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Settings']")
     table = Table(
         './/table',
-        column_widgets={
-            'Value': PopOverWidget()
-        },
+        column_widgets={'Value': PopOverWidget()},
     )
 
     @SatTab.nested
@@ -24,8 +22,7 @@ class SettingsView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
     def wait_for_update(self):
         """Wait for value to update"""

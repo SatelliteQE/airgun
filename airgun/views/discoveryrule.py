@@ -20,15 +20,13 @@ class DiscoveryRulesView(BaseLoggedInView):
         './/table',
         column_widgets={
             'Name': Text('./a'),
-            'Actions': ActionsDropdown(
-                "./div[contains(@class, 'btn-group')]"),
-        }
+            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+        },
     )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class DiscoveryRuleCreateView(BaseLoggedInView):
@@ -38,12 +36,11 @@ class DiscoveryRuleCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Discovery rules'
-                and self.breadcrumb.read() == 'New Discovery Rule'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Discovery rules'
+            and self.breadcrumb.read() == 'New Discovery Rule'
         )
 
     @View.nested
@@ -66,11 +63,9 @@ class DiscoveryRuleCreateView(BaseLoggedInView):
 
 
 class DiscoveryRuleEditView(DiscoveryRuleCreateView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Discovery rules'

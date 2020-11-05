@@ -9,7 +9,6 @@ from airgun.views.contentviewfilter import EditYumFilterView
 
 
 class ContentViewFilterEntity(BaseEntity):
-
     def create(self, cv_name, values):
         """Create a new content view filter"""
         view = self.navigate_to(self, 'New', cv_name=cv_name)
@@ -33,7 +32,8 @@ class ContentViewFilterEntity(BaseEntity):
     def read(self, cv_name, filter_name, widget_names=None):
         """Read content view filter values"""
         view = self.navigate_to(
-            self, 'Edit',
+            self,
+            'Edit',
             cv_name=cv_name,
             filter_name=filter_name,
         )
@@ -47,7 +47,8 @@ class ContentViewFilterEntity(BaseEntity):
         :param dict values: dictionary with new values
         """
         view = self.navigate_to(
-            self, 'Edit',
+            self,
+            'Edit',
             cv_name=cv_name,
             filter_name=filter_name,
         )
@@ -64,7 +65,8 @@ class ContentViewFilterEntity(BaseEntity):
             not provided - all repositories will be affected.
         """
         view = self.navigate_to(
-            self, 'Edit',
+            self,
+            'Edit',
             cv_name=cv_name,
             filter_name=filter_name,
         )
@@ -75,22 +77,19 @@ class ContentViewFilterEntity(BaseEntity):
             )
             return
         view.affected_repositories.filter_toggle.fill(
-            'This filter applies only to a subset of repositories in the '
-            'content view.'
+            'This filter applies only to a subset of repositories in the content view.'
         )
         # deselect all repositories
         view.affected_repositories.select_all.fill(True)
         view.affected_repositories.select_all.fill(False)
         for repo in repositories:
             view.affected_repositories.searchbox.fill(repo)
-            view.affected_repositories.table.row(
-                name=repo)[0].widget.fill(True)
+            view.affected_repositories.table.row(name=repo)[0].widget.fill(True)
         view.affected_repositories.update_repositories.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def add_package_rule(
-            self, cv_name, filter_name, rpm_name, architecture, version):
+    def add_package_rule(self, cv_name, filter_name, rpm_name, architecture, version):
         """Add package rule to RPM content view filter.
 
         :param str cv_name: content view name
@@ -101,16 +100,21 @@ class ContentViewFilterEntity(BaseEntity):
             (e.g. ('Equal To', '5.21-1') or ('Range', '4.1', '4.6')
         """
         view = self.navigate_to(
-            self, 'Edit',
+            self,
+            'Edit',
             cv_name=cv_name,
             filter_name=filter_name,
         )
         view.content_tabs.rpms.add_rule.click()
-        view.content_tabs.rpms.table.fill([{
-            'RPM Name': rpm_name,
-            'Architecture': architecture,
-            'Version': version,
-        }])
+        view.content_tabs.rpms.table.fill(
+            [
+                {
+                    'RPM Name': rpm_name,
+                    'Architecture': architecture,
+                    'Version': version,
+                }
+            ]
+        )
         view.content_tabs.rpms.table[0][ACTIONS_COLUMN].widget.save.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -135,23 +139,17 @@ class ContentViewFilterEntity(BaseEntity):
             """Returns True if row matches all passed filters"""
             row_values = row.read()
             return all(
-                row_values[key] == value
-                for key, value in filters.items()
-                if value is not None
+                row_values[key] == value for key, value in filters.items() if value is not None
             )
 
         # find row which matches all filters
-        rows = [
-            row for row
-            in table.rows()
-            if row_matches(row, **passed_details)
-        ]
-        assert rows, 'Table Row not found using passed filters {}'.format(
-            passed_details)
+        rows = [row for row in table.rows() if row_matches(row, **passed_details)]
+        assert rows, f'Table Row not found using passed filters {passed_details}'
         return rows
 
-    def update_package_rule(self, cv_name, filter_name, rpm_name, new_values,
-                            architecture=None, version=None):
+    def update_package_rule(
+        self, cv_name, filter_name, rpm_name, new_values, architecture=None, version=None
+    ):
         """Update package rule of RPM content view filter.
 
         :param str cv_name: content view name
@@ -165,7 +163,8 @@ class ContentViewFilterEntity(BaseEntity):
             value with exact correspondence to UI)
         """
         view = self.navigate_to(
-            self, 'Edit',
+            self,
+            'Edit',
             cv_name=cv_name,
             filter_name=filter_name,
         )
@@ -173,7 +172,7 @@ class ContentViewFilterEntity(BaseEntity):
             table=view.content_tabs.rpms.table,
             rpm_name=rpm_name,
             architecture=architecture,
-            version=version
+            version=version,
         )
         row = rows[0]
         row[ACTIONS_COLUMN].widget.edit.click()
@@ -194,14 +193,14 @@ class ContentViewFilterEntity(BaseEntity):
         :param str query: search query
         """
         view = self.navigate_to(
-            self, 'Edit',
+            self,
+            'Edit',
             cv_name=cv_name,
             filter_name=filter_name,
         )
         return view.content_tabs.rpms.search(query)
 
-    def remove_package_rule(
-            self, cv_name, filter_name, rpm_name, architecture=None, version=None):
+    def remove_package_rule(self, cv_name, filter_name, rpm_name, architecture=None, version=None):
         """Remove specific package rule from RPM content view filter.
 
         :param str cv_name: content view name
@@ -213,7 +212,8 @@ class ContentViewFilterEntity(BaseEntity):
             value with exact correspondence to UI)
         """
         view = self.navigate_to(
-            self, 'Edit',
+            self,
+            'Edit',
             cv_name=cv_name,
             filter_name=filter_name,
         )
@@ -222,7 +222,7 @@ class ContentViewFilterEntity(BaseEntity):
             table=view.content_tabs.rpms.table,
             rpm_name=rpm_name,
             architecture=architecture,
-            version=version
+            version=version,
         )
         for row in rows:
             row[0].widget.fill(True)
@@ -230,8 +230,7 @@ class ContentViewFilterEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def add_errata(
-            self, cv_name, filter_name, errata_id=None, search_filters=None):
+    def add_errata(self, cv_name, filter_name, errata_id=None, search_filters=None):
         """Add errata to errata content view filter.
 
         :param str cv_name: content view name
@@ -244,7 +243,8 @@ class ContentViewFilterEntity(BaseEntity):
             widget values accordingly
         """
         view = self.navigate_to(
-            self, 'Edit',
+            self,
+            'Edit',
             cv_name=cv_name,
             filter_name=filter_name,
         )
@@ -252,8 +252,7 @@ class ContentViewFilterEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def add_package_group(
-            self, cv_name, filter_name, package_group):
+    def add_package_group(self, cv_name, filter_name, package_group):
         """Add package group to package group content view filter.
 
         :param str cv_name: content view name
@@ -261,7 +260,8 @@ class ContentViewFilterEntity(BaseEntity):
         :param str package_group: package group name
         """
         view = self.navigate_to(
-            self, 'Edit',
+            self,
+            'Edit',
             cv_name=cv_name,
             filter_name=filter_name,
         )
@@ -269,8 +269,7 @@ class ContentViewFilterEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def add_module_stream(
-            self, cv_name, filter_name, module_stream_query):
+    def add_module_stream(self, cv_name, filter_name, module_stream_query):
         """Add module stream to module stream content view filter.
 
         :param str cv_name: content view name
@@ -278,7 +277,8 @@ class ContentViewFilterEntity(BaseEntity):
         :param str module_stream_query: module stream query with name and stream version
         """
         view = self.navigate_to(
-            self, 'Edit',
+            self,
+            'Edit',
             cv_name=cv_name,
             filter_name=filter_name,
         )
@@ -295,18 +295,16 @@ class ShowAllContentViewFilters(NavigateStep):
     Args:
         cv_name: name of content view
     """
+
     VIEW = ContentViewFiltersView
 
     def am_i_here(self, *args, **kwargs):
         cv_name = kwargs.get('cv_name')
-        return (
-                self.view.is_displayed
-                and self.view.breadcrumb.locations[1] == cv_name)
+        return self.view.is_displayed and self.view.breadcrumb.locations[1] == cv_name
 
     def prerequisite(self, *args, **kwargs):
         cv_name = kwargs.get('cv_name')
-        return self.navigate_to(
-            ContentViewEntity, 'Edit', entity_name=cv_name)
+        return self.navigate_to(ContentViewEntity, 'Edit', entity_name=cv_name)
 
     def step(self, *args, **kwargs):
         self.parent.filters.select()
@@ -319,13 +317,12 @@ class AddNewContentViewFilter(NavigateStep):
     Args:
         cv_name: name of content view
     """
+
     VIEW = CreateYumFilterView
 
     def am_i_here(self, *args, **kwargs):
         cv_name = kwargs.get('cv_name')
-        return (
-                self.view.is_displayed
-                and self.view.breadcrumb.locations[1] == cv_name)
+        return self.view.is_displayed and self.view.breadcrumb.locations[1] == cv_name
 
     def prerequisite(self, *args, **kwargs):
         cv_name = kwargs.get('cv_name')
@@ -343,16 +340,18 @@ class EditContentViewFilter(NavigateStep):
         cv_name: name of content view
         filter_name: name of content view filter
     """
+
     VIEW = EditYumFilterView
 
     def am_i_here(self, *args, **kwargs):
         cv_name = kwargs.get('cv_name')
         filter_name = kwargs.get('filter_name')
         return (
-                self.view.is_displayed
-                and self.view.breadcrumb.locations[1] == cv_name
-                # depending on tab both 'filter' and 'Edit filter' may occur
-                and filter_name in self.view.breadcrumb.locations[3])
+            self.view.is_displayed
+            and self.view.breadcrumb.locations[1] == cv_name
+            # depending on tab both 'filter' and 'Edit filter' may occur
+            and filter_name in self.view.breadcrumb.locations[3]
+        )
 
     def resetter(self, *args, **kwargs):
         """Refresh the page as it won't be possible to read dynamically

@@ -68,7 +68,7 @@ class StatusIcon(GenericLocatorWidget):
         }
         return colors.get(
             self.browser.element(self, parent=self.parent).value_of_css_property('color'),
-            'unknown'
+            'unknown',
         )
 
     def read(self):
@@ -78,6 +78,7 @@ class StatusIcon(GenericLocatorWidget):
 
 class InstallableUpdatesCellView(View):
     """Installable Updates Table Cell View for content host view Table"""
+
     ROOT = '.'
 
     @View.nested
@@ -93,8 +94,7 @@ class InstallableUpdatesCellView(View):
 
 class ContentHostsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Content Hosts')]")
-    export = Text(
-        ".//a[contains(@class, 'btn')][contains(@href, 'content_hosts.csv')]")
+    export = Text(".//a[contains(@class, 'btn')][contains(@href, 'content_hosts.csv')]")
     register = Text(".//button[@ui-sref='content-hosts.register']")
     actions = ActionsDropdown(".//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
@@ -105,14 +105,13 @@ class ContentHostsView(BaseLoggedInView, SearchableViewMixin):
             'Name': Text('./a'),
             'Subscription Status': StatusIcon(),
             'Installable Updates': InstallableUpdatesCellView(),
-        }
+        },
     )
     pagination = Pagination()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ContentHostDetailsView(BaseLoggedInView):
@@ -122,8 +121,7 @@ class ContentHostDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Hosts'
@@ -145,7 +143,6 @@ class ContentHostDetailsView(BaseLoggedInView):
         subscription_status = ReadOnlyEntry(name='Subscription Status')
         details = ReadOnlyEntry(name='Details')
         auto_attach = EditableEntryCheckbox(name='Auto-Attach')
-        service_level = EditableEntrySelect(name='Service Level')
         # System Purpose
         system_purpose_status = ReadOnlyEntry(name='System Purpose Status')
         service_level = EditableEntrySelect(name='Service Level (SLA)')
@@ -155,7 +152,7 @@ class ContentHostDetailsView(BaseLoggedInView):
         # Content Host Properties
         os = ReadOnlyEntry(
             locator=".//dt[.='OS']/following-sibling::dd[not(contains(@class, 'ng-hide'))]"
-            )
+        )
         architecture = ReadOnlyEntry(name='Architecture')
         number_of_cpus = ReadOnlyEntry(name='Number of CPUs')
         sockets = ReadOnlyEntry(name='Sockets')
@@ -220,8 +217,7 @@ class ContentHostDetailsView(BaseLoggedInView):
 
         remove_selected = Button('Remove Selected')
         table = SatTable(
-            './/table',
-            column_widgets={0: Checkbox(locator="./input[@type='checkbox']")}
+            './/table', column_widgets={0: Checkbox(locator="./input[@type='checkbox']")}
         )
 
     @View.nested
@@ -229,29 +225,24 @@ class ContentHostDetailsView(BaseLoggedInView):
         TAB_NAME = 'Packages'
         SUB_ITEM = 'Applicable'
 
-        upgrade_selected = ActionsDropdown(
-            ".//span[contains(@class, 'btn-group')]")
+        upgrade_selected = ActionsDropdown(".//span[contains(@class, 'btn-group')]")
         update_all_packages = Button('Update All Packages')
         table = SatTable(
-            './/table',
-            column_widgets={0: Checkbox(locator="./input[@type='checkbox']")}
+            './/table', column_widgets={0: Checkbox(locator="./input[@type='checkbox']")}
         )
 
     @View.nested
     class errata(SatTab):
-        lce_filter = Select(
-            locator='.//select[@ng-model="selectedErrataOption"]')
+        lce_filter = Select(locator='.//select[@ng-model="selectedErrataOption"]')
         searchbox = Search()
-        apply_selected = ActionsDropdown(
-            ".//span[contains(@class, 'btn-group')]")
+        apply_selected = ActionsDropdown(".//span[contains(@class, 'btn-group')]")
         recalculate = Button('Recalculate')
         table = SatTable(
             './/table',
             column_widgets={
                 0: Checkbox(locator="./input[@type='checkbox']"),
                 'Id': Text('./a'),
-
-            }
+            },
         )
 
         def search(self, query, lce=None):
@@ -270,7 +261,7 @@ class ContentHostDetailsView(BaseLoggedInView):
                 self.lce_filter.fill(lce)
 
             if re.search(r'\w{4}-\d{4}:\d{4}', query):
-                query = 'id = {}'.format(query)
+                query = f'id = {query}'
             self.searchbox.search(query)
 
             return self.table.read()
@@ -278,13 +269,12 @@ class ContentHostDetailsView(BaseLoggedInView):
     @View.nested
     class module_streams(SatTab, SearchableViewMixin):
         TAB_NAME = 'Module Streams'
-        status_filter = Select(
-            locator='.//select[@ng-model="nutupaneParams.status"]')
+        status_filter = Select(locator='.//select[@ng-model="nutupaneParams.status"]')
         table = SatTable(
             locator='//table',
             column_widgets={
                 'Name': Text('.//a'),
-                'Actions': ActionDropdownWithCheckbox(".//div[contains(@class, 'dropdown')]")
+                'Actions': ActionDropdownWithCheckbox(".//div[contains(@class, 'dropdown')]"),
             },
         )
 
@@ -306,10 +296,8 @@ class ContentHostDetailsView(BaseLoggedInView):
     class repository_sets(SatTab, SearchableViewMixin):
         TAB_NAME = 'Repository Sets'
 
-        show_all = Checkbox(
-            locator=".//input[contains(@ng-model, 'contentAccessModeAll')]")
-        limit_to_lce = Checkbox(
-            locator=".//input[contains(@ng-model, 'contentAccessModeEnv')]")
+        show_all = Checkbox(locator=".//input[contains(@ng-model, 'contentAccessModeAll')]")
+        limit_to_lce = Checkbox(locator=".//input[contains(@ng-model, 'contentAccessModeEnv')]")
         actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
 
         table = SatTable(
@@ -317,30 +305,26 @@ class ContentHostDetailsView(BaseLoggedInView):
             column_widgets={
                 0: Checkbox(locator="./input[@type='checkbox']"),
                 'Product Name': Text('./a'),
-            }
+            },
         )
 
         def read(self):
             """Sometimes no checkboxes are checked off by default, selecting
             "Show All" in such case.
             """
-            if (
-                    self.show_all.read() is False
-                    and self.limit_to_lce.read() is False):
+            if self.show_all.read() is False and self.limit_to_lce.read() is False:
                 self.show_all.fill(True)
             return super().read()
 
 
 class ContentHostTaskDetailsView(TaskDetailsView):
-
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Content Hosts'
-                and len(self.breadcrumb.locations) > 2
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Hosts'
+            and len(self.breadcrumb.locations) > 2
         )
 
 
@@ -360,10 +344,9 @@ class ErrataDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[1] == 'Errata'
-                and len(self.breadcrumb.locations) > 3
+            breadcrumb_loaded
+            and self.breadcrumb.locations[1] == 'Errata'
+            and len(self.breadcrumb.locations) > 3
         )

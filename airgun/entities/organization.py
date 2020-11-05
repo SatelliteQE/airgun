@@ -31,12 +31,7 @@ class OrganizationEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
         view = self.navigate_to(self, 'All')
-        wait_for(
-            lambda: not view.search(entity_name),
-            timeout=120,
-            delay=2,
-            logger=view.logger
-        )
+        wait_for(lambda: not view.search(entity_name), timeout=120, delay=2, logger=view.logger)
 
     def read(self, entity_name, widget_names=None):
         """Read specific organization details"""
@@ -64,6 +59,7 @@ class OrganizationEntity(BaseEntity):
 @navigator.register(OrganizationEntity, 'All')
 class ShowAllOrganizations(NavigateStep):
     """Navigate to All Organizations page"""
+
     VIEW = OrganizationsView
 
     def step(self, *args, **kwargs):
@@ -73,6 +69,7 @@ class ShowAllOrganizations(NavigateStep):
 @navigator.register(OrganizationEntity, 'New')
 class AddNewOrganization(NavigateStep):
     """Navigate to Create Organization page"""
+
     VIEW = OrganizationCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -88,6 +85,7 @@ class EditOrganization(NavigateStep):
     Args:
         entity_name: name of the organization
     """
+
     VIEW = OrganizationEditView
 
     def prerequisite(self, *args, **kwargs):
@@ -106,6 +104,7 @@ class SelectOrganizationContext(NavigateStep):
     Args:
         org_name: name of the organization
     """
+
     VIEW = BaseLoggedInView
 
     def am_i_here(self, *args, **kwargs):
@@ -126,5 +125,6 @@ class SelectOrganizationContext(NavigateStep):
         if wrong_context_view.is_displayed:
             wrong_context_view.back.click()
             self.view.browser.wait_for_element(
-                self.view.menu, exception=False, ensure_page_safe=True)
+                self.view.menu, exception=False, ensure_page_safe=True
+            )
         super().post_navigate(_tries, *args, **kwargs)

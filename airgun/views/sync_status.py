@@ -19,11 +19,11 @@ class NodeNotFoundError(Exception):
     """Raise when a node was not found"""
 
 
-class SyncStatusTableNode(object):
+class SyncStatusTableNode:
     """Table row interface to implement a sync status table row tree node"""
+
     CHECKBOX = "./td/input[@type='checkbox']"
-    RESULT_LINK = (".//a[not(contains(@class, 'hidden'))]"
-                   "[not(contains(@class, 'progress'))]")
+    RESULT_LINK = ".//a[not(contains(@class, 'hidden'))][not(contains(@class, 'progress'))]"
     RESULT_PROGRESS = ".//a[contains(@class, 'progress')]"
     SECTION_EXPANDER = "./td/span[contains(@class, 'expander')]"
 
@@ -57,8 +57,7 @@ class SyncStatusTableNode(object):
 
     def is_child_of(self, node):
         """Return whether this node is a child of node"""
-        return ('child-of-{0}'.format(node.id)
-                in self.browser.get_attribute('class', self.row))
+        return f'child-of-{node.id}' in self.browser.get_attribute('class', self.row)
 
     @cached_property
     def name(self):
@@ -89,8 +88,7 @@ class SyncStatusTableNode(object):
     def progress(self):
         """Return the progress element of this row if exist"""
         try:
-            progress = self.browser.element(
-                self.RESULT_PROGRESS, parent=self.row)
+            progress = self.browser.element(self.RESULT_PROGRESS, parent=self.row)
         except NoSuchElementException:
             progress = None
         return progress
@@ -99,8 +97,7 @@ class SyncStatusTableNode(object):
     def expander(self):
         """Return the expander element of this row if exist"""
         try:
-            expander = self.browser.element(
-                self.SECTION_EXPANDER, parent=self.row)
+            expander = self.browser.element(self.SECTION_EXPANDER, parent=self.row)
         except NoSuchElementException:
             expander = None
         return expander
@@ -128,8 +125,7 @@ class SyncStatusTableNode(object):
         """Add a child node to this node"""
         if not self.is_section:
             # we cannot add a node to a non section node
-            raise ReservedToSectionOnlyError(
-                'Adding node to a non section one is prohibited')
+            raise ReservedToSectionOnlyError('Adding node to a non section one is prohibited')
         if node.parent is not None:
             raise ValueError('Child Node already has parent')
 
@@ -219,8 +215,7 @@ class SyncStatusTable(SatTable):
                     # We have not found a parent for this node,
                     # this has not to happen, but in any case raise exception
                     raise ParentNodeNotFoundError(
-                        'Parent node for row '
-                        'index = {0} not found'.format(row_index)
+                        f'Parent node for row index = {row_index} not found'
                     )
         return nodes
 
@@ -255,8 +250,7 @@ class SyncStatusTable(SatTable):
                 node = parent_node[name]
                 parent_node = node
         if node and node.name != node_path[-1]:
-            raise NodeNotFoundError(
-                'Target node "{0}" not found'.format(node_path))
+            raise NodeNotFoundError(f'Target node "{node_path}" not found')
         return node
 
 
@@ -272,5 +266,4 @@ class SyncStatusView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None

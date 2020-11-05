@@ -6,8 +6,8 @@ from selenium.common.exceptions import NoSuchElementException
 
 class NavigateStep(navmazing.NavigateStep):
     """AirGun's version of :class:`navmazing.NavigateStep` with custom
-    implementations of :meth:`am_i_here`, :meth:`go` and ability to work with
-    views.
+    implementations of `navmazing.NavigateStep.am_i_here` and `navmazing.NavigateStep.go`
+    and ability to work with views.
     """
 
     VIEW = None
@@ -16,7 +16,7 @@ class NavigateStep(navmazing.NavigateStep):
         """Adding shortcut for navigate object to make easier calls to its
         navigate method
         """
-        super(NavigateStep, self).__init__(obj, navigate_obj, logger=logger)
+        super().__init__(obj, navigate_obj, logger=logger)
         self.navigate_to = self.navigate_obj.navigate
 
     @cached_property
@@ -25,10 +25,8 @@ class NavigateStep(navmazing.NavigateStep):
         for current navigate step by ``VIEW`` class attribute.
         """
         if self.VIEW is None:
-            raise AttributeError(
-                '{} does not have VIEW specified'.format(type(self).__name__))
-        return self.create_view(self.VIEW,
-                                additional_context={'entity': self.obj})
+            raise AttributeError(f'{type(self).__name__} does not have VIEW specified')
+        return self.create_view(self.VIEW, additional_context={'entity': self.obj})
 
     def create_view(self, view_class, additional_context=None):
         """Method which creates an instance of view, defined by ``view_class``.
@@ -50,8 +48,7 @@ class NavigateStep(navmazing.NavigateStep):
             additional_context = {}
         if not additional_context.get('entity'):
             additional_context['entity'] = self.obj
-        return view_class(
-            self.navigate_obj.browser, additional_context=additional_context)
+        return view_class(self.navigate_obj.browser, additional_context=additional_context)
 
     def am_i_here(self, *args, **kwargs):
         """Describes if the navigation is already at the requested destination.
@@ -70,11 +67,9 @@ class NavigateStep(navmazing.NavigateStep):
         entity_name = kwargs.get('entity_name')
         try:
             if entity_name and hasattr(self.view, 'breadcrumb'):
-                return (
-                    self.view.is_displayed
-                    and self.view.breadcrumb.locations[1] in (
-                        entity_name,
-                        'Edit {}'.format(entity_name))
+                return self.view.is_displayed and self.view.breadcrumb.locations[1] in (
+                    entity_name,
+                    f'Edit {entity_name}',
                 )
             return self.view.is_displayed
         except (AttributeError, NoSuchElementException):
@@ -87,7 +82,7 @@ class NavigateStep(navmazing.NavigateStep):
         :return: view instance if class attribute ``VIEW`` is set or ``None``
             otherwise
         """
-        super(NavigateStep, self).go(_tries=_tries, *args, **kwargs)
+        super().go(_tries=_tries, *args, **kwargs)
         view = self.view if self.VIEW is not None else None
         return view
 
@@ -107,7 +102,7 @@ class Navigate(navmazing.Navigate):
         :param airgun.browser.AirgunBrowser browser: airgun browser instance to
             perform navigation with
         """
-        super(Navigate, self).__init__()
+        super().__init__()
         self.browser = browser
 
 

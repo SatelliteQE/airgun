@@ -49,6 +49,7 @@ class OperatingSystemEntity(BaseEntity):
 @navigator.register(OperatingSystemEntity, 'All')
 class ShowAllOperatingSystems(NavigateStep):
     """Navigate to All Operating Systems page"""
+
     VIEW = OperatingSystemsView
 
     def step(self, *args, **kwargs):
@@ -58,6 +59,7 @@ class ShowAllOperatingSystems(NavigateStep):
 @navigator.register(OperatingSystemEntity, 'New')
 class AddNewOperatingSystem(NavigateStep):
     """Navigate to Create Operating System page"""
+
     VIEW = OperatingSystemCreateView
 
     prerequisite = NavigateToSibling('All')
@@ -73,6 +75,7 @@ class EditOperatingSystem(NavigateStep):
     Args:
         entity_name: name of the operating system
     """
+
     VIEW = OperatingSystemEditView
 
     def prerequisite(self, *args, **kwargs):
