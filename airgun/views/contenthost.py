@@ -244,6 +244,8 @@ class ContentHostDetailsView(BaseLoggedInView):
                 'Id': Text('./a'),
             },
         )
+        select_all = Checkbox(locator=".//input[@type='checkbox'][@ng-change='allSelected()']")
+        pagination = Pagination()
 
         def search(self, query, lce=None):
             """Apply available filters before proceeding with searching and
