@@ -152,6 +152,7 @@ class Session:
         user=None,
         password=None,
         session_cookie=None,
+        hostname=None,
         url=None,
         login=True,
     ):
@@ -168,18 +169,21 @@ class Session:
             passed - default one from settings will be used.
         :param requests.sessions.Session optional session_cookie: session object to be used
             to bypass login
-        :param str optional url: URL path to open when starting session (without protocol
             and hostname)
+        :param str optional hostname: The hostname of a target that differs from
+            settings.satellite.hostname
+        :param str optional url: URL path to open when starting session (without protocol
         """
         self.name = session_name or gen_string('alphanumeric')
         self._user = user or settings.satellite.username
         self._password = password or settings.satellite.password
         self._session_cookie = session_cookie
         self._factory = None
+        self._hostname = hostname or settings.satellite.hostname
         self._url = url
+        self._login = login
         self.navigator = None
         self.browser = None
-        self._login = login
 
     def __call__(self, user=None, password=None, session_cookie=None, url=None, login=None):
         """Stores provided values. This allows tests to provide additional
@@ -235,7 +239,7 @@ class Session:
                 endpoint = self._url
             else:
                 endpoint = getattr(entity, 'endpoint_path', '/')
-            full_url = f"https://{settings.satellite.hostname}{endpoint}"
+            full_url = f"https://{self._hostname}{endpoint}"
             self._prepare_browser(full_url)
 
         return entity(self.browser)
@@ -253,7 +257,7 @@ class Session:
         else:
             LOGGER.info('Starting UI session %r for user %r', self.name, self._user)
         self._factory = SeleniumBrowserFactory(
-            test_name=self.name, session_cookie=self._session_cookie
+            test_name=self.name, session_cookie=self._session_cookie, hostname=self._hostname
         )
         try:
             selenium_browser = self._factory.get_browser()
