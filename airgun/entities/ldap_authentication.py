@@ -73,7 +73,7 @@ class ShowAllLDAPSources(NavigateStep):
     VIEW = LDAPAuthenticationsView
 
     def step(self, *args, **kwargs):
-        self.view.menu.select('Administer', 'Authentication sources')
+        self.view.menu.select('Administer', 'Authentication Sources')
 
 
 @navigator.register(LDAPAuthenticationEntity, 'New')
@@ -85,7 +85,7 @@ class AddNewLDAPSource(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.parent.new.click()
+        self.parent.ldap.select_kebab.item_select('Create')
 
 
 @navigator.register(LDAPAuthenticationEntity, 'Edit')
