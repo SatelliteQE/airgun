@@ -125,8 +125,11 @@ class ContentHostEntity(BaseEntity):
         :return: Returns a dict containing task status details
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.errata.search(errata_id)
-        view.errata.table.row(id=errata_id)[0].widget.fill(True)
+        if errata_id == "All":
+            view.errata.select_all.fill(True)
+        else:
+            view.errata.search(errata_id)
+            view.errata.table.row(id=errata_id)[0].widget.fill(True)
         install_via_dict = {
             'katello': 'via Katello agent',
             'rex': 'via remote execution',
