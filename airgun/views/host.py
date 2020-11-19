@@ -193,6 +193,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Hosts']")
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text("//a[contains(text(),'Create Host')]")
+    register = Button("Register Host")
     select_all = Checkbox(locator="//input[@id='check_all']")
     table = SatTable(
         './/table',
@@ -462,6 +463,29 @@ class HostCreateView(BaseLoggedInView):
         enabled = Checkbox(id='host_enabled')
         hardware_model = FilteredDropdown(id='host_model_id')
         comment = TextInput(id='host_comment')
+
+
+class HostRegisterView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+    host_group = FilteredDropdown(id='s2id_host_group_id')
+    operatingsystem = FilteredDropdown(id='s2id_operatingsystem_id')
+    capsule = FilteredDropdown(id='s2id_smart_proxy')
+    setup_insights = FilteredDropdown(id='s2id_setup_insights')
+    remote_execution = FilteredDropdown(id='s2id_setup_remote_execution')
+    token_lifetime = TextInput(id='jwt_expiration')
+    remote_execution_interface = TextInput(id='remote_execution_interface')
+    activation_keys = TextInput(id='activation_key')
+    generate_command = TextInput(name='commit')
+    registration_command = Text('//pre[@id="registration_command"]')
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Registrations'
+            and self.breadcrumb.read() == 'Register Host'
+        )
 
 
 class HostDetailsView(BaseLoggedInView):
