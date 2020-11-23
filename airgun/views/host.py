@@ -192,7 +192,7 @@ class HostInterface(View):
 class HostsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Hosts']")
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
-    new = Text("//a[contains(@href, '/hosts/new')]")
+    new = Text("//a[contains(text(),'Create Host')]")
     select_all = Checkbox(locator="//input[@id='check_all']")
     table = SatTable(
         './/table',
