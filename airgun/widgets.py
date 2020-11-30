@@ -1451,7 +1451,7 @@ class Pagination(Widget):
     and current page index/overall amount of pages. Mainly used with Table widget.
     """
 
-    ROOT = "//form[contains(@class, 'content-view-pf-pagination')]"
+    ROOT = ".//form[contains(@class, 'content-view-pf-pagination')]"
     # Kattelo views use per_page with select, foreman use a per_page with Button DropDown.
     PER_PAGE_BUTTON_DROPDOWN = ".//div[button[@id='pagination-row-dropdown']]"
     PER_PAGE_SELECT = ".//select[contains(@ng-model, 'per_page')]"
