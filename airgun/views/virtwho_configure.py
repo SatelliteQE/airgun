@@ -124,7 +124,7 @@ class VirtwhoConfigureCreateView(BaseLoggedInView):
     satellite_url = TextInput(id='foreman_virt_who_configure_config_satellite_url')
     hypervisor_id = FilteredDropdown(id='foreman_virt_who_configure_config_hypervisor_id')
     debug = Checkbox(id='foreman_virt_who_configure_config_debug')
-    proxy = TextInput(id='foreman_virt_who_configure_config_proxy')
+    proxy = FilteredDropdown(id='foreman_virt_who_configure_config_http_proxy_id')
     no_proxy = TextInput(id='foreman_virt_who_configure_config_no_proxy')
     filtering = FilteredDropdown(id='foreman_virt_who_configure_config_listing_mode')
     filtering_content = ConditionalSwitchableView(reference='filtering')
@@ -216,7 +216,7 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
         filter_host_parents = Text('.//span[contains(@class,"config-filter_host_parents")]')
         exclude_hosts = Text('.//span[contains(@class,"config-blacklist")]')
         exclude_host_parents = Text('.//span[contains(@class,"config-exclude_host_parents")]')
-        proxy = Text('.//span[contains(@class,"config-proxy")]')
+        proxy = Text('.//span[contains(@class,"config-http_proxy_id")]')
         no_proxy = Text('.//span[contains(@class,"config-no_proxy")]')
         kubeconfig_path = Text('.//span[contains(@class,"config-kubeconfig_path")]')
 
@@ -244,7 +244,7 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
         exclude_host_parents_label = Text(
             _label_locator.format(class_name="config-exclude_host_parents")
         )
-        proxy_label = Text(_label_locator.format(class_name="config-proxy"))
+        proxy_label = Text(_label_locator.format(class_name="config-http_proxy_id"))
         no_proxy_label = Text(_label_locator.format(class_name="config-no_proxy"))
         kubeconfig_path_label = Text(_label_locator.format(class_name="config-kubeconfig_path"))
 
