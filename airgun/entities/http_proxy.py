@@ -14,6 +14,7 @@ class HTTPProxyEntity(BaseEntity):
     def create(self, values):
         """Create a new http-proxy."""
         view = self.navigate_to(self, 'New')
+        view.http_proxy.disable_pass.click()
         view.fill(values)
         view.submit.click()
         view.validations.assert_no_errors()
@@ -36,6 +37,7 @@ class HTTPProxyEntity(BaseEntity):
     def update(self, entity_name, values):
         """Update an existing http-proxy."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.http_proxy.disable_pass.click()
         view.fill(values)
         view.submit.click()
         view.validations.assert_no_errors()
