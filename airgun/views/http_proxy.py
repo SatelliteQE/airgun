@@ -47,6 +47,7 @@ class HTTPProxyCreateView(BaseLoggedInView):
         name = TextInput(id='http_proxy_name')
         url = TextInput(id='http_proxy_url')
         username = TextInput(id='http_proxy_username')
+        disable_pass = Text('//a[@id="disable-pass-btn"]')
         password = TextInput(id='http_proxy_password')
         test_url = TextInput(id='http_proxy_test_url')
         test_connection = Text('//a[@id="test_connection_button"]')
