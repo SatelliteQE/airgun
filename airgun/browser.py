@@ -76,7 +76,9 @@ class SeleniumBrowserFactory:
 
     """
 
-    def __init__(self, provider=None, browser=None, test_name=None, session_cookie=None):
+    def __init__(
+        self, provider=None, browser=None, test_name=None, session_cookie=None, hostname=None
+    ):
         """Initializes factory with either specified or fetched from settings
         values.
 
@@ -93,6 +95,8 @@ class SeleniumBrowserFactory:
             used otherwise.
         :param requests.sessions.Session optional session_cookie: session object to be used
             to bypass login
+        :param str optional hostname: The hostname of a target that differs from
+            settings.satellite.hostname
         """
         self.provider = provider or settings.selenium.browser
         self.browser = browser or settings.selenium.webdriver
@@ -100,6 +104,7 @@ class SeleniumBrowserFactory:
         self._session = session_cookie
         self._docker = None
         self._webdriver = None
+        self._hostname = hostname or settings.satellite.hostname
 
     def get_browser(self):
         """Returns selenium webdriver instance of selected ``provider`` and
@@ -161,7 +166,7 @@ class SeleniumBrowserFactory:
         if self._session:
             # webdriver doesn't allow to add cookies unless we land on the target domain
             # let's navigate to its invalid page to get it loaded ASAP
-            self._webdriver.get(f'https://{settings.satellite.hostname}/404')
+            self._webdriver.get(f'https://{self._hostname}/404')
             self._webdriver.add_cookie(
                 {'name': '_session_id', 'value': self._session.cookies.get_dict()['_session_id']}
             )
