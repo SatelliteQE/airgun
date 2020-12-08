@@ -11,6 +11,7 @@ from airgun.navigation import navigator
 from airgun.views.host import HostCreateView
 from airgun.views.host import HostDetailsView
 from airgun.views.host import HostEditView
+from airgun.views.host import HostRegisterView
 from airgun.views.host import HostsAssignCompliancePolicy
 from airgun.views.host import HostsAssignLocation
 from airgun.views.host import HostsAssignOrganization
@@ -42,6 +43,14 @@ class HostEntity(BaseEntity):
         )
         host_view.flash.assert_no_error()
         host_view.flash.dismiss()
+
+    def get_register_command(self, values):
+        """Get curl command generated on Register Host page"""
+        view = self.navigate_to(self, 'Register')
+        view.fill(values)
+        self.browser.click(view.generate_command)
+        self.browser.plugin.ensure_page_safe()
+        return view.registration_command.read()
 
     def search(self, value):
         """Search for existing host entity"""
@@ -257,6 +266,18 @@ class AddNewHost(NavigateStep):
 
     def step(self, *args, **kwargs):
         self.parent.new.click()
+
+
+@navigator.register(HostEntity, 'Register')
+class RegisterHost(NavigateStep):
+    """Navigate to Register Host page"""
+
+    VIEW = HostRegisterView
+
+    prerequisite = NavigateToSibling('All')
+
+    def step(self, *args, **kwargs):
+        self.parent.register.click()
 
 
 @navigator.register(HostEntity, 'Details')
