@@ -261,7 +261,7 @@ class Session:
         try:
             selenium_browser = self._factory.get_browser()
             self.browser = AirgunBrowser(selenium_browser, self)
-            LOGGER.info('Setting initial URL to {url}')
+            LOGGER.info(f'Setting initial URL to {url}')
 
             self.browser.url = url
 
