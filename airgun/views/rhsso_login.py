@@ -29,3 +29,12 @@ class RhssoTwoFactorSuccessView(View, ClickableMixin):
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.code, exception=False) is not None
+
+
+class RhssoTotpView(View, ClickableMixin):
+    totp = TextInput(id='totp')
+    submit = Text('//input[@name="login"]')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.totp, exception=False) is not None
