@@ -4,11 +4,13 @@ from airgun.navigation import navigator
 from airgun.views.common import BaseLoggedInView
 from airgun.views.rhsso_login import RhssoExternalLogoutView
 from airgun.views.rhsso_login import RhssoLoginView
+from airgun.views.rhsso_login import RhssoTotpView
 from airgun.views.rhsso_login import RhssoTwoFactorSuccessView
 
 
 class RHSSOLoginEntity(BaseEntity):
-    def login(self, values, external_login=False):
+    def login(self, values, external_login=False, totp=None):
+
         if external_login:
             view = RhssoExternalLogoutView(self.browser)
             view.login_again.click()
@@ -16,6 +18,10 @@ class RHSSOLoginEntity(BaseEntity):
             view = self.navigate_to(self, 'NavigateToLogin')
             view.fill(values)
             view.submit.click()
+            if totp:
+                view = RhssoTotpView(self.browser)
+                view.fill(totp)
+                view.submit.click()
 
     def logout(self):
         view = BaseLoggedInView(self.browser)
