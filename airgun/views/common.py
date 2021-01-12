@@ -39,8 +39,8 @@ class BaseLoggedInView(View):
     taxonomies = ContextSelector()
     flash = SatFlashMessages()
     validations = ValidationErrors()
-    current_user = Text("//a[@id='account_menu']")
-    account_menu = Text("//a[@id='account_menu']")
+    current_user = Text("//li[@id='account_menu']")
+    account_menu = Text("//li[@id='account_menu']")
     logout = Text("//a[@href='/users/logout']")
 
     def select_logout(self):
