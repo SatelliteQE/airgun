@@ -16,13 +16,13 @@ from airgun.utils import get_widget_by_name
 from airgun.utils import normalize_dict_values
 from airgun.widgets import ACEEditor
 from airgun.widgets import ContextSelector
+from airgun.widgets import FilteredDropdown
 from airgun.widgets import GenericRemovableWidgetItem
 from airgun.widgets import ItemsList
 from airgun.widgets import LCESelector
 from airgun.widgets import ProgressBar
 from airgun.widgets import ReadOnlyEntry
 from airgun.widgets import SatFlashMessages
-from airgun.widgets import SatSelect
 from airgun.widgets import SatSubscriptionsTable
 from airgun.widgets import SatTable
 from airgun.widgets import SatVerticalNavigation
@@ -492,7 +492,7 @@ class TemplateInputItem(GenericRemovableWidgetItem):
     remove_button = Text(".//a[@class='remove_nested_fields']")
     name = TextInput(locator=".//input[contains(@name, '[name]')]")
     required = Checkbox(locator=".//input[contains(@id, 'required')]")
-    input_type = SatSelect(locator=".//select[contains(@name, '[input_type]')]")
+    input_type = FilteredDropdown(locator=".//div[contains(@id, 'input_type')]")
 
     input_content = ConditionalSwitchableView(reference='input_type')
 
