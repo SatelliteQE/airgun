@@ -38,7 +38,7 @@ class JobTemplatesView(BaseLoggedInView, SearchableViewMixin):
 class JobTemplateForeignInputSetItem(GenericRemovableWidgetItem):
     """Job Template Foreign Input Set Item widget"""
 
-    remove_button = Text(".//a[@class='remove_nested_fields']")
+    remove_button = Text(".//a[contains(@class, 'remove_nested_fields')]")
     target_template = Select(locator=".//select[contains(@name, '[target_template_id]')]")
     include_all = Checkbox(locator=".//input[contains(@id, 'include_all')]")
     include = TextInput(locator=".//input[contains(@name, '[include]')]")

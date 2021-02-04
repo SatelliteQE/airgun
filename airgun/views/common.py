@@ -489,7 +489,7 @@ class BookmarkCreateView(BaseLoggedInView):
 class TemplateInputItem(GenericRemovableWidgetItem):
     """Template Input item view"""
 
-    remove_button = Text(".//a[@class='remove_nested_fields']")
+    remove_button = Text(".//a[contains(@class, 'remove_nested_fields')]")
     name = TextInput(locator=".//input[contains(@name, '[name]')]")
     required = Checkbox(locator=".//input[contains(@id, 'required')]")
     input_type = SatSelect(locator=".//select[contains(@name, '[input_type]')]")
