@@ -91,9 +91,10 @@ class ReportTemplateGenerateView(BaseLoggedInView):
     email_to = TextInput(id='report_template_report_mail_to')
     inputs = TextInputsGroup(locator='.//form')
     output_format = FilteredDropdown(id='s2id_report_template_report_format')
+    hosts_filter = TextInput(locator='//input[contains(@class,"search-input")]')
     generate_at = TextInput(id='report_template_report_generate_at')
     submit = Text('//input[@name="commit"]')
-    generating = Text('//div[@id="template_generator"]/div/span[2]')
+    generating = Text('//div[@data-original-title="Generating a report"]/span[2]')
 
     @property
     def is_displayed(self):

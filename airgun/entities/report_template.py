@@ -187,5 +187,5 @@ class GenerateReportTemplate(NavigateStep):
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
-        self.parent.search(entity_name)
+        self.parent.search(f'name="{entity_name}"')
         self.parent.table.row(name=entity_name)['Actions'].widget.fill('Generate')
