@@ -476,6 +476,7 @@ class HostRegisterView(BaseLoggedInView):
     remote_execution_interface = TextInput(id='remote_execution_interface')
     activation_keys = TextInput(id='activation_key')
     generate_command = TextInput(name='commit')
+    insecure = Checkbox(id='insecure')
     registration_command = Text('//pre[@id="registration_command"]')
 
     @property
