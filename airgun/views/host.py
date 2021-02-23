@@ -467,7 +467,7 @@ class HostCreateView(BaseLoggedInView):
 
 class HostRegisterView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    host_group = FilteredDropdown(id='s2id_host_group_id')
+    hostgroup = FilteredDropdown(id='s2id_hostgroup_id')
     operatingsystem = FilteredDropdown(id='s2id_operatingsystem_id')
     capsule = FilteredDropdown(id='s2id_smart_proxy')
     setup_insights = FilteredDropdown(id='s2id_setup_insights')
