@@ -98,6 +98,7 @@ class ContentHostsView(BaseLoggedInView, SearchableViewMixin):
     register = Text(".//button[@ui-sref='content-hosts.register']")
     actions = ActionsDropdown(".//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
+    select_all = Checkbox(locator="//input[@ng-model='selection.allSelected']")
     table = SatTable(
         './/table',
         column_widgets={
@@ -328,6 +329,19 @@ class ContentHostTaskDetailsView(TaskDetailsView):
             and self.breadcrumb.locations[0] == 'Content Hosts'
             and len(self.breadcrumb.locations) > 2
         )
+
+
+class SyspurposeBulkActionView(BaseLoggedInView):
+    title = Text("//h4[contains(., 'Content Host System Purpose')]")
+    service_level = Select(locator=".//select[@ng-model='selectedServiceLevels']")
+    role = Select(locator=".//select[@ng-model='selectedRoles']")
+    usage_type = Select(locator=".//select[@ng-model='selectedUsages']")
+    assign = Text(".//span[text()='Assign']")
+    confirm = Text(".//button[text()='Assign']")
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ErrataDetailsView(BaseLoggedInView):

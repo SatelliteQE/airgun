@@ -5,6 +5,7 @@ from airgun.views.contenthost import ContentHostDetailsView
 from airgun.views.contenthost import ContentHostsView
 from airgun.views.contenthost import ContentHostTaskDetailsView
 from airgun.views.contenthost import ErrataDetailsView
+from airgun.views.contenthost import SyspurposeBulkActionView
 from airgun.views.job_invocation import JobInvocationCreateView
 from airgun.views.job_invocation import JobInvocationStatusView
 
@@ -59,6 +60,17 @@ class ContentHostEntity(BaseEntity):
         view = ContentHostTaskDetailsView(view.browser)
         view.progressbar.wait_for_result()
         return view.read()
+
+    def bulk_set_syspurpose(self, hosts, values):
+        """Set system purpose for multiple hosts"""
+        view = self.navigate_to(self, 'All')
+        view.search(' or '.join(hosts))
+        view.select_all.fill(True)
+        view.actions.fill('Manage System Purpose')
+        view = SyspurposeBulkActionView(view.browser)
+        view.fill(values)
+        self.browser.click(view.assign)
+        self.browser.click(view.confirm)
 
     def execute_module_stream_action(
         self,
