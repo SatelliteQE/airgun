@@ -2149,6 +2149,7 @@ class PopOverModalView(View):
 
         //div[contains(@class,'modal-content')]
     """
+
     ROOT = "//div[contains(@class,'modal-content')]"
     header = Text(".//h4[contains(@class, 'modal-title')]")
     input_box = TextInput(locator=".//input[contains(@class, 'form-control')]")
@@ -2165,6 +2166,7 @@ class PopOverWidget(View):
 
         //div[contains(@class, 'editable-open')]
     """
+
     ROOT = '.'
     column_value = Text(".//span[contains(@class, 'editable')]")
     pop_over_view = PopOverModalView()
