@@ -2123,25 +2123,44 @@ class Link(Text):
             self.browser.click(self)
 
 
-class PopOverWidget(Widget):
+class PopOverModalView(View):
     """Popover-content UI widget which contains header, drop_down, input_box, or textarea and
     submit button. This is associated within a table.
 
     Example html representation::
 
-        <h3 class="popover-title">Authorize login delegation (Default: false)</h3>
-            <form class="form-inline editableform" style="">
-                <select class="form-control input-sm">
-                    <option value="0">No</option>
-                    <option value="1">Yes</option></select>
-                <div class="editable-buttons">
-                    <button type="submit" class="btn btn-primary btn-sm editable-submit">
+        <div class="modal-content" role="document">
+            <h4 class="modal-title">Update value for Connect by IP setting</h4>
+            <form class="form-horizontal well">
+                <select name="value" class="form-control">
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
 
-        <h3 class="popover-title">Authorize login delegation auth ...(Default: Not set)</h3>
-            <form class="form-inline editableform" style="">
-                <input type="text" ...>
-                <div class="editable-buttons">
-                    <button type="submit" class="btn btn-primary btn-sm editable-submit">
+        <div class="modal-content" role="document">
+            <h4 class="modal-title">Update value for Administrator email address setting</h4>
+            <form class="form-horizontal well">
+                <input name="value" class="form-control" value="root@rhts.example.com">
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+
+    Locator example::
+
+        //div[contains(@class,'modal-content')]
+    """
+
+    ROOT = "//div[contains(@class,'modal-content')]"
+    header = Text(".//h4[contains(@class, 'modal-title')]")
+    input_box = TextInput(locator=".//input[contains(@class, 'form-control')]")
+    textarea = TextInput(locator=".//textarea[contains(@class, 'form-control')]")
+    drop_down = Select(".//select[contains(@class,'form-control')]")
+    submit = Text(".//button[@type='submit']")
+
+
+class PopOverWidget(View):
+    """Popover-content UI widget which contains header, drop_down, input_box, or textarea and
+    submit button. This is associated within a table.
 
     Locator example::
 
@@ -2149,26 +2168,21 @@ class PopOverWidget(Widget):
     """
 
     ROOT = '.'
-    column_value = Text(".//span[contains(@class, 'editable-click')]")
-    header = Text(".//h3[contains(@class, 'popover-title')]")
-    input_box = TextInput(locator=".//input[contains(@class, 'form-control input-sm')]")
-    textarea = TextInput(locator=".//textarea[contains(@class, 'form-control input-large')]")
-    drop_down = Select(".//select[contains(@class,'form-control input-sm')]")
-    submit = Text(".//button[@type='submit']")
+    column_value = Text(".//span[contains(@class, 'editable')]")
+    pop_over_view = PopOverModalView()
 
     def fill(self, item):
         """Selects value from drop_down if exist otherwise write into input_box or textarea"""
         self.column_value.click()
-
-        if self.header.is_displayed:
+        if self.pop_over_view.header.is_displayed:
             for widget_name in ('input_box', 'textarea', 'drop_down'):
-                widget = getattr(self, widget_name)
+                widget = getattr(self.pop_over_view, widget_name)
                 if widget.is_displayed:
                     widget.fill(item)
                     break
         else:
             raise ReadOnlyWidgetError('This field setting is read-only')
-        self.submit.click()
+        self.pop_over_view.submit.click()
 
     def read(self):
         """read column updated value"""
