@@ -333,9 +333,9 @@ class ContentHostTaskDetailsView(TaskDetailsView):
 
 class SyspurposeBulkActionView(BaseLoggedInView):
     title = Text("//h4[contains(., 'Content Host System Purpose')]")
-    service_level = Select(locator=".//select[@ng-model='selectedServiceLevels']")
-    role = Select(locator=".//select[@ng-model='selectedRoles']")
-    usage_type = Select(locator=".//select[@ng-model='selectedUsages']")
+    service_level = Select(id='selectedServiceLevels')
+    role = Select(id='selectedRoles')
+    usage_type = Select(id='selectedUsages')
     assign = Text(".//span[text()='Assign']")
     confirm = Text(".//button[text()='Assign']")
 
