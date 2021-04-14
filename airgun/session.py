@@ -160,6 +160,7 @@ class Session:
         :param str optional session_name: string representing session name.
             Used in screenshot names, saucelabs test results, docker container
             names etc. You should provide your test name here in most cases.
+            Any '/' or ' ' characters will be converted to '_'.
             Defaults to random alphanumeric value.
         :param str optional user: username (login) of user, who will perform UI
             actions. If None is passed - default one provided by settings will
@@ -173,6 +174,10 @@ class Session:
             settings.satellite.hostname
         :param str optional url: URL path to open when starting session (without protocol
         """
+        if session_name:
+            for c in '/ ':
+                session_name = session_name.replace(c, '_')
+
         self.name = session_name or gen_string('alphanumeric')
         self._user = user or settings.satellite.username
         self._password = password or settings.satellite.password
@@ -279,13 +284,12 @@ class Session:
     def take_screenshot(self):
         """Take screen shot from the current browser window.
 
-        The screenshot named ``screenshot-YYYY-mm-dd_HH_MM_SS.png`` will be
-        placed on the path specified by
-        ``settings.screenshots_path/YYYY-mm-dd/ClassName/method_name/``.
+        The screenshot named f'{self.name}-screenshot-YYYY-mm-dd_HH_MM_SS.png'
+        will be stored in the path f'{settings.screenshots_path}/YYYY-mm-dd/'.
 
         All directories will be created if they don't exist. Make sure that the
-        user running Robottelo have the right permissions to create files and
-        directories matching the complete.
+        user running Robottelo has the right permissions to create files and
+        directories.
 
         This method is called automatically in case any exception during UI
         session happens.
@@ -299,7 +303,7 @@ class Session:
             os.makedirs(path)
         path = os.path.join(
             path,
-            f'{self.name.replace(" ", "_")}-screenshot-{now.strftime("%Y-%m-%d_%H_%M_%S")}.png',
+            f'{self.name}-screenshot-{now.strftime("%Y-%m-%d_%H_%M_%S")}.png',
         )
         LOGGER.debug('Saving screenshot %s', path)
         self.browser.selenium.save_screenshot(path)
