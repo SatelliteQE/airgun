@@ -1,3 +1,4 @@
+from widgetastic.widget import Table
 from widgetastic.widget import Text
 from widgetastic.widget import TextInput
 from widgetastic.widget import View
@@ -60,7 +61,7 @@ class ModuleStreamsDetailsView(BaseLoggedInView):
 
     @View.nested
     class repositories(SatTab):
-        table = SatTable(
+        table = Table(
             locator=".//table",
             column_widgets={
                 'Name': Text("./a"),
