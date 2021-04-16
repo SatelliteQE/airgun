@@ -306,7 +306,8 @@ class Session:
             f'{self.name}-screenshot-{now.strftime("%Y-%m-%d_%H_%M_%S")}.png',
         )
         LOGGER.debug('Saving screenshot %s', path)
-        self.browser.selenium.save_screenshot(path)
+        if not self.browser.selenium.save_screenshot(path):
+            LOGGER.error('Failed to save screenshot %s', path)
 
     @cached_property
     def activationkey(self):
