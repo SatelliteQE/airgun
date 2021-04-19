@@ -14,20 +14,25 @@ from airgun.views.repository import RepositoryPuppetModulesView
 
 
 class RepositoryEntity(BaseEntity):
-    def _find_default_http_proxy(self, values):
-        """ Finds the global proxy name and returns updated values accordingly."""
-        proxy = SettingsEntity(self.browser)
-        result = proxy.read(property_name='name = content_default_http_proxy')['table'][0]['Value']
-        global_proxy_name = result.split()[0]
-        if global_proxy_name == 'no':
-            global_proxy_name = 'None'
-        values["repo_content.http_proxy_policy"] = f'Global Default ({global_proxy_name})'
-        return values
+    @property
+    def global_default_http_proxy(self):
+        """Look up the default http proxy and return the string that a user would select for
+        HTTP Proxy Policy when creating or updating a repository.
+        """
+        proxy_name = SettingsEntity(self.browser).read(
+            property_name='name = content_default_http_proxy'
+        )['table'][0]['Value']
+
+        # The default text for no default http proxy varies between versions of Satellite
+        if proxy_name in ('Empty', 'no global default'):
+            proxy_name = 'None'
+
+        return f'Global Default ({proxy_name})'
 
     def create(self, product_name, values):
         """Create new repository for product"""
         if values.get("repo_content.http_proxy_policy") == "Global Default":
-            values = self._find_default_http_proxy(values)
+            values['repo_content.http_proxy_policy'] = self.global_default_http_proxy
         view = self.navigate_to(self, 'New', product_name=product_name)
         view.fill(values)
         view.submit.click()
@@ -47,7 +52,7 @@ class RepositoryEntity(BaseEntity):
     def update(self, product_name, entity_name, values):
         """Update product repository values"""
         if values.get("repo_content.http_proxy_policy") == "Global Default":
-            values = self._find_default_http_proxy(values)
+            values['repo_content.http_proxy_policy'] = self.global_default_http_proxy
         view = self.navigate_to(self, 'Edit', product_name=product_name, entity_name=entity_name)
         view.fill(values)
         view.flash.assert_no_error()
