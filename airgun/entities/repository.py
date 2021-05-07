@@ -1,3 +1,5 @@
+import re
+
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
@@ -19,13 +21,17 @@ class RepositoryEntity(BaseEntity):
         """Look up the default http proxy and return the string that a user would select for
         HTTP Proxy Policy when creating or updating a repository.
         """
-        proxy_name = SettingsEntity(self.browser).read(
+        proxy_setting = SettingsEntity(self.browser).read(
             property_name='name = content_default_http_proxy'
         )['table'][0]['Value']
 
         # The default text for no default http proxy varies between versions of Satellite
-        if proxy_name in ('Empty', 'no global default'):
+        if proxy_setting in ('Empty', 'no global default'):
             proxy_name = 'None'
+        else:
+            regex = re.compile(r'^(.*) \((.*)\)$')
+            match = regex.match(proxy_setting)
+            proxy_name = match.group(1) if match else 'None'
 
         return f'Global Default ({proxy_name})'
 
