@@ -8,7 +8,7 @@ from widgetastic.widget import Checkbox
 from widgetastic.widget import do_not_read_this_widget
 from widgetastic.widget import GenericLocatorWidget
 from widgetastic.widget import ParametrizedLocator
-from widgetastic.widget import ParametrizedView
+from widgetastic.widget import ClickableMixin
 from widgetastic.widget import Select
 from widgetastic.widget import Table
 from widgetastic.widget import Text
@@ -21,7 +21,6 @@ from widgetastic_patternfly import Button
 from widgetastic_patternfly import FlashMessage
 from widgetastic_patternfly import FlashMessages
 from widgetastic_patternfly import Kebab
-from widgetastic_patternfly import Parameter
 from widgetastic_patternfly import VerticalNavigation
 
 from airgun.exceptions import DisabledWidgetError
@@ -2229,32 +2228,22 @@ class AuthSourceAggregateCard(AggregateStatusCard):
             return None
 
 
-class Accordion(ParametrizedView):
-    """
-    """
-    PARAMETERS = ("index",)
-    ROOT = ParametrizedLocator(".//span[contains(text(), '{index}')]")
-    #ITEMS = ".//button[contains(@class, 'pf-c-accordion__toggle')]"
-    #ITEM = ".//span[contains(text(), '{}')]"
+class Accordion(View, ClickableMixin):
+    """PF4 Accordion widget"""
 
-    def __init__(self, parent=None, id=None, locator=None, logger=None, *args, **kwargs):
+    ROOT = ParametrizedLocator("{@locator}")
+    ITEMS = ".//button[contains(@class, 'pf-c-accordion__toggle')]"
+    ITEM = ".//span[contains(text(), '{}')]"
+
+    def __init__(self, parent=None, id=None, locator=None, logger=None):
+        Widget.__init__(self, parent=parent, logger=logger)
         if id:
-            self.locator = ".//div[@id={}].format(quote(id))"
+            self.locator = ".//div[@id={}]".format(quote(id))
         else:
             self.locator = locator
 
-    # note that this has 1-based indexing
-    index = Parameter("index")
-    # properties
-    @property
-    def item_list(self):
-        return self.parent
+    def items(self):
+        return [self.browser.text(elm) for elm in self.browser.elements(self.ITEMS)]
 
-    #@property
-    #def widget_names(self):
-    #    """ Return all tabs names present on page"""
-    #    return [self.browser.text(el) for el in self.browser.elements(self.ITEMS)]
-
-    def expand(self, value):
+    def toggle(self, value):
         self.browser.click(self.ITEM.format(value))
-
