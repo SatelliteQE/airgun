@@ -1536,12 +1536,20 @@ class Pagination(Widget):
                 widget.fill(value)
 
 
-class SatTable(Table):
-    """DEPRECATED. Please use :class:`widgetastic.widget.Table` instead.
+class SatTablePagination(Pagination):
+    """Paginator widget for use within SatTable."""
 
-    Satellite version of table. Main difference - in case it's empty, there
-    might be just 1 column with appropriate message in table body or no columns
-    and rows at all.
+    ROOT = "//form[contains(@class, 'content-view-pf-pagination')]"
+
+
+class SatTable(Table):
+    """Satellite version of table.
+
+    Includes a paginator sub-widget. If found, then the paginator is used to read all entries from
+    the table.
+
+    If the table is empty, there might be only one column with an appropriate message in the table
+    body, or it may have no columns or rows at all. This subclass handles both possibilities.
 
     Example html representation::
 
@@ -1574,7 +1582,7 @@ class SatTable(Table):
         "contains(@data-block, 'no-search-results-message')]"
     )
     tbody_row = Text('./tbody/tr')
-    pagination = Pagination()
+    pagination = SatTablePagination()
 
     @property
     def has_rows(self):
