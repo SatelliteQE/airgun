@@ -11,25 +11,27 @@ class CloudInventoryEntity(BaseEntity):
 
     def read(self, entity_name=None, widget_names=None):
         view = self.navigate_to(self, 'All')
+        result = view.read(widget_names=widget_names)
         if entity_name:
             view.inventory_list.toggle(entity_name)
-            entity_item = view.inventory_list
-            return entity_item.read()
-        return view.read(widget_names=widget_names)
+            result.update(view.inventory_list.read())
+        return result
 
     def generate_report(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.inventory_list.toggle(entity_name)
-        entity_item = view.inventory_list
-        entity_item.browser.click(entity_item.generating.restart, ignore_ajax=True)
-        wait_for(lambda: entity_item.status == 'idle', timeout=180, delay=1, logger=view.logger)
+        view.browser.click(view.inventory_list.generating.restart, ignore_ajax=True)
+        wait_for(
+            lambda: view.inventory_list.status == 'idle', timeout=180, delay=1, logger=view.logger
+        )
 
     def download_report(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.inventory_list.toggle(entity_name)
-        entity_item = view.inventory_list
-        entity_item.browser.click(entity_item.uploading.download_report, ignore_ajax=True)
-        wait_for(lambda: entity_item.status == 'idle', timeout=180, delay=1, logger=view.logger)
+        view.browser.click(view.inventory_list.uploading.download_report, ignore_ajax=True)
+        wait_for(
+            lambda: view.inventory_list.status == 'idle', timeout=180, delay=1, logger=view.logger
+        )
         return self.browser.save_downloaded_file()
 
     def update(self, values):

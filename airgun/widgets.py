@@ -5,10 +5,10 @@ from widgetastic.exceptions import NoSuchElementException
 from widgetastic.exceptions import WidgetOperationFailed
 from widgetastic.utils import retry_stale_element
 from widgetastic.widget import Checkbox
+from widgetastic.widget import ClickableMixin
 from widgetastic.widget import do_not_read_this_widget
 from widgetastic.widget import GenericLocatorWidget
 from widgetastic.widget import ParametrizedLocator
-from widgetastic.widget import ClickableMixin
 from widgetastic.widget import Select
 from widgetastic.widget import Table
 from widgetastic.widget import Text
@@ -2235,12 +2235,9 @@ class Accordion(View, ClickableMixin):
     ITEMS = ".//button[contains(@class, 'pf-c-accordion__toggle')]"
     ITEM = ".//span[contains(text(), '{}')]"
 
-    def __init__(self, parent=None, id=None, locator=None, logger=None):
+    def __init__(self, parent=None, id_=None, locator=None, logger=None):
         Widget.__init__(self, parent=parent, logger=logger)
-        if id:
-            self.locator = ".//div[@id={}]".format(quote(id))
-        else:
-            self.locator = locator
+        self.locator = './/div[@id={id_!r}]' if id_ else locator
 
     def items(self):
         return [self.browser.text(elm) for elm in self.browser.elements(self.ITEMS)]

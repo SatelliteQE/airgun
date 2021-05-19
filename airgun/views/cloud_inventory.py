@@ -32,27 +32,28 @@ class InventoryTab(Tab):
 class InventoryItemsView(Accordion):
     """Item related to one organization on Cloud Inventory Upload page."""
 
-    ROOT = ParametrizedLocator(".//dl[contains(@class, 'pf-c-accordion account-list')]")
+    ROOT = './/dl[contains(@class, "pf-c-accordion account-list")]'
     DESCRIPTION_LOCATOR = (
         './/span[contains(@class, "pf-c-label pf-m-blue pf-m-outline account-icon")]'
     )
-    STATUS_ELEMENTS = (
-        './/div[contains(@class, "status")][contains(@class, "container")]'
-        '/div[contains(@class, "item")]'
-    )
+    STATUS_ELEMENTS = './/div[contains(@class, "status container")]/div[contains(@class, "item")]'
 
     @View.nested
     class generating(InventoryTab):
-        process = Text(".//div[contains(@class, 'tab-header')]/div[1]")
+        process = Text('.//div[contains(@class, "tab-header")]/div[1]')
         restart = Button('Restart')
-        terminal = Text(".//div[@class='terminal']")
-        scheduled_run = Text(".//div[contains(@class, 'scheduled_run')]")
+        terminal = Text(
+            './/div[contains(@class, "report-generate")]//div[contains(@class, "terminal")]'
+        )
+        scheduled_run = Text('.//div[contains(@class, "scheduled_run")]')
 
     @View.nested
     class uploading(InventoryTab):
-        process = Text(".//div[contains(@class, 'tab-header')]/div[1]")
-        download_report = Button('contains', 'Download Report')
-        terminal = Text(".//div[@class='terminal']")
+        process = Text('.//div[contains(@class, "tab-header")]/div[1]')
+        download_report = Button('Download Report')
+        terminal = Text(
+            './/div[contains(@class, "report-upload")]//div[contains(@class, "terminal")]'
+        )
 
     @property
     def is_generating(self):
@@ -73,10 +74,10 @@ class InventoryItemsView(Accordion):
     @property
     def status(self):
         if self.is_generating:
-            return "generating"
+            return 'generating'
         if self.is_uploading:
-            return "uploading"
-        return "idle"
+            return 'uploading'
+        return 'idle'
 
     @property
     def is_active(self):
@@ -87,15 +88,15 @@ class InventoryItemsView(Accordion):
         if not self.is_active:
             self.click()
 
-    def read(self):
+    def read(self, widget_names=None):
         return {
             'generating': self.generating.read(),
             'uploading': self.uploading.read(),
             'status': self.status,
-            'auto_update': self.parent.parent.auto_update.read(),
-            'obfuscate_hostnames': self.parent.parent.obfuscate_hostnames.read(),
-            'obfuscate_ips': self.parent.parent.obfuscate_ips.read(),
-            'exclude_packages': self.parent.parent.exclude_packages.read(),
+            'auto_update': self.parent.auto_update.read(),
+            'obfuscate_hostnames': self.parent.obfuscate_hostnames.read(),
+            'obfuscate_ips': self.parent.obfuscate_ips.read(),
+            'exclude_packages': self.parent.exclude_packages.read(),
         }
 
     def fill(self, values):
@@ -105,18 +106,24 @@ class InventoryItemsView(Accordion):
 class CloudInventoryListView(BaseLoggedInView):
     """Main RH Cloud Inventory Upload view."""
 
-    title = Text("//h1[@class='inventory_title']")
-    auto_update = Switch(".//input[@id='rh-cloud-switcher-allow_auto_inventory_upload']")
+    title = Text('//div[contains(@class, "inventory-upload-header-title")]/h1')
+    auto_update = Switch('.//label[@for="rh-cloud-switcher-allow_auto_inventory_upload"]')
     obfuscate_hostnames = Switch(
-        ".//input[@id='rh-cloud-switcher-obfuscate_inventory_hostnames-on']"
+        './/label[@for="rh-cloud-switcher-obfuscate_inventory_hostnames"]'
     )
-    obfuscate_ips = Switch(".//input[@id='rh-cloud-switcher-obfuscate_inventory_ips']")
-    exclude_packages = Switch(".//input[@id='rh-cloud-switcher-exclude_installed_packages']")
-
-    @View.nested
-    class inventory_list(InventoryItemsView):
-        """Nested view for the inventory list widgets"""
+    obfuscate_ips = Switch('.//label[@for="rh-cloud-switcher-obfuscate_inventory_ips"]')
+    exclude_packages = Switch('.//label[@for="rh-cloud-switcher-exclude_installed_packages"]')
+    inventory_list = View.nested(InventoryItemsView)
 
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
+
+    def read(self, widget_names=None):
+        return {
+            'title': self.title.text,
+            'auto_update': self.auto_update.read(),
+            'obfuscate_hostnames': self.obfuscate_hostnames.read(),
+            'obfuscate_ips': self.obfuscate_ips.read(),
+            'exclude_packages': self.exclude_packages.read(),
+        }
