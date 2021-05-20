@@ -3,7 +3,6 @@ from jsmin import jsmin
 from wait_for import wait_for
 from widgetastic.exceptions import NoSuchElementException
 from widgetastic.exceptions import WidgetOperationFailed
-from widgetastic.utils import retry_stale_element
 from widgetastic.widget import Checkbox
 from widgetastic.widget import do_not_read_this_widget
 from widgetastic.widget import GenericLocatorWidget
@@ -697,9 +696,7 @@ class SatFlashMessage(FlashMessage):
 
     """
 
-    @property
-    def text(self):
-        return self.browser.text('./span[text()]', parent=self)
+    TEXT_LOCATOR = './span[text()]'
 
 
 class SatFlashMessages(FlashMessages):
@@ -726,26 +723,6 @@ class SatFlashMessages(FlashMessages):
     ROOT = '//div[@class="toast-notifications-list-pf"]'
     MSG_LOCATOR = f'{ROOT}/div[contains(@class, "alert")]'
     msg_class = SatFlashMessage
-
-    @retry_stale_element
-    def assert_no_error(self, ignore_messages=None):
-        if ignore_messages is None:
-            ignore_messages = []
-        self.logger.info('asserting there are no error messages')
-        for message in self.messages():
-            message_text = message.text
-            if message.type not in {'success', 'info', 'warning'}:
-                if message_text in ignore_messages:
-                    self.logger.info('ERROR MESSAGE IGNORED %s: %r', message.type, message_text)
-                    continue
-                self.logger.error('%s: %r', message.type, message_text)
-                raise AssertionError(f'assert_no_error: {message.type}: {message_text!r}')
-            else:
-                self.logger.info('%s: %r', message.type, message_text)
-
-    @retry_stale_element
-    def dismiss(self):
-        return super().dismiss()
 
 
 class ValidationErrors(Widget):
