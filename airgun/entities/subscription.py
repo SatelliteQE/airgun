@@ -53,7 +53,7 @@ class SubscriptionEntity(BaseEntity):
         """
         try:
             view = self.navigate_to(self, 'Manage Manifest')
-            result = "http" in view.manifest.red_hat_cdn_url.value
+            result = view.manifest.delete_button.is_enabled
             view.close_button.click()
             return result
         except TimedOutError:
