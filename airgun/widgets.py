@@ -2235,9 +2235,9 @@ class Accordion(View, ClickableMixin):
     ITEMS = ".//button[contains(@class, 'pf-c-accordion__toggle')]"
     ITEM = ".//span[contains(text(), '{}')]"
 
-    def __init__(self, parent=None, id_=None, locator=None, logger=None):
+    def __init__(self, parent=None, id=None, locator=None, logger=None):
         Widget.__init__(self, parent=parent, logger=logger)
-        self.locator = './/div[@id={id_!r}]' if id_ else locator
+        self.locator = './/div[@id={id!r}]' if id else locator
 
     def items(self):
         return [self.browser.text(elm) for elm in self.browser.elements(self.ITEMS)]

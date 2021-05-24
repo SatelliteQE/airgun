@@ -36,7 +36,7 @@ class InventoryItemsView(Accordion):
     DESCRIPTION_LOCATOR = (
         './/span[contains(@class, "pf-c-label pf-m-blue pf-m-outline account-icon")]'
     )
-    STATUS_ELEMENTS = './/div[contains(@class, "status container")]/div[contains(@class, "item")]'
+    STATUS_ELEMENTS = './/div[contains(@class, "status")]/div[contains(@class, "item")]'
 
     @View.nested
     class generating(InventoryTab):
@@ -58,7 +58,7 @@ class InventoryItemsView(Accordion):
     @property
     def is_generating(self):
         try:
-            self.parent_browser.selenium.find_element_by_xpath(f"{self.STATUS_ELEMENTS}[1]/div")
+            self.parent_browser.selenium.find_element_by_xpath(f'{self.STATUS_ELEMENTS}[1]/span')
             return True
         except NoSuchElementException:
             return False
@@ -66,7 +66,7 @@ class InventoryItemsView(Accordion):
     @property
     def is_uploading(self):
         try:
-            self.parent_browser.selenium.find_element_by_xpath(f"{self.STATUS_ELEMENTS}[2]/div")
+            self.parent_browser.selenium.find_element_by_xpath(f'{self.STATUS_ELEMENTS}[2]/span')
             return True
         except NoSuchElementException:
             return False

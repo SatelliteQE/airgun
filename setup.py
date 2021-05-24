@@ -24,6 +24,7 @@ setup(
         'wait_for',
         'widgetastic.core',
         'widgetastic.patternfly',
+        'widgetastic.patternfly4',
     ],
     packages=find_packages(exclude=['tests*']),
     package_data={'': ['LICENSE']},
