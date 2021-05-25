@@ -20,6 +20,7 @@ from widgetastic_patternfly import FlashMessage
 from widgetastic_patternfly import FlashMessages
 from widgetastic_patternfly import Kebab
 from widgetastic_patternfly import VerticalNavigation
+from widgetastic_patternfly4.ouia import ContextSelector as OUIAContextSelector
 
 from airgun.exceptions import DisabledWidgetError
 from airgun.exceptions import ReadOnlyWidgetError
@@ -786,22 +787,28 @@ class ValidationErrors(Widget):
         do_not_read_this_widget()
 
 
-class ContextSelector(Widget):
-    CURRENT_ORG = '//li[@id="organization-dropdown"]/a'
-    CURRENT_LOC = '//li[@id="location-dropdown"]/a'
-    ORG_LOCATOR = '//li[@id="organization-dropdown"]/ul/li/a[contains(.,{})]'
-    LOC_LOCATOR = '//li[@id="location-dropdown"]/ul/li/a[contains(.,{})]'
+class ContextSelector(OUIAContextSelector):
+    CURRENT_ORG = (
+        '//div[@id="organization-dropdown"]//span[@class="pf-c-context-selector__toggle-text"]'
+    )
+    CURRENT_LOC = (
+        '//div[@id="location-dropdown"]//span[@class="pf-c-context-selector__toggle-text"]'
+    )
+    ORG_LOCATOR = '//div[@id="organization-dropdown"]//li[button[contains(.,{})]]'
+    LOC_LOCATOR = '//div[@id="location-dropdown"]//li[button[contains(.,{})]]'
 
     def select_org(self, org_name):
         self.logger.info('Selecting Organization %r', org_name)
-        l1e = self.browser.element(self.CURRENT_ORG)
-        self.browser.move_to_element(l1e)
-        self.browser.click(l1e)
-        l2e = self.browser.element(self.ORG_LOCATOR.format(quote(org_name)))
-        self.browser.execute_script(
-            "arguments[0].click();",
-            l2e,
-        )
+
+        # Click current org to view the list
+        e = self.browser.element(self.CURRENT_ORG)
+        self.browser.move_to_element(e)
+        self.browser.click(e)
+
+        # Select the new org from the list
+        e = self.browser.element(self.ORG_LOCATOR.format(quote(org_name)))
+        e.click()
+
         self.browser.plugin.ensure_page_safe()
 
     @property
@@ -810,14 +817,16 @@ class ContextSelector(Widget):
 
     def select_loc(self, loc_name):
         self.logger.info('Selecting Location %r', loc_name)
-        l1e = self.browser.element(self.CURRENT_LOC)
-        self.browser.move_to_element(l1e)
-        self.browser.click(l1e)
-        l2e = self.browser.element(self.LOC_LOCATOR.format(quote(loc_name)))
-        self.browser.execute_script(
-            "arguments[0].click();",
-            l2e,
-        )
+
+        # Click current location to view the list
+        e = self.browser.element(self.CURRENT_LOC)
+        self.browser.move_to_element(e)
+        self.browser.click(e)
+
+        # Select the new location from the list
+        e = self.browser.element(self.LOC_LOCATOR.format(quote(loc_name)))
+        e.click()
+
         self.browser.plugin.ensure_page_safe()
 
     @property
