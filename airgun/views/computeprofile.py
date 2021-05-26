@@ -9,8 +9,8 @@ from airgun.widgets import ActionsDropdown
 
 
 class ComputeProfilesView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Compute Profiles']")
-    new = Text("//a[contains(@href, '/compute_profiles/new')]")
+    title = Text('//*[(self::h1 or self::h5) and text()="Compute Profiles"]')
+    new = Text('//a[text()="Create Compute Profile"]')
     table = Table(
         './/table',
         column_widgets={
