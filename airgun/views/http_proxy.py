@@ -11,8 +11,8 @@ from airgun.widgets import MultiSelect
 
 
 class HTTPProxyView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='HTTP Proxies']")
-    new = Text("//a[contains(@href, 'http_proxies/new')]")
+    title = Text('//h5[text()="HTTP Proxies"]')
+    new = Text('//a[text()="New HTTP Proxy"]')
     table = Table(
         './/table',
         column_widgets={
