@@ -660,11 +660,17 @@ class AirgunBrowser(Browser):
             self.url = downloads_uri
         time.sleep(3)
         script = (
-            'return document.querySelector("downloads-manager")'
-            '.shadowRoot.querySelector("#downloadsList")'
-            '.items.filter(e => e.state === "COMPLETE")'
-            '.map(e => e.filePath || e.file_path || e.fileUrl || e.file_url);'
+            'return downloads.Manager.get().items_'
+            '.filter(e => e.state === "COMPLETE")'
+            '.map(e => e.file_url || e.fileUrl);'
         )
+        if self.browser_type == 'chrome' and self.browser_version >= 79:
+            script = (
+                'return document.querySelector("downloads-manager")'
+                '.shadowRoot.querySelector("#downloadsList")'
+                '.items.filter(e => e.state === "COMPLETE")'
+                '.map(e => e.filePath || e.file_path || e.fileUrl || e.file_url);'
+            )
         return self.execute_script(script)
 
     def get_file_content(self, uri):
