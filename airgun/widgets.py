@@ -4,6 +4,7 @@ from wait_for import wait_for
 from widgetastic.exceptions import NoSuchElementException
 from widgetastic.exceptions import WidgetOperationFailed
 from widgetastic.widget import Checkbox
+from widgetastic.widget import ClickableMixin
 from widgetastic.widget import do_not_read_this_widget
 from widgetastic.widget import GenericLocatorWidget
 from widgetastic.widget import ParametrizedLocator
@@ -2210,3 +2211,21 @@ class AuthSourceAggregateCard(AggregateStatusCard):
             return int(self.browser.text(self.browser.element(self.COUNT)))
         except NoSuchElementException:
             return None
+
+
+class Accordion(View, ClickableMixin):
+    """PF4 Accordion widget"""
+
+    ROOT = ParametrizedLocator("{@locator}")
+    ITEMS = ".//button[contains(@class, 'pf-c-accordion__toggle')]"
+    ITEM = ".//span[contains(text(), '{}')]"
+
+    def __init__(self, parent=None, id=None, locator=None, logger=None):
+        Widget.__init__(self, parent=parent, logger=logger)
+        self.locator = './/div[@id={id!r}]' if id else locator
+
+    def items(self):
+        return [self.browser.text(elm) for elm in self.browser.elements(self.ITEMS)]
+
+    def toggle(self, value):
+        self.browser.click(self.ITEM.format(value))
