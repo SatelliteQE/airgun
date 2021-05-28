@@ -5,6 +5,7 @@ from widgetastic.widget import Text
 from widgetastic.widget import View
 from widgetastic_patternfly import Button
 from widgetastic_patternfly import Tab
+from widgetastic_patternfly4.button import Button as Pf4Button
 from widgetastic_patternfly4.switch import Switch
 
 from airgun.exceptions import ReadOnlyWidgetError
@@ -113,6 +114,12 @@ class CloudInventoryListView(BaseLoggedInView):
     )
     obfuscate_ips = Switch('.//label[@for="rh-cloud-switcher-obfuscate_inventory_ips"]')
     exclude_packages = Switch('.//label[@for="rh-cloud-switcher-exclude_installed_packages"]')
+    cloud_connector = Pf4Button(locator='//button[text()="Configure Cloud Connector"]')
+    cloud_connector_status = Pf4Button(locator='//button[text()="Cloud Connector is in progress"]')
+    sync_status = Pf4Button(locator='//button[text()="Sync inventory status"]')
+    sync_status_disabled = Pf4Button(
+        locator='//button[text()="Sync inventory status" and @aria-disabled="true"]'
+    )
     inventory_list = View.nested(InventoryItemsView)
 
     @property
