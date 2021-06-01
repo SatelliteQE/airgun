@@ -31,7 +31,7 @@ class CloudInventoryEntity(BaseEntity):
         wait_for(
             lambda: view.cloud_connector_status.is_displayed is False,
             handle_exception=True,
-            timeout=100,
+            timeout=180,
             delay=1,
             logger=view.logger,
         )
