@@ -9,12 +9,13 @@ class CloudInsightsEntity(BaseEntity):
     endpoint_path = '/foreman_rh_cloud/insights_cloud'
 
     def search(self, value):
-        """Search for 'value' and return hostname/recommendation names that match.
+        """Search for 'query' and return hostname/recommendation names that match.
 
         :param value: text to filter (default: no filter)
         """
         view = self.navigate_to(self, 'All')
-        return view.search(value)
+        view.search(value)
+        return view.recommendation_table.read()
 
     def remediate(self, entity_name):
         """Remediate hosts based on search input."""
@@ -26,8 +27,13 @@ class CloudInsightsEntity(BaseEntity):
         view.remediation_window.remediate.click()
         self.run_job()
 
-    def read_all(self, widget_names=None):
-        """Return dict with properties of RH Cloud - Insights."""
+    def sync_hits(self):
+        """Sync RH Cloud - Insights recommendations."""
+        view = self.navigate_to(self, 'All')
+        view.start_hits_sync.click()
+
+    def read(self, widget_names=None):
+        """Read all values for created activation key entity"""
         view = self.navigate_to(self, 'All')
         return view.read(widget_names=widget_names)
 
