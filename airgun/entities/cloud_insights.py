@@ -1,3 +1,5 @@
+from wait_for import wait_for
+
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
@@ -14,8 +16,7 @@ class CloudInsightsEntity(BaseEntity):
         :param value: text to filter (default: no filter)
         """
         view = self.navigate_to(self, 'All')
-        view.search(value)
-        return view.recommendation_table.read()
+        return view.search(value)
 
     def remediate(self, entity_name):
         """Remediate hosts based on search input."""
@@ -51,7 +52,12 @@ class CloudInsightsEntity(BaseEntity):
     def run_job(self):
         """Run remediation job"""
         view = self.navigate_to(self, 'Run')
-        self.browser.plugin.ensure_page_safe(timeout='60s')
+        wait_for(
+            lambda: view.is_displayed is True,
+            timeout=20,
+            delay=1,
+            logger=view.logger,
+        )
         view.submit.click()
 
 

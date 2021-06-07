@@ -1,3 +1,4 @@
+from wait_for import wait_for
 from widgetastic.widget import Checkbox
 from widgetastic.widget import Text
 from widgetastic.widget import TextInput
@@ -18,7 +19,7 @@ class RemediationView(Modal):
 
     remediate = Pf4Button(locator='//button[text()="Remediate" and @type="submit"]')
     cancel = Pf4Button(locator='//button[text()="Cancel"]')
-    remediation_table = PatternflyTable(
+    table = PatternflyTable(
         locator='.//table[@aria-label="remediations Table"]',
         column_widgets={
             'Hostname': Text('./a'),
@@ -43,7 +44,7 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixin):
     start_hits_sync = Button(locator='//button[text()="Start recommendations sync"]')
     remediate = Button(locator='//button[text()="Remediate"]')
     select_all = Checkbox(locator='.//input[@aria-label="Select all rows"]')
-    recommendation_table = PatternflyTable(
+    table = PatternflyTable(
         locator='.//table[@aria-label="Recommendations Table"]',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -61,3 +62,28 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixin):
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
+
+    def search(self, query):
+        """Perform search using searchbox on the page and return table
+        contents.
+
+        :param str query: search query to type into search field. E.g. ``foo``
+            or ``name = "bar"``.
+        :return: list of dicts representing table rows
+        :rtype: list
+        """
+        if not hasattr(self.__class__, 'table'):
+            raise AttributeError(
+                f'Class {self.__class__.__name__} does not have attribute "table". '
+                'SearchableViewMixin only works with views, which have table for results. '
+                'Please define table or use custom search implementation instead'
+            )
+        self.searchbox.search(query)
+        wait_for(
+            lambda: self.table.is_displayed is True,
+            handle_exception=True,
+            timeout=20,
+            delay=1,
+            logger=self.logger,
+        )
+        return self.table.read()
