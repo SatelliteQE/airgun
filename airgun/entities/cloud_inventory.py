@@ -21,58 +21,16 @@ class CloudInventoryEntity(BaseEntity):
         """Configure Cloud Connector"""
         view = self.navigate_to(self, 'All')
         view.cloud_connector.click()
-        wait_for(
-            lambda: view.cloud_connector_status.is_displayed is True,
-            handle_exception=True,
-            timeout=20,
-            delay=1,
-            logger=view.logger,
-        )
-        wait_for(
-            lambda: view.cloud_connector_status.is_displayed is False,
-            handle_exception=True,
-            timeout=180,
-            delay=1,
-            logger=view.logger,
-        )
 
     def sync_inventory_status(self):
         """Sync Inventory status"""
         view = self.navigate_to(self, 'All')
         view.sync_status.click()
-        wait_for(
-            lambda: view.sync_status_disabled.is_displayed is True,
-            handle_exception=True,
-            timeout=20,
-            delay=1,
-            logger=view.logger,
-        )
-        wait_for(
-            lambda: view.sync_status.is_displayed is True,
-            handle_exception=True,
-            timeout=20,
-            delay=1,
-            logger=view.logger,
-        )
 
     def generate_report(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.inventory_list.toggle(entity_name)
         view.browser.click(view.inventory_list.generating.restart, ignore_ajax=True)
-        wait_for(
-            lambda: view.inventory_list.status == 'generating',
-            handle_exception=True,
-            timeout=20,
-            delay=1,
-            logger=view.logger,
-        )
-        wait_for(
-            lambda: view.inventory_list.status == 'idle',
-            handle_exception=True,
-            timeout=180,
-            delay=1,
-            logger=view.logger,
-        )
 
     def download_report(self, entity_name):
         view = self.navigate_to(self, 'All')
