@@ -14,8 +14,8 @@ from airgun.widgets import RadioGroup
 
 
 class SubnetsView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Subnets']")
-    new = Text("//a[contains(@href, '/subnets/new')]")
+    title = Text('//*[(self::h1 or self::h5) and text()="Subnets"]')
+    new = Text('//a[text()="Create Subnet"]')
     table = Table(
         './/table',
         column_widgets={

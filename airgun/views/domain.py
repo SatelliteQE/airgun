@@ -15,8 +15,8 @@ from airgun.widgets import MultiSelect
 class DomainListView(BaseLoggedInView, SearchableViewMixin):
     """List of all domains."""
 
-    title = Text("//h1[text()='Domains']")
-    new = Text("//a[contains(@href, '/domains/new')]")
+    title = Text('//*[(self::h1 or self::h5) and text()="Domains"]')
+    new = Text('//a[text()="Create Domain"]')
     table = Table(
         './/table',
         column_widgets={
