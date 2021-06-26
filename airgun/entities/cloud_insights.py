@@ -5,7 +5,6 @@ from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
 from airgun.views.cloud_insights import CloudInsightsView
 from airgun.views.cloud_insights import CloudTokenView
-from airgun.views.cloud_insights import RemediationView
 from airgun.views.job_invocation import JobInvocationCreateView
 
 
@@ -34,6 +33,7 @@ class CloudInsightsEntity(BaseEntity):
         """Sync RH Cloud - Insights recommendations."""
         view = self.navigate_to(self, 'All')
         view.start_hits_sync.click()
+        view.browser.plugin.ensure_page_safe(timeout='60s')
 
     def read(self, widget_names=None):
         """Read all values for created activation key entity"""
@@ -45,6 +45,7 @@ class CloudInsightsEntity(BaseEntity):
         view = self.navigate_to(self, 'Token')
         view.rhcloud_token.fill(value)
         view.save_token.click()
+        view.browser.plugin.ensure_page_safe(timeout='60s')
 
     def update(self, values):
         """Update RH Cloud - Insights view."""
@@ -88,10 +89,3 @@ class RunJob(NavigateStep):
     """Navigate to Job Invocation screen."""
 
     VIEW = JobInvocationCreateView
-
-
-@navigator.register(CloudInsightsEntity, 'Remediate')
-class RunJob(NavigateStep):
-    """Navigate to Job Invocation screen."""
-
-    VIEW = RemediationView
