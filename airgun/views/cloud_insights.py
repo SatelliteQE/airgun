@@ -3,8 +3,8 @@ from widgetastic.widget import Checkbox
 from widgetastic.widget import Text
 from widgetastic.widget import TextInput
 from widgetastic.widget import View
-from widgetastic_patternfly4 import Pagination
 from widgetastic_patternfly4 import Button
+from widgetastic_patternfly4 import Pagination
 from widgetastic_patternfly4.ouia import Modal
 from widgetastic_patternfly4.ouia import PatternflyTable
 
@@ -17,7 +17,9 @@ class CloudTokenView(BaseLoggedInView):
     """RH Cloud Insights Landing page for adding RH Cloud Token."""
 
     rhcloud_token = TextInput(locator='//input[contains(@aria-label, "input-cloud-token")]')
-    save_token = Button(locator='//button[@data-ouia-component-id="OUIA-Generated-Button-primary-2"]')
+    save_token = Button(
+        locator='//button[@data-ouia-component-id="OUIA-Generated-Button-primary-2"]'
+    )
 
     @property
     def is_displayed(self):
@@ -27,7 +29,9 @@ class CloudTokenView(BaseLoggedInView):
 class RemediationView(Modal):
     """ Remediation window view"""
 
-    remediate = Button(locator='//button[@data-ouia-component-id="OUIA-Generated-Button-primary-2"]')
+    remediate = Button(
+        locator='//button[@data-ouia-component-id="OUIA-Generated-Button-primary-2"]'
+    )
     cancel = Button(locator='//button[@data-ouia-component-id="OUIA-Generated-Button-link-1"]')
     table = PatternflyTable(
         component_id='OUIA-Generated-Table-2',
@@ -49,8 +53,12 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixin):
 
     title = Text('//h1[text()="Red Hat Insights"]')
     insights_sync_switcher = InventoryBootstrapSwitch(class_name='insights_sync_switcher')
-    start_hits_sync = Button(locator='//button[@data-ouia-component-id="OUIA-Generated-Button-secondary-1"]')
-    remediate = Button(locator='//button[@data-ouia-component-id="OUIA-Generated-Button-primary-1"]')
+    start_hits_sync = Button(
+        locator='//button[@data-ouia-component-id="OUIA-Generated-Button-secondary-1"]'
+    )
+    remediate = Button(
+        locator='//button[@data-ouia-component-id="OUIA-Generated-Button-primary-1"]'
+    )
     select_all = Checkbox(locator='.//input[@aria-label="Select all rows"]')
     table = PatternflyTable(
         component_id='OUIA-Generated-Table-2',
@@ -62,8 +70,12 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixin):
             'Playbook': Text('.//a'),
         },
     )
-    select_all_hits = Button(locator='//button[@data-ouia-component-id="OUIA-Generated-Button-link-2"]')
-    clear_hits_selection = Button(locator='//button[@data-ouia-component-id="OUIA-Generated-Button-link-2"]')
+    select_all_hits = Button(
+        locator='//button[@data-ouia-component-id="OUIA-Generated-Button-link-2"]'
+    )
+    clear_hits_selection = Button(
+        locator='//button[@data-ouia-component-id="OUIA-Generated-Button-link-2"]'
+    )
     pagination = Pagination()
     remediation_window = View.nested(RemediationView)
 
