@@ -4,6 +4,8 @@ from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
 from airgun.views.cloud_insights import CloudInsightsView
+from airgun.views.cloud_insights import CloudTokenView
+from airgun.views.cloud_insights import RemediationView
 from airgun.views.job_invocation import JobInvocationCreateView
 
 
@@ -11,7 +13,7 @@ class CloudInsightsEntity(BaseEntity):
     endpoint_path = '/foreman_rh_cloud/insights_cloud'
 
     def search(self, value):
-        """Search for 'query' and return hostname/recommendation names that match.
+        """Search for 'query' and return matched hostnames/recommendations.
 
         :param value: text to filter (default: no filter)
         """
@@ -23,7 +25,7 @@ class CloudInsightsEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.select_all.fill(True)
-        view.select_all_hits.click()
+        # view.select_all_hits.click() skip till BZ#1975321 is fixed.
         view.remediate.click()
         view.remediation_window.remediate.click()
         self.run_job()
@@ -40,7 +42,7 @@ class CloudInsightsEntity(BaseEntity):
 
     def save_token_sync_hits(self, value):
         """Update Insights cloud view."""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, 'Token')
         view.rhcloud_token.fill(value)
         view.save_token.click()
 
@@ -61,6 +63,16 @@ class CloudInsightsEntity(BaseEntity):
         view.submit.click()
 
 
+@navigator.register(CloudInsightsEntity, 'Token')
+class SaveCloudTokenView(NavigateStep):
+    """Navigate to main Red Hat Insights page"""
+
+    VIEW = CloudTokenView
+
+    def step(self, *args, **kwargs):
+        self.view.menu.select('Configure', 'Insights')
+
+
 @navigator.register(CloudInsightsEntity, 'All')
 class ShowCloudInsightsView(NavigateStep):
     """Navigate to main Red Hat Insights page"""
@@ -76,3 +88,10 @@ class RunJob(NavigateStep):
     """Navigate to Job Invocation screen."""
 
     VIEW = JobInvocationCreateView
+
+
+@navigator.register(CloudInsightsEntity, 'Remediate')
+class RunJob(NavigateStep):
+    """Navigate to Job Invocation screen."""
+
+    VIEW = RemediationView
