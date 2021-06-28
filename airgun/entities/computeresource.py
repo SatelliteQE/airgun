@@ -132,7 +132,8 @@ class ComputeResourceEntity(BaseEntity):
         :return: The Compute resource images table rows values.
         """
         view = self.navigate_to(self, 'Detail', entity_name=entity_name)
-        return view.images.search(value)
+        view.images.filterbox.fill(value)
+        return view.images.table.read()
 
     def read_image(self, entity_name, image_name, widget_names=None):
         """Read from compute resource image edit view.
@@ -164,7 +165,7 @@ class ComputeResourceEntity(BaseEntity):
         :param str image_name: The existing compute resource image name to delete.
         """
         view = self.navigate_to(self, 'Detail', entity_name=entity_name)
-        view.images.search(image_name)
+        view.images.filterbox.fill(image_name)
         view.images.table.row(name=image_name)['Actions'].widget.fill('Destroy')
         self.browser.handle_alert()
         self.browser.plugin.ensure_page_safe()
@@ -309,5 +310,5 @@ class ComputeResourceImageEdit(ComputeResourceImageProvider):
 
     def step(self, *args, **kwargs):
         image_name = kwargs.get('image_name')
-        self.parent.images.search(image_name)
+        self.parent.images.filterbox.fill(image_name)
         self.parent.images.table.row(name=image_name)['Actions'].widget.fill('Edit')

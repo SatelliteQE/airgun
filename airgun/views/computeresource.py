@@ -219,10 +219,13 @@ class ResourceProviderDetailView(BaseLoggedInView):
         )
 
     @View.nested
-    class images(SatTab, SearchableViewMixin):
+    class images(SatTab):
         TAB_NAME = 'Images'
         ROOT = ".//div[@id='images']"
 
+        filterbox = TextInput(
+            locator=(".//input[contains(@placeholder, 'Filter')]")
+        )
         table = Table(
             './/table',
             column_widgets={
