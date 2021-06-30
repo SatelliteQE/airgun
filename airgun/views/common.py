@@ -28,6 +28,7 @@ from airgun.widgets import SatTable
 from airgun.widgets import SatVerticalNavigation
 from airgun.widgets import Search
 from airgun.widgets import ValidationErrors
+from widgetastic_patternfly4.ouia import Dropdown
 
 
 class BaseLoggedInView(View):
@@ -39,9 +40,9 @@ class BaseLoggedInView(View):
     taxonomies = ContextSelector()
     flash = SatFlashMessages()
     validations = ValidationErrors()
-    current_user = Text("//li[@id='account_menu']")
-    account_menu = Text("//li[@id='account_menu']")
     logout = Text("//a[@href='/users/logout']")
+    current_user = Dropdown('OUIA-Generated-Dropdown-1')
+    account_menu = Dropdown('OUIA-Generated-Dropdown-1')
 
     def select_logout(self):
         """logout from satellite"""
@@ -51,7 +52,7 @@ class BaseLoggedInView(View):
     def read(self, widget_names=None):
         """Reads the contents of the view and presents them as a dictionary.
 
-        :param widget_names: If specified , will read only the widgets which names is in the list.
+        :param widget_names: If specified, will read only the widgets names in the list.
 
         :return: A :py:class:`dict` of ``widget_name: widget_read_value``
             where the values are retrieved using the :py:meth:`Widget.read`.
