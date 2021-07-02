@@ -176,13 +176,6 @@ class ContentViewEditView(BaseLoggedInView):
         )
 
     @View.nested
-    class puppet_modules(SatTab):
-        TAB_NAME = 'Puppet Modules'
-
-        add_new_module = Text('.//button[@ui-sref="content-view.puppet-modules.names"]')
-        table = Table('.//table')
-
-    @View.nested
     class docker_repositories(SatTabWithDropdown):
         TAB_NAME = 'Container Images'
         SUB_ITEM = 'Repositories'
@@ -194,40 +187,6 @@ class ContentViewEditView(BaseLoggedInView):
         TAB_NAME = 'OSTree Content'
 
         resources = View.nested(AddRemoveResourcesView)
-
-
-class AddNewPuppetModuleView(BaseLoggedInView, SearchableViewMixin):
-    breadcrumb = BreadCrumb()
-    table = Table(
-        locator='.//table',
-        column_widgets={'Actions': Text('./button[@ng-click="selectVersion(item.name)"]')},
-    )
-
-    @property
-    def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Content Views'
-            and self.breadcrumb.read() == 'Add Puppet Module'
-        )
-
-
-class SelectPuppetModuleVersionView(BaseLoggedInView, SearchableViewMixin):
-    breadcrumb = BreadCrumb()
-    table = Table(
-        locator='.//table',
-        column_widgets={'Actions': Text('./button[@ng-click="selectVersion(item)"]')},
-    )
-
-    @property
-    def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Content Views'
-            and self.breadcrumb.read() == 'Version for Module:'
-        )
 
 
 class ContentViewVersionPublishView(BaseLoggedInView):
@@ -301,11 +260,6 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
     @View.nested
     class errata(SatSecondaryTab, SearchableViewMixin):
         table = Table(locator='.//table', column_widgets={'Title': Text('./a')})
-
-    @View.nested
-    class puppet_modules(SatSecondaryTab, SearchableViewMixin):
-        TAB_NAME = 'Puppet Modules'
-        table = Table('.//table')
 
     @View.nested
     class details(SatSecondaryTab):
