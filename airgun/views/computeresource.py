@@ -187,11 +187,14 @@ class ResourceProviderDetailView(BaseLoggedInView):
     @View.nested
     class compute_resource(SatTab):
         TAB_NAME = 'Compute Resource'
+        ROOT = ".//div[@id='primary']"
+
         table = SatTable('.//table')
 
     @View.nested
     class virtual_machines(SatTab, SearchableViewMixin):
         TAB_NAME = 'Virtual Machines'
+        ROOT = ".//div[@id='vms']"
 
         actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
         table = Table(
@@ -206,6 +209,8 @@ class ResourceProviderDetailView(BaseLoggedInView):
     @View.nested
     class compute_profiles(SatTab):
         TAB_NAME = 'Compute profiles'
+        ROOT = ".//div[@id='compute_profiles']"
+
         table = SatTable(
             './/table',
             column_widgets={
@@ -214,7 +219,13 @@ class ResourceProviderDetailView(BaseLoggedInView):
         )
 
     @View.nested
-    class images(SatTab, SearchableViewMixin):
+    class images(SatTab):
+        TAB_NAME = 'Images'
+        ROOT = ".//div[@id='images']"
+
+        filterbox = TextInput(
+            locator=(".//input[contains(@placeholder, 'Filter')]")
+        )
         table = Table(
             './/table',
             column_widgets={
