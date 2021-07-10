@@ -1,5 +1,3 @@
-from wait_for import wait_for
-
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
@@ -33,7 +31,7 @@ class CloudInsightsEntity(BaseEntity):
         """Sync RH Cloud - Insights recommendations."""
         view = self.navigate_to(self, 'All')
         view.start_hits_sync.click()
-        view.browser.plugin.ensure_page_safe(timeout='60s')
+        self.browser.plugin.ensure_page_safe(timeout='60s')
 
     def read(self, widget_names=None):
         """Read all values for created activation key entity"""
@@ -45,7 +43,7 @@ class CloudInsightsEntity(BaseEntity):
         view = self.navigate_to(self, 'Token')
         view.rhcloud_token.fill(value)
         view.save_token.click()
-        view.browser.plugin.ensure_page_safe(timeout='60s')
+        self.browser.plugin.ensure_page_safe(timeout='60s')
 
     def update(self, values):
         """Update RH Cloud - Insights view."""
@@ -55,12 +53,7 @@ class CloudInsightsEntity(BaseEntity):
     def run_job(self):
         """Run remediation job"""
         view = self.navigate_to(self, 'Run')
-        wait_for(
-            lambda: view.is_displayed is True,
-            timeout=20,
-            delay=1,
-            logger=view.logger,
-        )
+        self.browser.plugin.ensure_page_safe(timeout='60s')
         view.submit.click()
 
 
