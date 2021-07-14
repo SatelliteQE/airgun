@@ -84,9 +84,9 @@ class ReportTemplateEntity(BaseEntity):
         view.submit.click()
         # wait for the report to be generated
         wait_for(
-            lambda: "has been completed." in view.generating.text,
+            lambda: view.generated.is_displayed,
             timeout=300,
-            delay=1,
+            delay=1
         )
         view.flash.assert_no_error()
         return self.browser.save_downloaded_file()
