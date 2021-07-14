@@ -94,7 +94,7 @@ class ReportTemplateGenerateView(BaseLoggedInView):
     hosts_filter = TextInput(locator='//input[contains(@class,"search-input")]')
     generate_at = TextInput(id='report_template_report_generate_at')
     submit = Text('//input[@name="commit"]')
-    generating = Text('//div[@data-original-title="Generating a report"]/span[2]')
+    generated = Text('//div[contains(@class, "alert-success")]')
 
     @property
     def is_displayed(self):
@@ -104,3 +104,4 @@ class ReportTemplateGenerateView(BaseLoggedInView):
             and self.breadcrumb.locations[0] == 'Report Templates'
             and self.breadcrumb.read() == 'Generate a Report'
         )
+        
