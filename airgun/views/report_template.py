@@ -104,4 +104,3 @@ class ReportTemplateGenerateView(BaseLoggedInView):
             and self.breadcrumb.locations[0] == 'Report Templates'
             and self.breadcrumb.read() == 'Generate a Report'
         )
-        
