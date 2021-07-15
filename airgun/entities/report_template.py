@@ -86,7 +86,7 @@ class ReportTemplateEntity(BaseEntity):
         wait_for(
             lambda: view.generated.is_displayed,
             timeout=300,
-            delay=1
+            delay=1,
         )
         view.flash.assert_no_error()
         return self.browser.save_downloaded_file()
