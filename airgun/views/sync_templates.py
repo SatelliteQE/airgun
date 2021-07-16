@@ -33,24 +33,24 @@ class SyncTemplatesView(BaseLoggedInView):
 
     @template.register('Import')
     class ImportTemplates(View):
-        associate = Select(name='associate')
-        branch = TextInput(name='branch')
-        dirname = TextInput(name='dirname')
-        filter = TextInput(name='filter')
-        force_import = Checkbox(name='force')
-        lock = Checkbox(name='lock')
-        negate = Checkbox(name='negate')
-        prefix = TextInput(name='prefix')
-        repo = TextInput(name='repo')
+        associate = Select(name='import.associate')
+        branch = TextInput(name='import.branch')
+        dirname = TextInput(name='import.dirname')
+        filter = TextInput(name='import.filter')
+        force_import = Checkbox(name='import.force')
+        lock = Select(name='import.lock')
+        negate = Checkbox(name='import.negate')
+        prefix = TextInput(name='import.prefix')
+        repo = TextInput(name='import.repo')
 
     @template.register('Export')
     class ExportTemplates(View):
-        branch = TextInput(name='branch')
-        dirname = TextInput(name='dirname')
-        filter = TextInput(name='filter')
-        metadata_export_mode = Select(name='metadata_export_mode')
-        negate = Checkbox(name='negate')
-        repo = TextInput(name='repo')
+        branch = TextInput(name='export.branch')
+        dirname = TextInput(name='export.dirname')
+        filter = TextInput(name='export.filter')
+        metadata_export_mode = Select(name='export.metadata_export_mode')
+        negate = Checkbox(name='export.negate')
+        repo = TextInput(name='export.repo')
 
 
 class TemplatesReportView(BaseLoggedInView):
