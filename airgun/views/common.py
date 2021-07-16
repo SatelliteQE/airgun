@@ -11,6 +11,7 @@ from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly import Button
 from widgetastic_patternfly import Tab
 from widgetastic_patternfly import TabWithDropdown
+from widgetastic_patternfly4.ouia import Dropdown
 
 from airgun.utils import get_widget_by_name
 from airgun.utils import normalize_dict_values
@@ -28,7 +29,6 @@ from airgun.widgets import SatTable
 from airgun.widgets import SatVerticalNavigation
 from airgun.widgets import Search
 from airgun.widgets import ValidationErrors
-from widgetastic_patternfly4.ouia import Dropdown
 
 
 class BaseLoggedInView(View):

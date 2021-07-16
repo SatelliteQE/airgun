@@ -1,6 +1,7 @@
 import re
 
 from wait_for import wait_for
+from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Checkbox
 from widgetastic.widget import ConditionalSwitchableView
 from widgetastic.widget import GenericLocatorWidget
@@ -13,6 +14,9 @@ from widgetastic.widget import View
 from widgetastic.widget import Widget
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly import Button
+from widgetastic_patternfly4.ouia import Button as pf4Button
+from widgetastic_patternfly4.ouia import FormSelect
+from widgetastic_patternfly4.tabs import Tab
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
@@ -21,6 +25,7 @@ from airgun.views.job_invocation import JobInvocationCreateView
 from airgun.views.job_invocation import JobInvocationStatusView
 from airgun.views.task import TaskDetailsView
 from airgun.widgets import ActionsDropdown
+from airgun.widgets import BaseMultiSelect
 from airgun.widgets import CheckboxWithAlert
 from airgun.widgets import ConfigGroupMultiSelect
 from airgun.widgets import CustomParameter
@@ -193,7 +198,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Hosts']")
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text("//a[contains(text(),'Create Host')]")
-    register = Button("Register Host")
+    register = pf4Button('OUIA-Generated-Button-secondary-2')
     select_all = Checkbox(locator="//input[@id='check_all']")
     table = SatTable(
         './/table',
@@ -466,26 +471,77 @@ class HostCreateView(BaseLoggedInView):
 
 
 class HostRegisterView(BaseLoggedInView):
-    breadcrumb = BreadCrumb()
-    hostgroup = FilteredDropdown(id='s2id_hostgroup_id')
-    operatingsystem = FilteredDropdown(id='s2id_operatingsystem_id')
-    capsule = FilteredDropdown(id='s2id_smart_proxy')
-    setup_insights = FilteredDropdown(id='s2id_setup_insights')
-    remote_execution = FilteredDropdown(id='s2id_setup_remote_execution')
-    token_lifetime = TextInput(id='jwt_expiration')
-    remote_execution_interface = TextInput(id='remote_execution_interface')
-    activation_keys = TextInput(id='activation_key')
-    generate_command = TextInput(name='commit')
-    insecure = Checkbox(id='insecure')
-    registration_command = Text('//pre[@id="registration_command"]')
+    generate_command = pf4Button('OUIA-Generated-Button-primary-1')
+    cancel = pf4Button('OUIA-Generated-Button-link-1')
+    registration_command = TextInput(id='text-input-3')
+
+    @View.nested
+    class general(Tab):
+        TAB_NAME = 'General'
+        TAB_LOCATOR = ParametrizedLocator(
+            './/div[contains(@class, "pf-c-tabs")]//ul'
+            "/li[button[normalize-space(.)={@tab_name|quote}]]"
+        )
+        ROOT = '//section[@id="generalSection"]'
+
+        orgnization = FormSelect('OUIA-Generated-FormSelect-default-1')
+        location = FormSelect('OUIA-Generated-FormSelect-default-2')
+        host_group = FormSelect('OUIA-Generated-FormSelect-default-3')
+        operating_system = FormSelect('OUIA-Generated-FormSelect-default-4')
+        linux_host_init_link = Link('//a[text()="Linux host_init_config default"]')
+        capsule = FormSelect('OUIA-Generated-FormSelect-default-5')
+        insecure = Checkbox(id='reg_insecure')
+
+    @View.nested
+    class advanced(Tab):
+        TAB_NAME = 'Advanced'
+        TAB_LOCATOR = ParametrizedLocator(
+            './/div[contains(@class, "pf-c-tabs")]//ul'
+            "/li[button[normalize-space(.)={@tab_name|quote}]]"
+        )
+        ROOT = '//section[@id="advancedSection"]'
+
+        setup_rex = FormSelect('OUIA-Generated-FormSelect-default-6')
+        setup_insights = FormSelect('OUIA-Generated-FormSelect-default-7')
+        install_packages = TextInput(id='reg_packages')
+        repository = TextInput(id='reg_repo')
+        repository_gpg_key_url = TextInput(id='reg_gpg_key_url')
+        token_life_time = TextInput(id='reg_token_life_time_input')
+        rex_interface = TextInput(id='reg_rex_interface_input')
+        activation_keys = BaseMultiSelect('OUIA-Generated-Select-typeaheadmulti-1')
+        life_cycle_env = FormSelect('OUIA-Generated-FormSelect-default-8')
+        ignore_error = Checkbox(id='reg_katello_ignore')
+        force = Checkbox(id='reg_katello_force')
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Registrations'
-            and self.breadcrumb.read() == 'Register Host'
+        return self.browser.wait_for_element(self.general.operating_system, exception=False)
+
+    def before_fill(self, values):
+        """Fill some of the parameters tab widgets with values.
+
+        Args:
+            values: A dictionary of ``widget_name: value_to_fill``.
+
+        Note:
+            Some of the fields are disabled for few seconds and get enabled based
+            on the selection, handled separately
+        """
+        for field in ('host_group', 'operating_system'):
+            field_value = values.get('general').get(field)
+            if field_value:
+                wait_for(
+                    lambda: self.general.__getattribute__(field).is_enabled,
+                    timeout=30,
+                    delay=2,
+                    logger=self.logger,
+                )
+                self.general.__getattribute__(field).fill(field_value)
+        wait_for(
+            lambda: self.general.linux_host_init_link.is_displayed,
+            timeout=30,
+            delay=2,
+            logger=self.logger,
         )
 
 
