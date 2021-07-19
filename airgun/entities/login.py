@@ -13,9 +13,9 @@ class LoginEntity(BaseEntity):
 
     def logout(self):
         view = BaseLoggedInView(self.browser)
-        view.select_logout()
         view.flash.assert_no_error()
         view.flash.dismiss()
+        view.select_logout()
         view = LoginView(self.browser)
         return view.read()
 
