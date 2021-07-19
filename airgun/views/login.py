@@ -7,7 +7,7 @@ from widgetastic.widget import View
 class LoginView(View, ClickableMixin):
     username = TextInput(id="login_login")
     password = TextInput(id="login_password")
-    login_text = Text('//p[@id="login_text"]')
+    login_text = Text('//*[@id="login-footer-text"]')
     logo = Text('//img[@alt="logo"]')
     submit = Text('//button[@type="submit"]')
 
