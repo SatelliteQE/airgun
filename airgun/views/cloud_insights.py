@@ -17,18 +17,18 @@ class CloudTokenView(BaseLoggedInView):
     """RH Cloud Insights Landing page for adding RH Cloud Token."""
 
     rhcloud_token = TextInput(locator='//input[contains(@aria-label, "input-cloud-token")]')
-    save_token = Button(locator='//button[text()="Save setting and sync recommendations"]')
+    save_token = Button('Save setting and sync recommendations')
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.rhcloud_token, exception=False) is not None
+        return self.rhcloud_token.wait_displayed()
 
 
 class RemediationView(Modal):
     """ Remediation window view"""
 
-    remediate = Button(locator='//button[text()="Remediate" and @type="submit"]')
-    cancel = Button(locator='//button[text()="Cancel"]')
+    remediate = Button('Remediate')
+    cancel = Button('Cancel')
     table = PatternflyTable(
         component_id='OUIA-Generated-Table-2',
         column_widgets={
@@ -41,7 +41,7 @@ class RemediationView(Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.wait_displayed()
 
 
 class CloudInsightsView(BaseLoggedInView, SearchableViewMixin):
@@ -49,8 +49,8 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixin):
 
     title = Text('//h1[text()="Red Hat Insights"]')
     insights_sync_switcher = InventoryBootstrapSwitch(class_name='insights_sync_switcher')
-    start_hits_sync = Button(locator='//button[text()="Start recommendations sync"]')
-    remediate = Button(locator='//button[text()="Remediate"]')
+    start_hits_sync = Button('Start recommendations sync')
+    remediate = Button('Remediate')
     select_all = Checkbox(locator='.//input[@aria-label="Select all rows"]')
     table = PatternflyTable(
         component_id='OUIA-Generated-Table-2',
@@ -62,14 +62,14 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixin):
             'Playbook': Text('.//a'),
         },
     )
-    select_all_hits = Button(locator='//button[text()="Select recommendations from all pages"]')
-    clear_hits_selection = Button(locator='//button[text()="Clear Selection"]')
+    select_all_hits = Button('Select recommendations from all pages')
+    clear_hits_selection = Button('Clear Selection')
     pagination = Pagination()
     remediation_window = View.nested(RemediationView)
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.wait_displayed()
 
     def search(self, query):
         """Perform search using searchbox on the page and return table
