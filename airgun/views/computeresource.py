@@ -223,9 +223,7 @@ class ResourceProviderDetailView(BaseLoggedInView):
         TAB_NAME = 'Images'
         ROOT = ".//div[@id='images']"
 
-        filterbox = TextInput(
-            locator=(".//input[contains(@placeholder, 'Filter')]")
-        )
+        filterbox = TextInput(locator=(".//input[contains(@placeholder, 'Filter')]"))
         table = Table(
             './/table',
             column_widgets={
