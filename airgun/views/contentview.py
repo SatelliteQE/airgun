@@ -117,7 +117,6 @@ class ContentViewEditView(BaseLoggedInView):
         label = ReadOnlyEntry(name='Label')
         description = EditableEntry(name='Description')
         composite = ReadOnlyEntry(name='Composite?')
-        force_puppet = EditableEntryCheckbox(name='Force Puppet Environment')
         solve_dependencies = EditableEntryCheckbox(name='Solve Dependencies')
 
     @View.nested
