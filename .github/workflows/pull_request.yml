@@ -1,0 +1,38 @@
+# CI stages to execute against Pull Requests
+name: Airgun - CI
+
+on:
+  pull_request:
+    types: ["opened", "synchronize", "reopened"]
+
+env:
+    PYCURL_SSL_LIBRARY: openssl
+
+jobs:
+  codechecks:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9]
+    steps:
+      - name: Checkout Airgun
+        uses: actions/checkout@v2
+
+      - name: Set Up Python-${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          pip install -U pip
+          pip install -U -r requirements.txt -r requirements-optional.txt
+
+      - name: Pre Commit Checks
+        uses: pre-commit/action@v2.0.0
+
+      - name: Analysis (git diff)
+        if: failure()
+        run: git diff
