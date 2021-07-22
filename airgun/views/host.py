@@ -14,7 +14,7 @@ from widgetastic.widget import View
 from widgetastic.widget import Widget
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly import Button
-from widgetastic_patternfly4.ouia import Button as pf4Button
+from widgetastic_patternfly4.ouia import Button as PF4Button
 from widgetastic_patternfly4.ouia import FormSelect
 from widgetastic_patternfly4.tabs import Tab
 
@@ -198,7 +198,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Hosts']")
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text("//a[contains(text(),'Create Host')]")
-    register = pf4Button('OUIA-Generated-Button-secondary-2')
+    register = PF4Button('OUIA-Generated-Button-secondary-2')
     select_all = Checkbox(locator="//input[@id='check_all']")
     table = SatTable(
         './/table',
@@ -471,8 +471,8 @@ class HostCreateView(BaseLoggedInView):
 
 
 class HostRegisterView(BaseLoggedInView):
-    generate_command = pf4Button('OUIA-Generated-Button-primary-1')
-    cancel = pf4Button('OUIA-Generated-Button-link-1')
+    generate_command = PF4Button('OUIA-Generated-Button-primary-1')
+    cancel = PF4Button('OUIA-Generated-Button-link-1')
     registration_command = TextInput(id='text-input-3')
 
     @View.nested
@@ -518,10 +518,10 @@ class HostRegisterView(BaseLoggedInView):
         return self.browser.wait_for_element(self.general.operating_system, exception=False)
 
     def before_fill(self, values):
-        """Fill some of the parameters tab widgets with values.
+        """Fill some of the parameters in the widgets with values.
 
         Args:
-            values: A dictionary of ``widget_name: value_to_fill``.
+            values: A dictionary of `widget_name: value_to_fill`.
 
         Note:
             Some of the fields are disabled for few seconds and get enabled based

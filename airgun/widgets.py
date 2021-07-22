@@ -2248,8 +2248,7 @@ class BaseMultiSelect(BaseSelect, Dropdown):
     https://www.patternfly.org/v4/documentation/react/components/select#multiple
     """
 
-    BUTTON_LOCATOR = './/button'
-    MENU_BUTTON_LOCATOR = './/button[@aria-label="Options menu"]'
+    BUTTON_LOCATOR = './/button[@aria-label="Options menu"]'
     OUIA_COMPONENT_TYPE = "PF4/Select"
 
     def item_select(self, items, close=True):
@@ -2261,14 +2260,15 @@ class BaseMultiSelect(BaseSelect, Dropdown):
         """
         if not isinstance(items, (list, tuple, set)):
             items = [items]
-
+        if isinstance(items, str):
+            items = items.split(',')
         try:
             for item in items:
                 element = self.item_element(item, close=False)
                 if not element.find_element_by_xpath("./..").get_attribute('aria-selected'):
                     element.click()
         finally:
-            self.browser.click(self.MENU_BUTTON_LOCATOR)
+            self.browser.click(self.BUTTON_LOCATOR)
 
     def fill(self, items):
         """Fills all the items.
