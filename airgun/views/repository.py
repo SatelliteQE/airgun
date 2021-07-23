@@ -131,6 +131,25 @@ class RepositoryCreateView(BaseLoggedInView):
         class SpecificHttpProxy(View):
             http_proxy = Select(id="http_proxy")
 
+    @repo_content.register('ansible collection')
+    class AnsibleCollectionRepository(View):
+        arch_restrict = Select(id='architecture_restricted')
+        upstream_url = TextInput(id='url')
+        requirements = TextInput(id='ansible_collection_requirements')
+        requirements_btn = FileInput(id='requirementFile')
+        auth_url = TextInput(id='ansible_collection_auth_url')
+        auth_token = TextInput(id='ansible_collection_auth_token')
+        verify_ssl = Checkbox(id='verify_ssl_on_sync')
+        upstream_username = TextInput(id='upstream_username')
+        upstream_password = TextInput(id='upstream_password')
+        mirror_on_sync = Checkbox(id='mirror_on_sync')
+        http_proxy_policy = Select(id="http_proxy_policy")
+        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+
+        @proxy_policy.register('Use specific HTTP Proxy')
+        class SpecificHttpProxy(View):
+            http_proxy = Select(id="http_proxy")
+
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
@@ -197,6 +216,24 @@ class RepositoryEditView(BaseLoggedInView):
         publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
         gpg_key = EditableEntrySelect(name='GPG Key')
         download_policy = EditableEntrySelect(name='Download Policy')
+        upload_content = FileInput(name='content[]')
+        upload = Text("//button[contains(., 'Upload')]")
+        http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
+        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+
+        @proxy_policy.register(True, default=True)
+        class NoSpecificHttpProxy(View):
+            pass
+
+    @repo_content.register('ansible collection')
+    class AnsibleCollectionRepository(View):
+        arch_restrict = EditableEntrySelect(name='Restrict to architecture')
+        upstream_url = EditableEntry(name='Upstream URL')
+        requirements = EditableEntry(name='Requirements')
+        verify_ssl = EditableEntryCheckbox(name='Verify SSL')
+        upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
+        mirror_on_sync = EditableEntryCheckbox(name='Mirror on Sync')
+        publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
         upload_content = FileInput(name='content[]')
         upload = Text("//button[contains(., 'Upload')]")
         http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
