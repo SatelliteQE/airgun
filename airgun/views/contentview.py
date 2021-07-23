@@ -74,11 +74,6 @@ class ContentViewCopyView(BaseLoggedInView):
 class ContentViewRemoveView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
 
-    conflicts = Text("//div[@ng-show='conflictingVersions.length > 0']")
-    table = Table('.//table')
-    remove = Text(".//button[@ng-click='delete()']")
-    cancel = Text(".//a[contains(@class, 'btn')][@ui-sref='content-view.versions']")
-
     @property
     def conflicts_present(self):
         return 'ng-hide' not in self.browser.classes(self.conflicts)
