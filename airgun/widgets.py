@@ -21,7 +21,9 @@ from widgetastic_patternfly import FlashMessage
 from widgetastic_patternfly import FlashMessages
 from widgetastic_patternfly import Kebab
 from widgetastic_patternfly import VerticalNavigation
+from widgetastic_patternfly4.ouia import BaseSelect
 from widgetastic_patternfly4.ouia import ContextSelector as OUIAContextSelector
+from widgetastic_patternfly4.ouia import Dropdown
 
 from airgun.exceptions import DisabledWidgetError
 from airgun.exceptions import ReadOnlyWidgetError
@@ -2238,3 +2240,43 @@ class Accordion(View, ClickableMixin):
 
     def toggle(self, value):
         self.browser.click(self.ITEM.format(value))
+
+
+class BaseMultiSelect(BaseSelect, Dropdown):
+    """Represents the Patternfly Multi Select.
+
+    https://www.patternfly.org/v4/documentation/react/components/select#multiple
+    """
+
+    BUTTON_LOCATOR = './/button[@aria-label="Options menu"]'
+    OUIA_COMPONENT_TYPE = "PF4/Select"
+
+    def item_select(self, items, close=True):
+        """Opens the Dropdown and selects the desired items.
+
+        Args:
+            items: Items to be selected
+            close: Close the dropdown when finished
+        """
+        if not isinstance(items, (list, tuple, set)):
+            items = [items]
+        if isinstance(items, str):
+            items = items.split(',')
+        try:
+            for item in items:
+                element = self.item_element(item, close=False)
+                if not element.find_element_by_xpath("./..").get_attribute('aria-selected'):
+                    element.click()
+        finally:
+            self.browser.click(self.BUTTON_LOCATOR)
+
+    def fill(self, items):
+        """Fills all the items.
+
+        Args:
+            items: list containing what items to be selected
+        """
+        try:
+            self.item_select(items, close=False)
+        finally:
+            self.close()
