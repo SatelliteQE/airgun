@@ -2283,3 +2283,45 @@ class BaseMultiSelect(BaseSelect, Dropdown):
             self.item_select(items, close=False)
         finally:
             self.close()
+
+
+class InventoryBootstrapSwitch(Widget):
+    """Checkbox-like Switch control, representing On and Off state. But with
+    fancy UI and without any <form> elements.
+    There's also BootstrapSwitch widget in widgetastic_patternfly, but we don't
+    inherit from it as it uses completely different HTML structure than this one
+    (it has underlying <input>).
+    """
+
+    ON_TOGGLE = ".//span[contains(@class, 'bootstrap-switch-handle-on')]"
+    OFF_TOGGLE = ".//span[contains(@class, 'bootstrap-switch-handle-off')]"
+    ROOT = ParametrizedLocator("//div[@class={@class_name|quote}]/div")
+
+    def __init__(self, parent, class_name, **kwargs):
+        Widget.__init__(self, parent, logger=kwargs.pop('logger', None))
+        self.class_name = class_name
+
+    @property
+    def selected(self):
+        return 'bootstrap-switch-on' in self.browser.classes(self)
+
+    @property
+    def _clickable_el(self):
+        """In automation, you need to click on exact toggle element to trigger action
+
+        Returns: selenium webelement
+        """
+        locator = self.ON_TOGGLE
+        if not self.selected:
+            locator = self.OFF_TOGGLE
+        return self.browser.element(locator=locator)
+
+    def fill(self, value):
+        if bool(value) == self.selected:
+            return False
+        else:
+            self.browser.click(self._clickable_el)
+            return True
+
+    def read(self):
+        return self.selected
