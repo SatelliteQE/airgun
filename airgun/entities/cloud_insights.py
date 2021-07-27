@@ -1,5 +1,3 @@
-from wait_for import wait_for
-
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
@@ -55,12 +53,7 @@ class CloudInsightsEntity(BaseEntity):
     def run_job(self):
         """Run remediation job"""
         view = self.navigate_to(self, 'Run')
-        wait_for(
-            lambda: view.is_displayed is True,
-            timeout=20,
-            delay=1,
-            logger=view.logger,
-        )
+        view.search_query.wait_displayed()
         view.submit.click()
 
 

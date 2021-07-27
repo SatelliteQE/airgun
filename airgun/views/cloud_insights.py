@@ -1,4 +1,3 @@
-from wait_for import wait_for
 from widgetastic.widget import Checkbox
 from widgetastic.widget import Text
 from widgetastic.widget import TextInput
@@ -87,11 +86,5 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixin):
                 'Please define table or use custom search implementation instead'
             )
         self.searchbox.search(query)
-        wait_for(
-            lambda: self.table.is_displayed is True,
-            handle_exception=True,
-            timeout=20,
-            delay=1,
-            logger=self.logger,
-        )
+        self.table.wait_displayed()
         return self.table.read()
