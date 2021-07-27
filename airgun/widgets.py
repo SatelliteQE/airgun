@@ -631,7 +631,10 @@ class ActionDropdownWithCheckbox(ActionsDropdown):
 class Search(Widget):
     """Searchbar for table filtering"""
 
-    ROOT = '//div[@id="search-bar" or contains(@class, "toolbar-pf-filter") or contains(@class, "dataTables_filter")]'
+    ROOT = (
+        '//div[@id="search-bar" or contains(@class, "toolbar-pf-filter") '
+        'or contains(@class, "dataTables_filter")]'
+    )
     search_field = TextInput(
         locator=(
             ".//input[@id='search' or contains(@placeholder, 'Filter') or "

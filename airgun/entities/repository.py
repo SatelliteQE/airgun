@@ -109,7 +109,7 @@ class RepositoryEntity(BaseEntity):
             product_name=product_name,
             entity_name=entity_name,
         )
-        max_per_page = max([int(el.text) for el in view.items_per_page.all_options])
+        max_per_page = max(int(el.text) for el in view.items_per_page.all_options)
         view.items_per_page.fill(str(max_per_page))
         for _ in range(int(view.total_packages.text) // max_per_page + 1):
             view.select_all.fill(True)
@@ -128,7 +128,7 @@ class RepositoryEntity(BaseEntity):
             product_name=product_name,
             entity_name=entity_name,
         )
-        max_per_page = max([int(el.text) for el in view.items_per_page.all_options])
+        max_per_page = max(int(el.text) for el in view.items_per_page.all_options)
         view.items_per_page.fill(str(max_per_page))
         for _ in range(int(view.total_puppet_modules.text) // max_per_page + 1):
             view.select_all.fill(True)
