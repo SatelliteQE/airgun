@@ -4,6 +4,7 @@ from widgetastic.widget import Text
 from widgetastic.widget import TextInput
 from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly4 import Button as P4Button
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
@@ -14,6 +15,7 @@ from airgun.widgets import MultiSelect
 
 class UserGroupsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='User Groups']")
+    new_on_blank_page = P4Button('Create User group')
     new = Text("//a[contains(@href, '/usergroups/new')]")
     table = Table(
         './/table',
