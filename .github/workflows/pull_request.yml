@@ -36,3 +36,7 @@ jobs:
       - name: Analysis (git diff)
         if: failure()
         run: git diff
+
+      - name: Docs Build
+        run: |
+         make docs-html
