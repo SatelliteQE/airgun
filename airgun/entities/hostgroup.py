@@ -1,4 +1,5 @@
 from navmazing import NavigateToSibling
+from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
@@ -71,7 +72,10 @@ class AddNewHostGroup(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.parent.new.click()
+        try:
+            self.parent.new.click()
+        except NoSuchElementException:
+            self.parent.new_on_blank_page.click()
 
 
 @navigator.register(HostGroupEntity, 'Edit')
