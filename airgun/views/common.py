@@ -476,6 +476,7 @@ class BookmarkCreateView(BaseLoggedInView):
     )
     name = TextInput(name='name')
     query = TextInput(name='query')
+    error_message = Text(".//span[@class='error-message']")
     public = Checkbox(locator="//input[@type='checkbox'][@name='public' or @name='publik']")
     # text can be either 'Submit' or 'Save'
     submit = Text(".//button[@type='submit' or @ng-click='ok()']")
