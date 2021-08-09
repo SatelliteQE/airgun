@@ -1,5 +1,6 @@
 from widgetastic.exceptions import NoSuchElementException
 
+from airgun.exceptions import DisabledWidgetError
 from airgun.helpers.base import BaseEntityHelper
 from airgun.views.common import BookmarkCreateView
 
@@ -41,6 +42,10 @@ class BaseEntity:
         view.searchbox.actions.fill('Bookmark this search')
         view = BookmarkCreateView(self.browser)
         view.fill(values)
+        if not view.submit.is_enabled:
+            message = view.error_message.text
+            view.cancel.click()
+            raise DisabledWidgetError(message)
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
