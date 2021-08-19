@@ -1,6 +1,7 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.views.common import BaseLoggedInView
 from airgun.views.settings import SettingsView
 
 
@@ -32,6 +33,11 @@ class SettingsEntity(BaseEntity):
         view.search(property_name)
         view.Email.test_email_button.click()
         return view.flash.read()
+
+    def permission_denied(self):
+        """Return permission denied error text"""
+        view = BaseLoggedInView(self.browser)
+        return view.permission_denied.text
 
 
 @navigator.register(SettingsEntity, 'All')
