@@ -7,6 +7,7 @@ from airgun.views.errata import ErrataDetailsView
 from airgun.views.errata import ErrataInstallationConfirmationView
 from airgun.views.errata import ErrataTaskDetailsView
 from airgun.views.errata import ErratumView
+from airgun.views.job_invocation import JobInvocationStatusView
 
 
 class ErrataEntity(BaseEntity):
@@ -58,11 +59,16 @@ class ErrataEntity(BaseEntity):
             view.content_hosts.environment_filter.fill(environment)
         return view.read(widget_names=widget_names)
 
-    def install(self, entity_name, host_name):
+    def install(self, entity_name, host_name, installed_via=None):
         """Install errata on content host.
+
+        The installation method is not set here, but the path changes according to the method used.
+        For katello-agent, the Content Hosts' Task tab displays the progress. If REX is used,
+        the Job Invocation view displays the progress. In 6.10, REX became the default method.
 
         :param str entity_name: errata id or title
         :param str host_name: content host name to apply errata on
+        :param installed_via: what installation method was used
         """
         view = self.navigate_to(
             self,
@@ -77,8 +83,12 @@ class ErrataEntity(BaseEntity):
         view.content_hosts.apply.click()
         view = ErrataInstallationConfirmationView(view.browser)
         view.confirm.click()
-        view = ErrataTaskDetailsView(view.browser)
-        view.progressbar.wait_for_result()
+        if installed_via == 'katello':
+            view = ErrataTaskDetailsView(view.browser)
+            view.progressbar.wait_for_result()
+        else:
+            view = JobInvocationStatusView(view.browser)
+            view.wait_for_result()
         return view.read()
 
     def search_content_hosts(self, entity_name, value, environment=None):
