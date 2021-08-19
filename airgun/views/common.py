@@ -41,6 +41,7 @@ class BaseLoggedInView(View):
     validations = ValidationErrors()
     current_user = Text("//li[@id='account_menu']")
     account_menu = Text("//li[@id='account_menu']")
+    permission_denied = Text('//*[@id="content"]')
     logout = Text("//a[@href='/users/logout']")
 
     def select_logout(self):
