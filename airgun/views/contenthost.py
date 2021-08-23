@@ -337,7 +337,6 @@ class SyspurposeBulkActionView(BaseLoggedInView):
     role = Select(id='selectedRoles')
     usage_type = Select(id='selectedUsages')
     assign = Text(".//span[text()='Assign']")
-    confirm = Text(".//button[text()='Assign']")
 
     @property
     def is_displayed(self):
