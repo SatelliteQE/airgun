@@ -70,7 +70,6 @@ class ContentHostEntity(BaseEntity):
         view = SyspurposeBulkActionView(view.browser)
         view.fill(values)
         self.browser.click(view.assign)
-        self.browser.click(view.confirm)
 
     def execute_module_stream_action(
         self,
