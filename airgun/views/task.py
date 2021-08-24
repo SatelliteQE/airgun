@@ -22,6 +22,10 @@ class TaskReadOnlyEntry(ReadOnlyEntry):
     )
 
 
+class TaskReadOnlyEntryError(ReadOnlyEntry):
+    BASE_LOCATOR = "//span[contains(., '{}')]//parent::div" "/following-sibling::pre"
+
+
 class TaskPagination(Pagination):
     PER_PAGE_BUTTON_DROPDOWN = ".//div[button[@id='tasks-table-dropdown']]"
 
@@ -96,7 +100,7 @@ class TaskDetailsView(BaseLoggedInView):
         state = Text("//div[contains(@class, 'progress-description')]")
         progressbar = ProgressBar(locator='//div[contains(@class,"progress-bar")]')
         output = TaskReadOnlyEntry(name='Output')
-        errors = TaskReadOnlyEntry(name='Errors')
+        errors = TaskReadOnlyEntryError(name='Errors')
 
     def wait_for_result(self, timeout=60, delay=1):
         """Wait for invocation job to finish"""
