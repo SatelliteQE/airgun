@@ -127,7 +127,7 @@ class DashboardView(BaseLoggedInView):
     @View.nested
     class HostConfigurationChart(View):
         ROOT = ".//li[@data-name='Host Configuration Chart for All']"
-        chart = PieChart(".//div[@id='host_configuration_chart_all']")
+        chart = PieChart(".//div[@class='host-configuration-chart']")
 
     @View.nested
     class ContentViews(View):
