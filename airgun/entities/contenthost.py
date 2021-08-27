@@ -40,7 +40,7 @@ class ContentHostEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
-    def execute_package_action(self, entity_name, action_type, value, installed_via=None):
+    def execute_package_action(self, entity_name, action_type, value, installed_via='rex'):
         """Execute remote package action on a content host.
 
         The installation method is not set here, but the path changes according to the method used.
@@ -55,7 +55,7 @@ class ContentHostEntity(BaseEntity):
         :param value: Package or package group group name to remotely
             install/upgrade/remove (depending on `action_type`)
 
-        :param installed_via: what installation method was used
+        :param installed_via: what installation method was used (REX or katello-agent)
 
         :return: Returns a dict containing task status details
         """
