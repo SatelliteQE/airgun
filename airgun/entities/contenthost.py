@@ -40,8 +40,12 @@ class ContentHostEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
-    def execute_package_action(self, entity_name, action_type, value):
-        """Execute remote package action on a content host
+    def execute_package_action(self, entity_name, action_type, value, installed_via='rex'):
+        """Execute remote package action on a content host.
+
+        The installation method is not set here, but the path changes according to the method used.
+        For katello-agent, the Content Hosts' Task tab displays the progress. If REX is used,
+        the Job Invocation view displays the progress. In 6.10, REX became the default method.
 
         :param entity_name: content host name to remotely execute package
             action on
@@ -51,14 +55,20 @@ class ContentHostEntity(BaseEntity):
         :param value: Package or package group group name to remotely
             install/upgrade/remove (depending on `action_type`)
 
+        :param installed_via: what installation method was used (REX or katello-agent)
+
         :return: Returns a dict containing task status details
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.packages_actions.action_type.fill(action_type)
         view.packages_actions.name.fill(value)
         view.packages_actions.perform.click()
-        view = ContentHostTaskDetailsView(view.browser)
-        view.progressbar.wait_for_result()
+        if installed_via == 'katello':
+            view = ContentHostTaskDetailsView(view.browser)
+            view.progressbar.wait_for_result()
+        else:
+            view = JobInvocationStatusView(view.browser)
+            view.wait_for_result()
         return view.read()
 
     def bulk_set_syspurpose(self, hosts, values):
