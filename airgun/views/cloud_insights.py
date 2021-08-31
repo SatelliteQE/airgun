@@ -1,15 +1,17 @@
+from selenium.webdriver.common.keys import Keys
 from widgetastic.widget import Checkbox
 from widgetastic.widget import Text
 from widgetastic.widget import TextInput
 from widgetastic.widget import View
 from widgetastic_patternfly4 import Button
 from widgetastic_patternfly4 import Pagination
+from widgetastic_patternfly4.dropdown import Dropdown
 from widgetastic_patternfly4.ouia import Modal
 from widgetastic_patternfly4.ouia import PatternflyTable
+from widgetastic_patternfly4.ouia import Switch
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SearchableViewMixin
-from airgun.widgets import InventoryBootstrapSwitch
 
 
 class CloudTokenView(BaseLoggedInView):
@@ -47,9 +49,9 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixin):
     """Main RH Cloud Insights view."""
 
     title = Text('//h1[text()="Red Hat Insights"]')
-    insights_sync_switcher = InventoryBootstrapSwitch(class_name='insights_sync_switcher')
-    start_hits_sync = Button('Start recommendations sync')
+    insights_sync_switcher = Switch('OUIA-Generated-Switch-1')
     remediate = Button('Remediate')
+    insights_dropdown = Dropdown(locator='.//div[contains(@class, "title-dropdown")]')
     select_all = Checkbox(locator='.//input[@aria-label="Select all rows"]')
     table = PatternflyTable(
         component_id='OUIA-Generated-Table-2',
@@ -85,6 +87,6 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixin):
                 'SearchableViewMixin only works with views, which have table for results. '
                 'Please define table or use custom search implementation instead'
             )
-        self.searchbox.search(query)
+        self.searchbox.search(query + Keys.ENTER)
         self.table.wait_displayed()
         return self.table.read()

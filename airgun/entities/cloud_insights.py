@@ -30,7 +30,8 @@ class CloudInsightsEntity(BaseEntity):
     def sync_hits(self):
         """Sync RH Cloud - Insights recommendations."""
         view = self.navigate_to(self, 'All')
-        view.start_hits_sync.click()
+        view.insights_dropdown.wait_displayed()
+        view.insights_dropdown.item_select('Sync recommendations')
         self.browser.plugin.ensure_page_safe(timeout='60s')
 
     def read(self, widget_names=None):
