@@ -182,7 +182,7 @@ class VirtwhoConfigureEditView(VirtwhoConfigureCreateView):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Configurations'
+            and self.breadcrumb.locations[0] == 'Virt-who Configurations'
             and self.breadcrumb.read().startswith('Edit ')
         )
 
@@ -197,7 +197,7 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Configurations'
+            and self.breadcrumb.locations[0] == 'Virt-who Configurations'
             and self.breadcrumb.read() != 'Create Config'
         )
 
