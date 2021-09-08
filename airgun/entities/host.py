@@ -278,7 +278,7 @@ class RegisterHost(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.parent.register.click()
+        self.view.menu.select('Hosts', 'Register Host')
 
 
 @navigator.register(HostEntity, 'Details')
