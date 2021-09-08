@@ -150,27 +150,6 @@ class LCEEditView(BaseLoggedInView):
             return self.table.read()
 
     @View.nested
-    class puppet_modules(SatTab):
-        TAB_NAME = 'Puppet Modules'
-
-        cv_filter = SatSelect(".//select[@ng-model='contentView']")
-        searchbox = Search()
-        table = Table(locator=".//table")
-
-        def search(self, query, cv=None):
-            """Apply available filters before proceeding with searching.
-
-            :param str query: search query to type into search field.
-            :param str optional cv: filter by content view name
-            :return: list of dicts representing table rows
-            :rtype: list
-            """
-            if cv:
-                self.cv_filter.fill(cv)
-            self.searchbox.search(query)
-            return self.table.read()
-
-    @View.nested
     class module_streams(SatTab):
         TAB_NAME = 'Module Streams'
 

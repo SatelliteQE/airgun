@@ -70,12 +70,6 @@ class LCEEntity(BaseEntity):
         view.packages.search(package_name, cv=cv_name, repo=repo_name)
         return view.packages.table.read()
 
-    def search_puppet_module(self, entity_name, pupet_module_name, cv_name=None):
-        """Search for specific puppet module inside lifecycle environment"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.puppet_modules.search(pupet_module_name, cv=cv_name)
-        return view.puppet_modules.table.read()
-
     def search_module_stream(self, entity_name, module_name, cv_name=None, repo_name=None):
         """Search for specific module stream inside lifecycle environment"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)

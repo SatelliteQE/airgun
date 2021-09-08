@@ -94,21 +94,6 @@ class RepositoryCreateView(BaseLoggedInView):
         class SpecificHttpProxy(View):
             http_proxy = Select(id="http_proxy")
 
-    @repo_content.register('puppet')
-    class PuppetRepository(View):
-        upstream_url = TextInput(id='url')
-        verify_ssl = Checkbox(id='verify_ssl_on_sync')
-        upstream_username = TextInput(id='upstream_username')
-        upstream_password = TextInput(id='upstream_password')
-        mirror_on_sync = Checkbox(id='mirror_on_sync')
-        publish_via_http = Checkbox(id='unprotected')
-        http_proxy_policy = Select(id="http_proxy_policy")
-        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
-
-        @proxy_policy.register('Use specific HTTP Proxy')
-        class SpecificHttpProxy(View):
-            http_proxy = Select(id="http_proxy")
-
     @repo_content.register('yum')
     class YumRepository(View):
         arch_restrict = Select(id='architecture_restricted')
@@ -243,24 +228,6 @@ class RepositoryEditView(BaseLoggedInView):
         class NoSpecificHttpProxy(View):
             pass
 
-    @repo_content.register('puppet')
-    class PuppetRepository(View):
-        upstream_url = EditableEntry(name='Upstream URL')
-        verify_ssl = EditableEntryCheckbox(name='Verify SSL')
-        upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
-        mirror_on_sync = EditableEntryCheckbox(name='Mirror on Sync')
-        publish_via_https = ReadOnlyEntry(name='Publish via HTTPS')
-        publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
-        published_at = ReadOnlyEntry(name='Published At')
-        upload_content = FileInput(name='content[]')
-        upload = Text("//button[contains(., 'Upload')]")
-        http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
-        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
-
-        @proxy_policy.register(True, default=True)
-        class NoSpecificHttpProxy(View):
-            pass
-
     @repo_content.register('ostree')
     class OstreeRepository(View):
         upstream_url = EditableEntry(name='Upstream URL')
@@ -312,29 +279,4 @@ class RepositoryPackagesView(BaseLoggedInView, SearchableViewMixin):
             and self.breadcrumb.locations[0] == 'Products'
             and self.breadcrumb.locations[2] == 'Repositories'
             and self.breadcrumb.read() == 'Packages'
-        )
-
-
-class RepositoryPuppetModulesView(BaseLoggedInView, SearchableViewMixin):
-    breadcrumb = BreadCrumb()
-    dialog = ConfirmationDialog()
-    table = SatTable(
-        locator=".//table",
-        column_widgets={
-            0: Checkbox(locator=".//input[@ng-change='itemSelected(item)']"),
-        },
-    )
-    select_all = Checkbox(locator=".//input[@type='checkbox'][@ng-change='allSelected()']")
-    items_per_page = Select(locator=".//select[@ng-model='table.params.per_page']")
-    total_puppet_modules = Text("//span[@class='pagination-pf-items-total ng-binding']")
-    remove_packages = Text(".//button[@ng-click='openModal()']")
-
-    @property
-    def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Products'
-            and self.breadcrumb.locations[2] == 'Repositories'
-            and self.breadcrumb.read() == 'Manage Puppet Modules'
         )
