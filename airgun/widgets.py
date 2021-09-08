@@ -1751,7 +1751,7 @@ class SatTableWithUnevenStructure(SatTable):
 
     Some examples where we can use current class:
     'Content Counts' table present in every repository, containing amount of
-    packages/puppet modules/etc with links to corresponding details pages.
+    packages/source RPM's/Errata/etc with links to corresponding details pages.
     'Properties' table present in every host details page
 
     Example html representation::
@@ -1759,29 +1759,33 @@ class SatTableWithUnevenStructure(SatTable):
         <table class="table table-striped table-bordered">
             <thead>
             <tr>
-              <th colspan="2" ...><span ...>Content Type</span></th>
+              <th colspan="2" ...>Content Type</th>
             </tr>
             </thead>
 
             <tbody>
-            <tr ng-show="repository.content_type === 'yum'" class="ng-hide">
-              <td><span>Packages</span></td>
+            <tr ng-show="repository.content_type === 'yum'" class="ng-hide" style="">
+              <!-- translate: --><td translate="" class="ng-scope" style="">Packages</td>
               <td class="align-center">
-                <a ui-sref="product.repository.manage-content.packages(...)"
-                 href=".../repositories/151/content/packages">
+                <a ui-sref="product.repository.manage-content.packages(...)" class="ng-binding"
+                  href=".../repositories/<repo-id>/content/packages">
                   0
-                </a></td>
+                </a>
+              </td>
             </tr>
 
             ...
 
-            <tr ng-show="repository.content_type === 'puppet'" class="">
-              <td><span>Puppet Modules</span></td>
+            <tr ng-show="repository.content_type === 'docker'">
+              <!-- translate: -->
+                <td translate="" class="ng-scope" style="">Container Image Manifests</td>
               <td class="align-center">
-                <a ui-sref="product.repository.manage-content.puppet-module..."
-                 href=".../repositories/151/content/content/puppet_modules">
-                  2
-                </a></td>
+                <a ui-sref="product.repository.manage-content.docker-manifests(...)"
+                  class="ng-binding"
+                  href=".../repositories/<repo-id>/content/content/docker_manifests">
+                  0
+                </a>
+              </td>
             </tr>
             ...
             </tbody>

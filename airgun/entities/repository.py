@@ -12,7 +12,6 @@ from airgun.views.repository import RepositoriesView
 from airgun.views.repository import RepositoryCreateView
 from airgun.views.repository import RepositoryEditView
 from airgun.views.repository import RepositoryPackagesView
-from airgun.views.repository import RepositoryPuppetModulesView
 
 
 class RepositoryEntity(BaseEntity):
@@ -119,25 +118,6 @@ class RepositoryEntity(BaseEntity):
             view.flash.dismiss()
         if view.total_packages.text != '0':
             raise AssertionError(f'Unable to remove all packages from {entity_name}')
-
-    def remove_all_puppet_modules(self, product_name, entity_name):
-        """Remove all puppet modules from repository"""
-        view = self.navigate_to(
-            self,
-            'Puppet Modules',
-            product_name=product_name,
-            entity_name=entity_name,
-        )
-        max_per_page = max(int(el.text) for el in view.items_per_page.all_options)
-        view.items_per_page.fill(str(max_per_page))
-        for _ in range(int(view.total_puppet_modules.text) // max_per_page + 1):
-            view.select_all.fill(True)
-            view.remove_packages.click()
-            view.dialog.confirm()
-            view.flash.assert_no_error()
-            view.flash.dismiss()
-        if view.total_puppet_modules.text != '0':
-            raise AssertionError(f'Unable to remove all puppet modules from {entity_name}')
 
 
 @navigator.register(RepositoryEntity, 'All')
@@ -261,31 +241,3 @@ class RepositoryPackages(NavigateStep):
 
     def step(self, *args, **kwargs):
         self.parent.content_counts.row((0, 'Packages'))[1].widget.click()
-
-
-@navigator.register(RepositoryEntity, 'Puppet Modules')
-class RepositoryPuppetModules(NavigateStep):
-    """Open repository details page and click 'Puppet Modules' link from
-    'Content Counts' table to proceed to Puppet Modules page.
-
-    Args:
-        product_name: name of product
-        entity_name: name of repository
-    """
-
-    VIEW = RepositoryPuppetModulesView
-
-    def am_i_here(self, *args, **kwargs):
-        prod_name = kwargs.get('product_name')
-        repo_name = kwargs.get('entity_name')
-        return (
-            self.view.is_displayed
-            and self.view.breadcrumb.locations[1] == prod_name
-            and self.view.breadcrumb.locations[3] == repo_name
-        )
-
-    def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'Edit', **kwargs)
-
-    def step(self, *args, **kwargs):
-        self.parent.content_counts.row((0, 'Puppet Modules'))[1].widget.click()
