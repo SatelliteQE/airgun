@@ -394,7 +394,12 @@ class HostCreateView(BaseLoggedInView):
                 column_widgets = {
                     'Name': Text(locator=".//span[starts-with(@id, 'name_')]"),
                     'Value': TextInput(locator=".//textarea[@data-property='value']"),
-                    'Actions': Text(locator=(".//a[@data-original-title='Override this value']")),
+                    'Actions': Text(
+                        locator=(
+                            ".//a[@data-original-title='Override this value' "
+                            "or @title='Override this value']"
+                        )
+                    ),
                 }
                 SatTable.__init__(self, parent, locator, column_widgets=column_widgets, **kwargs)
 
