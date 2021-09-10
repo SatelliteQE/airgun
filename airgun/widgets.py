@@ -932,7 +932,10 @@ class CustomParameter(Table):
         column_widgets = {
             'Name': TextInput(locator=".//input[@placeholder='Name']"),
             'Value': TextInput(locator=".//textarea[@placeholder='Value']"),
-            'Actions': Text(locator=".//a[@data-original-title='Remove Parameter']"),
+            'Actions': Text(
+                locator=".//a[@data-original-title='Remove Parameter' "
+                "or @title='Remove Parameter']"
+            ),
         }
         super().__init__(parent, locator=locator, logger=logger, column_widgets=column_widgets)
 

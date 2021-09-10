@@ -69,7 +69,10 @@ class SmartClassParameterContent(View):
                 ),
             },
         )
-        add_new_matcher = Text(".//a[contains(@data-original-title, 'add a new matcher')]")
+        add_new_matcher = Text(
+            ".//a[contains(@data-original-title, 'add a new matcher') "
+            "or contains(@title, 'add a new matcher')]"
+        )
 
         def fill(self, values):
             """Add and fill all matchers provided
