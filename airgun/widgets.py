@@ -1,5 +1,4 @@
 from cached_property import cached_property
-from jsmin import jsmin
 from wait_for import wait_for
 from widgetastic.exceptions import NoSuchElementException
 from widgetastic.exceptions import WidgetOperationFailed
@@ -35,18 +34,16 @@ class SatSelect(Select):
     html tags from select option values
     """
 
-    SELECTED_OPTIONS_TEXT = jsmin(
-        '''\
-            var result_arr = [];
-            var opt_elements = arguments[0].selectedOptions;
-            for(var i = 0; i < opt_elements.length; i++){
-                value = opt_elements[i].innerHTML;
-                parsed_value = value.replace(/<[^>]+>/gm, '');
-                result_arr.push(parsed_value);
-            }
-            return result_arr;
-        '''
-    )
+    SELECTED_OPTIONS_TEXT = """
+var result_arr = [];
+var opt_elements = arguments[0].selectedOptions;
+for(var i = 0; i < opt_elements.length; i++){
+    value = opt_elements[i].innerHTML;
+    parsed_value = value.replace(/<[^>]+>/gm, '');
+    result_arr.push(parsed_value);
+}
+return result_arr;
+"""
 
 
 class CheckboxWithAlert(Checkbox):
