@@ -790,13 +790,9 @@ class ValidationErrors(Widget):
         do_not_read_this_widget()
 
 
-class ContextSelector(OUIAContextSelector):
-    CURRENT_ORG = (
-        '//div[@id="organization-dropdown"]//span[@class="pf-c-context-selector__toggle-text"]'
-    )
-    CURRENT_LOC = (
-        '//div[@id="location-dropdown"]//span[@class="pf-c-context-selector__toggle-text"]'
-    )
+class ContextSelector(Widget):
+    CURRENT_ORG = OUIAContextSelector('OUIA-Generated-ContextSelector-1')
+    CURRENT_LOC = OUIAContextSelector('OUIA-Generated-ContextSelector-2')
     ORG_LOCATOR = '//div[@id="organization-dropdown"]//li[button[contains(.,{})]]'
     LOC_LOCATOR = '//div[@id="location-dropdown"]//li[button[contains(.,{})]]'
 
