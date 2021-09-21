@@ -28,6 +28,7 @@ class CloudTokenView(BaseLoggedInView):
 class RemediationView(Modal):
     """ Remediation window view"""
 
+    OUIA_ID = 'OUIA-Generated-Modal-large-1'
     remediate = Button('Remediate')
     cancel = Button('Cancel')
     table = PatternflyTable(
