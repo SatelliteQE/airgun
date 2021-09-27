@@ -53,6 +53,7 @@ class HostGroupCreateView(BaseLoggedInView):
     class host_group(SatTab):
         TAB_NAME = 'Host Group'
 
+        parent_name = FilteredDropdown(id='s2id_hostgroup_parent_id')
         name = TextInput(id='hostgroup_name')
         description = TextInput(id='hostgroup_description')
         lce = FilteredDropdown(id='hostgroup_lifecycle_environment')
@@ -117,7 +118,9 @@ class HostGroupCreateView(BaseLoggedInView):
     @View.nested
     class activation_keys(SatTab):
         TAB_NAME = 'Activation Keys'
-        activation_keys = TextInput(id='kt_activation_keys')
+        activation_keys = TextInput(
+            locator=".//foreman-react-component[contains(@data-props, 'kt_activation_keys')]"
+        )
 
 
 class HostGroupEditView(HostGroupCreateView):
