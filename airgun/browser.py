@@ -9,44 +9,18 @@ import urllib
 from datetime import datetime
 from urllib.parse import unquote
 
-import selenium
-from fauxfactory import gen_string
+import yaml
+from attrdict import AttrDict
 from selenium import webdriver
 from wait_for import wait_for
+from webdriver_kaifuku import BrowserManager
 from widgetastic.browser import Browser
 from widgetastic.browser import DefaultPlugin
 
 from airgun import settings
 
-try:
-    import docker
-except ImportError:
-    # Let it fail later if not installed
-    docker = None
-
-try:
-    import sauceclient
-except ImportError:
-    # Optional requirement, airgun will report results back to saucelabs if
-    # installed
-    sauceclient = None
-
 
 LOGGER = logging.getLogger(__name__)
-
-
-class DockerBrowserError(Exception):
-    """Indicates any issue with DockerBrowser."""
-
-
-def _sauce_ondemand_url(saucelabs_user, saucelabs_key):
-    """Get sauce ondemand URL for a given user and key.
-
-    :param str saucelabs_user: saucelabs username
-    :param str saucelabs_key: saucelabs access key
-    :return: string representing saucelabs ondemand URL
-    """
-    return f'http://{saucelabs_user}:{saucelabs_key}@ondemand.saucelabs.com:80/wd/hub'
 
 
 class SeleniumBrowserFactory:
@@ -83,12 +57,9 @@ class SeleniumBrowserFactory:
         values.
 
         :param str optional provider: Browser provider name. One of
-            ('selenium', 'docker', 'saucelabs', 'remote'). If none specified -
+            ('selenium', 'remote'). If none specified -
             :attr:`settings.selenium.browser` is used.
-        :param str optional browser: Browser name. One of ('chrome', 'firefox',
-            'ie', 'edge', 'phantomjs'). Not required for ``docker``
-            provider as it currently supports firefox only. If none specified -
-            :attr:`settings.selenium.webdriver` is used.
+        :param str optional browser: Browser name. One of ('chrome', 'firefox').
         :param str optional test_name: Name of the test using this factory. It
             is useful for `saucelabs` provider to update saucelabs job name, or
             for `docker` provider to create container with meaningful name, not
@@ -100,6 +71,7 @@ class SeleniumBrowserFactory:
         """
         self.provider = provider or settings.selenium.browser
         self.browser = browser or settings.selenium.webdriver
+        self.web_kaifuku = AttrDict(yaml.safe_load(settings.webkaifuku.config))
         self.test_name = test_name
         self._session = session_cookie
         self._docker = None
@@ -115,16 +87,12 @@ class SeleniumBrowserFactory:
         """
         if self.provider == 'selenium':
             return self._get_selenium_browser()
-        elif self.provider == 'saucelabs':
-            return self._get_saucelabs_browser()
-        elif self.provider == 'docker':
-            return self._get_docker_browser()
         elif self.provider == 'remote':
             return self._get_remote_browser()
         else:
             raise ValueError(
                 f'"{self.provider}" browser is not supported. '
-                f'Please use one of {("selenium", "saucelabs", "docker", "remote")}'
+                f'Please use one of {("selenium", "remote")}'
             )
 
     def post_init(self):
@@ -133,16 +101,7 @@ class SeleniumBrowserFactory:
 
         :return: None
         """
-        # Workaround 'Certificate Error' screen on Microsoft Edge
-        if self.browser == 'edge' and (
-            'Certificate Error' in self._webdriver.title or 'Login' not in self._webdriver.title
-        ):
-            self._webdriver.get(
-                "javascript:document.getElementById('invalidcert_continue').click()"
-            )
-        # Workaround maximize_window() not working with chrome in docker
-        if not (self.provider == 'docker' and self.browser == 'chrome'):
-            self._webdriver.maximize_window()
+        pass
 
     def finalize(self, passed=True):
         """Finalize browser - close browser window, report results to saucelabs
@@ -155,11 +114,6 @@ class SeleniumBrowserFactory:
         if self.provider == 'selenium' or self.provider == 'remote':
             self._webdriver.quit()
             return
-        elif self.provider == 'saucelabs':
-            self._webdriver.quit()
-            return self._finalize_saucelabs_browser(passed)
-        elif self.provider == 'docker':
-            return self._finalize_docker_browser()
 
     def _set_session_cookie(self):
         """Add the session cookie (if provided) to the webdriver"""
@@ -179,6 +133,7 @@ class SeleniumBrowserFactory:
         :raises: ValueError: If wrong ``browser`` specified.
         """
         kwargs = {}
+        manager_conf = {}
         binary = settings.selenium.webdriver_binary
         browseroptions = settings.selenium.browseroptions
 
@@ -194,78 +149,18 @@ class SeleniumBrowserFactory:
                 for opt in browseroptions.split(';'):
                     options.add_argument(opt)
             kwargs.update({'options': options})
-            self._webdriver = webdriver.Chrome(**kwargs)
         elif self.browser == 'firefox':
             if binary:
                 kwargs.update({'executable_path': binary})
-            self._webdriver = webdriver.Firefox(**kwargs)
-        elif self.browser == 'ie':
-            if binary:
-                kwargs.update({'executable_path': binary})
-            self._webdriver = webdriver.Ie(**kwargs)
-        elif self.browser == 'edge':
-            if binary:
-                kwargs.update({'executable_path': binary})
-            capabilities = webdriver.DesiredCapabilities.EDGE.copy()
-            capabilities['acceptSslCerts'] = True
-            capabilities['javascriptEnabled'] = True
-            kwargs.update({'capabilities': capabilities})
-            self._webdriver = webdriver.Edge(**kwargs)
-        elif self.browser == 'phantomjs':
-            self._webdriver = webdriver.PhantomJS(service_args=['--ignore-ssl-errors=true'])
+        manager_conf.update({'webdriver': self.browser})
+        manager_conf.update({'webdriver_options': kwargs})
+        manager = BrowserManager.from_conf(manager_conf)
+        self._webdriver = manager.start()
         if self._webdriver is None:
             raise ValueError(
                 f'"{self.browser}" webdriver is not supported. '
-                f'Please use one of {("chrome", "firefox", "ie", "edge", "phantomjs")}'
+                f'Please use one of {("chrome", "firefox")}'
             )
-        self._set_session_cookie()
-        return self._webdriver
-
-    def _get_saucelabs_browser(self):
-        """Returns saucelabs webdriver instance of selected ``browser``.
-
-        Note: should not be called directly, use :meth:`get_browser` instead.
-
-        :raises: ValueError: If wrong ``browser`` specified.
-        """
-        self._webdriver = webdriver.Remote(
-            command_executor=_sauce_ondemand_url(
-                settings.selenium.saucelabs_user, settings.selenium.saucelabs_key
-            ),
-            desired_capabilities=self._get_webdriver_capabilities(),
-        )
-        self._set_session_cookie()
-        idle_timeout = settings.webdriver_desired_capabilities.idleTimeout
-        if idle_timeout:
-            self._webdriver.command_executor.set_timeout(int(idle_timeout))
-        return self._webdriver
-
-    def _get_docker_browser(self):
-        """Returns webdriver running in docker container. Currently only
-        firefox and chrome are supported.
-
-        Note: should not be called directly, use :meth:`get_browser` instead.
-        """
-        kwargs = {}
-        if self.test_name:
-            kwargs.update({'name': self.test_name})
-        self._docker = DockerBrowser(**kwargs)
-        if self.browser == 'chrome':
-            self._docker._image = 'selenium/standalone-chrome'
-            self._docker._capabilities = webdriver.DesiredCapabilities.CHROME.copy()
-            self._docker._capabilities.update({'args': 'start-maximized'})
-        elif self.browser == 'firefox':
-            self._docker._image = 'selenium/standalone-firefox'
-            self._docker._capabilities = webdriver.DesiredCapabilities.FIREFOX.copy()
-        else:
-            raise ValueError(
-                f'"{self.browser}" webdriver in docker container is currently not'
-                f'supported. Please use one of {("chrome", "firefox")}'
-            )
-        if settings.webdriver_desired_capabilities:
-            self._docker._capabilities.update(vars(settings.webdriver_desired_capabilities))
-        self._docker.start()
-        self._webdriver = self._docker.webdriver
         self._set_session_cookie()
         return self._webdriver
 
@@ -274,255 +169,15 @@ class SeleniumBrowserFactory:
 
         Note: should not be called directly, use :meth:`get_browser` instead.
         """
-        self._webdriver = webdriver.Remote(
-            command_executor=settings.selenium.command_executor,
-            desired_capabilities=self._get_webdriver_capabilities(),
-        )
+        desired_capabilities = self.web_kaifuku['webdriver_options']['desired_capabilities']
+        desired_capabilities.update({'name': self.test_name})
+        manager = BrowserManager.from_conf(self.web_kaifuku)
+        self._webdriver = manager.start()
         self._set_session_cookie()
-
-        idle_timeout = settings.webdriver_desired_capabilities.idleTimeout
+        idle_timeout = desired_capabilities['idletimeout']
         if idle_timeout:
             self._webdriver.command_executor.set_timeout(int(idle_timeout))
         return self._webdriver
-
-    def _get_webdriver_capabilities(self):
-        """Returns webdriver capabilities of selected ``browser``.
-
-        Note: should not be called directly, use :meth:`_get_remote_browser`
-        or :meth:`_get_saucelabs_browser` instead.
-
-        :raises: ValueError: If wrong ``browser`` specified.
-        """
-        if self.browser == 'chrome':
-            desired_capabilities = webdriver.DesiredCapabilities.CHROME.copy()
-            enable_downloading = {
-                'chromeOptions': {
-                    'args': ['disable-web-security', 'ignore-certificate-errors'],
-                    'prefs': {'download.prompt_for_download': False},
-                }
-            }
-            desired_capabilities.update(enable_downloading)
-        elif self.browser == 'firefox':
-            desired_capabilities = webdriver.DesiredCapabilities.FIREFOX.copy()
-        elif self.browser == 'ie':
-            desired_capabilities = webdriver.DesiredCapabilities.INTERNETEXPLORER.copy()
-        elif self.browser == 'edge':
-            desired_capabilities = webdriver.DesiredCapabilities.EDGE.copy()
-            desired_capabilities['acceptSslCerts'] = True
-            desired_capabilities['javascriptEnabled'] = True
-        else:
-            raise ValueError(
-                f'"{self.browser}" webdriver capabilities is currently not supported. '
-                f'Please use one of {("chrome", "firefox", "ie", "edge")}'
-            )
-        if settings.webdriver_desired_capabilities:
-            desired_capabilities.update(vars(settings.webdriver_desired_capabilities))
-
-        desired_capabilities.update({'name': self.test_name})
-
-        return desired_capabilities
-
-    def _finalize_saucelabs_browser(self, passed):
-        """SauceLabs has no way to determine whether test passed or failed
-        automatically, so we explicitly 'tell' it.
-
-        Note: should not be called directly, use :meth:`finalize` instead.
-
-        :param bool passed: Bool value indicating whether test passed or not.
-        """
-        client = sauceclient.SauceClient(
-            settings.selenium.saucelabs_user, settings.selenium.saucelabs_key
-        )
-        LOGGER.debug(
-            'Updating SauceLabs job "%s": name "%s" and status "%s"',
-            self._webdriver.session_id,
-            self.test_name,
-            'passed' if passed else 'failed',
-        )
-        kwargs = {'passed': passed}
-        # do not pass test name if it's not set
-        if self.test_name:
-            kwargs.update({'name': self.test_name})
-        client.jobs.update_job(self._webdriver.session_id, **kwargs)
-
-    def _finalize_docker_browser(self):
-        """Stops docker container.
-
-        Note: should not be called directly, use :meth:`finalize` instead.
-        """
-        self._docker.stop()
-
-
-class DockerBrowser:
-    """Provide a browser instance running inside a docker container.
-
-    Usage::
-
-        # either as context manager
-        with DockerBrowser() as browser:
-            # testing!
-
-        # or with manual :meth:`start` and :meth:`stop` calls.
-        docker_browser = DockerBrowser()
-        docker_browser.start()
-        # testing!
-        docker_browser.stop()
-
-    """
-
-    def __init__(self, name=None, image=None, capabilities=None):
-        """Ensure ``docker-py`` package is installed.
-
-        :param str optional name: name for docker container.
-        :raises: airgun.browser.DockerBrowserError: if ``docker-py`` package is
-            not installed.
-        """
-        if docker is None:
-            raise DockerBrowserError(
-                'Package docker-py is not installed. Install it in order to use DockerBrowser.'
-            )
-        self.webdriver = None
-        self._capabilities = capabilities
-        self._image = image
-        self.container = None
-        self._client = None
-        self._name = name or gen_string('alphanumeric')
-        self._started = False
-
-    def start(self):
-        """Start all machinery needed to run a browser inside a docker
-        container.
-        """
-        if self._started:
-            return
-        self._init_client()
-        self._create_container()
-        self._init_webdriver()
-        self._started = True
-
-    def stop(self):
-        """Quit the browser, remove docker container and close docker client."""
-        self._quit_webdriver()
-        self._remove_container()
-        self._close_client()
-        self.webdriver = None
-        self.container = None
-        self._client = None
-        self._started = False
-
-    def _init_webdriver(self):
-        """Init the selenium Remote webdriver."""
-        if self.webdriver or not self.container:
-            return
-        exception = None
-        # An exception can be raised while the container is not ready
-        # yet. Give up to 10 seconds for a container being ready.
-        for _ in range(20):
-            try:
-                self.webdriver = webdriver.Remote(
-                    command_executor=f'http://127.0.0.1:{self.container["HostPort"]}/wd/hub',
-                    desired_capabilities=self._capabilities,
-                )
-            except Exception as err:
-                # Capture the raised exception for later usage and wait
-                # a few for the next attempt.
-                exception = err
-                time.sleep(0.5)
-            else:
-                # Connection succeeded time to leave the for loop
-                break
-        else:
-            # Reraise the captured exception.
-            raise DockerBrowserError(
-                'Failed to connect the webdriver to the containerized selenium.'
-            ) from exception
-
-    def _quit_webdriver(self):
-        """Quit the selenium remote webdriver."""
-        if not self.webdriver:
-            return
-        self.webdriver.quit()
-
-    def _init_client(self):
-        """Init docker client.
-
-        Make sure that docker service to be published under the
-        ``unix://var/run/docker.sock`` unix socket.
-
-        Use auto for version in order to allow docker client to automatically
-        figure out the server version.
-        """
-        if self._client:
-            return
-        self._client = docker.Client(base_url='unix://var/run/docker.sock', version='auto')
-
-    def _close_client(self):
-        """Close docker Client."""
-        if not self._client:
-            return
-        self._client.close()
-
-    def _create_container(self):
-        """Create a docker container running a ``standalone-firefox`` or
-        ``standalone-chrome`` selenium.
-
-        Make sure to have the image ``selenium/standalone-firefox`` or
-        ``selenium/standalone-chrome`` already pulled, preferably in the
-        same version as the selenium-module.
-        """
-        if self.container:
-            return
-        image_version = selenium.__version__
-        if not self._client.images(name=self._get_image_name(image_version)):
-            LOGGER.warning(
-                'Could not find docker-image for your selenium-version "%s"; trying with "latest"',
-                self._get_image_name(image_version),
-            )
-            image_version = 'latest'
-            if not self._client.images(name=self._get_image_name(image_version)):
-                raise DockerBrowserError(
-                    f'Could not find docker-image "{self._get_image_name(image_version)}";'
-                    ' please pull it'
-                )
-        # Grab only the test name, get rid of square brackets from parametrize
-        # and add some random chars. E.g. 'test_positive_create_0_abc'
-        name_for_container = self._name.split('.')[-1].replace('[', '_').strip(']')
-        self.container = self._client.create_container(
-            detach=True,
-            environment={
-                'SCREEN_WIDTH': '1920',
-                'SCREEN_HEIGHT': '1080',
-            },
-            host_config=self._client.create_host_config(publish_all_ports=True),
-            image=self._get_image_name(image_version),
-            name=f'{name_for_container}_{gen_string("alphanumeric", 3)}',
-            ports=[4444],
-        )
-        LOGGER.debug('Starting container with ID "%s"', self.container['Id'])
-        self._client.start(self.container['Id'])
-        self.container.update(self._client.port(self.container['Id'], 4444)[0])
-
-    def _remove_container(self):
-        """Turn off and clean up container from system."""
-        if not self.container:
-            return
-        LOGGER.debug('Stopping container with ID "%s"', self.container['Id'])
-        self._client.stop(self.container['Id'])
-        self._client.wait(self.container['Id'])
-        self._client.remove_container(self.container['Id'], force=True)
-
-    def __enter__(self):
-        """Setup docker browser when used as context manager."""
-        self.start()
-        return self
-
-    def __exit__(self, *exc):
-        """Perform all cleanups when used as context manager."""
-        self.stop()
-
-    def _get_image_name(self, version):
-        """Returns docker-image's name and version (aka tag)"""
-        return f'{self._image}:{version}'
 
 
 class AirgunBrowserPlugin(DefaultPlugin):
