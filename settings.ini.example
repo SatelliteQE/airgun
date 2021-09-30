@@ -13,17 +13,6 @@ webdriver=chrome
 webdriver_binary=/home/user/path/to/chromedriver
 screenshots_path=/home/user/path/to/screenshots
 # browseroptions=headless
-# saucelabs_user=user
-# saucelabs_key=key
-# command_executor=http://127.0.0.1:4444/wd/hub
 
-# [webdriver_desired_capabilities]
-# platform=macOS 10.12
-# version=64.0
-# maxDuration=5400
-# idleTimeout=1000
-# seleniumVersion=3.8.1
-# build=example
-# screenResolution=1600x1200
-# tunnelIdentifier=example
-# tags=[example]
+[webkaifuku]
+config={'webdriver': 'chrome', 'webdriver_options': {'command_executor': 'http://localhost/wd/hub', 'desired_capabilities': {'browserName': 'chrome', 'chromeOptions': {'args': ['disable-web-security', 'ignore-certificate-errors'], 'prefs': {'download.prompt_for_download': False}}, 'platform': 'any', 'maxduration': 5400, 'idletimeout': 1000, 'start-maximised': True, 'screenresolution': '1600x1200'}}}
