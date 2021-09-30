@@ -36,26 +36,15 @@ class SatelliteSettings:
 class SeleniumSettings:
     def __init__(self):
         self.browser = None
-        self.saucelabs_key = None
-        self.saucelabs_user = None
         self.screenshots_path = None
         self.webdriver = None
         self.webdriver_binary = None
-        self.command_executor = None
         self.browseroptions = None
 
 
-class WebdriverCapabilitiesSettings:
+class WebKaifukuSettings:
     def __init__(self):
-        self.platform = None
-        self.version = None
-        self.maxDuration = None
-        self.idleTimeout = None
-        self.seleniumVersion = None
-        self.build = None
-        self.screenResolution = None
-        self.tunnelIdentifier = None
-        self.tags = None
+        self.config = None
 
 
 class Settings:
@@ -64,7 +53,7 @@ class Settings:
         self.airgun = AirgunSettings()
         self.satellite = SatelliteSettings()
         self.selenium = SeleniumSettings()
-        self.webdriver_desired_capabilities = WebdriverCapabilitiesSettings()
+        self.webkaifuku = WebKaifukuSettings()
 
     def _configure_logging(self):
         logging.captureWarnings(False)
