@@ -17,6 +17,18 @@ from airgun.widgets import PuppetClassesMultiSelect
 from airgun.widgets import RadioGroup
 
 
+class ActivationKeyDropDown(ActionsDropdown):
+    dropdown = Text('.//*[self::div]')
+
+    @property
+    def items(self):
+        """Returns a list of all dropdown items as strings."""
+        self.dropdown.click()
+        return [
+            self.browser.text(el) for el in self.browser.elements(self.ITEMS_LOCATOR, parent=self)
+        ]
+
+
 class HostGroupsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[contains(., 'Host Group Configuration') or text()='Host Groups']")
     new = Text("//a[contains(@href, '/hostgroups/new')]")
@@ -118,7 +130,7 @@ class HostGroupCreateView(BaseLoggedInView):
     @View.nested
     class activation_keys(SatTab):
         TAB_NAME = 'Activation Keys'
-        activation_keys = TextInput(
+        activation_keys = ActivationKeyDropDown(
             locator=".//foreman-react-component[contains(@data-props, 'kt_activation_keys')]"
         )
 
