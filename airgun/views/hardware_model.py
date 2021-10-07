@@ -1,20 +1,28 @@
 from widgetastic.widget import Text
 from widgetastic.widget import TextInput
 from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import Button
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SearchableViewMixin
+from airgun.widgets import ConfirmationDialog
 from airgun.widgets import SatTable
 
 
+class DeleteHardwareModelDialog(ConfirmationDialog):
+    confirm_dialog = Text(".//button[text()='Delete']")
+    cancel_dialog = Text(".//button[text()='Cancel']")
+
+
 class HardwareModelsView(BaseLoggedInView, SearchableViewMixin):
+    delete_dialog = DeleteHardwareModelDialog()
     title = Text("//h1[text()='Hardware Models']")
     new = Text("//a[contains(@href, '/models/new')]")
     table = SatTable(
         './/table',
         column_widgets={
             'Name': Text('.//a'),
-            'Actions': Text('.//a[@data-method="delete"]'),
+            'Actions': Button('Delete'),
         },
     )
 

@@ -9,7 +9,7 @@ from airgun.views.hardware_model import HardwareModelsView
 
 
 class HardwareModelEntity(BaseEntity):
-    endpoint_path = '/hardware_models'
+    endpoint_path = '/models'
 
     def create(self, values):
         """Create new hardware model"""
@@ -37,13 +37,22 @@ class HardwareModelEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def delete(self, entity_name):
-        """Delete hardware model"""
+    def delete(self, entity_name, err_message=''):
+        """Delete hardware model
+
+        err_message - expected when dialog throws an error, error message is checked
+        """
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.click(handle_alert=True)
-        view.flash.assert_no_error()
-        view.flash.dismiss()
+        view.table.row(name=entity_name)['Actions'].widget.click()
+        view.delete_dialog.confirm()
+        if err_message:
+            view.flash.assert_message(err_message)
+            view.flash.dismiss()
+            view.delete_dialog.cancel()
+        else:
+            view.flash.assert_no_error()
+            view.flash.dismiss()
 
 
 @navigator.register(HardwareModelEntity, 'All')
