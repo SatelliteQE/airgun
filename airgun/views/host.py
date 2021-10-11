@@ -478,7 +478,7 @@ class HostCreateView(BaseLoggedInView):
 class HostRegisterView(BaseLoggedInView):
     generate_command = PF4Button('OUIA-Generated-Button-primary-1')
     cancel = PF4Button('OUIA-Generated-Button-link-1')
-    registration_command = TextInput(id='text-input-3')
+    registration_command = Text("//input[@aria-label='Copyable input']")
 
     @View.nested
     class general(Tab):
@@ -517,6 +517,9 @@ class HostRegisterView(BaseLoggedInView):
         life_cycle_env = FormSelect('OUIA-Generated-FormSelect-default-8')
         ignore_error = Checkbox(id='reg_katello_ignore')
         force = Checkbox(id='reg_katello_force')
+        activation_key_helper = Text("//div[@id='reg_katello_ak-helper']")
+        life_cycle_env_helper = Text("//div[@id='reg_katello_lce-helper']")
+        install_packages_helper = Text("//div[@id='reg_packages-helper']")
 
     @property
     def is_displayed(self):
