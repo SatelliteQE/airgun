@@ -7,6 +7,7 @@ from widgetastic_patternfly import BreadCrumb
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
 from airgun.views.common import SearchableViewMixin
+from airgun.widgets import ActionsDropdown
 from airgun.widgets import CustomParameter
 from airgun.widgets import FilteredDropdown
 from airgun.widgets import MultiSelect
@@ -75,7 +76,7 @@ class OperatingSystemsView(BaseLoggedInView, SearchableViewMixin):
         './/table',
         column_widgets={
             'Title': Text('./a'),
-            'Actions': Text('.//a[@data-method="delete"]'),
+            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
 

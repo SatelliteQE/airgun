@@ -19,11 +19,12 @@ class OperatingSystemEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def delete(self, entity_name):
+    def delete(self, entity_name, cancel=False):
         """Remove existing operating system entity"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(title__endswith=entity_name)['Actions'].widget.click(handle_alert=True)
+        view.table.row(title__endswith=entity_name)['Actions'].widget.fill('Delete')
+        self.browser.handle_alert(cancel=cancel)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
