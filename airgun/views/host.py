@@ -383,7 +383,7 @@ class HostCreateView(BaseLoggedInView):
         """Host parameters tab"""
 
         puppet_class_parameters = Table(
-            ".//table[@id='inherited_puppetclasses_parameters']",
+            ".//div[@id='inherited_puppetclasses_parameters']/table",
             column_widgets={'Value': PuppetClassParameterValue()},
         )
 
