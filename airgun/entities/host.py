@@ -44,13 +44,15 @@ class HostEntity(BaseEntity):
         host_view.flash.assert_no_error()
         host_view.flash.dismiss()
 
-    def get_register_command(self, values):
+    def get_register_command(self, values, full_read=None):
         """Get curl command generated on Register Host page"""
         view = self.navigate_to(self, 'Register')
         view.fill(values)
         self.browser.click(view.generate_command)
         self.browser.plugin.ensure_page_safe()
         view.registration_command.wait_displayed()
+        if full_read:
+            return view.read()
         return view.registration_command.read()
 
     def search(self, value):
