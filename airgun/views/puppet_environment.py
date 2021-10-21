@@ -20,7 +20,7 @@ class PuppetEnvironmentTableView(BaseLoggedInView, SearchableViewMixin):
     """
 
     title = Text(".//h1[contains(., 'Puppet Environments')]")
-    new = Text(".//a[contains(@href, '/environments/new')]")
+    new = Text(".//a[text()='Create Puppet Environment']")
     import_environments = Text(
         ".//span[contains(@class, 'btn')]/a[contains(@href, 'import_environments')]"
     )
