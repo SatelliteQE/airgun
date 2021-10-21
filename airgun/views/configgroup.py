@@ -10,7 +10,7 @@ from airgun.widgets import PuppetClassesMultiSelect
 
 class ConfigGroupsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Config Groups']")
-    new = Text("//a[contains(@href, '/config_groups/new')]")
+    new = Text("//a[text()='Create Config Group']")
     table = Table(
         './/table',
         column_widgets={
