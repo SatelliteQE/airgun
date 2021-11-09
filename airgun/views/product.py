@@ -241,3 +241,17 @@ class ProductManageHttpProxy(BaseLoggedInView):
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+class ProductAdvancedSync(BaseLoggedInView):
+    """Represents Advanced Sync page for Products."""
+
+    title = Text("//h4[text()='Advanced Sync']")
+    optimized = Text("//input[contains(@value, 'standard')]")
+    complete = Text("//input[contains(@value, 'skipMetadataCheck')]")
+    task = Text("//a[text()='Click to view task']")
+    sync = Text('//button[@ng-click="ok()"]')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
