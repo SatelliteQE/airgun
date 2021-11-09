@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.views.product import ProductAdvancedSync
 from airgun.views.product import ProductCreateView
 from airgun.views.product import ProductEditView
 from airgun.views.product import ProductManageHttpProxy
@@ -10,6 +11,7 @@ from airgun.views.product import ProductRepoDiscoveryView
 from airgun.views.product import ProductsTableView
 from airgun.views.product import ProductSyncPlanView
 from airgun.views.product import ProductTaskDetailsView
+from airgun.views.task import TaskDetailsView
 
 
 class ProductEntity(BaseEntity):
@@ -96,6 +98,30 @@ class ProductEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def advanced_sync(self, entities_list, sync_type):
+        """Advanced Sync for product/products
+
+        :param entities_list: The product names to perform Advanced Sync action.
+        :param sync_type: value containing sync type.
+            eg: sync_type="optimized", sync_type="complete"
+        """
+
+        view = self.navigate_to(
+            self,
+            'Select Action',
+            action_name='Advanced Sync',
+            entities_list=entities_list,
+        )
+        if sync_type == "optimized":
+            view.optimized.click()
+        elif sync_type == "complete":
+            view.complete.click()
+        view.sync.click()
+        view.task.click()
+        view = TaskDetailsView(view.browser)
+        view.wait_for_result()
+        return view.read()
+
 
 @navigator.register(ProductEntity, 'All')
 class ShowAllProducts(NavigateStep):
@@ -163,6 +189,7 @@ class ProductsSelectAction(NavigateStep):
 
     ACTIONS_VIEWS = {
         'Manage HTTP Proxy': ProductManageHttpProxy,
+        'Advanced Sync': ProductAdvancedSync,
     }
 
     def prerequisite(self, *args, **kwargs):
