@@ -33,16 +33,16 @@ class SyncStatusTableNode:
         self.children = {}
 
     def __getitem__(self, name):
-        """"Return the child name"""
+        """Return the child name"""
         return self.children[name]
 
     def __contains__(self, name):
-        """"Check child with name is exist in this node"""
+        """Check child with name is exist in this node"""
         return name in self.children
 
     @property
     def browser(self):
-        """"Return the browser"""
+        """Return the browser"""
         return self.row.browser
 
     @cached_property
