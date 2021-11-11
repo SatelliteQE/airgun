@@ -1044,7 +1044,7 @@ class ConfirmationDialog(Widget):
     discard_dialog = Text(".//button[contains(@ng-click, 'cancel') and @class='close']")
 
     def _check_is_displayed(self, elem):
-        """ This is to check if dialog is displayed """
+        """This is to check if dialog is displayed"""
         wait_for(lambda: elem.is_displayed, timeout=10, delay=1, logger=self.logger)
 
     def confirm(self):

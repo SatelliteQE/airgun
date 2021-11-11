@@ -106,7 +106,7 @@ class SubscriptionColumnsFilter(GenericLocatorWidget):
         return values
 
     def fill(self, values):
-        """Check or uncheck one of the checkboxes """
+        """Check or uncheck one of the checkboxes"""
         self.open()
         checkboxes = self.checkboxes()
         for name, value in values.items():
