@@ -46,7 +46,7 @@ class ProductEntity(BaseEntity):
         return view.search(value)
 
     def read(self, entity_name, widget_names=None):
-        """Read all values for already created product """
+        """Read all values for already created product"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
