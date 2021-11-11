@@ -478,7 +478,7 @@ class HostCreateView(BaseLoggedInView):
 class HostRegisterView(BaseLoggedInView):
     generate_command = PF4Button('OUIA-Generated-Button-primary-1')
     cancel = PF4Button('OUIA-Generated-Button-link-1')
-    registration_command = Text("//input[@aria-label='Copyable input']")
+    registration_command = TextInput(locator="//input[@aria-label='Copyable input']")
 
     @View.nested
     class general(Tab):
