@@ -26,7 +26,7 @@ class CloudTokenView(BaseLoggedInView):
 
 
 class RemediationView(Modal):
-    """ Remediation window view"""
+    """Remediation window view"""
 
     OUIA_ID = 'OUIA-Generated-Modal-large-1'
     remediate = Button('Remediate')
