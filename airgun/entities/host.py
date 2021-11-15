@@ -8,6 +8,7 @@ from airgun.exceptions import DisabledWidgetError
 from airgun.helpers.host import HostHelper
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.views.cloud_insights import CloudInsightsView
 from airgun.views.host import HostCreateView
 from airgun.views.host import HostDetailsView
 from airgun.views.host import HostEditView
@@ -120,6 +121,13 @@ class HostEntity(BaseEntity):
         output = view.browser.element(view.yaml_output).text
         view.browser.selenium.back()
         return output
+
+    def read_insights_recommendations(self, entity_name):
+        """Get Insights recommendations for host"""
+        view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        view.recommendations.click()
+        view = self.navigate_to(self, 'Recommendations')
+        return view.table.read()
 
     def _select_action(self, action_name, entities_list):
         """Navigate to all entities, select the entities, and returns the view
@@ -363,3 +371,10 @@ class HostsSelectAction(NavigateStep):
             for entity in entities_list:
                 self.parent.table.row(name=entity)[0].widget.fill(True)
         self.parent.actions.fill(action_name)
+
+
+@navigator.register(HostEntity, 'Recommendations')
+class ShowRecommendations(NavigateStep):
+    """Navigate to Insights recommendations page"""
+
+    VIEW = CloudInsightsView
