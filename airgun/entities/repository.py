@@ -80,19 +80,13 @@ class RepositoryEntity(BaseEntity):
 
     def delete(self, product_name, entity_name):
         """Delete specific product repository"""
-        view = self.navigate_to(self, 'All', product_name=product_name)
+        view = self.navigate_to(self, 'All', product_name=product_name, entity_name=entity_name)
         view.search(entity_name)
         view.table.row(name=entity_name)[0].fill(True)
         view.delete.click()
         view.dialog.confirm()
         view.flash.assert_no_error()
         view.flash.dismiss()
-        wait_for(
-            lambda: view.search(f'name = "{entity_name}"') == [],
-            timeout=30,
-            delay=2,
-            logger=view.logger,
-        )
 
     def synchronize(self, product_name, entity_name):
         """Synchronize repository"""
