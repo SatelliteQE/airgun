@@ -582,6 +582,7 @@ class HostDetailsView(BaseLoggedInView):
     yaml_dump = Text("//a[text()='YAML']")
     yaml_output = Text("//pre")
     content_details = Text("//a[text()='Content']")
+    recommendations = Text("//a[text()='Recommendations']")
 
     @View.nested
     class properties(SatTab):
