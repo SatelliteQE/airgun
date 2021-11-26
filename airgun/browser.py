@@ -174,9 +174,6 @@ class SeleniumBrowserFactory:
         manager = BrowserManager.from_conf(self.web_kaifuku)
         self._webdriver = manager.start()
         self._set_session_cookie()
-        idle_timeout = desired_capabilities['idletimeout']
-        if idle_timeout:
-            self._webdriver.command_executor.set_timeout(int(idle_timeout))
         return self._webdriver
 
 
