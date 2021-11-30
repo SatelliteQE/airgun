@@ -205,6 +205,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixin):
         column_widgets={
             0: Checkbox(locator=".//input[@class='host_select_boxes']"),
             'Name': Text("./a"),
+            'Recommendations': Text("./a"),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
@@ -602,6 +603,68 @@ class HostEditView(HostCreateView):
             and self.breadcrumb.locations[0] == 'All Hosts'
             and self.breadcrumb.read().startswith('Edit ')
         )
+
+
+class RecommendationWidget(GenericLocatorWidget):
+    """The widget representation of recommendation item."""
+    EXPAND_BUTTON = ".//div[contains(@class, 'expand')]"
+    NAME = ".//div/p[contains(@class, 'item-heading')]"
+    RISK_LABEL = ".//div/span[contains(@class, 'risk-label')]"
+    TEXT = ".//div[contains(@class, 'list-group-item-container')]"
+
+    @property
+    def expand_button(self):
+        """Return the expand button element."""
+        return self.browser.element(self.EXPAND_BUTTON, parent=self)
+
+    @property
+    def expanded(self):
+        """Check whether this recommendation is expanded or not."""
+        return 'active' in self.browser.get_attribute('class', self.expand_button)
+
+    def expand(self):
+        """Expand the recommendation item section."""
+        if not self.expanded:
+            self.browser.click(self.EXPAND_BUTTON, parent=self)
+
+    @property
+    def name(self):
+        """Return the name displayed for this recommendation item"""
+        return self.browser.text(self.NAME, parent=self)
+
+    @property
+    def label(self):
+        """Return the risk label displayed for this recommendation item"""
+        return self.browser.text(self.RISK_LABEL, parent=self)
+
+    @property
+    def text(self):
+        """Return the text displayed for this recommendation item"""
+        return self.browser.text(self.TEXT, parent=self)
+
+    def read(self):
+        if self.expanded:
+            return dict(name=self.name, label=self.label, text=self.text)
+        else:
+            self.expand()
+            return dict(name=self.name, label=self.label, text=self.text)
+
+
+class RecommendationListView(View):
+    """Insights tab view of a host"""
+    ROOT = "//div[contains(@id, 'host_details_insights_tab')]"
+    ITEMS = ".//div[@id='hits_list']/div[contains(@class, 'list-group-item')]"
+    ITEM_WIDGET = RecommendationWidget
+
+    def items(self):
+        items = []
+        for index, _ in enumerate(self.browser.elements(self.ITEMS, parent=self)):
+            item = self.ITEM_WIDGET(self, f'{self.ITEMS}[{index + 1}]')
+            items.append(item)
+        return items
+
+    def read(self):
+        return [item.read() for item in self.items()]
 
 
 class HostsActionCommonDialog(BaseLoggedInView):

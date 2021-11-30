@@ -25,6 +25,7 @@ from airgun.views.host import HostsJobInvocationCreateView
 from airgun.views.host import HostsJobInvocationStatusView
 from airgun.views.host import HostsUnassignCompliancePolicy
 from airgun.views.host import HostsView
+from airgun.views.host import RecommendationListView
 
 
 class HostEntity(BaseEntity):
@@ -128,6 +129,11 @@ class HostEntity(BaseEntity):
         view.recommendations.click()
         view = self.navigate_to(self, 'Recommendations')
         return view.table.read()
+
+    def insights_tab(self, entity_name):
+        """Get details from Insights tab"""
+        view = self.navigate_to(self, 'InsightsTab', entity_name=entity_name)
+        return view.read()
 
     def _select_action(self, action_name, entities_list):
         """Navigate to all entities, select the entities, and returns the view
@@ -378,3 +384,18 @@ class ShowRecommendations(NavigateStep):
     """Navigate to Insights recommendations page"""
 
     VIEW = CloudInsightsView
+
+
+@navigator.register(HostEntity, 'InsightsTab')
+class InsightsTab(NavigateStep):
+    """Navigate to Insights tab on host details page"""
+
+    VIEW = RecommendationListView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Recommendations'].click()
