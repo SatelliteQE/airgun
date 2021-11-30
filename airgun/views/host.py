@@ -607,6 +607,7 @@ class HostEditView(HostCreateView):
 
 class RecommendationWidget(GenericLocatorWidget):
     """The widget representation of recommendation item."""
+
     EXPAND_BUTTON = ".//div[contains(@class, 'expand')]"
     NAME = ".//div/p[contains(@class, 'item-heading')]"
     RISK_LABEL = ".//div/span[contains(@class, 'risk-label')]"
@@ -652,6 +653,7 @@ class RecommendationWidget(GenericLocatorWidget):
 
 class RecommendationListView(View):
     """Insights tab view of a host"""
+
     ROOT = "//div[contains(@id, 'host_details_insights_tab')]"
     ITEMS = ".//div[@id='hits_list']/div[contains(@class, 'list-group-item')]"
     ITEM_WIDGET = RecommendationWidget
