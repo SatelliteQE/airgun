@@ -554,57 +554,6 @@ class HostRegisterView(BaseLoggedInView):
         )
 
 
-class HostDetailsView(BaseLoggedInView):
-    breadcrumb = BreadCrumb()
-
-    @property
-    def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'All Hosts'
-            and self.breadcrumb.read() != 'Create Host'
-        )
-
-    boot_disk = ActionsDropdown(
-        "//div[contains(@class, 'btn-group')][contains(., 'Boot')][not(*[self::div])]"
-    )
-    schedule_remote_job = ActionsDropdown(
-        "//div[contains(@class, 'btn-group')][contains(., 'Schedule')][not(*[self::div])]"
-    )
-    back = Text("//a[text()='Back']")
-    webconsole = Text("//a[text()='Web Console']")
-    edit = Text("//a[@id='edit-button']")
-    clone = Text("//a[@id='clone-button']")
-    build = Text("//a[@id='build-review']")
-    delete = Text("//a[@id='delete-button']")
-    audits_details = Text("//a[text()='Audits']")
-    facts_details = Text("//a[text()='Facts']")
-    yaml_dump = Text("//a[text()='YAML']")
-    yaml_output = Text("//pre")
-    content_details = Text("//a[text()='Content']")
-    recommendations = Text("//a[text()='Recommendations']")
-
-    @View.nested
-    class properties(SatTab):
-        properties_table = SatTableWithUnevenStructure(locator="//table[@id='properties_table']")
-
-
-class HostEditView(HostCreateView):
-    breadcrumb = BreadCrumb()
-    submit = Text('//input[@name="commit"]')
-    toggle_manage = Text("//a[contains(@href, '/toggle_manage')]")
-
-    @property
-    def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'All Hosts'
-            and self.breadcrumb.read().startswith('Edit ')
-        )
-
-
 class RecommendationWidget(GenericLocatorWidget):
     """The widget representation of recommendation item."""
 
@@ -667,6 +616,61 @@ class RecommendationListView(View):
 
     def read(self):
         return [item.read() for item in self.items()]
+
+
+class HostDetailsView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'All Hosts'
+            and self.breadcrumb.read() != 'Create Host'
+        )
+
+    boot_disk = ActionsDropdown(
+        "//div[contains(@class, 'btn-group')][contains(., 'Boot')][not(*[self::div])]"
+    )
+    schedule_remote_job = ActionsDropdown(
+        "//div[contains(@class, 'btn-group')][contains(., 'Schedule')][not(*[self::div])]"
+    )
+    back = Text("//a[text()='Back']")
+    webconsole = Text("//a[text()='Web Console']")
+    edit = Text("//a[@id='edit-button']")
+    clone = Text("//a[@id='clone-button']")
+    build = Text("//a[@id='build-review']")
+    delete = Text("//a[@id='delete-button']")
+    audits_details = Text("//a[text()='Audits']")
+    facts_details = Text("//a[text()='Facts']")
+    yaml_dump = Text("//a[text()='YAML']")
+    yaml_output = Text("//pre")
+    content_details = Text("//a[text()='Content']")
+    recommendations = Text("//a[text()='Recommendations']")
+
+    @View.nested
+    class properties(SatTab):
+        properties_table = SatTableWithUnevenStructure(locator="//table[@id='properties_table']")
+
+    @View.nested
+    class insights(SatTab):
+        insights_tab = RecommendationListView()
+
+
+class HostEditView(HostCreateView):
+    breadcrumb = BreadCrumb()
+    submit = Text('//input[@name="commit"]')
+    toggle_manage = Text("//a[contains(@href, '/toggle_manage')]")
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'All Hosts'
+            and self.breadcrumb.read().startswith('Edit ')
+        )
 
 
 class HostsActionCommonDialog(BaseLoggedInView):
