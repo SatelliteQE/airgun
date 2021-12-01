@@ -9,6 +9,7 @@ from airgun.views.common import WrongContextAlert
 from airgun.views.organization import OrganizationCreateView
 from airgun.views.organization import OrganizationEditView
 from airgun.views.organization import OrganizationsView
+from airgun.views.organization import OrganizationSelectView
 
 
 class OrganizationEntity(BaseEntity):
@@ -54,6 +55,15 @@ class OrganizationEntity(BaseEntity):
     def select(self, org_name):
         """Select necessary organization from context menu on the top of the page"""
         self.navigate_to(self, 'Context', org_name=org_name)
+
+    def select_org_page(self, org_name):
+        """Select necessary organization from menu on the the page.
+            It's the page you see when you are on product page and have
+            'Any Organization' selected
+        """
+        view = self.navigate_to(self, 'Select Org')
+        view.organizations.fill(org_name)
+        view.select.click()
 
 
 @navigator.register(OrganizationEntity, 'All')
@@ -128,3 +138,12 @@ class SelectOrganizationContext(NavigateStep):
                 self.view.menu, exception=False, ensure_page_safe=True
             )
         super().post_navigate(_tries, *args, **kwargs)
+
+
+@navigator.register(OrganizationEntity, 'Select Org')
+class AnyOrganizationContext(NavigateStep):
+    """Select "Any Organization" from menu
+    Args:
+        org_name: name of the organization
+    """
+    VIEW = OrganizationSelectView

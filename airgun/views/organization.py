@@ -12,7 +12,8 @@ from airgun.widgets import ActionsDropdown
 from airgun.widgets import CustomParameter
 from airgun.widgets import FilteredDropdown
 from airgun.widgets import MultiSelect
-
+from widgetastic.widget import Select
+from widgetastic_patternfly import Button
 
 class OrganizationsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[text()='Organizations']")
@@ -45,6 +46,15 @@ class OrganizationCreateView(BaseLoggedInView):
             and self.breadcrumb.locations[0] == 'Organizations'
             and self.breadcrumb.read() == 'New Organization'
         )
+
+class OrganizationSelectView(BaseLoggedInView, SearchableViewMixin):
+    title = Text('//h1[text()="Select an Organization"]')
+    organizations = Select(id='organization')
+    select = Button('Select')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class OrganizationCreateSelectHostsView(BaseLoggedInView):
