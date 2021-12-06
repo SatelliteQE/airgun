@@ -5,6 +5,7 @@ from widgetastic.exceptions import RowNotFound
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.ldapauthentication import LDAPAuthenticationCreateView
 from airgun.views.ldapauthentication import LDAPAuthenticationEditView
 from airgun.views.ldapauthentication import LDAPAuthenticationsView
@@ -72,6 +73,7 @@ class ShowAllLDAPSources(NavigateStep):
 
     VIEW = LDAPAuthenticationsView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Administer', 'Authentication Sources')
 
@@ -84,6 +86,7 @@ class AddNewLDAPSource(NavigateStep):
 
     prerequisite = NavigateToSibling('All')
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.parent.ldap.select_kebab.item_select('Create')
 

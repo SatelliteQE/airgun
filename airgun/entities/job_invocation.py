@@ -4,6 +4,7 @@ from wait_for import wait_for
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.job_invocation import JobInvocationCreateView
 from airgun.views.job_invocation import JobInvocationStatusView
 from airgun.views.job_invocation import JobInvocationsView
@@ -47,6 +48,7 @@ class ShowAllJobs(NavigateStep):
 
     VIEW = JobInvocationsView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Monitor', 'Jobs')
 

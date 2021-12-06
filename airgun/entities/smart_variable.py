@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.smart_variable import SmartVariableCreateView
 from airgun.views.smart_variable import SmartVariableEditView
 from airgun.views.smart_variable import SmartVariablesTableView
@@ -54,6 +55,7 @@ class ShowAllSmartVariables(NavigateStep):
 
     VIEW = SmartVariablesTableView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Configure', 'Smart Variables')
 

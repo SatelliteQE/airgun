@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.provisioning_template import ProvisioningTemplateCreateView
 from airgun.views.provisioning_template import ProvisioningTemplateDetailsView
 from airgun.views.provisioning_template import ProvisioningTemplatesView
@@ -86,6 +87,7 @@ class ShowAllProvisioningTemplates(NavigateStep):
 
     VIEW = ProvisioningTemplatesView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Provisioning Templates')
 
