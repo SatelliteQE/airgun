@@ -19,6 +19,7 @@ setup(
         'cached_property',
         'fauxfactory',
         'navmazing',
+        'python-box',
         'pytest',
         'selenium',
         'wait_for',
