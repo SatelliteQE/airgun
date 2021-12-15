@@ -10,7 +10,7 @@ from datetime import datetime
 from urllib.parse import unquote
 
 import yaml
-from attrdict import AttrDict
+from box import Box
 from selenium import webdriver
 from wait_for import wait_for
 from webdriver_kaifuku import BrowserManager
@@ -71,7 +71,7 @@ class SeleniumBrowserFactory:
         """
         self.provider = provider or settings.selenium.browser
         self.browser = browser or settings.selenium.webdriver
-        self.web_kaifuku = AttrDict(yaml.safe_load(settings.webkaifuku.config))
+        self.web_kaifuku = Box(yaml.safe_load(settings.webkaifuku.config))
         self.test_name = test_name
         self._session = session_cookie
         self._docker = None
