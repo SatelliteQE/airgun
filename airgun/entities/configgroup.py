@@ -9,7 +9,7 @@ from airgun.views.configgroup import ConfigGroupsView
 
 
 class ConfigGroupEntity(BaseEntity):
-    endpoint_path = '/config_groups'
+    endpoint_path = '/foreman_puppet/config_groups'
 
     def create(self, values):
         """Create new config group"""

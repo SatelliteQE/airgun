@@ -9,7 +9,7 @@ from airgun.views.puppet_environment import PuppetEnvironmentTableView
 
 
 class PuppetEnvironmentEntity(BaseEntity):
-    endpoint_path = '/environments'
+    endpoint_path = '/foreman_puppet/environments'
 
     def create(self, values):
         """Create puppet environment entity"""
