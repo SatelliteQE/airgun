@@ -1,4 +1,5 @@
 """Exceptions raised by airgun"""
+from selenium.common.exceptions import InvalidElementStateException
 
 
 class ReadOnlyWidgetError(Exception):
@@ -11,3 +12,6 @@ class DisabledWidgetError(Exception):
 
 class DestinationNotReachedError(Exception):
     """Raised when navigation destination view was not reached (not dispayed)."""
+
+
+__all__ = ["InvalidElementStateException"]
