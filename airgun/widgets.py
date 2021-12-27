@@ -635,12 +635,14 @@ class Search(Widget):
     search_field = TextInput(
         locator=(
             ".//input[@id='search' or contains(@placeholder, 'Filter') or "
-            "@ng-model='table.searchTerm' or contains(@ng-model, 'Filter')]"
+            "@ng-model='table.searchTerm' or contains(@ng-model, 'Filter') or "
+            "@data-autocomplete-id='searchBar' or contains(@placeholder, 'Search') "
+            "or contains(@class, 'search-input')]"
         )
     )
     search_button = Text(
-        ".//button[contains(@type,'submit') or contains(@class, 'search-btn') "
-        "or @ng-click='table.search(table.searchTerm)']"
+        ".//button[contains(@id, 'btn-search') or contains(@type,'submit') or "
+        "contains(@class, 'search-btn') or @ng-click='table.search(table.searchTerm)']"
     )
     clear_button = Text(
         ".//span[contains(@class,'autocomplete-clear-button') or contains(@class,'fa-close')]"
