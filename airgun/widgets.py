@@ -21,6 +21,7 @@ from widgetastic_patternfly import FlashMessages
 from widgetastic_patternfly import Kebab
 from widgetastic_patternfly import VerticalNavigation
 from widgetastic_patternfly4.ouia import BaseSelect
+from widgetastic_patternfly4.ouia import Button as PF4Button
 from widgetastic_patternfly4.ouia import ContextSelector as OUIAContextSelector
 from widgetastic_patternfly4.ouia import Dropdown
 
@@ -1062,6 +1063,16 @@ class ConfirmationDialog(Widget):
     def read(self):
         """Widgets has no fields to read"""
         do_not_read_this_widget()
+
+
+class Pf4ConfirmationDialog(ConfirmationDialog):
+    """PF4 confirmation dialog with two buttons and close 'x' button in the
+    right corner."""
+
+    ROOT = '//div[@id="app-confirm-modal" or @data-ouia-component-type="PF4/ModalContent"]'
+    confirm_dialog = PF4Button('OUIA-Generated-Button-danger-1')
+    cancel_dialog = PF4Button('OUIA-Generated-Button-link-1')
+    discard_dialog = PF4Button('OUIA-Generated-Button-plain-1')
 
 
 class LCESelector(GenericLocatorWidget):
