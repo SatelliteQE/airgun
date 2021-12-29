@@ -8,6 +8,7 @@ from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
 from airgun.views.common import SearchableViewMixin
 from airgun.widgets import MultiSelect
+from airgun.widgets import Pf4ConfirmationDialog
 
 
 class HTTPProxyView(BaseLoggedInView, SearchableViewMixin):
@@ -21,6 +22,7 @@ class HTTPProxyView(BaseLoggedInView, SearchableViewMixin):
             'Actions': Text(".//a[@data-method='delete']"),
         },
     )
+    dialog = Pf4ConfirmationDialog()
 
     @property
     def is_displayed(self):

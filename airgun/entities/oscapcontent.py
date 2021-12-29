@@ -33,7 +33,7 @@ class OSCAPContentEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(title=entity_name)['Actions'].widget.fill('Delete')
-        self.browser.handle_alert()
+        view.dialog.confirm()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
