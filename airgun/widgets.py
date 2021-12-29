@@ -1063,7 +1063,7 @@ class ConfirmationDialog(Widget):
         do_not_read_this_widget()
 
 
-class ConfirmationBox(ConfirmationDialog):
+class Pf4ConfirmationDialog(ConfirmationDialog):
     """PF4 confirmation dialog with two buttons and close 'x' button in the
     right corner."""
 
