@@ -4,6 +4,7 @@ from wait_for import wait_for
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.job_template import JobTemplateCreateView
 from airgun.views.job_template import JobTemplateEditView
 from airgun.views.job_template import JobTemplatesView
@@ -72,6 +73,7 @@ class ShowAllTemplates(NavigateStep):
 
     VIEW = JobTemplatesView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Job templates')
 

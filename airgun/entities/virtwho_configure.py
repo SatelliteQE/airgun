@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.virtwho_configure import VirtwhoConfigureCreateView
 from airgun.views.virtwho_configure import VirtwhoConfigureDetailsView
 from airgun.views.virtwho_configure import VirtwhoConfigureEditView
@@ -84,6 +85,7 @@ class ShowAllVirtwhoConfigures(NavigateStep):
 
     VIEW = VirtwhoConfiguresView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Infrastructure', 'Virt-who configurations')
 

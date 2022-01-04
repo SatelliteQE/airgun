@@ -1,6 +1,7 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.package import PackageDetailsView
 from airgun.views.package import PackagesView
 
@@ -40,6 +41,7 @@ class ShowAllPackages(NavigateStep):
 
     VIEW = PackagesView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Packages')
 

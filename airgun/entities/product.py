@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.product import ProductAdvancedSync
 from airgun.views.product import ProductCreateView
 from airgun.views.product import ProductEditView
@@ -129,6 +130,7 @@ class ShowAllProducts(NavigateStep):
 
     VIEW = ProductsTableView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Products')
 

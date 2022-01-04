@@ -4,6 +4,7 @@ from wait_for import wait_for
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import WrongContextAlert
 from airgun.views.organization import OrganizationCreateView
@@ -62,6 +63,7 @@ class ShowAllOrganizations(NavigateStep):
 
     VIEW = OrganizationsView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Administer', 'Organizations')
 

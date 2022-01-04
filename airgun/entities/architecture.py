@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.architecture import ArchitectureCreateView
 from airgun.views.architecture import ArchitectureDetailsView
 from airgun.views.architecture import ArchitecturesView
@@ -52,6 +53,7 @@ class ShowAllArchitectures(NavigateStep):
 
     VIEW = ArchitecturesView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Architectures')
 

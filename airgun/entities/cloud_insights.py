@@ -1,6 +1,7 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.cloud_insights import CloudInsightsView
 from airgun.views.cloud_insights import CloudTokenView
 from airgun.views.job_invocation import JobInvocationCreateView
@@ -64,6 +65,7 @@ class SaveCloudTokenView(NavigateStep):
 
     VIEW = CloudTokenView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Configure', 'Insights')
 
@@ -74,6 +76,7 @@ class ShowCloudInsightsView(NavigateStep):
 
     VIEW = CloudInsightsView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Configure', 'Insights')
 

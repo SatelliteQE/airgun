@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.partitiontable import PartitionTableCreateView
 from airgun.views.partitiontable import PartitionTableEditView
 from airgun.views.partitiontable import PartitionTablesView
@@ -81,6 +82,7 @@ class ShowAllPartitionTables(NavigateStep):
 
     VIEW = PartitionTablesView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Partition Tables')
 
