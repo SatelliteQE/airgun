@@ -3,6 +3,7 @@ from wait_for import wait_for
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.sync_templates import SyncTemplatesView
 from airgun.views.sync_templates import TemplatesReportView
 
@@ -36,6 +37,7 @@ class SyncMainPageNavigation(NavigateStep):
 
     VIEW = SyncTemplatesView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Sync Templates')
 

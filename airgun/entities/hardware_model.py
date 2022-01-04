@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.hardware_model import HardwareModelCreateView
 from airgun.views.hardware_model import HardwareModelEditView
 from airgun.views.hardware_model import HardwareModelsView
@@ -61,6 +62,7 @@ class ShowAllHardwareModels(NavigateStep):
 
     VIEW = HardwareModelsView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Hardware Models')
 

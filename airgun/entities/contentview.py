@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.contentview import ContentViewCopyView
 from airgun.views.contentview import ContentViewCreateView
 from airgun.views.contentview import ContentViewEditView
@@ -229,6 +230,7 @@ class ShowAllContentViews(NavigateStep):
 
     VIEW = ContentViewTableView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Content Views')
 

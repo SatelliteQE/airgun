@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.os import OperatingSystemCreateView
 from airgun.views.os import OperatingSystemEditView
 from airgun.views.os import OperatingSystemsView
@@ -53,6 +54,7 @@ class ShowAllOperatingSystems(NavigateStep):
 
     VIEW = OperatingSystemsView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Operating Systems')
 

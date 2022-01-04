@@ -1,6 +1,7 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.contenthost import ContentHostDetailsView
 from airgun.views.contenthost import ContentHostsView
 from airgun.views.contenthost import ContentHostTaskDetailsView
@@ -226,6 +227,7 @@ class ShowAllContentHosts(NavigateStep):
 
     VIEW = ContentHostsView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Content Hosts')
 
