@@ -8,6 +8,7 @@ from airgun.exceptions import DisabledWidgetError
 from airgun.helpers.host import HostHelper
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.cloud_insights import CloudInsightsView
 from airgun.views.host import HostCreateView
 from airgun.views.host import HostDetailsView
@@ -269,6 +270,7 @@ class ShowAllHosts(NavigateStep):
 
     VIEW = HostsView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'All Hosts')
 
@@ -293,6 +295,7 @@ class RegisterHost(NavigateStep):
 
     prerequisite = NavigateToSibling('All')
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Register Host')
 

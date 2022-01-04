@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.oscaptailoringfile import SCAPTailoringFileCreateView
 from airgun.views.oscaptailoringfile import SCAPTailoringFileEditView
 from airgun.views.oscaptailoringfile import SCAPTailoringFilesView
@@ -73,6 +74,7 @@ class ShowAllSCAPTailoringFiles(NavigateStep):
 
     VIEW = SCAPTailoringFilesView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Tailoring Files')
 

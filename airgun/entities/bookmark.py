@@ -1,6 +1,7 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.bookmark import BookmarkEditView
 from airgun.views.bookmark import BookmarksView
 
@@ -58,6 +59,7 @@ class ShowAllBookmarks(NavigateStep):
 
     VIEW = BookmarksView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Administer', 'Bookmarks')
 

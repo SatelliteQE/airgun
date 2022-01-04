@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.domain import DomainCreateView
 from airgun.views.domain import DomainEditView
 from airgun.views.domain import DomainListView
@@ -86,6 +87,7 @@ class ShowAllDomains(NavigateStep):
 
     VIEW = DomainListView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Infrastructure', 'Domains')
 

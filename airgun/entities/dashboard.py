@@ -1,6 +1,7 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.dashboard import DashboardView
 
 
@@ -38,6 +39,7 @@ class OpenDashboard(NavigateStep):
 
     VIEW = DashboardView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Monitor', 'Dashboard')
 

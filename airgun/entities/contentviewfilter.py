@@ -2,6 +2,7 @@ from airgun.entities.base import BaseEntity
 from airgun.entities.contentview import ContentViewEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.contentviewfilter import ACTIONS_COLUMN
 from airgun.views.contentviewfilter import ContentViewFiltersView
 from airgun.views.contentviewfilter import CreateYumFilterView
@@ -306,6 +307,7 @@ class ShowAllContentViewFilters(NavigateStep):
         cv_name = kwargs.get('cv_name')
         return self.navigate_to(ContentViewEntity, 'Edit', entity_name=cv_name)
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.parent.filters.select()
 

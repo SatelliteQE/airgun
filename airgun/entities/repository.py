@@ -7,6 +7,7 @@ from airgun.entities.product import ProductEntity
 from airgun.entities.settings import SettingsEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.product import ProductTaskDetailsView
 from airgun.views.repository import RepositoriesView
 from airgun.views.repository import RepositoryCreateView
@@ -133,6 +134,7 @@ class ShowAllRepositories(NavigateStep):
         product_name = kwargs.get('product_name')
         return self.navigate_to(ProductEntity, 'Edit', entity_name=product_name)
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.parent.repositories.click()
 
