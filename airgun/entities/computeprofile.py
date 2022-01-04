@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.computeprofile import ComputeProfileCreateView
 from airgun.views.computeprofile import ComputeProfileDetailView
 from airgun.views.computeprofile import ComputeProfileRenameView
@@ -56,6 +57,7 @@ class ShowAllComputeProfiles(NavigateStep):
 
     VIEW = ComputeProfilesView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Infrastructure', 'Compute Profiles')
 

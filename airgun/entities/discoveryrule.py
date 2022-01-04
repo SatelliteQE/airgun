@@ -3,6 +3,7 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.utils import retry_navigation
 from airgun.views.discoveredhosts import DiscoveredHostsView
 from airgun.views.discoveryrule import DiscoveryRuleCreateView
 from airgun.views.discoveryrule import DiscoveryRuleEditView
@@ -122,6 +123,7 @@ class ShowAllDiscoveryRules(NavigateStep):
 
     VIEW = DiscoveryRulesView
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Configure', 'Discovery Rules')
 
