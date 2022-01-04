@@ -1,6 +1,8 @@
 import functools
 import time
 
+from wait_for import TimedOutError
+
 
 def merge_dict(values, new_values):
     """Update dict values with new values from new_values dict
@@ -84,7 +86,7 @@ def retry_navigation(method):
         for i in range(attempts):
             try:
                 return method(*args, **kwargs)
-            except (Exception):
+            except (TimedOutError):
                 if i < attempts - 1:
                     args[0].view.parent.browser.refresh()
                     time.sleep(0.5)
