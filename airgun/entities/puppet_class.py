@@ -7,7 +7,7 @@ from airgun.views.puppet_class import PuppetClassesView
 
 
 class PuppetClassEntity(BaseEntity):
-    endpoint_path = '/puppetclasses'
+    endpoint_path = '/foreman_puppet/puppetclasses'
 
     def search(self, value):
         """Search for puppet class entity"""

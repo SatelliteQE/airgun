@@ -7,7 +7,7 @@ from airgun.views.smart_class_parameter import SmartClassParametersView
 
 
 class SmartClassParameterEntity(BaseEntity):
-    endpoint_path = '/puppetclass_lookup_keys'
+    endpoint_path = '/foreman_puppet/puppetclass_lookup_keys'
 
     def search(self, value):
         """Search for smart class parameter entity and return table row that
