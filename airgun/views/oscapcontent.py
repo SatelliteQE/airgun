@@ -9,11 +9,12 @@ from airgun.views.common import SatTab
 from airgun.views.common import SearchableViewMixin
 from airgun.widgets import ActionsDropdown
 from airgun.widgets import MultiSelect
+from airgun.widgets import Pf4ConfirmationDialog
 from airgun.widgets import SatTable
 
 
 class SCAPContentsView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='SCAP Contents']")
+    title = Text("//h1[text()='SCAP Content']")
     new = Text("//a[contains(@href, 'scap_contents/new')]")
     table = SatTable(
         './/table',
@@ -22,6 +23,7 @@ class SCAPContentsView(BaseLoggedInView, SearchableViewMixin):
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
+    dialog = Pf4ConfirmationDialog()
 
     @property
     def is_displayed(self):

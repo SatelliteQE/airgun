@@ -50,6 +50,7 @@ class HTTPProxyEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         self.search(entity_name)
         view.table.row(Name=entity_name)['Actions'].widget.click(handle_alert=True)
+        view.dialog.confirm()
         view.validations.assert_no_errors()
         view.flash.assert_no_error()
         view.flash.dismiss()
