@@ -53,6 +53,7 @@ from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.oscapcontent import OSCAPContentEntity
 from airgun.entities.oscappolicy import OSCAPPolicyEntity
 from airgun.entities.oscaptailoringfile import OSCAPTailoringFileEntity
+from airgun.entities.new_contentview import NewContentViewEntity
 from airgun.entities.package import PackageEntity
 from airgun.entities.partitiontable import PartitionTableEntity
 from airgun.entities.product import ProductEntity

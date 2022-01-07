@@ -691,7 +691,6 @@ class ActionDropdownWithCheckbox(ActionsDropdown):
         self.customize_check_box.fill(item['is_customize'])
         self.select(item['action'])
 
-
 class Search(Widget):
     """Searchbar for table filtering"""
 
@@ -744,6 +743,48 @@ class Search(Widget):
         self.fill(value)
         if self.search_button.is_displayed:
             self.search_button.click()
+
+class PF4Search(Search):
+    """PF4 Searchbar for table filtering"""
+
+    ROOT = '//div[@role="combobox" or @aria-haspopup="listbox"]'
+    search_field = TextInput(
+        locator=(
+            ".//input[@type='search' or @id='downshift-0-input' or contains(@class, 'pf-m-search')]"
+        )
+    )
+    clear_button = Button(locator=".//button[contains(@class,'search-clear')]")
+
+    def fill(self, value):
+        return self.search_field.fill(value)
+
+    def read(self):
+        return self.search_field.read()
+
+    def clear(self):
+        """Clears search field value and re-trigger search to remove all
+                filters.
+                """
+        if self.clear_button.is_displayed:
+            self.clear_button.click()
+        else:
+            self.browser.clear(self.search_field)
+
+    def search(self, value):
+        self.clear()
+        self.fill(value)
+        self.browser.plugin.ensure_page_safe()
+        #TODO: might need to add sleeper here or some wait_for
+
+    def after_fill(self):
+        """Ensure widgets appears after filling out searchbox"""
+        wait_for(
+            lambda: self.clear_button.is_displayed is True,
+            timeout=300,
+            delay=1,
+            logger=self.logger
+        )
+        #TODO: Might need to do sleeper or another wait_for table
 
 
 class PF4Search(Search):
@@ -1373,6 +1414,11 @@ class EditableEntry(GenericLocatorWidget):
     save_button = Text(".//button[normalize-space(.)='Save']")
     cancel_button = Text(".//button[span[normalize-space(.)='Cancel']]")
     entry_value = Text(".//span[contains(@class, 'editable-value')]")
+    #PF4 editable entry
+    pf4_edit_button = Text("//button[@aria-label='edit name']")
+    pf4_edit_field = TextInput(locator=".//input[@aria-label='name text input']")
+    pf4_save_button = Text("//button[@aria-label='submit name']")
+    pf4_cancel_button = Text("//button[@aria-label='clear name']")
 
     def __init__(self, parent, locator=None, name=None, logger=None):
         """Supports initialization via ``locator=`` or ``name=``"""
@@ -1390,10 +1436,15 @@ class EditableEntry(GenericLocatorWidget):
         # in some cases editing fields automatically triggers editing others,
         # so the field may be opened for editing and clicking "edit" button is
         # not required for it
+        # TODO: rework this or create a separate function
         if self.edit_button.is_displayed:
             self.edit_button.click()
-        self.edit_field.fill(value)
-        self.save_button.click()
+            self.edit_field.fill(value)
+            self.save_button.click()
+        if self.pf4_edit_button.is_displayed:
+            self.pf4_edit_button.click()
+            self.pf4_edit_field.fill(value)
+            self.pf4_save_button.click()
 
     def read(self):
         """Returns string with current widget value"""
@@ -1967,6 +2018,71 @@ class SatTableWithUnevenStructure(SatTable):
             if 'ng-hide' not in self.browser.classes(row)
         }
 
+
+class ProgressBarPF4(GenericLocatorWidget):
+    """Generic progress bar widget.
+
+    Example html representation::
+
+        <div class="progress ng-isolate-scope" type="success" ...>
+          <div class="progress-bar progress-bar-success" aria-valuenow="0"
+           aria-valuemin="0" aria-valuemax="100" aria-valuetext="0%" ...></div>
+        </div>
+
+    Locator example::
+
+        .//div[contains(@class, "progress progress-striped")]
+
+    """
+
+    PROGRESSBAR = '//div[contains(@role, "progressbar") or contains(@class, "pf-c-progress__bar")]'
+
+    def __init__(self, parent, locator=None, logger=None):
+        """Provide common progress bar locator if it wasn't specified."""
+        Widget.__init__(self, parent, logger=logger)
+        if not locator:
+            locator = self.PROGRESSBAR
+        self.locator = locator
+
+    @property
+    def is_active(self):
+        """Boolean value whether progress bar is active or not (stopped,
+        pending or any other state).
+        """
+        if 'active' in self.browser.classes(self, check_safe=False):
+            return True
+        return False
+
+    @property
+    def progress(self):
+        """String value with current flow rate in percent."""
+        return self.browser.get_attribute('pf-c-progress__measure', self.PROGRESSBAR, check_safe=False)
+
+    @property
+    def is_completed(self):
+        """Boolean value whether progress bar is finished or not"""
+        if not self.is_active and self.progress == '100%':
+            return True
+        return False
+
+    def wait_for_result(self, timeout=600, delay=1):
+        """Waits for progress bar to finish. By default checks whether progress
+        bar is completed every second for 10 minutes.
+
+        :param timeout: integer value for timeout in seconds
+        :param delay: float value for delay between attempts in seconds
+        """
+        wait_for(lambda: self.is_displayed, timeout=30, delay=delay, logger=self.logger)
+        wait_for(
+            lambda: self.is_completed is True or not self.is_displayed,
+            timeout=timeout,
+            delay=delay,
+            logger=self.logger,
+        )
+
+    def read(self):
+        """Returns current progress."""
+        return self.progress
 
 class ProgressBar(GenericLocatorWidget):
     """Generic progress bar widget.
