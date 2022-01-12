@@ -20,6 +20,7 @@ from widgetastic_patternfly import FlashMessage
 from widgetastic_patternfly import FlashMessages
 from widgetastic_patternfly import Kebab
 from widgetastic_patternfly import VerticalNavigation
+from widgetastic_patternfly4 import Dropdown as SearchDropdown
 from widgetastic_patternfly4.ouia import BaseSelect
 from widgetastic_patternfly4.ouia import Button as PF4Button
 from widgetastic_patternfly4.ouia import ContextSelector as OUIAContextSelector
@@ -675,6 +676,27 @@ class Search(Widget):
         self.fill(value)
         if self.search_button.is_displayed:
             self.search_button.click()
+
+
+class PF4Search(Search):
+    """PF4 Searchbar for table filtering"""
+
+    ROOT = '//div[@role="combobox" or @aria-haspopup="listbox"]'
+    search_field = TextInput(
+        locator=(
+            ".//input[@type='search' or @id='downshift-2-input' or contains(@class, 'search')]"
+        )
+    )
+    clear_button = Button(locator=".//button[contains(@class,'search-clear')]")
+    actions = SearchDropdown(locator=".//button[@id='toggle-id']")
+
+    def search(self, value):
+        if hasattr(self.parent, 'flash'):
+            # large flash messages may hide the search button
+            self.parent.flash.dismiss()
+        self.clear()
+        self.fill(value)
+        self.browser.plugin.ensure_page_safe()
 
 
 class SatVerticalNavigation(VerticalNavigation):

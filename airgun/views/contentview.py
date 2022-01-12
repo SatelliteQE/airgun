@@ -6,6 +6,7 @@ from widgetastic.widget import TextInput
 from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly import Button
+from widgetastic_patternfly4 import PatternflyTable
 
 from airgun.views.common import AddRemoveResourcesView
 from airgun.views.common import BaseLoggedInView
@@ -18,6 +19,7 @@ from airgun.widgets import ActionsDropdown
 from airgun.widgets import ConfirmationDialog
 from airgun.widgets import EditableEntry
 from airgun.widgets import EditableEntryCheckbox
+from airgun.widgets import PF4Search
 from airgun.widgets import PublishPromoteProgressBar
 from airgun.widgets import ReadOnlyEntry
 from airgun.widgets import SatSelect
@@ -25,9 +27,10 @@ from airgun.widgets import Search
 
 
 class ContentViewTableView(BaseLoggedInView, SearchableViewMixin):
+    searchbox = PF4Search()
     title = Text("//h2[contains(., 'Content Views')]")
     new = Text("//a[contains(@href, '/content_views/new')]")
-    table = Table('.//table', column_widgets={'Name': Text('./a')})
+    table = PatternflyTable(locator='.//table[@data-ouia-component-type="PF4/Table"]')
 
     @property
     def is_displayed(self):

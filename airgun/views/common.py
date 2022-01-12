@@ -439,7 +439,17 @@ class SearchableViewMixin(WTMixin):
         if not self.is_searchable():
             return None
         self.searchbox.search(query)
+        # Tried following ways to wait for table to be displayed, only sleep worked
+        #   from wait_for import wait_for
+        #   wait_for(
+        #       lambda: self.table.is_displayed is True,
+        #       timeout=60,
+        #       delay=1,
+        #   )
+        #   self.table.wait_displayed()
+        import time
 
+        time.sleep(3)
         return self.table.read()
 
 
