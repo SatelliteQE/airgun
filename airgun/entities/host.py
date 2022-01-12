@@ -247,7 +247,9 @@ class HostEntity(BaseEntity):
         view.validations.assert_no_errors()
         # switch to the last opened tab,
         self.browser.switch_to_window(self.browser.window_handles[-1])
-        self.browser.wait_for_element(locator='//div[@id="index-brand"]', exception=True)
+        self.browser.wait_for_element(
+            locator='//div[@id="index-brand"]', exception=True, timeout=10
+        )
         # the remote host content is loaded in an iframe, let's switch to it
         self.browser.switch_to_frame(locator='//div[@id="content"]/iframe')
 
