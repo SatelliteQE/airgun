@@ -126,7 +126,6 @@ class ResourceProviderCreateView(BaseLoggedInView):
         url = TextInput(id='compute_resource_url')
         user = TextInput(id='compute_resource_user')
         password = TextInput(id='compute_resource_password')
-        api4 = Checkbox(id='compute_resource_use_v4')
         certification_authorities = TextInput(id='compute_resource_public_key')
 
         @View.nested
