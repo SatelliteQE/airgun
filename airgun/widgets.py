@@ -712,23 +712,20 @@ class SatFlashMessages(FlashMessages):
 
     Example html representation::
 
-        <div class="toast-notifications-list-pf">
-            <div class="alert toast-pf alert-success alert-dismissable">
-                <button ... type="button" class="close close-default">
-                    <span ... class="pficon pficon-close"></span></button>
-                <span aria-hidden="true" class="pficon pficon-ok"></span>
-                <span><span>Sample message</span></span></div>
-            </div>
-        </div>
+        <ul class="pf-c-alert-group pf-m-toast"><li>
+        <div class="pf-c-alert pf-m-success foreman-toast" aria-label="Success Alert"
+            data-ouia-component-type="PF4/Alert" data-ouia-safe="true"
+            data-ouia-component-id="OUIA-Generated-Alert-success-1">
+            <div class="pf-c-alert__icon">
 
     Locator example::
 
-        //div[@class="toast-notifications-list-pf"]
+        //ul[@class="pf-c-alert-group pf-m-toast"]/li/div[contains(@class, "pf-c-alert")]
 
     """
 
-    ROOT = '//div[@class="toast-notifications-list-pf"]'
-    MSG_LOCATOR = f'{ROOT}/div[contains(@class, "alert")]'
+    ROOT = '//ul[@class="pf-c-alert-group pf-m-toast"]'
+    MSG_LOCATOR = f'{ROOT}/div[contains(@class, "pf-c-alert")]'
     msg_class = SatFlashMessage
 
 
