@@ -125,6 +125,21 @@ class HostCollectionEntity(BaseEntity):
             )
             return job_status_view.overview.read()
 
+    def search_applicable_hosts(self, entity_name, errata_id):
+        """Check for search URI in Host Collection errata view.
+
+        :param str entity_name:  The host collection name.
+        :param str errata_id: the applicable errata id.
+
+        :return: Search URL to list the applicable hosts
+        """
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.details.install_errata.click()
+        view = HostCollectionInstallErrataView(view.browser)
+        uri = view.search_url.__element__().get_attribute('href')
+        view.dialog.confirm()
+        return uri
+
     def install_errata(
         self, entity_name, errata_id, install_via='via Katello agent', job_values=None
     ):
