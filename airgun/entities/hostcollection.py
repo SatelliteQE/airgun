@@ -137,6 +137,7 @@ class HostCollectionEntity(BaseEntity):
         view.details.install_errata.click()
         view = HostCollectionInstallErrataView(view.browser)
         uri = view.search_url.__element__().get_attribute('href')
+        view.dialog.confirm()
         return uri
 
     def install_errata(
