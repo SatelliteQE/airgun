@@ -63,6 +63,12 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
+    def host_status(self, value):
+        """Get Host status"""
+        view = self.navigate_to(self, 'All')
+        view.search(value)
+        return view.browser.element(view.host_status).get_attribute('data-original-title')
+
     def get_details(self, entity_name, widget_names=None):
         """Read host values from Host Details page, optionally only the widgets in widget_names
         will be read.
