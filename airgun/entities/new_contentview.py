@@ -1,4 +1,5 @@
 import time
+
 from navmazing import NavigateToSibling
 from wait_for import wait_for
 
@@ -11,6 +12,7 @@ from airgun.views.new_contentview import NewContentViewRemoveView
 from airgun.views.new_contentview import NewContentViewTableView
 from airgun.views.new_contentview import NewContentViewVersionPromoteView
 from airgun.views.new_contentview import NewContentViewVersionPublishView
+
 
 class NewContentViewEntity(BaseEntity):
     endpoint_path = '/content_views'
@@ -111,7 +113,6 @@ class NewContentViewEntity(BaseEntity):
         view.flash.dismiss()
         return view.versions.table[0].read()
 
-
     def update(self, entity_name, values):
         """Update existing content view"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
@@ -122,6 +123,7 @@ class NewContentViewEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
         return filled_values
+
 
 @navigator.register(NewContentViewEntity, 'All')
 class ShowAllContentViews(NavigateStep):
@@ -163,6 +165,7 @@ class EditContentView(NavigateStep):
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
 
+
 @navigator.register(NewContentViewEntity, 'Delete')
 class DeleteContentView(NavigateStep):
     """Navigate to Delete Content View screen by selecting appropriate action
@@ -180,6 +183,7 @@ class DeleteContentView(NavigateStep):
 
     def step(self, *args, **kwargs):
         self.parent.actions.fill('Remove Content View')
+
 
 @navigator.register(NewContentViewEntity, 'Publish')
 class PublishContentViewVersion(NavigateStep):
@@ -204,6 +208,7 @@ class PublishContentViewVersion(NavigateStep):
             timeout=10,
         )
         self.parent.publish.click()
+
 
 @navigator.register(NewContentViewEntity, 'Promote')
 class PromoteContentViewVersion(NavigateStep):

@@ -24,6 +24,8 @@ from widgetastic_patternfly4.ouia import BaseSelect
 from widgetastic_patternfly4.ouia import Button as PF4Button
 from widgetastic_patternfly4.ouia import ContextSelector as OUIAContextSelector
 from widgetastic_patternfly4.ouia import Dropdown
+from widgetastic_patternfly4.table import BaseExpandableTable
+from widgetastic_patternfly4.table import BasePatternflyTable
 
 from airgun.exceptions import DisabledWidgetError
 from airgun.exceptions import ReadOnlyWidgetError
@@ -691,6 +693,7 @@ class ActionDropdownWithCheckbox(ActionsDropdown):
         self.customize_check_box.fill(item['is_customize'])
         self.select(item['action'])
 
+
 class Search(Widget):
     """Searchbar for table filtering"""
 
@@ -744,13 +747,15 @@ class Search(Widget):
         if self.search_button.is_displayed:
             self.search_button.click()
 
+
 class PF4Search(Search):
     """PF4 Searchbar for table filtering"""
 
     ROOT = '//div[@role="combobox" or @aria-haspopup="listbox"]'
     search_field = TextInput(
         locator=(
-            ".//input[@type='search' or @id='downshift-0-input' or contains(@class, 'pf-m-search')]"
+            ".//input[@type='search' or @id='downshift-0-input' or"
+            " contains(@class, 'pf-m-search')]"
         )
     )
     clear_button = Button(locator=".//button[contains(@class,'search-clear')]")
@@ -763,8 +768,8 @@ class PF4Search(Search):
 
     def clear(self):
         """Clears search field value and re-trigger search to remove all
-                filters.
-                """
+        filters.
+        """
         if self.clear_button.is_displayed:
             self.clear_button.click()
         else:
@@ -774,7 +779,7 @@ class PF4Search(Search):
         self.clear()
         self.fill(value)
         self.browser.plugin.ensure_page_safe()
-        #TODO: might need to add sleeper here or some wait_for
+        # TODO: might need to add sleeper here or some wait_for
 
     def after_fill(self):
         """Ensure widgets appears after filling out searchbox"""
@@ -782,9 +787,9 @@ class PF4Search(Search):
             lambda: self.clear_button.is_displayed is True,
             timeout=300,
             delay=1,
-            logger=self.logger
+            logger=self.logger,
         )
-        #TODO: Might need to do sleeper or another wait_for table
+        # TODO: Might need to do sleeper or another wait_for table
 
 
 class PF4Search(Search):
@@ -1414,7 +1419,7 @@ class EditableEntry(GenericLocatorWidget):
     save_button = Text(".//button[normalize-space(.)='Save']")
     cancel_button = Text(".//button[span[normalize-space(.)='Cancel']]")
     entry_value = Text(".//span[contains(@class, 'editable-value')]")
-    #PF4 editable entry
+    # PF4 editable entry
     pf4_edit_button = Text("//button[@aria-label='edit name']")
     pf4_edit_field = TextInput(locator=".//input[@aria-label='name text input']")
     pf4_save_button = Text("//button[@aria-label='submit name']")
@@ -2056,7 +2061,9 @@ class ProgressBarPF4(GenericLocatorWidget):
     @property
     def progress(self):
         """String value with current flow rate in percent."""
-        return self.browser.get_attribute('pf-c-progress__measure', self.PROGRESSBAR, check_safe=False)
+        return self.browser.get_attribute(
+            'pf-c-progress__measure', self.PROGRESSBAR, check_safe=False
+        )
 
     @property
     def is_completed(self):
@@ -2083,6 +2090,7 @@ class ProgressBarPF4(GenericLocatorWidget):
     def read(self):
         """Returns current progress."""
         return self.progress
+
 
 class ProgressBar(GenericLocatorWidget):
     """Generic progress bar widget.
@@ -2595,3 +2603,33 @@ class InventoryBootstrapSwitch(Widget):
 
     def read(self):
         return self.selected
+
+
+class SatPatternflyTable(BasePatternflyTable, Table):
+    def __init__(
+        self,
+        parent,
+        column_widgets=None,
+        assoc_column=None,
+        rows_ignore_top=None,
+        rows_ignore_bottom=None,
+        top_ignore_fill=False,
+        bottom_ignore_fill=False,
+        logger=None,
+    ):
+        self.component_type = "PF4/Table"
+        super().__init__(
+            parent,
+            locator=(f".//*[@data-ouia-component-type={quote(self.component_type)}]"),
+            column_widgets=column_widgets,
+            assoc_column=assoc_column,
+            rows_ignore_top=rows_ignore_top,
+            rows_ignore_bottom=rows_ignore_bottom,
+            top_ignore_fill=top_ignore_fill,
+            bottom_ignore_fill=bottom_ignore_fill,
+            logger=logger,
+        )
+
+
+class SatExpandableTable(BaseExpandableTable, SatPatternflyTable):
+    pass

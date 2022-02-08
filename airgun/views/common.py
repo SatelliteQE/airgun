@@ -373,10 +373,15 @@ class AddRemoveResourcesView(View):
 
 class NewAddRemoveResourcesView(View):
     searchbox = PF4Search()
-    type = Dropdown(locator='.//div[contains(@class, "All repositories") or contains(@aria-haspopup="listbox")]')
-    Status = Dropdown(locator='.//div[contains(@class, "All") or contains(@aria-haspopup="listbox")]')
+    type = Dropdown(
+        locator='.//div[contains(@class, "All repositories") or'
+        ' contains(@aria-haspopup="listbox")]'
+    )
+    Status = Dropdown(
+        locator='.//div[contains(@class, "All") or contains(@aria-haspopup="listbox")]'
+    )
     add_repo = PF4Button('OUIA-Generated-Button-secondary-2')
-    #Need to add kebab menu
+    # Need to add kebab menu
     table = PatternflyTable(
         component_id='OUIA-Generated-Table-4',
         column_widgets={
@@ -386,7 +391,7 @@ class NewAddRemoveResourcesView(View):
             'Product': Text('.//a'),
             'Sync State': Text('.//a'),
             'Content': Text('.//a'),
-            'Status': Text('.//a')
+            'Status': Text('.//a'),
         },
     )
 

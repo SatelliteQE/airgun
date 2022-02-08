@@ -21,12 +21,13 @@ from airgun.widgets import EditableEntry
 from airgun.widgets import PF4Search
 from airgun.widgets import ProgressBarPF4
 from airgun.widgets import ReadOnlyEntry
+from airgun.widgets import SatExpandableTable
+
 
 class NewContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[contains(., 'Content Views')]")
     create_content_view = PF4Button('OUIA-Generated-Button-primary-1')
-    table = PatternflyTable(
-        component_id='OUIA-Generated-Table',
+    table = SatExpandableTable(
         column_widgets={
             'Name': Text('./a'),
             'Last Published': Text('./a'),
@@ -38,6 +39,7 @@ class NewContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
+
 
 class NewContentViewCreateView(BaseLoggedInView):
     title = Text("//h1[contains(., 'Create content view') or contains(@id, 'pf-modal-part-1')]")
@@ -58,6 +60,7 @@ class NewContentViewCreateView(BaseLoggedInView):
     def is_displayed(self):
         return self.browser.wait_for_element(self.import_only, exception=False)
 
+
 class ContentViewCopyView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
 
@@ -76,6 +79,7 @@ class ContentViewCopyView(BaseLoggedInView):
             and self.breadcrumb.read() == 'Copy'
         )
 
+
 class NewContentViewDeleteView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     ROOT = './/div[contains(@class,"pf-c-wizard")]'
@@ -85,11 +89,14 @@ class NewContentViewDeleteView(BaseLoggedInView):
     back = PF4Button('OUIA-Generated-Button-secondary-2')
     cancel = PF4Button('OUA-Generated-Button-link-2')
 
+
 class NewContentViewEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     search = PF4Search()
     title = Text("//h2[contains(., 'Publish) or contains(@id, 'pf-wizard-title-0')]")
-    actions = ActionsDropdown("//div[contains(@data-ouia-component-id, 'OUIA-Generated-Dropdown-2')]")
+    actions = ActionsDropdown(
+        "//div[contains(@data-ouia-component-id, 'OUIA-Generated-Dropdown-2')]"
+    )
     publish = PF4Button('OUIA-Generated-Button-primary-1')
     # not sure if this is needed
     dialog = ConfirmationDialog()
@@ -107,9 +114,7 @@ class NewContentViewEditView(BaseLoggedInView):
 
     @View.nested
     class details(Tab):
-        TAB_LOCATOR = ParametrizedLocator(
-            '//a[contains(@href, "#/details")]'
-        )
+        TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/details")]')
         name = EditableEntry(name='Name')
         label = ReadOnlyEntry(name='Label')
         type = ReadOnlyEntry(name='Composite?')
@@ -120,12 +125,10 @@ class NewContentViewEditView(BaseLoggedInView):
 
     @View.nested
     class versions(Tab):
-        TAB_LOCATOR = ParametrizedLocator(
-            '//a[contains(@href, "#/versions")]'
-        )
+        TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/versions")]')
         searchbox = PF4Search()
         table = PatternflyTable(
-            #component_id='OUIA-Generated-Table',
+            # component_id='OUIA-Generated-Table',
             column_widgets={
                 'Version': Text('.//a'),
                 'Environments': Text('.//a'),
@@ -152,25 +155,20 @@ class NewContentViewEditView(BaseLoggedInView):
 
     @View.nested
     class content_views(Tab):
-        TAB_LOCATOR = ParametrizedLocator(
-            '//a[contains(@href, "#/contentviews")]'
-        )
+        TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/contentviews")]')
 
         resources = View.nested(NewAddRemoveResourcesView)
 
     @View.nested
     class repositories(Tab):
-        TAB_LOCATOR = ParametrizedLocator(
-            '//a[contains(@href, "#/repositories")]'
-        )
+        TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/repositories")]')
         resources = View.nested(NewAddRemoveResourcesView)
 
     @View.nested
     class filters(Tab):
-        TAB_LOCATOR = ParametrizedLocator(
-            '//a[contains(@href, "#/filters")]'
-        )
+        TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/filters")]')
         new_filter = Text(".//button[@ui-sref='content-view.yum.filters.new']")
+
 
 class NewContentViewVersionPublishView(BaseLoggedInView):
     # publishing view is a popup so adding all navigation within the same context
@@ -179,11 +177,13 @@ class NewContentViewVersionPublishView(BaseLoggedInView):
     title = Text("//h2[contains(., 'Publish' or contains(@id, 'pf-wizard-title-0')]")
     # publishing screen
     description = TextInput(id='description')
-    #use either promote-switch or OUIA-Generated-Switch-1
+    # use either promote-switch or OUIA-Generated-Switch-1
     promote = Switch('promote-switch')
 
     # need to fix this for publish_and_promote
-    lce = Checkbox(locator=".//input[contains(@data-ouia-component-id, 'OUIA-Generated-Checkbox-2')]")
+    lce = Checkbox(
+        locator=".//input[contains(@data-ouia-component-id, 'OUIA-Generated-Checkbox-2')]"
+    )
     # review screen only has info to review
     # shared buttons at bottom for popup for both push and review section
     next = PF4Button('OUIA-Generated-Button-primary-1')
@@ -197,9 +197,9 @@ class NewContentViewVersionPublishView(BaseLoggedInView):
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-                breadcrumb_loaded
-                and self.breadcrumb.locations[0] == 'Content Views'
-                and self.breadcrumb.read() == 'Versions'
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Content Views'
+            and self.breadcrumb.read() == 'Versions'
         )
 
     def wait_animation_end(self):
@@ -222,19 +222,20 @@ class NewContentViewVersionPublishView(BaseLoggedInView):
             logger=self.logger,
         )
 
+
 class NewContentViewVersionDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
 
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        description = EditableEntry(name='Description')
         return (
             breadcrumb_loaded
             and len(self.breadcrumb.locations) > 3
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.locations[2] == 'Versions'
         )
+
 
 class NewContentViewVersionPromoteView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
