@@ -792,32 +792,6 @@ class PF4Search(Search):
         # TODO: Might need to do sleeper or another wait_for table
 
 
-class PF4Search(Search):
-    """PF4 Searchbar for table filtering"""
-
-    ROOT = '//div[@role="combobox" or @aria-haspopup="listbox"]'
-    search_field = TextInput(
-        locator=(
-            ".//input[@type='text' or @id='downshift-0-input' or"
-            " contains(@class, 'pf-m-search') or data-ouia-component-type='PF4/TextInput']"
-        )
-    )
-    clear_button = Button(locator=".//button[contains(@class,'search-clear')]")
-
-    def clear(self):
-        """Clears search field value and re-trigger search to remove all
-        filters.
-        """
-        if self.clear_button.is_displayed:
-            self.clear_button.click()
-        else:
-            self.browser.clear(self.search_field)
-
-    def search(self, value):
-        self.clear()
-        self.fill(value)
-
-
 class SatVerticalNavigation(VerticalNavigation):
     """The Patternfly Vertical navigation."""
 
@@ -2024,74 +1998,6 @@ class SatTableWithUnevenStructure(SatTable):
         }
 
 
-class ProgressBarPF4(GenericLocatorWidget):
-    """Generic progress bar widget.
-
-    Example html representation::
-
-        <div class="progress ng-isolate-scope" type="success" ...>
-          <div class="progress-bar progress-bar-success" aria-valuenow="0"
-           aria-valuemin="0" aria-valuemax="100" aria-valuetext="0%" ...></div>
-        </div>
-
-    Locator example::
-
-        .//div[contains(@class, "progress progress-striped")]
-
-    """
-
-    PROGRESSBAR = '//div[contains(@role, "progressbar") or contains(@class, "pf-c-progress__bar")]'
-
-    def __init__(self, parent, locator=None, logger=None):
-        """Provide common progress bar locator if it wasn't specified."""
-        Widget.__init__(self, parent, logger=logger)
-        if not locator:
-            locator = self.PROGRESSBAR
-        self.locator = locator
-
-    @property
-    def is_active(self):
-        """Boolean value whether progress bar is active or not (stopped,
-        pending or any other state).
-        """
-        if 'active' in self.browser.classes(self, check_safe=False):
-            return True
-        return False
-
-    @property
-    def progress(self):
-        """String value with current flow rate in percent."""
-        return self.browser.get_attribute(
-            'pf-c-progress__measure', self.PROGRESSBAR, check_safe=False
-        )
-
-    @property
-    def is_completed(self):
-        """Boolean value whether progress bar is finished or not"""
-        if not self.is_active and self.progress == '100%':
-            return True
-        return False
-
-    def wait_for_result(self, timeout=600, delay=1):
-        """Waits for progress bar to finish. By default checks whether progress
-        bar is completed every second for 10 minutes.
-
-        :param timeout: integer value for timeout in seconds
-        :param delay: float value for delay between attempts in seconds
-        """
-        wait_for(lambda: self.is_displayed, timeout=30, delay=delay, logger=self.logger)
-        wait_for(
-            lambda: self.is_completed is True or not self.is_displayed,
-            timeout=timeout,
-            delay=delay,
-            logger=self.logger,
-        )
-
-    def read(self):
-        """Returns current progress."""
-        return self.progress
-
-
 class ProgressBar(GenericLocatorWidget):
     """Generic progress bar widget.
 
@@ -2156,6 +2062,46 @@ class ProgressBar(GenericLocatorWidget):
     def read(self):
         """Returns current progress."""
         return self.progress
+
+
+class ProgressBarPF4(ProgressBar):
+    """Generic progress bar widget.
+
+    Example html representation::
+
+        <div class="progress ng-isolate-scope" type="success" ...>
+          <div class="progress-bar progress-bar-success" aria-valuenow="0"
+           aria-valuemin="0" aria-valuemax="100" aria-valuetext="0%" ...></div>
+        </div>
+
+    Locator example::
+
+        .//div[contains(@class, "progress progress-striped")]
+
+    """
+
+    PROGRESSBAR = '//div[contains(@role, "progressbar") or contains(@class, "pf-c-progress__bar")]'
+
+    def __init__(self, parent, locator=None, logger=None):
+        """Provide common progress bar locator if it wasn't specified."""
+        Widget.__init__(self, parent, logger=logger)
+        if not locator:
+            locator = self.PROGRESSBAR
+        self.locator = locator
+
+    @property
+    def progress(self):
+        """String value with current flow rate in percent."""
+        return self.browser.get_attribute(
+            'pf-c-progress__measure', self.PROGRESSBAR, check_safe=False
+        )
+
+    @property
+    def is_completed(self):
+        """Boolean value whether progress bar is finished or not"""
+        if not self.is_active and self.progress == '100%':
+            return True
+        return False
 
 
 class PublishPromoteProgressBar(ProgressBar):

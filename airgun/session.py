@@ -48,7 +48,6 @@ from airgun.entities.location import LocationEntity
 from airgun.entities.login import LoginEntity
 from airgun.entities.media import MediaEntity
 from airgun.entities.modulestream import ModuleStreamEntity
-from airgun.entities.new_contentview import NewContentViewEntity
 from airgun.entities.organization import OrganizationEntity
 from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.oscapcontent import OSCAPContentEntity
