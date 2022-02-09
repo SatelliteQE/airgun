@@ -21,12 +21,11 @@ setup(
         'navmazing',
         'python-box',
         'pytest',
-        'selenium',
         'wait_for',
         'webdriver-kaifuku',
         'widgetastic.core',
         'widgetastic.patternfly',
-        'widgetastic.patternfly4',
+        'widgetastic.patternfly4 @ git+https://github.com/RedHatQE/widgetastic.patternfly4.git@selenium4#egg=widgetastic.patternfly4',  # noqa
     ],
     packages=find_packages(exclude=['tests*']),
     package_data={'': ['LICENSE']},
