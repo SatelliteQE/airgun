@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 from setuptools import find_packages
 from setuptools import setup
-
 with open('README.rst') as f:
     README = f.read()
-
 setup(
     name='airgun',
     version='0.0.1',  # Should be identical to the version in docs/conf.py!
@@ -21,11 +19,12 @@ setup(
         'navmazing',
         'python-box',
         'pytest',
+        'selenium',
         'wait_for',
         'webdriver-kaifuku',
         'widgetastic.core',
         'widgetastic.patternfly',
-        'widgetastic.patternfly4 @ git+https://github.com/RedHatQE/widgetastic.patternfly4.git@selenium4#egg=widgetastic.patternfly4',  # noqa
+        'widgetastic.patternfly4',
     ],
     packages=find_packages(exclude=['tests*']),
     package_data={'': ['LICENSE']},
