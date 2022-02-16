@@ -18,7 +18,7 @@ setup(
         'fauxfactory',
         'navmazing',
         'python-box',
-        'pytest',        
+        'pytest',
         'wait_for',
         'webdriver-kaifuku',
         'widgetastic.core',
