@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
@@ -17,7 +19,7 @@ from airgun.views.contentview import ContentViewVersionRemoveView
 
 
 class ContentViewEntity(BaseEntity):
-    endpoint_path = '/content_views'
+    endpoint_path = '/legacy/content_views'
 
     def create(self, values):
         """Create a new content view"""
@@ -232,7 +234,10 @@ class ShowAllContentViews(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Content Views')
+        current_url = urlparse(self.view.browser.url)
+        self.view.browser.url = (
+            f'{current_url.scheme}://{current_url.netloc}{ContentViewEntity.endpoint_path}'
+        )
 
 
 @navigator.register(ContentViewEntity, 'New')
