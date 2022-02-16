@@ -24,7 +24,6 @@ setup(
         'widgetastic.core',
         'widgetastic.patternfly',
         'widgetastic.patternfly4',
-        'selenium==4.1.0',
     ],
     packages=find_packages(exclude=['tests*']),
     package_data={'': ['LICENSE']},
