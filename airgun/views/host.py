@@ -511,6 +511,7 @@ class HostRegisterView(BaseLoggedInView):
         setup_rex = FormSelect('OUIA-Generated-FormSelect-default-6')
         setup_insights = FormSelect('OUIA-Generated-FormSelect-default-7')
         install_packages = TextInput(id='reg_packages')
+        update_packages = Checkbox(id='reg_update_packages')
         repository = TextInput(id='reg_repo')
         repository_gpg_key_url = TextInput(id='reg_gpg_key_url')
         token_life_time = TextInput(id='reg_token_life_time_input')
