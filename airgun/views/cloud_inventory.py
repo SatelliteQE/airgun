@@ -115,6 +115,9 @@ class CloudInventoryListView(BaseLoggedInView):
     obfuscate_ips = Switch('.//label[@for="rh-cloud-switcher-obfuscate_inventory_ips"]')
     exclude_packages = Switch('.//label[@for="rh-cloud-switcher-exclude_installed_packages"]')
     cloud_connector = Pf4Button(locator='//button[text()="Configure Cloud Connector"]')
+    reconfigure_cloud_connector = Pf4Button(
+        locator='//button[text()="Reconfigure Cloud Connector"]'
+    )
     sync_status = Pf4Button(locator='//button[text()=" Sync inventory status"]')
     inventory_list = View.nested(InventoryItemsView)
 
