@@ -23,6 +23,11 @@ class CloudInventoryEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.cloud_connector.click()
 
+    def is_cloud_connector_configured(self):
+        """Check if Cloud Connector is configured"""
+        view = self.navigate_to(self, 'All')
+        return view.reconfigure_cloud_connector.is_displayed
+
     def sync_inventory_status(self):
         """Sync Inventory status"""
         view = self.navigate_to(self, 'All')
