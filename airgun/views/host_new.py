@@ -78,7 +78,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class Traces(Tab):
-        enable_traces = Button('Enable Traces')
+        enable_traces = Button('OUIA-Generated-Button-primary-1')
 
     @View.nested
     class RepositorySets(Tab):

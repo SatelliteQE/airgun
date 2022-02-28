@@ -34,6 +34,7 @@ from airgun.widgets import FilteredDropdown
 from airgun.widgets import GenericRemovableWidgetItem
 from airgun.widgets import Link
 from airgun.widgets import MultiSelect
+from airgun.widgets import Pf4ConfirmationDialog
 from airgun.widgets import PuppetClassesMultiSelect
 from airgun.widgets import RadioGroup
 from airgun.widgets import RemovableWidgetsItemsListView
@@ -212,6 +213,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixin):
     )
     host_status = "//span[contains(@class, 'host-status')]"
     actions = ActionsDropdown("//div[@id='submit_multiple']")
+    dialog = Pf4ConfirmationDialog()
 
     @property
     def is_displayed(self):
