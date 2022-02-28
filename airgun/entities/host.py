@@ -97,11 +97,9 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
-        alert_message = self.browser.get_alert().text
-        self.browser.handle_alert(cancel=cancel)
+        view.dialog.confirm()
         view.flash.assert_no_error()
         view.flash.dismiss()
-        return alert_message
 
     def delete_interface(self, entity_name, interface_id):
         """Delete host network interface.
@@ -330,6 +328,10 @@ class ShowHostDetails(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+        host_view = NewHostDetailsView(self.parent.browser)
+        host_view.wait_displayed()
+        host_view.dropdown.wait_displayed()
+        host_view.dropdown.item_select('Legacy UI')
 
 
 @navigator.register(HostEntity, 'Edit')
