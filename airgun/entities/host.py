@@ -243,26 +243,34 @@ class HostEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def get_webconsole_content(self, entity_name):
+    def get_webconsole_content(self, entity_name, rhel_version=7):
         """Navigate to host's webconsole and return the hostname from the cockpit page
 
         :param str entity_name: The host name for which to set the parameter value.
+        :param int rhel_version: Choose UI elements based on rhel version.
         """
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
         view.webconsole.click()
         view.validations.assert_no_errors()
+
+        # set locators based on selected UI
+        if rhel_version > 7:
+            hostname_element = 'span'
+            hostname_id = 'system_information_hostname_text'
+        else:
+            hostname_element = 'a'
+            hostname_id = 'system_information_hostname_button'
+
         # switch to the last opened tab,
         self.browser.switch_to_window(self.browser.window_handles[-1])
-        self.browser.wait_for_element(locator='//div[@id="index-brand"]', exception=True)
+        self.browser.wait_for_element(locator='//div[@id="content"]/iframe', exception=True)
         # the remote host content is loaded in an iframe, let's switch to it
         self.browser.switch_to_frame(locator='//div[@id="content"]/iframe')
 
         self.browser.wait_for_element(
-            locator='//a[@id="system_information_hostname_button"]', exception=True, visible=True
+            locator=f'//{hostname_element}[@id="{hostname_id}"]', exception=True, visible=True
         )
-        hostname_button_view = self.browser.selenium.find_elements_by_id(
-            'system_information_hostname_button'
-        )
+        hostname_button_view = self.browser.selenium.find_elements_by_id(hostname_id)
         hostname = hostname_button_view[0].text
         self.browser.switch_to_main_frame()
         self.browser.switch_to_window(self.browser.window_handles[0])
