@@ -58,8 +58,15 @@ class RepositoryCreateView(BaseLoggedInView):
         verify_ssl = Checkbox(id='verify_ssl_on_sync')
         upstream_username = TextInput(id='upstream_username')
         upstream_password = TextInput(id='upstream_password')
+        auth_token = TextInput(id='ansible_collection_auth_token')
+        mirroring_policy = Select(id='mirroring_policy')
+        include_tags = TextInput(id='include_tags')
+        exclude_tags = TextInput(id='exclude_tags')
         http_proxy_policy = Select(id="http_proxy_policy")
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+        ssl_ca_cert = Select(id='ssl_ca_cert_id')
+        ssl_client_cert = Select(id='ssl_client_cert_id')
+        ssl_client_key = Select(id='ssl_client_key_id')
 
         @proxy_policy.register('Use specific HTTP Proxy')
         class SpecificHttpProxy(View):
@@ -71,9 +78,14 @@ class RepositoryCreateView(BaseLoggedInView):
         verify_ssl = Checkbox(id='verify_ssl_on_sync')
         upstream_username = TextInput(id='upstream_username')
         upstream_password = TextInput(id='upstream_password')
+        auth_token = TextInput(id='ansible_collection_auth_token')
+        mirroring_policy = Select(id='mirroring_policy')
         publish_via_http = Checkbox(id='unprotected')
         http_proxy_policy = Select(id="http_proxy_policy")
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+        ssl_ca_cert = Select(id='ssl_ca_cert_id')
+        ssl_client_cert = Select(id='ssl_client_cert_id')
+        ssl_client_key = Select(id='ssl_client_key_id')
 
         @proxy_policy.register('Use specific HTTP Proxy')
         class SpecificHttpProxy(View):
@@ -97,14 +109,19 @@ class RepositoryCreateView(BaseLoggedInView):
     @repo_content.register('yum')
     class YumRepository(View):
         arch_restrict = Select(id='architecture_restricted')
+        os_restrict = Select(id='os_versions')
         upstream_url = TextInput(id='url')
+        ignore_srpms = Checkbox(id='ignore_srpms')
         verify_ssl = Checkbox(id='verify_ssl_on_sync')
         upstream_username = TextInput(id='upstream_username')
         upstream_password = TextInput(id='upstream_password')
+        auth_token = TextInput(id='ansible_collection_auth_token')
         download_policy = Select(id='download_policy')
-        mirror_on_sync = Checkbox(id='mirror_on_sync')
+        mirroring_policy = Select(id='mirroring_policy')
+        retain_package_versions = TextInput(id='retain_package_versions_count')
         checksum_type = Select(id='checksum_type')
         publish_via_http = Checkbox(id='unprotected')
+        unprotected = Checkbox(id='unprotected')
         gpg_key = Select(id='gpg_key_id')
         ssl_ca_cert = Select(id='ssl_ca_cert_id')
         ssl_client_cert = Select(id='ssl_client_cert_id')
@@ -127,9 +144,12 @@ class RepositoryCreateView(BaseLoggedInView):
         verify_ssl = Checkbox(id='verify_ssl_on_sync')
         upstream_username = TextInput(id='upstream_username')
         upstream_password = TextInput(id='upstream_password')
-        mirror_on_sync = Checkbox(id='mirror_on_sync')
+        mirroring_policy = Select(id='mirroring_policy')
         http_proxy_policy = Select(id="http_proxy_policy")
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+        ssl_ca_cert = Select(id='ssl_ca_cert_id')
+        ssl_client_cert = Select(id='ssl_client_cert_id')
+        ssl_client_key = Select(id='ssl_client_key_id')
 
         @proxy_policy.register('Use specific HTTP Proxy')
         class SpecificHttpProxy(View):
@@ -185,6 +205,9 @@ class RepositoryEditView(BaseLoggedInView):
         publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
         http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+        mirroring_policy = EditableEntrySelect(name='Mirroring Policy')
+        include_tags = EditableEntry(name='Include Tags')
+        exclude_tags = EditableEntry(name='Exclude Tags')
 
         @proxy_policy.register(True, default=True)
         class NoSpecificHttpProxy(View):
@@ -193,17 +216,21 @@ class RepositoryEditView(BaseLoggedInView):
     @repo_content.register('yum')
     class YumRepository(View):
         arch_restrict = EditableEntrySelect(name='Restrict to architecture')
-        upstream_url = EditableEntry(name='Upstream URL')
+        os_restrict = EditableEntrySelect(name='Restrict to OS version')
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
+        upstream_url = EditableEntry(name='Upstream URL')
         upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
         metadata_type = EditableEntrySelect(name='Yum Metadata Checksum')
-        mirror_on_sync = EditableEntryCheckbox(name='Mirror on Sync')
+        retain_package_versions = EditableEntry(name='Retain package versions')
+        http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
+        ignore_srpms = EditableEntryCheckbox(name='Ignore SRPMs')
         publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
+        unprotected = EditableEntryCheckbox(name='Unprotected')
         gpg_key = EditableEntrySelect(name='GPG Key')
         download_policy = EditableEntrySelect(name='Download Policy')
+        mirroring_policy = EditableEntrySelect(name='Mirroring Policy')
         upload_content = FileInput(name='content[]')
         upload = Text("//button[contains(., 'Upload')]")
-        http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
 
         @proxy_policy.register(True, default=True)
@@ -217,12 +244,12 @@ class RepositoryEditView(BaseLoggedInView):
         requirements = EditableEntry(name='Requirements')
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
         upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
-        mirror_on_sync = EditableEntryCheckbox(name='Mirror on Sync')
         publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
         upload_content = FileInput(name='content[]')
         upload = Text("//button[contains(., 'Upload')]")
         http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+        mirroring_policy = EditableEntrySelect(name='Mirroring Policy')
 
         @proxy_policy.register(True, default=True)
         class NoSpecificHttpProxy(View):
@@ -241,6 +268,15 @@ class RepositoryEditView(BaseLoggedInView):
         @proxy_policy.register(True, default=True)
         class NoSpecificHttpProxy(View):
             pass
+
+    @repo_content.register('file')
+    class FileRepository(View):
+        upstream_url = EditableEntry(name='Upstream URL')
+        verify_ssl = EditableEntryCheckbox(name='Verify SSL')
+        upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
+        publish_via_http = EditableEntryCheckbox(name='Publish via HTTP')
+        unprotected = EditableEntryCheckbox(name='Unprotected')
+        mirroring_policy = EditableEntrySelect(name='Mirroring Policy')
 
     @property
     def is_displayed(self):
