@@ -1,7 +1,6 @@
 from time import sleep
 
 from navmazing import NavigateToSibling
-from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.exceptions import DisabledWidgetError
@@ -27,6 +26,7 @@ from airgun.views.host import HostsJobInvocationStatusView
 from airgun.views.host import HostsUnassignCompliancePolicy
 from airgun.views.host import HostsView
 from airgun.views.host import RecommendationListView
+from airgun.views.host_new import NewHostDetailsView
 
 
 class HostEntity(BaseEntity):
@@ -40,10 +40,8 @@ class HostEntity(BaseEntity):
         view.fill(values)
         self.browser.click(view.submit, ignore_ajax=True)
         self.browser.plugin.ensure_page_safe(timeout='600s')
-        host_view = HostDetailsView(self.browser)
-        wait_for(
-            lambda: host_view.is_displayed is True, timeout=60, delay=1, logger=host_view.logger
-        )
+        host_view = NewHostDetailsView(self.browser)
+        host_view.wait_displayed()
         host_view.flash.assert_no_error()
         host_view.flash.dismiss()
 

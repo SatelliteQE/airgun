@@ -14,6 +14,7 @@ from widgetastic.widget import View
 from widgetastic.widget import Widget
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly import Button
+from widgetastic_patternfly4.ouia import BreadCrumb as PF4BreadCrumb
 from widgetastic_patternfly4.ouia import Button as PF4Button
 from widgetastic_patternfly4.ouia import FormSelect
 from widgetastic_patternfly4.tabs import Tab
@@ -621,7 +622,7 @@ class RecommendationListView(View):
 
 
 class HostDetailsView(BaseLoggedInView):
-    breadcrumb = BreadCrumb()
+    breadcrumb = PF4BreadCrumb('OUIA-Generated-Breadcrumb-1')
 
     @property
     def is_displayed(self):

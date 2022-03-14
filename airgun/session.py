@@ -32,6 +32,7 @@ from airgun.entities.errata import ErrataEntity
 from airgun.entities.filter import FilterEntity
 from airgun.entities.hardware_model import HardwareModelEntity
 from airgun.entities.host import HostEntity
+from airgun.entities.host_new import NewHostEntity
 from airgun.entities.hostcollection import HostCollectionEntity
 from airgun.entities.hostgroup import HostGroupEntity
 from airgun.entities.http_proxy import HTTPProxyEntity
@@ -418,6 +419,11 @@ class Session:
     def host(self):
         """Instance of Host entity."""
         return self._open(HostEntity)
+
+    @cached_property
+    def host_new(self):
+        """Instance of Host entity."""
+        return self._open(NewHostEntity)
 
     @cached_property
     def hostcollection(self):

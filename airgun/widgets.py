@@ -949,7 +949,7 @@ class CustomParameter(Table):
         :param value: dict with format {'name': str, 'value': str}
         """
         self.add_new_value.click()
-        new_row = self.__getitem__(-1)
+        new_row = self.__getitem__(0)
         new_row['Name'].widget.fill(value['name'])
         new_row['Value'].widget.fill(value['value'])
 
