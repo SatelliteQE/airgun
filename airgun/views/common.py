@@ -21,6 +21,7 @@ from airgun.widgets import FilteredDropdown
 from airgun.widgets import GenericRemovableWidgetItem
 from airgun.widgets import ItemsList
 from airgun.widgets import LCESelector
+from airgun.widgets import Pf4ConfirmationDialog
 from airgun.widgets import ProgressBar
 from airgun.widgets import ReadOnlyEntry
 from airgun.widgets import SatFlashMessages
@@ -40,6 +41,7 @@ class BaseLoggedInView(View):
     taxonomies = ContextSelector()
     flash = SatFlashMessages()
     validations = ValidationErrors()
+    dialog = Pf4ConfirmationDialog()
     logout = Text("//a[@href='/users/logout']")
     current_user = Dropdown('OUIA-Generated-Dropdown-1')
     account_menu = Dropdown('OUIA-Generated-Dropdown-1')

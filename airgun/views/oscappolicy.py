@@ -12,7 +12,6 @@ from airgun.views.dashboard import TotalCount
 from airgun.widgets import ActionsDropdown
 from airgun.widgets import FilteredDropdown
 from airgun.widgets import MultiSelect
-from airgun.widgets import Pf4ConfirmationDialog
 from airgun.widgets import RadioGroup
 from airgun.widgets import SatTable
 
@@ -27,7 +26,6 @@ class SCAPPoliciesView(BaseLoggedInView, SearchableViewMixin):
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
-    dialog = Pf4ConfirmationDialog()
 
     @property
     def is_displayed(self):

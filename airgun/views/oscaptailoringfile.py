@@ -10,7 +10,6 @@ from airgun.views.common import SatTab
 from airgun.views.common import SearchableViewMixin
 from airgun.widgets import ActionsDropdown
 from airgun.widgets import MultiSelect
-from airgun.widgets import Pf4ConfirmationDialog
 
 
 class SCAPTailoringFilesView(BaseLoggedInView, SearchableViewMixin):
@@ -23,7 +22,6 @@ class SCAPTailoringFilesView(BaseLoggedInView, SearchableViewMixin):
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
-    dialog = Pf4ConfirmationDialog()
 
     @property
     def is_displayed(self):
