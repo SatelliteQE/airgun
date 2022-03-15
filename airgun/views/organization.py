@@ -12,7 +12,6 @@ from airgun.widgets import ActionsDropdown
 from airgun.widgets import CustomParameter
 from airgun.widgets import FilteredDropdown
 from airgun.widgets import MultiSelect
-from airgun.widgets import Pf4ConfirmationDialog
 
 
 class OrganizationsView(BaseLoggedInView, SearchableViewMixin):
@@ -25,7 +24,6 @@ class OrganizationsView(BaseLoggedInView, SearchableViewMixin):
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
-    dialog = Pf4ConfirmationDialog()
 
     @property
     def is_displayed(self):
