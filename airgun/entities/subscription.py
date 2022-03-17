@@ -173,6 +173,19 @@ class SubscriptionEntity(BaseEntity):
         view.confirm_deletion.confirm()
         self._wait_for_process_to_finish('Delete Upstream Subscription', has_manifest=True)
 
+    def cdn_update(self):
+        """Selects Red Hat content to be consumed from Red Hat CDN"""
+        view = self.navigate_to(self, 'Manage Manifest')
+        view.cdn_configuration.click()
+        view.update_cdn.click()
+        pass
+
+    def export_sync_update(self):
+        """Content will be consumed via Import/Export Process"""
+        view = self.navigate_to(self, 'Manage Manifest')
+        view.cdn_configuration.export_sync.click()
+        view.export_sync.click()
+
 
 class SubscriptionNavigationStep(NavigateStep):
     """To ensure that we reached the destination, some targets need extra post navigation tasks"""

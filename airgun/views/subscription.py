@@ -2,6 +2,7 @@ from wait_for import wait_for
 from widgetastic.widget import Checkbox
 from widgetastic.widget import FileInput
 from widgetastic.widget import GenericLocatorWidget
+from widgetastic.widget import Select
 from widgetastic.widget import Text
 from widgetastic.widget import TextInput
 from widgetastic.widget import View
@@ -13,6 +14,7 @@ from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
 from airgun.views.common import SearchableViewMixin
 from airgun.widgets import ConfirmationDialog
+from airgun.widgets import EditableEntry
 from airgun.widgets import ItemsListReadOnly
 from airgun.widgets import ProgressBar
 from airgun.widgets import SatTable
@@ -157,7 +159,6 @@ class ManageManifestView(BaseLoggedInView):
 
     @View.nested
     class manifest(SatTab):
-        red_hat_cdn_url = TextInput(id='cdnUrl')
         manifest_file = FileInput(id='usmaFile')
         refresh_button = Button('Refresh')
         delete_button = Button('Delete')
@@ -166,9 +167,35 @@ class ManageManifestView(BaseLoggedInView):
     class manifest_history(SatTab):
         TAB_NAME = "Manifest History"
         table = SatTable(
-            locator='//div[@id="manifest-history-tabs"]//table',
+            locator='//div[@id="manifest-history-tabs-tab-2"]//table',
             column_widgets={'Status': Text(), 'Message': Text(), 'Timestamp': Text()},
         )
+
+    @View.nested
+    class cdn_configuration(SatTab):
+        TAB_NAME = "CDN Configuration"
+
+        @View.nested
+        class redhat_cdn(SatTab):
+            TAB_NAME = "Red Hat CDN"
+            url = TextInput(id='cdn-configuration-url-input')
+            update_cdn = Button('cdn-configuration-update-button')
+
+        @View.nested
+        class network_sync(SatTab):
+            TAB_NAME = "Network Sync"
+            url = TextInput(id='network-sync-url-input')
+            username = TextInput(id='network-sync-username-input')
+            password = EditableEntry(id='network-sync-password-input')
+            org_label = TextInput(id='network-sync-organization-input')
+            lce = TextInput(id='network-sync-lifecycle-environment-input')
+            cv_label = TextInput(id='network-sync-content-view-input')
+            ssl_ca = Select(id='network-sync-ca-content-credential-input')
+
+        @View.nested
+        class export_sync(SatTab):
+            TAB_NAME = "Export Sync"
+            update_export_sync = Button('export-sync-configuration-update-button')
 
     @property
     def is_displayed(self):
