@@ -38,7 +38,7 @@ class PuppetEnvironmentEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.search(value)
         view.table.row(name=value)['Actions'].widget.fill('Delete')
-        self.browser.handle_alert()
+        view.dialog.confirm()
         view.flash.assert_no_error()
         view.flash.dismiss()
 

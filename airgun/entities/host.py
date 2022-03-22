@@ -223,7 +223,7 @@ class HostEntity(BaseEntity):
         :param name: the parameter name.
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)  # type: HostEditView
-        return view.parameters.puppet_class_parameters.row(name=name)['Value'].widget.read()
+        return view.puppet_enc.puppet_class_parameters.row(name=name)['Value'].widget.read()
 
     def set_puppet_class_parameter_value(self, entity_name, name, value):
         """Set Puppet class parameter value
@@ -233,7 +233,7 @@ class HostEntity(BaseEntity):
         :param dict value: The parameter value
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)  # type: HostEditView
-        view.parameters.puppet_class_parameters.row(name=name).fill({'Value': value})
+        view.puppet_enc.puppet_class_parameters.row(name=name).fill({'Value': value})
         view.submit.click()
         view.validations.assert_no_errors()
         view.flash.assert_no_error()
