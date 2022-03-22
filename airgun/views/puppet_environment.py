@@ -28,7 +28,7 @@ class PuppetEnvironmentTableView(BaseLoggedInView, SearchableViewMixin):
         locator='.//table',
         column_widgets={
             'Name': Text(
-                ".//a[starts-with(@href, '/environments/') and \
+                ".//a[starts-with(@href, '/foreman_puppet/environments/') and \
                 contains(@href,'/edit')]"
             ),
             'Actions': ActionsDropdown('./div[contains(@class, "btn-group")]'),

@@ -251,7 +251,7 @@ class HostCreateView(BaseLoggedInView):
         inherit_puppet_environment = ToggleButton(
             locator=".//div[label[@for='environment_id']]//button"
         )
-        puppet_environment = FilteredDropdown(id='host_environment')
+        puppet_environment = FilteredDropdown(id='host_puppet_attributes_environment')
         puppet_master = FilteredDropdown(id='host_puppet_proxy')
         puppet_ca = FilteredDropdown(id='host_puppet_ca_proxy')
         openscap_capsule = FilteredDropdown(id='host_openscap_proxy')
@@ -378,19 +378,20 @@ class HostCreateView(BaseLoggedInView):
             )
 
     @View.nested
-    class puppet_classes(SatTab):
-        TAB_NAME = 'Puppet Classes'
+    class puppet_enc(SatTab):
+        TAB_NAME = 'Puppet ENC'
+
         config_groups = ConfigGroupMultiSelect(locator='.')
         classes = PuppetClassesMultiSelect(locator='.')
+
+        puppet_class_parameters = Table(
+            ".//table[@id='puppet_klasses_parameters_table']",
+            column_widgets={'Value': PuppetClassParameterValue()},
+        )
 
     @View.nested
     class parameters(SatTab):
         """Host parameters tab"""
-
-        puppet_class_parameters = Table(
-            ".//div[@id='inherited_puppetclasses_parameters']/table",
-            column_widgets={'Value': PuppetClassParameterValue()},
-        )
 
         @View.nested
         class global_params(SatTable):
@@ -649,7 +650,7 @@ class HostDetailsView(BaseLoggedInView):
     delete = Text("//a[@id='delete-button']")
     audits_details = Text("//a[text()='Audits']")
     facts_details = Text("//a[text()='Facts']")
-    yaml_dump = Text("//a[text()='YAML']")
+    yaml_dump = Text("//a[text()='Puppet YAML']")
     yaml_output = Text("//pre")
     content_details = Text("//a[text()='Content']")
     recommendations = Text("//a[text()='Recommendations']")

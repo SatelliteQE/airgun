@@ -71,7 +71,7 @@ class HostGroupCreateView(BaseLoggedInView):
         lce = FilteredDropdown(id='hostgroup_lifecycle_environment')
         content_view = FilteredDropdown(id='hostgroup_content_view')
         content_source = FilteredDropdown(id='s2id_content_source_id')
-        puppet_environment = FilteredDropdown(id='hostgroup_environment')
+        puppet_environment = FilteredDropdown(id='hostgroup_puppet_attributes_environment')
         deploy = FilteredDropdown(id='hostgroup_compute_resource')
         puppet_master = FilteredDropdown(id='hostgroup_puppet_proxy')
         puppet_ca = FilteredDropdown(id='hostgroup_puppet_ca_proxy')
