@@ -342,7 +342,11 @@ class AirgunBrowser(Browser):
         )
 
         # it must be local absolute path, without protocol
-        elem.send_keys(unquote(uri[7:]))
+        # In some version <= 98, this changed so schema is not included in the path
+        if 'file://' in uri or 'http://' in uri:
+            elem.send_keys(unquote(uri[7:]))
+        else:
+            elem.send_keys(unquote(uri))
 
         result = self.selenium.execute_async_script(
             "var input = arguments[0], callback = arguments[1]; "
