@@ -125,6 +125,11 @@ class DashboardView(BaseLoggedInView):
             ].widget.click()
 
     @View.nested
+    class LatestJobs(View):
+        ROOT = ".//li[@data-name='Latest Jobs']"
+        jobs = SatTable('.//table')
+
+    @View.nested
     class HostConfigurationChart(View):
         ROOT = ".//li[@data-name='Host Configuration Chart for All']"
         chart = PieChart(".//div[@class='host-configuration-chart']")
