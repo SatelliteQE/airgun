@@ -15,7 +15,6 @@ from airgun.views.common import SatTab
 from airgun.views.common import SearchableViewMixin
 from airgun.widgets import ActionsDropdown
 from airgun.widgets import FilteredDropdown
-from airgun.widgets import Pf4ConfirmationDialog
 
 
 class VirtwhoConfigureStatus(GenericLocatorWidget):
@@ -112,7 +111,6 @@ class VirtwhoConfiguresView(BaseLoggedInView, SearchableViewMixin):
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
-    dialog = Pf4ConfirmationDialog()
 
     @property
     def is_displayed(self):
