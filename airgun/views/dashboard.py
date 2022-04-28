@@ -162,7 +162,7 @@ class DashboardView(BaseLoggedInView):
     @View.nested
     class LatestErrata(View):
         ROOT = ".//li[@data-name='Latest Errata']"
-        erratas = Table('.//table')
+        erratas = SatTable('.//table')
 
     @View.nested
     class NewHosts(View):
