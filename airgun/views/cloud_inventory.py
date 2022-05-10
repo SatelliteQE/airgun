@@ -107,7 +107,7 @@ class InventoryItemsView(Accordion):
 class CloudInventoryListView(BaseLoggedInView):
     """Main RH Cloud Inventory Upload view."""
 
-    title = Text('//div[contains(@class, "inventory-upload-header-title")]/h1')
+    title = Text('//h1[text()="Red Hat Inventory"]')
     auto_update = Switch('.//label[@for="rh-cloud-switcher-allow_auto_inventory_upload"]')
     obfuscate_hostnames = Switch(
         './/label[@for="rh-cloud-switcher-obfuscate_inventory_hostnames"]'
