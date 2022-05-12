@@ -1,10 +1,10 @@
 from widgetastic.widget import Text
 from widgetastic.widget import View
 from widgetastic.widget import Widget
+from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import Tab
 from widgetastic_patternfly4.ouia import BreadCrumb
 from widgetastic_patternfly4.ouia import Button
-from widgetastic_patternfly4.ouia import Dropdown
 
 from airgun.views.common import BaseLoggedInView
 
@@ -47,11 +47,13 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.Overview.RecentJobsCard.is_table_loaded, exception=False
+        )
         return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Hosts'
 
     edit = Button('OUIA-Generated-Button-secondary-1')
-    dropdown = Dropdown('OUIA-Generated-Dropdown-2')
+    dropdown = Dropdown(locator='//button[@id="hostdetails-kebab"]/..')
 
     @View.nested
     class Overview(Tab):
@@ -71,6 +73,11 @@ class NewHostDetailsView(BaseLoggedInView):
             status_warning = Text('.//span[@class="status-warning"]')
             status_error = Text('.//span[@class="status-error"]')
             status_disabled = Text('.//span[@class="disabled"]')
+
+        @View.nested
+        class RecentJobsCard(Card):
+            ROOT = '(//article[contains(@class, "pf-c-card")])[5]'
+            is_table_loaded = './/ul[@aria-label="recent-jobs-table"]'
 
     @View.nested
     class Content(Tab):
