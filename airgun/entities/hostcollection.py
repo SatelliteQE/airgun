@@ -33,7 +33,7 @@ class HostCollectionEntity(BaseEntity):
         """Delete the host collection entity."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.actions.fill('Remove')
-        view.dialog.confirm()
+        self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -137,7 +137,7 @@ class HostCollectionEntity(BaseEntity):
         view.details.install_errata.click()
         view = HostCollectionInstallErrataView(view.browser)
         uri = view.search_url.__element__().get_attribute('href')
-        view.dialog.confirm()
+        self.browser.handle_alert()
         return uri
 
     def install_errata(
@@ -166,7 +166,7 @@ class HostCollectionEntity(BaseEntity):
         view.table.row(Id=errata_id)[0].widget.fill(True)
         view.install.fill(install_via)
         if view.dialog.is_displayed:
-            view.dialog.confirm()
+            self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
         if install_via == 'via remote execution - customize first':
@@ -246,7 +246,7 @@ class HostCollectionEntity(BaseEntity):
         view.lce.fill({lce: True})
         view.content_view.fill(content_view)
         view.assign.click()
-        view.dialog.confirm()
+        self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
         task_view = HostCollectionActionTaskDetailsView(view.browser)

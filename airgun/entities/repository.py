@@ -85,7 +85,7 @@ class RepositoryEntity(BaseEntity):
         view.search(entity_name)
         view.table.row(name=entity_name)[0].fill(True)
         view.delete.click()
-        view.dialog.confirm()
+        self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -108,7 +108,7 @@ class RepositoryEntity(BaseEntity):
         for _ in range(int(view.total_packages.text) // max_per_page + 1):
             view.select_all.fill(True)
             view.remove_packages.click()
-            view.dialog.confirm()
+            self.browser.handle_alert()
             view.flash.assert_no_error()
             view.flash.dismiss()
         if view.total_packages.text != '0':

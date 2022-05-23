@@ -24,7 +24,7 @@ class SyncPlanEntity(BaseEntity):
         """Delete existing sync plan"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.actions.fill('Remove')
-        view.dialog.confirm()
+        self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
 

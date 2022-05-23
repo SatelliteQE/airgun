@@ -26,7 +26,7 @@ class LocationEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
-        view.dialog.confirm()
+        self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
 

@@ -20,7 +20,7 @@ class ContentHostEntity(BaseEntity):
         view.search(entity_name)
         view.table.row(name=entity_name)[0].widget.fill(True)
         view.actions.fill('Delete Hosts')
-        view.dialog.confirm()
+        self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
