@@ -21,6 +21,7 @@ class VirtwhoConfigureEntity(BaseEntity):
             'rhevm': 'Red Hat Virtualization Hypervisor (rhevm)',
             'libvirt': 'libvirt',
             'kubevirt': 'Container-native virtualization',
+            'ahv': 'Nutanix AHV (ahv)',
         }
         vals = values.copy()
         if 'hypervisor_type' in vals:
