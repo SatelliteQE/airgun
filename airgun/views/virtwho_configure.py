@@ -150,6 +150,14 @@ class VirtwhoConfigureCreateView(BaseLoggedInView):
         server = TextInput(id='foreman_virt_who_configure_config_hypervisor_server')
         kubeconfig = TextInput(id='foreman_virt_who_configure_config_kubeconfig_path')
 
+    @hypervisor_content.register('Nutanix AHV (ahv)')
+    class NutanixForm(View):
+        server = TextInput(id='foreman_virt_who_configure_config_hypervisor_server')
+        username = TextInput(id='foreman_virt_who_configure_config_hypervisor_username')
+        password = TextInput(id='foreman_virt_who_configure_config_hypervisor_password')
+        prism_flavor = FilteredDropdown(id='foreman_virt_who_configure_config_prism_flavor')
+        filtering_content = ConditionalSwitchableView(reference='prism_flavor')
+
     @filtering_content.register('Unlimited', default=True)
     class FilterUnlimitedForm(View):
         pass
@@ -219,6 +227,7 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
         proxy = Text('.//span[contains(@class,"config-http_proxy_id")]')
         no_proxy = Text('.//span[contains(@class,"config-no_proxy")]')
         kubeconfig_path = Text('.//span[contains(@class,"config-kubeconfig_path")]')
+        prism_flavor = Text('.//span[contains(@class,"config-prism_flavor")]')
 
         _label_locator = (
             "//span[contains(@class, '{class_name}')]/../preceding-sibling::div/strong"
@@ -247,6 +256,7 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
         proxy_label = Text(_label_locator.format(class_name="config-http_proxy_id"))
         no_proxy_label = Text(_label_locator.format(class_name="config-no_proxy"))
         kubeconfig_path_label = Text(_label_locator.format(class_name="config-kubeconfig_path"))
+        prism_flavor_label = Text(_label_locator.format(class_name="config-prism_flavor"))
 
     @View.nested
     class deploy(SatTab):
