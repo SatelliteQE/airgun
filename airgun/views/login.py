@@ -10,6 +10,7 @@ class LoginView(View, ClickableMixin):
     login_text = Text('//*[@id="login-footer-text"]')
     logo = Text('//img[@alt="logo"]')
     submit = Text('//button[@type="submit"]')
+    version = Text('//*[@id="version"]')
 
     @property
     def is_displayed(self):
