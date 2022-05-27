@@ -39,7 +39,7 @@ class ProductEntity(BaseEntity):
         """Deletes product from UI"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.actions.fill('Remove Product')
-        view.dialog.confirm()
+        self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
 

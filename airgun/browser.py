@@ -16,9 +16,12 @@ from wait_for import wait_for
 from webdriver_kaifuku import BrowserManager
 from widgetastic.browser import Browser
 from widgetastic.browser import DefaultPlugin
+from widgetastic.exceptions import NoAlertPresentException
+from widgetastic.exceptions import NoSuchElementException
 
 from airgun import settings
-
+from airgun.widgets import ConfirmationDialog
+from airgun.widgets import Pf4ConfirmationDialog
 
 LOGGER = logging.getLogger(__name__)
 
@@ -409,3 +412,49 @@ class AirgunBrowser(Browser):
         self.url = current_url
         self.plugin.ensure_page_safe()
         return file_path
+
+    def check_alert(self, locator):
+        try:
+            return self.move_to_element(locator).is_displayed()
+        except NoSuchElementException:
+            self.logger.info(f'No {locator} type alert detected !')
+        return False
+
+    def get_alert(self):
+        """Returns the current alert/PF4 alert object.
+
+        Raises:
+            :py:class:`selenium.common.exceptions.NoAlertPresentException`
+        """
+        pf4_modal_locator = "//div[@data-ouia-component-type='PF4/ModalContent']"
+        modal_locator = "//div[@class='modal-content']"
+        modal_map = {pf4_modal_locator: Pf4ConfirmationDialog, modal_locator: ConfirmationDialog}
+        if not self.handles_alerts:
+            return None
+        try:
+            return self.selenium.switch_to.alert
+        except NoAlertPresentException:
+            for locator, locator_class in modal_map.items():
+                if self.check_alert(locator):
+                    return locator_class(self.browser)
+            raise
+
+    def handle_alert(
+        self,
+        cancel=False,
+        wait=30.0,
+        squash=False,
+        prompt=None,
+        check_present=False,
+    ):
+        """Extend the behaviour of widgetstatic.browser.handle_alert to handle PF4 alerts"""
+        popup = self.get_alert()
+        if isinstance(popup, (Pf4ConfirmationDialog, ConfirmationDialog)):
+            if cancel:
+                self.logger.info("  dismissing")
+                popup.cancel()
+            else:
+                self.logger.info("  accepting")
+                popup.confirm()
+        else:
+            super(AirgunBrowser, self.browser).handle_alert()
