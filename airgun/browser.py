@@ -420,9 +420,11 @@ class AirgunBrowser(Browser):
             self.logger.info(f'No {locator} type alert detected !')
         return False
 
-    def get_alert(self):
+    def get_alert(self, squash=False):
         """Returns the current alert/PF4 alert object.
 
+        :param bool optional squash: Whether or not to squash errors during alert handling.
+                Default False
         Raises:
             :py:class:`selenium.common.exceptions.NoAlertPresentException`
         """
@@ -437,7 +439,10 @@ class AirgunBrowser(Browser):
             for locator, locator_class in modal_map.items():
                 if self.check_alert(locator):
                     return locator_class(self.browser)
-            raise
+            if squash:
+                return False
+            else:
+                raise
 
     def handle_alert(
         self,
@@ -448,7 +453,7 @@ class AirgunBrowser(Browser):
         check_present=False,
     ):
         """Extend the behaviour of widgetstatic.browser.handle_alert to handle PF4 alerts"""
-        popup = self.get_alert()
+        popup = self.get_alert(squash=squash)
         if isinstance(popup, (Pf4ConfirmationDialog, ConfirmationDialog)):
             if cancel:
                 self.logger.info("  dismissing")
@@ -457,4 +462,6 @@ class AirgunBrowser(Browser):
                 self.logger.info("  accepting")
                 popup.confirm()
         else:
-            super(AirgunBrowser, self.browser).handle_alert()
+            super(AirgunBrowser, self.browser).handle_alert(
+                cancel=cancel, wait=wait, squash=squash, prompt=prompt, check_present=check_present
+            )
