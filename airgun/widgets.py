@@ -703,7 +703,26 @@ class SatFlashMessage(FlashMessage):
 
     """
 
-    TEXT_LOCATOR = './span[text()]'
+    TYPE_MAPPING = {
+        "pf-m-warning": "warning",
+        "pf-m-success": "success",
+        "pf-m-danger": "error",
+        "pf-m-info": "info",
+    }
+
+    ROOT = ParametrizedLocator('.//div[contains(@class, "foreman-toast") and position()={index}]')
+    TITLE_LOCATOR = './/h4[contains(@class, "alert__title")]'
+    DISMISS_LOCATOR = './/div[contains(@class, "alert__action")]'
+    ICON_LOCATOR = './/div[contains(@class, "alert__icon")]'
+    DESCRIPTION_LOCATOR = './/div[contains(@class, "alert__description")]'
+
+    @property
+    def text(self):
+        """Return the message text of the notification."""
+        try:
+            return self.browser.text(self.DESCRIPTION_LOCATOR)
+        except NoSuchElementException:
+            return self.browser.text(self.TITLE_LOCATOR)
 
 
 class SatFlashMessages(FlashMessages):
@@ -725,7 +744,7 @@ class SatFlashMessages(FlashMessages):
     """
 
     ROOT = '//ul[@class="pf-c-alert-group pf-m-toast"]'
-    MSG_LOCATOR = f'{ROOT}/div[contains(@class, "pf-c-alert")]'
+    MSG_LOCATOR = f'{ROOT}//div[contains(@class, "foreman-toast")]'
     msg_class = SatFlashMessage
 
 
