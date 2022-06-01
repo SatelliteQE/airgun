@@ -83,8 +83,8 @@ class HostGroupCreateView(BaseLoggedInView):
         resources = MultiSelect(id='ms-hostgroup_ansible_role_ids')
 
     @View.nested
-    class puppet_classes(SatTab):
-        TAB_NAME = 'Puppet Classes'
+    class puppet_enc(SatTab):
+        TAB_NAME = 'Puppet ENC'
         config_groups = ConfigGroupMultiSelect(locator='.')
         classes = PuppetClassesMultiSelect(locator='.')
 
