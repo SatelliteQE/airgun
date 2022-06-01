@@ -11,6 +11,7 @@ from airgun.views.common import SatTab
 from airgun.widgets import ActionsDropdown
 from airgun.widgets import FilteredDropdown
 from airgun.widgets import MultiSelect
+from airgun.widgets import Pagination
 from airgun.widgets import Search
 
 
@@ -24,6 +25,7 @@ class FiltersView(BaseLoggedInView):
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
+    pagination = Pagination()
 
     @property
     def is_displayed(self):
