@@ -7,7 +7,6 @@ from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
 from airgun.views.common import SearchableViewMixin
 from airgun.views.smart_class_parameter import SmartClassParameterContent
-from airgun.views.smart_variable import SmartVariableContent
 from airgun.widgets import FilteredDropdown
 from airgun.widgets import ItemsList
 from airgun.widgets import MultiSelect
@@ -62,11 +61,4 @@ class PuppetClassDetailsView(BaseLoggedInView):
         )
         parameter = SmartClassParameterContent(
             locator="//div[@id='smart_class_param']//div[@class='tab-pane fields active']"
-        )
-
-    @View.nested
-    class smart_variables(SatTab):
-        TAB_NAME = 'Smart Variables'
-        variable = SmartVariableContent(
-            locator="//div[@id='smart_vars']//div[@class='tab-pane fields active']"
         )

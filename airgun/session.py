@@ -68,7 +68,6 @@ from airgun.entities.rhsso_login import RHSSOLoginEntity
 from airgun.entities.role import RoleEntity
 from airgun.entities.settings import SettingsEntity
 from airgun.entities.smart_class_parameter import SmartClassParameterEntity
-from airgun.entities.smart_variable import SmartVariableEntity
 from airgun.entities.subnet import SubnetEntity
 from airgun.entities.subscription import SubscriptionEntity
 from airgun.entities.sync_status import SyncStatusEntity
@@ -599,11 +598,6 @@ class Session:
     def sc_parameter(self):
         """Instance of Smart Class Parameter entity."""
         return self._open(SmartClassParameterEntity)
-
-    @cached_property
-    def smartvariable(self):
-        """Instance of Smart Variable entity."""
-        return self._open(SmartVariableEntity)
 
     @cached_property
     def subnet(self):
