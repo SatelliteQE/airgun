@@ -9,7 +9,7 @@ from airgun.widgets import SatTable
 
 
 class BookmarksView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Bookmarks']")
+    title = Text("//h1[normalize-space(.)='Bookmarks']")
     table = SatTable(
         ".//table",
         column_widgets={
@@ -29,7 +29,7 @@ class BookmarkEditView(BaseLoggedInView):
     query = TextInput(id='bookmark_query')
     public = Checkbox(id='bookmark_public')
     submit = Text(".//input[@type='submit']")
-    cancel = Text(".//a[text()='Cancel']")
+    cancel = Text(".//a[normalize-space(.)='Cancel']")
 
     @property
     def is_displayed(self):

@@ -10,13 +10,13 @@ from airgun.widgets import SatTable
 
 
 class DeleteHardwareModelDialog(ConfirmationDialog):
-    confirm_dialog = Text(".//button[text()='Delete']")
-    cancel_dialog = Text(".//button[text()='Cancel']")
+    confirm_dialog = Text(".//button[normalize-space(.)='Delete']")
+    cancel_dialog = Text(".//button[normalize-space(.)='Cancel']")
 
 
 class HardwareModelsView(BaseLoggedInView, SearchableViewMixin):
     delete_dialog = DeleteHardwareModelDialog()
-    title = Text("//h1[text()='Hardware Models']")
+    title = Text("//h1[normalize-space(.)='Hardware Models']")
     new = Text("//a[contains(@href, '/models/new')]")
     table = SatTable(
         './/table',

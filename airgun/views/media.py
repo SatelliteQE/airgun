@@ -12,7 +12,7 @@ from airgun.widgets import MultiSelect
 
 
 class MediumView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Installation Media']")
+    title = Text("//h1[normalize-space(.)='Installation Media']")
     new = Text("//a[contains(@href, '/media/new')]")
     table = Table(
         './/table',

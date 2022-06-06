@@ -933,7 +933,7 @@ class CustomParameter(Table):
 
     """
 
-    add_new_value = Text("..//a[contains(text(),'+ Add Parameter')]")
+    add_new_value = Text("..//a[contains(normalize-space(.),'+ Add Parameter')]")
 
     def __init__(self, parent, locator=None, id=None, logger=None):
         """Supports initialization via ``locator=`` or ``id=``"""
@@ -1251,8 +1251,8 @@ class EditableEntry(GenericLocatorWidget):
 
     edit_button = Text(".//span[contains(@ng-hide, 'editMode')]")
     edit_field = TextInput(locator=".//*[self::input or self::textarea]")
-    save_button = Text(".//button[text()='Save']")
-    cancel_button = Text(".//button[span[text()='Cancel']]")
+    save_button = Text(".//button[normalize-space(.)='Save']")
+    cancel_button = Text(".//button[span[normalize-space(.)='Cancel']]")
     entry_value = Text(".//span[contains(@class, 'editable-value')]")
 
     def __init__(self, parent, locator=None, name=None, logger=None):
@@ -2241,7 +2241,7 @@ class AuthSourceAggregateCard(AggregateStatusCard):
         </div>
     """
 
-    ROOT = ParametrizedLocator('.//h2[contains(text(), {@name|quote})]/parent::div')
+    ROOT = ParametrizedLocator('.//h2[contains(normalize-space(.), {@name|quote})]/parent::div')
     select_kebab = Kebab(locator="./div[contains(@class, 'dropdown-kebab-pf')]")
     COUNT = ".//span[@class='card-pf-item-text']"
 
@@ -2261,7 +2261,7 @@ class Accordion(View, ClickableMixin):
 
     ROOT = ParametrizedLocator("{@locator}")
     ITEMS = ".//button[contains(@class, 'pf-c-accordion__toggle')]"
-    ITEM = ".//span[contains(text(), '{}')]"
+    ITEM = ".//span[contains(normalize-space(.), '{}')]"
 
     def __init__(self, parent=None, id=None, locator=None, logger=None):
         Widget.__init__(self, parent=parent, logger=logger)

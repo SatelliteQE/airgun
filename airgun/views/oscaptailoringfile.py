@@ -13,7 +13,7 @@ from airgun.widgets import MultiSelect
 
 
 class SCAPTailoringFilesView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Tailoring Files']")
+    title = Text("//h1[normalize-space(.)='Tailoring Files']")
     new = Text("//a[contains(@href, 'tailoring_files/new')]")
     table = Table(
         './/table',
@@ -31,7 +31,7 @@ class SCAPTailoringFilesView(BaseLoggedInView, SearchableViewMixin):
 class SCAPTailoringFileCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     submit = Text('//input[@name="commit"]')
-    cancel = Text('//a[text()="Cancel"]')
+    cancel = Text('//a[normalize-space(.)="Cancel"]')
 
     @property
     def is_displayed(self):

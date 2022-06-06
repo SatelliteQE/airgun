@@ -24,8 +24,8 @@ from airgun.widgets import SatTable
 
 class ComputeResourcesView(BaseLoggedInView, SearchableViewMixin):
 
-    title = Text('//*[(self::h1 or self::h5) and text()="Compute Resources"]')
-    new = Text('//a[text()="Create Compute Resource"]')
+    title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="Compute Resources"]')
+    new = Text('//a[normalize-space(.)="Create Compute Resource"]')
     table = SatTable(
         './/table',
         column_widgets={

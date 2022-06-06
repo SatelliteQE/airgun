@@ -9,7 +9,7 @@ from airgun.widgets import MultiSelect
 
 
 class ArchitecturesView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Architectures']")
+    title = Text("//h1[normalize-space(.)='Architectures']")
     new = Text("//a[contains(@href, '/architectures/new')]")
     table = Table(
         './/table',

@@ -9,8 +9,8 @@ from airgun.widgets import ActionsDropdown
 
 
 class ComputeProfilesView(BaseLoggedInView, SearchableViewMixin):
-    title = Text('//*[(self::h1 or self::h5) and text()="Compute Profiles"]')
-    new = Text('//a[text()="Create Compute Profile"]')
+    title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="Compute Profiles"]')
+    new = Text('//a[normalize-space(.)="Create Compute Profile"]')
     table = Table(
         './/table',
         column_widgets={

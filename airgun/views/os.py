@@ -70,7 +70,7 @@ class TemplatesList(View):
 
 
 class OperatingSystemsView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Operating Systems']")
+    title = Text("//h1[normalize-space(.)='Operating Systems']")
     new = Text("//a[contains(@href, '/operatingsystems/new')]")
     table = Table(
         './/table',

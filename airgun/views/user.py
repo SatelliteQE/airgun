@@ -13,7 +13,7 @@ from airgun.widgets import MultiSelect
 
 
 class UsersView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Users']")
+    title = Text("//h1[normalize-space(.)='Users']")
     new = Text("//a[contains(@href, '/users/new')]")
     table = Table(
         './/table',

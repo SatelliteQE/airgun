@@ -229,7 +229,7 @@ class ProductSyncPlanView(SyncPlanCreateView):
 class ProductManageHttpProxy(BaseLoggedInView):
     """Represents Http Proxy Management page for Products."""
 
-    title = Text("//h4[text()='Http Proxy Management']")
+    title = Text("//h4[normalize-space(.)='Http Proxy Management']")
     http_proxy_policy = Select(id="http_proxy_policy")
     proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
     update = Text('//button[@ng-click="update()"]')
@@ -246,10 +246,10 @@ class ProductManageHttpProxy(BaseLoggedInView):
 class ProductAdvancedSync(BaseLoggedInView):
     """Represents Advanced Sync page for Products."""
 
-    title = Text("//h4[text()='Advanced Sync']")
+    title = Text("//h4[normalize-space(.)='Advanced Sync']")
     optimized = Text("//input[contains(@value, 'standard')]")
     complete = Text("//input[contains(@value, 'skipMetadataCheck')]")
-    task = Text("//a[text()='Click to view task']")
+    task = Text("//a[normalize-space(.)='Click to view task']")
     sync = Text('//button[@ng-click="ok()"]')
 
     @property

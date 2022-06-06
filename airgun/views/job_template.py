@@ -20,7 +20,7 @@ from airgun.widgets import RemovableWidgetsItemsListView
 
 class JobTemplatesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[contains(., 'Job Templates')]")
-    import_template = Text("//a[text()='Import']")
+    import_template = Text("//a[normalize-space(.)='Import']")
     new = Text("//a[contains(@href, '/job_templates/new')]")
     table = Table(
         './/table',

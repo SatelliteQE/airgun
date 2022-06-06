@@ -101,7 +101,7 @@ class VirtwhoConfiguresDebug(Widget):
 
 
 class VirtwhoConfiguresView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Virt-who Configurations']")
+    title = Text("//h1[normalize-space(.)='Virt-who Configurations']")
     new = Text("//a[contains(@href, '/foreman_virt_who_configure/configs/new')]")
     table = Table(
         './/table',
@@ -197,8 +197,8 @@ class VirtwhoConfigureEditView(VirtwhoConfigureCreateView):
 
 class VirtwhoConfigureDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    edit = Text("//a[text()='Edit']")
-    delete = Text("//a[text()='Delete']")
+    edit = Text("//a[normalize-space(.)='Edit']")
+    delete = Text("//a[normalize-space(.)='Delete']")
 
     @property
     def is_displayed(self):
@@ -262,4 +262,4 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
     class deploy(SatTab):
         command = Text("//pre[@id='config_command']")
         script = VirtwhoConfigureScript()
-        download = Text("//a[text()='Download the script']")
+        download = Text("//a[normalize-space(.)='Download the script']")

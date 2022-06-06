@@ -147,14 +147,17 @@ class DiscoveredHostsActionDialog(BaseLoggedInView):
 class DiscoveredHostsAutoProvisionDialog(DiscoveredHostsActionDialog):
     """Discovered hosts Auto Provision action dialog view"""
 
-    title = Text("//h4[text()='Auto Provision - The following hosts are about to be changed']")
+    title = Text(
+        "//h4[normalize-space(.)='Auto Provision - The following hosts are about to be changed']"
+    )
 
 
 class DiscoveredHostsAssignOrganizationDialog(DiscoveredHostsActionDialog):
     """Discovered hosts Assign Organization action dialog view"""
 
     title = Text(
-        "//h4[text()='Assign Organization - The following hosts are about to be changed']"
+        "//h4[normalize-space(.)='Assign Organization - "
+        "The following hosts are about to be changed']"
     )
     organization = Select(id='organization_id')
 
@@ -162,27 +165,29 @@ class DiscoveredHostsAssignOrganizationDialog(DiscoveredHostsActionDialog):
 class DiscoveredHostsAssignLocationDialog(DiscoveredHostsActionDialog):
     """Discovered hosts Assign Location action dialog view"""
 
-    title = Text("//h4[text()='Assign Location - The following hosts are about to be changed']")
+    title = Text(
+        "//h4[normalize-space(.)='Assign Location - The following hosts are about to be changed']"
+    )
     location = Select(id='location_id')
 
 
 class DiscoveredHostsRebootDialog(DiscoveredHostsActionDialog):
     """Discovered hosts Reboot dialog action view"""
 
-    title = Text("//h4[text()='Reboot - The following hosts are about to be changed']")
+    title = Text("//h4[normalize-space(.)='Reboot - The following hosts are about to be changed']")
 
 
 class DiscoveredHostsDeleteDialog(DiscoveredHostsActionDialog):
     """Discovered hosts Delete dialog action view"""
 
-    title = Text("//h4[text()='Delete - The following hosts are about to be changed']")
+    title = Text("//h4[normalize-space(.)='Delete - The following hosts are about to be changed']")
 
 
 class DiscoveredHostProvisionDialog(BaseLoggedInView):
     """Discovered host Provision action dialog view"""
 
     ROOT = ".//div[@class='modal-content']"
-    title = Text(".//h4[text()='Select initial host properties']")
+    title = Text(".//h4[normalize-space(.)='Select initial host properties']")
     host_group = FilteredDropdown(id='host_hostgroup_id')
     organization = FilteredDropdown(id='host_organization_id')
     location = FilteredDropdown(id='host_location_id')

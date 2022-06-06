@@ -49,7 +49,7 @@ class RemediationView(Modal):
 class CloudInsightsView(BaseLoggedInView, SearchableViewMixin):
     """Main RH Cloud Insights view."""
 
-    title = Text('//h1[text()="Red Hat Insights"]')
+    title = Text('//h1[normalize-space(.)="Red Hat Insights"]')
     insights_sync_switcher = Switch('OUIA-Generated-Switch-1')
     remediate = Button('Remediate')
     insights_dropdown = Dropdown(locator='.//div[contains(@class, "title-dropdown")]')

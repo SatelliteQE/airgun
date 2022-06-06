@@ -14,7 +14,7 @@ from airgun.widgets import SatTable
 
 
 class PuppetClassesView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Puppet Classes']")
+    title = Text("//h1[normalize-space(.)='Puppet Classes']")
     import_environments = Text("//a[contains(@href, '/import_environments')]")
     table = SatTable(
         './/table',

@@ -10,7 +10,7 @@ from airgun.widgets import PopOverWidget
 
 
 class SettingsView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Settings']")
+    title = Text("//h1[normalize-space(.)='Settings']")
     table = Table(
         './/table',
         column_widgets={'Value': PopOverWidget()},
