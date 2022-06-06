@@ -17,7 +17,7 @@ from airgun.widgets import SatTable
 
 
 class SCAPPoliciesView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Compliance Policies']")
+    title = Text("//h1[normalize-space(.)='Compliance Policies']")
     new = Text("//a[contains(@href, '/compliance/policies/new')]")
     table = SatTable(
         './/table',
@@ -155,7 +155,7 @@ class SCAPPolicyCreateView(BaseLoggedInView):
 
 class SCAPPolicyEditView(BaseLoggedInView):
     submit = Text('//input[@name="commit"]')
-    cancel = Text("//a[text()='Cancel']")
+    cancel = Text("//a[normalize-space(.)='Cancel']")
     breadcrumb = BreadCrumb()
 
     @property
@@ -217,7 +217,7 @@ class SCAPPolicyEditView(BaseLoggedInView):
 
 
 class SCAPPolicyDetailsView(BaseLoggedInView):
-    title = Text('h1[text()[contains(., "Compliance policy")]]')
+    title = Text('h1[normalize-space(.)[contains(., "Compliance policy")]]')
 
     @property
     def is_displayed(self):

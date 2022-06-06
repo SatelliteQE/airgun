@@ -336,7 +336,7 @@ class SyspurposeBulkActionView(BaseLoggedInView):
     service_level = Select(id='selectedServiceLevels')
     role = Select(id='selectedRoles')
     usage_type = Select(id='selectedUsages')
-    assign = Text(".//span[text()='Assign']")
+    assign = Text(".//span[normalize-space(.)='Assign']")
 
     @property
     def is_displayed(self):

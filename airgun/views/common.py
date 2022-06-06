@@ -77,7 +77,7 @@ class WrongContextAlert(View):
 
     message = Text(
         "//div[contains(@class, 'alert-warning')]"
-        "[span[text()='Please try to update your request']]"
+        "[span[normalize-space(.)='Please try to update your request']]"
     )
     back = Button(href='/')
 

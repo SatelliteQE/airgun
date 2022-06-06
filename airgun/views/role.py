@@ -10,7 +10,7 @@ from airgun.widgets import SatTable
 
 
 class RolesView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Roles']")
+    title = Text("//h1[normalize-space(.)='Roles']")
     new = Text("//a[contains(@href, '/roles/new')]")
     table = SatTable(
         './/table',

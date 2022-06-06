@@ -11,8 +11,8 @@ from airgun.widgets import MultiSelect
 
 
 class HTTPProxyView(BaseLoggedInView, SearchableViewMixin):
-    title = Text('//*[(self::h1 or self::h5) and text()="HTTP Proxies"]')
-    new = Text('//a[text()="New HTTP Proxy"]')
+    title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="HTTP Proxies"]')
+    new = Text('//a[normalize-space(.)="New HTTP Proxy"]')
     table = Table(
         './/table',
         column_widgets={
@@ -30,7 +30,7 @@ class HTTPProxyView(BaseLoggedInView, SearchableViewMixin):
 class HTTPProxyCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     submit = Text('//input[@name="commit"]')
-    cancel = Text('//a[text()="Cancel"]')
+    cancel = Text('//a[normalize-space(.)="Cancel"]')
 
     @property
     def is_displayed(self):

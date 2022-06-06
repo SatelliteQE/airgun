@@ -104,7 +104,7 @@ class SmartClassParameterContent(View):
 
 
 class SmartClassParametersView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Smart Class Parameters']")
+    title = Text("//h1[normalize-space(.)='Smart Class Parameters']")
     table = SatTable(
         './/table',
         column_widgets={

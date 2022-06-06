@@ -19,7 +19,7 @@ from airgun.widgets import TextInputsGroup
 
 
 class ReportTemplatesView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Report Templates']")
+    title = Text("//h1[normalize-space(.)='Report Templates']")
     new = Button("Create Template")
     table = Table(
         './/table',

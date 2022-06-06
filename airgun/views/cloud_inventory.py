@@ -107,18 +107,18 @@ class InventoryItemsView(Accordion):
 class CloudInventoryListView(BaseLoggedInView):
     """Main RH Cloud Inventory Upload view."""
 
-    title = Text('//h1[text()="Red Hat Inventory"]')
+    title = Text('//h1[normalize-space(.)="Red Hat Inventory"]')
     auto_update = Switch('.//label[@for="rh-cloud-switcher-allow_auto_inventory_upload"]')
     obfuscate_hostnames = Switch(
         './/label[@for="rh-cloud-switcher-obfuscate_inventory_hostnames"]'
     )
     obfuscate_ips = Switch('.//label[@for="rh-cloud-switcher-obfuscate_inventory_ips"]')
     exclude_packages = Switch('.//label[@for="rh-cloud-switcher-exclude_installed_packages"]')
-    cloud_connector = Pf4Button(locator='//button[text()="Configure Cloud Connector"]')
+    cloud_connector = Pf4Button(locator='//button[normalize-space(.)="Configure Cloud Connector"]')
     reconfigure_cloud_connector = Pf4Button(
-        locator='//button[text()="Reconfigure Cloud Connector"]'
+        locator='//button[normalize-space(.)="Reconfigure Cloud Connector"]'
     )
-    sync_status = Pf4Button(locator='//button[text()=" Sync inventory status"]')
+    sync_status = Pf4Button(locator='//button[normalize-space(.)="Sync inventory status"]')
     inventory_list = View.nested(InventoryItemsView)
 
     @property

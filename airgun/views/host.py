@@ -197,9 +197,9 @@ class HostInterface(View):
 
 
 class HostsView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Hosts']")
+    title = Text("//h1[normalize-space(.)='Hosts']")
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
-    new = Text("//a[contains(text(),'Create Host')]")
+    new = Text("//a[contains(normalize-space(.),'Create Host')]")
     register = PF4Button('OUIA-Generated-Button-secondary-2')
     select_all = Checkbox(locator="//input[@id='check_all']")
     table = SatTable(
@@ -499,7 +499,7 @@ class HostRegisterView(BaseLoggedInView):
         location = FormSelect('OUIA-Generated-FormSelect-default-2')
         host_group = FormSelect('OUIA-Generated-FormSelect-default-3')
         operating_system = FormSelect('OUIA-Generated-FormSelect-default-4')
-        linux_host_init_link = Link('//a[text()="Linux host_init_config default"]')
+        linux_host_init_link = Link('//a[normalize-space(.)="Linux host_init_config default"]')
         capsule = FormSelect('OUIA-Generated-FormSelect-default-5')
         insecure = Checkbox(id='reg_insecure')
 
@@ -642,18 +642,18 @@ class HostDetailsView(BaseLoggedInView):
     schedule_remote_job = ActionsDropdown(
         "//div[contains(@class, 'btn-group')][contains(., 'Schedule')][not(*[self::div])]"
     )
-    back = Text("//a[text()='Back']")
-    webconsole = Text("//a[text()='Web Console']")
+    back = Text("//a[normalize-space(.)='Back']")
+    webconsole = Text("//a[normalize-space(.)='Web Console']")
     edit = Text("//a[@id='edit-button']")
     clone = Text("//a[@id='clone-button']")
     build = Text("//a[@id='build-review']")
     delete = Text("//a[@id='delete-button']")
-    audits_details = Text("//a[text()='Audits']")
-    facts_details = Text("//a[text()='Facts']")
-    yaml_dump = Text("//a[text()='Puppet YAML']")
+    audits_details = Text("//a[normalize-space(.)='Audits']")
+    facts_details = Text("//a[normalize-space(.)='Facts']")
+    yaml_dump = Text("//a[normalize-space(.)='Puppet YAML']")
     yaml_output = Text("//pre")
-    content_details = Text("//a[text()='Content']")
-    recommendations = Text("//a[text()='Recommendations']")
+    content_details = Text("//a[normalize-space(.)='Content']")
+    recommendations = Text("//a[normalize-space(.)='Recommendations']")
 
     @View.nested
     class properties(SatTab):
@@ -693,12 +693,17 @@ class HostsActionCommonDialog(BaseLoggedInView):
 
 
 class HostsChangeGroup(HostsActionCommonDialog):
-    title = Text("//h4[text()='Change Group - The following hosts are about to be changed']")
+    title = Text(
+        "//h4[normalize-space(.)='Change Group - The following hosts are about to be changed']"
+    )
     host_group = Select(id='hostgroup_id')
 
 
 class HostsChangeEnvironment(HostsActionCommonDialog):
-    title = Text("//h4[text()='Change Environment - The following hosts are about to be changed']")
+    title = Text(
+        "//h4[normalize-space(.)='Change Environment - "
+        "The following hosts are about to be changed']"
+    )
     environment = Select(id='environment_id')
 
 
@@ -754,28 +759,32 @@ class HostsTaxonomyMismatchRadioGroup(GenericLocatorWidget):
 
 class HostsAssignOrganization(HostsActionCommonDialog):
     title = Text(
-        "//h4[text()='Assign Organization - The following hosts are about to be changed']"
+        "//h4[normalize-space(.)='Assign Organization - "
+        "The following hosts are about to be changed']"
     )
     organization = Select(id='organization_id')
     on_mismatch = HostsTaxonomyMismatchRadioGroup(taxonomy='Organization')
 
 
 class HostsAssignLocation(HostsActionCommonDialog):
-    title = Text("//h4[text()='Assign Location - The following hosts are about to be changed']")
+    title = Text(
+        "//h4[normalize-space(.)='Assign Location - The following hosts are about to be changed']"
+    )
     location = Select(id='location_id')
     on_mismatch = HostsTaxonomyMismatchRadioGroup(taxonomy='Location')
 
 
 class HostsAssignCompliancePolicy(HostsActionCommonDialog):
     title = Text(
-        "//h4[text()='Assign Compliance Policy - The following hosts are about to be changed']"
+        "//h4[normalize-space(.)='Assign Compliance Policy - "
+        "The following hosts are about to be changed']"
     )
     policy = Select(id='policy_id')
 
 
 class HostsUnassignCompliancePolicy(HostsActionCommonDialog):
     title = Text(
-        "//h4[text()='Unassign Compliance Policy"
+        "//h4[normalize-space(.)='Unassign Compliance Policy"
         " - The following hosts are about to be changed']"
     )
     policy = Select(id='policy_id')
@@ -783,13 +792,16 @@ class HostsUnassignCompliancePolicy(HostsActionCommonDialog):
 
 class HostsChangeOpenscapCapsule(HostsActionCommonDialog):
     title = Text(
-        "//h4[text()='Change OpenSCAP Capsule - The following hosts are about to be changed']"
+        "//h4[normalize-space(.)='Change OpenSCAP Capsule - "
+        "The following hosts are about to be changed']"
     )
     policy = Select(id='smart_proxy_id')
 
 
 class HostsDeleteActionDialog(HostsActionCommonDialog):
-    title = Text("//h4[text()='Delete Hosts - The following hosts are about to be changed']")
+    title = Text(
+        "//h4[normalize-space(.)='Delete Hosts - The following hosts are about to be changed']"
+    )
 
 
 class HostsDeleteTaskDetailsView(TaskDetailsView):

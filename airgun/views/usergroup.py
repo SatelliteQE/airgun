@@ -14,7 +14,7 @@ from airgun.widgets import MultiSelect
 
 
 class UserGroupsView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='User Groups']")
+    title = Text("//h1[normalize-space(.)='User Groups']")
     new_on_blank_page = P4Button('Create User group')
     new = Text("//a[contains(@href, '/usergroups/new')]")
     table = Table(

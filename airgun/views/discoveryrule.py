@@ -15,7 +15,7 @@ from airgun.widgets import SatTable
 
 
 class DiscoveryRulesView(BaseLoggedInView):
-    title = Text("//h1[text()='Discovery Rules']")
+    title = Text("//h1[normalize-space(.)='Discovery Rules']")
     new = Text("//a[contains(@href, '/discovery_rules/new')]")
     new_on_blank_page = PF4Button('Create Rule')
     table = SatTable(
@@ -33,7 +33,7 @@ class DiscoveryRulesView(BaseLoggedInView):
 
 class DiscoveryRuleCreateView(BaseLoggedInView):
     submit = Text('//input[@name="commit"]')
-    cancel = Text('//a[text()="Cancel"]')
+    cancel = Text('//a[normalize-space(.)="Cancel"]')
     breadcrumb = BreadCrumb()
 
     @property

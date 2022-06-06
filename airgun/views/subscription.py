@@ -152,7 +152,7 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
 
 
 class ManageManifestView(BaseLoggedInView):
-    ROOT = '//div[@role="dialog" and @tabindex][div//h4[text()="Manage Manifest"]]'
+    ROOT = '//div[@role="dialog" and @tabindex][div//h4[normalize-space(.)="Manage Manifest"]]'
     close_button = Button('Close')
 
     @View.nested
@@ -186,7 +186,10 @@ class ManageManifestView(BaseLoggedInView):
 
 
 class DeleteManifestConfirmationView(BaseLoggedInView):
-    ROOT = '//div[@role="dialog" and @tabindex][div//h4[text()="Confirm delete manifest"]]'
+    ROOT = (
+        '//div[@role="dialog" and @tabindex]'
+        '[div//h4[normalize-space(.)="Confirm delete manifest"]]'
+    )
     message = Text('.//div[@class="modal-body"]')
     delete_button = Button('Delete')
     cancel_button = Button('Cancel')
@@ -230,13 +233,15 @@ class SubscriptionDetailsView(BaseLoggedInView):
     class details(SatTab):
 
         associations = SatTable(
-            locator=".//div[h2[text()='Associations']]/table",
+            locator=".//div[h2[normalize-space(.)='Associations']]/table",
             column_widgets={
                 'Quantity': Text('.//a'),
             },
         )
 
-        provided_products = ItemsListReadOnly(".//h2[text()='Provided Products']/following::ul")
+        provided_products = ItemsListReadOnly(
+            ".//h2[normalize-space(.)='Provided Products']/following::ul"
+        )
 
     @View.nested
     class product_content(SatTab):

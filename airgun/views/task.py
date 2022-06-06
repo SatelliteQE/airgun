@@ -31,7 +31,7 @@ class TaskPagination(Pagination):
 
 
 class TasksView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Tasks']")
+    title = Text("//h1[normalize-space(.)='Tasks']")
     focus = ActionsDropdown("//div[./button[@id='tasks-dashboard-time-period-dropdown']]")
     table = SatTable(
         ".//div[@class='tasks-table']//table",

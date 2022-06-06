@@ -11,7 +11,7 @@ class AuditEntry(View):
 
     ROOT = ".//div[@id='audit-list']/div/div[contains(@class, 'list-group-item')]"
     user = Text(".//a[@class='user-info']")
-    action_type = Text(".//div[@class='list-group-item-text' and text()]")
+    action_type = Text(".//div[@class='list-group-item-text' and normalize-space(.)]")
     resource_type = Text(".//div[@class='list-view-pf-additional-info-item'][1]")
     resource_name = Text(".//div[@class='list-view-pf-additional-info-item'][2]")
     created_at = Text(".//div[@class='list-view-pf-actions']/span")
@@ -39,7 +39,7 @@ class AuditEntry(View):
 
 
 class AuditsView(BaseLoggedInView):
-    title = Text("//h1[text()='Audits']")
+    title = Text("//h1[normalize-space(.)='Audits']")
     searchbox = Search()
     entry = AuditEntry()
 

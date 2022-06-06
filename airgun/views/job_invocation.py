@@ -54,7 +54,7 @@ class JobInvocationCreateView(BaseLoggedInView):
 
     @View.nested
     class advanced_options(View):
-        expander = Text(".//a[text()='Display advanced fields']")
+        expander = Text(".//a[normalize-space(.)='Display advanced fields']")
         effective_user = TextInput(locator=".//input[contains(@name, '[effective_user]')]")
         description = TextInput(locator=".//input[contains(@name, '[description]')]")
         use_default = Checkbox(id="description_format_override")
@@ -82,7 +82,7 @@ class JobInvocationCreateView(BaseLoggedInView):
                 self.browser.wait_for_element(self.effective_user, visible=True, exception=False)
 
     query_type = RadioGroup(locator="//div[label[contains(., 'Type of query')]]")
-    schedule = RadioGroup(locator="//div[label[text()='Schedule']]")
+    schedule = RadioGroup(locator="//div[label[normalize-space(.)='Schedule']]")
     schedule_content = ConditionalSwitchableView(reference='schedule')
 
     @schedule_content.register('Execute now', default=True)
@@ -170,9 +170,9 @@ class JobInvocationStatusView(BaseLoggedInView):
             and len(self.breadcrumb.locations) == 2
         )
 
-    rerun = Text("//a[text()='Rerun']")
-    rerun_failed = Text("//a[text()='Rerun failed']")
-    job_task = Text("//a[text()='Job Task']")
+    rerun = Text("//a[normalize-space(.)='Rerun']")
+    rerun_failed = Text("//a[normalize-space(.)='Rerun failed']")
+    job_task = Text("//a[normalize-space(.)='Job Task']")
     cancel_job = Button(value='Cancel Job')
     abort_job = Button(value='Abort Job')
 

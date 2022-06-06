@@ -15,7 +15,7 @@ from airgun.widgets import MultiSelect
 
 
 class LocationsView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Locations']")
+    title = Text("//h1[normalize-space(.)='Locations']")
     new = Text("//a[contains(@href, '/locations/new')]")
     table = Table(
         './/table',
@@ -50,7 +50,7 @@ class LocationCreateView(BaseLoggedInView):
 class LocationsEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     submit = Text("//form[contains(@id, 'edit')]//input[@name='commit']")
-    cancel = Text("//a[text()='Cancel']")
+    cancel = Text("//a[normalize-space(.)='Cancel']")
 
     @property
     def is_displayed(self):

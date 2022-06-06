@@ -28,7 +28,7 @@ class TemplateHostEnvironmentAssociation(GenericRemovableWidgetItem):
 
 
 class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Provisioning Templates']")
+    title = Text("//h1[normalize-space(.)='Provisioning Templates']")
     new = Button("Create Template")
     build_pxe_default = Button("Build PXE Default")
     table = Table(
@@ -85,7 +85,7 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
             ROOT = "//div[@id='association']"
             ITEMS = ".//fieldset[@id='template_combination']/div"
             ITEM_WIDGET_CLASS = TemplateHostEnvironmentAssociation
-            add_item_button = Text(".//a[text()='+ Add Combination']")
+            add_item_button = Text(".//a[normalize-space(.)='+ Add Combination']")
 
     @View.nested
     class locations(SatTab):

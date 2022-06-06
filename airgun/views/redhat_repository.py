@@ -212,7 +212,7 @@ class RedHatRepositoriesView(BaseLoggedInView):
     title = Text("//h1[contains(., 'Red Hat Repositories')]")
     search_category = RepositorySearchCategory(".//div[button[@id='search-list-select']]")
     search_box = TextInput(id='downshift-0-input')
-    search_button = Text(".//button[text() = 'Search']")
+    search_button = Text(".//button[normalize-space(.) = 'Search']")
     search_types = RepositorySearchTypes(".//div[button[@data-id='formControlsSelectMultiple']]")
     search_clear = Text(".//span[@class = 'fa fa-times']")
     recommended_repos = Text(".//div[contains(@class, 'bootstrap-switch wrapper')]")

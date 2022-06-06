@@ -78,7 +78,7 @@ class AutoRefresh(Widget):
 
 
 class DashboardView(BaseLoggedInView):
-    title = Text("//h1[text()='Overview']")
+    title = Text("//h1[normalize-space(.)='Overview']")
     manage = ActionsDropdown("//div[@class='btn-group']")
     refresh = AutoRefresh()
     searchbox = Search()

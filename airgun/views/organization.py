@@ -15,7 +15,7 @@ from airgun.widgets import MultiSelect
 
 
 class OrganizationsView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='Organizations']")
+    title = Text("//h1[normalize-space(.)='Organizations']")
     new = Text("//a[contains(@href, '/organizations/new')]")
     table = Table(
         './/table',
@@ -49,9 +49,9 @@ class OrganizationCreateView(BaseLoggedInView):
 
 class OrganizationCreateSelectHostsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    assign_all = Text("//a[text()='Assign All']")
-    assign_manually = Text("//a[text()='Manually Assign']")
-    proceed = Text("//a[text()='Proceed to Edit']")
+    assign_all = Text("//a[normalize-space(.)='Assign All']")
+    assign_manually = Text("//a[normalize-space(.)='Manually Assign']")
+    proceed = Text("//a[normalize-space(.)='Proceed to Edit']")
 
     @property
     def is_displayed(self):
@@ -66,7 +66,7 @@ class OrganizationCreateSelectHostsView(BaseLoggedInView):
 class OrganizationEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     submit = Text("//form[contains(@id, 'edit')]//input[@name='commit']")
-    cancel = Text("//a[text()='Cancel']")
+    cancel = Text("//a[normalize-space(.)='Cancel']")
 
     @property
     def is_displayed(self):

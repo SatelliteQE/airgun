@@ -13,7 +13,7 @@ from airgun.widgets import SatTable
 
 
 class SCAPContentsView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[text()='SCAP Content']")
+    title = Text("//h1[normalize-space(.)='SCAP Content']")
     new = Text("//a[contains(@href, 'scap_contents/new')]")
     table = SatTable(
         './/table',
@@ -31,7 +31,7 @@ class SCAPContentsView(BaseLoggedInView, SearchableViewMixin):
 class SCAPContentCreateView(BaseLoggedInView):
     create_form = Text("//form[@id='new_scap_content']")
     submit = Text('//input[@name="commit"]')
-    cancel = Text('//a[text()="Cancel"]')
+    cancel = Text('//a[normalize-space(.)="Cancel"]')
 
     @View.nested
     class file_upload(SatTab):

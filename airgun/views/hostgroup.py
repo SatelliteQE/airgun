@@ -30,7 +30,9 @@ class ActivationKeyDropDown(ActionsDropdown):
 
 
 class HostGroupsView(BaseLoggedInView, SearchableViewMixin):
-    title = Text("//h1[contains(., 'Host Group Configuration') or text()='Host Groups']")
+    title = Text(
+        "//h1[contains(., 'Host Group Configuration') or normalize-space(.)='Host Groups']"
+    )
     new = Text("//a[contains(@href, '/hostgroups/new')]")
     new_on_blank_page = PF4Button('Create Host Group')
     table = Table(
