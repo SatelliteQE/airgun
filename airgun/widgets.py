@@ -564,8 +564,10 @@ class ActionsDropdown(GenericLocatorWidget):
         "contains(@ng-click, 'toggleDropdown')][contains(@class, 'btn')]"
         "[*[self::span or self::i][contains(@class, 'caret')]]"
     )
+    pf4_drop_down = Dropdown('OUIA-Generated-Dropdown-2')
     button = Text(
-        ".//*[self::button or self::span][contains(@class, 'btn')]"
+        "//*[self::button or self::span][contains(@class, 'btn')]"
+        "[contains(@aria-label, 'search button')]"
         "[not(*[self::span or self::i][contains(@class, 'caret')])]"
     )
     ITEMS_LOCATOR = './/ul/li/a'
@@ -574,16 +576,25 @@ class ActionsDropdown(GenericLocatorWidget):
     @property
     def is_open(self):
         """Checks whether dropdown list is open."""
-        return 'open' in self.browser.classes(self)
+        try:
+            return 'open' in self.browser.classes(
+                self
+            ) or 'pf-m-expanded' in self.pf4_drop_down.browser.classes(self.pf4_drop_down)
+        except NoSuchElementException:
+            return False
 
     def open(self):
         """Opens dropdown list"""
         if not self.is_open:
-            self.dropdown.click()
+            try:
+                self.dropdown.click()
+            except NoSuchElementException:
+                self.pf4_drop_down.click()
 
     @property
     def items(self):
         """Returns a list of all dropdown items as strings."""
+        self.open()
         return [
             self.browser.text(el) for el in self.browser.elements(self.ITEMS_LOCATOR, parent=self)
         ]
@@ -630,7 +641,7 @@ class Search(Widget):
     """Searchbar for table filtering"""
 
     ROOT = (
-        '//div[@id="search-bar" or contains(@class, "toolbar-pf-filter") '
+        '//div[contains(@class, "toolbar-pf-filter") or contains(@class, "title_filter")'
         'or contains(@class, "dataTables_filter")]'
     )
     search_field = TextInput(
@@ -648,7 +659,10 @@ class Search(Widget):
     clear_button = Text(
         ".//span[contains(@class,'autocomplete-clear-button') or contains(@class,'fa-close')]"
     )
-    actions = ActionsDropdown(".//*[self::div or self::span][contains(@class, 'input-group-btn')]")
+    actions = ActionsDropdown(
+        ".//*[self::div or self::span][contains(@class, 'input-group-btn') "
+        "or contains(@class, 'pf-c-input-group')]"
+    )
 
     def fill(self, value):
         return self.search_field.fill(value)
