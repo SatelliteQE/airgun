@@ -3,6 +3,7 @@ from widgetastic.widget import Text
 from widgetastic.widget import TextInput
 from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly4 import Button as PF4Button
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
@@ -16,6 +17,7 @@ from airgun.widgets import SatTable
 class DiscoveryRulesView(BaseLoggedInView):
     title = Text("//h1[text()='Discovery Rules']")
     new = Text("//a[contains(@href, '/discovery_rules/new')]")
+    new_on_blank_page = PF4Button('Create Rule')
     table = SatTable(
         './/table',
         column_widgets={

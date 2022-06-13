@@ -5,6 +5,7 @@ from widgetastic.widget import TableColumn
 from widgetastic.widget import TableRow
 from widgetastic.widget import Text
 from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import Button
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SearchableViewMixin
@@ -137,7 +138,7 @@ class DiscoveredHostsActionDialog(BaseLoggedInView):
 
     title = None
     table = SatTable("//div[@class='modal-body']//table")
-    submit = Text("//button[@onclick='tfm.hosts.table.submitModalForm()']")
+    submit = Button("Submit")
 
     @property
     def is_displayed(self):
