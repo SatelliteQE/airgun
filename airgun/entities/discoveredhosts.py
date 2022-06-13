@@ -118,6 +118,13 @@ class DiscoveredHostsEntity(BaseEntity):
             self, 'Select Action', action_name=action_name, entities_list=entities_list
         )
         view.fill(values)
+        wait_for(
+            lambda: view.submit.disabled,
+            fail_condition=True,
+            timeout=10,
+            delay=0.2,
+            logger=view.logger,
+        )
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
