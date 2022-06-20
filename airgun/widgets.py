@@ -591,13 +591,23 @@ class ActionsDropdown(GenericLocatorWidget):
             except NoSuchElementException:
                 self.pf4_drop_down.click()
 
+    def close(self):
+        """Closes dropdown list"""
+        if self.is_open:
+            try:
+                self.dropdown.click()
+            except NoSuchElementException:
+                self.pf4_drop_down.click()
+
     @property
     def items(self):
         """Returns a list of all dropdown items as strings."""
         self.open()
-        return [
+        items = [
             self.browser.text(el) for el in self.browser.elements(self.ITEMS_LOCATOR, parent=self)
         ]
+        self.close()
+        return items
 
     def select(self, item):
         """Selects item from dropdown."""
