@@ -566,8 +566,8 @@ class ActionsDropdown(GenericLocatorWidget):
     )
     pf4_drop_down = Dropdown('OUIA-Generated-Dropdown-2')
     button = Text(
-        "//*[self::button or self::span][contains(@class, 'btn')]"
-        "[contains(@aria-label, 'search button')]"
+        ".//*[self::button or self::span][contains(@class, 'btn') or "
+        "contains(@aria-label, 'search button')]"
         "[not(*[self::span or self::i][contains(@class, 'caret')])]"
     )
     ITEMS_LOCATOR = './/ul/li/a'
