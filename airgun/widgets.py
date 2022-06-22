@@ -2138,7 +2138,7 @@ class AutoCompleteTextInput(TextInput):
         self.clear()
         super().fill(value)
         self.browser.plugin.ensure_page_safe()
-        self.browser.execute_script('arguments[0].blur();', self.__element__())
+        self.browser.send_keys_to_focused_element('\t')
         return self.value != old_value
 
 
