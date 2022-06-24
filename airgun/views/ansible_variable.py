@@ -55,19 +55,26 @@ class NewAnsibleVariableView(BaseLoggedInView):
     """View while creating a new Ansible Variable"""
 
     breadcrumb = BreadCrumb()
+
+    # 'Ansible Variable Details' section
     key = TextInput(id='ansible_variable_key')
     description = TextInput(id='ansible_variable_description')
     ansible_role = FilteredDropdown(id='ansible_variable_ansible_role_id')
-    override = Checkbox(id='ansible_variable_override')
 
+    # 'Default Behavior' section
+    override = Checkbox(id='ansible_variable_override')
     # Accessing all widgets except the ones above requires that the `override` checkbox is filled
     parameter_type = SatSelect(id='ansible_variable_parameter_type')
     default_value = TextInput(id='ansible_variable_default_value')
     hidden_value = Checkbox(id='ansible_variable_hidden_value')
+
+    # 'Optional Input Validator' section
     expand_optional_input_validator = Text("//h2[@class='expander collapsed']")
     required = Checkbox(id='ansible_variable_required')
     validator_type = SatSelect(id='ansible_variable_validator_type')
     validator_rule = TextInput(id='ansible_variable_validator_rule')
+
+    # 'Prioritize Attribute Order' section
     attribute_order = TextInput(id='order')
     merge_overrides = Checkbox(id='ansible_variable_merge_overrides')
     merge_default = Checkbox(id='ansible_variable_merge_default')
@@ -77,6 +84,8 @@ class NewAnsibleVariableView(BaseLoggedInView):
 
     @View.nested
     class matcher_section(View):
+        """'Specify Matchers' section"""
+
         add_matcher = Text("//a[contains(@class, 'add_nested_fields')]")
         params = MatcherTable(
             locator=".//table[@class='table white-header']",

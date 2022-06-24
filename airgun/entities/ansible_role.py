@@ -20,8 +20,12 @@ class AnsibleRolesEntity(BaseEntity):
 
     def delete(self, entity_name):
         """Delete Ansible Role from Satellite"""
-        # This method currently does not work as the Name column table header
-        # cell includes the `▲` character used for sorting that column
+        # This method currently relies on searching for a specific role as
+        # directly accessing the 'Name' column is not possible due to the
+        # presence of the `▲` character used for sorting that column in the table
+        # header cell. The Satellite UX team is planning to address this in a
+        # future release, likely by wrapping the sort character in a separate
+        # span tag from the column header text.
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.table.row()['Actions'].widget.fill('Delete')
