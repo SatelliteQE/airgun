@@ -1,10 +1,17 @@
+from widgetastic.widget import Checkbox
 from widgetastic.widget import Text
+from widgetastic.widget import TextInput
 from widgetastic.widget import View
 from widgetastic.widget import Widget
+from widgetastic.widget.table import Table
 from widgetastic_patternfly4 import Dropdown
+from widgetastic_patternfly4 import Pagination
+from widgetastic_patternfly4 import Select
 from widgetastic_patternfly4 import Tab
 from widgetastic_patternfly4.ouia import BreadCrumb
 from widgetastic_patternfly4.ouia import Button
+from widgetastic_patternfly4.ouia import ExpandableTable
+from widgetastic_patternfly4.ouia import PatternflyTable
 
 from airgun.views.common import BaseLoggedInView
 
@@ -63,27 +70,108 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class DetailsCard(Card):
-            ROOT = '(.//article[contains(@class, "pf-c-card")])[1]'
+            ROOT = './/article[.//div[text()="Details"]]'
             details = HostDetailsCard()
 
         @View.nested
         class HostStatusCard(Card):
-            ROOT = '(//article[contains(@class, "pf-c-card")])[2]'
+            ROOT = './/article[.//span[text()="Host Status"]]'
             status = Text('.//h4[contains(@data-ouia-component-id, "OUIA-Generated-Title")]')
 
-            status_success = Text('.//span[@class="status-success"]')
-            status_warning = Text('.//span[@class="status-warning"]')
-            status_error = Text('.//span[@class="status-error"]')
-            status_disabled = Text('.//span[@class="disabled"]')
+            status_success = Text('.//span[span[@class="status-success"]]')
+            status_warning = Text('.//span[span[@class="status-warning"]]')
+            status_error = Text('.//span[span[@class="status-error"]]')
+            status_disabled = Text('.//span[span[@class="disabled"]]')
+
+        @View.nested
+        class InstallableErrataCard(Card):
+            ROOT = './/article[.//div[text()="Installable Errata"]]'
+
+            security_advisory = Text('.//a[contains(@href, "type=security")]')
+            bug_fixes = Text('.//a[contains(@href, "type=bugfix")]')
+            enhancements = Text('.//a[contains(@href, "type=enhancement")]')
+
+        @View.nested
+        class TotalRisksCard(Card):
+            ROOT = './/article[.//div[text()="Total risks"]]'
+
+            low = Text('.//*[@id="legend-labels-0"]/*')
+            moderate = Text('.//*[@id="legend-labels-1"]/*')
+            important = Text('.//*[@id="legend-labels-2"]/*')
+            critical = Text('.//*[@id="legend-labels-3"]/*')
 
         @View.nested
         class RecentJobsCard(Card):
-            ROOT = '(//article[contains(@class, "pf-c-card")])[5]'
+            ROOT = './/article[.//div[text()="Recent jobs"]]'
             is_table_loaded = './/ul[@aria-label="recent-jobs-table"]'
 
     @View.nested
     class Content(Tab):
-        pass
+        ROOT = './/div'
+
+        @View.nested
+        class Packages(Tab):
+            ROOT = './/div[@id="packages-tab"]'
+
+            searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
+            upgrade = Button('Upgrade')
+            status_filter = Dropdown('.//div[@aria-label="select Status container"]/div')
+            table = PatternflyTable(
+                component_id="host-packages-table",
+                column_widgets={
+                    # 0: Checkbox(locator='.//input[@type="checkbox"]'), # TODO missing in 6.11
+                    'Package': Text('./parent::td'),
+                    'Status': Text('./span'),
+                    'Installed Version': Text('./parent::td'),
+                    'Upgradable To': Text('./span'),
+                    4: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                },
+            )
+            pagination = Pagination()
+
+        @View.nested
+        class Errata(Tab):
+            ROOT = './/div[@id="errata-tab"]'
+
+            searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
+            apply = Button('Apply')
+            type_filter = Select(locator='.//div[@aria-label="select Type container"]/div')
+            severity_filter = Select(locator='.//div[@aria-label="select Severity container"]/div')
+            dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
+
+            table = ExpandableTable(
+                component_id="host-errata-table",
+                column_widgets={
+                    1: Checkbox(locator='.//input[@type="checkbox"]'),
+                    'Errata': Text('./a'),
+                    'Type': Text('./span'),
+                    'Severity': Text('./span'),
+                    'Installable': Text('./span'),
+                    'Synopsis': Text('./span'),
+                    'Published date': Text('./span/span'),
+                    8: Dropdown(locator='./div'),
+                },
+            )
+            pagination = Pagination()
+
+        @View.nested
+        class ModuleStreams(Tab):
+            TAB_NAME = "Module streams"
+            ROOT = './/div[@id="modulestreams-tab"]'
+
+            searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
+            table = Table(
+                locator='.//table[@aria-label="Content View Table"]',
+                column_widgets={
+                    'Name': Text('./a'),
+                    'State': Text('.//span'),
+                    'Stream': Text('./parent::td'),
+                    'Installation status': Text('.//small'),
+                    'Installed profile': Text('./parent::td'),
+                    5: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                },
+            )
+            pagination = Pagination()
 
     @View.nested
     class Traces(Tab):
