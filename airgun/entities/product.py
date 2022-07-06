@@ -13,7 +13,7 @@ from airgun.views.product import ProductsTableView
 from airgun.views.product import ProductSyncPlanView
 from airgun.views.product import ProductTaskDetailsView
 from airgun.views.task import TaskDetailsView
-
+from airgun.views.product import ProductVerifyContentChecksum
 
 class ProductEntity(BaseEntity):
     endpoint_path = '/products'
@@ -123,6 +123,27 @@ class ProductEntity(BaseEntity):
         view.wait_for_result()
         return view.read()
 
+    def Verify_content_checksum(self, entities_list):
+        """Advanced Sync for product/products
+
+        :param entities_list: The product names to perform Advanced Sync action.
+        :param sync_type: value containing sync type.
+            eg: sync_type="optimized", sync_type="complete"
+        """
+
+        view = self.navigate_to(
+            self,
+            'Select Action',
+            action_name='Verify Content Checksum',
+            entities_list=entities_list,
+        )
+        #view.select_all.fill(True)
+        view.title.click()
+        view.task.click()
+        view = TaskDetailsView(view.browser)
+        view.wait_for_result()
+        return view.read()
+
 
 @navigator.register(ProductEntity, 'All')
 class ShowAllProducts(NavigateStep):
@@ -192,6 +213,7 @@ class ProductsSelectAction(NavigateStep):
     ACTIONS_VIEWS = {
         'Manage HTTP Proxy': ProductManageHttpProxy,
         'Advanced Sync': ProductAdvancedSync,
+        'Verify Content Checksum': ProductVerifyContentChecksum
     }
 
     def prerequisite(self, *args, **kwargs):

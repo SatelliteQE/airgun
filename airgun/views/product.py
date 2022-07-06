@@ -261,3 +261,16 @@ class ProductAdvancedSync(BaseLoggedInView):
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+
+class ProductVerifyContentChecksum(BaseLoggedInView):
+    """Represents Advanced Sync page for Products."""
+
+    title = Select("//h4[text()='Verify Content Checksum']")
+    task = Text("//a[text()='Click to view task']")
+    #sync = Text('//button[@ng-click="ok()"]')F
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
