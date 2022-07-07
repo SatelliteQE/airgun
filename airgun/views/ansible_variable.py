@@ -20,19 +20,14 @@ class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixin):
 
     title = Text("//h1[contains(., text()='Ansible Variables')")
     new_variable = Text("//a[contains(@href, '/ansible/ansible_variables/new')]")
-    total_variables = Text("//span[@class='pagination-pf-items-total']")
+    total_variables = Text(".//span[@class='pagination-pf-items-total']")
     table = SatTable(
         './/table',
         column_widgets={
-            'Name': Text("./a"),
-            'Role': Text("./a"),
-            'Type': Text("./a"),
-            'Imported?': Text("./a"),
             'Actions': Text(".//a[@data-method='delete']"),
         },
     )
     pagination = Pagination()
-    confirm = Pf4ConfirmationDialog()
 
     @property
     def is_displayed(self):
