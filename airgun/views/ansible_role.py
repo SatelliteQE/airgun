@@ -7,12 +7,13 @@ from widgetastic_patternfly4 import PatternflyTable
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SearchableViewMixin
-from airgun.widgets import ActionsDropdown
+from airgun.widgets import ActionsDropdown, Pf4ConfirmationDialog
 from airgun.widgets import Pagination
 
 
 class ImportPagination(Pagination):
     PER_PAGE_BUTTON_DROPDOWN = ".//div[button[@id='pagination-options-menu-toggle-2']]"
+    total_items = Text("//span[@class='pf-c-optionsmenu__toggle-text']/b[2]")
 
 
 class AnsibleRolesView(BaseLoggedInView, SearchableViewMixin):
@@ -23,14 +24,10 @@ class AnsibleRolesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[contains(., text()='Ansible Roles')")
     import_button = Text("//a[contains(@href, '/ansible_roles/import')]")
     submit = Button('Submit')
-    total_imported_roles = Text("//span[contains(@class, 'pagination-pf-items-total')]")
+    total_imported_roles = Text(".//span[contains(@class, 'pagination-pf-items-total')]")
     table = Table(
         './/table',
         column_widgets={
-            'Name': Text("./a"),
-            'Hostgroups': Text("./a"),
-            'Hosts': Text("./a"),
-            'Imported at': Text("./a"),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
@@ -51,11 +48,6 @@ class AnsibleRolesImportView(BaseLoggedInView):
         component_id='OUIA-Generated-Table-2',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
-            'Name': Text('.//a'),
-            'Operation': Text('.//a'),
-            'Variables': Text('.//a'),
-            'Hosts Count': Text('.//a'),
-            'Hostgroups Count': Text('.//a'),
         },
     )
     pagination = ImportPagination()

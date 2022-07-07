@@ -22,8 +22,8 @@ class AnsibleVariablesEntity(BaseEntity):
         """Delete Ansible variable from Satellite"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.click(handle_alert=True)
-        view.confirm.confirm_dialog.click()
+        view.table.row(name=entity_name)['Actions'].widget.click()
+        view.dialog.confirm_dialog.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
 

@@ -959,7 +959,6 @@ class CustomParameter(Table):
 
     add_new_value = Text("..//a[contains(normalize-space(.),'+ Add Parameter')]")
 
-    # def __init__(self, parent, locator=None, id=None, logger=None, column_widgets=None):
     def __init__(self, parent, **kwargs):
         """Supports initialization via ``locator=`` or ``id=``"""
         if (
@@ -969,9 +968,11 @@ class CustomParameter(Table):
             and not kwargs.get('id')
         ):
             raise ValueError('Please specify either locator or id')
-        locator = kwargs.get('locator') or f".//table[@id='{kwargs.get('id')}']"
+        locator = kwargs.get('locator') or f".//table[@id='{kwargs.pop('id')}']"
+        kwargs.update({'locator': f'{locator}'})
+        super().__init__(parent, **kwargs)
 
-        column_widgets = kwargs.get('column_widgets') or {
+        self.column_widgets = kwargs.get('column_widgets') or {
             'Name': TextInput(locator=".//input[@placeholder='Name']"),
             'Value': TextInput(locator=".//textarea[@placeholder='Value']"),
             'Actions': Text(
@@ -979,14 +980,11 @@ class CustomParameter(Table):
                 "or @title='Remove Parameter']"
             ),
         }
-        self.name = list(column_widgets.keys())[0]
+        self.name = list(self.column_widgets.keys())[0]
         self.name_key = '_'.join(self.name.lower().split(' '))
-        self.value = list(column_widgets.keys())[1]
+        self.value = list(self.column_widgets.keys())[1]
         self.value_key = '_'.join(self.value.lower().split(' '))
 
-        super().__init__(
-            parent, locator=locator, logger=kwargs.get('logger'), column_widgets=column_widgets
-        )
 
     def read(self):
         """Return a list of dictionaries. Each dictionary consists of name and
@@ -1037,9 +1035,8 @@ class CustomParameter(Table):
             names_to_fill = [param[self.name_key] for param in params_to_fill]
         except KeyError:
             raise KeyError("parameter value is missing 'name' key")
-
         # Check if duplicate names were passed in and skip incase list
-        if not isinstance(names_to_fill[0], dict):
+        if names_to_fill and not isinstance(names_to_fill[0], dict):
             if len(set(names_to_fill)) < len(names_to_fill):
                 raise ValueError(
                     "Cannot use fill() with duplicate parameter names. "
