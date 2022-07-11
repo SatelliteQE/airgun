@@ -79,6 +79,7 @@ from airgun.entities.task import TaskEntity
 from airgun.entities.user import UserEntity
 from airgun.entities.usergroup import UserGroupEntity
 from airgun.entities.virtwho_configure import VirtwhoConfigureEntity
+from airgun.entities.webhook import WebhookEntity
 from airgun.navigation import Navigate
 from airgun.navigation import navigator
 
@@ -655,3 +656,8 @@ class Session:
     def virtwho_configure(self):
         """Instance of Virtwho Configure entity."""
         return self._open(VirtwhoConfigureEntity)
+
+    @cached_property
+    def webhook(self):
+        """Instance of Webhook entity."""
+        return self._open(WebhookEntity)
