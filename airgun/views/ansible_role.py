@@ -7,7 +7,7 @@ from widgetastic_patternfly4 import PatternflyTable
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SearchableViewMixin
-from airgun.widgets import ActionsDropdown, Pf4ConfirmationDialog
+from airgun.widgets import ActionsDropdown
 from airgun.widgets import Pagination
 
 

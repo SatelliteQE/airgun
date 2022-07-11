@@ -970,6 +970,16 @@ class CustomParameter(Table):
             raise ValueError('Please specify either locator or id')
         locator = kwargs.get('locator') or f".//table[@id='{kwargs.pop('id')}']"
         kwargs.update({'locator': f'{locator}'})
+
+        # Implementation of parameters is inconsistent as to whether a new row
+        # is added to the top or bottom of the table when adding a parameter.
+        # Views representing pages that add new parameters to the bottom of the
+        # table can pass a `new_row_bottom = True` kwarg to the CustomParameter
+        # __init__ method.
+        if kwargs.get('new_row_bottom'):
+            self.new_row_bottom = kwargs.pop('new_row_bottom')
+        else:
+            self.new_row_bottom = False
         super().__init__(parent, **kwargs)
 
         self.column_widgets = kwargs.get('column_widgets') or {
@@ -984,7 +994,6 @@ class CustomParameter(Table):
         self.name_key = '_'.join(self.name.lower().split(' '))
         self.value = list(self.column_widgets.keys())[1]
         self.value_key = '_'.join(self.value.lower().split(' '))
-
 
     def read(self):
         """Return a list of dictionaries. Each dictionary consists of name and
@@ -1003,7 +1012,11 @@ class CustomParameter(Table):
         :param value: dict with format {'name': str, 'value': str}
         """
         self.add_new_value.click()
-        new_row = self.__getitem__(-1)
+        if self.new_row_bottom:
+            new_row = self.__getitem__(-1)
+        else:
+            new_row = self.__getitem__(0)
+        new_row.wait_displayed()
         new_row[self.name].widget.fill(value[self.name_key])
         new_row[self.value].widget.fill(value[self.value_key])
 
