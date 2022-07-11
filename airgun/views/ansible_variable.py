@@ -84,6 +84,9 @@ class NewAnsibleVariableView(BaseLoggedInView):
         add_matcher = Text("//a[contains(@class, 'add_nested_fields')]")
         params = MatcherTable(
             locator=".//table[@class='table white-header']",
+            # new_row_bottom is passed to the __init__ method of the
+            # CustomParameter widget, see comment there for additional details
+            new_row_bottom=True,
             column_widgets={
                 'Attribute type': MatcherActions(),
                 'Value': TextInput(locator=".//textarea[@id='new_lookup_value_value']"),
