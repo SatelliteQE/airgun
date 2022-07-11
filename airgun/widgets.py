@@ -2132,6 +2132,8 @@ class AutoCompleteTextInput(TextInput):
         """
         if self.clear_button.is_displayed:
             self.clear_button.click()
+        else:
+            self.browser.clear(self)
 
     def fill(self, value):
         old_value = self.value
