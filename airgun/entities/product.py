@@ -207,4 +207,7 @@ class ProductsSelectAction(NavigateStep):
         entities_list = kwargs.get('entities_list')
         for entity in entities_list:
             self.parent.table.row(name=entity)[0].click()
+            if not self.parent.table.row(name=entity)[0].read():
+                script = "document.getElementsByTagName('input')[2].click();"
+                self.parent.browser.execute_script(script)
         self.parent.actions.fill(action_name)

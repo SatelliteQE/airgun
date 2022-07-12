@@ -55,7 +55,13 @@ class ProductsTableView(BaseLoggedInView, SearchableViewMixin):
     )
     repo_discovery = Text("//button[contains(.,'Repo Discovery')]")
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
-    table = Table('.//table', column_widgets={'Name': Text('./a')})
+    table = Table(
+        './/table',
+        column_widgets={
+            0: Checkbox(locator=".//input[@ng-change='itemSelected(product)']"),
+            'Name': Text('./a'),
+        },
+    )
     dialog = ConfirmationDialog()
 
     @property
