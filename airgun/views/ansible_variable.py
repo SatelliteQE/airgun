@@ -11,7 +11,6 @@ from airgun.views.common import SearchableViewMixin
 from airgun.widgets import CustomParameter
 from airgun.widgets import FilteredDropdown
 from airgun.widgets import Pagination
-from airgun.widgets import Pf4ConfirmationDialog
 from airgun.widgets import SatSelect
 
 
