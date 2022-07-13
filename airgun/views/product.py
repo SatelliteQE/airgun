@@ -267,9 +267,10 @@ class ProductAdvancedSync(BaseLoggedInView):
 class ProductVerifyContentChecksum(BaseLoggedInView):
     """Represents Advanced Sync page for Products."""
 
-    title = Select("//h4[text()='Verify Content Checksum']")
-    task = Text("//a[text()='Click to view task']")
-    #sync = Text('//button[@ng-click="ok()"]')F
+    #title = Text("//h4[text()='Verify Content Checksum']")
+    title = Text("//h4[normalize-space(.)='Verify Content Checksum']")
+    task = Text("//a[normalize-space(.)='Click to monitor task progress.']")
+    #sync = Text('//button[@ng-click="ok()"]')
 
     @property
     def is_displayed(self):
