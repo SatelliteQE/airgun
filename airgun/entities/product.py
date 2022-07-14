@@ -123,12 +123,10 @@ class ProductEntity(BaseEntity):
         view.wait_for_result()
         return view.read()
 
-    def Verify_content_checksum(self, entities_list):
-        """Advanced Sync for product/products
+    def verify_content_checksum(self, entities_list):
+        """Verify Content Checksum for product/products
 
-        :param entities_list: The product names to perform Advanced Sync action.
-        :param sync_type: value containing sync type.
-            eg: sync_type="optimized", sync_type="complete"
+        :param entities_list: The product names to perform Verify Content Checksum action.
         """
 
         view = self.navigate_to(
@@ -137,9 +135,7 @@ class ProductEntity(BaseEntity):
             action_name='Verify Content Checksum',
             entities_list=entities_list,
         )
-        #view.select_all.fill(True)
-        view.title.click()
-        view.task.click()
+        view.task_alert.click()
         view = TaskDetailsView(view.browser)
         view.wait_for_result()
         return view.read()
