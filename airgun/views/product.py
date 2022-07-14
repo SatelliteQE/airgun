@@ -263,7 +263,6 @@ class ProductAdvancedSync(BaseLoggedInView):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
-
 class ProductVerifyContentChecksum(BaseLoggedInView):
     """Represents Verify Content Checksum Alert page for Products."""
 
