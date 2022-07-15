@@ -102,12 +102,7 @@ class ComputeResourceEntity(BaseEntity):
         view = self.navigate_to(
             self, 'Profile', entity_name=entity_name, compute_profile=compute_profile
         )
-        success_on_timeout_old = getattr(self.browser.plugin, 'success_on_timeout')
-        try:
-            setattr(self.browser.plugin, 'success_on_timeout', True)
-            view.fill(values)
-        finally:
-            setattr(self.browser.plugin, 'success_on_timeout', success_on_timeout_old)
+        view.fill(values)
         view.submit.click()
 
     def read_computeprofile(self, entity_name, compute_profile, widget_names=None):

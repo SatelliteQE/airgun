@@ -12,7 +12,6 @@ from urllib.parse import unquote
 import yaml
 from box import Box
 from selenium import webdriver
-from wait_for import TimedOutError
 from wait_for import wait_for
 from webdriver_kaifuku import BrowserManager
 from widgetastic.browser import Browser
@@ -237,20 +236,11 @@ class AirgunBrowserPlugin(DefaultPlugin):
         }
         '''
 
-    success_on_timeout = False
-
     def ensure_page_safe(self, timeout='30s'):
         """Ensures page is fully loaded.
         Default timeout was 10s, this changes it to 30s.
-        If self.success_on_timeout is True, the function doesn't raise an exception
-        and continues as if the page was safe instead. This can be used to bypass
-        some bugs, e.g. https://bugzilla.redhat.com/show_bug.cgi?id=2106022
         """
-        try:
-            super().ensure_page_safe()
-        except TimedOutError as e:
-            if not self.success_on_timeout:
-                raise e
+        super().ensure_page_safe(timeout)
 
     def before_click(self, element, locator=None):
         """Invoked before clicking on an element. Ensure page is fully loaded
