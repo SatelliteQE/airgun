@@ -118,6 +118,8 @@ class NewHostDetailsView(BaseLoggedInView):
             searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
             status_filter = Dropdown('.//div[@aria-label="select Status container"]/div')
             upgrade = Button('Upgrade')
+            dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
+
             table = PatternflyTable(
                 component_id="host-packages-table",
                 column_widgets={
@@ -195,3 +197,24 @@ class NewHostDetailsView(BaseLoggedInView):
     @View.nested
     class Insights(Tab):
         pass
+
+class InstallPackagesView(View):
+    """Install packages modal"""
+ 
+    ROOT = './/div[@id="package-install-modal"]'
+
+    select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
+    searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
+
+    table = Table(
+        locator='.//table[@aria-label="Content View Table"]',
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Package': Text('./parent::td'),
+            'Version': Text('./parent::td'),
+        },
+    )
+    pagination = Pagination()
+
+    install = Dropdown('Install')
+    cancel = Button('Cancel')
