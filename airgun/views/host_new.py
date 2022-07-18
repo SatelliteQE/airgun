@@ -4,11 +4,11 @@ from widgetastic.widget import TextInput
 from widgetastic.widget import View
 from widgetastic.widget import Widget
 from widgetastic.widget.table import Table
+from widgetastic_patternfly4 import Button
 from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import Pagination
 from widgetastic_patternfly4 import Select
 from widgetastic_patternfly4 import Tab
-from widgetastic_patternfly4 import Button
 from widgetastic_patternfly4.ouia import BreadCrumb
 from widgetastic_patternfly4.ouia import Button as OUIAButton
 from widgetastic_patternfly4.ouia import ExpandableTable
@@ -166,7 +166,9 @@ class NewHostDetailsView(BaseLoggedInView):
 
             searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
             status_filter = Select(locator='.//div[@aria-label="select Status container"]/div')
-            installation_status_filter = Select(locator='.//div[@aria-label="select Installation status container"]/div')
+            installation_status_filter = Select(
+                locator='.//div[@aria-label="select Installation status container"]/div'
+            )
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = Table(
@@ -183,8 +185,27 @@ class NewHostDetailsView(BaseLoggedInView):
             pagination = Pagination()
 
         @View.nested
-    class Traces(Tab):
-        enable_traces = Button('OUIA-Generated-Button-primary-1')
+        class RepositorySets(Tab):
+            TAB_NAME = 'Repository sets'
+            ROOT = './/div[@id="repo-sets-tab"]'
+
+            select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
+            searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
+            status_filter = Select(locator='.//div[@aria-label="select Status container"]/div')
+            dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
+
+            table = Table(
+                locator='.//table[@aria-label="Content View Table"]',
+                column_widgets={
+                    0: Checkbox(locator='.//input[@type="checkbox"]'),
+                    'Repository': Text('./span'),
+                    'Product': Text('./a'),
+                    'Repository path': Text('./span'),
+                    'Status': Text('.//span[contains(@class, "pf-c-label__content")]'),
+                    5: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                },
+            )
+            pagination = Pagination()
 
     @View.nested
     class Traces(Tab):
@@ -198,9 +219,10 @@ class NewHostDetailsView(BaseLoggedInView):
     class Insights(Tab):
         pass
 
+
 class InstallPackagesView(View):
     """Install packages modal"""
- 
+
     ROOT = './/div[@id="package-install-modal"]'
 
     select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
