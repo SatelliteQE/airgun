@@ -261,3 +261,13 @@ class ProductAdvancedSync(BaseLoggedInView):
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+class ProductVerifyContentChecksum(BaseLoggedInView):
+    """Represents Verify Content Checksum Alert page for Products."""
+
+    task_alert = Text("//a[normalize-space(.)='Click to monitor task progress.']")
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.task_alert, exception=False) is not None

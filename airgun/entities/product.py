@@ -12,6 +12,7 @@ from airgun.views.product import ProductRepoDiscoveryView
 from airgun.views.product import ProductsTableView
 from airgun.views.product import ProductSyncPlanView
 from airgun.views.product import ProductTaskDetailsView
+from airgun.views.product import ProductVerifyContentChecksum
 from airgun.views.task import TaskDetailsView
 
 
@@ -123,6 +124,22 @@ class ProductEntity(BaseEntity):
         view.wait_for_result()
         return view.read()
 
+    def verify_content_checksum(self, entities_list):
+        """Verify Content Checksum for product/products
+
+        :param entities_list: The product names to perform Verify Content Checksum action.
+        """
+        view = self.navigate_to(
+            self,
+            'Select Action',
+            action_name='Verify Content Checksum',
+            entities_list=entities_list,
+        )
+        view.task_alert.click()
+        view = TaskDetailsView(view.browser)
+        view.wait_for_result()
+        return view.read()
+
 
 @navigator.register(ProductEntity, 'All')
 class ShowAllProducts(NavigateStep):
@@ -192,6 +209,7 @@ class ProductsSelectAction(NavigateStep):
     ACTIONS_VIEWS = {
         'Manage HTTP Proxy': ProductManageHttpProxy,
         'Advanced Sync': ProductAdvancedSync,
+        'Verify Content Checksum': ProductVerifyContentChecksum,
     }
 
     def prerequisite(self, *args, **kwargs):
