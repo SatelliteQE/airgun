@@ -685,6 +685,10 @@ class HostsChangeContentSourceView(BaseLoggedInView):
     content_source = Select("//select[@id=change_cs_content_source_select]")
     change_button = Button("//button[@id=generate_btn]")
 
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
 
 class HostsActionCommonDialog(BaseLoggedInView):
     """Common base class Dialog for Hosts Actions"""
