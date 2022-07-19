@@ -16,6 +16,7 @@ from airgun.views.host import HostRegisterView
 from airgun.views.host import HostsAssignCompliancePolicy
 from airgun.views.host import HostsAssignLocation
 from airgun.views.host import HostsAssignOrganization
+from airgun.views.host import HostsChangeContentSourceView
 from airgun.views.host import HostsChangeEnvironment
 from airgun.views.host import HostsChangeGroup
 from airgun.views.host import HostsChangeOpenscapCapsule
@@ -365,6 +366,7 @@ class HostsSelectAction(NavigateStep):
     """
 
     ACTIONS_VIEWS = {
+        'Change Content Source': HostsChangeContentSourceView,
         'Change Environment': HostsChangeEnvironment,
         'Change Group': HostsChangeGroup,
         'Assign Compliance Policy': HostsAssignCompliancePolicy,

@@ -679,6 +679,13 @@ class HostEditView(HostCreateView):
         )
 
 
+class HostsChangeContentSourceView(BaseLoggedInView):
+    environment = Select("//select[@id=change_cs_environment_select]")
+    content_view = Select("//select[@id=change_cs_content_view_select]")
+    content_source = Select("//select[@id=change_cs_content_source_select]")
+    change_button = Button("//button[@id=generate_btn]")
+
+
 class HostsActionCommonDialog(BaseLoggedInView):
     """Common base class Dialog for Hosts Actions"""
 
