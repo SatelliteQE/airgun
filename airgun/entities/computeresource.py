@@ -102,7 +102,8 @@ class ComputeResourceEntity(BaseEntity):
         view = self.navigate_to(
             self, 'Profile', entity_name=entity_name, compute_profile=compute_profile
         )
-        view.fill(values)
+        with self.browser.ignore_ensure_page_safe_timeout():
+            view.fill(values)
         view.submit.click()
 
     def read_computeprofile(self, entity_name, compute_profile, widget_names=None):

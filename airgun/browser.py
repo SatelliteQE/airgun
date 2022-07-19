@@ -6,12 +6,14 @@ import logging
 import os
 import time
 import urllib
+from contextlib import contextmanager
 from datetime import datetime
 from urllib.parse import unquote
 
 import yaml
 from box import Box
 from selenium import webdriver
+from wait_for import TimedOutError
 from wait_for import wait_for
 from webdriver_kaifuku import BrowserManager
 from widgetastic.browser import Browser
@@ -236,11 +238,30 @@ class AirgunBrowserPlugin(DefaultPlugin):
         }
         '''
 
+    def __init__(self, *args, **kwargs):
+        self._ignore_ensure_page_safe_timeout = False
+        super().__init__(*args, **kwargs)
+
+    @property
+    def ignore_ensure_page_safe_timeout(self):
+        return self._ignore_ensure_page_safe_timeout
+
+    @ignore_ensure_page_safe_timeout.setter
+    def ignore_ensure_page_safe_timeout(self, value):
+        self._ignore_ensure_page_safe_timeout = value
+
     def ensure_page_safe(self, timeout='30s'):
         """Ensures page is fully loaded.
         Default timeout was 10s, this changes it to 30s.
+        If self.ignore_ensure_page_safe_timeout is True, the function doesn't raise an exception
+        and continues as if the page was safe instead. This can be used to bypass
+        some bugs, e.g. https://bugzilla.redhat.com/show_bug.cgi?id=2106022
         """
-        super().ensure_page_safe(timeout)
+        try:
+            super().ensure_page_safe()
+        except TimedOutError:
+            if not self.ignore_ensure_page_safe_timeout:
+                raise
 
     def before_click(self, element, locator=None):
         """Invoked before clicking on an element. Ensure page is fully loaded
@@ -465,3 +486,11 @@ class AirgunBrowser(Browser):
             super(AirgunBrowser, self.browser).handle_alert(
                 cancel=cancel, wait=wait, squash=squash, prompt=prompt, check_present=check_present
             )
+
+    @contextmanager
+    def ignore_ensure_page_safe_timeout(self):
+        try:
+            self.plugin.ignore_ensure_page_safe_timeout = True
+            yield
+        finally:
+            self.plugin.ignore_ensure_page_safe_timeout = False
