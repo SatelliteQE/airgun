@@ -76,7 +76,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class HostStatusCard(Card):
-            ROOT = './/article[.//span[text()="Host Status"]]'
+            ROOT = './/article[.//span[text()="Host status"]]'
             status = Text('.//h4[contains(@data-ouia-component-id, "OUIA-Generated-Title")]')
 
             status_success = Text('.//span[span[@class="status-success"]]')
@@ -86,7 +86,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class InstallableErrataCard(Card):
-            ROOT = './/article[.//div[text()="Installable Errata"]]'
+            ROOT = './/article[.//div[text()="Installable errata"]]'
 
             security_advisory = Text('.//a[contains(@href, "type=security")]')
             bug_fixes = Text('.//a[contains(@href, "type=bugfix")]')
@@ -126,9 +126,9 @@ class NewHostDetailsView(BaseLoggedInView):
                     0: Checkbox(locator='.//input[@type="checkbox"]'),
                     'Package': Text('./parent::td'),
                     'Status': Text('./span'),
-                    'Installed Version': Text('./parent::td'),
-                    'Upgradable To': Text('./span'),
-                    4: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                    'Installed version': Text('./parent::td'),
+                    'Upgradable to': Text('./span'),
+                    5: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
                 },
             )
             pagination = Pagination()
@@ -238,5 +238,5 @@ class InstallPackagesView(View):
     )
     pagination = Pagination()
 
-    install = Dropdown('Install')
+    install = Button(locator='.//button[(normalize-space(.)="Install")]')
     cancel = Button('Cancel')
