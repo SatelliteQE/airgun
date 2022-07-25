@@ -298,7 +298,7 @@ class ComputeResourceVMwareProfileControllerVolumeItem(GenericRemovableWidgetIte
     disk_mode = FilteredDropdown(
         locator=".//div[label[contains(., 'Disk Mode')]]//div[contains(@class, 'form-control')]"
     )
-    size = TextInput(locator=".//div[label[contains(., 'Size')]]/div/span/input")
+    size = TextInput(locator=".//div[label[contains(., 'Size')]]//input")
     thin_provision = Checkbox(locator=".//div[label[contains(., 'Thin provision')]]/div/input")
     eager_zero = Checkbox(locator=".//div[label[contains(., 'Eager zero')]]/div/input")
 
@@ -320,7 +320,9 @@ class ComputeResourceVMwareProfileStorageItem(GenericRemovableWidgetItem):
     controller = FilteredDropdown(
         locator=".//div[@class='controller-header']//div[contains(@class, 'form-control')]"
     )
-    remove_button = Text(".//button[contains(@class, 'remove-controller')]")
+    remove_button = Text(
+        ".//button[contains(concat(' ', @class, ' '), ' btn-remove-controller ')]"
+    )
     disks = ComputeResourceVMwareProfileControllerVolumeList()
 
 
@@ -433,10 +435,12 @@ class ResourceProviderProfileView(BaseLoggedInView):
 
         @View.nested
         class storage(RemovableWidgetsItemsListView):
-            ROOT = "//div[@id='scsi_controllers']"
-            ITEMS = ".//div[@class='controller-container']"
+            ROOT = "//div[contains(concat(' ', @class, ' '), ' vmware-storage-container ')]"
+            ITEMS = "//div[contains(concat(' ', @class, ' '), ' controller-container ')]"
             ITEM_WIDGET_CLASS = ComputeResourceVMwareProfileStorageItem
-            add_item_button = Text(".//button[contains(@class, 'add-controller')]")
+            add_item_button = Text(
+                "//button[contains(concat(' ', @class, ' '), ' btn-add-controller ')]"
+            )
 
     @property
     def is_displayed(self):
