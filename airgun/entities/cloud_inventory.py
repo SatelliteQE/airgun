@@ -1,5 +1,3 @@
-from wait_for import wait_for
-
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
@@ -42,13 +40,6 @@ class CloudInventoryEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.inventory_list.toggle(entity_name)
         view.browser.click(view.inventory_list.uploading.download_report, ignore_ajax=True)
-        wait_for(
-            lambda: view.inventory_list.status == 'idle',
-            handle_exception=True,
-            timeout=180,
-            delay=1,
-            logger=view.logger,
-        )
         return self.browser.save_downloaded_file()
 
     def update(self, values):

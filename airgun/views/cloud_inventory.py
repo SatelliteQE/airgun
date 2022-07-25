@@ -59,7 +59,7 @@ class InventoryItemsView(Accordion):
     @property
     def is_generating(self):
         try:
-            self.parent_browser.selenium.find_element_by_xpath(f'{self.STATUS_ELEMENTS}[1]/span')
+            self.parent_browser.element(f'{self.STATUS_ELEMENTS}[1]')
             return True
         except NoSuchElementException:
             return False
@@ -67,7 +67,7 @@ class InventoryItemsView(Accordion):
     @property
     def is_uploading(self):
         try:
-            self.parent_browser.selenium.find_element_by_xpath(f'{self.STATUS_ELEMENTS}[2]/span')
+            self.parent_browser.element(f'{self.STATUS_ELEMENTS}[2]')
             return True
         except NoSuchElementException:
             return False
