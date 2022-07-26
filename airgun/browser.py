@@ -258,7 +258,11 @@ class AirgunBrowserPlugin(DefaultPlugin):
         some bugs, e.g. https://bugzilla.redhat.com/show_bug.cgi?id=2106022
         """
         try:
-            super().ensure_page_safe()
+            if self.ignore_ensure_page_safe_timeout:
+                # set lower timeout, otherwise the page will be stuck in a lot of waiting because
+                # once broken, ensure_page_safe will always timeout until loading a new page
+                timeout = '2s'  # experiments show 5s let the page load properly w/o much waiting
+            super().ensure_page_safe(timeout)
         except TimedOutError:
             if not self.ignore_ensure_page_safe_timeout:
                 raise
