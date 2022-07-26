@@ -104,7 +104,7 @@ class ComputeResourceEntity(BaseEntity):
         )
         with self.browser.ignore_ensure_page_safe_timeout():
             view.fill(values)
-        view.submit.click()
+            view.submit.click()
 
     def read_computeprofile(self, entity_name, compute_profile, widget_names=None):
         """Read specific compute profile attributes through CR detail view"""
