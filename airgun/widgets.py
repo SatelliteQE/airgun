@@ -652,7 +652,7 @@ class Search(Widget):
 
     ROOT = (
         '//div[contains(@class, "toolbar-pf-filter") or contains(@class, "title_filter")'
-        'or contains(@class, "dataTables_filter")]'
+        'or contains(@class, "dataTables_filter") or @id="search-bar"]'
     )
     search_field = TextInput(
         locator=(

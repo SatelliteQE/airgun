@@ -10,7 +10,7 @@ from airgun.widgets import SatTable
 
 
 class DeleteHardwareModelDialog(ConfirmationDialog):
-    confirm_dialog = Text(".//button[normalize-space(.)='Delete']")
+    confirm_dialog = Text(".//button[contains(normalize-space(.),'Delete')]")
     cancel_dialog = Text(".//button[normalize-space(.)='Cancel']")
 
 
