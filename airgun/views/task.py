@@ -3,12 +3,12 @@ from widgetastic.widget import Table
 from widgetastic.widget import Text
 from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly4 import Pagination
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
 from airgun.views.common import SearchableViewMixin
 from airgun.widgets import ActionsDropdown
-from airgun.widgets import Pagination
 from airgun.widgets import PieChart
 from airgun.widgets import ProgressBar
 from airgun.widgets import ReadOnlyEntry
@@ -26,10 +26,6 @@ class TaskReadOnlyEntryError(ReadOnlyEntry):
     BASE_LOCATOR = "//span[contains(., '{}')]//parent::div" "/following-sibling::pre"
 
 
-class TaskPagination(Pagination):
-    PER_PAGE_BUTTON_DROPDOWN = ".//div[button[@id='tasks-table-dropdown']]"
-
-
 class TasksView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Tasks']")
     focus = ActionsDropdown("//div[./button[@id='tasks-dashboard-time-period-dropdown']]")
@@ -39,7 +35,7 @@ class TasksView(BaseLoggedInView, SearchableViewMixin):
             'Action': Text('./a'),
         },
     )
-    pagination = TaskPagination()
+    pagination = Pagination()
 
     @property
     def is_displayed(self):

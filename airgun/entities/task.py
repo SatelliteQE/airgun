@@ -40,6 +40,11 @@ class TaskEntity(BaseEntity):
         else:
             chart.name.click()
 
+    def total_items(self):
+        """Get total items displayed in the table"""
+        view = self.navigate_to(self, 'All')
+        return view.pagination.total_items
+
 
 @navigator.register(TaskEntity, 'All')
 class ShowAllTasks(NavigateStep):
