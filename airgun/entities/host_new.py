@@ -38,6 +38,7 @@ class NewHostEntity(HostEntity):
     def install_package(self, entity_name, package):
         """Installs package on host using the installation modal"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
         view.Content.Packages.select()
         view.Content.Packages.dropdown.wait_displayed()
         view.Content.Packages.dropdown.item_select('Install packages')
@@ -52,6 +53,7 @@ class NewHostEntity(HostEntity):
     def apply_package_action(self, entity_name, package_name, action):
         """Apply `action` to selected package based on the `package_name`"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
         view.Content.Packages.searchbar.fill(package_name)
         # wait for filter to apply
         time.sleep(1)
@@ -63,6 +65,7 @@ class NewHostEntity(HostEntity):
     def get_errata_by_type(self, entity_name, type):
         """List errata based on type and return table"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
         view.Content.Errata.select()
         view.Content.Errata.type_filter.fill(type)
         return view.read(widget_names="Content.Errata.table")
@@ -70,6 +73,7 @@ class NewHostEntity(HostEntity):
     def apply_erratas(self, entity_name, search):
         """Apply errata on selected host based on errata_id"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
         view.Content.Errata.searchbar.fill(search)
         view.Content.Errata.select_all.click()
         view.Content.Errata.apply.click()
@@ -79,6 +83,7 @@ class NewHostEntity(HostEntity):
     def get_module_streams(self, entity_name, search):
         """Filter module streams"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
         view.Content.ModuleStreams.select()
         view.Content.ModuleStreams.searchbar.fill(search)
         # wait for filter to apply
@@ -89,6 +94,7 @@ class NewHostEntity(HostEntity):
     def apply_module_streams_action(self, entity_name, module_stream, action):
         """Apply `action` to selected Module stream based on the `module_stream`"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
         view.Content.ModuleStreams.searchbar.fill(module_stream)
         # wait for filter to apply
         time.sleep(1)
