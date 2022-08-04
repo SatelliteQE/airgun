@@ -4,6 +4,7 @@ from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
 from airgun.views.host_new import InstallPackagesView
+from airgun.views.host_new import ModuleStreamDialog
 from airgun.views.host_new import NewHostDetailsView
 
 
@@ -98,12 +99,10 @@ class NewHostEntity(HostEntity):
         view.Content.ModuleStreams.searchbar.fill(module_stream)
         # wait for filter to apply
         time.sleep(1)
-        # workaround for items that include description
-        for item in view.Content.ModuleStreams.table[0][5].widget.items:
-            if action in item:
-                action = item
-                break
         view.Content.ModuleStreams.table[0][5].widget.item_select(action)
+        modal = ModuleStreamDialog(self.browser)
+        if modal.is_displayed:
+            modal.confirm()
         view.flash.assert_no_error()
         view.flash.dismiss()
 

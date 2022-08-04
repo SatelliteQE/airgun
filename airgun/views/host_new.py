@@ -15,12 +15,19 @@ from widgetastic_patternfly4.ouia import ExpandableTable
 from widgetastic_patternfly4.ouia import PatternflyTable
 
 from airgun.views.common import BaseLoggedInView
+from airgun.widgets import Pf4ConfirmationDialog
 
 
 class Card(View):
     """Each card in host view has it's own title with same locator"""
 
     title = Text('.//div[@class="pf-c-card__title"]')
+
+
+class DropdownWithDescripton(Dropdown):
+    """Dropdown with description below items"""
+
+    ITEM_LOCATOR = ".//*[contains(@class, 'pf-c-dropdown__menu-item') and contains(text(), {})]"
 
 
 class HostDetailsCard(Widget):
@@ -179,7 +186,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Stream': Text('./parent::td'),
                     'Installation status': Text('.//small'),
                     'Installed profile': Text('./parent::td'),
-                    5: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                    5: DropdownWithDescripton(locator='.//div[contains(@class, "pf-c-dropdown")]'),
                 },
             )
             pagination = Pagination()
@@ -240,3 +247,9 @@ class InstallPackagesView(View):
 
     install = Button(locator='.//button[(normalize-space(.)="Install")]')
     cancel = Button('Cancel')
+
+
+class ModuleStreamDialog(Pf4ConfirmationDialog):
+
+    confirm_dialog = Button(locator='.//button[@aria-label="confirm-module-action"]')
+    cancel_dialog = Button(locator='.//button[@aria-label="cancel-module-action"]')
