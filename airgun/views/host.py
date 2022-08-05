@@ -684,10 +684,11 @@ class HostsChangeContentSourceView(BaseLoggedInView):
     content_view = Select("//select[@id=change_cs_content_view_select]")
     content_source = Select("//select[@id=change_cs_content_source_select]")
     change_button = Button("//button[@id=generate_btn]")
+    run_job_link = Link('//a[normalize-space(.)="Run job invocation"]')
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.change_button, exception=False) is not None
 
 
 class HostsActionCommonDialog(BaseLoggedInView):

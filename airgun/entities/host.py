@@ -27,6 +27,7 @@ from airgun.views.host import HostsJobInvocationStatusView
 from airgun.views.host import HostsUnassignCompliancePolicy
 from airgun.views.host import HostsView
 from airgun.views.host import RecommendationListView
+from airgun.views.job_invocation import JobInvocationCreateView
 from airgun.views.host_new import NewHostDetailsView
 
 
@@ -273,6 +274,21 @@ class HostEntity(BaseEntity):
         self.browser.switch_to_window(self.browser.window_handles[0])
         self.browser.close_window(self.browser.window_handles[-1])
         return hostname
+
+    def change_content_source(self, entities_list, values):
+        """"""
+        view = self._select_action('Change Content Source', entities_list)
+        view.environment.fill(values["env"])
+        view.content_view.fill(values["content_view"])
+        view.content_source.fill(values["content_source"])
+        view.change_button.click()
+
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+        view.run_job_link.click()
+
+        view = JobInvocationCreateView
+        view.submit.click()
 
 
 @navigator.register(HostEntity, 'All')
