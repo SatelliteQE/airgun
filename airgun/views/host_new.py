@@ -34,9 +34,7 @@ class HostDetailsCard(Widget):
     """Details card body contains multiple host detail information"""
 
     LABELS = './/div[@class="pf-c-description-list__group"]//dt//span'
-    VALUES = (
-        './/div[@class="pf-c-description-list__group"]//dd//descendant::*/normalize-space(.)/..'
-    )
+    VALUES = './/div[@class="pf-c-description-list__group"]//dd//descendant::*/text()/..'
 
     def read(self):
         """Return a dictionary where keys are property names and values are property values.
@@ -64,6 +62,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
+        self.browser.plugin.ensure_page_safe()
         breadcrumb_loaded = self.browser.wait_for_element(
             self.Overview.RecentJobsCard.is_table_loaded, exception=False
         )
@@ -123,7 +122,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
             searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
-            status_filter = Dropdown('.//div[@aria-label="select Status container"]/div')
+            status_filter = Dropdown(locator='.//div[@aria-label="select Status container"]/div')
             upgrade = Button('Upgrade')
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
@@ -148,7 +147,7 @@ class NewHostDetailsView(BaseLoggedInView):
             searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
             type_filter = Select(locator='.//div[@aria-label="select Type container"]/div')
             severity_filter = Select(locator='.//div[@aria-label="select Severity container"]/div')
-            apply = Button('Apply')
+            apply = Button(locator='.//button[normalize-space(.)="Apply"]')
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = ExpandableTable(
