@@ -62,26 +62,23 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        self.browser.plugin.ensure_page_safe()
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.Overview.RecentJobsCard.is_table_loaded, exception=False
-        )
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Hosts'
 
     edit = OUIAButton('OUIA-Generated-Button-secondary-1')
     dropdown = Dropdown(locator='//button[@id="hostdetails-kebab"]/..')
 
     @View.nested
-    class Overview(Tab):
+    class overview(Tab):
         ROOT = './/div[contains(@class, "host-details-tab-item")]'
 
         @View.nested
-        class DetailsCard(Card):
+        class details(Card):
             ROOT = './/article[.//div[text()="Details"]]'
             details = HostDetailsCard()
 
         @View.nested
-        class HostStatusCard(Card):
+        class host_status(Card):
             ROOT = './/article[.//span[text()="Host status"]]'
             status = Text('.//h4[contains(@data-ouia-component-id, "OUIA-Generated-Title")]')
 
@@ -91,7 +88,7 @@ class NewHostDetailsView(BaseLoggedInView):
             status_disabled = Text('.//span[span[@class="disabled"]]')
 
         @View.nested
-        class InstallableErrataCard(Card):
+        class installable_errata(Card):
             ROOT = './/article[.//div[text()="Installable errata"]]'
 
             security_advisory = Text('.//a[contains(@href, "type=security")]')
@@ -99,7 +96,7 @@ class NewHostDetailsView(BaseLoggedInView):
             enhancements = Text('.//a[contains(@href, "type=enhancement")]')
 
         @View.nested
-        class TotalRisksCard(Card):
+        class total_risks(Card):
             ROOT = './/article[.//div[text()="Total risks"]]'
 
             low = Text('.//*[@id="legend-labels-0"]/*')
@@ -108,16 +105,16 @@ class NewHostDetailsView(BaseLoggedInView):
             critical = Text('.//*[@id="legend-labels-3"]/*')
 
         @View.nested
-        class RecentJobsCard(Card):
+        class recent_jobs(Card):
             ROOT = './/article[.//div[text()="Recent jobs"]]'
             is_table_loaded = './/ul[@aria-label="recent-jobs-table"]'
 
     @View.nested
-    class Content(Tab):
+    class content(Tab):
         ROOT = './/div'
 
         @View.nested
-        class Packages(Tab):
+        class packages(Tab):
             ROOT = './/div[@id="packages-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
@@ -140,7 +137,7 @@ class NewHostDetailsView(BaseLoggedInView):
             pagination = Pagination()
 
         @View.nested
-        class Errata(Tab):
+        class errata(Tab):
             ROOT = './/div[@id="errata-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
@@ -166,7 +163,7 @@ class NewHostDetailsView(BaseLoggedInView):
             pagination = Pagination()
 
         @View.nested
-        class ModuleStreams(Tab):
+        class module_streams(Tab):
             TAB_NAME = 'Module streams'
             ROOT = './/div[@id="modulestreams-tab"]'
 
@@ -191,7 +188,7 @@ class NewHostDetailsView(BaseLoggedInView):
             pagination = Pagination()
 
         @View.nested
-        class RepositorySets(Tab):
+        class repository_sets(Tab):
             TAB_NAME = 'Repository sets'
             ROOT = './/div[@id="repo-sets-tab"]'
 
@@ -214,15 +211,15 @@ class NewHostDetailsView(BaseLoggedInView):
             pagination = Pagination()
 
     @View.nested
-    class Traces(Tab):
+    class traces(Tab):
         enable_traces = OUIAButton('OUIA-Generated-Button-primary-1')
 
     @View.nested
-    class Ansible(Tab):
+    class ansible(Tab):
         pass
 
     @View.nested
-    class Insights(Tab):
+    class insights(Tab):
         pass
 
 

@@ -1,5 +1,3 @@
-import time
-
 from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
@@ -30,24 +28,24 @@ class NewHostEntity(HostEntity):
     def get_packages(self, entity_name, search=""):
         """Filter installed packages on host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.Content.Packages.select()
-        view.Content.Packages.searchbar.fill(search)
+        view.content.packages.select()
+        view.content.packages.searchbar.fill(search)
         # wait for filter to apply
-        time.sleep(1)
-        return view.Content.Packages.read()
+        self.browser.plugin.ensure_page_safe()
+        return view.content.packages.read()
 
     def install_package(self, entity_name, package):
         """Installs package on host using the installation modal"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
-        view.Content.Packages.select()
-        view.Content.Packages.dropdown.wait_displayed()
-        view.Content.Packages.dropdown.item_select('Install packages')
+        view.content.packages.select()
+        view.content.packages.dropdown.wait_displayed()
+        view.content.packages.dropdown.item_select('Install packages')
         view = InstallPackagesView(self.browser)
         view.wait_displayed()
         view.searchbar.fill(package)
         # wait for filter to apply
-        time.sleep(2)
+        self.browser.plugin.ensure_page_safe()
         view.select_all.click()
         view.install.click()
 
@@ -55,11 +53,11 @@ class NewHostEntity(HostEntity):
         """Apply `action` to selected package based on the `package_name`"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
-        view.Content.Packages.searchbar.fill(package_name)
+        view.content.packages.searchbar.fill(package_name)
         # wait for filter to apply
-        time.sleep(1)
-        view.Content.Packages.table.wait_displayed()
-        view.Content.Packages.table[0][5].widget.item_select(action)
+        self.browser.plugin.ensure_page_safe()
+        view.content.packages.table.wait_displayed()
+        view.content.packages.table[0][5].widget.item_select(action)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -67,17 +65,19 @@ class NewHostEntity(HostEntity):
         """List errata based on type and return table"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
-        view.Content.Errata.select()
-        view.Content.Errata.type_filter.fill(type)
-        return view.read(widget_names="Content.Errata.table")
+        view.content.errata.select()
+        view.content.errata.type_filter.fill(type)
+        return view.read(widget_names="content.errata.table")
 
     def apply_erratas(self, entity_name, search):
         """Apply errata on selected host based on errata_id"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
-        view.Content.Errata.searchbar.fill(search)
-        view.Content.Errata.select_all.click()
-        view.Content.Errata.apply.click()
+        view.content.errata.searchbar.fill(search)
+        # wait for filter to apply
+        self.browser.plugin.ensure_page_safe()
+        view.content.errata.select_all.click()
+        view.content.errata.apply.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -85,21 +85,21 @@ class NewHostEntity(HostEntity):
         """Filter module streams"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
-        view.Content.ModuleStreams.select()
-        view.Content.ModuleStreams.searchbar.fill(search)
+        view.content.module_streams.select()
+        view.content.module_streams.searchbar.fill(search)
         # wait for filter to apply
-        time.sleep(1)
-        view.Content.ModuleStreams.table.wait_displayed()
-        return view.Content.ModuleStreams.table.read()
+        self.browser.plugin.ensure_page_safe()
+        view.content.module_streams.table.wait_displayed()
+        return view.content.module_streams.table.read()
 
     def apply_module_streams_action(self, entity_name, module_stream, action):
         """Apply `action` to selected Module stream based on the `module_stream`"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
-        view.Content.ModuleStreams.searchbar.fill(module_stream)
+        view.content.module_streams.searchbar.fill(module_stream)
         # wait for filter to apply
-        time.sleep(1)
-        view.Content.ModuleStreams.table[0][5].widget.item_select(action)
+        self.browser.plugin.ensure_page_safe()
+        view.content.module_streams.table[0][5].widget.item_select(action)
         modal = ModuleStreamDialog(self.browser)
         if modal.is_displayed:
             modal.confirm()
