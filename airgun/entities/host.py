@@ -26,6 +26,7 @@ from airgun.views.host import HostsJobInvocationStatusView
 from airgun.views.host import HostsUnassignCompliancePolicy
 from airgun.views.host import HostsView
 from airgun.views.host import RecommendationListView
+from airgun.views.host_new import NewHostDetailsView
 
 
 class HostEntity(BaseEntity):
@@ -39,7 +40,7 @@ class HostEntity(BaseEntity):
         view.fill(values)
         self.browser.click(view.submit, ignore_ajax=True)
         self.browser.plugin.ensure_page_safe(timeout='600s')
-        host_view = HostDetailsView(self.browser)
+        host_view = NewHostDetailsView(self.browser)
         host_view.wait_displayed()
         host_view.flash.assert_no_error()
         host_view.flash.dismiss()
@@ -327,6 +328,10 @@ class ShowHostDetails(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+        host_view = NewHostDetailsView(self.parent.browser)
+        host_view.wait_displayed()
+        host_view.dropdown.wait_displayed()
+        host_view.dropdown.item_select('Legacy UI')
 
 
 @navigator.register(HostEntity, 'Edit')
