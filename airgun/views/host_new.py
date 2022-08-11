@@ -82,10 +82,10 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/article[.//span[text()="Host status"]]'
             status = Text('.//h4[contains(@data-ouia-component-id, "OUIA-Generated-Title")]')
 
-            status_success = Text('.//span[span[@class="status-success"]]')
-            status_warning = Text('.//span[span[@class="status-warning"]]')
-            status_error = Text('.//span[span[@class="status-error"]]')
-            status_disabled = Text('.//span[span[@class="disabled"]]')
+            status_success = Text('.//a[span[@class="status-success"]]')
+            status_warning = Text('.//a[span[@class="status-warning"]]')
+            status_error = Text('.//a[span[@class="status-error"]]')
+            status_disabled = Text('.//a[span[@class="disabled"]]')
 
         @View.nested
         class installable_errata(Card):
@@ -120,7 +120,7 @@ class NewHostDetailsView(BaseLoggedInView):
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
             searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
             status_filter = Dropdown(locator='.//div[@aria-label="select Status container"]/div')
-            upgrade = Button('Upgrade')
+            upgrade = Button(locator='.//button[normalize-space(.)="Upgrade"]')
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = PatternflyTable(
