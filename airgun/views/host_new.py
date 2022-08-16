@@ -33,16 +33,16 @@ class DropdownWithDescripton(Dropdown):
 class HostDetailsCard(Widget):
     """Details card body contains multiple host detail information"""
 
-    LABELS = './/div[@class="pf-c-description-list__group"]//dt//span'
-    VALUES = './/div[@class="pf-c-description-list__group"]//dd//descendant::*/text()/..'
+    LABELS = '//div[@class="pf-c-description-list__group"]//dt//span'
+    VALUES = '//div[@class="pf-c-description-list__group"]//dd//descendant::*/text()/..'
 
     def read(self):
         """Return a dictionary where keys are property names and values are property values.
         Values are either in span elements or in div elements
         """
         items = {}
-        labels = self.browser.elements(self.LABELS)
-        values = self.browser.elements(self.VALUES)
+        labels = self.browser.elements(f'{self.parent.ROOT}{self.LABELS}')
+        values = self.browser.elements(f'{self.parent.ROOT}{self.VALUES}')
         # the length of elements should be always same
         if len(values) != len(labels):
             raise AttributeError(
