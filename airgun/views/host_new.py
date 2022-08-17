@@ -111,10 +111,13 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class content(Tab):
+        # TODO Setting ROOT is just a workaround because of BZ 2119076,
+        # once this gets fixed we should use the parametrized locator from Tab class
         ROOT = './/div'
 
         @View.nested
         class packages(Tab):
+            # workaround for BZ 2119076
             ROOT = './/div[@id="packages-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
@@ -138,6 +141,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class errata(Tab):
+            # workaround for BZ 2119076
             ROOT = './/div[@id="errata-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
@@ -165,6 +169,7 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class module_streams(Tab):
             TAB_NAME = 'Module streams'
+            # workaround for BZ 2119076
             ROOT = './/div[@id="modulestreams-tab"]'
 
             searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
@@ -190,6 +195,7 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class repository_sets(Tab):
             TAB_NAME = 'Repository sets'
+            # workaround for BZ 2119076
             ROOT = './/div[@id="repo-sets-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
