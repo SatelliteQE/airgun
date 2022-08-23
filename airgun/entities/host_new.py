@@ -27,6 +27,7 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
         return view.read(widget_names=widget_names)
 
+<<<<<<< HEAD
     def schedule_job(self, entity_name, values):
         """Schedule a remote execution on selected host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
@@ -38,6 +39,8 @@ class NewHostEntity(HostEntity):
         view.fill(values)
         view.submit.click()
 
+=======
+>>>>>>> fcfc9bb (Add content tab to new host UI (#720))
     def get_packages(self, entity_name, search=""):
         """Filter installed packages on host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
@@ -90,7 +93,11 @@ class NewHostEntity(HostEntity):
         # wait for filter to apply
         self.browser.plugin.ensure_page_safe()
         view.content.errata.select_all.click()
+<<<<<<< HEAD
         view.content.errata.apply.fill('Apply')
+=======
+        view.content.errata.apply.click()
+>>>>>>> fcfc9bb (Add content tab to new host UI (#720))
         view.flash.assert_no_error()
         view.flash.dismiss()
 
