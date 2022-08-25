@@ -15,6 +15,7 @@ from widgetastic_patternfly4.ouia import ExpandableTable
 from widgetastic_patternfly4.ouia import PatternflyTable
 
 from airgun.views.common import BaseLoggedInView
+from airgun.widgets import Pf4ActionsDropdown
 from airgun.widgets import Pf4ConfirmationDialog
 
 
@@ -28,6 +29,29 @@ class DropdownWithDescripton(Dropdown):
     """Dropdown with description below items"""
 
     ITEM_LOCATOR = ".//*[contains(@class, 'pf-c-dropdown__menu-item') and contains(text(), {})]"
+
+
+class ItemList(Widget):
+    """Item list view, similar to table view, but using the ul/li structure"""
+
+    ROW = '//li/div[@class="pf-c-data-list__item-row"]/div'
+    COLUMN = './div'
+
+    def read(self):
+        """Return content of table"""
+        items = []
+        # make sure that parent locator works for str and also Locator object
+        parent_locator = (
+            self.parent.ROOT if type(self.parent.ROOT) == str else f'({self.parent.ROOT.locator})'
+        )
+        rows = self.browser.elements(f'{parent_locator}{self.ROW}')
+        for row in rows:
+            columns = []
+            elements = row.find_elements("xpath", self.COLUMN)
+            for element in elements:
+                columns.append(element.text)
+            items.append(columns)
+        return items
 
 
 class HostDetailsCard(Widget):
@@ -67,6 +91,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     edit = OUIAButton('OUIA-Generated-Button-secondary-1')
     dropdown = Dropdown(locator='//button[@id="hostdetails-kebab"]/..')
+    schedule_job = Pf4ActionsDropdown(locator='.//div[div/button[@aria-label="Select"]]')
 
     @View.nested
     class overview(Tab):
@@ -86,6 +111,12 @@ class NewHostDetailsView(BaseLoggedInView):
             status_warning = Text('.//a[span[@class="status-warning"]]')
             status_error = Text('.//a[span[@class="status-error"]]')
             status_disabled = Text('.//a[span[@class="disabled"]]')
+
+        class recent_audits(Card):
+            ROOT = './/article[.//div[text()="Recent audits"]]'
+
+            all_audits = Text('.//a[normalize-space(.)="All audits"]')
+            table = ItemList()
 
         @View.nested
         class installable_errata(Card):
@@ -108,6 +139,16 @@ class NewHostDetailsView(BaseLoggedInView):
         class recent_jobs(Card):
             ROOT = './/article[.//div[text()="Recent jobs"]]'
             is_table_loaded = './/ul[@aria-label="recent-jobs-table"]'
+            actions = Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]')
+
+            class finished(Tab):
+                table = ItemList()
+
+            class running(Tab):
+                table = ItemList()
+
+            class scheduled(Tab):
+                table = ItemList()
 
     @View.nested
     class content(Tab):
@@ -123,7 +164,9 @@ class NewHostDetailsView(BaseLoggedInView):
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
             searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
             status_filter = Dropdown(locator='.//div[@aria-label="select Status container"]/div')
-            upgrade = Button(locator='.//button[normalize-space(.)="Upgrade"]')
+            upgrade = Pf4ActionsDropdown(
+                locator='.//div[div/button[normalize-space(.)="Upgrade"]]'
+            )
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = PatternflyTable(
@@ -148,7 +191,7 @@ class NewHostDetailsView(BaseLoggedInView):
             searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
             type_filter = Select(locator='.//div[@aria-label="select Type container"]/div')
             severity_filter = Select(locator='.//div[@aria-label="select Severity container"]/div')
-            apply = Button(locator='.//button[normalize-space(.)="Apply"]')
+            apply = Pf4ActionsDropdown(locator='.//div[@aria-label="errata_dropdown"]')
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = ExpandableTable(
