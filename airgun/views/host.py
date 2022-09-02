@@ -688,7 +688,7 @@ class HostsChangeContentSourceView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.change_button, exception=False) is not None
+        return self.change_button.is_displayed()
 
 
 class HostsActionCommonDialog(BaseLoggedInView):
