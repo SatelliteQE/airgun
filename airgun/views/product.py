@@ -136,6 +136,10 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
     breadcrumb = BreadCrumb()
     repo_type = Select(locator="//select[@ng-model='discovery.contentType']")
     url = TextInput(id='urlToDiscover')
+    registry_type = Select(id='registry_type')
+    username = TextInput(id='upstreamUsername')
+    password = TextInput(id='upstreamPassword')
+    registry_search = TextInput(id='registrySearch')
 
     @property
     def is_displayed(self):
