@@ -4,6 +4,7 @@ from airgun.navigation import navigator
 from airgun.views.host_new import InstallPackagesView
 from airgun.views.host_new import ModuleStreamDialog
 from airgun.views.host_new import NewHostDetailsView
+from airgun.views.job_invocation import JobInvocationCreateView
 
 
 class NewHostEntity(HostEntity):
@@ -23,7 +24,19 @@ class NewHostEntity(HostEntity):
         will be read.
         """
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe()
         return view.read(widget_names=widget_names)
+
+    def schedule_job(self, entity_name, values):
+        """Schedule a remote execution on selected host"""
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        view.schedule_job.fill('Schedule a job')
+        view = JobInvocationCreateView(self.browser)
+        self.browser.plugin.ensure_page_safe()
+        view.wait_displayed()
+        view.fill(values)
+        view.submit.click()
 
     def get_packages(self, entity_name, search=""):
         """Filter installed packages on host"""
@@ -77,7 +90,7 @@ class NewHostEntity(HostEntity):
         # wait for filter to apply
         self.browser.plugin.ensure_page_safe()
         view.content.errata.select_all.click()
-        view.content.errata.apply.click()
+        view.content.errata.apply.fill('Apply')
         view.flash.assert_no_error()
         view.flash.dismiss()
 

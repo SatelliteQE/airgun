@@ -633,6 +633,51 @@ class ActionsDropdown(GenericLocatorWidget):
         return self.items
 
 
+class Pf4ActionsDropdown(ActionsDropdown):
+    """PF4 version of actions dropdown with support for items description
+
+    Example html representation::
+
+        <div class="pf-c-dropdown pf-m-expanded" data-ouia-component-type="PF4/Dropdown">
+          <div class="pf-c-dropdown__toggle pf-m-split-button pf-m-action">
+              <button class="pf-c-dropdown__toggle-button">Schedule a job</button>
+              <button class="pf-c-dropdown__toggle-button pf-m-secondary">
+              </button>
+          </div>
+          <ul class="pf-c-dropdown__menu" role="menu">
+              <li "role="menuitem"><a><div>Run Puppet Once</div></a></li>
+              <li "role="menuitem"><a><div>Run OpenSCAP scan</div></a></li>
+              <li "role="menuitem"><a><div>Run Ansible roles</div></a></li>
+              <li "role="menuitem"><a><div>Enable web console</div></a></li>
+          </ul>
+        </div>
+
+    """
+
+    button = Text(
+        './/button[contains(@class,"pf-c-dropdown__toggle-button")'
+        'and not(@data-ouia-component-type="PF4/DropdownToggle")]'
+    )
+    dropdown = Text(
+        './/button[contains(@class,"pf-c-dropdown__toggle-button")'
+        'and @data-ouia-component-type="PF4/DropdownToggle"]'
+    )
+    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-c-dropdown__menu')]/li"
+    ITEM_LOCATOR = ".//ul/li[@role='menuitem' and contains(normalize-space(.), '{}')]"
+
+    @property
+    def is_open(self):
+        return 'pf-m-expanded' in self.browser.classes(self)
+
+    @property
+    def is_enabled(self):
+        return 'pf-m-disabled' not in self.browser.classes(self)
+
+    def select(self, item):
+        self.open()
+        self.browser.element(self.ITEM_LOCATOR.format(item), parent=self).click()
+
+
 class ActionDropdownWithCheckbox(ActionsDropdown):
     """Custom drop down which contains the checkbox inside in drop down."""
 
