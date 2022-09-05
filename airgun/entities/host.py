@@ -259,6 +259,7 @@ class HostEntity(BaseEntity):
 
         # switch to the last opened tab,
         self.browser.switch_to_window(self.browser.window_handles[-1])
+        self.browser.plugin.ensure_page_safe()
         self.browser.wait_for_element(locator='//div[@id="content"]/iframe', exception=True)
         # the remote host content is loaded in an iframe, let's switch to it
         self.browser.switch_to_frame(locator='//div[@id="content"]/iframe')
