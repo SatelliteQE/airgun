@@ -267,8 +267,8 @@ class HostEntity(BaseEntity):
         self.browser.wait_for_element(
             locator=f'//{hostname_element}[@id="{hostname_id}"]', exception=True, visible=True
         )
-        hostname_button_view = self.browser.selenium.find_elements_by_id(hostname_id)
-        hostname = hostname_button_view[0].text
+        hostname_button = self.browser.selenium.find_elements("id", hostname_id)
+        hostname = hostname_button[0].text
         self.browser.switch_to_main_frame()
         self.browser.switch_to_window(self.browser.window_handles[0])
         self.browser.close_window(self.browser.window_handles[-1])
