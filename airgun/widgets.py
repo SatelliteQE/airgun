@@ -2347,7 +2347,7 @@ class BaseMultiSelect(BaseSelect, Dropdown):
         try:
             for item in items:
                 element = self.item_element(item, close=False)
-                if not element.find_element_by_xpath("./..").get_attribute('aria-selected'):
+                if not element.find_element("xpath", "./..").get_attribute('aria-selected'):
                     element.click()
         finally:
             self.browser.click(self.BUTTON_LOCATOR)
