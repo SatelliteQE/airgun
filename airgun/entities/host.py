@@ -247,9 +247,8 @@ class HostEntity(BaseEntity):
         view.validations.assert_no_errors()
         # switch to the last opened tab,
         self.browser.switch_to_window(self.browser.window_handles[-1])
-        self.browser.wait_for_element(
-            locator='//div[@id="index-brand"]', exception=True, timeout=10
-        )
+        self.browser.plugin.ensure_page_safe()
+        self.browser.wait_for_element(locator='//div[@id="content"]/iframe', exception=True)
         # the remote host content is loaded in an iframe, let's switch to it
         self.browser.switch_to_frame(locator='//div[@id="content"]/iframe')
 
@@ -259,7 +258,8 @@ class HostEntity(BaseEntity):
         hostname_button_view = self.browser.selenium.find_elements_by_id(
             'system_information_hostname_button'
         )
-        hostname = hostname_button_view[0].text
+        hostname_button = self.browser.selenium.find_elements("id", hostname_id)
+        hostname = hostname_button[0].text
         self.browser.switch_to_main_frame()
         self.browser.switch_to_window(self.browser.window_handles[0])
         self.browser.close_window(self.browser.window_handles[-1])
