@@ -4,6 +4,7 @@ from airgun.navigation import navigator
 from airgun.views.host_new import InstallPackagesView
 from airgun.views.host_new import ModuleStreamDialog
 from airgun.views.host_new import NewHostDetailsView
+from navmazing import NavigateToSibling
 from airgun.views.job_invocation import JobInvocationCreateView
 
 
@@ -26,6 +27,7 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe()
         return view.read(widget_names=widget_names)
+
 
     def schedule_job(self, entity_name, values):
         """Schedule a remote execution on selected host"""
@@ -140,6 +142,11 @@ class NewHostEntity(HostEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def get_ansible_roles(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        return view.ansible.roles.table.read()
+
 
 @navigator.register(NewHostEntity, 'NewDetails')
 class ShowNewHostDetails(NavigateStep):
@@ -158,3 +165,15 @@ class ShowNewHostDetails(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+
+@navigator.register(NewHostEntity, 'AnsibleTab')
+class ShowNewHostAnsible(NavigateStep):
+    """Navigate to the Ansible Tab of Host Details by clicking on the subtab"""
+
+    VIEW = NewHostDetailsView
+
+    prerequisite = NavigateToSibling('NewDetails')
+
+    def step(self, *args, **kwargs):
+        print(self.parent.rolesListTable)

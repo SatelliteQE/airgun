@@ -12,12 +12,14 @@ from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import Pagination
 from widgetastic_patternfly4 import Select
 from widgetastic_patternfly4 import Tab
+from widgetastic_patternfly4 import PatternflyTable
 from widgetastic_patternfly4.ouia import BreadCrumb
 from widgetastic_patternfly4.ouia import Button as OUIAButton
 from widgetastic_patternfly4.ouia import ExpandableTable
 from widgetastic_patternfly4.ouia import PatternflyTable
 
 from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
 from airgun.widgets import Pf4ActionsDropdown
 from airgun.widgets import Pf4ConfirmationDialog
 from airgun.widgets import SatTableWithoutHeaders
@@ -254,12 +256,84 @@ class NewHostDetailsView(BaseLoggedInView):
         enable_traces = OUIAButton('OUIA-Generated-Button-primary-1')
 
     @View.nested
-    class ansible(Tab):
+    class insights(Tab):
         pass
 
     @View.nested
-    class insights(Tab):
-        pass
+    class ansible(SatTab):
+        """View comprising the subtabs under the Ansible Tab"""
+        ROOT = './/div[contains(@class, "ansible-host-details")]'
+        TAB_NAME = 'Ansible'
+
+        @View.nested
+        class roles(SatTab):
+            TAB_NAME = 'Roles'
+            assignedRoles = Text('.//a[contains(@href, "roles/all")]')
+            edit = Button(locator='.//button[@aria-label="edit ansible roles"]')
+            table = PatternflyTable(
+                #No OUIA ID
+                locator='',
+                column_widgets={
+                    'Name': Text('.//a')
+                },
+            )
+
+        @View.nested
+        class variables(SatTab):
+            TAB_NAME = 'Variables'
+            table = PatternflyTable(
+                #No OUIA ID
+                locator='',
+                column_widgets={
+                    'Name': Text('.//a'),
+                    'Ansible role': Text('./span'),
+                    'Type': Text('./span'),
+                    #the next field can also be a form group
+                    'Value': Text('./span'),
+                    'Source attribute': Text('./span'),
+                    #The next 2 buttons are hidden by default, but appear in this order
+                    5: Button(locator='.//button[@aria-label="Cancel editing override button"]'),
+                    6: Button(locator='.//button[@aria-label="Submit override button"]'),
+                    #Clicking this button hides it, and displays the previous 2
+                    7: Button(locator='.//button[@aria-label="Edit override button"]')
+                },
+            )
+
+        @View.nested
+        class inventory(SatTab):
+            TAB_NAME = 'Inventory'
+            ROOT = ""
+
+        @View.nested
+        class jobs(SatTab):
+            TAB_NAME = 'Jobs'
+            #Only displays when there isn't a Job scheduled for this host
+            scheduleRecurringJob = Button(locator='.//button[@aria-label="schedule recurring job"]')
+
+            #Mutually Exclusive with the above button
+            scheduledJobsTable = PatternflyTable(
+                #No OUIA ID
+                locator='',
+                column_widgets={
+                    'Description': Text('.//a'),
+                    'Schedule': Text('./span'),
+                    'Next Run': Text('./span'),
+                    4: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                }
+            )
+
+            #Only displayed on Refresh when there are previously executed jobs
+            previousJobsTable = PatternflyTable(
+                #No OUIA ID
+                locator='',
+                column_widgets={
+                    'Description': Text('.//a'),
+                    'Result': Text('./span'),
+                    'State': Text('./span'),
+                    'Executed at': Text('./span'),
+                    'Schedule': Text('./span')
+                }
+            )
 
 
 class InstallPackagesView(View):
@@ -284,7 +358,19 @@ class InstallPackagesView(View):
     cancel = Button('Cancel')
 
 
+class EditAnsibleRolesView(View):
+    """Edit Ansible Roles Modal"""
+
+    ROOT = ''
+    #No current representation for this Widget in Widgetastic
+
+
 class ModuleStreamDialog(Pf4ConfirmationDialog):
 
     confirm_dialog = Button(locator='.//button[@aria-label="confirm-module-action"]')
     cancel_dialog = Button(locator='.//button[@aria-label="cancel-module-action"]')
+    
+class RecurringJobDialog(Pf4ConfirmationDialog):
+
+    confirm_dialog = Button(locator='.//button[@data-ouia-component-id="btn-modal-confirm"]')
+    cancel_dialog = Button(locator='.//button[@data-ouia-component-id="btn-modal-cancel"]')
