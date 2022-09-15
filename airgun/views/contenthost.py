@@ -89,8 +89,6 @@ class InstallableUpdatesCellView(View):
         bug_fix = Text(".//span[contains(@ng-class, 'errataCounts.bugfix')]")
         enhancement = Text(".//span[contains(@ng-class, 'errataCounts.enhancement')]")
 
-    packages = Text("./a[contains(@ui-sref, 'packages.applicable')]")
-
 
 class ContentHostsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Content Hosts')]")
@@ -236,7 +234,7 @@ class ContentHostDetailsView(BaseLoggedInView):
     class errata(SatTab):
         lce_filter = Select(locator='.//select[@ng-model="selectedErrataOption"]')
         searchbox = Search()
-        apply_selected = ActionsDropdown(".//span[contains(@class, 'btn-group')]")
+        apply_selected = ActionsDropdown(".//span[contains(@class, 'btn-group dropdown')]")
         recalculate = Button('Recalculate')
         table = SatTable(
             './/table',
