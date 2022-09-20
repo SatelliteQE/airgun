@@ -38,7 +38,7 @@ class PuppetClassEntity(BaseEntity):
         """Delete puppet class entity"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(class_name=entity_name)['Actions'].widget.click(handle_alert=True)
+        view.table.row(name=entity_name)['Actions'].widget.click(handle_alert=True)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -70,4 +70,4 @@ class EditPuppetClass(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
-        self.parent.table.row(class_name=entity_name)['Class name'].widget.click()
+        self.parent.table.row(name=entity_name)['Name'].widget.click()
