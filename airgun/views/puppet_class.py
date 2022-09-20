@@ -19,7 +19,7 @@ class PuppetClassesView(BaseLoggedInView, SearchableViewMixin):
     table = SatTable(
         './/table',
         column_widgets={
-            'Class name': Text('./a'),
+            'Name': Text('./a'),
             'Actions': Text('.//a[@data-method="delete"]'),
         },
     )
