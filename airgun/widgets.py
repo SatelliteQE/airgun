@@ -1181,7 +1181,7 @@ class Pf4ConfirmationDialog(ConfirmationDialog):
     ROOT = '//div[@id="app-confirm-modal" or @data-ouia-component-type="PF4/ModalContent"]'
     confirm_dialog = PF4Button('btn-modal-confirm')
     cancel_dialog = PF4Button('btn-modal-cancel')
-    discard_dialog = PF4Button('OUIA-Generated-Modal-small-1-ModalBoxCloseButton')
+    discard_dialog = PF4Button('app-confirm-modal-ModalBoxCloseButton')
 
 
 class LCESelector(GenericLocatorWidget):
