@@ -15,8 +15,7 @@ from airgun.widgets import SatTable
 
 class WebhooksView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Webhooks']")
-    new = Button('Create Webhook')
-    new_on_blank_page = PF4Button('Create Webhook')
+    new = PF4Button('Create new')
     table = SatTable(
         './/table',
         column_widgets={
