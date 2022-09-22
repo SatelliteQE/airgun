@@ -22,6 +22,7 @@ from airgun.widgets import GenericRemovableWidgetItem
 from airgun.widgets import ItemsList
 from airgun.widgets import LCESelector
 from airgun.widgets import Pf4ConfirmationDialog
+from airgun.widgets import PF4Search
 from airgun.widgets import ProgressBar
 from airgun.widgets import ReadOnlyEntry
 from airgun.widgets import SatFlashMessages
@@ -442,6 +443,48 @@ class SearchableViewMixin(WTMixin):
             return None
         self.searchbox.search(query)
 
+        return self.table.read()
+
+
+class SearchableViewMixinPF4(SearchableViewMixin):
+    """Mixin which adds :class:`airgun.widgets.Search` widget and
+    :meth:`airgun.widgets.Search.search` to your view. It's useful for _most_ entities list views
+
+    where searchbox and results table are present.
+    Note that class which uses this mixin should have :attr: `table` attribute.
+    """
+
+    searchbox = PF4Search()
+    blank_page = Text("//div[contains(@class, 'pf-c-empty-state')]")
+
+    def is_searchable(self):
+        """Verify that search procedure can be executed against specific page
+        that is not blank
+        """
+        if self.searchbox.search_field.is_displayed and (not self.blank_page.is_displayed):
+            return True
+        return False
+
+    def search(self, query):
+        """Perform search using searchbox on the page and return table
+        contents.
+
+        :param str query: search query to type into search field. E.g. ``foo``
+            or ``name = "bar"``.
+        :return: list of dicts representing table rows
+        :rtype: list
+        """
+        if not hasattr(self.__class__, 'table'):
+            raise AttributeError(
+                f'Class {self.__class__.__name__} does not have attribute "table". '
+                'SearchableViewMixin only works with views, which have table for results. '
+                'Please define table or use custom search implementation instead'
+            )
+        if not self.is_searchable():
+            return None
+        self.searchbox.search(query)
+        self.browser.plugin.ensure_page_safe(timeout='60s')
+        self.table.wait_displayed()
         return self.table.read()
 
 

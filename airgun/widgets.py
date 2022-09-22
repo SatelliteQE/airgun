@@ -746,6 +746,32 @@ class Search(Widget):
             self.search_button.click()
 
 
+class PF4Search(Search):
+    """PF4 Searchbar for table filtering"""
+
+    ROOT = '//div[@role="combobox" or @aria-haspopup="listbox"]'
+    search_field = TextInput(
+        locator=(
+            ".//input[@type='text' or @id='downshift-0-input' or"
+            " contains(@class, 'pf-m-search') or data-ouia-component-type='PF4/TextInput']"
+        )
+    )
+    clear_button = Button(locator=".//button[contains(@class,'search-clear')]")
+
+    def clear(self):
+        """Clears search field value and re-trigger search to remove all
+        filters.
+        """
+        if self.clear_button.is_displayed:
+            self.clear_button.click()
+        else:
+            self.browser.clear(self.search_field)
+
+    def search(self, value):
+        self.clear()
+        self.fill(value)
+
+
 class SatVerticalNavigation(VerticalNavigation):
     """The Patternfly Vertical navigation."""
 
