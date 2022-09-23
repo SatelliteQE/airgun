@@ -62,6 +62,7 @@ class LCEEntity(BaseEntity):
         """Deletes existing lifecycle environment entity"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.remove.click()
+        self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
