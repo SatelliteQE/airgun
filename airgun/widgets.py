@@ -2034,6 +2034,53 @@ class ProgressBar(GenericLocatorWidget):
         return self.progress
 
 
+class ProgressBarPF4(ProgressBar):
+    """Generic progress bar widget.
+    Example html representation::
+        <div role="progressbar" class="pf-c-progress__bar"
+           aria-valuemin="0" aria-valuemax="100">
+        </div>
+    Locator example::
+        .//div[contains(@class, "progress progress-striped")]
+    """
+    publish_modal = '//div[contains(@data-ouia-component-type, "PF4/ModalContent") ' \
+                  'or contains(@data-ouia-component-id, "OUIA-Generated-Modal-large")]'
+
+    close_button = PF4Button('publish-wizard-close')
+
+    def __init__(self, parent, locator=None, logger=None):
+        """Provide common progress bar locator if it wasn't specified."""
+        Widget.__init__(self, parent, logger=logger)
+        if not locator:
+            locator = self.PROGRESSBAR
+        self.locator = locator
+
+    @property
+    def progress(self):
+        """String value with current flow rate in percent."""
+        return self.browser.get_attribute(
+            'pf-c-progress__measure', self.PROGRESSBAR, check_safe=False
+        )
+
+    @property
+    def is_completed(self):
+        """Boolean value whether progress bar is finished or not"""
+        if not self.is_active and self.progress == '100%':
+            return True
+        return False
+
+    def wait_for_result(self, timeout=600, delay=1):
+        """Waits for progress bar to finish. By default checks whether progress
+        bar is completed every second for 10 minutes.
+
+        :param timeout: integer value for timeout in seconds
+        :param delay: float value for delay between attempts in seconds
+        """
+        self.publish_modal.is_displayed()
+        self.close_button.is_displayed()
+        return True
+
+
 class PublishPromoteProgressBar(ProgressBar):
     """Progress bar for Publish and Promote procedures. They contain status
     message and link to associated task. Also the progress is displayed
