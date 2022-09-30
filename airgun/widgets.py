@@ -2318,7 +2318,11 @@ class PopOverWidget(View):
     """
 
     ROOT = '.'
-    column_value = Text(".//div[contains(@class,'ellipsis-pf-tooltip editable')]")
+    column_value = Text(
+        './/div[contains(@class, "ellipsis-pf-tooltip editable") '
+        'or contains(@class,"ellipsis editable") '
+        'or contains(@class,"ellipsis editable-empty editable")]'
+    )
     pop_over_view = PopOverModalView()
 
     def fill(self, item):
