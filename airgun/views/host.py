@@ -521,7 +521,8 @@ class HostRegisterView(BaseLoggedInView):
         token_life_time = TextInput(id='reg_token_life_time_input')
         rex_interface = TextInput(id='reg_rex_interface_input')
         activation_keys = BaseMultiSelect('OUIA-Generated-Select-typeaheadmulti-1')
-        life_cycle_env = FormSelect('OUIA-Generated-FormSelect-default-8')
+        rex_pull_mode = FormSelect('OUIA-Generated-FormSelect-default-8')
+        life_cycle_env = FormSelect('OUIA-Generated-FormSelect-default-9')
         ignore_error = Checkbox(id='reg_katello_ignore')
         force = Checkbox(id='reg_katello_force')
         activation_key_helper = Text("//div[@id='reg_katello_ak-helper']")
@@ -625,7 +626,7 @@ class RecommendationListView(View):
 
 
 class HostDetailsView(BaseLoggedInView):
-    breadcrumb = PF4BreadCrumb('OUIA-Generated-Breadcrumb-1')
+    breadcrumb = PF4BreadCrumb('breadcrumbs-list')
 
     @property
     def is_displayed(self):

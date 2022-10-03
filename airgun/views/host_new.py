@@ -60,7 +60,7 @@ class HostDetailsCard(Widget):
 
 
 class NewHostDetailsView(BaseLoggedInView):
-    breadcrumb = BreadCrumb('OUIA-Generated-Breadcrumb-1')
+    breadcrumb = BreadCrumb('breadcrumbs-list')
 
     @property
     def is_displayed(self):
