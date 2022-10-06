@@ -127,6 +127,32 @@ class NewHostDetailsView(BaseLoggedInView):
             class scheduled(Tab):
                 table = SatTableWithoutHeaders(locator='.//table[@aria-label="recent-jobs-table"]')
 
+        @View.nested
+        class host_collections(Card):
+            ROOT = './/article[.//div[text()="Host collections"]]'
+            empty_add_hc = OUIAButton('add-to-a-host-collection-button')
+            add_hc = OUIAButton('add-button')
+            cancel_hc = OUIAButton('cancel-button')
+
+            hc_table = ExpandableTable(
+                component_id='host-collections-table',
+                column_widgets={
+                    'Host collection': Text('./a'),
+                    'Capacity': Text('.//a'),
+                    'Description': Text('.//a'),
+                },
+            )
+            # Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
+            hc_checkbox = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
+
+        @View.nested
+        class content_view_details(Card):
+            ROOT = './/article[.//div[text()="Content view details"]]'
+
+            change_content_view = Dropdown(
+                locator='//button[@id="change-host-content-view-kebab"]/..'
+            )
+
     @View.nested
     class content(Tab):
         # TODO Setting ROOT is just a workaround because of BZ 2119076,
@@ -247,6 +273,10 @@ class NewHostDetailsView(BaseLoggedInView):
     @View.nested
     class insights(Tab):
         pass
+
+    @View.nested
+    class reports(Tab):
+        ROOT = './/div[contains(@class, "pf-c-tabs") and contains(@id, "pf-tabs-Reports"]'
 
 
 class InstallPackagesView(View):
