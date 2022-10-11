@@ -1,6 +1,3 @@
-import time
-
-from selenium.webdriver.common.keys import Keys
 from widgetastic.widget import Checkbox
 from widgetastic.widget import Text
 from widgetastic.widget import TextInput
@@ -23,17 +20,6 @@ from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
 from airgun.widgets import Pf4ActionsDropdown
 from airgun.widgets import Pf4ConfirmationDialog
-from airgun.widgets import SatTableWithoutHeaders
-
-
-class SearchInput(TextInput):
-    def fill(self, value):
-        changed = super().fill(value)
-        if changed:
-            # workaround for BZ #2140636
-            time.sleep(1)
-            self.browser.send_keys(Keys.ENTER, self)
-        return changed
 
 
 class Card(View):
@@ -46,6 +32,29 @@ class DropdownWithDescripton(Dropdown):
     """Dropdown with description below items"""
 
     ITEM_LOCATOR = ".//*[contains(@class, 'pf-c-dropdown__menu-item') and contains(text(), {})]"
+
+
+class ItemList(Widget):
+    """Item list view, similar to table view, but using the ul/li structure"""
+
+    ROW = '//li/div[@class="pf-c-data-list__item-row"]/div'
+    COLUMN = './div'
+
+    def read(self):
+        """Return content of table"""
+        items = []
+        # make sure that parent locator works for str and also Locator object
+        parent_locator = (
+            self.parent.ROOT if type(self.parent.ROOT) == str else f'({self.parent.ROOT.locator})'
+        )
+        rows = self.browser.elements(f'{parent_locator}{self.ROW}')
+        for row in rows:
+            columns = []
+            elements = row.find_elements("xpath", self.COLUMN)
+            for element in elements:
+                columns.append(element.text)
+            items.append(columns)
+        return items
 
 
 class HostDetailsCard(Widget):
@@ -76,7 +85,7 @@ class HostDetailsCard(Widget):
 
 
 class NewHostDetailsView(BaseLoggedInView):
-    breadcrumb = BreadCrumb('breadcrumbs-list')
+    breadcrumb = BreadCrumb('OUIA-Generated-Breadcrumb-1')
 
     @property
     def is_displayed(self):
@@ -99,7 +108,7 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class host_status(Card):
             ROOT = './/article[.//span[text()="Host status"]]'
-            status = Text('.//h4[contains(@data-ouia-component-id, "global-state-title")]')
+            status = Text('.//h4[contains(@data-ouia-component-id, "OUIA-Generated-Title")]')
 
             status_success = Text('.//a[span[@class="status-success"]]')
             status_warning = Text('.//a[span[@class="status-warning"]]')
@@ -110,7 +119,7 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/article[.//div[text()="Recent audits"]]'
 
             all_audits = Text('.//a[normalize-space(.)="All audits"]')
-            table = SatTableWithoutHeaders(locator='.//table[@aria-label="audits table"]')
+            table = ItemList()
 
         @View.nested
         class installable_errata(Card):
@@ -132,16 +141,17 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class recent_jobs(Card):
             ROOT = './/article[.//div[text()="Recent jobs"]]'
+            is_table_loaded = './/ul[@aria-label="recent-jobs-table"]'
             actions = Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]')
 
             class finished(Tab):
-                table = SatTableWithoutHeaders(locator='.//table[@aria-label="recent-jobs-table"]')
+                table = ItemList()
 
             class running(Tab):
-                table = SatTableWithoutHeaders(locator='.//table[@aria-label="recent-jobs-table"]')
+                table = ItemList()
 
             class scheduled(Tab):
-                table = SatTableWithoutHeaders(locator='.//table[@aria-label="recent-jobs-table"]')
+                table = ItemList()
 
     @View.nested
     class content(Tab):
@@ -155,7 +165,7 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@id="packages-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-            searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
+            searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
             status_filter = Dropdown(locator='.//div[@aria-label="select Status container"]/div')
             upgrade = Pf4ActionsDropdown(
                 locator='.//div[div/button[normalize-space(.)="Upgrade"]]'
@@ -181,7 +191,7 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@id="errata-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-            searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
+            searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
             type_filter = Select(locator='.//div[@aria-label="select Type container"]/div')
             severity_filter = Select(locator='.//div[@aria-label="select Severity container"]/div')
             apply = Pf4ActionsDropdown(locator='.//div[@aria-label="errata_dropdown"]')
@@ -208,7 +218,7 @@ class NewHostDetailsView(BaseLoggedInView):
             # workaround for BZ 2119076
             ROOT = './/div[@id="modulestreams-tab"]'
 
-            searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
+            searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
             status_filter = Select(locator='.//div[@aria-label="select Status container"]/div')
             installation_status_filter = Select(
                 locator='.//div[@aria-label="select Installation status container"]/div'
@@ -235,7 +245,7 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@id="repo-sets-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-            searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
+            searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
             status_filter = Select(locator='.//div[@aria-label="select Status container"]/div')
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
@@ -263,13 +273,15 @@ class NewHostDetailsView(BaseLoggedInView):
     @View.nested
     class ansible(Tab):
         """View comprising the subtabs under the Ansible Tab"""
+        #ROOT = './/div[contains(@class, "ansible-host-details")]'
+        #ROOT = './/div[contains(@id, "pf-tab-Ansible")]'
         ROOT = './/div[starts-with(@class, "ansible-host-detail")]'
         TAB_NAME = 'Ansible'
 
         @View.nested
         class roles(Tab):
             TAB_NAME = 'Roles'
-            ROOT = '//button[contains(@id, "pf-tab-roles")]'
+            #ROOT = '//button[contains(@id, "pf-tab-roles")]'
             assignedRoles = Text('.//a[contains(@href, "roles/all")]')
             edit = Button(locator='.//button[@aria-label="edit ansible roles"]')
             table = Table(
@@ -282,7 +294,7 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class variables(Tab):
             TAB_NAME = 'Variables'
-            ROOT = './/div[contains(@id, "pf-tab-variables")]'
+            #ROOT = './/div[contains(@id, "pf-tab-variables")]'
             table = Table(
                 locator = './/div[contains(@class, "pf-c-table)"]',
                 column_widgets={
@@ -303,12 +315,12 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class inventory(Tab):
             TAB_NAME = 'Inventory'
-            ROOT = './/div[contains(@id, "pf-tab-inventory")]'
+            #ROOT = './/div[contains(@id, "pf-tab-inventory")]'
 
         @View.nested
         class jobs(Tab):
             TAB_NAME = 'Jobs'
-            ROOT = './/div[contains(@id="pf-tab-jobs")]'
+            #ROOT = './/div[contains(@id="pf-tab-jobs")]'
             #Only displays when there isn't a Job scheduled for this host
             scheduleRecurringJob = Button(locator='.//button[@aria-label="schedule recurring job"]')
 
@@ -344,7 +356,7 @@ class InstallPackagesView(View):
     ROOT = './/div[@id="package-install-modal"]'
 
     select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-    searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
+    searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
 
     table = Table(
         locator='.//table[@aria-label="Content View Table"]',

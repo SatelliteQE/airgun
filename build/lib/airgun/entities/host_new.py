@@ -48,7 +48,6 @@ class NewHostEntity(HostEntity):
         view.content.packages.searchbar.fill(search)
         # wait for filter to apply
         self.browser.plugin.ensure_page_safe()
-        view.content.packages.table.wait_displayed()
         return view.content.packages.read()
 
     def install_package(self, entity_name, package):
@@ -84,8 +83,6 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         view.content.errata.select()
         view.content.errata.type_filter.fill(type)
-        self.browser.plugin.ensure_page_safe()
-        view.content.errata.table.wait_displayed()
         return view.read(widget_names="content.errata.table")
 
     def apply_erratas(self, entity_name, search):
@@ -107,7 +104,7 @@ class NewHostEntity(HostEntity):
         view.content.module_streams.select()
         view.content.module_streams.searchbar.fill(search)
         # wait for filter to apply
-        self.browser.wait_for_element(locator='//h4[text()="Loading"]', exception=False)
+        self.browser.plugin.ensure_page_safe()
         view.content.module_streams.table.wait_displayed()
         return view.content.module_streams.table.read()
 
@@ -122,24 +119,6 @@ class NewHostEntity(HostEntity):
         modal = ModuleStreamDialog(self.browser)
         if modal.is_displayed:
             modal.confirm()
-        view.flash.assert_no_error()
-        view.flash.dismiss()
-
-    def get_repo_sets(self, entity_name, search):
-        """Get all repository sets available for host"""
-        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        view.content.repository_sets.searchbar.fill(search)
-        self.browser.plugin.ensure_page_safe()
-        return view.content.repository_sets.table.read()
-
-    def override_repo_sets(self, entity_name, repo_set, action):
-        """Change override for repository set"""
-        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        view.content.repository_sets.searchbar.fill(repo_set)
-        self.browser.plugin.ensure_page_safe()
-        view.content.repository_sets.table[0][5].widget.item_select(action)
         view.flash.assert_no_error()
         view.flash.dismiss()
 

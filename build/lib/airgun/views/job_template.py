@@ -1,0 +1,114 @@
+from widgetastic.widget import Checkbox
+from widgetastic.widget import Select
+from widgetastic.widget import Table
+from widgetastic.widget import Text
+from widgetastic.widget import TextInput
+from widgetastic.widget import View
+from widgetastic_patternfly import BreadCrumb
+
+from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SatTab
+from airgun.views.common import SearchableViewMixin
+from airgun.views.common import TemplateEditor
+from airgun.views.common import TemplateInputItem
+from airgun.widgets import ActionsDropdown
+from airgun.widgets import FilteredDropdown
+from airgun.widgets import GenericRemovableWidgetItem
+from airgun.widgets import MultiSelect
+from airgun.widgets import RemovableWidgetsItemsListView
+
+
+class JobTemplatesView(BaseLoggedInView, SearchableViewMixin):
+    title = Text("//h1[contains(., 'Job Templates')]")
+    import_template = Text("//a[normalize-space(.)='Import']")
+    new = Text("//a[contains(@href, '/job_templates/new')]")
+    table = Table(
+        './/table',
+        column_widgets={
+            'Name': Text('./a'),
+            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+        },
+    )
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+class JobTemplateForeignInputSetItem(GenericRemovableWidgetItem):
+    """Job Template Foreign Input Set Item widget"""
+
+    remove_button = Text(".//a[contains(@class, 'remove_nested_fields')]")
+    target_template = Select(locator=".//select[contains(@name, '[target_template_id]')]")
+    include_all = Checkbox(locator=".//input[contains(@id, 'include_all')]")
+    include = TextInput(locator=".//input[contains(@name, '[include]')]")
+    exclude = TextInput(locator=".//input[contains(@name, '[exclude]')]")
+
+
+class JobTemplateCreateView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+    submit = Text('//input[@name="commit"]')
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Job templates'
+            and self.breadcrumb.read() == 'New Job Template'
+        )
+
+    @View.nested
+    class template(SatTab):
+        name = TextInput(id='job_template_name')
+        default = Checkbox(id='job_template_default')
+        template_editor = View.nested(TemplateEditor)
+        description = TextInput(id='job_template_description')
+        audit = TextInput(id='job_template_audit_comment')
+
+    @View.nested
+    class inputs(RemovableWidgetsItemsListView, SatTab):
+        ITEMS = ".//div[contains(@class, 'template_inputs')]/following-sibling::div"
+        ITEM_WIDGET_CLASS = TemplateInputItem
+        add_item_button = Text(".//a[@data-association='template_inputs']")
+
+    @View.nested
+    class job(SatTab):
+        job_category = TextInput(name='job_template[job_category]')
+        description_format = TextInput(id='job_template_description_format')
+        provider_type = FilteredDropdown(id='job_template_provider_type')
+        timeout = TextInput(id='job_template_execution_timeout_interval')
+
+        @View.nested
+        class foreign_input_sets(RemovableWidgetsItemsListView):
+            ROOT = "//div[div[contains(@class, 'foreign_input_sets')]]"
+            ITEMS = ".//div[contains(@class, 'foreign_input_sets')]/following-sibling::div"
+            ITEM_WIDGET_CLASS = JobTemplateForeignInputSetItem
+            add_item_button = Text(".//a[@data-association='foreign_input_sets']")
+
+        value = TextInput(id='job_template_effective_user_attributes_value')
+        current_user = Checkbox(id='job_template_effective_user_attributes_current_user')
+        overridable = Checkbox(id='job_template_effective_user_attributes_overridable')
+
+    @View.nested
+    class type(SatTab):
+        snippet = Checkbox(id='job_template_snippet')
+
+    @View.nested
+    class locations(SatTab):
+        resources = MultiSelect(id='ms-job_template_location_ids')
+
+    @View.nested
+    class organizations(SatTab):
+        resources = MultiSelect(id='ms-job_template_organization_ids')
+
+
+class JobTemplateEditView(JobTemplateCreateView):
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Job Templates'
+            and self.breadcrumb.read().startswith('Edit ')
+        )
