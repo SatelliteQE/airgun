@@ -23,7 +23,7 @@ class CloudInsightsEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
         view.select_all.fill(True)
-        # view.select_all_hits.click() skip till BZ#1975321 is fixed.
+        view.select_all_hits.click()
         view.remediate.click()
         view.remediation_window.remediate.click()
         self.run_job()
