@@ -696,7 +696,7 @@ class Search(Widget):
     """Searchbar for table filtering"""
 
     ROOT = (
-        '//div[contains(@class, "toolbar-pf-filter") or contains(@class, "title_filter")'
+        './/div[contains(@class, "toolbar-pf-filter") or contains(@class, "title_filter")'
         'or contains(@class, "dataTables_filter") or @id="search-bar"]'
     )
     search_field = TextInput(
