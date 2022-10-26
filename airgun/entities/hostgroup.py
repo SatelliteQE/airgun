@@ -21,6 +21,17 @@ class HostGroupEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def clone(self, entity_name, values):
+        """Clone an existing host group entity"""
+        view = self.navigate_to(self, 'All')
+        view.search(entity_name)
+        view.table.row(name=entity_name)['Actions'].widget.fill('Clone')
+        view = HostGroupCreateView(self.browser)
+        view.fill(values)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
     def search(self, value):
         """Search for existing host group entity"""
         view = self.navigate_to(self, 'All')
