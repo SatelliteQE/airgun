@@ -80,7 +80,7 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
         applicable_os = MultiSelect(id='ms-provisioning_template_operatingsystem_ids')
 
         @View.nested
-        class vaild_hostgroups(RemovableWidgetsItemsListView):
+        class valid_hostgroups(RemovableWidgetsItemsListView):
             ROOT = "//div[@id='association']"
             ITEMS = ".//fieldset[@id='template_combination']/div"
             ITEM_WIDGET_CLASS = TemplateHostEnvironmentAssociation
