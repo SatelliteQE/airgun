@@ -24,7 +24,6 @@ class TemplateHostEnvironmentAssociation(GenericRemovableWidgetItem):
 
     remove_button = Text(".//a[@title='Remove Combination']")
     host_group = Select(locator=".//select[contains(@name, '[hostgroup_id]')]")
-    environment = Select(locator=".//select[contains(@name, '[environment_id]')]")
 
 
 class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixin):
@@ -81,7 +80,7 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
         applicable_os = MultiSelect(id='ms-provisioning_template_operatingsystem_ids')
 
         @View.nested
-        class hg_environment_combination(RemovableWidgetsItemsListView):
+        class valid_hostgroups(RemovableWidgetsItemsListView):
             ROOT = "//div[@id='association']"
             ITEMS = ".//fieldset[@id='template_combination']/div"
             ITEM_WIDGET_CLASS = TemplateHostEnvironmentAssociation
