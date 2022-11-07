@@ -83,7 +83,7 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class host_status(Card):
             ROOT = './/article[.//span[text()="Host status"]]'
-            status = Text('.//h4[contains(@data-ouia-component-id, "OUIA-Generated-Title")]')
+            status = Text('.//h4[contains(@data-ouia-component-id, "global-state-title")]')
 
             status_success = Text('.//a[span[@class="status-success"]]')
             status_warning = Text('.//a[span[@class="status-warning"]]')
