@@ -1588,7 +1588,7 @@ class Pagination(Widget):
     and current page index/overall amount of pages. Mainly used with Table widget.
     """
 
-    ROOT = ".//form[contains(@class, 'content-view-pf-pagination')]"
+    ROOT = ".//foreman-react-component[contains(@name, 'Pagination')]"
     # Kattelo views use per_page with select, foreman use a per_page with Button DropDown.
     PER_PAGE_BUTTON_DROPDOWN = ".//div[button[@id='pagination-row-dropdown']]"
     PER_PAGE_SELECT = ".//select[contains(@ng-model, 'per_page')]"
@@ -1597,7 +1597,7 @@ class Pagination(Widget):
     next_page_button = Text(".//li[a[span[contains(@class, 'angle-right')]]]")
     last_page_button = Text(".//li[a[span[contains(@class, 'angle-double-right')]]]")
     page = TextInput(locator=".//input[contains(@class, 'pagination-pf-page')]")
-    pages = Text(".//span[contains(@class, 'pagination-pf-pages')]")
+    pages = Text("//div[contains(@class, 'pf-c-pagination__nav-page-select')]//span")
     total_items = Text(".//span[contains(@class, 'pagination-pf-items-total')]")
 
     @cached_property
