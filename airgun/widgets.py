@@ -1596,7 +1596,7 @@ class Pagination(Widget):
     previous_page_button = Button(".//div[button[@data-action='previous']]")
     next_page_button = Button(".//div[button[@data-action='next']]")
     last_page_button = Button(".//div[button[@data-action='last']]")
-    page = TextInput(locator=".//input[contains(@class, 'pagination-pf-page')]")
+    page = TextInput(locator=".//input[contains(@class, 'pf-c-form-control')]")
     pages = Text("//div[contains(@class, 'pf-c-pagination__nav-page-select')]//span")
     total_items = Text(".//span[contains(@class, 'pf-c-options-menu__toggle-text')]/b[2]")
 
