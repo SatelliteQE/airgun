@@ -1590,7 +1590,7 @@ class Pagination(Widget):
 
     ROOT = ".//foreman-react-component[contains(@name, 'Pagination')]"
     # Kattelo views use per_page with select, foreman use a per_page with Button DropDown.
-    PER_PAGE_BUTTON_DROPDOWN = ".//div[button[@id='pagination-row-dropdown']]"
+    PER_PAGE_BUTTON_DROPDOWN = ".//div[button[@id='paginationoptions-menu-toggle-3']]"
     PER_PAGE_SELECT = ".//select[contains(@ng-model, 'per_page')]"
     first_page_button = Button(".//div[button[@data-action='first']]")
     previous_page_button = Button(".//div[button[@data-action='previous']]")
