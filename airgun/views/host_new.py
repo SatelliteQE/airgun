@@ -12,15 +12,12 @@ from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import Pagination
 from widgetastic_patternfly4 import Select
 from widgetastic_patternfly4 import Tab
-from widgetastic_patternfly4 import PatternflyTable
 from widgetastic_patternfly4.ouia import BreadCrumb
 from widgetastic_patternfly4.ouia import Button as OUIAButton
 from widgetastic_patternfly4.ouia import ExpandableTable
 from widgetastic_patternfly4.ouia import PatternflyTable
-from widgetastic.utils import ParametrizedLocator
 
 from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
 from airgun.widgets import Pf4ActionsDropdown
 from airgun.widgets import Pf4ConfirmationDialog
 from airgun.widgets import SatTableWithoutHeaders
@@ -263,79 +260,111 @@ class NewHostDetailsView(BaseLoggedInView):
     @View.nested
     class ansible(Tab):
         """View comprising the subtabs under the Ansible Tab"""
-        ROOT = './/div[starts-with(@class, "ansible-host-detail")]'
-        TAB_NAME = 'Ansible'
+
+        ROOT = './/div'
 
         @View.nested
         class roles(Tab):
             TAB_NAME = 'Roles'
-            ROOT = '//button[contains(@id, "pf-tab-roles")]'
+            ROOT = './/div[@class="ansible-host-detail"]'
+
             assignedRoles = Text('.//a[contains(@href, "roles/all")]')
             edit = Button(locator='.//button[@aria-label="edit ansible roles"]')
             table = Table(
-                locator='.//div[contains(@class, "pf-c-table)"]',
-                column_widgets={
-                    'Name': Text('.//a')
-                }
+                locator='.//table[contains(@class, "pf-c-table")]',
+                column_widgets={'Name': Text('.//a')},
             )
+            pagination = Pagination()
 
         @View.nested
         class variables(Tab):
             TAB_NAME = 'Variables'
-            ROOT = './/div[contains(@id, "pf-tab-variables")]'
+            ROOT = './/div[@class="ansible-host-detail"]'
             table = Table(
-                locator = './/div[contains(@class, "pf-c-table)"]',
+                locator='.//table[contains(@class, "pf-c-table")]',
                 column_widgets={
                     'Name': Text('.//a'),
                     'Ansible role': Text('./span'),
                     'Type': Text('./span'),
-                    #the next field can also be a form group
+                    # the next field can also be a form group
                     'Value': Text('./span'),
                     'Source attribute': Text('./span'),
-                    #The next 2 buttons are hidden by default, but appear in this order
+                    # The next 2 buttons are hidden by default, but appear in this order
                     5: Button(locator='.//button[@aria-label="Cancel editing override button"]'),
                     6: Button(locator='.//button[@aria-label="Submit override button"]'),
-                    #Clicking this button hides it, and displays the previous 2
-                    7: Button(locator='.//button[@aria-label="Edit override button"]')
+                    # Clicking this button hides it, and displays the previous 2
+                    7: Button(locator='.//button[@aria-label="Edit override button"]'),
                 },
             )
+            pagination = Pagination()
 
         @View.nested
         class inventory(Tab):
             TAB_NAME = 'Inventory'
-            ROOT = './/div[contains(@id, "pf-tab-inventory")]'
+            ROOT = './/div[@class="ansible-host-detail"]'
 
         @View.nested
         class jobs(Tab):
             TAB_NAME = 'Jobs'
-            ROOT = './/div[contains(@id="pf-tab-jobs")]'
-            #Only displays when there isn't a Job scheduled for this host
-            scheduleRecurringJob = Button(locator='.//button[@aria-label="schedule recurring job"]')
+            ROOT = './/div[@class="ansible-host-detail"]'
 
-            #Mutually Exclusive with the above button
-            scheduledJobsTable = PatternflyTable(
-                #No OUIA ID
-                locator='',
-                column_widgets={
-                    'Description': Text('.//a'),
-                    'Schedule': Text('./span'),
-                    'Next Run': Text('./span'),
-                    4: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
-                }
-            )
+            @property
+            def is_displayed(self):
+                return (
+                    self.schedule.is_displayed
+                    or self.jobs.is_displayed
+                    or self.previous.is_displayed
+                )
 
-            #Only displayed on Refresh when there are previously executed jobs
-            previousJobsTable = PatternflyTable(
-                #No OUIA ID
-                locator='',
-                column_widgets={
-                    'Description': Text('.//a'),
-                    'Result': Text('./span'),
-                    'State': Text('./span'),
-                    'Executed at': Text('./span'),
-                    'Schedule': Text('./span')
-                }
-            )
+            @View.nested
+            class schedule(Tab):
+                # Only displays when there isn't a Job scheduled for this host
+                scheduleRecurringJob = Button(
+                    locator='.//button[@aria-label="schedule recurring job"]'
+                )
+
+                @property
+                def is_displayed(self):
+                    return self.scheduleRecurringJob.is_displayed
+
+            @View.nested
+            class jobs(Tab):
+                # Mutually Exclusive with the above button
+                scheduledText = './/h3[text()="Scheduled recurring jobs"]'
+                scheduledJobsTable = Table(
+                    locator='.//div[contains(@class, "pf-c-table)"]',
+                    column_widgets={
+                        'Description': Text('.//a'),
+                        'Schedule': Text('./span'),
+                        'Next Run': Text('./span'),
+                        4: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                    },
+                )
+                pagination = Pagination()
+
+                @property
+                def is_displayed(self):
+                    return self.scheduledText.is_displayed
+
+            @View.nested
+            class previous(Tab):
+                # Only displayed on Refresh when there are previously executed jobs
+                previousText = './/h3[text()="Previously executed jobs"]'
+                previousJobsTable = Table(
+                    locator='',
+                    column_widgets={
+                        'Description': Text('.//a'),
+                        'Result': Text('./span'),
+                        'State': Text('./span'),
+                        'Executed at': Text('./span'),
+                        'Schedule': Text('./span'),
+                    },
+                )
+                pagination = Pagination()
+
+                @property
+                def is_displayed(self):
+                    return self.previousText.is_displayed
 
 
 class InstallPackagesView(View):
@@ -360,18 +389,31 @@ class InstallPackagesView(View):
     cancel = Button('Cancel')
 
 
+class AllAssignedRolesView(View):
+    """All Assigned Roles Modal"""
+
+    ROOT = './/div[@data-ouia-component-id="modal-ansible-roles"]'
+
+    table = Table(
+        locator='.//table[contains(@class, "pf-c-table")]',
+        column_widgets={'Name': Text('.//a'), 'Source': Text('.//a')},
+    )
+    pagination = Pagination()
+
+
 class EditAnsibleRolesView(View):
     """Edit Ansible Roles Modal"""
 
     ROOT = ''
-    #No current representation for this Widget in Widgetastic
+    # No current representation for this Widget in Widgetastic
 
 
 class ModuleStreamDialog(Pf4ConfirmationDialog):
 
     confirm_dialog = Button(locator='.//button[@aria-label="confirm-module-action"]')
     cancel_dialog = Button(locator='.//button[@aria-label="cancel-module-action"]')
-    
+
+
 class RecurringJobDialog(Pf4ConfirmationDialog):
 
     confirm_dialog = Button(locator='.//button[@data-ouia-component-id="btn-modal-confirm"]')

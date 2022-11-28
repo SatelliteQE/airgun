@@ -1,12 +1,13 @@
+from navmazing import NavigateToSibling
+
 from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.views.host_new import AllAssignedRolesView
 from airgun.views.host_new import InstallPackagesView
 from airgun.views.host_new import ModuleStreamDialog
 from airgun.views.host_new import NewHostDetailsView
-from navmazing import NavigateToSibling
 from airgun.views.job_invocation import JobInvocationCreateView
-from time import sleep
 
 
 class NewHostEntity(HostEntity):
@@ -28,7 +29,6 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe()
         return view.read(widget_names=widget_names)
-
 
     def schedule_job(self, entity_name, values):
         """Schedule a remote execution on selected host"""
@@ -146,9 +146,18 @@ class NewHostEntity(HostEntity):
     def get_ansible_roles(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
-        sleep(2)
-        table = view.ansible.roles.table.read()
-        return table
+        self.browser.plugin.ensure_page_safe()
+        return view.ansible.roles.table.read()
+
+    def get_ansible_roles_modal(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.ansible.roles.assignedRoles.click()
+        view = AllAssignedRolesView(self.browser)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.table.read()
 
 
 @navigator.register(NewHostEntity, 'NewDetails')
