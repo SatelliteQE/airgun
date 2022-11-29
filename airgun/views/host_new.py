@@ -1,3 +1,6 @@
+import time
+
+from selenium.webdriver.common.keys import Keys
 from widgetastic.widget import Checkbox
 from widgetastic.widget import Text
 from widgetastic.widget import TextInput
@@ -18,6 +21,16 @@ from airgun.views.common import BaseLoggedInView
 from airgun.widgets import Pf4ActionsDropdown
 from airgun.widgets import Pf4ConfirmationDialog
 from airgun.widgets import SatTableWithoutHeaders
+
+
+class SearchInput(TextInput):
+    def fill(self, value):
+        changed = super().fill(value)
+        if changed:
+            # workaround for BZ #2140636
+            time.sleep(1)
+            self.browser.send_keys(Keys.ENTER, self)
+        return changed
 
 
 class Card(View):
@@ -139,7 +152,7 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@id="packages-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-            searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
+            searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
             status_filter = Dropdown(locator='.//div[@aria-label="select Status container"]/div')
             upgrade = Pf4ActionsDropdown(
                 locator='.//div[div/button[normalize-space(.)="Upgrade"]]'
@@ -165,7 +178,7 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@id="errata-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-            searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
+            searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
             type_filter = Select(locator='.//div[@aria-label="select Type container"]/div')
             severity_filter = Select(locator='.//div[@aria-label="select Severity container"]/div')
             apply = Pf4ActionsDropdown(locator='.//div[@aria-label="errata_dropdown"]')
@@ -192,7 +205,7 @@ class NewHostDetailsView(BaseLoggedInView):
             # workaround for BZ 2119076
             ROOT = './/div[@id="modulestreams-tab"]'
 
-            searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
+            searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
             status_filter = Select(locator='.//div[@aria-label="select Status container"]/div')
             installation_status_filter = Select(
                 locator='.//div[@aria-label="select Installation status container"]/div'
@@ -219,7 +232,7 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@id="repo-sets-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-            searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
+            searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
             status_filter = Select(locator='.//div[@aria-label="select Status container"]/div')
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
@@ -255,7 +268,7 @@ class InstallPackagesView(View):
     ROOT = './/div[@id="package-install-modal"]'
 
     select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-    searchbar = TextInput(locator='.//input[contains(@class, "pf-m-search")]')
+    searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
 
     table = Table(
         locator='.//table[@aria-label="Content View Table"]',
