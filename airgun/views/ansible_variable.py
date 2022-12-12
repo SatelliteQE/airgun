@@ -17,7 +17,7 @@ from airgun.widgets import SatSelect
 class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixin):
     """Main Ansible Variables view"""
 
-    title = Text("//h1[text()='Ansible Variables']")
+    title = Text("//h1[contains(normalize-space(.),'Ansible Variables')]")
     new_variable = Text("//a[contains(@href, '/ansible/ansible_variables/new')]")
     total_variables = Text("//span[@class='pf-c-options-menu__toggle-text']//b[2]")
     table = SatTable(

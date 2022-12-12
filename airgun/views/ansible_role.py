@@ -21,7 +21,7 @@ class AnsibleRolesView(BaseLoggedInView, SearchableViewMixin):
     is present, without the search widget or table.
     """
 
-    title = Text("//h1[text()='Ansible Roles']")
+    title = Text("//h1[contains(normalize-space(.),'Ansible Roles')]")
     import_button = Text("//a[contains(@href, '/ansible_roles/import')]")
     submit = Button('Submit')
     total_imported_roles = Text("//span[@class='pf-c-options-menu__toggle-text']//b[2]")

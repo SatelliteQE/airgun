@@ -39,6 +39,7 @@ class AnsibleRolesEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         # Before any roles have been imported, no table or pagination widget are
         # present on the page
+        # Applying wait_displayed for the page to get rendered
         view.wait_displayed()
         return int(view.total_imported_roles.read())
 
