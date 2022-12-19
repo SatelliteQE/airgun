@@ -21,10 +21,11 @@ class AnsibleRolesView(BaseLoggedInView, SearchableViewMixin):
     is present, without the search widget or table.
     """
 
-    title = Text("//h1[contains(., text()='Ansible Roles')")
+    title = Text("//h1[contains(normalize-space(.),'Ansible Roles')]")
     import_button = Text("//a[contains(@href, '/ansible_roles/import')]")
     submit = Button('Submit')
-    total_imported_roles = Text(".//span[contains(@class, 'pagination-pf-items-total')]")
+    total_imported_roles = Text(
+        "//span[@class='pf-c-options-menu__toggle-text']//b[2]")
     table = Table(
         './/table',
         column_widgets={
@@ -42,7 +43,8 @@ class AnsibleRolesImportView(BaseLoggedInView):
     """View while selecting Ansible roles to import."""
 
     breadcrumb = BreadCrumb()
-    total_available_roles = Text("//div[@class='pf-c-pagination__total-items']/b[2]")
+    total_available_roles = Text(
+        "//div[@class='pf-c-pagination__total-items']/b[2]")
     select_all = Checkbox(locator="//input[@id='select-all']")
     table = PatternflyTable(
         component_id='OUIA-Generated-Table-2',
