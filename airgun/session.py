@@ -20,6 +20,7 @@ from airgun.entities.cloud_insights import CloudInsightsEntity
 from airgun.entities.cloud_inventory import CloudInventoryEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.computeresource import ComputeResourceEntity
+from airgun.entities.config_report import ConfigReportEntity
 from airgun.entities.configgroup import ConfigGroupEntity
 from airgun.entities.containerimagetag import ContainerImageTagEntity
 from airgun.entities.contentcredential import ContentCredentialEntity
@@ -363,6 +364,11 @@ class Session:
     def configgroup(self):
         """Instance of Config Group entity."""
         return self._open(ConfigGroupEntity)
+
+    @cached_property
+    def configreport(self):
+        """Instance of Config Report entity."""
+        return self._open(ConfigReportEntity)
 
     @cached_property
     def containerimagetag(self):
