@@ -100,6 +100,30 @@ class VirtwhoConfiguresDebug(Widget):
         raise ReadOnlyWidgetError('Debug status widget is read only')
 
 
+class VirtwhoConfiguresAHVDebug(Widget):
+    """Return the virtwho configure ahv_internal_debug status."""
+
+    DEBUG = ".//span[contains(@class,'config-ahv_internal_debug')]"
+    STATUS = ".//span[contains(@class,'fa-check')]"
+
+    @property
+    def status(self):
+        debug = self.browser.element(self.DEBUG)
+        try:
+            self.browser.element(self.STATUS, parent=debug)
+            checkbox = True
+        except NoSuchElementException:
+            checkbox = False
+        return checkbox
+
+    def read(self):
+        """Returns the ahv_internal_debug status"""
+        return self.status
+
+    def fill(self, value):
+        raise ReadOnlyWidgetError('ahv_internal_debug status widget is read only')
+
+
 class VirtwhoConfiguresView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Virt-who Configurations']")
     new = Text("//a[contains(@href, '/foreman_virt_who_configure/configs/new')]")
@@ -130,6 +154,7 @@ class VirtwhoConfigureCreateView(BaseLoggedInView):
     filtering_content = ConditionalSwitchableView(reference='filtering')
     hypervisor_type = FilteredDropdown(id='foreman_virt_who_configure_config_hypervisor_type')
     hypervisor_content = ConditionalSwitchableView(reference='hypervisor_type')
+    ahv_internal_debug = Checkbox(id='foreman_virt_who_configure_config_ahv_internal_debug')
     submit = Text('//input[@name="commit"]')
 
     @hypervisor_content.register(
@@ -213,6 +238,7 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
     class overview(SatTab):
         status = VirtwhoConfigureStatus('.')
         debug = VirtwhoConfiguresDebug()
+        ahv_internal_debug = VirtwhoConfiguresAHVDebug()
         hypervisor_type = Text('.//span[contains(@class,"config-hypervisor_type")]')
         hypervisor_server = Text('.//span[contains(@class,"config-hypervisor_server")]')
         hypervisor_username = Text('.//span[contains(@class,"config-hypervisor_username")]')
