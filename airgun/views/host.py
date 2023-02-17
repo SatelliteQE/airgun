@@ -502,6 +502,8 @@ class HostRegisterView(BaseLoggedInView):
         linux_host_init_link = Link('//a[normalize-space(.)="Linux host_init_config default"]')
         capsule = FormSelect('OUIA-Generated-FormSelect-default-5')
         insecure = Checkbox(id='reg_insecure')
+        activation_keys = BaseMultiSelect('OUIA-Generated-Select-typeaheadmulti-1')
+        activation_key_helper = Text("//div[@id='reg_katello_ak-helper']")
 
     @View.nested
     class advanced(Tab):
@@ -520,12 +522,10 @@ class HostRegisterView(BaseLoggedInView):
         repository_gpg_key_url = TextInput(id='reg_gpg_key_url')
         token_life_time = TextInput(id='reg_token_life_time_input')
         rex_interface = TextInput(id='reg_rex_interface_input')
-        activation_keys = BaseMultiSelect('OUIA-Generated-Select-typeaheadmulti-1')
         rex_pull_mode = FormSelect('OUIA-Generated-FormSelect-default-8')
         life_cycle_env = FormSelect('OUIA-Generated-FormSelect-default-9')
         ignore_error = Checkbox(id='reg_katello_ignore')
         force = Checkbox(id='reg_katello_force')
-        activation_key_helper = Text("//div[@id='reg_katello_ak-helper']")
         life_cycle_env_helper = Text("//div[@id='reg_katello_lce-helper']")
         install_packages_helper = Text("//div[@id='reg_packages-helper']")
 
