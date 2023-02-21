@@ -206,7 +206,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixin):
         './/table',
         column_widgets={
             0: Checkbox(locator=".//input[@class='host_select_boxes']"),
-            'Name': Text("./a"),
+            'Name': Text("//a[contains(@href, '/new/hosts')]"),
             'Recommendations': Text("./a"),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
