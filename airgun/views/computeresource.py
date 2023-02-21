@@ -68,9 +68,8 @@ class ResourceProviderCreateView(BaseLoggedInView):
 
     @provider_content.register('Google')
     class GCEProviderForm(View):
-        google_project_id = TextInput(id='compute_resource_project')
-        client_email = TextInput(id='compute_resource_email')
-        certificate_path = TextInput(id='compute_resource_key_path')
+        json_key = TextInput(id='gce_json')
+        upload_button = Text("//input[@id='password_json']")
 
         @View.nested
         class zone(View):
