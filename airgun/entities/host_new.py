@@ -1,6 +1,9 @@
+from navmazing import NavigateToSibling
+
 from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
+from airgun.views.host_new import AllAssignedRolesView
 from airgun.views.host_new import InstallPackagesView
 from airgun.views.host_new import ModuleStreamDialog
 from airgun.views.host_new import NewHostDetailsView
@@ -140,6 +143,22 @@ class NewHostEntity(HostEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def get_ansible_roles(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.ansible.roles.table.read()
+
+    def get_ansible_roles_modal(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.ansible.roles.assignedRoles.click()
+        view = AllAssignedRolesView(self.browser)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.table.read()
+
 
 @navigator.register(NewHostEntity, 'NewDetails')
 class ShowNewHostDetails(NavigateStep):
@@ -158,3 +177,15 @@ class ShowNewHostDetails(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+
+@navigator.register(NewHostEntity, 'AnsibleTab')
+class ShowNewHostAnsible(NavigateStep):
+    """Navigate to the Ansible Tab of Host Details by clicking on the subtab"""
+
+    VIEW = NewHostDetailsView
+
+    prerequisite = NavigateToSibling('NewDetails')
+
+    def step(self, *args, **kwargs):
+        print(self.parent.rolesListTable)
