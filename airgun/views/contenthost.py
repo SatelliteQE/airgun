@@ -101,7 +101,7 @@ class ContentHostsView(BaseLoggedInView, SearchableViewMixin):
         './/table',
         column_widgets={
             0: Checkbox(locator="./input[@type='checkbox']"),
-            'Name': Text('./a'),
+            'Name': Text('.//a'),
             'Subscription Status': StatusIcon(),
             'Installable Updates': InstallableUpdatesCellView(),
         },
