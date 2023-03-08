@@ -567,3 +567,10 @@ class TemplateInputItem(GenericRemovableWidgetItem):
             locator=".//input[contains(@name, '[puppet_parameter_name]')]"
         )
         description = TextInput(locator=".//textarea[contains(@name, '[description]')]")
+
+
+class WizardStepView(View):
+    def __init__(self, parent, logger=None):
+        """Expand the selected wizard step"""
+        View.__init__(self, parent, logger=logger)
+        self.expander.click()
