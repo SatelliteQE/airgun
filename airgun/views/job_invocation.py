@@ -1,19 +1,18 @@
 from wait_for import wait_for
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ConditionalSwitchableView
 from widgetastic.widget import Text
 from widgetastic.widget import TextInput
 from widgetastic.widget import View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Button
+from widgetastic_patternfly4 import Button
+from widgetastic_patternfly4 import Radio
+from widgetastic_patternfly4.ouia import Select
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
 from airgun.views.common import SatTable
 from airgun.views.common import SearchableViewMixin
+from airgun.views.common import WizardStepView
 from airgun.widgets import ActionsDropdown
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import RadioGroup
 
 
 class JobInvocationsView(BaseLoggedInView, SearchableViewMixin):
@@ -28,125 +27,95 @@ class JobInvocationsView(BaseLoggedInView, SearchableViewMixin):
 
 class JobInvocationCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    job_category = FilteredDropdown(id='job_invocation_job_category')
-    job_template = FilteredDropdown(locator="//div[contains(@class, 'job_template_selector')]")
-    bookmark = FilteredDropdown(id='targeting_bookmark')
-    search_query = TextInput(name='targeting[search_query]')
-    template_content = ConditionalSwitchableView(reference='job_template')
-
-    @template_content.register('Run Command - SSH Default', default=True)
-    class RunSSHCommandForm(View):
-        command = TextInput(id='command')
-
-    @template_content.register('Power Action - SSH Default')
-    class RestartHostForm(View):
-        action = FilteredDropdown(id='s2id_action')
-
-    @template_content.register('Puppet Run Once - SSH Default')
-    class RunPuppetForm(View):
-        puppet_options = TextInput(id='puppet_options')
-
-    @template_content.register('Module Action - SSH Default')
-    class RunModuleForm(View):
-        action = FilteredDropdown(id='s2id_action')
-        module_spec = TextInput(id='module_spec')
-        puppet_options = TextInput(id='options')
 
     @View.nested
-    class advanced_options(View):
-        expander = Text(".//a[normalize-space(.)='Display advanced fields']")
-        effective_user = TextInput(locator=".//input[contains(@name, '[effective_user]')]")
-        description = TextInput(locator=".//input[contains(@name, '[description]')]")
-        use_default = Checkbox(id="description_format_override")
-        description_content = ConditionalSwitchableView(reference='use_default')
+    class category_and_template(WizardStepView):
+        expander = Text(".//button[contains(.,'Category and Template')]")
+        job_category = Select('OUIA-Generated-Select-single-1')
+        job_template = Select('OUIA-Generated-Select-typeahead-1')
 
-        @description_content.register(False)
-        class DescriptionTemplateForm(View):
-            description_template = TextInput(id='job_invocation_description_format')
+    @View.nested
+    class target_hosts_and_inputs(WizardStepView):
+        expander = Text(".//button[contains(.,'Target hosts and inputs')]")
+        command = TextInput(id='command')
 
-        timeout = TextInput(locator=".//input[contains(@name, '[execution_timeout_interval]')]")
-        password = TextInput(id='job_invocation_password')
-        passphrase = TextInput(id='job_invocation_key_passphrase')
-        sudo_password = TextInput(id='job_invocation_sudo_password')
-        concurrency_level = TextInput(id='job_invocation_concurrency_level')
-        time_span = TextInput(id='job_invocation_time_span')
-        execution_order = RadioGroup(locator="//div[label[contains(., 'Execution ordering')]]")
+        package_action = Select('OUIA-Generated-Select-single-15')
+        package = TextInput(id='package')
 
-        def __init__(self, parent, logger=None):
-            """Expand advanced options section once we get to run job page.
-            That is need to be able to read or change values there
-            """
-            View.__init__(self, parent, logger=logger)
-            if self.expander.is_displayed:
-                self.expander.click()
-                self.browser.wait_for_element(self.effective_user, visible=True, exception=False)
+        service_action = Select('OUIA-Generated-Select-single-28')
+        service = TextInput(id='service')
 
-    query_type = RadioGroup(locator="//div[label[contains(., 'Type of query')]]")
-    schedule = RadioGroup(locator="//div[label[normalize-space(.)='Schedule']]")
-    schedule_content = ConditionalSwitchableView(reference='schedule')
+        module_action = Select('OUIA-Generated-Select-single-31')
+        module_spec = TextInput(id='module_spec')
+        options = TextInput(id='options')
 
-    @schedule_content.register('Execute now', default=True)
-    class ExecuteNowForm(View):
-        pass
+        power_action = Select('OUIA-Generated-Select-single-34')
 
-    @schedule_content.register('Schedule future execution')
-    class FutureExecutionForm(View):
-        start_at = TextInput(id='triggering_start_at_raw')
-        start_before = TextInput(id='triggering_start_before_raw')
+    @View.nested
+    class advanced_fields(WizardStepView):
+        expander = Text(".//button[contains(.,'Advanced fields')]")
+        ssh_user = TextInput(id='ssh-user')
+        effective_user = TextInput(id='effective-user')
+        timeout_to_kill = TextInput(id='timeout-to-kill')
+        time_to_pickup = TextInput(id='time-to-pickup')
+        password = TextInput(id='job-password')
+        pk_passphrase = TextInput(id='key-passphrase')
+        effective_user_password = TextInput(id='effective-user-password')
+        concurrency_level = TextInput(id='concurrency-level')
+        time_span = TextInput(id='time-span')
+        execution_order_alphabetical = Radio(id='execution-order-alphabetical')
+        execution_order_randomized = Radio(id='execution-order-randomized')
 
-    @schedule_content.register('Set up recurring execution')
-    class RecurringExecutionForm(View):
-        repeats = FilteredDropdown(id='input_type_selector')
-        repeats_content = ConditionalSwitchableView(reference='repeats')
+    @View.nested
+    class schedule(WizardStepView):
+        expander = Text(".//button[contains(.,'Type of execution')]")
+        # Execution type
+        immediate = Radio(id='schedule-type-now')
+        future = Radio(id='schedule-type-future')
+        recurring = Radio(id='schedule-type-recurring')
+        # Query type
+        static_query = Radio(id='query-type-static')
+        dynamic_query = Radio(id='query-type-dynamic')
 
-        @repeats_content.register('cronline')
-        class CronlineForm(View):
-            cron_line = TextInput(id='triggering_cronline')
+    @View.nested
+    class schedule_future_execution(WizardStepView):
+        expander = Text(".//button[contains(.,'Future execution')]")
+        start_at_date = TextInput(locator='//input[contains(@aria-label, "starts at datepicker")]')
+        start_at_time = TextInput(locator='//input[contains(@aria-label, "starts at timepicker")]')
+        start_before_date = TextInput(
+            locator='//input[contains(@aria-label, "starts before datepicker")]'
+        )
+        start_before_time = TextInput(
+            locator='//input[contains(@aria-label, "starts before timepicker")]'
+        )
 
-        @repeats_content.register('monthly')
-        class RepeatMonthlyForm(View):
-            at_days = TextInput(id='triggering_days')
-            at_hours = FilteredDropdown(id='triggering_time_time_4i')
-            at_minutes = FilteredDropdown(id='triggering_time_time_5i')
+    @View.nested
+    class schedule_recurring_execution(WizardStepView):
+        expander = Text(".//button[contains(.,'Recurring execution')]")
+        # Starts
+        start_now = Radio(id='start-now')
+        start_at = Radio(id='start-at')
+        start_at_date = TextInput(locator='//input[contains(@aria-label, "starts at datepicker")]')
+        start_at_time = TextInput(locator='//input[contains(@aria-label, "starts at timepicker")]')
+        # Repeats
+        repeats = Select('OUIA-Generated-Select-single-3')
+        repeats_at = TextInput(locator='//input[contains(@aria-label, "repeat-at")]')
+        # Ends
+        ends_never = Radio(id='never-ends')
+        ends_on = Radio(id='ends-on')
+        ends_on_date = TextInput(locator='//input[contains(@aria-label, "ends on datepicker")]')
+        ends_on_time = TextInput(locator='//input[contains(@aria-label, "ends on timepicker")]')
+        ends_after = Radio(id='ends-after')
+        ends_after_count = TextInput(locator='//input[contains(@id, "repeat-amount")]')
+        purpose = TextInput(locator='//input[contains(@aria-label, "purpose")]')
 
-        @repeats_content.register('weekly')
-        class RepeatWeeklyForm(View):
-            on_mon = Checkbox(id='triggering_days_of_week_1')
-            on_tue = Checkbox(id='triggering_days_of_week_2')
-            on_wed = Checkbox(id='triggering_days_of_week_3')
-            on_thu = Checkbox(id='triggering_days_of_week_4')
-            on_fri = Checkbox(id='triggering_days_of_week_5')
-            on_sat = Checkbox(id='triggering_days_of_week_6')
-            on_sun = Checkbox(id='triggering_days_of_week_7')
-            at_hours = FilteredDropdown(id='triggering_time_time_4i')
-            at_minutes = FilteredDropdown(id='triggering_time_time_5i')
+    @View.nested
+    class submit(WizardStepView):
+        expander = Text(".//button[contains(.,'Review')]")
+        submit = Text(".//button[contains(.,'Run')]")
 
-        @repeats_content.register('daily', default=True)
-        class RepeatDailyForm(View):
-            at_hours = FilteredDropdown(id='triggering_time_time_4i')
-            at_minutes = FilteredDropdown(id='triggering_time_time_5i')
-
-        @repeats_content.register('hourly')
-        class RepeatHourlyForm(View):
-            at_minutes = FilteredDropdown(id='triggering_time_time_5i')
-
-        repeat_n_times = TextInput(id='triggering_max_iteration')
-        ends = RadioGroup(locator="//div[@id='end_time_limit_select']")
-        ends_date_content = ConditionalSwitchableView(reference='ends')
-
-        @ends_date_content.register('Never', default=True)
-        class NoEndsDateForm(View):
-            pass
-
-        @ends_date_content.register('On')
-        class EndsDateEnabledForm(View):
-            at_year = FilteredDropdown(id='triggering_end_time_end_time_1i')
-            at_month = FilteredDropdown(id='triggering_end_time_end_time_2i')
-            at_day = FilteredDropdown(id='triggering_end_time_end_time_3i')
-            at_hours = FilteredDropdown(id='triggering_end_time_end_time_4i')
-            at_minutes = FilteredDropdown(id='triggering_end_time_end_time_5i')
-
-    submit = Text('//input[@name="commit"]')
+        def click(self):
+            self.submit.click()
 
     @property
     def is_displayed(self):
