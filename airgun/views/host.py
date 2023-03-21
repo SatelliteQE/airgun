@@ -680,6 +680,18 @@ class HostEditView(HostCreateView):
         )
 
 
+class HostsChangeContentSourceView(BaseLoggedInView):
+    environment = Select("//select[@id=change_cs_environment_select]")
+    content_view = Select("//select[@id=change_cs_content_view_select]")
+    content_source = Select("//select[@id=change_cs_content_source_select]")
+    change_button = Button("//button[@id=generate_btn]")
+    run_job_link = Link('//a[normalize-space(.)="Run job invocation"]')
+
+    @property
+    def is_displayed(self):
+        return self.change_button.is_displayed()
+
+
 class HostsActionCommonDialog(BaseLoggedInView):
     """Common base class Dialog for Hosts Actions"""
 
