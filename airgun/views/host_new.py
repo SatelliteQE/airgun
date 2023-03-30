@@ -119,7 +119,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
             details = HostDetailsCard()
 
-            #TODO  power_operations = 
+            power_operations = OUIAButton('power-status-dropdown-toggle')
 
         @View.nested
         class host_status(Card):
@@ -245,8 +245,8 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/article[.//div[text()="Registration details"]]'
 
             registered_on = Text('.//div[contains(@class, "pf-c-description-list__group")][1]/dd/div')
-            registered_by = ItemsList('.//div[contains(@class, "pf-c-description-list__group")][2]/ul')
-            activation_key_link = Text('.//div[contains(@class, "pf-c-description-list__group")][2]//a')
+            registration_type = Text('.//div[contains(@class, "pf-c-description-list__group")][2]/ul/h4')
+            activation_key_name = Text('.//div[contains(@class, "pf-c-description-list__group")][2]//a')
             registered_through = Text('.//div[contains(@class, "pf-c-description-list__group")][3]/dd/div')
 
         @View.nested
@@ -258,6 +258,7 @@ class NewHostDetailsView(BaseLoggedInView):
             sockets = Text('.//div[contains(@class, "pf-c-description-list__group")][3]//dd')
             cores_per_socket = Text('.//div[contains(@class, "pf-c-description-list__group")][4]//dd')
             ram = Text('.//div[contains(@class, "pf-c-description-list__group")][5]//dd')
+            storage = Text('.//div[contains(@class, "pf-c-description-list__group")][6]//h4')
 
         @View.nested
         class provisioning_templates(Card):
@@ -275,9 +276,7 @@ class NewHostDetailsView(BaseLoggedInView):
         class networking_interfaces(Card):
             ROOT = './/article[.//div[text()="Networking interfaces"]]'
 
-            # TODO Finish Accordion correctly
             networking_interfaces_accordion = Accordion(locator='.//div[contains(@class, "pf-c-card__expandable-content")]')
-            #networking_interfaces_accordion = Accordion(locator='.//dl[contains(@class, "pf-c-accordion interface-accordion")]')
             networking_interfaces_dict = {
                 'fqdn': Text('.//div[contains(@class, "pf-c-accordion__expanded-content-body")]//div[.//dt[normalize-space(.)="FQDN"]]//div'),
                 'ipv4': Text('.//div[contains(@class, "pf-c-accordion__expanded-content-body")]//div[.//dt[normalize-space(.)="IPv4"]]//div'),
@@ -405,9 +404,14 @@ class NewHostDetailsView(BaseLoggedInView):
     class parameters(Tab):
         ROOT = './/div'
 
-        add_parameter = OUIAButton('OUIA-Generated-Button-primary-4')
+        add_parameter = Button(locator='.//button[text()="Add parameter"]')
         searchbar = SearchInput(locator='//input[contains(@class, "pf-c-search-input__text-input")]')
-        # TODO solve case while adding new parameter. I need to somehow specify if that cell in that column should be Text() or TextInput() etc.
+        new_parameter_name = TextInput(locator='.//td//input[contains(@aria-label, "name")]')
+        new_parameter_type = Select(locator='.//td[2]//div[@data-ouia-component-type="PF4/Select"]')
+        new_parameter_value = TextInput(locator='.//td[3]//textarea')
+        cancel_addition = Button(locator='.//td[5]//button[1]')
+        confirm_addition = Button(locator='.//td[5]//button[2]')
+
         parameters_table = Table(
             locator='.//table[@aria-label="Parameters table"]',
             column_widgets={
@@ -431,7 +435,6 @@ class NewHostDetailsView(BaseLoggedInView):
         searchbar = SearchInput(locator='.//input[contains(@aria-label, "Select all")]')
         Pf4ActionsDropdown = Button(locator='.//div[contains(@aria-label, "bulk_actions_dropdown")]')
         traces_table = PatternflyTable(
-            #locator='.//table[contains(@class, "pf-c-table")]',
             component_id='host-traces-table',
             column_widgets={
             0: Checkbox(locator='.//input[contains(@aria-label, "Select row")]'),
@@ -552,6 +555,39 @@ class NewHostDetailsView(BaseLoggedInView):
                 @property
                 def is_displayed(self):
                     return self.previousText.is_displayed
+
+    @View.nested
+    class puppet(Tab):
+        ROOT = './/div'
+
+        search_bar = SearchInput(locator='.//input[contains(@class, "search-input")]')
+        puppet_reports_table = PatternflyTable(
+            component_id='reports-table',
+            column_widgets={
+                'reported_at': Text('.//a'),
+                'failed': Text('.//td[2]'),
+                'failed_restarts': Text('.//td[3]'),
+                'restarted': Text('.//td[4]'),
+                'applied': Text('.//td[5]'),
+                'skipped': Text('.//td[6]'),
+                'pending': Text('.//td[7]'),
+                7: Button(locator='.//button[contains(@aria-label, "Actions")]'),
+            }
+        )
+        pagination = Pagination()
+
+        @View.nested
+        class enc_preview(Tab):
+            ROOT = './/div[@class="enc-preview-tab"]'
+            TAB_NAME = "ENC Preview"
+            preview = Text('.//code')
+
+        @View.nested
+        class puppet_details(Card):
+            ROOT = './/article[.//div[text()="Puppet details"]]'
+            puppet_environment = Text('./div[2]//div[contains(@class, "pf-c-description-list__group")][1]//dd')
+            puppet_capsule = Text('./div[2]//div[contains(@class, "pf-c-description-list__group")][2]//dd')
+            puppet_ca_capsule = Text('./div[2]//div[contains(@class, "pf-c-description-list__group")][3]//dd')
 
     @View.nested
     class reports(Tab):
