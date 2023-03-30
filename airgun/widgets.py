@@ -704,7 +704,7 @@ class Search(Widget):
             ".//input[@id='search' or contains(@placeholder, 'Filter') or "
             "@ng-model='table.searchTerm' or contains(@ng-model, 'Filter') or "
             "@data-autocomplete-id='searchBar' or contains(@placeholder, 'Search') "
-            "or contains(@class, 'search-input')]"
+            "or contains(@class, 'search-input') or @aria-owns='searchBar']"
         )
     )
     search_button = Text(
