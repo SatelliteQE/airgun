@@ -254,7 +254,7 @@ class NewHostDetailsView(BaseLoggedInView):
         ROOT = './/div'
 
         title = Text('//h2')
-        enable_traces = Button(locator='.//button[@data-ouia-component-id="enable-traces-button"]')
+        enable_traces = OUIAButton('enable-traces-button')
 
     @View.nested
     class insights(Tab):
