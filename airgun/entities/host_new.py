@@ -179,6 +179,73 @@ class NewHostEntity(HostEntity):
         return view.traces.read()
 
 
+    def get_networking_interfaces(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.details.networking_interfaces.networking_interfaces_accordion.items()
+    
+    def get_networking_interfaces_details(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        net_devices = [i.split()[0] for i in view.details.networking_interfaces.networking_interfaces_accordion.items()]
+        #helper = self.browser.elements(view.details.networking_interfaces.networking_interfaces_accordion.ITEMS)
+        #net_dev = [i.text.split()[0] for i in helper]
+
+        #view.details.networking_interfaces.networking_interfaces_accordion.toggle_all_on()
+
+
+        for dev in net_devices[1:]:
+            view.details.networking_interfaces.networking_interfaces_accordion.toggle(dev)
+
+
+        locator_templ = './/div[contains(@class, "pf-c-accordion__expanded-content-body")]//div[.//dt[normalize-space(.)="{}"]]//div'     
+        networking_interface_dict = {
+            'fqdn': self.browser.elements(locator_templ.format('FQDN')),
+            'ipv4': self.browser.elements(locator_templ.format('IPv4')),
+            'ipv6': self.browser.elements(locator_templ.format('IPv6')),
+            'mac': self.browser.elements(locator_templ.format('MAC')),
+            'subnet': self.browser.elements(locator_templ.format('Subnet')),
+            'mtu': self.browser.elements(locator_templ.format('MTU')),
+        } # TODO
+        return networking_interface_dict
+        #return view.details.networking_interfaces.networking_interfaces_accordion.items_details()
+
+    def get_parameters(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.parameters.read()
+
+    def get_traces(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.traces.read()
+    
+    def get_reports(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.reports.read()
+    
+    def get_insights(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.insights.read()
+
+
+
+
+
+
+
+
+
+
+
 @navigator.register(NewHostEntity, 'NewDetails')
 class ShowNewHostDetails(NavigateStep):
     """Navigate to Host Details page by clicking on necessary host name in the table
