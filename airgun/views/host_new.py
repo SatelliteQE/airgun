@@ -251,7 +251,10 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class traces(Tab):
-        enable_traces = OUIAButton('OUIA-Generated-Button-primary-1')
+        ROOT = './/div'
+
+        title = Text('//h2')
+        enable_traces = OUIAButton('enable-traces-button')
 
     @View.nested
     class insights(Tab):
@@ -399,6 +402,14 @@ class AllAssignedRolesView(View):
         column_widgets={'Name': Text('.//a'), 'Source': Text('.//a')},
     )
     pagination = Pagination()
+
+
+class EnableTracerView(View):
+    """Enable Tracer Modal"""
+
+    ROOT = './/div[@data-ouia-component-id="enable-tracer-modal"]'
+
+    confirm = Button(locator='//*[@data-ouia-component-id="enable-tracer-modal"]/footer/button[1]')
 
 
 class EditAnsibleRolesView(View):
