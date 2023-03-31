@@ -4,6 +4,7 @@ from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
 from airgun.views.host_new import AllAssignedRolesView
+from airgun.views.host_new import EnableTracerView
 from airgun.views.host_new import InstallPackagesView
 from airgun.views.host_new import ModuleStreamDialog
 from airgun.views.host_new import NewHostDetailsView
@@ -158,6 +159,23 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         return view.table.read()
+
+    def enable_tracer(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.traces.enable_traces.click()
+        modal = EnableTracerView(self.browser)
+        if modal.is_displayed:
+            modal.confirm.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def get_tracer(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.traces.read()
 
 
 @navigator.register(NewHostEntity, 'NewDetails')
