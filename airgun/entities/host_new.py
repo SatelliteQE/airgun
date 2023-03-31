@@ -171,11 +171,11 @@ class NewHostEntity(HostEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def get_tracer_title(self, entity_name):
+    def get_tracer(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        return view.traces.title.read()
+        return view.traces.read()
 
 
 @navigator.register(NewHostEntity, 'NewDetails')
