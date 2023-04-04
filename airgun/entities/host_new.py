@@ -27,6 +27,7 @@ class NewHostEntity(HostEntity):
         will be read.
         """
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         return view.read(widget_names=widget_names)
 
