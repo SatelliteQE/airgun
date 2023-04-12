@@ -26,6 +26,7 @@ from airgun.views.host import HostsJobInvocationStatusView
 from airgun.views.host import HostsUnassignCompliancePolicy
 from airgun.views.host import HostsView
 from airgun.views.host import RecommendationListView
+from airgun.views.host_new import ManageColumnsView
 from airgun.views.host_new import NewHostDetailsView
 
 
@@ -274,6 +275,30 @@ class HostEntity(BaseEntity):
         self.browser.close_window(self.browser.window_handles[-1])
         return hostname
 
+    def manage_table_columns(self, values: dict):
+        """
+        Select which columns should be displayed in the hosts table.
+
+        :param dict values: items of 'column name: value' pairs
+            Example: {'IPv4': True, 'Power': False, 'Model': True}
+        """
+        view = self.navigate_to(self, 'ManageColumns')
+        view.fill(values)
+        view.submit()
+        self.browser.plugin.ensure_page_safe()
+        hosts_view = HostsView(self.browser)
+        hosts_view.wait_displayed()
+
+    def get_displayed_table_headers(self):
+        """
+        Return displayed columns in the hosts table.
+
+        :return list: header names of the hosts table
+        """
+        view = self.navigate_to(self, 'All')
+        view.wait_displayed()
+        return view.displayed_table_header_names
+
 
 @navigator.register(HostEntity, 'All')
 class ShowAllHosts(NavigateStep):
@@ -417,3 +442,17 @@ class InsightsTab(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Recommendations'].click()
+
+
+@navigator.register(HostEntity, 'ManageColumns')
+class HostsManageColumns(NavigateStep):
+    """Navigate to the Manage columns dialog"""
+
+    VIEW = ManageColumnsView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        """Open the Manage columns dialog"""
+        self.parent.manage_columns.click()

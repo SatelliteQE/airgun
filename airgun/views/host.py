@@ -198,6 +198,7 @@ class HostInterface(View):
 
 class HostsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Hosts']")
+    manage_columns = PF4Button("OUIA-Generated-Button-link-1")
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text(".//div[@id='rails-app-content']//a[contains(normalize-space(.),'Create Host')]")
     register = PF4Button('OUIA-Generated-Button-secondary-2')
@@ -211,6 +212,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixin):
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
+    displayed_table_headers = ".//table/thead/tr/th[not(@hidden)]"
     host_status = "//span[contains(@class, 'host-status')]"
     actions = ActionsDropdown("//div[@id='submit_multiple']")
     dialog = Pf4ConfirmationDialog()
@@ -218,6 +220,17 @@ class HostsView(BaseLoggedInView, SearchableViewMixin):
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
+
+    @property
+    def displayed_table_header_names(self) -> list:
+        """
+        Return names of the displayed headers in the hosts table.
+
+        Note: Cannot use 'self.table.headers' for this because it returns also hidden headers.
+        """
+        return [
+            header.text.strip() for header in self.browser.elements(self.displayed_table_headers)
+        ]
 
 
 class HostCreateView(BaseLoggedInView):

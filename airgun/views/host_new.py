@@ -18,6 +18,7 @@ from widgetastic_patternfly4.ouia import ExpandableTable
 from widgetastic_patternfly4.ouia import PatternflyTable
 
 from airgun.views.common import BaseLoggedInView
+from airgun.widgets import CheckboxGroup
 from airgun.widgets import Pf4ActionsDropdown
 from airgun.widgets import Pf4ConfirmationDialog
 from airgun.widgets import SatTableWithoutHeaders
@@ -429,3 +430,83 @@ class RecurringJobDialog(Pf4ConfirmationDialog):
 
     confirm_dialog = Button(locator='.//button[@data-ouia-component-id="btn-modal-confirm"]')
     cancel_dialog = Button(locator='.//button[@data-ouia-component-id="btn-modal-cancel"]')
+
+
+class PF4CheckboxTreeView(CheckboxGroup):
+    """
+    Modified :class:`airgun.widgets.CheckboxGroup` for PF4 tree view with checkboxes:
+        https://www.patternfly.org/v4/components/tree-view#with-checkboxes
+    """
+
+    ITEMS_LOCATOR = './/*[self::span|self::label][contains(@class, "pf-c-tree-view__node-text")]'
+    CHECKBOX_LOCATOR = (
+        './/*[self::span|self::label][contains(@class, "pf-c-tree-view__node-text")]'
+        '[normalize-space(.)="{}"]/preceding-sibling::span/input[@type="checkbox"]'
+    )
+
+
+class ManageColumnsView(BaseLoggedInView):
+    """Manage columns modal."""
+
+    ROOT = '//div[contains(@class, "pf-c-modal-box")]'
+
+    CHECKBOX_SECTION_TOGGLE = (
+        './/*[self::span|self::label][contains(@class, "pf-c-tree-view__node-text")]'
+        '[normalize-space(.)="{}"]/preceding-sibling::button'
+    )
+    DEFAULT_COLLAPSED_SECTIONS = [
+        CHECKBOX_SECTION_TOGGLE.format('Content'),
+        CHECKBOX_SECTION_TOGGLE.format('Network'),
+        CHECKBOX_SECTION_TOGGLE.format('Reported data'),
+        CHECKBOX_SECTION_TOGGLE.format('RH Cloud'),
+    ]
+    is_tree_collapsed = True
+    title = Text(
+        './/header//span[contains(@class, "pf-c-modal-box__title")]'
+        '[normalize-space(.)="Manage columns"]'
+    )
+    confirm_dialog = Button(locator='.//button[normalize-space(.)="Save"]')
+    cancel_dialog = Button(locator='.//button[normalize-space(.)="Cancel"]')
+    checkbox_group = PF4CheckboxTreeView(locator='.//div[contains(@class, "pf-c-tree-view")]')
+
+    def collapsed_sections(self):
+        return (self.browser.element(locator) for locator in self.DEFAULT_COLLAPSED_SECTIONS)
+
+    @property
+    def is_displayed(self):
+        title = self.browser.wait_for_element(self.title, exception=False)
+        return title is not None and title.is_diaplyed()
+
+    def expand_all(self):
+        """Expand all tree sections that are collapsed by default"""
+        if self.is_tree_collapsed:
+            for checkbox_group in self.collapsed_sections():
+                checkbox_group.click()
+                self.is_tree_collapsed = False
+
+    def read(self):
+        """
+        Get labels and values of all checkboxes in the dialog.
+
+        :return dict: mapping of `label: value` items
+        """
+        self.expand_all()
+        return self.checkbox_group.read()
+
+    def fill(self, values):
+        """
+        Set value of given checkboxes.
+        Example: values={'Operating system': True, 'Owner': False}
+
+        :param dict values: mapping of `label: value` items
+        """
+        self.expand_all()
+        self.checkbox_group.fill(values)
+
+    def submit(self):
+        """Submit the dialog and wait for the page to reload."""
+        self.confirm_dialog.click()
+        # the submit and page reload does not kick in immediately
+        # so ensure_page_safe() does not catches it
+        time.sleep(2)
+        self.browser.plugin.ensure_page_safe()
