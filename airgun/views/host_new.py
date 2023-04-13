@@ -74,7 +74,7 @@ class HostDetailsCard(Widget):
     """Overview/Details & Details/SystemProperties card body contains multiple host detail info"""
 
     LABELS = '//div[@class="pf-c-description-list__group"]//dt//span'
-    VALUES = '//div[@class="pf-c-description-list__group"]//dd//descendant::*/text()/..'
+    VALUES = '//div[@class="pf-c-description-list__group"]//*[self::dd or self::ul]'
 
     def read(self):
         """Return a dictionary where keys are property names and values are property values.
