@@ -105,7 +105,7 @@ class NewHostDetailsView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Hosts'
 
-    edit = OUIAButton('OUIA-Generated-Button-secondary-1')
+    edit = OUIAButton('host-edit-button')
     dropdown = Dropdown(locator='//button[@id="hostdetails-kebab"]/..')
     schedule_job = Pf4ActionsDropdown(locator='.//div[div/button[@aria-label="Select"]]')
 
@@ -664,7 +664,7 @@ class NewHostDetailsView(BaseLoggedInView):
         ROOT = './/div'
 
         search_bar = SearchInput(locator='.//input[contains(@class, "search-input")]')
-        remediate = OUIAButton('OUIA-Generated-Button-primary-5')
+        remediate = Button(locator='.//button[text()="Remediate"]')
         insights_dropdown = Dropdown(locator='.//div[contains(@class, "insights-dropdown")]')
 
         select_all = Checkbox(locator='.//input[@name="check-all"]')
