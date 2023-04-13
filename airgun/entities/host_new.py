@@ -178,6 +178,142 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
         return view.traces.read()
 
+    def get_os_info(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.details.operating_system.read()
+
+    def get_provisioning_info(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.details.provisioning.read()
+
+    def get_bios_info(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.details.bios.read()
+
+    def get_registration_details(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.details.registration_details.read()
+
+    def get_hw_properties(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.details.hw_properties.read()
+
+    def get_provisioning_templates(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        d = view.details.read()
+        return d['provisioning_templates']['templates_table']
+
+    def get_networking_interfaces(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.details.networking_interfaces.networking_interfaces_accordion.items()
+
+    def get_networking_interfaces_details(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        net_devices = [
+            i.split()[0]
+            for i in view.details.networking_interfaces.networking_interfaces_accordion.items()
+        ]
+
+        for dev in net_devices[1:]:
+            view.details.networking_interfaces.networking_interfaces_accordion.toggle(dev)
+
+        def dict_val_gen(item_name):
+            """Generator needed to fill the networking interface dictionary"""
+            locator_templ = (
+                './/div[contains(@class, "pf-c-accordion__expanded-content-body")]'
+                '//div[.//dt[normalize-space(.)="{}"]]//div'
+            )
+            values = self.browser.elements(locator_templ.format(item_name))
+            yield values
+
+        networking_interface_dict = {}
+        tmp = {
+            'fqdn': [i.text for i in list(dict_val_gen('FQDN'))[0]],
+            'ipv4': [i.text for i in list(dict_val_gen('IPv4'))[0]],
+            'ipv6': [i.text for i in list(dict_val_gen('IPv6'))[0]],
+            'mac': [i.text for i in list(dict_val_gen('MAC'))[0]],
+            # TODO: After RFE BZ2183086 is resolved, uncomment line below
+            # 'subnet': [i.text for i in list(dict_val_gen('Subnet'))[0]],
+            'mtu': [i.text for i in list(dict_val_gen('MTU'))[0]],
+        }
+
+        for i, dev in enumerate(net_devices):
+            networking_interface_dict[dev] = {key: tmp[key][i] for key in tmp}
+
+        return networking_interface_dict
+
+    def get_installed_products(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        installed_products_list = view.details.installed_products.read()
+        return installed_products_list['installed_products_list']
+
+    def get_parameters(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.parameters.read()
+
+    def add_new_parameter(self, entity_name, parameter_name, parameter_type, parameter_value):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.parameters.add_parameter.click()
+        view.parameters.new_parameter_name.fill(parameter_name)
+        view.parameters.new_parameter_type.fill(parameter_type)
+        view.parameters.new_parameter_value.fill(parameter_value)
+        view.parameters.confirm_addition.click()
+
+    def get_traces(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.traces.read()
+
+    def get_puppet_details(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        reports_table = view.puppet.puppet_reports_table.read()
+        x = view.puppet.puppet_details.read()
+        x['reports_table'] = reports_table
+        return x
+
+    def get_puppet_enc_preview(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.puppet.enc_preview.read()
+
+    def get_reports(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.reports.read()
+
+    def get_insights(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.insights.read()
+
 
 @navigator.register(NewHostEntity, 'NewDetails')
 class ShowNewHostDetails(NavigateStep):
