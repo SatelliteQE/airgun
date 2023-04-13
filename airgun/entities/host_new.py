@@ -225,14 +225,20 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        net_devices = [i.split()[0] for i in view.details.networking_interfaces.networking_interfaces_accordion.items()]
+        net_devices = [
+            i.split()[0]
+            for i in view.details.networking_interfaces.networking_interfaces_accordion.items()
+        ]
 
         for dev in net_devices[1:]:
             view.details.networking_interfaces.networking_interfaces_accordion.toggle(dev)
 
         def val_gen(item_name):
             """Generator for values in the networking interfaces accordion"""
-            locator_templ = './/div[contains(@class, "pf-c-accordion__expanded-content-body")]//div[.//dt[normalize-space(.)="{}"]]//div'
+            locator_templ = (
+                './/div[contains(@class, "pf-c-accordion__expanded-content-body")]'
+                '//div[.//dt[normalize-space(.)="{}"]]//div'
+            )
             values = self.browser.elements(locator_templ.format(item_name))
             yield values
 
@@ -243,22 +249,13 @@ class NewHostEntity(HostEntity):
             'ipv6': [i.text for i in list(val_gen('IPv6'))[0]],
             'mac': [i.text for i in list(val_gen('MAC'))[0]],
             # TODO: After RFE BZ2183086 is resolved, uncomment line below
-            #'subnet': [i.text for i in list(val_gen('Subnet'))[0]],
+            # 'subnet': [i.text for i in list(val_gen('Subnet'))[0]],
             'mtu': [i.text for i in list(val_gen('MTU'))[0]],
         }
 
         for i, dev in enumerate(net_devices):
-            networking_interface_dict[dev] = {key:tmp[key][i] for key in tmp}
+            networking_interface_dict[dev] = {key: tmp[key][i] for key in tmp}
 
-        locator_templ = './/div[contains(@class, "pf-c-accordion__expanded-content-body")]//div[.//dt[normalize-space(.)="{}"]]//div'     
-        networking_interface_dict = {
-            'fqdn': self.browser.elements(locator_templ.format('FQDN')),
-            'ipv4': self.browser.elements(locator_templ.format('IPv4')),
-            'ipv6': self.browser.elements(locator_templ.format('IPv6')),
-            'mac': self.browser.elements(locator_templ.format('MAC')),
-            'subnet': self.browser.elements(locator_templ.format('Subnet')),
-            'mtu': self.browser.elements(locator_templ.format('MTU')),
-        }
         return networking_interface_dict
 
     def get_installed_products(self, entity_name):
@@ -273,7 +270,7 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         return view.parameters.read()
-    
+
     def add_new_parameter(self, entity_name, parameter_name, parameter_type, parameter_value):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
@@ -310,14 +307,14 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         return view.reports.read()
-    
+
     def get_insights(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         return view.insights.read()
-    
-    
+
+
 @navigator.register(NewHostEntity, 'NewDetails')
 class ShowNewHostDetails(NavigateStep):
     """Navigate to Host Details page by clicking on necessary host name in the table

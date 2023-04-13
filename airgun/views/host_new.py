@@ -20,8 +20,8 @@ from widgetastic_patternfly4.ouia import PatternflyTable
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import Accordion
-from airgun.widgets import ItemsList
 from airgun.widgets import CheckboxGroup
+from airgun.widgets import ItemsList
 from airgun.widgets import Pf4ActionsDropdown
 from airgun.widgets import Pf4ConfirmationDialog
 from airgun.widgets import SatTableWithoutHeaders
@@ -71,7 +71,7 @@ class DropdownWithDescripton(Dropdown):
 
 
 class HostDetailsCard(Widget):
-    """Overview/Details and Details/SystemProperties card body contains multiple host detail information"""
+    """Overview/Details & Details/SystemProperties card body contains multiple host detail info"""
 
     LABELS = '//div[@class="pf-c-description-list__group"]//dt//span'
     VALUES = '//div[@class="pf-c-description-list__group"]//dd//descendant::*/text()/..'
@@ -138,7 +138,6 @@ class NewHostDetailsView(BaseLoggedInView):
 
             all_audits = Text('.//a[normalize-space(.)="All audits"]')
             table = SatTableWithoutHeaders(locator='.//table[@aria-label="audits table"]')
-        
 
         @View.nested
         class recent_communication(Card):
@@ -194,20 +193,25 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class system_purpose(Card):
             ROOT = './/article[.//div[text()="System purpose"]]'
-            edit_system_purpose = Text('.//button[@data-ouia-component-id="syspurpose-edit-button"]')
+            edit_system_purpose = Text(
+                './/button[@data-ouia-component-id="syspurpose-edit-button"]'
+            )
 
             role = Text('.//dd[contains(@class, "pf-c-description-list__description")][1]')
             sla = Text('.//dd[contains(@class, "pf-c-description-list__description")][2]')
             usage_type = Text('.//dd[contains(@class, "pf-c-description-list__description")][3]')
-            release_version = Text('.//dd[contains(@class, "pf-c-description-list__description")][4]')
+            release_version = Text(
+                './/dd[contains(@class, "pf-c-description-list__description")][4]'
+            )
             addons = Text('.//dd[contains(@class, "pf-c-description-list__description")][5]')
-
 
     @View.nested
     class details(Tab):
         ROOT = './/div[contains(@class, "host-details-tab-item")]'
 
-        card_collapse_switch = Text('.//button[contains(@data-ouia-component-id, "expand-button")]')
+        card_collapse_switch = Text(
+            './/button[contains(@data-ouia-component-id, "expand-button")]'
+        )
 
         @View.nested
         class system_properties(Card):
@@ -219,16 +223,22 @@ class NewHostDetailsView(BaseLoggedInView):
         class operating_system(Card):
             ROOT = './/article[.//div[text()="Operating system"]]'
 
-            architecture = Text('.//a[contains(@data-ouia-component-id, "OUIA-Generated-Button-link-1")]')
+            architecture = Text(
+                './/a[contains(@data-ouia-component-id, "OUIA-Generated-Button-link-1")]'
+            )
             os = Text('.//a[contains(@data-ouia-component-id, "OUIA-Generated-Button-link-2")]')
             boot_time = Text('.//div[contains(@class, "pf-c-description-list__group")][3]/dd/div')
-            kernel_release = Text('.//div[contains(@class, "pf-c-description-list__group")][4]/dd/div')
+            kernel_release = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][4]/dd/div'
+            )
 
         @View.nested
         class provisioning(Card):
             ROOT = './/article[.//div[text()="Provisioning"]]'
 
-            build_duration = Text('.//div[contains(@class, "pf-c-description-list__group")][1]/dd/div')
+            build_duration = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][1]/dd/div'
+            )
             token = Text('.//div[contains(@class, "pf-c-description-list__group")][2]/dd/div')
             pxe_loader = Text('.//div[contains(@class, "pf-c-description-list__group")][3]/dd/div')
 
@@ -238,25 +248,39 @@ class NewHostDetailsView(BaseLoggedInView):
 
             vendor = Text('.//div[contains(@class, "pf-c-description-list__group")][1]/dd/div')
             version = Text('.//div[contains(@class, "pf-c-description-list__group")][2]/dd/div')
-            release_date = Text('.//div[contains(@class, "pf-c-description-list__group")][3]/dd/div')
+            release_date = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][3]/dd/div'
+            )
 
         @View.nested
         class registration_details(Card):
             ROOT = './/article[.//div[text()="Registration details"]]'
 
-            registered_on = Text('.//div[contains(@class, "pf-c-description-list__group")][1]/dd/div')
-            registration_type = Text('.//div[contains(@class, "pf-c-description-list__group")][2]/ul/h4')
-            activation_key_name = Text('.//div[contains(@class, "pf-c-description-list__group")][2]//a')
-            registered_through = Text('.//div[contains(@class, "pf-c-description-list__group")][3]/dd/div')
+            registered_on = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][1]/dd/div'
+            )
+            registration_type = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][2]/ul/h4'
+            )
+            activation_key_name = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][2]//a'
+            )
+            registered_through = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][3]/dd/div'
+            )
 
         @View.nested
         class hw_properties(Card):
             ROOT = './/article[.//div[text()="HW properties"]]'
 
             model = Text('.//div[contains(@class, "pf-c-description-list__group")][1]//dd')
-            number_of_cpus = Text('.//div[contains(@class, "pf-c-description-list__group")][2]//dd')
+            number_of_cpus = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][2]//dd'
+            )
             sockets = Text('.//div[contains(@class, "pf-c-description-list__group")][3]//dd')
-            cores_per_socket = Text('.//div[contains(@class, "pf-c-description-list__group")][4]//dd')
+            cores_per_socket = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][4]//dd'
+            )
             ram = Text('.//div[contains(@class, "pf-c-description-list__group")][5]//dd')
             storage = Text('.//div[contains(@class, "pf-c-description-list__group")][6]//h4')
 
@@ -264,7 +288,9 @@ class NewHostDetailsView(BaseLoggedInView):
         class provisioning_templates(Card):
             ROOT = './/article[.//div[text()="Provisioning templates"]]'
 
-            templates_table = SatTableWithoutHeaders(locator='.//table[@aria-label="templates table"]')
+            templates_table = SatTableWithoutHeaders(
+                locator='.//table[@aria-label="templates table"]'
+            )
 
         @View.nested
         class installed_products(Card):
@@ -276,20 +302,26 @@ class NewHostDetailsView(BaseLoggedInView):
         class networking_interfaces(Card):
             ROOT = './/article[.//div[text()="Networking interfaces"]]'
 
-            networking_interfaces_accordion = Accordion(locator='.//div[contains(@class, "pf-c-card__expandable-content")]')
+            networking_interfaces_accordion = Accordion(
+                locator='.//div[contains(@class, "pf-c-card__expandable-content")]'
+            )
+            locator_templ = (
+                './/div[contains(@class, "pf-c-accordion__expanded-content-body")]'
+                '//div[.//dt[normalize-space(.)="{}"]]//div'
+            )
             networking_interfaces_dict = {
-                'fqdn': Text('.//div[contains(@class, "pf-c-accordion__expanded-content-body")]//div[.//dt[normalize-space(.)="FQDN"]]//div'),
-                'ipv4': Text('.//div[contains(@class, "pf-c-accordion__expanded-content-body")]//div[.//dt[normalize-space(.)="IPv4"]]//div'),
-                'ipv6': Text('.//div[contains(@class, "pf-c-accordion__expanded-content-body")]//div[.//dt[normalize-space(.)="IPv6"]]//div'),
-                'mac': Text('.//div[contains(@class, "pf-c-accordion__expanded-content-body")]//div[.//dt[normalize-space(.)="MAC"]]//div'),
-                'subnet': Text('.//div[contains(@class, "pf-c-accordion__expanded-content-body")]//div[.//dt[normalize-space(.)="Subnet"]]//div'),
-                'mtu': Text('.//div[contains(@class, "pf-c-accordion__expanded-content-body")]//div[.//dt[normalize-space(.)="MTU"]]//div')
+                'fqdn': Text(locator_templ.format('FQDN')),
+                'ipv4': Text(locator_templ.format('IPv4')),
+                'ipv6': Text(locator_templ.format('IPv6')),
+                'mac': Text(locator_templ.format('MAC')),
+                'subnet': Text(locator_templ.format('Subnet')),
+                'mtu': Text(locator_templ.format('MTU')),
             }
             edit_interfaces = Text('.//a[contains(@href, "/hosts/")]')
 
         @View.nested
         class networking_interface(Card):
-            pass    
+            pass
 
     @View.nested
     class content(Tab):
@@ -405,9 +437,13 @@ class NewHostDetailsView(BaseLoggedInView):
         ROOT = './/div'
 
         add_parameter = Button(locator='.//button[text()="Add parameter"]')
-        searchbar = SearchInput(locator='//input[contains(@class, "pf-c-search-input__text-input")]')
+        searchbar = SearchInput(
+            locator='//input[contains(@class, "pf-c-search-input__text-input")]'
+        )
         new_parameter_name = TextInput(locator='.//td//input[contains(@aria-label, "name")]')
-        new_parameter_type = Select(locator='.//td[2]//div[@data-ouia-component-type="PF4/Select"]')
+        new_parameter_type = Select(
+            locator='.//td[2]//div[@data-ouia-component-type="PF4/Select"]'
+        )
         new_parameter_value = TextInput(locator='.//td[3]//textarea')
         cancel_addition = Button(locator='.//td[5]//button[1]')
         confirm_addition = Button(locator='.//td[5]//button[2]')
@@ -419,9 +455,14 @@ class NewHostDetailsView(BaseLoggedInView):
                 'Type': Text('.//td[contains(@data-label, "Type")]'),
                 'Value': Text('.//td[contains(@data-label, "Value")]'),
                 'Source': Text('.//td[contains(@data-label, "Source")]'),
-                4: Button(locator='.//button[contains(@data-ouia-component-id, "OUIA-Generated-Button-plain-")]'),
+                4: Button(
+                    locator=(
+                        './/button'
+                        '[contains(@data-ouia-component-id, "OUIA-Generated-Button-plain-")]'
+                    )
+                ),
                 5: Button(locator='.//td[contains(@class, "parameters-actions")]//button'),
-            }
+            },
         )
         pagination = Pagination()
 
@@ -433,19 +474,20 @@ class NewHostDetailsView(BaseLoggedInView):
         enable_traces = OUIAButton('enable-traces-button')
         select_all = Checkbox(locator='.//input[contains(@aria-label, "Select all")]')
         searchbar = SearchInput(locator='.//input[contains(@aria-label, "Select all")]')
-        Pf4ActionsDropdown = Button(locator='.//div[contains(@aria-label, "bulk_actions_dropdown")]')
+        Pf4ActionsDropdown = Button(
+            locator='.//div[contains(@aria-label, "bulk_actions_dropdown")]'
+        )
         traces_table = PatternflyTable(
             component_id='host-traces-table',
             column_widgets={
-            0: Checkbox(locator='.//input[contains(@aria-label, "Select row")]'),
-            'Application': Text('.//td[2]'),
-            'Type': Text('.//td[3]'),
-            'Helper': Text('.//td[4]'),
-            4: Button(locator='.//button[contains(@aria-label, "Actions")]')
-            }
+                0: Checkbox(locator='.//input[contains(@aria-label, "Select row")]'),
+                'Application': Text('.//td[2]'),
+                'Type': Text('.//td[3]'),
+                'Helper': Text('.//td[4]'),
+                4: Button(locator='.//button[contains(@aria-label, "Actions")]'),
+            },
         )
         pagination = Pagination()
-        
 
     @View.nested
     class ansible(Tab):
@@ -572,7 +614,7 @@ class NewHostDetailsView(BaseLoggedInView):
                 'skipped': Text('.//td[6]'),
                 'pending': Text('.//td[7]'),
                 7: Button(locator='.//button[contains(@aria-label, "Actions")]'),
-            }
+            },
         )
         pagination = Pagination()
 
@@ -585,9 +627,15 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class puppet_details(Card):
             ROOT = './/article[.//div[text()="Puppet details"]]'
-            puppet_environment = Text('./div[2]//div[contains(@class, "pf-c-description-list__group")][1]//dd')
-            puppet_capsule = Text('./div[2]//div[contains(@class, "pf-c-description-list__group")][2]//dd')
-            puppet_ca_capsule = Text('./div[2]//div[contains(@class, "pf-c-description-list__group")][3]//dd')
+            puppet_environment = Text(
+                './div[2]//div[contains(@class, "pf-c-description-list__group")][1]//dd'
+            )
+            puppet_capsule = Text(
+                './div[2]//div[contains(@class, "pf-c-description-list__group")][2]//dd'
+            )
+            puppet_ca_capsule = Text(
+                './div[2]//div[contains(@class, "pf-c-description-list__group")][3]//dd'
+            )
 
     @View.nested
     class reports(Tab):
@@ -606,7 +654,7 @@ class NewHostDetailsView(BaseLoggedInView):
                 'origin': Text('.//td[7]'),
                 'pending': Text('.//td[8]'),
                 8: Button(locator='.//button[contains(@aria-label, "Actions")]'),
-            }
+            },
         )
 
         pagination = Pagination()
@@ -627,8 +675,8 @@ class NewHostDetailsView(BaseLoggedInView):
                 'Recommendation': Text('.//td[2]'),
                 'Total Risk': Text('.//td[3]'),
                 'Remediate': Text('.//td[4]'),
-                4: Button(locator='.//button[contains(@aria-label, "Actions")]')
-            }
+                4: Button(locator='.//button[contains(@aria-label, "Actions")]'),
+            },
         )
         pagination = Pagination()
         remediation_window = View.nested(RemediationView)
