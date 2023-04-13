@@ -380,7 +380,7 @@ class NewHostDetailsView(BaseLoggedInView):
         class repository_sets(Tab):
             TAB_NAME = 'Repository sets'
             # workaround for BZ 2119076
-            ROOT = './/div[@id="repo-sets-tab"]'    
+            ROOT = './/div[@id="repo-sets-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
             searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')

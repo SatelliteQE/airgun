@@ -226,11 +226,6 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         net_devices = [i.split()[0] for i in view.details.networking_interfaces.networking_interfaces_accordion.items()]
-        #helper = self.browser.elements(view.details.networking_interfaces.networking_interfaces_accordion.ITEMS)
-        #net_dev = [i.text.split()[0] for i in helper]
-
-        #view.details.networking_interfaces.networking_interfaces_accordion.toggle_all_on()
-
 
         for dev in net_devices[1:]:
             view.details.networking_interfaces.networking_interfaces_accordion.toggle(dev)
@@ -265,7 +260,6 @@ class NewHostEntity(HostEntity):
             'mtu': self.browser.elements(locator_templ.format('MTU')),
         }
         return networking_interface_dict
-        #return view.details.networking_interfaces.networking_interfaces_accordion.items_details()
 
     def get_installed_products(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
