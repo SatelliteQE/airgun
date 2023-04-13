@@ -233,8 +233,8 @@ class NewHostEntity(HostEntity):
         for dev in net_devices[1:]:
             view.details.networking_interfaces.networking_interfaces_accordion.toggle(dev)
 
-        def val_gen(item_name):
-            """Generator for values in the networking interfaces accordion"""
+        def dict_val_gen(item_name):
+            """Generator needed to fill the networking interface dictionary"""
             locator_templ = (
                 './/div[contains(@class, "pf-c-accordion__expanded-content-body")]'
                 '//div[.//dt[normalize-space(.)="{}"]]//div'
@@ -244,13 +244,13 @@ class NewHostEntity(HostEntity):
 
         networking_interface_dict = {}
         tmp = {
-            'fqdn': [i.text for i in list(val_gen('FQDN'))[0]],
-            'ipv4': [i.text for i in list(val_gen('IPv4'))[0]],
-            'ipv6': [i.text for i in list(val_gen('IPv6'))[0]],
-            'mac': [i.text for i in list(val_gen('MAC'))[0]],
+            'fqdn': [i.text for i in list(dict_val_gen('FQDN'))[0]],
+            'ipv4': [i.text for i in list(dict_val_gen('IPv4'))[0]],
+            'ipv6': [i.text for i in list(dict_val_gen('IPv6'))[0]],
+            'mac': [i.text for i in list(dict_val_gen('MAC'))[0]],
             # TODO: After RFE BZ2183086 is resolved, uncomment line below
-            # 'subnet': [i.text for i in list(val_gen('Subnet'))[0]],
-            'mtu': [i.text for i in list(val_gen('MTU'))[0]],
+            # 'subnet': [i.text for i in list(dict_val_gen('Subnet'))[0]],
+            'mtu': [i.text for i in list(dict_val_gen('MTU'))[0]],
         }
 
         for i, dev in enumerate(net_devices):
