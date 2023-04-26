@@ -15,8 +15,9 @@ from widgetastic_patternfly4 import Tab
 from widgetastic_patternfly4.ouia import BreadCrumb
 from widgetastic_patternfly4.ouia import Button as OUIAButton
 from widgetastic_patternfly4.ouia import ExpandableTable
-from widgetastic_patternfly4.ouia import Modal
+from widgetastic_patternfly4.ouia import FormSelect as OUIAFormSelect
 from widgetastic_patternfly4.ouia import PatternflyTable
+from widgetastic_patternfly4.ouia import Select as OUIASelect
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import Accordion
@@ -28,21 +29,21 @@ from airgun.widgets import SatTableWithoutHeaders
 
 
 class SearchInput(TextInput):
-    def fill(self, value):
+    def fill(self, value, enter_timeout=1):
         changed = super().fill(value)
         if changed:
             # workaround for BZ #2140636
-            time.sleep(1)
+            time.sleep(enter_timeout)
             self.browser.send_keys(Keys.ENTER, self)
         return changed
 
 
-class RemediationView(Modal):
+class RemediationView(View):
     """Remediation window view"""
 
-    OUIA_ID = 'OUIA-Generated-Modal-large-1'
-    remediate = Button('Remediate')
-    cancel = Button('Cancel')
+    ROOT = './/div[@id="remediation-modal"]'
+    remediate = Button(locator='.//button[text()="Remediate"]')
+    cancel = Button(locator='.//button[text()="Cancel"]')
     table = PatternflyTable(
         component_id='OUIA-Generated-Table-4',
         column_widgets={
@@ -95,6 +96,17 @@ class HostDetailsCard(Widget):
             key = self.browser.text(key).replace(' ', '_').lower()
             items[key] = value
         return items
+
+
+class HostColectionsList(Widget):
+    """Host collections list in host details page"""
+
+    ROOT = './/div[@class="pf-c-card__body host-collection-card-body"]'
+    ITEMS = './/span[contains(@class, "pf-c-expandable-section__toggle-text")]'
+
+    def read(self):
+        """Return a list of assigned host collections"""
+        return [self.browser.text(item) for item in self.browser.elements(self.ITEMS)]
 
 
 class NewHostDetailsView(BaseLoggedInView):
@@ -175,6 +187,15 @@ class NewHostDetailsView(BaseLoggedInView):
             moderate = Text('.//*[@id="legend-labels-1"]/*')
             important = Text('.//*[@id="legend-labels-2"]/*')
             critical = Text('.//*[@id="legend-labels-3"]/*')
+
+        @View.nested
+        class host_collections(Card):
+            ROOT = './/article[.//div[text()="Host collections"]]'
+            kebab_menu = Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]')
+            no_host_collections = Text('.//h2')
+            add_to_host_collection = OUIAButton('add-to-a-host-collection-button')
+
+            assigned_host_collections = HostColectionsList()
 
         @View.nested
         class recent_jobs(Card):
@@ -440,11 +461,11 @@ class NewHostDetailsView(BaseLoggedInView):
         searchbar = SearchInput(
             locator='//input[contains(@class, "pf-c-search-input__text-input")]'
         )
-        new_parameter_name = TextInput(locator='.//td//input[contains(@aria-label, "name")]')
-        new_parameter_type = Select(
+        parameter_name_input = TextInput(locator='.//td//input[contains(@aria-label, "name")]')
+        parameter_type_input = Select(
             locator='.//td[2]//div[@data-ouia-component-type="PF4/Select"]'
         )
-        new_parameter_value = TextInput(locator='.//td[3]//textarea')
+        parameter_value_input = TextInput(locator='.//td[3]//textarea')
         cancel_addition = Button(locator='.//td[5]//button[1]')
         confirm_addition = Button(locator='.//td[5]//button[2]')
 
@@ -461,7 +482,7 @@ class NewHostDetailsView(BaseLoggedInView):
                         '[contains(@data-ouia-component-id, "OUIA-Generated-Button-plain-")]'
                     )
                 ),
-                5: Button(locator='.//td[contains(@class, "parameters-actions")]//button'),
+                5: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
             },
         )
         pagination = Pagination()
@@ -667,7 +688,10 @@ class NewHostDetailsView(BaseLoggedInView):
         remediate = Button(locator='.//button[text()="Remediate"]')
         insights_dropdown = Dropdown(locator='.//div[contains(@class, "insights-dropdown")]')
 
-        select_all = Checkbox(locator='.//input[@name="check-all"]')
+        select_all_one_page = Checkbox(locator='.//input[@name="check-all"]')
+        select_all_pages = Button(
+            locator='.//button[text()="Select recommendations from all pages"]'
+        )
         recommendations_table = PatternflyTable(
             component_id='OUIA-Generated-Table-2',
             column_widgets={
@@ -679,7 +703,6 @@ class NewHostDetailsView(BaseLoggedInView):
             },
         )
         pagination = Pagination()
-        remediation_window = View.nested(RemediationView)
 
 
 class InstallPackagesView(View):
@@ -722,6 +745,56 @@ class EnableTracerView(View):
     ROOT = './/div[@data-ouia-component-id="enable-tracer-modal"]'
 
     confirm = Button(locator='//*[@data-ouia-component-id="enable-tracer-modal"]/footer/button[1]')
+
+
+class ParameterDeleteDialog(View):
+    """Confirmation dialog for deleting host parameter"""
+
+    ROOT = './/div[@data-ouia-component-id="app-confirm-modal"]'
+
+    confirm_delete = OUIAButton('btn-modal-confirm')
+    cancel_delete = OUIAButton('btn-modal-cancel')
+
+
+class ManageHostCollectionModal(View):
+    """Host Collection Modal"""
+
+    ROOT = './/div[@data-ouia-component-id="host-collections-modal"]'
+
+    create_host_collection = OUIAButton('empty-state-primary-action-button')
+    select_all = Checkbox(locator='.//input[contains(@aria-label, "Select all")]')
+    searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
+
+    host_collection_table = Table(
+        locator='.//table[contains(@class, "pf-c-table")]',
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'host_collecntion': Text('.//a'),
+            'capacity': Text('.//td[3]'),
+            'description': Text('.//td[4]'),
+        },
+    )
+
+    pagination = Pagination()
+
+    add = OUIAButton('add-button')
+    remove = OUIAButton('add-button')
+    cancel = OUIAButton('cancel-button')
+
+
+class EditSystemPurposeView(View):
+    """Edit System Purpose Modal"""
+
+    ROOT = './/div[@data-ouia-component-id="syspurpose-edit-modal"]'
+
+    role = OUIAFormSelect('role-select')
+    sla = OUIAFormSelect('service-level-select')
+    usage = OUIAFormSelect('usage-select')
+    release_version = OUIAFormSelect('release-version-select')
+    add_ons = OUIASelect('syspurpose-addons-select')
+
+    save = OUIAButton('save-syspurpose')
+    cancel = OUIAButton('cancel-syspurpose')
 
 
 class EditAnsibleRolesView(View):
