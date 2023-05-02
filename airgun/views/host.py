@@ -495,7 +495,7 @@ class HostRegisterView(BaseLoggedInView):
         )
         ROOT = '//section[@id="generalSection"]'
 
-        orgnization = FormSelect('OUIA-Generated-FormSelect-default-1')
+        organization = FormSelect('OUIA-Generated-FormSelect-default-1')
         location = FormSelect('OUIA-Generated-FormSelect-default-2')
         host_group = FormSelect('OUIA-Generated-FormSelect-default-3')
         operating_system = FormSelect('OUIA-Generated-FormSelect-default-4')
