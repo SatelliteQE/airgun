@@ -693,7 +693,7 @@ class NewHostDetailsView(BaseLoggedInView):
         select_all_pages = Button(
             locator='.//button[text()="Select recommendations from all pages"]'
         )
-        
+
         recommendations_table = PatternflyTable(
             component_id='OUIA-Generated-Table-2',
             column_widgets={

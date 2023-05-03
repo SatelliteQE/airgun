@@ -529,7 +529,7 @@ class NewHostEntity(HostEntity):
                 f'Parameter {parameter_to_change} not found on {entity_name}, '
                 'thus cannot be edited.'
             )
-        
+
         view.parameters.searchbar.fill(new_parameter_name)
         view.wait_displayed()
         if view.parameters.parameters_table.row_count != 0:
@@ -630,7 +630,7 @@ class NewHostEntity(HostEntity):
         Raises:
             ValueError: If recommendation_to_remediate is None and remediate_all is False
                     or if both recommendation_to_remediate and remediate_all are provided.
-        
+
         Search is affected by this BZ2192545.
         """
 
