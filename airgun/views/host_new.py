@@ -10,13 +10,13 @@ from widgetastic.widget.table import Table
 from widgetastic_patternfly4 import Button
 from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import Pagination
+from widgetastic_patternfly4 import PatternflyTable
 from widgetastic_patternfly4 import Select
 from widgetastic_patternfly4 import Tab
 from widgetastic_patternfly4.ouia import BreadCrumb
 from widgetastic_patternfly4.ouia import Button as OUIAButton
 from widgetastic_patternfly4.ouia import ExpandableTable
 from widgetastic_patternfly4.ouia import FormSelect as OUIAFormSelect
-from widgetastic_patternfly4.ouia import PatternflyTable
 from widgetastic_patternfly4.ouia import Select as OUIASelect
 
 from airgun.views.common import BaseLoggedInView
@@ -469,6 +469,7 @@ class NewHostDetailsView(BaseLoggedInView):
         cancel_addition = Button(locator='.//td[5]//button[1]')
         confirm_addition = Button(locator='.//td[5]//button[2]')
 
+        table_header = PatternflyTable(locator='.//table[@data-ouia-component-type="PF4/Table"]')
         parameters_table = Table(
             locator='.//table[@aria-label="Parameters table"]',
             column_widgets={
@@ -692,6 +693,7 @@ class NewHostDetailsView(BaseLoggedInView):
         select_all_pages = Button(
             locator='.//button[text()="Select recommendations from all pages"]'
         )
+        
         recommendations_table = PatternflyTable(
             component_id='OUIA-Generated-Table-2',
             column_widgets={

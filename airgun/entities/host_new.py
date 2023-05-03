@@ -17,6 +17,10 @@ from airgun.views.host_new import RemediationView
 from airgun.views.job_invocation import JobInvocationCreateView
 
 
+global available_param_types
+available_param_types = ['string', 'boolean', 'integer', 'real', 'array', 'hash', 'yaml', 'json']
+
+
 class NewHostEntity(HostEntity):
     def create(self, values):
         """Create new host entity"""
@@ -58,7 +62,7 @@ class NewHostEntity(HostEntity):
 
         if not any([role, sla, usage, release_ver, add_ons]):
             raise ValueError(
-                'At least one of the role, sla, usage, release_ver, add_ons ' 'must be provided!'
+                'At least one of the role, sla, usage, release_ver, add_ons must be provided!'
             )
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
@@ -86,25 +90,22 @@ class NewHostEntity(HostEntity):
 
         Args:
             entity_name: Name of the host
-            host_collection_name: Name of the host collection we want to remove host from
+            host_collection_name: Name of the host collection we want to add the host to
             add_to_all_collections: If True, host will be added to all host collections
 
         Raises:
-            ValueError: If specific hostColName is set to be removed and add all is set to True.
-            ValueError: If no parameters are passed.
+            ValueError: If specific hostColName is set to be removed and add all is set to True
+                        or if no parameters are passed.
             ValueError: If host is already assigned to selected host collection.
             ValueError: If there are no host collections left for addition.
             ValueError: Given host collection name is not found in host collections.
         """
 
-        if host_collection_name and add_to_all_collections:
+        if (host_collection_name and add_to_all_collections) or (
+            (host_collection_name is None) and (add_to_all_collections is False)
+        ):
             raise ValueError(
                 'Either host_collection_name or add_to_all_collections must be provided!'
-            )
-        if (host_collection_name is None) and (add_to_all_collections is False):
-            raise ValueError(
-                'host_collection_name None and add_to_all_collections False '
-                'is invalid combination!'
             )
 
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
@@ -135,6 +136,7 @@ class NewHostEntity(HostEntity):
             if view.host_collection_table.row_count == 0:
                 raise ValueError(f'{host_collection_name} not found in host collections!')
             time.sleep(3)
+            # Select the host collection via checkbox in the table
             view.host_collection_table[0][0].widget.click()
         else:
             view.select_all.click()
@@ -152,20 +154,17 @@ class NewHostEntity(HostEntity):
             remove_from_all_collections: If True, host will be removed from all host collections
 
         Raises:
-            ValueError: If specific hostColName is set to be removed & remove all is set to True.
-            ValueError: If no parameters are passed.
+            ValueError: If specific hostColName is set to be removed & remove all is set to True
+                            or if no parameters are passed.
             ValueError: If host is not assigned to any host collection.
             ValueError: If given host col name we want to remove is not assigned to host.
         """
 
-        if (host_collection_name is not None) and remove_from_all_collections:
+        if ((host_collection_name is not None) and remove_from_all_collections) or (
+            (host_collection_name is None) and (remove_from_all_collections is False)
+        ):
             raise ValueError(
-                'Either host_collection_name or remove_from_all_collections must be provided!'
-            )
-        if (host_collection_name is None) and (remove_from_all_collections is False):
-            raise ValueError(
-                'host_collection_name None and remove_from_all_collections False '
-                'is invalid combination!'
+                'Either host_collection_name or add_to_all_collections must be provided!'
             )
 
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
@@ -190,6 +189,7 @@ class NewHostEntity(HostEntity):
                     f"{host_collection_name} not assigned to host, thus can't remove it!"
                 )
             time.sleep(3)
+            # Select the host collection via checkbox in the table
             view.host_collection_table[0][0].widget.click()
         else:
             view.select_all.click()
@@ -452,20 +452,23 @@ class NewHostEntity(HostEntity):
 
         # Sanitize input
         parameter_type = parameter_type.lower()
-        available_types = ['string', 'boolean', 'integer', 'real', 'array', 'hash', 'yaml', 'json']
-        if parameter_type not in available_types:
-            raise ValueError(f'Parameter type {parameter_type} is not valid')
+        if parameter_type not in available_param_types:
+            raise ValueError(
+                f'Parameter type {parameter_type} is not valid!'
+                f'Available types are: {available_param_types}'
+            )
 
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         view.parameters.click()
+        view.parameters.table_header.sort_by('name', 'ascending')
         view.parameters.searchbar.fill(parameter_name)
         view.wait_displayed()
         # Check if parameter with given name does not exist. If it does, raise ValueError.
         if view.parameters.parameters_table.row_count != 0:
             if view.parameters.parameters_table[0][0].text == parameter_name:
-                raise ValueError(f'Parameter with name {parameter_name} already exists')
+                raise ValueError(f'Parameter with name {parameter_name} already exists!')
 
         view.parameters.add_parameter.click()
         view.parameters.parameter_name_input.fill(parameter_name)
@@ -506,27 +509,27 @@ class NewHostEntity(HostEntity):
             )
         # Sanitize input
         new_parameter_type = new_parameter_type.lower()
-        available_types = ['string', 'boolean', 'integer', 'real', 'array', 'hash', 'yaml', 'json']
-        if new_parameter_type not in available_types:
-            raise ValueError(f'Parameter type {new_parameter_type} is not valid!')
+        if new_parameter_type not in available_param_types:
+            raise ValueError(
+                f'Parameter type {new_parameter_type} is not valid!'
+                f'Available types are: {available_param_types}'
+            )
 
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         view.parameters.click()
+        view.parameters.table_header.sort_by('name', 'ascending')
         view.parameters.searchbar.fill(parameter_to_change)
         view.wait_displayed()
-        if view.parameters.parameters_table.row_count == 0:
+        if (view.parameters.parameters_table.row_count == 0) or (
+            view.parameters.parameters_table[0][0].text != parameter_to_change
+        ):
             raise ValueError(
                 f'Parameter {parameter_to_change} not found on {entity_name}, '
                 'thus cannot be edited.'
             )
-        elif view.parameters.parameters_table[0][0].text != parameter_to_change:
-            raise ValueError(
-                f'Parameter {parameter_to_change} not found on {entity_name}, '
-                'thus cannot be edited.'
-            )
-
+        
         view.parameters.searchbar.fill(new_parameter_name)
         view.wait_displayed()
         if view.parameters.parameters_table.row_count != 0:
@@ -538,6 +541,7 @@ class NewHostEntity(HostEntity):
 
         view.parameters.searchbar.fill(parameter_to_change)
         view.wait_displayed()
+        # Click edit button in the row
         view.parameters.parameters_table[0][4].widget.click()
         view.wait_displayed()
         if new_parameter_name:
@@ -566,10 +570,14 @@ class NewHostEntity(HostEntity):
         view.parameters.click()
         view.parameters.searchbar.fill(parameter_name)
         view.wait_displayed()
-        if view.parameters.parameters_table.row_count == 0:
+        # Fail if there are no parameters or if first parameter is not the one we are looking for
+        if (view.parameters.parameters_table.row_count == 0) or (
+            view.parameters.parameters_table[0][0].text != parameter_name
+        ):
             raise ValueError(
                 f'Parameter {parameter_name} not found on {entity_name}, thus cannot be deleted.'
             )
+
         view.parameters.parameters_table[0][5].widget.item_select('Delete')
         delete_modal = ParameterDeleteDialog(self.browser)
         if delete_modal.is_displayed:
@@ -621,16 +629,16 @@ class NewHostEntity(HostEntity):
 
         Raises:
             ValueError: If recommendation_to_remediate is None and remediate_all is False
-            ValueError: If both recommendation_to_remediate and remediate_all are provided
+                    or if both recommendation_to_remediate and remediate_all are provided.
+        
+        Search is affected by this BZ2192545.
         """
 
-        if (recommendation_to_remediate is not None) and remediate_all:
+        if ((recommendation_to_remediate is not None) and remediate_all) or (
+            (recommendation_to_remediate is None) and (remediate_all is False)
+        ):
             raise ValueError(
                 'Either recommendation_to_remediate or remediate_all must be provided!'
-            )
-        if (recommendation_to_remediate is None) and (remediate_all is False):
-            raise ValueError(
-                'recommendation_to_remediate None and remediate_all False is invalid combination!'
             )
 
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
@@ -640,6 +648,7 @@ class NewHostEntity(HostEntity):
             view.insights.select_all_one_page.click()
             view.insights.select_all_pages.click()
         else:
+            view.insights.recommendations_table.sort_by('name', 'ascending')
             view.insights.search_bar.fill(recommendation_to_remediate)
             view.wait_displayed()
             view.insights.recommendations_table[0][0].widget.click()
