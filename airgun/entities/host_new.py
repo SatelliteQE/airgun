@@ -630,8 +630,8 @@ class NewHostEntity(HostEntity):
         Raises:
             ValueError: If recommendation_to_remediate is None and remediate_all is False
                     or if both recommendation_to_remediate and remediate_all are provided.
+            IndexError: If given recommendation is not found
 
-        Search is affected by this BZ2192545.
         """
 
         if ((recommendation_to_remediate is not None) and remediate_all) or (
