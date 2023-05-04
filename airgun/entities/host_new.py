@@ -674,7 +674,7 @@ class NewHostEntity(HostEntity):
                 # Excape double quotes in the recommendation
                 recommendation_to_remediate = recommendation_to_remediate.replace('"', '\\"')
                 recommendation_to_remediate = f'title = "{recommendation_to_remediate}"'
-                view.insights.search_bar.fill(recommendation_to_remediate)
+                view.insights.search_bar.fill(recommendation_to_remediate, enter_timeout=3)
                 view.wait_displayed()
                 self.browser.plugin.ensure_page_safe()
                 time.sleep(3)
