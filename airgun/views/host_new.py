@@ -10,13 +10,13 @@ from widgetastic.widget.table import Table
 from widgetastic_patternfly4 import Button
 from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import Pagination
-from widgetastic_patternfly4 import PatternflyTable
 from widgetastic_patternfly4 import Select
 from widgetastic_patternfly4 import Tab
 from widgetastic_patternfly4.ouia import BreadCrumb
 from widgetastic_patternfly4.ouia import Button as OUIAButton
 from widgetastic_patternfly4.ouia import ExpandableTable
 from widgetastic_patternfly4.ouia import FormSelect as OUIAFormSelect
+from widgetastic_patternfly4.ouia import PatternflyTable
 from widgetastic_patternfly4.ouia import Select as OUIASelect
 
 from airgun.views.common import BaseLoggedInView
@@ -42,8 +42,8 @@ class RemediationView(View):
     """Remediation window view"""
 
     ROOT = './/div[@id="remediation-modal"]'
-    remediate = Button(locator='.//button[text()="Remediate"]')
-    cancel = Button(locator='.//button[text()="Cancel"]')
+    remediate = Button("Remediate")
+    cancel = Button("Cancel")
     table = PatternflyTable(
         component_id='OUIA-Generated-Table-4',
         column_widgets={

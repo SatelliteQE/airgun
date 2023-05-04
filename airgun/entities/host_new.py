@@ -648,10 +648,44 @@ class NewHostEntity(HostEntity):
             view.insights.select_all_one_page.click()
             view.insights.select_all_pages.click()
         else:
-            view.insights.recommendations_table.sort_by('name', 'ascending')
-            view.insights.search_bar.fill(recommendation_to_remediate)
-            view.wait_displayed()
-            view.insights.recommendations_table[0][0].widget.click()
+            view.insights.recommendations_table.sort_by('Recommendation', 'ascending')
+
+            if type(recommendation_to_remediate) is list:
+                if not recommendation_to_remediate:
+                    raise ValueError('List of recommendations cannot be empty!')
+                for recommendation in recommendation_to_remediate:
+                    view.insights.click()
+                    # Excape double quotes in the recommendation
+                    recommendation = recommendation.replace('"', '\\"')
+                    recommendation = f'title = "{recommendation}"'
+                    view.insights.search_bar.fill(recommendation, enter_timeout=3)
+                    view.wait_displayed()
+                    self.browser.plugin.ensure_page_safe()
+                    time.sleep(3)
+                    try:
+                        # Click the checkbox of the first recommendation
+                        view.insights.recommendations_table[0][0].widget.click()
+                    except IndexError:
+                        raise IndexError(
+                            f'Recommendation {recommendation} not found on {entity_name}, '
+                            'thus cannot be remediated.'
+                        )
+            else:
+                # Excape double quotes in the recommendation
+                recommendation_to_remediate = recommendation_to_remediate.replace('"', '\\"')
+                recommendation_to_remediate = f'title = "{recommendation_to_remediate}"'
+                view.insights.search_bar.fill(recommendation_to_remediate)
+                view.wait_displayed()
+                self.browser.plugin.ensure_page_safe()
+                time.sleep(3)
+                try:
+                    # Click the checkbox of the first recommendation
+                    view.insights.recommendations_table[0][0].widget.click()
+                except IndexError:
+                    raise IndexError(
+                        f'Recommendation {recommendation_to_remediate} not found '
+                        f'on {entity_name}, thus cannot be remediated.'
+                    )
         view.insights.remediate.click()
         view = RemediationView(self.browser)
         view.remediate.click()
