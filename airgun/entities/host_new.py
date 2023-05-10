@@ -90,13 +90,14 @@ class NewHostEntity(HostEntity):
 
         Args:
             entity_name: Name of the host
-            host_collection_name: Name of the host collection we want to add the host to
+            host_collection_name: Name  or list of the host collection we want to add the host to
             add_to_all_collections: If True, host will be added to all host collections
 
         Raises:
             ValueError: If specific hostColName is set to be removed and add all is set to True
                         or if no parameters are passed.
             ValueError: If host is already assigned to selected host collection.
+            ValueError: If there is empty list provided for host_collection_name.
             ValueError: If there are no host collections left for addition.
             ValueError: Given host collection name is not found in host collections.
         """
@@ -130,14 +131,27 @@ class NewHostEntity(HostEntity):
             raise ValueError('No host collections found or left for addition!')
 
         if not add_to_all_collections:
-            view.searchbar.fill("name = " + host_collection_name, enter_timeout=5)
-            view.wait_displayed()
-            self.browser.plugin.ensure_page_safe()
-            if view.host_collection_table.row_count == 0:
-                raise ValueError(f'{host_collection_name} not found in host collections!')
-            time.sleep(3)
-            # Select the host collection via checkbox in the table
-            view.host_collection_table[0][0].widget.click()
+            if type(host_collection_name) is list:
+                if not host_collection_name:
+                    raise ValueError('host_collection_name list is empty!')
+                for host_col in host_collection_name:
+                    view.searchbar.fill("name = " + host_col, enter_timeout=2)
+                    view.wait_displayed()
+                    self.browser.plugin.ensure_page_safe()
+                    if view.host_collection_table.row_count == 0:
+                        raise ValueError(f'{host_col} not found in host collections!')
+                    time.sleep(3)
+                    # Select the host collection via checkbox in the table
+                    view.host_collection_table[0][0].widget.click()
+            else:
+                view.searchbar.fill("name = " + host_collection_name, enter_timeout=2)
+                view.wait_displayed()
+                self.browser.plugin.ensure_page_safe()
+                if view.host_collection_table.row_count == 0:
+                    raise ValueError(f'{host_collection_name} not found in host collections!')
+                time.sleep(3)
+                # Select the host collection via checkbox in the table
+                view.host_collection_table[0][0].widget.click()
         else:
             view.select_all.click()
         view.add.click()
@@ -150,13 +164,14 @@ class NewHostEntity(HostEntity):
 
         Args:
             entity_name: Name of the host
-            host_collection_name: Name of the host collection we want to remove host from
+            host_collection_name: Name or list of the host collection we want to remove host from
             remove_from_all_collections: If True, host will be removed from all host collections
 
         Raises:
             ValueError: If specific hostColName is set to be removed & remove all is set to True
                             or if no parameters are passed.
             ValueError: If host is not assigned to any host collection.
+            ValueError: If there is empty list provided for host_collection_name.
             ValueError: If given host col name we want to remove is not assigned to host.
         """
 
@@ -181,16 +196,29 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
 
         if not remove_from_all_collections:
-            view.searchbar.fill("name = " + host_collection_name, enter_timeout=5)
-            view.wait_displayed()
-            self.browser.plugin.ensure_page_safe()
-            if not view.host_collection_table.is_displayed:
-                raise ValueError(
-                    f"{host_collection_name} not assigned to host, thus can't remove it!"
-                )
-            time.sleep(3)
-            # Select the host collection via checkbox in the table
-            view.host_collection_table[0][0].widget.click()
+            if type(host_collection_name) is list:
+                if not host_collection_name:
+                    raise ValueError('host_collection_name list is empty!')
+                for host_col in host_collection_name:
+                    view.searchbar.fill("name = " + host_col, enter_timeout=2)
+                    view.wait_displayed()
+                    self.browser.plugin.ensure_page_safe()
+                    if not view.host_collection_table.is_displayed:
+                        raise ValueError(f"{host_col} not assigned to host, thus can't remove it!")
+                    time.sleep(3)
+                    # Select the host collection via checkbox in the table
+                    view.host_collection_table[0][0].widget.click()
+            else:
+                view.searchbar.fill("name = " + host_collection_name, enter_timeout=2)
+                view.wait_displayed()
+                self.browser.plugin.ensure_page_safe()
+                if not view.host_collection_table.is_displayed:
+                    raise ValueError(
+                        f"{host_collection_name} not assigned to host, thus can't remove it!"
+                    )
+                time.sleep(3)
+                # Select the host collection via checkbox in the table
+                view.host_collection_table[0][0].widget.click()
         else:
             view.select_all.click()
         view.remove.click()
