@@ -106,7 +106,9 @@ class ContentHostsView(BaseLoggedInView, SearchableViewMixin):
             'Installable Updates': InstallableUpdatesCellView(),
         },
     )
-    pagination = Pagination()
+
+    total_items = Text("//span[@class='pagination-pf-items-total ng-binding']")
+    pages = Text("//span[@class='pagination-pf-pages ng-binding ng-scope']")
 
     @property
     def is_displayed(self):
