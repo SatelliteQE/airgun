@@ -42,11 +42,11 @@ class ContentHostEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
-    def get_details(self, entity_name, widget_names=None):
+    def read_legacy_ui(self, entity_name, widget_names=None):
         """Read host values from Host Details page, optionally only the widgets in widget_names
         will be read.
         """
-        view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def execute_package_action(self, entity_name, action_type, value, installed_via='rex'):
@@ -280,7 +280,7 @@ class NavigateToErrataDetails(NavigateStep):
         self.parent.errata.table.row(id=errata_id)['Id'].widget.click()
 
 
-@navigator.register(ContentHostEntity, 'Details')
+@navigator.register(ContentHostEntity, 'LegacyDetails')
 class ShowContentHostDetails(NavigateStep):
     """Navigate to Host Details page by clicking on necessary host name in the
     table
