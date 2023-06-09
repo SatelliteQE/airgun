@@ -48,6 +48,7 @@ class VirtwhoConfigureEntity(BaseEntity):
         values = self._reset_values(values)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_message(f"Success alert: Successfully created {values['name']}.")
         view.flash.assert_no_error()
         view.flash.dismiss()
 
