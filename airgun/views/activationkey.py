@@ -1,3 +1,4 @@
+from widgetastic.widget import Checkbox
 from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Select
 from widgetastic.widget import Table
@@ -86,7 +87,17 @@ class ActivationKeyEditView(BaseLoggedInView):
     @View.nested
     class repository_sets(SatTab):
         TAB_NAME = 'Repository Sets'
-        table = Table(locator=".//table")
+        repo_type = Select(locator='.//select[@id="repositoryTypes"]')
+        table = Table(
+            locator=".//table",
+            column_widgets={
+                0: Checkbox(locator='.//input[@type="checkbox"]'),
+                'Repository Name': Text('./td'),
+                'Product Name': Text('./a'),
+                'Repository path': Text('./td'),
+                'Status': Text('./td'),
+            },
+        )
 
     @View.nested
     class host_collections(SatTab):
