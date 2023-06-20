@@ -48,6 +48,7 @@ class VirtwhoConfigureEntity(BaseEntity):
         values = self._reset_values(values)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_message(f"Success alert: Successfully created {values['name']}.")
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -62,6 +63,7 @@ class VirtwhoConfigureEntity(BaseEntity):
         values = self._reset_values(values)
         view.fill(values)
         view.submit.click()
+        view.flash.assert_message(f"Success alert: Successfully updated {name}.")
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -76,6 +78,7 @@ class VirtwhoConfigureEntity(BaseEntity):
         view.search(value)
         view.table.row(name=value)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        view.flash.assert_message(f"Success alert: Successfully deleted {value}.")
         view.flash.assert_no_error()
         view.flash.dismiss()
 
