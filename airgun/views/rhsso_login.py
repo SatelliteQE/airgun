@@ -16,7 +16,7 @@ class RhssoLoginView(View, ClickableMixin):
 
 class RhssoExternalLogoutView(View, ClickableMixin):
     login_again = Text('//a[@href="/users/extlogin"]')
-    logo = Text('//img[@alt="logo')
+    logo = Text('//img[@alt="logo"]')
 
     @property
     def is_displayed(self):

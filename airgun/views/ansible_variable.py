@@ -18,10 +18,8 @@ class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixin):
     """Main Ansible Variables view"""
 
     title = Text("//h1[contains(normalize-space(.),'Ansible Variables')]")
-    new_variable = Text(
-        "//a[contains(@href, '/ansible/ansible_variables/new')]")
-    total_variables = Text(
-        "//span[@class='pf-c-options-menu__toggle-text']//b[2]")
+    new_variable = Text("//a[contains(@href, '/ansible/ansible_variables/new')]")
+    total_variables = Text("//span[@class='pf-c-options-menu__toggle-text']//b[2]")
     table = SatTable(
         './/table',
         column_widgets={
@@ -114,8 +112,7 @@ class NewAnsibleVariableView(BaseLoggedInView):
     def expand(self):
         """Expand the Optional Input Validator section"""
         if not self.expanded:
-            self.browser.click(
-                self.expand_optional_input_validator, parent=self)
+            self.browser.click(self.expand_optional_input_validator, parent=self)
 
     @property
     def is_displayed(self):

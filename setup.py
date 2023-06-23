@@ -32,7 +32,7 @@ setup(
     include_package_data=True,
     license='GNU GPL v3.0',
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
-    classifiers=(
+    classifiers=[
         'Development Status :: 1 - Planning',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
@@ -42,5 +42,5 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
-    ),
+    ],
 )
