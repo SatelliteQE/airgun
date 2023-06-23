@@ -517,7 +517,7 @@ class HostRegisterView(BaseLoggedInView):
         linux_host_init_link = Link('//a[normalize-space(.)="Linux host_init_config default"]')
         capsule = FormSelect('OUIA-Generated-FormSelect-default-5')
         insecure = Checkbox(id='reg_insecure')
-        activation_keys = BaseMultiSelect('OUIA-Generated-Select-typeaheadmulti-1')
+        activation_keys = BaseMultiSelect('activation-keys-field')
         activation_key_helper = Text("//div[@id='reg_katello_ak-helper']")
 
     @View.nested
