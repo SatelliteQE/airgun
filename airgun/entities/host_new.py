@@ -462,6 +462,12 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
         return view.parameters.read()
 
+    def get_virtualization(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.details.virtualization.read()
+
     def add_new_parameter(self, entity_name, parameter_name, parameter_type, parameter_value):
         """
         Function that adds new parameter to the host

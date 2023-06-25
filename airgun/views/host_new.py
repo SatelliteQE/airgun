@@ -344,6 +344,20 @@ class NewHostDetailsView(BaseLoggedInView):
         class networking_interface(Card):
             pass
 
+        @View.nested
+        class virtualization(Card):
+            ROOT = './/article[contains(@data-ouia-component-id, "card-template-Virtualization")]'
+
+            name = Text('.//div[contains(@class, "pf-c-description-list__group")][1]//dd')
+            core_per_socket = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][2]//dd'
+            )
+            sockets = Text('.//div[contains(@class, "pf-c-description-list__group")][3]//dd')
+            memory = Text('.//div[contains(@class, "pf-c-description-list__group")][4]//dd')
+            display = Text('.//div[contains(@class, "pf-c-description-list__group")][5]//dd')
+            disk = Text('.//div[contains(@class, "pf-c-description-list__group")][6]//dd')
+            running_on = Text('.//div[contains(@class, "pf-c-description-list__group")][13]//dd')
+
     @View.nested
     class content(Tab):
         # TODO Setting ROOT is just a workaround because of BZ 2119076,
