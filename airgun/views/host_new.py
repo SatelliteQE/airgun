@@ -348,14 +348,28 @@ class NewHostDetailsView(BaseLoggedInView):
         class virtualization(Card):
             ROOT = './/article[contains(@data-ouia-component-id, "card-template-Virtualization")]'
 
-            name = Text('.//div[contains(@class, "pf-c-description-list__group")][1]//dd')
-            core_per_socket = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][2]//dd'
+            datacenter = Text('.//div[contains(@class, "pf-c-description-list__group")][1]//dd')
+            cluster = Text('.//div[contains(@class, "pf-c-description-list__group")][2]//dd')
+            memory = Text('.//div[contains(@class, "pf-c-description-list__group")][3]//dd')
+            public_ip_address = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][4]//dd'
             )
-            sockets = Text('.//div[contains(@class, "pf-c-description-list__group")][3]//dd')
-            memory = Text('.//div[contains(@class, "pf-c-description-list__group")][4]//dd')
-            display = Text('.//div[contains(@class, "pf-c-description-list__group")][5]//dd')
-            disk = Text('.//div[contains(@class, "pf-c-description-list__group")][6]//dd')
+            mac_address = Text('.//div[contains(@class, "pf-c-description-list__group")][5]//dd')
+            cpus = Text('.//div[contains(@class, "pf-c-description-list__group")][6]//dd')
+            cores_per_socket = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][7]//dd'
+            )
+            firmware = Text('.//div[contains(@class, "pf-c-description-list__group")][8]//dd')
+            hypervisor = Text('.//div[contains(@class, "pf-c-description-list__group")][9]//dd')
+            connection_state = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][10]//dd'
+            )
+            overall_status = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][11]//dd'
+            )
+            annotation_notes = Text(
+                './/div[contains(@class, "pf-c-description-list__group")][12]//dd'
+            )
             running_on = Text('.//div[contains(@class, "pf-c-description-list__group")][13]//dd')
 
     @View.nested
