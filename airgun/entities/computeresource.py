@@ -91,9 +91,13 @@ class ComputeResourceEntity(BaseEntity):
         if vm['Power'].widget.read() == 'On':
             vm['Actions'].widget.click(handle_alert=True)
 
-    def vm_import(self, entity_name, vm_name, hostgroup, location):
+    def vm_import(self, entity_name, vm_name, hostgroup, location, org=None, name=None):
         """Imports the specified VM"""
         view = self.navigate_to(self, 'VMImport', entity_name=entity_name, vm_name=vm_name)
+        if name:
+            view.fill({'host.name': name})
+        if org:
+            view.fill({'host.organization': org})
         view.fill({'host.hostgroup': hostgroup, 'host.location': location})
         view.submit.click()
 
