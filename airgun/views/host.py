@@ -497,8 +497,8 @@ class HostCreateView(BaseLoggedInView):
 
 
 class HostRegisterView(BaseLoggedInView):
-    generate_command = PF4Button('OUIA-Generated-Button-primary-1')
-    cancel = PF4Button('OUIA-Generated-Button-link-1')
+    generate_command = PF4Button('registration_generate_btn')
+    cancel = PF4Button('registration-cancel-button')
     registration_command = TextInput(locator="//input[@aria-label='Copyable input']")
 
     @View.nested
@@ -510,12 +510,12 @@ class HostRegisterView(BaseLoggedInView):
         )
         ROOT = '//section[@id="generalSection"]'
 
-        organization = FormSelect('OUIA-Generated-FormSelect-default-1')
-        location = FormSelect('OUIA-Generated-FormSelect-default-2')
-        host_group = FormSelect('OUIA-Generated-FormSelect-default-3')
-        operating_system = FormSelect('OUIA-Generated-FormSelect-default-4')
+        organization = FormSelect('reg_organization')
+        location = FormSelect('reg_location')
+        host_group = FormSelect('reg_host_group')
+        operating_system = FormSelect('os-select')
         linux_host_init_link = Link('//a[normalize-space(.)="Linux host_init_config default"]')
-        capsule = FormSelect('OUIA-Generated-FormSelect-default-5')
+        capsule = FormSelect('reg_smart_proxy')
         insecure = Checkbox(id='reg_insecure')
         activation_keys = BaseMultiSelect('activation-keys-field')
         activation_key_helper = Text("//div[@id='reg_katello_ak-helper']")
@@ -529,8 +529,8 @@ class HostRegisterView(BaseLoggedInView):
         )
         ROOT = '//section[@id="advancedSection"]'
 
-        setup_rex = FormSelect('OUIA-Generated-FormSelect-default-6')
-        setup_insights = FormSelect('OUIA-Generated-FormSelect-default-7')
+        setup_rex = FormSelect('registration_setup_remote_execution')
+        setup_insights = FormSelect('registration_setup_insights')
         install_packages = TextInput(id='reg_packages')
         update_packages = Checkbox(id='reg_update_packages')
         repository = TextInput(id='reg_repo')
@@ -538,7 +538,7 @@ class HostRegisterView(BaseLoggedInView):
         token_life_time = TextInput(id='reg_token_life_time_input')
         rex_interface = TextInput(id='reg_rex_interface_input')
         rex_pull_mode = FormSelect('OUIA-Generated-FormSelect-default-8')
-        life_cycle_env = FormSelect('OUIA-Generated-FormSelect-default-9')
+        life_cycle_env = FormSelect('reg-katello-lce')
         ignore_error = Checkbox(id='reg_katello_ignore')
         force = Checkbox(id='reg_katello_force')
         life_cycle_env_helper = Text("//div[@id='reg_katello_lce-helper']")
