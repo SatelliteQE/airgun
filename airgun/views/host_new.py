@@ -436,12 +436,18 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@id="repo-sets-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-            searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
+            searchbar = SearchInput(
+                locator='.//input[contains(@aria-label, "text input for search")]'
+            )
+            show_all = Button(locator='.//div[button[@aria-label="No limit"]]')
+            limit_to_environemnt = Button(
+                locator='.//div[button[@aria-label="Limit to environment"]]'
+            )
             status_filter = Select(locator='.//div[@aria-label="select Status container"]/div')
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = Table(
-                locator='.//table[@aria-label="Content View Table"]',
+                locator='.//table[@data-ouia-component-id="host-repository-sets-table"]',
                 column_widgets={
                     0: Checkbox(locator='.//input[@type="checkbox"]'),
                     'Repository': Text('./span'),
