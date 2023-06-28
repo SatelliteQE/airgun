@@ -40,8 +40,8 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
+        # Run this read twice to navigate to the page and load it before reading
         view.read(widget_names=widget_names)
-        time.sleep(3)
         return view.read(widget_names=widget_names)
 
     def edit_system_purpose(
