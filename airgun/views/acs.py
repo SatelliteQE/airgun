@@ -145,15 +145,15 @@ class AddAlternateContentSourceModal(View):
 
     There are two variations of wizard steps depending on selected source type:
 
-    * Select source type
-    * Name source
-    * Select Capsule
-    - Simplified:
-        * Select products
-    - Custom, RHUI:
-        * URL and paths
-        * Credentials
-    * Review details
+    - Select source type
+    - Name source
+    - Select Capsule
+    @ Simplified:
+        - Select products
+    @ Custom, RHUI:
+        - URL and paths
+        - Credentials
+    - Review details
     """
 
     ROOT = '//div[contains(@data-ouia-component-id, "OUIA-Generated-Modal-large-")]'
@@ -243,11 +243,11 @@ class RowDrawer(View):
     """
     Class that describes row drawer of the Alternate Content Sources page.
     Drawer can contain following items depending on the type of the ACS:
-            * Details:           [Simplified, Custom, RHUI]
-            * Capsules:          [Simplified, Custom, RHUI]
-            * URL and subpaths:  [Custom, RHUI]
-            * Credentials:       [Custom, RHUI]
-            * Products:          [Simplified]
+            - Details:           [Simplified, Custom, RHUI]
+            - Capsules:          [Simplified, Custom, RHUI]
+            - URL and subpaths:  [Custom, RHUI]
+            - Credentials:       [Custom, RHUI]
+            - Products:          [Simplified]
     """
 
     title = OUIAText('acs-name-text')
