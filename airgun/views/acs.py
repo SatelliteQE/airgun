@@ -395,26 +395,25 @@ class RowDrawer(View):
         time.sleep(3)
         # Expand and read each stack item
         for key in result:
-            match key:
-                case 'details':
-                    self.details_stack_item.expand()
-                    result[key] = self.details_stack_item.read()
-                    result['details']['last_refresh'] = self.last_refresh.text
-                case 'capsules':
-                    self.capsules_stack_item.expand()
-                    result[key] = self.capsules_stack_item.read()
-                case 'url_and_subpaths':
-                    if self.url_and_subpaths_stack_item.is_displayed:
-                        self.url_and_subpaths_stack_item.expand()
-                        result[key] = self.url_and_subpaths_stack_item.read()
-                case 'credentials':
-                    if self.credentials_stack_item.is_displayed:
-                        self.credentials_stack_item.expand()
-                        result[key] = self.credentials_stack_item.read()
-                case 'products':
-                    if self.products_stack_item.is_displayed:
-                        self.products_stack_item.expand()
-                        result[key] = self.products_stack_item.read()
+            if key == 'details':
+                self.details_stack_item.expand()
+                result[key] = self.details_stack_item.read()
+                result['details']['last_refresh'] = self.last_refresh.text
+            elif key == 'capsules':
+                self.capsules_stack_item.expand()
+                result[key] = self.capsules_stack_item.read()
+            elif key == 'url_and_subpaths':
+                if self.url_and_subpaths_stack_item.is_displayed:
+                    self.url_and_subpaths_stack_item.expand()
+                    result[key] = self.url_and_subpaths_stack_item.read()
+            elif key == 'credentials':
+                if self.credentials_stack_item.is_displayed:
+                    self.credentials_stack_item.expand()
+                    result[key] = self.credentials_stack_item.read()
+            elif key == 'products':
+                if self.products_stack_item.is_displayed:
+                    self.products_stack_item.expand()
+                    result[key] = self.products_stack_item.read()
 
         # Remove None values from the result dictionary and return it
         result = {k: v for k, v in result.items() if v is not None}
