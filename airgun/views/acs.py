@@ -246,7 +246,7 @@ class RowDrawer(View):
     """
     Class that describes row drawer of the Alternate Content Sources page.
     Drawer can contain following items depending on the type of the ACS:
-    
+
         * Details:           [Simplified, Custom, RHUI]
         * Capsules:          [Simplified, Custom, RHUI]
         * URL and subpaths:  [Custom, RHUI]
