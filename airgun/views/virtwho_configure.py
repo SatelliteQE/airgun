@@ -120,6 +120,7 @@ class VirtwhoConfiguresView(BaseLoggedInView, SearchableViewMixin):
 class VirtwhoConfigureCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     name = TextInput(id='foreman_virt_who_configure_config_name')
+    organization_id = FilteredDropdown(id='foreman_virt_who_configure_config_organization_id')
     interval = FilteredDropdown(id='foreman_virt_who_configure_config_interval')
     satellite_url = TextInput(id='foreman_virt_who_configure_config_satellite_url')
     hypervisor_id = FilteredDropdown(id='foreman_virt_who_configure_config_hypervisor_id')
