@@ -75,9 +75,7 @@ class EditCapsulesModal(DualListSelector):
 
     use_http_proxies = Switch(locator='.//label[@for="use-http-proxies-switch"]')
 
-    edit_button = Button(locator='.//div[@class="pf-c-form__actions"]/button[1]')
-    # TODO Remove line above and uncomment line below when BZ2213190 is fixed
-    # edit_button = OUIAButton('edit-acs-smart-proxies-submit')
+    edit_button = OUIAButton('edit-acs-smart-proxies-submit')
     cancel_button = OUIAButton('edit-acs-smart-proxies-cancel')
 
 
@@ -101,9 +99,7 @@ class EditCredentialsModal(EditModal):
     ROOT = '//div[@data-ouia-component-id="acs-edit-credentials-modal"]'
 
     verify_ssl_toggle = Switch(locator='.//label[@for="verify-ssl-switch"]')
-    select_ca_cert = FormSelect(locator='.//select[option[text()="Select a CA certificate"]]')
-    # TODO Remove line above and uncomment line below when BZ2212812 is fixed
-    # select_ca_cert = OUIAFormSelect('sslCAcert-select')
+    select_ca_cert = OUIAFormSelect('sslCAcert-select')
 
     manual_auth_radio_btn = Radio(id='manual_auth')
     username = OUIATextInput('acs-username-field')
@@ -111,18 +107,12 @@ class EditCredentialsModal(EditModal):
 
     content_credentials_radio_btn = Radio(id='content_credentials')
     ssl_client_cert = OUIAFormSelect('ssl-client-cert-select')
-    ssl_client_key = FormSelect(locator='.//select[option[text()="Select a client key"]]')
-    # TODO Remove line above and uncomment line below when BZ2212812 is fixed
-    # ssl_client_key = OUIAFormSelect('ssl-client-key-select')
+    ssl_client_key = OUIAFormSelect('ssl_client_key_select')
 
     none_auth_radio_btn = Radio(id='none')
 
-    edit_button = Button(locator='.//div[@class="pf-c-form__actions"]/button[1]')
-    # TODO Remove line above and uncomment line below when BZ2212740 is fixed
-    # edit_button = OUIAButton('edit-acs-credentials-submit')
-    cancel_button = Button(locator='.//div[@class="pf-c-form__actions"]/button[2]')
-    # TODO Remove line above and uncomment line below when BZ2212740 is fixed
-    # cancel_button = OUIAButton('edit-acs-credentials-cancel')
+    edit_button = OUIAButton('edit-acs-credentials-submit')
+    cancel_button = OUIAButton('edit-acs-credentials-cancel')
 
 
 class EditProductsModal(DualListSelector):
@@ -130,12 +120,8 @@ class EditProductsModal(DualListSelector):
 
     ROOT = '//div[@data-ouia-component-id="acs-edit-products-modal"]'
 
-    edit_button = Button(locator='.//div[@class="pf-c-form__actions"]/button[1]')
-    # TODO Remove line above and uncomment line below when BZ2213486 is fixed
-    # edit_button = OUIAButton('edit-acs-credentials-submit')
-    cancel_button = Button(locator='.//div[@class="pf-c-form__actions"]/button[2]')
-    # TODO Remove line above and uncomment line below when BZ2213486 is fixed
-    # cancel_button = OUIAButton('edit-acs-credentials-cancel')
+    edit_button = OUIAButton('edit-acs-products-submit')
+    cancel_button = OUIAButton('edit-acs-products-cancel')
 
 
 class AddAlternateContentSourceModal(View):
@@ -292,9 +278,8 @@ class RowDrawer(View):
     class capsules_stack_item(View, AcsStackItem):
         """Class representing the Capsules stack item in the ACS drawer"""
 
-        # TODO Remove "Smart proxies" part from xpath after BZ2213768 is resolved"
         ROOT = (
-            '//div[(normalize-space(.)="Smart proxies" or normalize-space(.)="Capsules")'
+            '//div[(normalize-space(.)="Capsules")'
             ' and contains(@class, "pf-c-expandable-section")]'
         )
         title = OUIAText('expandable-smart-proxies-text')
