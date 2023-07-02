@@ -324,6 +324,7 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         view.content.repository_sets.searchbar.fill(search)
         self.browser.plugin.ensure_page_safe()
+        time.sleep(3)
         return view.content.repository_sets.table.read()
 
     def override_repo_sets(self, entity_name, repo_set, action):
