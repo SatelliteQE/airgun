@@ -49,4 +49,5 @@ class AuditsView(BaseLoggedInView):
 
     def search(self, query):
         self.searchbox.search(query)
+        self.title.click()  # to exit the search field
         return self.entry.read()
