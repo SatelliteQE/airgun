@@ -436,8 +436,17 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@id="repo-sets-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-            searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
+            searchbar = SearchInput(
+                locator='.//input[contains(@class, "pf-c-text-input-group__text-input")]'
+            )
+            show_all = Button(locator='.//div[button[@aria-label="No limit"]]')
+            limit_to_environemnt = Button(
+                locator='.//div[button[@aria-label="Limit to environment"]]'
+            )
             status_filter = Select(locator='.//div[@aria-label="select Status container"]/div')
+            repository_type = Select(
+                locator='.//div[@aria-label="select Repository type container"]/div'
+            )
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = Table(
@@ -448,7 +457,8 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Product': Text('./a'),
                     'Repository path': Text('./span'),
                     'Status': Text('.//span[contains(@class, "pf-c-label__content")]'),
-                    5: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                    'Repository Type': Text('./span'),
+                    6: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
                 },
             )
             pagination = Pagination()

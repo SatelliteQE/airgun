@@ -332,7 +332,18 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         view.content.repository_sets.searchbar.fill(repo_set)
         self.browser.plugin.ensure_page_safe()
-        view.content.repository_sets.table[0][5].widget.item_select(action)
+        view.content.repository_sets.table[0][6].widget.item_select(action)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
+    def bulk_override_repo_sets(self, entity_name, repo_type, action):
+        """Change override for repository set"""
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.content.repository_sets.repository_type.item_select(repo_type)
+        view.content.repository_sets.select_all.click()
+        view.content.repository_sets.dropdown.item_select(action)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
