@@ -36,7 +36,7 @@ class ActivationKeyEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
-    def get_repos(self, entity_name, repo_type="All", widget_names=None):
+    def get_repos(self, entity_name, repo_type="All"):
         """Read all values for repository sets on activation keys"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.repository_sets.repo_type.select_by_visible_text(repo_type)
