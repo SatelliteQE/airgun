@@ -22,7 +22,6 @@ from widgetastic_patternfly import Kebab
 from widgetastic_patternfly import VerticalNavigation
 from widgetastic_patternfly4.ouia import BaseSelect
 from widgetastic_patternfly4.ouia import Button as PF4Button
-from widgetastic_patternfly4.ouia import ContextSelector as OUIAContextSelector
 from widgetastic_patternfly4.ouia import Dropdown
 
 from airgun.exceptions import DisabledWidgetError
@@ -905,8 +904,8 @@ class ValidationErrors(Widget):
 
 
 class ContextSelector(Widget):
-    CURRENT_ORG = OUIAContextSelector('OUIA-Generated-ContextSelector-1')
-    CURRENT_LOC = OUIAContextSelector('OUIA-Generated-ContextSelector-2')
+    CURRENT_ORG = '//div[@data-ouia-component-id="taxonomy-context-selector-organization"]'
+    CURRENT_LOC = '//div[@data-ouia-component-id="taxonomy-context-selector-location"]'
     ORG_LOCATOR = '//div[@id="organization-dropdown"]//li[button[contains(.,{})]]'
     LOC_LOCATOR = '//div[@id="location-dropdown"]//li[button[contains(.,{})]]'
 
