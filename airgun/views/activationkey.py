@@ -86,6 +86,7 @@ class ActivationKeyEditView(BaseLoggedInView):
     @View.nested
     class repository_sets(SatTab):
         TAB_NAME = 'Repository Sets'
+        repo_type = Select(locator='.//select[@id="repositoryTypes"]')
         table = Table(locator=".//table")
 
     @View.nested
