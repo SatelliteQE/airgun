@@ -96,4 +96,3 @@ jobs:
             - [Parent Pull Request](https://github.com/${{ github.repository }}/pull/${{ github.event.number }})
           labels: Failed_AutoCherryPick,${{ matrix.label }}
           assignees: ${{ env.assignee }}
-
