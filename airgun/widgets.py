@@ -23,6 +23,8 @@ from widgetastic_patternfly import VerticalNavigation
 from widgetastic_patternfly4.ouia import BaseSelect
 from widgetastic_patternfly4.ouia import Button as PF4Button
 from widgetastic_patternfly4.ouia import Dropdown
+from widgetastic_patternfly4.table import BaseExpandableTable
+from widgetastic_patternfly4.table import BasePatternflyTable
 
 from airgun.exceptions import DisabledWidgetError
 from airgun.exceptions import ReadOnlyWidgetError
@@ -751,11 +753,17 @@ class PF4Search(Search):
     ROOT = '//div[@role="combobox" or @aria-haspopup="listbox"]'
     search_field = TextInput(
         locator=(
-            ".//input[@type='text' or @id='downshift-0-input' or"
-            " contains(@class, 'pf-m-search') or data-ouia-component-type='PF4/TextInput']"
+            ".//input[@type='search' or @id='downshift-0-input' or"
+            " contains(@class, 'pf-m-search')]"
         )
     )
     clear_button = Button(locator=".//button[contains(@class,'search-clear')]")
+
+    def fill(self, value):
+        return self.search_field.fill(value)
+
+    def read(self):
+        return self.search_field.read()
 
     def clear(self):
         """Clears search field value and re-trigger search to remove all
@@ -769,6 +777,18 @@ class PF4Search(Search):
     def search(self, value):
         self.clear()
         self.fill(value)
+        self.browser.plugin.ensure_page_safe()
+        # TODO: might need to add sleeper here or some wait_for
+
+    def after_fill(self):
+        """Ensure widgets appears after filling out searchbox"""
+        wait_for(
+            lambda: self.clear_button.is_displayed is True,
+            timeout=300,
+            delay=1,
+            logger=self.logger,
+        )
+        # TODO: Might need to do sleeper or another wait_for table
 
 
 class SatVerticalNavigation(VerticalNavigation):
@@ -1372,6 +1392,11 @@ class EditableEntry(GenericLocatorWidget):
     save_button = Text(".//button[normalize-space(.)='Save']")
     cancel_button = Text(".//button[span[normalize-space(.)='Cancel']]")
     entry_value = Text(".//span[contains(@class, 'editable-value')]")
+    # PF4 editable entry
+    pf4_edit_button = Text("//button[@aria-label='edit name']")
+    pf4_edit_field = TextInput(locator=".//input[@aria-label='name text input']")
+    pf4_save_button = Text("//button[@aria-label='submit name']")
+    pf4_cancel_button = Text("//button[@aria-label='clear name']")
 
     def __init__(self, parent, locator=None, name=None, logger=None):
         """Supports initialization via ``locator=`` or ``name=``"""
@@ -1389,10 +1414,15 @@ class EditableEntry(GenericLocatorWidget):
         # in some cases editing fields automatically triggers editing others,
         # so the field may be opened for editing and clicking "edit" button is
         # not required for it
+        # TODO: rework this or create a separate function
         if self.edit_button.is_displayed:
             self.edit_button.click()
-        self.edit_field.fill(value)
-        self.save_button.click()
+            self.edit_field.fill(value)
+            self.save_button.click()
+        if self.pf4_edit_button.is_displayed:
+            self.pf4_edit_button.click()
+            self.pf4_edit_field.fill(value)
+            self.pf4_save_button.click()
 
     def read(self):
         """Returns string with current widget value"""
@@ -2033,6 +2063,46 @@ class ProgressBar(GenericLocatorWidget):
         return self.progress
 
 
+class ProgressBarPF4(ProgressBar):
+    """Generic progress bar widget.
+
+    Example html representation::
+
+        <div class="progress ng-isolate-scope" type="success" ...>
+          <div class="progress-bar progress-bar-success" aria-valuenow="0"
+           aria-valuemin="0" aria-valuemax="100" aria-valuetext="0%" ...></div>
+        </div>
+
+    Locator example::
+
+        .//div[contains(@class, "progress progress-striped")]
+
+    """
+
+    PROGRESSBAR = '//div[contains(@role, "progressbar") or contains(@class, "pf-c-progress__bar")]'
+
+    def __init__(self, parent, locator=None, logger=None):
+        """Provide common progress bar locator if it wasn't specified."""
+        Widget.__init__(self, parent, logger=logger)
+        if not locator:
+            locator = self.PROGRESSBAR
+        self.locator = locator
+
+    @property
+    def progress(self):
+        """String value with current flow rate in percent."""
+        return self.browser.get_attribute(
+            'pf-c-progress__measure', self.PROGRESSBAR, check_safe=False
+        )
+
+    @property
+    def is_completed(self):
+        """Boolean value whether progress bar is finished or not"""
+        if not self.is_active and self.progress == '100%':
+            return True
+        return False
+
+
 class PublishPromoteProgressBar(ProgressBar):
     """Progress bar for Publish and Promote procedures. They contain status
     message and link to associated task. Also the progress is displayed
@@ -2478,3 +2548,33 @@ class InventoryBootstrapSwitch(Widget):
 
     def read(self):
         return self.selected
+
+
+class SatPatternflyTable(BasePatternflyTable, Table):
+    def __init__(
+        self,
+        parent,
+        column_widgets=None,
+        assoc_column=None,
+        rows_ignore_top=None,
+        rows_ignore_bottom=None,
+        top_ignore_fill=False,
+        bottom_ignore_fill=False,
+        logger=None,
+    ):
+        self.component_type = "PF4/Table"
+        super().__init__(
+            parent,
+            locator=(f".//*[@data-ouia-component-type={quote(self.component_type)}]"),
+            column_widgets=column_widgets,
+            assoc_column=assoc_column,
+            rows_ignore_top=rows_ignore_top,
+            rows_ignore_bottom=rows_ignore_bottom,
+            top_ignore_fill=top_ignore_fill,
+            bottom_ignore_fill=bottom_ignore_fill,
+            logger=logger,
+        )
+
+
+class SatExpandableTable(BaseExpandableTable, SatPatternflyTable):
+    pass
