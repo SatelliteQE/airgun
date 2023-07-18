@@ -748,14 +748,9 @@ class Search(Widget):
 class PF4Search(Search):
     """PF4 Searchbar for table filtering"""
 
-    ROOT = '//div[@role="combobox" or @aria-haspopup="listbox"]'
-    search_field = TextInput(
-        locator=(
-            ".//input[@type='text' or @id='downshift-0-input' or"
-            " contains(@class, 'pf-m-search') or data-ouia-component-type='PF4/TextInput']"
-        )
-    )
-    clear_button = Button(locator=".//button[contains(@class,'search-clear')]")
+    ROOT = '//div[@class="foreman-search-bar"]'
+    search_field = TextInput(locator=(".//input[@aria-label='Search input']"))
+    clear_button = Button(locator=(".//input[@aria-label='Reset search']"))
 
     def clear(self):
         """Clears search field value and re-trigger search to remove all
