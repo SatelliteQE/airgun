@@ -44,7 +44,7 @@ class BaseLoggedInView(View):
     validations = ValidationErrors()
     dialog = Pf4ConfirmationDialog()
     logout = Text("//a[@href='/users/logout']")
-    current_user = Dropdown('OUIA-Generated-Dropdown-1')
+    current_user = Dropdown('user-info-dropdown')
     account_menu = Dropdown('OUIA-Generated-Dropdown-1')
     permission_denied = Text('//*[@id="content"]')
 
