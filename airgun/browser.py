@@ -282,6 +282,14 @@ class AirgunBrowserPlugin(DefaultPlugin):
         # ignore_ajax=True usage from browser click
         pass
 
+    def do_refresh(self):
+        """
+        Refresh current page.
+        """
+
+        self.browser.refresh()
+        self.browser.plugin.ensure_page_safe()
+
 
 class AirgunBrowser(Browser):
     """A wrapper around :class:`widgetastic.browser.Browser` which injects

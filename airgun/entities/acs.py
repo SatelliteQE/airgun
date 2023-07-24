@@ -17,14 +17,6 @@ from airgun.views.acs import RowDrawer
 
 
 class AcsEntity(BaseEntity):
-    def do_refresh(self):
-        """
-        Refresh the page as it is needed to refresh page to see changes after deleting an ACS
-        """
-
-        self.browser.refresh()
-        self.browser.plugin.ensure_page_safe()
-
     def wait_for_content_table(self, view):
         wait_for(lambda: view.acs_drawer.content_table.is_displayed, timeout=10, delay=1)
 
@@ -39,7 +31,7 @@ class AcsEntity(BaseEntity):
         Raises:
             ValueError: If row_id and acs_name are not specified or both specified
             ValueError: If no ACS is found
-            ValueEroor: If given ACS name does not exist
+            ValueError: If given ACS name does not exist
         """
 
         if (row_id is None and acs_name is None) or (row_id is not None and acs_name is not None):
@@ -62,9 +54,10 @@ class AcsEntity(BaseEntity):
             view.acs_drawer.content_table[0][1].widget.click()
         self.browser.plugin.ensure_page_safe()
         view.wait_displayed()
-        x = RowDrawer(self.browser).read()
+        result = RowDrawer(self.browser).read()
+        result['details']['last_refresh'] = RowDrawer(self.browser).last_refresh.text
         self.close_details_side_panel()
-        return x
+        return result
 
     def get_all_acs_info(self):
         """
@@ -75,6 +68,9 @@ class AcsEntity(BaseEntity):
         view = self.navigate_to(self, 'ACS')
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
+        if view.acs_drawer.clear_search_btn.is_displayed:
+            view.acs_drawer.clear_search_btn.click()
+        wait_for(lambda: view.acs_drawer.content_table.is_displayed, timeout=10, delay=1)
         acs_table = view.acs_drawer.content_table.read()
         for i, row in enumerate(acs_table):
             row['details'] = self.get_row_drawer_content(row_id=i)
@@ -108,7 +104,6 @@ class AcsEntity(BaseEntity):
 
         for acs in acs_name:
             view.acs_drawer.search_bar.fill(f'name = {acs}')
-            time.sleep(3)
             if not view.acs_drawer.content_table.is_displayed:
                 raise ValueError(f'ACS {acs} not found!')
             # Check the checkbox of ACS item
@@ -123,8 +118,8 @@ class AcsEntity(BaseEntity):
         if action == 'Refresh':
             view.acs_drawer.clear_search_btn.click()
 
-        self.do_refresh()
-        time.sleep(10)
+        self.browser.plugin.do_refresh()
+        wait_for(lambda: view.acs_drawer.content_table.is_displayed, timeout=10, delay=1)
 
     def refresh_acs(self, acs_name):
         """Function that refreshes ACS item(s)"""
@@ -149,7 +144,7 @@ class AcsEntity(BaseEntity):
         view = self.navigate_to(self, 'ACS')
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        time.sleep(5)
+        wait_for(lambda: view.acs_drawer.content_table.is_displayed, timeout=10, delay=1)
         if not view.acs_drawer.content_table.is_displayed:
             raise ValueError('No ACS found!')
 
@@ -162,7 +157,7 @@ class AcsEntity(BaseEntity):
                 f'Error while taking an action on all ACS: {view.error_message.read()}'
             )
 
-        self.do_refresh()
+        self.browser.plugin.do_refresh()
         if action == 'Delete':
             time.sleep(10)
         elif action == 'Refresh':
@@ -194,24 +189,25 @@ class AcsEntity(BaseEntity):
         # Check if acs we want to edit exists
         view.acs_drawer.search_bar.fill(f'name = {acs_name_to_edit}')
         view.wait_displayed()
-        time.sleep(3)
         if not view.acs_drawer.content_table.is_displayed:
             raise ValueError(f'ACS {acs_name_to_edit} not found!')
         # Click on ACS name in ACS table
         view.acs_drawer.content_table[0][1].widget.click()
         # Load side panel view
         view = RowDrawer(self.browser)
-        time.sleep(3)
+        wait_for(lambda: view.details.title.is_displayed, timeout=10, delay=1)
         return view
 
     def close_details_side_panel(self):
         """Function that closes side panel view"""
 
         view = AlternateContentSourcesView(self.browser)
-        time.sleep(4)
+        time.sleep(2)
         view.acs_drawer.content_table[0][1].widget.click()
 
-    def edit_acs_details(self, acs_name_to_edit=None, new_acs_name=None, new_description=None):
+    def edit_acs_details(
+        self, acs_name_to_edit=None, new_acs_name=None, new_description=None, check_parameters=True
+    ):
         """
         Function that edits ACS items details
 
@@ -219,6 +215,7 @@ class AcsEntity(BaseEntity):
             acs_name_to_edit (str): ACS name to be edited
             new_acs_name (str): New ACS name
             new_description (str): Description to be set for ACS item
+            check_parameters (bool): Whether to check function parameters
 
         Raises:
             ValueError: At least acs_name_to_edit and one of new_acs_name or new_description
@@ -226,14 +223,18 @@ class AcsEntity(BaseEntity):
             ValueError: If Error alert is displayed after editing ACS item
         """
 
-        if (acs_name_to_edit is None) and ((new_acs_name is None) or (new_description is None)):
+        if (
+            (acs_name_to_edit is None)
+            and ((new_acs_name is None) or (new_description is None))
+            and check_parameters
+        ):
             raise ValueError(
                 'At least acs_name_to_edit and one of new_acs_name or new_description '
                 'must be specified!'
             )
 
         view = self.edit_helper(acs_name_to_edit)
-        view.details_stack_item.edit_details.click()
+        view.details.edit_details.click()
         # Load EditDetailsModal view
         view = EditDetailsModal(self.browser)
         if new_acs_name is not None:
@@ -286,7 +287,6 @@ class AcsEntity(BaseEntity):
                 if (not option) or (option not in x):
                     raise ValueError(f'Option {option} not available for addition!')
                 view.available_options_list.fill(option)
-                time.sleep(1)
             view.add_selected.click()
 
         if options_to_remove is not None:
@@ -297,7 +297,6 @@ class AcsEntity(BaseEntity):
                 if (not option) or (option not in x):
                     raise ValueError(f'Option {option} not available for removing!')
                 view.chosen_options_list.fill(option)
-                time.sleep(1)
             view.remove_selected.click()
 
         if add_all:
@@ -320,6 +319,7 @@ class AcsEntity(BaseEntity):
         remove_all=False,
         options_to_add=None,
         options_to_remove=None,
+        check_parameters=True,
     ):
         """
         Function that edits ACS capsules.
@@ -331,22 +331,23 @@ class AcsEntity(BaseEntity):
             remove_all (bool): Whether to remove all available options
             options_to_add (str or list): List of options to add
             options_to_remove (str or list): List of options to remove
+            check_parameters (bool): Whether to check function parameters
 
         Raises:
             ValueError: If add_all and remove_all are True at the same time
             ValueError: If add_all or remove_all are True at the same time
                         with options_to_add or options_to_remove
         """
-
-        if add_all and remove_all:
-            raise ValueError('add_all and remove_all cannot be True at the same time!')
-        if (add_all or remove_all) and (
-            options_to_add is not None or options_to_remove is not None
-        ):
-            raise ValueError(
-                'add_all or remove_all cannot be True at the same time with '
-                'options_to_add or options_to_remove!'
-            )
+        if check_parameters:
+            if add_all and remove_all:
+                raise ValueError('add_all and remove_all cannot be True at the same time!')
+            if (add_all or remove_all) and (
+                options_to_add is not None or options_to_remove is not None
+            ):
+                raise ValueError(
+                    'add_all or remove_all cannot be True at the same time with '
+                    'options_to_add or options_to_remove!'
+                )
 
         # Check options parameters and cast them to list
         if options_to_add is not None and isinstance(options_to_add, str):
@@ -356,10 +357,9 @@ class AcsEntity(BaseEntity):
 
         view = self.edit_helper(acs_name_to_edit)
         # Close side panel view
-        view.capsules_stack_item.edit_capsules.click()
-        time.sleep(4)
+        view.capsules.edit_capsules.click()
         view = EditCapsulesModal(self.browser)
-
+        wait_for(lambda: view.available_options_search.is_displayed, timeout=10, delay=1)
         # Toggle Use HTTP proxies
         if use_http_proxies is False and view.use_http_proxies.selected:
             view.use_http_proxies.click()
@@ -373,7 +373,9 @@ class AcsEntity(BaseEntity):
         )
         self.close_details_side_panel()
 
-    def edit_url_subpaths(self, acs_name_to_edit=None, new_url=None, new_subpaths=None):
+    def edit_url_subpaths(
+        self, acs_name_to_edit=None, new_url=None, new_subpaths=None, check_parameters=True
+    ):
         """
         Function that edits ACS url and subpaths
 
@@ -381,20 +383,22 @@ class AcsEntity(BaseEntity):
             acs_name_to_edit (str): ACS name to be edited
             new_url (str): New ACS url
             new_subpaths (str or list): Subpaths to be set for ACS item
+            check_parameters (bool): Whether to check function parameters
 
         Raises:
             ValueError: At least acs_name_to_edit and one of new_url
                         or new_subpaths must be specified!
             ValueError: If Error alert is displayed while editing ACS item's url or subpaths
         """
-
-        if (acs_name_to_edit is None) and ((new_url is None) or (new_subpaths is None)):
-            raise ValueError(
-                'At least acs_name_to_edit and one of new_url or new_subpaths must be specified!'
-            )
+        if check_parameters:
+            if (acs_name_to_edit is None) and ((new_url is None) or (new_subpaths is None)):
+                raise ValueError(
+                    'At least acs_name_to_edit and one of new_url or '
+                    'new_subpaths must be specified!'
+                )
 
         view = self.edit_helper(acs_name_to_edit)
-        view.url_and_subpaths_stack_item.edit_url_and_subpaths.click()
+        view.url_and_subpaths.edit_url_and_subpaths.click()
         # Load EditUrlAndSubpathsModal view
         view = EditUrlAndSubpathsModal(self.browser)
         new_subpaths = new_subpaths if isinstance(new_subpaths, list) else [new_subpaths]
@@ -403,14 +407,14 @@ class AcsEntity(BaseEntity):
         new_subpaths = ','.join(new_subpaths) if len(new_subpaths) > 1 else new_subpaths[0]
         if new_url is not None:
             view.base_url.fill(new_url)
-            time.sleep(1)
             if view.url_err.is_displayed:
                 raise ValueError(f'Error while editing url: {view.url_err.read()}')
         if new_subpaths is not None:
             view.subpaths.fill(new_subpaths)
-            time.sleep(1)
             if view.paths_err.is_displayed:
                 raise ValueError(f'Error while editing subpaths: {view.paths_err.read()}')
+
+        # Save changes
         view.edit_button.click()
         self.close_details_side_panel()
 
@@ -426,6 +430,7 @@ class AcsEntity(BaseEntity):
         ssl_client_cert=None,
         ssl_client_key=None,
         none_auth=False,
+        check_parameters=True,
     ):
         """
         Function that edits ACS credentials.
@@ -443,6 +448,7 @@ class AcsEntity(BaseEntity):
             ssl_client_cert (str): SSL client certificate to choose
             ssl_client_key (str): SSL client key to choose
             none_auth (bool): Whether to use no authentication
+            check_parameters (bool): Whether to check function parameters
 
         Raises:
             ValueError: At least acs_name_to_edit and one of manual_auth,
@@ -453,19 +459,20 @@ class AcsEntity(BaseEntity):
                         must be specified when using credentials
         """
 
-        if (acs_name_to_edit is None) and (
-            sum([manual_auth, content_credentials_auth, none_auth] != 1)
-        ):
-            raise ValueError(
-                'At least acs_name_to_edit and one of '
-                'manual_auth, content_credentials_auth, none_auth must be specified!'
-            )
+        if check_parameters:
+            if (acs_name_to_edit is None) and (
+                sum([manual_auth, content_credentials_auth, none_auth] != 1)
+            ):
+                raise ValueError(
+                    'At least acs_name_to_edit and one of '
+                    'manual_auth, content_credentials_auth, none_auth must be specified!'
+                )
 
         view = self.edit_helper(acs_name_to_edit)
-        view.credentials_stack_item.edit_credentials.click()
-        time.sleep(3)
+        view.credentials.edit_credentials.click()
         # Load EditCredentialsModal view
         view = EditCredentialsModal(self.browser)
+        wait_for(lambda: view.verify_ssl_toggle.is_displayed, timeout=10, delay=1)
 
         # Toggle verify_ssl
         if verify_ssl is False and view.verify_ssl_toggle.selected:
@@ -479,7 +486,7 @@ class AcsEntity(BaseEntity):
 
         # Select manual authentication method
         if manual_auth:
-            if (username is None) and (password is None):
+            if (username is None) and (password is None) and check_parameters:
                 raise ValueError(
                     'At least one of username and password must be specified '
                     'when using manual authentication!'
@@ -493,7 +500,7 @@ class AcsEntity(BaseEntity):
 
         # Select content credentials authentication method
         if content_credentials_auth:
-            if (ssl_client_cert is None) and (ssl_client_key is None):
+            if (ssl_client_cert is None) and (ssl_client_key is None) and check_parameters:
                 raise ValueError(
                     'At least one of ssl_client_cert and ssl_client_key '
                     'must be specified when using content credentials authentication!'
@@ -520,6 +527,7 @@ class AcsEntity(BaseEntity):
         remove_all=False,
         products_to_add=None,
         products_to_remove=None,
+        check_parameters=True,
     ):
         """
         Function that edits ACS products.
@@ -530,6 +538,7 @@ class AcsEntity(BaseEntity):
             remove_all (bool): Whether to remove all available options
             products_to_add (str or list): List of products to add
             products_to_remove (str or list): List of products to remove
+            check_parameters (bool): Whether to check function parameters
 
         Raises:
             ValueError: If add_all and remove_all are True at the same time
@@ -537,15 +546,16 @@ class AcsEntity(BaseEntity):
                         with options_to_add or options_to_remove
         """
 
-        if add_all and remove_all:
-            raise ValueError('add_all and remove_all cannot be True at the same time!')
-        if (add_all or remove_all) and (
-            products_to_add is not None or products_to_remove is not None
-        ):
-            raise ValueError(
-                'add_all or remove_all cannot be True at the same time with '
-                'options_to_add or options_to_remove!'
-            )
+        if check_parameters:
+            if add_all and remove_all:
+                raise ValueError('add_all and remove_all cannot be True at the same time!')
+            if (add_all or remove_all) and (
+                products_to_add is not None or products_to_remove is not None
+            ):
+                raise ValueError(
+                    'add_all or remove_all cannot be True at the same time with '
+                    'options_to_add or options_to_remove!'
+                )
 
         # Check options parameters and cast them to list
         if products_to_add is not None and isinstance(products_to_add, str):
@@ -554,10 +564,9 @@ class AcsEntity(BaseEntity):
             products_to_remove = [products_to_remove]
 
         view = self.edit_helper(acs_name_to_edit)
-        view.products_stack_item.edit_products.click()
-        time.sleep(3)
+        view.products.edit_products.click()
         view = EditProductsModal(self.browser)
-
+        wait_for(lambda: view.available_options_search.is_displayed, timeout=10, delay=1)
         # Call helper function that handles adding/removing options
         # from dual list selector and saves changes
         self.dual_list_selector_edit_helper(
@@ -589,6 +598,7 @@ class AcsEntity(BaseEntity):
         ssl_client_cert=None,
         ssl_client_key=None,
         none_auth=False,
+        check_parameters=True,
     ):
         """
         Function that creates new ACS according to the given parameters.
@@ -621,6 +631,7 @@ class AcsEntity(BaseEntity):
                                     credentials authentication
             ssl_client_key (str): SSL client key to be used for content credentials authentication
             none_auth (bool): Whether to use no authentication
+            check_parameters (bool): Whether to check function parameters
 
         Raises:
             ValueError: If more than one type is selected
@@ -642,57 +653,55 @@ class AcsEntity(BaseEntity):
             ValueError: If subpaths are not valid
             ValueError: If there is some general error after adding ACS
         """
+        if check_parameters:
+            # CHECK THE PARAMETERS
+            if sum([custom_type, simplified_type, rhui_type]) != 1:
+                raise ValueError('Only one type can be selected!')
 
-        # CHECK THE PARAMETERS
-        if sum([custom_type, simplified_type, rhui_type]) != 1:
-            raise ValueError('Only one type can be selected!')
+            if custom_type or rhui_type:
+                if sum([manual_auth, content_credentials_auth, none_auth]) != 1:
+                    raise ValueError('Only one credential type can be selected!')
 
-        if custom_type or rhui_type:
-            if sum([manual_auth, content_credentials_auth, none_auth]) != 1:
-                raise ValueError('Only one credential type can be selected!')
+            if rhui_type and content_type is not None:
+                raise ValueError('content_type cannot be specified when rhui_type is True!')
 
-        if rhui_type and content_type is not None:
-            raise ValueError('content_type cannot be specified when rhui_type is True!')
+            if name is None:
+                raise ValueError('name cannot be None!')
 
-        if name is None:
-            raise ValueError('name cannot be None!')
+            if (custom_type or simplified_type) and content_type is None:
+                raise ValueError(
+                    'content_type cannot be None when custom_type or simplified_type is True!'
+                )
 
-        if (custom_type or simplified_type) and content_type is None:
-            raise ValueError(
-                'content_type cannot be None when custom_type or simplified_type is True!'
-            )
+            if add_all_capsules is False and capsules_to_add is None:
+                raise ValueError('capsules_to_add cannot be None when add_all_capsules is False!')
 
-        if add_all_capsules is False and capsules_to_add is None:
-            raise ValueError('capsules_to_add cannot be None when add_all_capsules is False!')
+            if simplified_type and (add_all_products is False and products_to_add is None):
+                raise ValueError(
+                    'While simplified mode is selected '
+                    'products_to_add cannot be None when add_all_products is False!'
+                )
 
-        if simplified_type and (add_all_products is False and products_to_add is None):
-            raise ValueError(
-                'While simplified mode is selected '
-                'products_to_add cannot be None when add_all_products is False!'
-            )
+            if (custom_type is True or rhui_type is True) and base_url is None:
+                raise ValueError('base_url cannot be None when custom_type or rhui_type is True!')
 
-        if (custom_type is True or rhui_type is True) and base_url is None:
-            raise ValueError('base_url cannot be None when custom_type or rhui_type is True!')
+            if verify_ssl is False and ca_cert is not None:
+                raise ValueError('ca_cert must be None when verify_ssl is False!')
 
-        if verify_ssl is False and ca_cert is not None:
-            raise ValueError('ca_cert must be None when verify_ssl is False!')
+            if manual_auth is True and (username is None or password is None):
+                raise ValueError('username and password cannot be None when manual_auth is True!')
 
-        if manual_auth is True and (username is None or password is None):
-            raise ValueError('username and password cannot be None when manual_auth is True!')
-
-        if rhui_type is True and manual_auth is True:
-            raise ValueError('manual_auth cannot be True when rhui_type is True!')
+            if rhui_type is True and manual_auth is True:
+                raise ValueError('manual_auth cannot be True when rhui_type is True!')
 
         view = self.navigate_to(self, 'ACS')
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        time.sleep(5)
+        wait_for(lambda: view.title.is_displayed, timeout=10, delay=1)
         # If there are some ACS already created
         if view.acs_drawer.content_table.is_displayed:
             # Check if we are not creating ACS with the name that already exists
             view.acs_drawer.search_bar.fill(f'name = {name}')
-            view.wait_displayed()
-            time.sleep(3)
             if view.acs_drawer.content_table.is_displayed:
                 raise ValueError(f'ACS with {name} already exists!')
             else:
@@ -704,7 +713,7 @@ class AcsEntity(BaseEntity):
         view = AddAlternateContentSourceModal(self.browser)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        time.sleep(5)
+        wait_for(lambda: view.title.is_displayed, timeout=10, delay=1)
 
         # Select ACS type
         if custom_type:
@@ -718,8 +727,7 @@ class AcsEntity(BaseEntity):
 
         # Fill name and description
         view.name_source
-        view.name_source.name.fill(name)
-        view.name_source.description.fill(description)
+        view.fill({'name_source.name': name, 'name_source.description': description})
 
         # Select capsules
         if add_all_capsules:
@@ -730,13 +738,11 @@ class AcsEntity(BaseEntity):
                 capsules_to_add = [capsules_to_add]
             for capsule in capsules_to_add:
                 view.select_capsule.available_options_search.fill(capsule)
-                time.sleep(1)
                 # Check if capsule is available
                 x = view.select_capsule.available_options_list.read()
                 if (not capsule) or (capsule not in x):
                     raise ValueError(f'Capsule {capsule} not available for adition!')
                 view.select_capsule.available_options_list.fill(capsule)
-                time.sleep(1)
             view.select_capsule.add_selected.click()
 
         if use_http_proxies:
@@ -752,20 +758,17 @@ class AcsEntity(BaseEntity):
                     products_to_add = [products_to_add]
                 for product in products_to_add:
                     view.select_products.available_options_search.fill(product)
-                    time.sleep(1)
                     # Check if product is available
                     x = view.select_products.available_options_list.read()
                     if (not product) or (product not in x):
                         raise ValueError(f'Product {product} not available for adition!')
                     view.select_products.available_options_list.fill(product)
-                    time.sleep(1)
                 view.select_products.add_selected.click()
 
         # Fill in URLs and paths and credentials
         if custom_type or rhui_type:
             # URLs and paths
             view.url_and_paths.base_url.fill(base_url)
-            time.sleep(1)
             if view.url_and_paths.url_err.is_displayed:
                 raise ValueError(f'Error while adding url: {view.url_and_paths.url_err.read()}')
             if subpaths is not None:
@@ -774,7 +777,6 @@ class AcsEntity(BaseEntity):
                     subpaths = ','.join(subpaths) if len(subpaths) > 1 else subpaths[0]
                 if isinstance(subpaths, str):
                     view.url_and_paths.subpaths.fill(subpaths)
-                time.sleep(1)
                 if view.url_and_paths.paths_err.is_displayed:
                     raise ValueError(
                         f'Error while editing subpaths: {view.url_and_paths.paths_err.read()}'
@@ -786,13 +788,21 @@ class AcsEntity(BaseEntity):
                 if ca_cert is not None:
                     view.credentials.select_ca_cert.fill(ca_cert)
             if manual_auth:
-                view.credentials.manual_auth_radio_btn.fill(True)
-                view.credentials.username.fill(username)
-                view.credentials.password.fill(password)
+                view.fill(
+                    {
+                        'credentials.manual_auth_radio_btn': True,
+                        'credentials.username': username,
+                        'credentials.password': password,
+                    }
+                )
             elif content_credentials_auth:
-                view.credentials.content_credentials_radio_btn.fill(True)
-                view.credentials.ssl_client_cert.fill(ssl_client_cert)
-                view.credentials.ssl_client_key.fill(ssl_client_key)
+                view.fill(
+                    {
+                        'credentials.content_credentials_radio_btn': True,
+                        'credentials.ssl_client_cert': ssl_client_cert,
+                        'credentials.ssl_client_key': ssl_client_key,
+                    }
+                )
             elif none_auth:
                 view.credentials.none_auth_radio_btn.fill(True)
 
@@ -806,9 +816,8 @@ class AcsEntity(BaseEntity):
             raise ValueError(f'Error while adding ACS: {view.error_message.read()}')
         # Wait for ACS to be added to the table
         wait_for(lambda: view.acs_drawer.content_table.is_displayed, timeout=10, delay=1)
-        # CLose the side panel
+        # Close the side panel
         view = AlternateContentSourcesView(self.browser)
-        time.sleep(4)
         view.acs_drawer.content_table[-1][1].widget.click()
 
 

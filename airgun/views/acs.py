@@ -1,5 +1,3 @@
-import time
-
 from widgetastic.widget import Checkbox
 from widgetastic.widget import Text
 from widgetastic.widget import TextInput
@@ -20,17 +18,10 @@ from widgetastic_patternfly4.ouia import TextInput as OUIATextInput
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import WizardStepView
-from airgun.views.host_new import SearchInput
+from airgun.widgets import DualListSelector
+from airgun.widgets import EditModal
 from airgun.widgets import ItemsList
-
-
-class EditModal(View):
-    """Class representing the Edit modal header"""
-
-    title = Text('.//h1')
-    close_button = OUIAButton('acs-edit-details-modal-ModalBoxCloseButton')
-
-    error_message = Text('//div[contains(@aria-label, "Danger Alert")]')
+from airgun.widgets import SearchInput
 
 
 class EditDetailsModal(EditModal):
@@ -43,29 +34,6 @@ class EditDetailsModal(EditModal):
 
     edit_button = OUIAButton('edit-acs-details-submit')
     cancel_button = OUIAButton('edit-acs-details-cancel')
-
-
-class DualListSelector(EditModal):
-    """Class representing some elements of the Dual List Selector modal."""
-
-    available_options_search = SearchInput(
-        locator='.//input[@aria-label="Available search input"]'
-    )
-    available_options_list = ItemsList(
-        locator='.//div[contains(@class, "pf-m-available")]'
-        '//ul[@class="pf-c-dual-list-selector__list"]'
-    )
-
-    add_selected = Button(locator='.//button[@aria-label="Add selected"]')
-    add_all = Button(locator='.//button[@aria-label="Add all"]')
-    remove_all = Button(locator='.//button[@aria-label="Remove all"]')
-    remove_selected = Button(locator='.//button[@aria-label="Remove selected"]')
-
-    chosen_options_search = SearchInput(locator='.//input[@aria-label="Chosen search input"]')
-    chosen_options_list = ItemsList(
-        locator='.//div[contains(@class, "pf-m-chosen")]'
-        '//ul[@class="pf-c-dual-list-selector__list"]'
-    )
 
 
 class EditCapsulesModal(DualListSelector):
@@ -244,12 +212,10 @@ class RowDrawer(View):
     title = OUIAText('acs-name-text')
     refresh_resource = OUIAButton('refresh-acs')
     kebab_menu = Dropdown(locator='//button[contains(@aria-label, "details_actions")]')
-    last_refresh = Text('//dd[contains(@aria-label, "name_text_value")]')
-    # TODO Remove line above and uncomment line below when BZ2209938 is fixed
-    # last_refresh = Text('//dd[contains(@aria-label, "last_refresh_text_value")]')
+    last_refresh = Text('//dd[contains(@aria-label, "last_refresh_text_value")]')
 
     @View.nested
-    class details_stack_item(View, AcsStackItem):
+    class details(View, AcsStackItem):
         """Class representing the Details stack item in the ACS drawer."""
 
         ROOT = (
@@ -267,15 +233,13 @@ class RowDrawer(View):
 
             ROOT = '//div[@id="showDetails"]'
 
-            name = Text('.//dd[@aria-label="name_text_value"][1]')
-            # TODO Remove line above and uncomment line below when BZ2208161 & BZ2209938 are fixed
-            # name = Text('.//dd[@aria-label="name_text_value"]')
+            name = Text('//dd[@aria-label="name_text_value"]')
             description = Text('//dd[@aria-label="description_text_value"]')
             type = Text('//dd[@aria-label="type_text_value"]')
             content_type = Text('//dd[@aria-label="content_type_text_value"]')
 
     @View.nested
-    class capsules_stack_item(View, AcsStackItem):
+    class capsules(View, AcsStackItem):
         """Class representing the Capsules stack item in the ACS drawer"""
 
         ROOT = (
@@ -297,7 +261,7 @@ class RowDrawer(View):
             use_http_proxies = Text('//dd[@aria-label="useHttpProxies_value"]')
 
     @View.nested
-    class url_and_subpaths_stack_item(View, AcsStackItem):
+    class url_and_subpaths(View, AcsStackItem):
         """
         Class representing the URL and subpaths stack item in the ACS drawer.
         Present only if ACS is of type 'Custom' or 'RHUI'.
@@ -323,7 +287,7 @@ class RowDrawer(View):
             subpaths = Text('//dd[@aria-label="subpaths_text_value"]')
 
     @View.nested
-    class credentials_stack_item(View, AcsStackItem):
+    class credentials(View, AcsStackItem):
         """
         Class representing the Credentials stack item in the ACS drawer.
         Present only if ACS is of type 'Custom' or 'RHUI'.
@@ -353,7 +317,7 @@ class RowDrawer(View):
             password = Text('//dd[@aria-label="password_value"]')
 
     @View.nested
-    class products_stack_item(View, AcsStackItem):
+    class products(View, AcsStackItem):
         """
         Class representing the Products stack item in the ACS drawer.
         Present only if ACS is of type 'Simplified'.
@@ -375,39 +339,6 @@ class RowDrawer(View):
             ROOT = '//div[@id="showProducts"]'
 
             products_list = ItemsList(locator='.//ul[contains(@class, "pf-c-list")]')
-
-    def read(self):
-        """Reads the ACS drawer and returns its content as a dictionary."""
-
-        keys = ['details', 'capsules', 'url_and_subpaths', 'credentials', 'products']
-        result = dict.fromkeys(keys)
-        # Sleep ensures that all stack items are loaded and test does not fail
-        time.sleep(3)
-        # Expand and read each stack item
-        for key in result:
-            if key == 'details':
-                self.details_stack_item.expand()
-                result[key] = self.details_stack_item.read()
-                result['details']['last_refresh'] = self.last_refresh.text
-            elif key == 'capsules':
-                self.capsules_stack_item.expand()
-                result[key] = self.capsules_stack_item.read()
-            elif key == 'url_and_subpaths':
-                if self.url_and_subpaths_stack_item.is_displayed:
-                    self.url_and_subpaths_stack_item.expand()
-                    result[key] = self.url_and_subpaths_stack_item.read()
-            elif key == 'credentials':
-                if self.credentials_stack_item.is_displayed:
-                    self.credentials_stack_item.expand()
-                    result[key] = self.credentials_stack_item.read()
-            elif key == 'products':
-                if self.products_stack_item.is_displayed:
-                    self.products_stack_item.expand()
-                    result[key] = self.products_stack_item.read()
-
-        # Remove None values from the result dictionary and return it
-        result = {k: v for k, v in result.items() if v is not None}
-        return result
 
 
 class AlternateContentSourcesView(BaseLoggedInView):
