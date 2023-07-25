@@ -158,10 +158,7 @@ class AcsEntity(BaseEntity):
             )
 
         self.browser.plugin.do_refresh()
-        if action == 'Delete':
-            time.sleep(10)
-        elif action == 'Refresh':
-            time.sleep(5)
+        wait_for(lambda: view.title.is_displayed, timeout=10, delay=1)
 
     def refresh_all_acs(self):
         """Function that refreshes all ACS items"""
