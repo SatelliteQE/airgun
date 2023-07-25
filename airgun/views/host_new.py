@@ -1,6 +1,5 @@
 import time
 
-from selenium.webdriver.common.keys import Keys
 from widgetastic.widget import Checkbox
 from widgetastic.widget import Text
 from widgetastic.widget import TextInput
@@ -26,16 +25,7 @@ from airgun.widgets import ItemsList
 from airgun.widgets import Pf4ActionsDropdown
 from airgun.widgets import Pf4ConfirmationDialog
 from airgun.widgets import SatTableWithoutHeaders
-
-
-class SearchInput(TextInput):
-    def fill(self, value, enter_timeout=1):
-        changed = super().fill(value)
-        if changed:
-            # workaround for BZ #2140636
-            time.sleep(enter_timeout)
-            self.browser.send_keys(Keys.ENTER, self)
-        return changed
+from airgun.widgets import SearchInput
 
 
 class RemediationView(View):
