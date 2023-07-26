@@ -1,4 +1,7 @@
+import time
+
 from cached_property import cached_property
+from selenium.webdriver.common.keys import Keys
 from wait_for import wait_for
 from widgetastic.exceptions import NoSuchElementException
 from widgetastic.exceptions import WidgetOperationFailed
@@ -2478,3 +2481,48 @@ class InventoryBootstrapSwitch(Widget):
 
     def read(self):
         return self.selected
+
+
+class SearchInput(TextInput):
+    def fill(self, value, enter_timeout=1, after_enter_timeout=3):
+        changed = super().fill(value)
+        if changed:
+            # workaround for BZ #2140636
+            time.sleep(enter_timeout)
+            self.browser.send_keys(Keys.ENTER, self)
+            time.sleep(after_enter_timeout)
+        return changed
+
+
+class EditModal(View):
+    """Class representing the Edit modal header"""
+
+    title = Text('.//h1')
+    close_button = PF4Button('acs-edit-details-modal-ModalBoxCloseButton')
+
+    error_message = Text('//div[contains(@aria-label, "Danger Alert")]')
+
+
+class DualListSelector(EditModal):
+    """Class representing the Dual List Selector in a modal."""
+
+    from widgetastic_patternfly4 import Button
+
+    available_options_search = SearchInput(
+        locator='.//input[@aria-label="Available search input"]'
+    )
+    available_options_list = ItemsList(
+        locator='.//div[contains(@class, "pf-m-available")]'
+        '//ul[@class="pf-c-dual-list-selector__list"]'
+    )
+
+    add_selected = Button(locator='.//button[@aria-label="Add selected"]')
+    add_all = Button(locator='.//button[@aria-label="Add all"]')
+    remove_all = Button(locator='.//button[@aria-label="Remove all"]')
+    remove_selected = Button(locator='.//button[@aria-label="Remove selected"]')
+
+    chosen_options_search = SearchInput(locator='.//input[@aria-label="Chosen search input"]')
+    chosen_options_list = ItemsList(
+        locator='.//div[contains(@class, "pf-m-chosen")]'
+        '//ul[@class="pf-c-dual-list-selector__list"]'
+    )

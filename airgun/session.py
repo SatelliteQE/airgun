@@ -10,6 +10,7 @@ from fauxfactory import gen_string
 from airgun import settings
 from airgun.browser import AirgunBrowser
 from airgun.browser import SeleniumBrowserFactory
+from airgun.entities.acs import AcsEntity
 from airgun.entities.activationkey import ActivationKeyEntity
 from airgun.entities.ansible_role import AnsibleRolesEntity
 from airgun.entities.ansible_variable import AnsibleVariablesEntity
@@ -315,6 +316,11 @@ class Session:
         LOGGER.debug('Saving screenshot %s', path)
         if not self.browser.selenium.save_screenshot(path):
             LOGGER.error('Failed to save screenshot %s', path)
+
+    @cached_property
+    def acs(self):
+        """Instance of Alternate Content Sources entity."""
+        return self._open(AcsEntity)
 
     @cached_property
     def activationkey(self):
