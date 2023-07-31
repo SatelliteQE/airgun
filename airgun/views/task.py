@@ -7,7 +7,7 @@ from widgetastic_patternfly4 import Pagination
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import ActionsDropdown
 from airgun.widgets import PieChart
 from airgun.widgets import ProgressBar
@@ -26,7 +26,7 @@ class TaskReadOnlyEntryError(ReadOnlyEntry):
     BASE_LOCATOR = "//span[contains(., '{}')]//parent::div" "/following-sibling::pre"
 
 
-class TasksView(BaseLoggedInView, SearchableViewMixin):
+class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Tasks']")
     focus = ActionsDropdown("//div[./button[@id='tasks-dashboard-time-period-dropdown']]")
     table = SatTable(
