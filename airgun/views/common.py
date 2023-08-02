@@ -11,6 +11,7 @@ from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly import Button
 from widgetastic_patternfly import Tab
 from widgetastic_patternfly import TabWithDropdown
+from widgetastic_patternfly4.navigation import Navigation
 from widgetastic_patternfly4.ouia import Dropdown
 
 from airgun.utils import get_widget_by_name
@@ -28,7 +29,6 @@ from airgun.widgets import ReadOnlyEntry
 from airgun.widgets import SatFlashMessages
 from airgun.widgets import SatSubscriptionsTable
 from airgun.widgets import SatTable
-from airgun.widgets import SatVerticalNavigation
 from airgun.widgets import Search
 from airgun.widgets import ValidationErrors
 
@@ -36,9 +36,7 @@ from airgun.widgets import ValidationErrors
 class BaseLoggedInView(View):
     """Base view for Satellite pages"""
 
-    menu = SatVerticalNavigation(
-        './/div[@id="vertical-nav" or contains(@class, "nav-pf-vertical")]/ul'
-    )
+    menu = Navigation("Global")
     taxonomies = ContextSelector()
     flash = SatFlashMessages()
     validations = ValidationErrors()
