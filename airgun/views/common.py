@@ -45,7 +45,7 @@ class BaseLoggedInView(View):
     dialog = Pf4ConfirmationDialog()
     logout = Text("//a[@href='/users/logout']")
     current_user = Dropdown('user-info-dropdown')
-    account_menu = Dropdown('OUIA-Generated-Dropdown-1')
+    account_menu = Dropdown('user-info-dropdown')
     permission_denied = Text('//*[@id="content"]')
 
     def select_logout(self):
