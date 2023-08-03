@@ -9,6 +9,7 @@ from airgun.views.common import SatTable
 from airgun.views.common import SearchableViewMixin
 from airgun.widgets import ActionsDropdown
 from airgun.widgets import MultiSelect
+from airgun.widgets import Search
 
 
 class PuppetEnvironmentTableView(BaseLoggedInView, SearchableViewMixin):
@@ -34,6 +35,7 @@ class PuppetEnvironmentTableView(BaseLoggedInView, SearchableViewMixin):
             'Actions': ActionsDropdown('./div[contains(@class, "btn-group")]'),
         },
     )
+    search = Search()
 
     @property
     def is_displayed(self):
