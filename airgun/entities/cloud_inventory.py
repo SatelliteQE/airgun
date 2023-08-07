@@ -57,4 +57,4 @@ class ShowCloudInventoryListView(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Inventory Upload')
+        self.view.menu.select('Configure', 'RH Cloud', 'Inventory Upload')

@@ -59,7 +59,7 @@ class ShowAllVariables(NavigateStep):
     VIEW = AnsibleVariablesView
 
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Variables')
+        self.view.menu.select('Configure', 'Ansible', 'Variables')
 
 
 @navigator.register(AnsibleVariablesEntity, 'New')

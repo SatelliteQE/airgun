@@ -125,7 +125,7 @@ class ShowAllReportTemplates(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Monitor', 'Report Templates')
+        self.view.menu.select('Monitor', 'Reports', 'Report Templates')
 
 
 @navigator.register(ReportTemplateEntity, 'New')

@@ -53,7 +53,7 @@ class ShowAllMedium(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Installation Media')
+        self.view.menu.select('Hosts', 'Provisioning Setup', 'Installation Media')
 
 
 @navigator.register(MediaEntity, 'New')

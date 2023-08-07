@@ -88,7 +88,7 @@ class ShowAllSCAPPolicies(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Policies')
+        self.view.menu.select('Hosts', 'Compliance', 'Policies')
 
 
 @navigator.register(OSCAPPolicyEntity, 'New')

@@ -108,7 +108,7 @@ class ShowAllErratum(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Errata')
+        self.view.menu.select('Content', 'Content Types', 'Errata')
 
 
 @navigator.register(ErrataEntity, 'Details')

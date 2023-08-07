@@ -43,7 +43,7 @@ class ShowAllPackages(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Packages')
+        self.view.menu.select('Content', 'Content Types', 'Packages')
 
 
 @navigator.register(PackageEntity, 'Details')

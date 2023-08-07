@@ -64,7 +64,7 @@ class ShowAllHardwareModels(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Hardware Models')
+        self.view.menu.select('Hosts', 'Provisioning Setup', 'Hardware Models')
 
 
 @navigator.register(HardwareModelEntity, 'New')

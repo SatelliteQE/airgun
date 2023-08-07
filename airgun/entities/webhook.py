@@ -77,7 +77,7 @@ class ShowAllWebhooks(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Administer', 'Webhooks')
+        self.view.menu.select('Administer', 'Webhook', 'Webhooks')
 
 
 @navigator.register(WebhookEntity, 'New')

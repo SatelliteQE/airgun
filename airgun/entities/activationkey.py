@@ -94,7 +94,7 @@ class ShowAllActivationKeys(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Activation Keys')
+        self.view.menu.select('Content', 'Lifecycle', 'Activation Keys')
 
 
 @navigator.register(ActivationKeyEntity, 'New')

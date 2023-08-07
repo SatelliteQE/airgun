@@ -89,7 +89,7 @@ class ShowAllProvisioningTemplates(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Provisioning Templates')
+        self.view.menu.select('Hosts', 'Templates', 'Provisioning Templates')
 
 
 @navigator.register(ProvisioningTemplateEntity, 'New')

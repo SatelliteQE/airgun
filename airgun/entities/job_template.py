@@ -75,7 +75,7 @@ class ShowAllTemplates(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Job templates')
+        self.view.menu.select('Hosts', 'Templates', 'Job templates')
 
 
 @navigator.register(JobTemplateEntity, 'New')

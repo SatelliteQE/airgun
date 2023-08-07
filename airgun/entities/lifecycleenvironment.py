@@ -87,7 +87,7 @@ class ShowAllLCE(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Lifecycle Environments')
+        self.view.menu.select('Content', 'Lifecycle', 'Lifecycle Environments')
 
 
 @navigator.register(LCEEntity, 'New Path')

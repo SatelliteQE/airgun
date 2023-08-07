@@ -76,7 +76,7 @@ class ShowAllSCAPTailoringFiles(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Tailoring Files')
+        self.view.menu.select('Hosts', 'Compliance', 'Tailoring Files')
 
 
 @navigator.register(OSCAPTailoringFileEntity, 'New')

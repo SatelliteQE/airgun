@@ -78,7 +78,7 @@ class ShowCloudInsightsView(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Insights')
+        self.view.menu.select('Configure', 'RH Cloud', 'Insights')
 
 
 @navigator.register(CloudInsightsEntity, 'Run')

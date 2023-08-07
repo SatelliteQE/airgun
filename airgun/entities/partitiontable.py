@@ -84,7 +84,7 @@ class ShowAllPartitionTables(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Partition Tables')
+        self.view.menu.select('Hosts', 'Templates', 'Partition Tables')
 
 
 @navigator.register(PartitionTableEntity, 'New')
