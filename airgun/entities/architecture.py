@@ -55,7 +55,7 @@ class ShowAllArchitectures(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Architectures')
+        self.view.menu.select('Hosts', 'Provisioning Setup', 'Architectures')
 
 
 @navigator.register(ArchitectureEntity, 'New')

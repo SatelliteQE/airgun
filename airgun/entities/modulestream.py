@@ -40,7 +40,7 @@ class ShowAllModuleStreams(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Module Streams')
+        self.view.menu.select('Content', 'Content Types', 'Module Streams')
 
 
 @navigator.register(ModuleStreamEntity, 'Details')

@@ -39,7 +39,7 @@ class SyncMainPageNavigation(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Sync Templates')
+        self.view.menu.select('Hosts', 'Templates', 'Sync Templates')
 
 
 @navigator.register(SyncTemplatesEntity, 'Sync')

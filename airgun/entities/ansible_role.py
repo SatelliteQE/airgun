@@ -61,7 +61,7 @@ class ShowAllRoles(NavigateStep):
     VIEW = AnsibleRolesView
 
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Roles')
+        self.view.menu.select('Configure', 'Ansible', 'Roles')
 
 
 @navigator.register(AnsibleRolesEntity, 'Import')

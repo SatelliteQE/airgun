@@ -50,7 +50,7 @@ class ShowAllConfigReports(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Monitor', 'Config Management')
+        self.view.menu.select('Monitor', 'Reports', 'Config Management')
 
 
 @navigator.register(ConfigReportEntity, 'Report Details')

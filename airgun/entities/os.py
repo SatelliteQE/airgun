@@ -56,7 +56,7 @@ class ShowAllOperatingSystems(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Operating Systems')
+        self.view.menu.select('Hosts', 'Provisioning Setup', 'Operating Systems')
 
 
 @navigator.register(OperatingSystemEntity, 'New')

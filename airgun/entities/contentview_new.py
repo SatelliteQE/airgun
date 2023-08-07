@@ -31,7 +31,7 @@ class ShowAllContentViewsScreen(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Content Views')
+        self.view.menu.select('Content', 'Lifecycle', 'Content Views')
 
 
 @navigator.register(NewContentViewEntity, 'New')

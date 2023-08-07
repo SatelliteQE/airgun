@@ -36,7 +36,7 @@ class ShowAllContainerImageTags(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Container Image Tags')
+        self.view.menu.select('Content', 'Content Types', 'Container Image Tags')
 
 
 @navigator.register(ContainerImageTagEntity, 'Details')

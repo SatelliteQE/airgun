@@ -77,7 +77,7 @@ class ShowAllSCAPContents(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'SCAP contents')
+        self.view.menu.select('Hosts', 'Compliance', 'SCAP contents')
 
 
 @navigator.register(OSCAPContentEntity, 'New')
