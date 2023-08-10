@@ -8,7 +8,7 @@ from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.views.common import TemplateEditor
 from airgun.views.common import TemplateInputItem
 from airgun.widgets import ActionsDropdown
@@ -18,7 +18,7 @@ from airgun.widgets import MultiSelect
 from airgun.widgets import RemovableWidgetsItemsListView
 
 
-class JobTemplatesView(BaseLoggedInView, SearchableViewMixin):
+class JobTemplatesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[contains(., 'Job Templates')]")
     import_template = Text("//a[normalize-space(.)='Import']")
     new = Text("//a[contains(@href, '/job_templates/new')]")

@@ -7,14 +7,14 @@ from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTable
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import CustomParameter
 from airgun.widgets import FilteredDropdown
 from airgun.widgets import Pagination
 from airgun.widgets import SatSelect
 
 
-class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixin):
+class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixinPF4):
     """Main Ansible Variables view"""
 
     title = Text("//h1[contains(normalize-space(.),'Ansible Variables')]")

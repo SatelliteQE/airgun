@@ -4,7 +4,7 @@ from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly import Button
 
 from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import ConfirmationDialog
 from airgun.widgets import SatTable
 
@@ -14,7 +14,7 @@ class DeleteHardwareModelDialog(ConfirmationDialog):
     cancel_dialog = Text(".//button[normalize-space(.)='Cancel']")
 
 
-class HardwareModelsView(BaseLoggedInView, SearchableViewMixin):
+class HardwareModelsView(BaseLoggedInView, SearchableViewMixinPF4):
     delete_dialog = DeleteHardwareModelDialog()
     title = Text("//h1[normalize-space(.)='Hardware models']")
     new = Text("//a[contains(@href, '/models/new')]")
