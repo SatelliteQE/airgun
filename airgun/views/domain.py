@@ -6,13 +6,13 @@ from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import CustomParameter
 from airgun.widgets import FilteredDropdown
 from airgun.widgets import MultiSelect
 
 
-class DomainListView(BaseLoggedInView, SearchableViewMixin):
+class DomainListView(BaseLoggedInView, SearchableViewMixinPF4):
     """List of all domains."""
 
     title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="Domains"]')

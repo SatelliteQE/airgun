@@ -5,11 +5,11 @@ from widgetastic_patternfly import Button
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import PopOverWidget
 
 
-class SettingsView(BaseLoggedInView, SearchableViewMixin):
+class SettingsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Settings']")
     table = Table(
         './/table',

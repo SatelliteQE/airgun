@@ -1,4 +1,3 @@
-from selenium.webdriver.common.keys import Keys
 from widgetastic.widget import Checkbox
 from widgetastic.widget import Text
 from widgetastic.widget import TextInput
@@ -11,7 +10,7 @@ from widgetastic_patternfly4.ouia import PatternflyTable
 from widgetastic_patternfly4.ouia import Switch
 
 from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 
 
 class CloudTokenView(BaseLoggedInView):
@@ -46,7 +45,7 @@ class RemediationView(Modal):
         return self.title.wait_displayed()
 
 
-class CloudInsightsView(BaseLoggedInView, SearchableViewMixin):
+class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
     """Main RH Cloud Insights view."""
 
     title = Text('//h1[normalize-space(.)="Red Hat Insights"]')
@@ -71,23 +70,4 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.title.wait_displayed()
-
-    def search(self, query):
-        """Perform search using searchbox on the page and return table
-        contents.
-
-        :param str query: search query to type into search field. E.g. ``foo``
-            or ``name = "bar"``.
-        :return: list of dicts representing table rows
-        :rtype: list
-        """
-        if not hasattr(self.__class__, 'table'):
-            raise AttributeError(
-                f'Class {self.__class__.__name__} does not have attribute "table". '
-                'SearchableViewMixin only works with views, which have table for results. '
-                'Please define table or use custom search implementation instead'
-            )
-        self.searchbox.search(query + Keys.ENTER)
-        self.table.wait_displayed()
-        return self.table.read()
+        return self.browser.wait_for_element(self.title, exception=False) is not None
