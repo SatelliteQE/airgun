@@ -4,11 +4,11 @@ from widgetastic.widget import TextInput
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import ActionsDropdown
 
 
-class ComputeProfilesView(BaseLoggedInView, SearchableViewMixin):
+class ComputeProfilesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="Compute Profiles"]')
     new = Text('//a[normalize-space(.)="Create Compute Profile"]')
     table = Table(

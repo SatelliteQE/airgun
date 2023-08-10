@@ -6,13 +6,13 @@ from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import ActionsDropdown
 from airgun.widgets import MultiSelect
 from airgun.widgets import SatTable
 
 
-class SCAPContentsView(BaseLoggedInView, SearchableViewMixin):
+class SCAPContentsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='SCAP Content']")
     new = Text("//a[contains(@href, 'scap_contents/new')]")
     table = SatTable(

@@ -3,13 +3,13 @@ from widgetastic.widget import TextInput
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import ActionsDropdown
 from airgun.widgets import MultiSelect
 from airgun.widgets import SatTable
 
 
-class RolesView(BaseLoggedInView, SearchableViewMixin):
+class RolesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Roles']")
     new = Text("//a[contains(@href, '/roles/new')]")
     table = SatTable(
