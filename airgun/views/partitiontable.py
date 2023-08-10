@@ -9,7 +9,7 @@ from widgetastic_patternfly import Button
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.views.common import TemplateInputItem
 from airgun.widgets import ACEEditor
 from airgun.widgets import ActionsDropdown
@@ -18,7 +18,7 @@ from airgun.widgets import MultiSelect
 from airgun.widgets import RemovableWidgetsItemsListView
 
 
-class PartitionTablesView(BaseLoggedInView, SearchableViewMixin):
+class PartitionTablesView(BaseLoggedInView, SearchableViewMixinPF4):
 
     title = Text("//h1[text()='Partition Tables']")
     new = Button("Create Partition Table")

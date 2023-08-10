@@ -8,7 +8,7 @@ from widgetastic_patternfly import Button
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.views.common import TemplateEditor
 from airgun.views.common import TemplateInputItem
 from airgun.widgets import ActionsDropdown
@@ -18,7 +18,7 @@ from airgun.widgets import RemovableWidgetsItemsListView
 from airgun.widgets import TextInputsGroup
 
 
-class ReportTemplatesView(BaseLoggedInView, SearchableViewMixin):
+class ReportTemplatesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Report Templates']")
     new = Button("Create Template")
     table = Table(

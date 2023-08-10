@@ -3,8 +3,8 @@ from widgetastic.widget import View
 
 from airgun.exceptions import ReadOnlyWidgetError
 from airgun.views.common import BaseLoggedInView
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import SatTableWithoutHeaders
-from airgun.widgets import Search
 
 
 class AuditEntry(View):
@@ -38,16 +38,10 @@ class AuditEntry(View):
         raise ReadOnlyWidgetError('View is read only, fill is prohibited')
 
 
-class AuditsView(BaseLoggedInView):
+class AuditsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Audits']")
-    searchbox = Search()
-    entry = AuditEntry()
+    table = AuditEntry()
 
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
-
-    def search(self, query):
-        self.searchbox.search(query)
-        self.title.click()  # to exit the search field
-        return self.entry.read()

@@ -6,7 +6,7 @@ from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import ActionsDropdown
 from airgun.widgets import CustomParameter
 from airgun.widgets import FilteredDropdown
@@ -69,7 +69,7 @@ class TemplatesList(View):
             result[title].fill(select_value)
 
 
-class OperatingSystemsView(BaseLoggedInView, SearchableViewMixin):
+class OperatingSystemsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Operating Systems']")
     new = Text("//a[contains(@href, '/operatingsystems/new')]")
     table = Table(

@@ -7,12 +7,12 @@ from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import FilteredDropdown
 from airgun.widgets import MultiSelect
 
 
-class UsersView(BaseLoggedInView, SearchableViewMixin):
+class UsersView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Users']")
     new = Text("//a[contains(@href, '/users/new')]")
     table = Table(
