@@ -8,12 +8,12 @@ from widgetastic_patternfly4 import Button as PF4Button
 from widgetastic_patternfly4 import Tab
 
 from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import AutoCompleteTextInput
 from airgun.widgets import SatTable
 
 
-class WebhooksView(BaseLoggedInView, SearchableViewMixin):
+class WebhooksView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Webhooks']")
     new = PF4Button('Create new')
     table = SatTable(
