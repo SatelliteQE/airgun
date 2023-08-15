@@ -749,10 +749,10 @@ class Search(Widget):
 class PF4Search(Search):
     """PF4 Searchbar for table filtering"""
 
-    ROOT = '//div[@class="foreman-search-bar"]'
-    search_field = TextInput(locator=(".//input[@aria-label='Search input']"))
-    search_button = Text(locator=(".//button[@aria-label='Search']"))
-    clear_button = Button(locator=(".//input[@aria-label='Reset search']"))
+    ROOT = '//div[@id="search-bar"]'
+    search_field = TextInput(locator=(".//input[contains(@class, 'search-input')]"))
+    search_button = Text(locator=(".//button[contains(@id, 'btn-search')]"))
+    clear_button = Text(locator=(".//button[contains(@class,'autocomplete-clear-button')]"))
 
     def clear(self):
         """Clears search field value and re-trigger search to remove all
