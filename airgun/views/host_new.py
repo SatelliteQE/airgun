@@ -337,30 +337,28 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class virtualization(Card):
             ROOT = './/article[contains(@data-ouia-component-id, "card-template-Virtualization")]'
+            LABELS = '//div[@class="pf-c-description-list__group"]//dt//span'
+            VALUES = '//div[@class="pf-c-description-list__group"]//*[self::dd or self::ul]'
 
-            datacenter = Text('.//div[contains(@class, "pf-c-description-list__group")][1]//dd')
-            cluster = Text('.//div[contains(@class, "pf-c-description-list__group")][2]//dd')
-            memory = Text('.//div[contains(@class, "pf-c-description-list__group")][3]//dd')
-            public_ip_address = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][4]//dd'
-            )
-            mac_address = Text('.//div[contains(@class, "pf-c-description-list__group")][5]//dd')
-            cpus = Text('.//div[contains(@class, "pf-c-description-list__group")][6]//dd')
-            cores_per_socket = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][7]//dd'
-            )
-            firmware = Text('.//div[contains(@class, "pf-c-description-list__group")][8]//dd')
-            hypervisor = Text('.//div[contains(@class, "pf-c-description-list__group")][9]//dd')
-            connection_state = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][10]//dd'
-            )
-            overall_status = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][11]//dd'
-            )
-            annotation_notes = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][12]//dd'
-            )
-            running_on = Text('.//div[contains(@class, "pf-c-description-list__group")][13]//dd')
+            def read(self):
+                """Return a dictionary where keys are property names and values are property values.
+                Values are either in span elements or in div elements
+                """
+                items = {}
+                labels = self.browser.elements(self.LABELS)
+                values = self.browser.elements(self.VALUES)
+                # the length of elements should be always same
+                if len(values) != len(labels):
+                    raise AttributeError(
+                        'Each label should have one value, therefore length should be equal. '
+                        f'Length of labels: {len(labels)} isnt equal to length of {len(values)}, '
+                        'Please double check xpaths.'
+                    )
+                for key, value in zip(labels, values):
+                    value = self.browser.text(value)
+                    key = self.browser.text(key).replace(' ', '_').lower()
+                    items[key] = value
+                return items
 
     @View.nested
     class content(Tab):
