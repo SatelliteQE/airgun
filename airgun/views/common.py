@@ -440,7 +440,7 @@ class SearchableViewMixin(WTMixin):
         if not self.is_searchable():
             return None
         self.searchbox.search(query)
-        if self.title:
+        if hasattr(self, 'title'):
             self.title.click()
         return self.table.read()
 
@@ -484,7 +484,7 @@ class SearchableViewMixinPF4(SearchableViewMixin):
         self.searchbox.search(query)
         self.browser.plugin.ensure_page_safe(timeout='60s')
         self.table.wait_displayed()
-        if self.title:
+        if hasattr(self, 'title'):
             self.title.click()
         return self.table.read()
 
