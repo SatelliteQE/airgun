@@ -6,12 +6,12 @@ from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import FilteredDropdown
 from airgun.widgets import MultiSelect
 
 
-class MediumView(BaseLoggedInView, SearchableViewMixin):
+class MediumView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Installation Media']")
     new = Text("//a[contains(@href, '/media/new')]")
     table = Table(

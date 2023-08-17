@@ -7,14 +7,14 @@ from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatVerticalTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import ActionsDropdown
 from airgun.widgets import CustomParameter
 from airgun.widgets import FilteredDropdown
 from airgun.widgets import MultiSelect
 
 
-class OrganizationsView(BaseLoggedInView, SearchableViewMixin):
+class OrganizationsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Organizations']")
     new = Text("//a[contains(@href, '/organizations/new')]")
     table = Table(

@@ -21,7 +21,7 @@ from widgetastic_patternfly4.tabs import Tab
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.views.job_invocation import JobInvocationCreateView
 from airgun.views.job_invocation import JobInvocationStatusView
 from airgun.views.task import TaskDetailsView
@@ -196,7 +196,7 @@ class HostInterface(View):
         return self.browser.wait_for_element(self.title, visible=True, exception=False) is not None
 
 
-class HostsView(BaseLoggedInView, SearchableViewMixin):
+class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text(".//div[@id='rails-app-content']//a[contains(normalize-space(.),'Create Host')]")
