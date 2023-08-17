@@ -4,11 +4,11 @@ from widgetastic.widget import TextInput
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import SatTable
 
 
-class BookmarksView(BaseLoggedInView, SearchableViewMixin):
+class BookmarksView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Bookmarks']")
     table = SatTable(
         ".//table",

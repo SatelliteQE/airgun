@@ -8,7 +8,7 @@ from widgetastic_patternfly4 import Button as PF4Button
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import ActionsDropdown
 from airgun.widgets import ConfigGroupMultiSelect
 from airgun.widgets import FilteredDropdown
@@ -29,7 +29,7 @@ class ActivationKeyDropDown(ActionsDropdown):
         ]
 
 
-class HostGroupsView(BaseLoggedInView, SearchableViewMixin):
+class HostGroupsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text(
         "//h1[contains(., 'Host Group Configuration') or normalize-space(.)='Host Groups']"
     )

@@ -4,11 +4,11 @@ from widgetastic.widget import TextInput
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.widgets import MultiSelect
 
 
-class ArchitecturesView(BaseLoggedInView, SearchableViewMixin):
+class ArchitecturesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Architectures']")
     new = Text("//a[contains(@href, '/architectures/new')]")
     table = Table(

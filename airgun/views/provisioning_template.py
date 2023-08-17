@@ -9,7 +9,7 @@ from widgetastic_patternfly import Button
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import SearchableViewMixinPF4
 from airgun.views.common import TemplateEditor
 from airgun.views.common import TemplateInputItem
 from airgun.widgets import ActionsDropdown
@@ -26,7 +26,7 @@ class TemplateHostEnvironmentAssociation(GenericRemovableWidgetItem):
     host_group = Select(locator=".//select[contains(@name, '[hostgroup_id]')]")
 
 
-class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixin):
+class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Provisioning Templates']")
     new = Button("Create Template")
     build_pxe_default = Button("Build PXE Default")
