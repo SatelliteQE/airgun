@@ -481,6 +481,7 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         view.details.virtualization.read()
+        time.sleep(3)
         return view.details.virtualization.read()
 
     def add_new_parameter(self, entity_name, parameter_name, parameter_type, parameter_value):
