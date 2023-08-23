@@ -1,19 +1,20 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.computeresource import ComputeResourceRHVImageCreateView
-from airgun.views.computeresource import ComputeResourceRHVImageEditView
-from airgun.views.computeresource import ComputeResourcesView
-from airgun.views.computeresource import ComputeResourceVMwareImageCreateView
-from airgun.views.computeresource import ComputeResourceVMwareImageEditView
-from airgun.views.computeresource import ResourceProviderCreateView
-from airgun.views.computeresource import ResourceProviderDetailView
-from airgun.views.computeresource import ResourceProviderEditView
-from airgun.views.computeresource import ResourceProviderProfileView
-from airgun.views.computeresource import ResourceProviderVMImport
+from airgun.views.computeresource import (
+    ComputeResourceRHVImageCreateView,
+    ComputeResourceRHVImageEditView,
+    ComputeResourcesView,
+    ComputeResourceVMwareImageCreateView,
+    ComputeResourceVMwareImageEditView,
+    ResourceProviderCreateView,
+    ResourceProviderDetailView,
+    ResourceProviderEditView,
+    ResourceProviderProfileView,
+    ResourceProviderVMImport,
+)
 
 
 class ComputeResourceEntity(BaseEntity):
@@ -273,7 +274,7 @@ class ComputeResourceImageProvider(NavigateStep):
     (that depend from compute resource provider) before reaching navigation destination.
     """
 
-    PROVIDER_VIEWS = dict()
+    PROVIDER_VIEWS = {}
 
     def prerequisite(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
@@ -293,11 +294,10 @@ class ComputeResourceImageProvider(NavigateStep):
 
 @navigator.register(ComputeResourceEntity, 'Create Image')
 class ComputeResourceImageCreate(ComputeResourceImageProvider):
-
-    PROVIDER_VIEWS = dict(
-        RHV=ComputeResourceRHVImageCreateView,
-        VMware=ComputeResourceVMwareImageCreateView,
-    )
+    PROVIDER_VIEWS = {
+        'RHV': ComputeResourceRHVImageCreateView,
+        'VMware': ComputeResourceVMwareImageCreateView,
+    }
 
     def step(self, *args, **kwargs):
         self.parent.create_image.click()
@@ -305,11 +305,10 @@ class ComputeResourceImageCreate(ComputeResourceImageProvider):
 
 @navigator.register(ComputeResourceEntity, 'Edit Image')
 class ComputeResourceImageEdit(ComputeResourceImageProvider):
-
-    PROVIDER_VIEWS = dict(
-        RHV=ComputeResourceRHVImageEditView,
-        VMware=ComputeResourceVMwareImageEditView,
-    )
+    PROVIDER_VIEWS = {
+        'RHV': ComputeResourceRHVImageEditView,
+        'VMware': ComputeResourceVMwareImageEditView,
+    }
 
     def step(self, *args, **kwargs):
         image_name = kwargs.get('image_name')

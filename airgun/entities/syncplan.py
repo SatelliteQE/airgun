@@ -1,12 +1,9 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.syncplan import SyncPlanCreateView
-from airgun.views.syncplan import SyncPlanEditView
-from airgun.views.syncplan import SyncPlansView
+from airgun.views.syncplan import SyncPlanCreateView, SyncPlanEditView, SyncPlansView
 
 
 class SyncPlanEntity(BaseEntity):

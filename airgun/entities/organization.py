@@ -1,14 +1,14 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import WrongContextAlert
-from airgun.views.organization import OrganizationCreateView
-from airgun.views.organization import OrganizationEditView
-from airgun.views.organization import OrganizationsView
+from airgun.views.common import BaseLoggedInView, WrongContextAlert
+from airgun.views.organization import (
+    OrganizationCreateView,
+    OrganizationEditView,
+    OrganizationsView,
+)
 
 
 class OrganizationEntity(BaseEntity):
@@ -105,11 +105,12 @@ class SelectOrganizationContext(NavigateStep):
     """
 
     VIEW = BaseLoggedInView
+    ELLIPSIS_LENGTH = 30
 
     def am_i_here(self, *args, **kwargs):
         org_name = kwargs.get('org_name')
-        if len(org_name) > 30:
-            org_name = org_name[:27] + '...'
+        if len(org_name) > self.ELLIPSIS_LENGTH:
+            org_name = org_name[: self.ELLIPSIS_LENGTH - 3] + '...'
         return org_name == self.view.taxonomies.current_org
 
     def step(self, *args, **kwargs):

@@ -5,29 +5,29 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.exceptions import DisabledWidgetError
 from airgun.helpers.host import HostHelper
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.cloud_insights import CloudInsightsView
-from airgun.views.host import HostCreateView
-from airgun.views.host import HostDetailsView
-from airgun.views.host import HostEditView
-from airgun.views.host import HostRegisterView
-from airgun.views.host import HostsAssignCompliancePolicy
-from airgun.views.host import HostsAssignLocation
-from airgun.views.host import HostsAssignOrganization
-from airgun.views.host import HostsChangeEnvironment
-from airgun.views.host import HostsChangeGroup
-from airgun.views.host import HostsChangeOpenscapCapsule
-from airgun.views.host import HostsDeleteActionDialog
-from airgun.views.host import HostsDeleteTaskDetailsView
-from airgun.views.host import HostsJobInvocationCreateView
-from airgun.views.host import HostsJobInvocationStatusView
-from airgun.views.host import HostsUnassignCompliancePolicy
-from airgun.views.host import HostsView
-from airgun.views.host import RecommendationListView
-from airgun.views.host_new import ManageColumnsView
-from airgun.views.host_new import NewHostDetailsView
+from airgun.views.host import (
+    HostCreateView,
+    HostDetailsView,
+    HostEditView,
+    HostRegisterView,
+    HostsAssignCompliancePolicy,
+    HostsAssignLocation,
+    HostsAssignOrganization,
+    HostsChangeEnvironment,
+    HostsChangeGroup,
+    HostsChangeOpenscapCapsule,
+    HostsDeleteActionDialog,
+    HostsDeleteTaskDetailsView,
+    HostsJobInvocationCreateView,
+    HostsJobInvocationStatusView,
+    HostsUnassignCompliancePolicy,
+    HostsView,
+    RecommendationListView,
+)
+from airgun.views.host_new import ManageColumnsView, NewHostDetailsView
 
 
 class HostEntity(BaseEntity):
@@ -251,7 +251,7 @@ class HostEntity(BaseEntity):
         view.validations.assert_no_errors()
 
         # set locators based on selected UI
-        if rhel_version > 7:
+        if rhel_version > 7:  # noqa: PLR2004 - Context makes magic number clear
             hostname_element = 'span'
             hostname_id = 'system_information_hostname_text'
         else:

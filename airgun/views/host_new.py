@@ -1,31 +1,27 @@
 import time
 
 from selenium.webdriver.common.keys import Keys
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic.widget import Widget
+from widgetastic.widget import Checkbox, Text, TextInput, View, Widget
 from widgetastic.widget.table import Table
-from widgetastic_patternfly4 import Button
-from widgetastic_patternfly4 import Dropdown
-from widgetastic_patternfly4 import Pagination
-from widgetastic_patternfly4 import Select
-from widgetastic_patternfly4 import Tab
-from widgetastic_patternfly4.ouia import BreadCrumb
-from widgetastic_patternfly4.ouia import Button as OUIAButton
-from widgetastic_patternfly4.ouia import ExpandableTable
-from widgetastic_patternfly4.ouia import FormSelect as OUIAFormSelect
-from widgetastic_patternfly4.ouia import PatternflyTable
-from widgetastic_patternfly4.ouia import Select as OUIASelect
+from widgetastic_patternfly4 import Button, Dropdown, Pagination, Select, Tab
+from widgetastic_patternfly4.ouia import (
+    BreadCrumb,
+    Button as OUIAButton,
+    ExpandableTable,
+    FormSelect as OUIAFormSelect,
+    PatternflyTable,
+    Select as OUIASelect,
+)
 
 from airgun.views.common import BaseLoggedInView
-from airgun.widgets import Accordion
-from airgun.widgets import CheckboxGroup
-from airgun.widgets import ItemsList
-from airgun.widgets import Pf4ActionsDropdown
-from airgun.widgets import Pf4ConfirmationDialog
-from airgun.widgets import SatTableWithoutHeaders
+from airgun.widgets import (
+    Accordion,
+    CheckboxGroup,
+    ItemsList,
+    Pf4ActionsDropdown,
+    Pf4ConfirmationDialog,
+    SatTableWithoutHeaders,
+)
 
 
 class SearchInput(TextInput):
@@ -92,9 +88,9 @@ class HostDetailsCard(Widget):
                 'Please double check xpaths.'
             )
         for key, value in zip(labels, values):
-            value = self.browser.text(value)
-            key = self.browser.text(key).replace(' ', '_').lower()
-            items[key] = value
+            _value = self.browser.text(value)
+            _key = self.browser.text(key).replace(' ', '_').lower()
+            items[_key] = _value
         return items
 
 
@@ -230,9 +226,7 @@ class NewHostDetailsView(BaseLoggedInView):
     class details(Tab):
         ROOT = './/div[contains(@class, "host-details-tab-item")]'
 
-        card_collapse_switch = Text(
-            './/button[contains(@data-ouia-component-id, "expand-button")]'
-        )
+        card_collapse_switch = Text('.//button[contains(@data-ouia-component-id, "expand-button")]')
 
         @View.nested
         class system_properties(Card):
@@ -295,9 +289,7 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/article[.//div[text()="HW properties"]]'
 
             model = Text('.//div[contains(@class, "pf-c-description-list__group")][1]//dd')
-            number_of_cpus = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][2]//dd'
-            )
+            number_of_cpus = Text('.//div[contains(@class, "pf-c-description-list__group")][2]//dd')
             sockets = Text('.//div[contains(@class, "pf-c-description-list__group")][3]//dd')
             cores_per_socket = Text(
                 './/div[contains(@class, "pf-c-description-list__group")][4]//dd'
@@ -358,9 +350,7 @@ class NewHostDetailsView(BaseLoggedInView):
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
             searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
             status_filter = Dropdown(locator='.//div[@aria-label="select Status container"]/div')
-            upgrade = Pf4ActionsDropdown(
-                locator='.//div[div/button[normalize-space(.)="Upgrade"]]'
-            )
+            upgrade = Pf4ActionsDropdown(locator='.//div[div/button[normalize-space(.)="Upgrade"]]')
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = PatternflyTable(
@@ -813,13 +803,11 @@ class EditAnsibleRolesView(View):
 
 
 class ModuleStreamDialog(Pf4ConfirmationDialog):
-
     confirm_dialog = Button(locator='.//button[@aria-label="confirm-module-action"]')
     cancel_dialog = Button(locator='.//button[@aria-label="cancel-module-action"]')
 
 
 class RecurringJobDialog(Pf4ConfirmationDialog):
-
     confirm_dialog = Button(locator='.//button[@data-ouia-component-id="btn-modal-confirm"]')
     cancel_dialog = Button(locator='.//button[@data-ouia-component-id="btn-modal-cancel"]')
 
