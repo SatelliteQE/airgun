@@ -1,13 +1,14 @@
 import re
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.errata import ErrataDetailsView
-from airgun.views.errata import ErrataInstallationConfirmationView
-from airgun.views.errata import ErrataTaskDetailsView
-from airgun.views.errata import ErratumView
+from airgun.views.errata import (
+    ErrataDetailsView,
+    ErrataInstallationConfirmationView,
+    ErrataTaskDetailsView,
+    ErratumView,
+)
 
 
 class ErrataEntity(BaseEntity):

@@ -1,5 +1,8 @@
-flake8
 pre-commit
 sphinx
 sphinx-autoapi
 sphinxcontrib-spelling
+
+# For linting
+ruff
+

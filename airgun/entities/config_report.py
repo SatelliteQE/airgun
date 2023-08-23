@@ -1,9 +1,7 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.config_report import ConfigReportDetailsView
-from airgun.views.config_report import ConfigReportsView
+from airgun.views.config_report import ConfigReportDetailsView, ConfigReportsView
 
 
 class ConfigReportEntity(BaseEntity):

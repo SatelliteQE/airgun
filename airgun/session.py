@@ -1,15 +1,14 @@
 """Session controller which manages UI session"""
+from datetime import datetime
 import logging
 import os
 import sys
-from datetime import datetime
 
 from cached_property import cached_property
 from fauxfactory import gen_string
 
 from airgun import settings
-from airgun.browser import AirgunBrowser
-from airgun.browser import SeleniumBrowserFactory
+from airgun.browser import AirgunBrowser, SeleniumBrowserFactory
 from airgun.entities.activationkey import ActivationKeyEntity
 from airgun.entities.ansible_role import AnsibleRolesEntity
 from airgun.entities.ansible_variable import AnsibleVariablesEntity
@@ -82,8 +81,7 @@ from airgun.entities.user import UserEntity
 from airgun.entities.usergroup import UserGroupEntity
 from airgun.entities.virtwho_configure import VirtwhoConfigureEntity
 from airgun.entities.webhook import WebhookEntity
-from airgun.navigation import Navigate
-from airgun.navigation import navigator
+from airgun.navigation import Navigate, navigator
 
 LOGGER = logging.getLogger(__name__)
 
@@ -235,7 +233,7 @@ class Session:
         try:
             if not passed:
                 self.take_screenshot()
-        except Exception as err:
+        except Exception as err:  # noqa: BLE001 TODO: fix bare except
             LOGGER.exception(err)
         finally:
             self._factory.finalize(passed)
