@@ -1,13 +1,14 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.virtwho_configure import VirtwhoConfigureCreateView
-from airgun.views.virtwho_configure import VirtwhoConfigureDetailsView
-from airgun.views.virtwho_configure import VirtwhoConfigureEditView
-from airgun.views.virtwho_configure import VirtwhoConfiguresView
+from airgun.views.virtwho_configure import (
+    VirtwhoConfigureCreateView,
+    VirtwhoConfigureDetailsView,
+    VirtwhoConfigureEditView,
+    VirtwhoConfiguresView,
+)
 
 
 class VirtwhoConfigureEntity(BaseEntity):
@@ -33,7 +34,7 @@ class VirtwhoConfigureEntity(BaseEntity):
         """Check if the config can be viewed/created"""
         try:
             view = self.navigate_to(self, 'All')
-        except Exception:
+        except Exception:  # noqa: BLE001 - TODO: determine proper exception
             return {"can_view": False, "can_create": False}
         return {"can_view": True, "can_create": view.new.is_displayed}
 

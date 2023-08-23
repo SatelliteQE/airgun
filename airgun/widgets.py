@@ -3,32 +3,32 @@ import time
 from cached_property import cached_property
 from selenium.webdriver.common.keys import Keys
 from wait_for import wait_for
-from widgetastic.exceptions import NoSuchElementException
-from widgetastic.exceptions import WidgetOperationFailed
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ClickableMixin
-from widgetastic.widget import do_not_read_this_widget
-from widgetastic.widget import GenericLocatorWidget
-from widgetastic.widget import ParametrizedLocator
-from widgetastic.widget import Select
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic.widget import Widget
+from widgetastic.exceptions import NoSuchElementException, WidgetOperationFailed
+from widgetastic.widget import (
+    Checkbox,
+    ClickableMixin,
+    GenericLocatorWidget,
+    ParametrizedLocator,
+    Select,
+    Table,
+    Text,
+    TextInput,
+    View,
+    Widget,
+    do_not_read_this_widget,
+)
 from widgetastic.xpath import quote
-from widgetastic_patternfly import AggregateStatusCard
-from widgetastic_patternfly import Button
-from widgetastic_patternfly import FlashMessage
-from widgetastic_patternfly import FlashMessages
-from widgetastic_patternfly import Kebab
-from widgetastic_patternfly import VerticalNavigation
-from widgetastic_patternfly4.ouia import BaseSelect
-from widgetastic_patternfly4.ouia import Button as PF4Button
-from widgetastic_patternfly4.ouia import Dropdown
+from widgetastic_patternfly import (
+    AggregateStatusCard,
+    Button,
+    FlashMessage,
+    FlashMessages,
+    Kebab,
+    VerticalNavigation,
+)
+from widgetastic_patternfly4.ouia import BaseSelect, Button as PF4Button, Dropdown
 
-from airgun.exceptions import DisabledWidgetError
-from airgun.exceptions import ReadOnlyWidgetError
+from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
 from airgun.utils import get_widget_by_name
 
 
@@ -101,8 +101,8 @@ class RadioGroup(GenericLocatorWidget):
             return next(
                 btn for btn in self.browser.elements(self.LABELS) if self.browser.text(btn) == name
             )
-        except StopIteration:
-            raise NoSuchElementException(f"RadioButton {name} is absent on page")
+        except StopIteration as err:
+            raise NoSuchElementException(f"RadioButton {name} is absent on page") from err
 
     @property
     def selected(self):
@@ -111,11 +111,10 @@ class RadioGroup(GenericLocatorWidget):
             btn = self.browser.element(self.BUTTON, parent=self._get_parent_label(name))
             if btn.get_attribute('checked') is not None:
                 return name
-        else:
-            raise ValueError(
-                "Whether no radio button is selected or proper attribute "
-                "should be added to framework"
-            )
+        raise ValueError(
+            "Whether no radio button is selected or proper attribute "
+            "should be added to framework"
+        )
 
     def select(self, name):
         """Select specific radio button in the group"""
@@ -163,11 +162,10 @@ class ToggleRadioGroup(RadioGroup):
             btn = self.browser.element(self._get_parent_label(name))
             if 'active' in btn.get_attribute('class'):
                 return name
-        else:
-            raise ValueError(
-                "Whether no radio button is selected or proper attribute "
-                "should be added to framework"
-            )
+        raise ValueError(
+            "Whether no radio button is selected or proper attribute "
+            "should be added to framework"
+        )
 
     def select(self, name):
         """Select specific radio button in the group"""
@@ -1061,7 +1059,7 @@ class CustomParameter(Table):
                 "or @title='Remove Parameter']"
             ),
         }
-        self.name = list(self.column_widgets.keys())[0]
+        self.name = next(iter(self.column_widgets.keys()))
         self.name_key = '_'.join(self.name.lower().split(' '))
         self.value = list(self.column_widgets.keys())[1]
         self.value_key = '_'.join(self.value.lower().split(' '))
@@ -1117,8 +1115,8 @@ class CustomParameter(Table):
 
         try:
             names_to_fill = [param[self.name_key] for param in params_to_fill]
-        except KeyError:
-            raise KeyError("parameter value is missing 'name' key")
+        except KeyError as err:
+            raise KeyError("parameter value is missing 'name' key") from err
         # Check if duplicate names were passed in and skip incase list
         if names_to_fill and not isinstance(names_to_fill[0], dict):
             if len(set(names_to_fill)) < len(names_to_fill):
@@ -1275,7 +1273,7 @@ class LCESelector(GenericLocatorWidget):
         :param value: dictionary that consist of single checkbox name and
             value that should be assigned to that checkbox
         """
-        checkbox_name = list(value.keys())[0]
+        checkbox_name = next(iter(value.keys()))
         checkbox_value = value[checkbox_name]
         checkbox_locator = self.CHECKBOX.format(checkbox_name)
         return self.select(checkbox_locator, checkbox_value)
@@ -1342,7 +1340,7 @@ class TextInputHidden(TextInput):
     def read(self):
         value = super().read()
         hidden = 'masked-input' in self.browser.classes(self)
-        return dict(value=value, hidden=hidden)
+        return {'value': value, 'hidden': hidden}
 
 
 class EditableEntry(GenericLocatorWidget):
@@ -1574,9 +1572,7 @@ class ACEEditor(Widget):
         :param value: string with value that should be used for field update
             procedure
         """
-        self.browser.execute_script(
-            f"ace.edit('{self.ace_edit_id}').setValue(arguments[0])", value
-        )
+        self.browser.execute_script(f"ace.edit('{self.ace_edit_id}').setValue(arguments[0])", value)
 
     def read(self):
         """Returns string with current widget value"""
@@ -1765,7 +1761,7 @@ class SatTable(Table):
             # ensure that we are at the right page (to not read the same page twice) and
             # to escape any ui bug that will cause hanging on this loop.
             wait_for(
-                lambda: self.pagination.current_page == page_number,
+                lambda page_number=page_number: self.pagination.current_page == page_number,
                 timeout=30,
                 delay=1,
                 logger=self.logger,
@@ -2415,7 +2411,7 @@ class BaseMultiSelect(BaseSelect, Dropdown):
             items: Items to be selected
             close: Close the dropdown when finished
         """
-        if not isinstance(items, (list, tuple, set)):
+        if not isinstance(items, list | tuple | set):
             items = [items]
         if isinstance(items, str):
             items = items.split(',')
@@ -2506,9 +2502,7 @@ class DualListSelector(EditModal):
 
     from widgetastic_patternfly4 import Button
 
-    available_options_search = SearchInput(
-        locator='.//input[@aria-label="Available search input"]'
-    )
+    available_options_search = SearchInput(locator='.//input[@aria-label="Available search input"]')
     available_options_list = ItemsList(
         locator='.//div[contains(@class, "pf-m-available")]'
         '//ul[@class="pf-c-dual-list-selector__list"]'

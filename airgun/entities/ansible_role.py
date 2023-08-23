@@ -1,10 +1,8 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
-from airgun.views.ansible_role import AnsibleRolesImportView
-from airgun.views.ansible_role import AnsibleRolesView
+from airgun.navigation import NavigateStep, navigator
+from airgun.views.ansible_role import AnsibleRolesImportView, AnsibleRolesView
 
 
 class AnsibleRolesEntity(BaseEntity):

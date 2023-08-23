@@ -1,16 +1,9 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic_patternfly4 import Button
-from widgetastic_patternfly4 import Pagination
+from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic_patternfly4 import Button, Pagination
 from widgetastic_patternfly4.dropdown import Dropdown
-from widgetastic_patternfly4.ouia import Modal
-from widgetastic_patternfly4.ouia import PatternflyTable
-from widgetastic_patternfly4.ouia import Switch
+from widgetastic_patternfly4.ouia import Modal, PatternflyTable, Switch
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 
 
 class CloudTokenView(BaseLoggedInView):

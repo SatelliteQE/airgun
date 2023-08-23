@@ -1,8 +1,7 @@
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.sync_status import SyncStatusView
 
@@ -40,7 +39,7 @@ class SyncStatusEntity(BaseEntity):
             repo_node.fill(True)
         view.synchronize_now.click()
         wait_for(
-            lambda: all([node.progress is None for node in repo_nodes]),
+            lambda: all(node.progress is None for node in repo_nodes),
             timeout=timeout,
             delay=5,
             logger=view.logger,

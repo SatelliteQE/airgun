@@ -1,13 +1,9 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.role import RoleCloneView
-from airgun.views.role import RoleCreateView
-from airgun.views.role import RoleEditView
-from airgun.views.role import RolesView
+from airgun.views.role import RoleCloneView, RoleCreateView, RoleEditView, RolesView
 
 
 class RoleEntity(BaseEntity):

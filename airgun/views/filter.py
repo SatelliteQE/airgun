@@ -1,18 +1,21 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ConditionalSwitchableView
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import (
+    Checkbox,
+    ConditionalSwitchableView,
+    Table,
+    Text,
+    TextInput,
+    View,
+)
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import MultiSelect
-from airgun.widgets import Pagination
-from airgun.widgets import Search
+from airgun.views.common import BaseLoggedInView, SatTab
+from airgun.widgets import (
+    ActionsDropdown,
+    FilteredDropdown,
+    MultiSelect,
+    Pagination,
+    Search,
+)
 
 
 class FiltersView(BaseLoggedInView):
