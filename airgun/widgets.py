@@ -26,6 +26,8 @@ from widgetastic_patternfly import VerticalNavigation
 from widgetastic_patternfly4.ouia import BaseSelect
 from widgetastic_patternfly4.ouia import Button as PF4Button
 from widgetastic_patternfly4.ouia import Dropdown
+from widgetastic_patternfly4.table import BaseExpandableTable
+from widgetastic_patternfly4.table import BasePatternflyTable
 
 from airgun.exceptions import DisabledWidgetError
 from airgun.exceptions import ReadOnlyWidgetError
@@ -1281,6 +1283,26 @@ class LCESelector(GenericLocatorWidget):
         return self.select(checkbox_locator, checkbox_value)
 
 
+class PF4LCESelector(LCESelector):
+    """Patternfly 4 Version of LCESelector
+    """
+    LABELS = ".//label[contains(@class, 'pf-c-check__label')]"
+    CHECKBOX = ".//input[@class='pf-c-check__input' and parent::div/label[contains(., '{}')]]"
+
+    def __init__(self, parent, locator=None, logger=None):
+        """Allow to specify ``locator`` if needed or use default one otherwise.
+        Locator is needed when multiple :class:`LCESelector` are present,
+        typically as a part of :class:`airgun.views.common.LCESelectorGroup`.
+        """
+        if locator is None:
+            locator = """.//div[contains(@class, 'pf-c-form__group')]//div[@class='pf-c-form__group-control pf-m-inline']"""
+        super().__init__(parent, locator, logger=logger)
+
+    def checkbox_selected(self, locator):
+        """Identify whether specific checkbox is selected or not"""
+        return self.browser.get_attribute('checked', locator)
+
+
 class LimitInput(Widget):
     """Input for managing limits (e.g. Hosts limit). Consists of 'Unlimited'
     checkbox and text input for specifying the limit, which is only visible if
@@ -1373,6 +1395,10 @@ class EditableEntry(GenericLocatorWidget):
     save_button = Text(".//button[normalize-space(.)='Save']")
     cancel_button = Text(".//button[span[normalize-space(.)='Cancel']]")
     entry_value = Text(".//span[contains(@class, 'editable-value')]")
+    pf4_edit_button = Text("//button[@aria-label='edit name']")
+    pf4_edit_field = TextInput(locator=".//input[@aria-label='name text input']")
+    pf4_save_button = Text("//button[@aria-label='submit name']")
+    pf4_cancel_button = Text("//button[@aria-label='clear name']")
 
     def __init__(self, parent, locator=None, name=None, logger=None):
         """Supports initialization via ``locator=`` or ``name=``"""
@@ -1392,8 +1418,12 @@ class EditableEntry(GenericLocatorWidget):
         # not required for it
         if self.edit_button.is_displayed:
             self.edit_button.click()
-        self.edit_field.fill(value)
-        self.save_button.click()
+            self.edit_field.fill(value)
+            self.save_button.click()
+        if self.pf4_edit_button.is_displayed:
+            self.pf4_edit_button.click()
+            self.pf4_edit_field.fill(value)
+            self.pf4_save_button.click()
 
     def read(self):
         """Returns string with current widget value"""
@@ -2023,7 +2053,7 @@ class ProgressBar(GenericLocatorWidget):
         """
         wait_for(lambda: self.is_displayed, timeout=30, delay=delay, logger=self.logger)
         wait_for(
-            lambda: self.is_completed is True or not self.is_displayed,
+            lambda: not self.is_displayed or self.is_completed is True,
             timeout=timeout,
             delay=delay,
             logger=self.logger,
@@ -2032,6 +2062,41 @@ class ProgressBar(GenericLocatorWidget):
     def read(self):
         """Returns current progress."""
         return self.progress
+
+
+class ProgressBarPF4(ProgressBar):
+    """Generic progress bar widget.
+    Example html representation::
+        <div class="progress ng-isolate-scope" type="success" ...>
+          <div class="progress-bar progress-bar-success" aria-valuenow="0"
+           aria-valuemin="0" aria-valuemax="100" aria-valuetext="0%" ...></div>
+        </div>
+    Locator example::
+        .//div[contains(@class, "progress progress-striped")]
+    """
+
+    PROGRESSBAR = '//div[contains(@role, "progressbar") or contains(@class, "pf-c-progress__bar")]'
+
+    def __init__(self, parent, locator=None, logger=None):
+        """Provide common progress bar locator if it wasn't specified."""
+        Widget.__init__(self, parent, logger=logger)
+        if not locator:
+            locator = self.PROGRESSBAR
+        self.locator = locator
+
+    @property
+    def progress(self):
+        """String value with current flow rate in percent."""
+        return self.browser.get_attribute(
+            'pf-c-progress__measure', self.PROGRESSBAR, check_safe=False
+        )
+
+    @property
+    def is_completed(self):
+        """Boolean value whether progress bar is finished or not"""
+        if not self.is_active and self.progress == '100%':
+            return True
+        return False
 
 
 class PublishPromoteProgressBar(ProgressBar):
@@ -2524,3 +2589,32 @@ class DualListSelector(EditModal):
         locator='.//div[contains(@class, "pf-m-chosen")]'
         '//ul[@class="pf-c-dual-list-selector__list"]'
     )
+
+class SatPatternflyTable(BasePatternflyTable, Table):
+    def __init__(
+        self,
+        parent,
+        column_widgets=None,
+        assoc_column=None,
+        rows_ignore_top=None,
+        rows_ignore_bottom=None,
+        top_ignore_fill=False,
+        bottom_ignore_fill=False,
+        logger=None,
+    ):
+        self.component_type = "PF4/Table"
+        super().__init__(
+            parent,
+            locator=(f".//*[@data-ouia-component-type={quote(self.component_type)}]"),
+            column_widgets=column_widgets,
+            assoc_column=assoc_column,
+            rows_ignore_top=rows_ignore_top,
+            rows_ignore_bottom=rows_ignore_bottom,
+            top_ignore_fill=top_ignore_fill,
+            bottom_ignore_fill=bottom_ignore_fill,
+            logger=logger,
+        )
+
+
+class SatExpandableTable(BaseExpandableTable, SatPatternflyTable):
+    pass
