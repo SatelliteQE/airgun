@@ -38,7 +38,7 @@ class ShowAllSmartClassParameters(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Smart Class Parameters')
+        self.view.menu.select('Configure', 'Puppet ENC', 'Smart Class Parameters')
 
 
 @navigator.register(SmartClassParameterEntity, 'Edit')

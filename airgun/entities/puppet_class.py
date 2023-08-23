@@ -51,7 +51,7 @@ class ShowAllPuppetClasses(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Classes')
+        self.view.menu.select('Configure', 'Puppet ENC', 'Classes')
 
 
 @navigator.register(PuppetClassEntity, 'Edit')
