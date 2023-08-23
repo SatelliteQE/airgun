@@ -5,14 +5,15 @@ from wait_for import wait_for
 from airgun.entities.base import BaseEntity
 from airgun.entities.product import ProductEntity
 from airgun.entities.settings import SettingsEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.product import ProductTaskDetailsView
-from airgun.views.repository import RepositoriesView
-from airgun.views.repository import RepositoryCreateView
-from airgun.views.repository import RepositoryEditView
-from airgun.views.repository import RepositoryPackagesView
+from airgun.views.repository import (
+    RepositoriesView,
+    RepositoryCreateView,
+    RepositoryEditView,
+    RepositoryPackagesView,
+)
 
 
 class RepositoryEntity(BaseEntity):

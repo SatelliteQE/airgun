@@ -1,10 +1,7 @@
-from typing import Any
-from typing import Dict
-from typing import List
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from airgun.entities.base import BaseEntity
+    pass
 
 
 class BaseEntityHelper:

@@ -1,13 +1,14 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.webhook import DeleteWebhookConfirmationView
-from airgun.views.webhook import WebhookCreateView
-from airgun.views.webhook import WebhookEditView
-from airgun.views.webhook import WebhooksView
+from airgun.views.webhook import (
+    DeleteWebhookConfirmationView,
+    WebhookCreateView,
+    WebhookEditView,
+    WebhooksView,
+)
 
 
 class WebhookEntity(BaseEntity):
