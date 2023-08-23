@@ -2,12 +2,13 @@ from navmazing import NavigateToSibling
 from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.hostgroup import HostGroupCreateView
-from airgun.views.hostgroup import HostGroupEditView
-from airgun.views.hostgroup import HostGroupsView
+from airgun.views.hostgroup import (
+    HostGroupCreateView,
+    HostGroupEditView,
+    HostGroupsView,
+)
 
 
 class HostGroupEntity(BaseEntity):

@@ -1,10 +1,6 @@
-from widgetastic.widget import Text
-from widgetastic.widget import View
-from widgetastic.widget import Widget
-from widgetastic_patternfly4 import Dropdown
-from widgetastic_patternfly4 import Tab
-from widgetastic_patternfly4.ouia import BreadCrumb
-from widgetastic_patternfly4.ouia import Button
+from widgetastic.widget import Text, View, Widget
+from widgetastic_patternfly4 import Dropdown, Tab
+from widgetastic_patternfly4.ouia import BreadCrumb, Button
 
 from airgun.views.common import BaseLoggedInView
 
@@ -38,9 +34,9 @@ class HostDetailsCard(Widget):
                 'Please double check xpaths.'
             )
         for key, value in zip(labels, values):
-            value = self.browser.text(value)
-            key = self.browser.text(key).replace(' ', '_').lower()
-            items[key] = value
+            _value = self.browser.text(value)
+            _key = self.browser.text(key).replace(' ', '_').lower()
+            items[_key] = _value
         return items
 
 

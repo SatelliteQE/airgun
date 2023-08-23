@@ -1,10 +1,7 @@
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
+from widgetastic.widget import Table, Text, TextInput
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 from airgun.widgets import MultiSelect
 
 

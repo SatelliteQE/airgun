@@ -1,16 +1,10 @@
 from wait_for import wait_for
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import Button
-from widgetastic_patternfly4 import Button as PF4Button
-from widgetastic_patternfly4 import Tab
+from widgetastic_patternfly4 import Button as PF4Button, Tab
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixin
-from airgun.widgets import AutoCompleteTextInput
-from airgun.widgets import SatTable
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
+from airgun.widgets import AutoCompleteTextInput, SatTable
 
 
 class WebhooksView(BaseLoggedInView, SearchableViewMixin):

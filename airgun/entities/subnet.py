@@ -1,12 +1,9 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.subnet import SubnetCreateView
-from airgun.views.subnet import SubnetEditView
-from airgun.views.subnet import SubnetsView
+from airgun.views.subnet import SubnetCreateView, SubnetEditView, SubnetsView
 
 
 class SubnetEntity(BaseEntity):

@@ -1,7 +1,6 @@
 from cached_property import cached_property
 from widgetastic.exceptions import NoSuchElementException
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Text
+from widgetastic.widget import Checkbox, Text
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import SatTable

@@ -1,15 +1,8 @@
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
-from airgun.widgets import CustomParameter
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import MultiSelect
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
+from airgun.widgets import CustomParameter, FilteredDropdown, MultiSelect
 
 
 class DomainListView(BaseLoggedInView, SearchableViewMixin):
@@ -37,21 +30,21 @@ class DomainCreateView(BaseLoggedInView):
     cancel_button = Text(".//a[@href='/domains']")
 
     @View.nested
-    class domain(SatTab):  # noqa
+    class domain(SatTab):
         dns_domain = TextInput(id='domain_name')
         full_name = TextInput(id='domain_fullname')
         dns_capsule = FilteredDropdown(id='domain_dns_id')
 
     @View.nested
-    class parameters(SatTab):  # noqa
+    class parameters(SatTab):
         params = CustomParameter(id='global_parameters_table')
 
     @View.nested
-    class locations(SatTab):  # noqa
+    class locations(SatTab):
         multiselect = MultiSelect(id='ms-domain_location_ids')
 
     @View.nested
-    class organizations(SatTab):  # noqa
+    class organizations(SatTab):
         multiselect = MultiSelect(id='ms-domain_organization_ids')
 
     @property

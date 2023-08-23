@@ -1,6 +1,6 @@
 """AirGun's implementation of base navigation and navigate steps."""
-import navmazing
 from cached_property import cached_property
+import navmazing
 from selenium.common.exceptions import NoSuchElementException
 
 
@@ -82,7 +82,7 @@ class NavigateStep(navmazing.NavigateStep):
         :return: view instance if class attribute ``VIEW`` is set or ``None``
             otherwise
         """
-        super().go(_tries=_tries, *args, **kwargs)
+        super().go(*args, _tries=_tries, **kwargs)
         view = self.view if self.VIEW is not None else None
         return view
 

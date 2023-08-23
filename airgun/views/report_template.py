@@ -1,21 +1,20 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Button
+from widgetastic.widget import Checkbox, Table, Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb, Button
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
-from airgun.views.common import TemplateEditor
-from airgun.views.common import TemplateInputItem
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import MultiSelect
-from airgun.widgets import RemovableWidgetsItemsListView
-from airgun.widgets import TextInputsGroup
+from airgun.views.common import (
+    BaseLoggedInView,
+    SatTab,
+    SearchableViewMixin,
+    TemplateEditor,
+    TemplateInputItem,
+)
+from airgun.widgets import (
+    ActionsDropdown,
+    FilteredDropdown,
+    MultiSelect,
+    RemovableWidgetsItemsListView,
+    TextInputsGroup,
+)
 
 
 class ReportTemplatesView(BaseLoggedInView, SearchableViewMixin):

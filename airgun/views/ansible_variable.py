@@ -1,17 +1,8 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Select
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import Checkbox, Select, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTable
-from airgun.views.common import SearchableViewMixin
-from airgun.widgets import CustomParameter
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import Pagination
-from airgun.widgets import SatSelect
+from airgun.views.common import BaseLoggedInView, SatTable, SearchableViewMixin
+from airgun.widgets import CustomParameter, FilteredDropdown, Pagination, SatSelect
 
 
 class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixin):
@@ -105,9 +96,7 @@ class NewAnsibleVariableView(BaseLoggedInView):
     @property
     def expanded(self):
         """Check whether this section is expanded"""
-        return 'active' in self.browser.get_attribute(
-            'class', self.expand_optional_input_validator
-        )
+        return 'active' in self.browser.get_attribute('class', self.expand_optional_input_validator)
 
     def expand(self):
         """Expand the Optional Input Validator section"""

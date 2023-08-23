@@ -1,14 +1,9 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Table
-from widgetastic.widget import Text
+from widgetastic.widget import Checkbox, Table, Text
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button
-from widgetastic_patternfly4 import PatternflyTable
+from widgetastic_patternfly4 import Button, PatternflyTable
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixin
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import Pagination
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
+from airgun.widgets import ActionsDropdown, Pagination
 
 
 class ImportPagination(Pagination):
