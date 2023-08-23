@@ -55,7 +55,7 @@ class ShowAllConfigGroups(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Config Groups')
+        self.view.menu.select('Configure', 'Puppet ENC', 'Config Groups')
 
 
 @navigator.register(ConfigGroupEntity, 'New')
