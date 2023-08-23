@@ -62,7 +62,7 @@ class ShowAllPuppetEnvironmentsView(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Environments')
+        self.view.menu.select('Configure', 'Puppet ENC', 'Environments')
 
 
 @navigator.register(PuppetEnvironmentEntity, 'New')
