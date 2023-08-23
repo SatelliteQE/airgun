@@ -1,10 +1,7 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
+from widgetastic.widget import Checkbox, Text, TextInput
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 from airgun.widgets import SatTable
 
 

@@ -1,13 +1,7 @@
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import View
-from widgetastic.widget import Widget
+from widgetastic.widget import Table, Text, View, Widget
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTable
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import PieChart
-from airgun.widgets import Search
+from airgun.views.common import BaseLoggedInView, SatTable
+from airgun.widgets import ActionsDropdown, PieChart, Search
 
 
 class ItemValueList(Widget):

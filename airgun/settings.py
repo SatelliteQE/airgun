@@ -1,7 +1,6 @@
+from configparser import ConfigParser
 import logging
 import os
-from configparser import ConfigParser
-
 
 SETTINGS_FILE_NAME = 'settings.ini'
 

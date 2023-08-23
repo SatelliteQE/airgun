@@ -1,36 +1,36 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ConditionalSwitchableView
-from widgetastic.widget import do_not_read_this_widget
-from widgetastic.widget import ParametrizedLocator
-from widgetastic.widget import ParametrizedView
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic.widget import WTMixin
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Button
-from widgetastic_patternfly import Tab
-from widgetastic_patternfly import TabWithDropdown
+from widgetastic.widget import (
+    Checkbox,
+    ConditionalSwitchableView,
+    ParametrizedLocator,
+    ParametrizedView,
+    Text,
+    TextInput,
+    View,
+    WTMixin,
+    do_not_read_this_widget,
+)
+from widgetastic_patternfly import BreadCrumb, Button, Tab, TabWithDropdown
 from widgetastic_patternfly4.navigation import Navigation
 from widgetastic_patternfly4.ouia import Dropdown
 
-from airgun.utils import get_widget_by_name
-from airgun.utils import normalize_dict_values
-from airgun.widgets import ACEEditor
-from airgun.widgets import ContextSelector
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import GenericRemovableWidgetItem
-from airgun.widgets import ItemsList
-from airgun.widgets import LCESelector
-from airgun.widgets import Pf4ConfirmationDialog
-from airgun.widgets import PF4Search
-from airgun.widgets import ProgressBar
-from airgun.widgets import ReadOnlyEntry
-from airgun.widgets import SatFlashMessages
-from airgun.widgets import SatSubscriptionsTable
-from airgun.widgets import SatTable
-from airgun.widgets import Search
-from airgun.widgets import ValidationErrors
+from airgun.utils import get_widget_by_name, normalize_dict_values
+from airgun.widgets import (
+    ACEEditor,
+    ContextSelector,
+    FilteredDropdown,
+    GenericRemovableWidgetItem,
+    ItemsList,
+    LCESelector,
+    Pf4ConfirmationDialog,
+    PF4Search,
+    ProgressBar,
+    ReadOnlyEntry,
+    SatFlashMessages,
+    SatSubscriptionsTable,
+    SatTable,
+    Search,
+    ValidationErrors,
+)
 
 
 class BaseLoggedInView(View):
@@ -61,7 +61,7 @@ class BaseLoggedInView(View):
         """
         if widget_names is None:
             return super().read()
-        if not isinstance(widget_names, (list, tuple)):
+        if not isinstance(widget_names, list | tuple):
             widget_names = [widget_names]
         values = {}
         for widget_name in widget_names:
@@ -285,7 +285,7 @@ class ListRemoveTab(SatSecondaryTab):
     def fill(self, values):
         """Remove associated resource(s)."""
         if not isinstance(values, list):
-            values = list((values,))
+            values = [values]
         for value in values:
             self.remove(value)
 
@@ -316,7 +316,7 @@ class AddTab(SatSecondaryTab):
     def fill(self, values):
         """Associate resource(s)"""
         if not isinstance(values, list):
-            values = list((values,))
+            values = [values]
         for value in values:
             self.add(value)
 

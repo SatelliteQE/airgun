@@ -1,11 +1,12 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.contentview_new import NewContentViewCreateView
-from airgun.views.contentview_new import NewContentViewTableView
+from airgun.views.contentview_new import (
+    NewContentViewCreateView,
+    NewContentViewTableView,
+)
 
 
 class NewContentViewEntity(BaseEntity):

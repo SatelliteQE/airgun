@@ -1,12 +1,9 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.lifecycleenvironment import LCECreateView
-from airgun.views.lifecycleenvironment import LCEEditView
-from airgun.views.lifecycleenvironment import LCEView
+from airgun.views.lifecycleenvironment import LCECreateView, LCEEditView, LCEView
 
 
 class LCEEntity(BaseEntity):
