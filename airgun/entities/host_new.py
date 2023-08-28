@@ -478,10 +478,8 @@ class NewHostEntity(HostEntity):
 
     def get_virtualization(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
+        view.details.virtualization.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        view.details.virtualization.read()
-        time.sleep(3)
         return view.details.virtualization.read()
 
     def add_new_parameter(self, entity_name, parameter_name, parameter_type, parameter_value):
