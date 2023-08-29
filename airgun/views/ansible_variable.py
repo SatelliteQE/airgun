@@ -1,5 +1,6 @@
 from widgetastic.widget import Checkbox, Select, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly4 import Pagination
 
 from airgun.views.common import BaseLoggedInView, SatTable, SearchableViewMixinPF4
 from airgun.widgets import CustomParameter, FilteredDropdown, Pagination, SatSelect

@@ -45,7 +45,7 @@ class AnsibleRolesImportView(BaseLoggedInView):
             0: Checkbox(locator='.//input[@type="checkbox"]'),
         },
     )
-    pagination = ImportPagination()
+    pagination = Pagination()
     submit = Button('Submit')
     cancel = Button('Cancel')
 

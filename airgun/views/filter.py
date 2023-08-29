@@ -7,6 +7,7 @@ from widgetastic.widget import (
     View,
 )
 from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly4 import Pagination
 
 from airgun.views.common import BaseLoggedInView, SatTab
 from airgun.widgets import (
