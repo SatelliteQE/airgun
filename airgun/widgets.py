@@ -2034,6 +2034,41 @@ class ProgressBar(GenericLocatorWidget):
         return self.progress
 
 
+class ProgressBarPF4(ProgressBar):
+    """Generic progress bar widget.
+    Example html representation::
+        <div class="progress ng-isolate-scope" type="success" ...>
+          <div class="progress-bar progress-bar-success" aria-valuenow="0"
+           aria-valuemin="0" aria-valuemax="100" aria-valuetext="0%" ...></div>
+        </div>
+    Locator example::
+        .//div[contains(@class, "progress progress-striped")]
+    """
+
+    PROGRESSBAR = '//div[contains(@role, "progressbar") or contains(@class, "pf-c-progress__bar")]'
+
+    def __init__(self, parent, locator=None, logger=None):
+        """Provide common progress bar locator if it wasn't specified."""
+        Widget.__init__(self, parent, logger=logger)
+        if not locator:
+            locator = self.PROGRESSBAR
+        self.locator = locator
+
+    @property
+    def progress(self):
+        """String value with current flow rate in percent."""
+        return self.browser.get_attribute(
+            'pf-c-progress__measure', self.PROGRESSBAR, check_safe=False
+        )
+
+    @property
+    def is_completed(self):
+        """Boolean value whether progress bar is finished or not"""
+        if not self.is_active and self.progress == '100%':
+            return True
+        return False
+
+
 class PublishPromoteProgressBar(ProgressBar):
     """Progress bar for Publish and Promote procedures. They contain status
     message and link to associated task. Also the progress is displayed

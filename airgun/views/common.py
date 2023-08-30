@@ -1,3 +1,7 @@
+import time
+
+from wait_for import wait_for
+
 from widgetastic.widget import Checkbox
 from widgetastic.widget import ConditionalSwitchableView
 from widgetastic.widget import do_not_read_this_widget
@@ -13,6 +17,8 @@ from widgetastic_patternfly import Tab
 from widgetastic_patternfly import TabWithDropdown
 from widgetastic_patternfly4.navigation import Navigation
 from widgetastic_patternfly4.ouia import Dropdown
+from widgetastic_patternfly4.ouia import PatternflyTable
+from widgetastic_patternfly4.ouia import Button as PF4Button
 
 from airgun.utils import get_widget_by_name
 from airgun.utils import normalize_dict_values
@@ -381,6 +387,71 @@ class AddRemoveSubscriptionsView(AddRemoveResourcesView):
         table = SatSubscriptionsTable(
             locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
         )
+
+
+class NewAddRemoveResourcesView(View):
+    searchbox = PF4Search()
+    type = Dropdown(
+        locator='.//div[contains(@class, "All repositories") or'
+        ' contains(@aria-haspopup="listbox")]'
+    )
+    Status = Dropdown(
+        locator='.//div[contains(@class, "All") or contains(@aria-haspopup="listbox")]'
+    )
+    add_repo = PF4Button('OUIA-Generated-Button-secondary-2')
+    # Need to add kebab menu
+    table = PatternflyTable(
+        component_id='OUIA-Generated-Table-4',
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Type': Text('.//a'),
+            'Name': Text('.//a'),
+            'Product': Text('.//a'),
+            'Sync State': Text('.//a'),
+            'Content': Text('.//a'),
+            'Status': Text('.//a'),
+        },
+    )
+
+    def search(self, value):
+        """Search for specific available resource and return the results"""
+        self.searchbox.search(value)
+        # Tried following ways to wait for table to be displayed, only sleep worked
+        # Might need a before/after fill
+        wait_for(
+            lambda: self.table.is_displayed is True,
+            timeout=60,
+            delay=1,
+        )
+        time.sleep(3)
+        self.table.wait_displayed()
+        return self.table.read()
+
+    def add(self, value):
+        """Associate specific resource"""
+        self.search(value)
+        next(self.table.rows())[0].widget.fill(True)
+        self.add_repo.click()
+
+    def fill(self, values):
+        """Associate resource(s)"""
+        if not isinstance(values, list):
+            values = list((values,))
+        for value in values:
+            self.add(value)
+
+    def remove(self, value):
+        """Unassign some resource(s).
+        :param str or list values: string containing resource name or a list of
+            such strings.
+        """
+        self.search(value)
+        next(self.table.rows())[0].widget.fill(True)
+        self.remove_button.click()
+
+    def read(self):
+        """Read all table values from both resource tables"""
+        return self.table.read()
 
 
 class TemplateEditor(View):
