@@ -9,10 +9,12 @@ from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly import Tab
 from widgetastic_patternfly4 import Button
 from widgetastic_patternfly4 import Dropdown
+from widgetastic_patternfly4 import Radio as PF4Radio
 from widgetastic_patternfly4.ouia import Button as PF4Button
 from widgetastic_patternfly4.ouia import ExpandableTable
 from widgetastic_patternfly4.ouia import Switch
 from widgetastic_patternfly4.ouia import PatternflyTable
+from widgetastic_patternfly4.ouia import Select as PF4Select
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import NewAddRemoveResourcesView
@@ -170,7 +172,26 @@ class NewContentViewEditView(BaseLoggedInView):
     @View.nested
     class filters(Tab):
         TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/filters")]')
-        new_filter = Text(".//button[@ui-sref='content-view.yum.filters.new']")
+        new_filter = PF4Button('create-filter-button')
+        searchbox = PF4Search()
+        table = PatternflyTable(
+            component_id="content-view-filters-table",
+            column_widgets={
+                0: Checkbox(locator='.//input[@type="checkbox"]'),
+                'Name': Text('.//a'),
+                'Description': Text('.//a'),
+                'Updated': Text('.//a'),
+                'Content type': Text('.//a'),
+                'Inclusion type': Text('.//a'),
+                6: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+            },
+        )
+
+        def search(self, name):
+            """Searches for specific filter'
+            """
+            self.searchbox.search(name)
+            return self.table.read()
 
 
 class NewContentViewVersionPublishView(BaseLoggedInView):
@@ -234,3 +255,15 @@ class NewContentViewVersionDetailsView(BaseLoggedInView):
             and self.breadcrumb.locations[2] == 'Versions'
         )
 
+
+class CreateFilterView(View):
+    ROOT = './/div[@data-ouia-component-id="create-filter-modal"]'
+
+    name = TextInput(id='name')
+    filterType = PF4Select('content_type')
+    includeFilter = PF4Radio(label_text='Include filter')
+    excludeFilter = PF4Radio(label_test='Exclude filter')
+    #create = PF4Button('.//button[@data-ouia-component-id="create-filter-form-submit-button"]')
+    create = PF4Button('create-filter-form-submit-button')
+    #cancel = PF4Button('.//button[@data-ouia-component-id="create-filter-form-cancel-button"]')
+    cancel = PF4Button('create-filter-form-cancel-button')

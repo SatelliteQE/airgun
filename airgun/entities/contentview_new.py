@@ -9,6 +9,7 @@ from airgun.views.contentview_new import NewContentViewCreateView
 from airgun.views.contentview_new import NewContentViewTableView
 from airgun.views.contentview_new import NewContentViewEditView
 from airgun.views.contentview_new import NewContentViewVersionPublishView
+from airgun.views.contentview_new import CreateFilterView 
 
 
 class NewContentViewEntity(BaseEntity):
@@ -39,6 +40,39 @@ class NewContentViewEntity(BaseEntity):
         view.progressbar.wait_for_result()
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.versions.table.read()
+
+    def create_filter(self, entity_name, filter_name, filter_type, filter_inclusion):
+        """Create a new filter on a CV - filter_type should be one of the available dropdown options
+        in the Content Type dropdown, and filter_inclusion should be either 'include' or 'exclude'
+        :return: dict with new filter table row
+        """
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.filters.new_filter.click()
+        view = CreateFilterView(self.browser)
+        view.name.fill(filter_name)
+        view.filterType.fill(filter_type)
+        if filter_inclusion == 'include':
+            view.includeFilter.fill(True)
+        elif filter_inclusion == 'exclude':
+            view.excludeFilter.fill(True)
+        else:
+            raise ValueError("Filter_inclusion must be one of include or exclude.")
+        view.create.click()
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        return view.filters.table.read()
+
+    def delete_filter(self, entity_name, filter_name):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.filters.search(filter_name)
+        view.filters.table[0][6].widget.item_select('Remove')
+        #Attempt to read the table, and if there isn't one return True, else delete failed so return False
+        try:
+            view.filters.table.read()
+        except:
+            return True
+        else:
+            return False
+
 
 
 @navigator.register(NewContentViewEntity, 'All')
