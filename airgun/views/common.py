@@ -1,3 +1,6 @@
+import time
+
+from wait_for import wait_for
 from widgetastic.widget import Checkbox
 from widgetastic.widget import ConditionalSwitchableView
 from widgetastic.widget import do_not_read_this_widget
@@ -13,6 +16,8 @@ from widgetastic_patternfly import Tab
 from widgetastic_patternfly import TabWithDropdown
 from widgetastic_patternfly4.navigation import Navigation
 from widgetastic_patternfly4.ouia import Dropdown
+from widgetastic_patternfly4.ouia import PatternflyTable
+from widgetastic_patternfly4.ouia import Button as PF4Button
 
 from airgun.utils import get_widget_by_name
 from airgun.utils import normalize_dict_values
@@ -22,6 +27,7 @@ from airgun.widgets import FilteredDropdown
 from airgun.widgets import GenericRemovableWidgetItem
 from airgun.widgets import ItemsList
 from airgun.widgets import LCESelector
+from airgun.widgets import PF4LCESelector
 from airgun.widgets import Pf4ConfirmationDialog
 from airgun.widgets import PF4Search
 from airgun.widgets import ProgressBar
@@ -259,6 +265,33 @@ class LCESelectorGroup(ParametrizedView):
         return self.lce.read()
 
 
+class PF4LCESelectorGroup(LCESelectorGroup):
+    """Group of :class:`airgun.widgets.PF4LCESelector`, typically present on page
+    for selecting desired lifecycle environment.
+
+    Usage::
+
+        lce = View.nested(PF4LCESelectorGroup)
+
+        #or
+
+        @View.nested
+        class lce(PF4LCESelectorGroup):
+            pass
+    """
+
+    ROOT = (
+        ".//*[self::div or self::span][@class='env-path']/parent::*"
+    )
+
+    PARAMETERS = ('lce_name',)
+
+    LAST_ENV = ".//*[self::div or self::span][@class='env-path'][last()]"
+    lce = PF4LCESelector(
+        locator=ParametrizedLocator(""".//label[contains(@class, 'pf-c-check__label')][normalize-space(.)='{lce_name}']""")
+    )
+
+
 class ListRemoveTab(SatSecondaryTab):
     """'List/Remove' tab, part of :class:`AddRemoveResourcesView`."""
 
@@ -362,6 +395,72 @@ class AddRemoveResourcesView(View):
             'assigned': self.list_remove_tab.read(),
             'unassigned': self.add_tab.read(),
         }
+
+
+class NewAddRemoveResourcesView(View):
+    searchbox = PF4Search()
+    type = Dropdown(
+        locator='.//div[contains(@class, "All repositories") or'
+        ' contains(@aria-haspopup="listbox")]'
+    )
+    Status = Dropdown(
+        locator='.//div[contains(@class, "All") or contains(@aria-haspopup="listbox")]'
+    )
+    add_repo = PF4Button('OUIA-Generated-Button-secondary-2')
+    # Need to add kebab menu
+    table = PatternflyTable(
+        component_id='OUIA-Generated-Table-4',
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Type': Text('.//a'),
+            'Name': Text('.//a'),
+            'Product': Text('.//a'),
+            'Sync State': Text('.//a'),
+            'Content': Text('.//a'),
+            'Status': Text('.//a'),
+        },
+    )
+
+    def search(self, value):
+        """Search for specific available resource and return the results"""
+        self.searchbox.search(value)
+        # Tried following ways to wait for table to be displayed, only sleep worked
+        # Might need a before/after fill
+        wait_for(
+            lambda: self.table.is_displayed is True,
+            timeout=60,
+            delay=1,
+        )
+        time.sleep(3)
+        self.table.wait_displayed()
+        return self.table.read()
+
+    def add(self, value):
+        """Associate specific resource"""
+        self.search(value)
+        next(self.table.rows())[0].widget.fill(True)
+        self.add_repo.click()
+
+    def fill(self, values):
+        """Associate resource(s)"""
+        if not isinstance(values, list):
+            values = list((values,))
+        for value in values:
+            self.add(value)
+
+    def remove(self, value):
+        """Unassign some resource(s).
+        :param str or list values: string containing resource name or a list of
+            such strings.
+        """
+        self.search(value)
+        next(self.table.rows())[0].widget.fill(True)
+        self.remove_button.click()
+
+    def read(self):
+        """Read all table values from both resource tables"""
+        return self.table.read()
+
 
 
 class AddRemoveSubscriptionsView(AddRemoveResourcesView):
