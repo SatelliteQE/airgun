@@ -5,10 +5,10 @@ from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep
 from airgun.navigation import navigator
 from airgun.utils import retry_navigation
-from airgun.views.contentview_new import NewContentViewCreateView
-from airgun.views.contentview_new import NewContentViewTableView
-from airgun.views.contentview_new import NewContentViewEditView
-from airgun.views.contentview_new import NewContentViewVersionPublishView
+from airgun.views.contentview_new import ContentViewCreateView
+from airgun.views.contentview_new import ContentViewTableView
+from airgun.views.contentview_new import ContentViewEditView
+from airgun.views.contentview_new import ContentViewVersionPublishView
 
 
 class NewContentViewEntity(BaseEntity):
@@ -45,7 +45,7 @@ class NewContentViewEntity(BaseEntity):
 class ShowAllContentViewsScreen(NavigateStep):
     """Navigate to All Content Views screen."""
 
-    VIEW = NewContentViewTableView
+    VIEW = ContentViewTableView
 
     @retry_navigation
     def step(self, *args, **kwargs):
@@ -56,7 +56,7 @@ class ShowAllContentViewsScreen(NavigateStep):
 class CreateContentView(NavigateStep):
     """Navigate to Create content view."""
 
-    VIEW = NewContentViewCreateView
+    VIEW = ContentViewCreateView
 
     prerequisite = NavigateToSibling('All')
 
@@ -71,7 +71,7 @@ class EditContentView(NavigateStep):
         entity_name: name of content view
     """
 
-    VIEW = NewContentViewEditView
+    VIEW = ContentViewEditView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
@@ -89,7 +89,7 @@ class PublishContentViewVersion(NavigateStep):
         entity_name: name of content view
     """
 
-    VIEW = NewContentViewVersionPublishView
+    VIEW = ContentViewVersionPublishView
 
     def prerequisite(self, *args, **kwargs):
         """Open Content View first."""

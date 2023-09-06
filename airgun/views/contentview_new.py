@@ -21,7 +21,7 @@ from airgun.widgets import ActionsDropdown
 from airgun.widgets import ConfirmationDialog
 from airgun.widgets import EditableEntry
 from airgun.widgets import PF4Search
-from airgun.widgets import ProgressBarPF4
+from airgun.widgets import PF4ProgressBar
 from airgun.widgets import ReadOnlyEntry
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import NewAddRemoveResourcesView
@@ -30,14 +30,14 @@ from airgun.widgets import ActionsDropdown
 from airgun.widgets import ConfirmationDialog
 from airgun.widgets import EditableEntry
 from airgun.widgets import PF4Search
-from airgun.widgets import ProgressBarPF4
+from airgun.widgets import PF4ProgressBar
 from airgun.widgets import ReadOnlyEntry
 
 from airgun.views.common import BaseLoggedInView
 from airgun.views.common import SearchableViewMixinPF4
 
 
-class NewContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
+class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text('.//h1[@data-ouia-component-id="cvPageHeaderText"]')
     create_content_view = PF4Button('create-content-view')
     table = ExpandableTable(
@@ -55,7 +55,7 @@ class NewContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
         return True
 
 
-class NewContentViewCreateView(BaseLoggedInView):
+class ContentViewCreateView(BaseLoggedInView):
     title = Text('.//div[@data-ouia-component-id="create-content-view-modal"]')
     name = TextInput(id='name')
     label = TextInput(id='label')
@@ -91,7 +91,7 @@ class NewContentViewCreateView(BaseLoggedInView):
         self.submit.wait_displayed()
 
 
-class NewContentViewEditView(BaseLoggedInView):
+class ContentViewEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     search = PF4Search()
     title = Text("//h2[contains(., 'Publish) or contains(@id, 'pf-wizard-title-0')]")
@@ -173,7 +173,7 @@ class NewContentViewEditView(BaseLoggedInView):
         new_filter = Text(".//button[@ui-sref='content-view.yum.filters.new']")
 
 
-class NewContentViewVersionPublishView(BaseLoggedInView):
+class ContentViewVersionPublishView(BaseLoggedInView):
     # publishing view is a popup so adding all navigation within the same context
     breadcrumb = BreadCrumb()
     ROOT = './/div[contains(@class,"pf-c-wizard")]'
@@ -189,7 +189,7 @@ class NewContentViewVersionPublishView(BaseLoggedInView):
     back = Button('Back')
     cancel = Button('Cancel')
     close_button = Button('Close')
-    progressbar = ProgressBarPF4()
+    progressbar = PF4ProgressBar()
 
     @property
     def is_displayed(self):

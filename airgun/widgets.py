@@ -2034,7 +2034,7 @@ class ProgressBar(GenericLocatorWidget):
         return self.progress
 
 
-class ProgressBarPF4(ProgressBar):
+class PF4ProgressBar(ProgressBar):
     """Generic progress bar widget.
     Example html representation::
         <div class="progress ng-isolate-scope" type="success" ...>
@@ -2047,26 +2047,12 @@ class ProgressBarPF4(ProgressBar):
 
     PROGRESSBAR = '//div[contains(@role, "progressbar") or contains(@class, "pf-c-progress__bar")]'
 
-    def __init__(self, parent, locator=None, logger=None):
-        """Provide common progress bar locator if it wasn't specified."""
-        Widget.__init__(self, parent, logger=logger)
-        if not locator:
-            locator = self.PROGRESSBAR
-        self.locator = locator
-
     @property
     def progress(self):
         """String value with current flow rate in percent."""
         return self.browser.get_attribute(
             'pf-c-progress__measure', self.PROGRESSBAR, check_safe=False
         )
-
-    @property
-    def is_completed(self):
-        """Boolean value whether progress bar is finished or not"""
-        if not self.is_active and self.progress == '100%':
-            return True
-        return False
 
 
 class PublishPromoteProgressBar(ProgressBar):
