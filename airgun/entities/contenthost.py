@@ -7,6 +7,7 @@ from airgun.views.contenthost import ContentHostsView
 from airgun.views.contenthost import ContentHostTaskDetailsView
 from airgun.views.contenthost import ErrataDetailsView
 from airgun.views.contenthost import SyspurposeBulkActionView
+from airgun.views.host_new import NewHostDetailsView
 from airgun.views.job_invocation import JobInvocationCreateView
 from airgun.views.job_invocation import JobInvocationStatusView
 
@@ -39,6 +40,13 @@ class ContentHostEntity(BaseEntity):
     def read(self, entity_name, widget_names=None):
         """Read content host details, optionally read only the widgets in widget_names."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        return view.read(widget_names=widget_names)
+
+    def read_legacy_ui(self, entity_name, widget_names=None):
+        """Read host values from Host Details page, optionally only the widgets in widget_names
+        will be read.
+        """
+        view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def execute_package_action(self, entity_name, action_type, value, installed_via='rex'):
@@ -270,3 +278,26 @@ class NavigateToErrataDetails(NavigateStep):
         environment = kwargs.get('environment')
         self.parent.errata.search(errata_id, lce=environment)
         self.parent.errata.table.row(id=errata_id)['Id'].widget.click()
+
+
+@navigator.register(ContentHostEntity, 'LegacyDetails')
+class ShowContentHostDetails(NavigateStep):
+    """Navigate to Host Details page by clicking on necessary host name in the
+    table
+    Args:
+        entity_name: name of the host
+    """
+
+    VIEW = ContentHostDetailsView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        self.parent.search(entity_name)
+        self.parent.table.row(name=entity_name)['Name'].widget.click()
+        host_view = NewHostDetailsView(self.parent.browser)
+        host_view.wait_displayed()
+        host_view.dropdown.wait_displayed()
+        host_view.dropdown.item_select('Legacy content host UI')
