@@ -10,6 +10,7 @@ from airgun.views.host_new import (
     EnableTracerView,
     InstallPackagesView,
     ManageHostCollectionModal,
+    ManageHostStatusesView,
     ModuleStreamDialog,
     NewHostDetailsView,
     ParameterDeleteDialog,
@@ -43,6 +44,19 @@ class NewHostEntity(HostEntity):
         # Run this read twice to navigate to the page and load it before reading
         view.read(widget_names=widget_names)
         return view.read(widget_names=widget_names)
+
+    def get_host_statuses(self, entity_name):
+        """Read host statuses from Host Details page
+
+        Args:
+            entity_name: Name of the host
+        """
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.overview.host_status.manage_all_statuses.click()
+        view = ManageHostStatusesView(self.browser)
+        return view.read()
 
     def edit_system_purpose(
         self, entity_name, role=None, sla=None, usage=None, release_ver=None, add_ons=None

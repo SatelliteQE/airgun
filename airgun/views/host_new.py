@@ -795,6 +795,26 @@ class EditSystemPurposeView(View):
     cancel = OUIAButton('cancel-syspurpose')
 
 
+class ManageHostStatusesView(View):
+    """Manage host statuses modal"""
+
+    ROOT = './/div[@data-ouia-component-id="statuses-modal"]'
+
+    host_statuses_table = Table(
+        locator='.//table[contains(@class, "pf-c-table")]',
+        column_widgets={
+            'name': Text('.//td[1]'),
+            'status': Text('.//td[2]'),
+            'reported_at': Text('.//td[3]'),
+            '3': Button(locator='.//td[4]'),
+        },
+    )
+
+    def read(self):
+        # Parses into a dictionary of {name: {status, reported_at}}
+        return {value.pop('Name'): value for value in self.host_statuses_table.read()}
+
+
 class EditAnsibleRolesView(View):
     """Edit Ansible Roles Modal"""
 
