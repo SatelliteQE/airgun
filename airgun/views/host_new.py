@@ -800,13 +800,13 @@ class ManageHostStatusesView(View):
 
     ROOT = './/div[@data-ouia-component-id="statuses-modal"]'
 
-    host_statuses_table = Table(
-        locator='.//table[contains(@class, "pf-c-table")]',
+    host_statuses_table = PatternflyTable(
+        component_id='statuses-table',
         column_widgets={
-            'name': Text('.//td[1]'),
-            'status': Text('.//td[2]'),
-            'reported_at': Text('.//td[3]'),
-            '3': Button(locator='.//td[4]'),
+            'Name': Text('.//td[1]'),
+            'Status': Text('.//td[2]'),
+            'Reported at': Text('.//td[3]'),
+            3: Button(locator='.//td[4]'),
         },
     )
 
