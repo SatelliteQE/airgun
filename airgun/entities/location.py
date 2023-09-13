@@ -1,13 +1,10 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.common import BaseLoggedInView
-from airgun.views.location import LocationCreateView
-from airgun.views.location import LocationsEditView
-from airgun.views.location import LocationsView
+from airgun.views.location import LocationCreateView, LocationsEditView, LocationsView
 
 
 class LocationEntity(BaseEntity):
@@ -104,11 +101,12 @@ class SelectLocationContext(NavigateStep):
     """
 
     VIEW = BaseLoggedInView
+    ELLIPSIS_LENGTH = 30
 
     def am_i_here(self, *args, **kwargs):
         loc_name = kwargs.get('loc_name')
-        if len(loc_name) > 30:
-            loc_name = loc_name[:27] + '...'
+        if len(loc_name) > self.ELLIPSIS_LENGTH:
+            loc_name = loc_name[: self.ELLIPSIS_LENGTH - 3] + '...'
         return loc_name == self.view.taxonomies.current_loc
 
     def step(self, *args, **kwargs):

@@ -2,45 +2,47 @@ import re
 
 from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ConditionalSwitchableView
-from widgetastic.widget import GenericLocatorWidget
-from widgetastic.widget import NoSuchElementException
-from widgetastic.widget import Select
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic.widget import Widget
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Button
-from widgetastic_patternfly4.ouia import BreadCrumb as PF4BreadCrumb
-from widgetastic_patternfly4.ouia import Button as PF4Button
-from widgetastic_patternfly4.ouia import FormSelect
+from widgetastic.widget import (
+    Checkbox,
+    ConditionalSwitchableView,
+    GenericLocatorWidget,
+    NoSuchElementException,
+    Select,
+    Table,
+    Text,
+    TextInput,
+    View,
+    Widget,
+)
+from widgetastic_patternfly import BreadCrumb, Button
+from widgetastic_patternfly4.ouia import (
+    BreadCrumb as PF4BreadCrumb,
+    Button as PF4Button,
+    FormSelect,
+)
 from widgetastic_patternfly4.tabs import Tab
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixinPF4
-from airgun.views.job_invocation import JobInvocationCreateView
-from airgun.views.job_invocation import JobInvocationStatusView
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 from airgun.views.task import TaskDetailsView
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import BaseMultiSelect
-from airgun.widgets import CheckboxWithAlert
-from airgun.widgets import ConfigGroupMultiSelect
-from airgun.widgets import CustomParameter
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import GenericRemovableWidgetItem
-from airgun.widgets import Link
-from airgun.widgets import MultiSelect
-from airgun.widgets import Pf4ConfirmationDialog
-from airgun.widgets import PuppetClassesMultiSelect
-from airgun.widgets import RadioGroup
-from airgun.widgets import RemovableWidgetsItemsListView
-from airgun.widgets import SatTable
-from airgun.widgets import SatTableWithUnevenStructure
-from airgun.widgets import ToggleButton
+from airgun.widgets import (
+    ActionsDropdown,
+    BaseMultiSelect,
+    CheckboxWithAlert,
+    ConfigGroupMultiSelect,
+    CustomParameter,
+    FilteredDropdown,
+    GenericRemovableWidgetItem,
+    Link,
+    MultiSelect,
+    Pf4ConfirmationDialog,
+    PuppetClassesMultiSelect,
+    RadioGroup,
+    RemovableWidgetsItemsListView,
+    SatTable,
+    SatTableWithUnevenStructure,
+    ToggleButton,
+)
 
 
 class TableActions(View):
@@ -413,16 +415,14 @@ class HostCreateView(BaseLoggedInView):
                 """Return a list of dictionaries. Each dictionary consists of
                 global parameter name, value and whether overridden or not.
                 """
-                parameters = []
-                for row in self.rows():
-                    parameters.append(
-                        {
-                            'name': row['Name'].widget.read(),
-                            'value': row['Value'].widget.read(),
-                            'overridden': not row['Actions'].widget.is_displayed,
-                        }
-                    )
-                return parameters
+                return [
+                    {
+                        'name': row['Name'].widget.read(),
+                        'value': row['Value'].widget.read(),
+                        'overridden': not row['Actions'].widget.is_displayed,
+                    }
+                    for row in self.rows()
+                ]
 
             def override(self, name):
                 """Override a single global parameter.
@@ -547,7 +547,7 @@ class HostRegisterView(BaseLoggedInView):
             field_value = values.get('general').get(field)
             if field_value:
                 wait_for(
-                    lambda: self.general.__getattribute__(field).is_enabled,
+                    lambda field=field: self.general.__getattribute__(field).is_enabled,
                     timeout=30,
                     delay=2,
                     logger=self.logger,
@@ -601,10 +601,10 @@ class RecommendationWidget(GenericLocatorWidget):
 
     def read(self):
         if self.expanded:
-            return dict(name=self.name, label=self.label, text=self.text)
+            return {'name': self.name, 'label': self.label, 'text': self.text}
         else:
             self.expand()
-            return dict(name=self.name, label=self.label, text=self.text)
+            return {'name': self.name, 'label': self.label, 'text': self.text}
 
 
 class RecommendationListView(View):
@@ -727,9 +727,10 @@ class HostsTaxonomyMismatchRadioGroup(GenericLocatorWidget):
     taxonomy = None
     fix_mismatch = Text("//input[contains(@id, 'optimistic_import_yes')]")
     fail_on_mismatch = Text("//input[contains(@id, 'optimistic_import_no')]")
-    buttons_text = dict(
-        fix_mismatch='Fix {taxonomy} on Mismatch', fail_on_mismatch='Fail on Mismatch'
-    )
+    buttons_text = {
+        'fix_mismatch': 'Fix {taxonomy} on Mismatch',
+        'fail_on_mismatch': 'Fail on Mismatch',
+    }
 
     def __init__(self, parent, **kwargs):
         self.taxonomy = kwargs.pop('taxonomy')
@@ -748,9 +749,9 @@ class HostsTaxonomyMismatchRadioGroup(GenericLocatorWidget):
     def fill(self, value):
         """Select the button with text equal to value"""
         for name, text in self.buttons_text.items():
-            text = text.replace('{taxonomy}', self.taxonomy)
+            _text = text.replace('{taxonomy}', self.taxonomy)
             widget = getattr(self, name)
-            if text == value and not self._is_checked(widget):
+            if _text == value and not self._is_checked(widget):
                 widget.click()
 
     @property

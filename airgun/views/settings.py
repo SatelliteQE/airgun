@@ -1,11 +1,8 @@
 from wait_for import wait_for
-from widgetastic.widget import Table
-from widgetastic.widget import Text
+from widgetastic.widget import Table, Text
 from widgetastic_patternfly import Button
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
 from airgun.widgets import PopOverWidget
 
 

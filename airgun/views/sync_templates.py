@@ -1,10 +1,12 @@
 from wait_for import wait_for
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ConditionalSwitchableView
-from widgetastic.widget import Select
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import (
+    Checkbox,
+    ConditionalSwitchableView,
+    Select,
+    Text,
+    TextInput,
+    View,
+)
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView
@@ -54,7 +56,6 @@ class SyncTemplatesView(BaseLoggedInView):
 
 
 class TemplatesReportView(BaseLoggedInView):
-
     title = Text("//h1")
     REPORTS = "//div[contains(@class, 'list-group-item')]"
 

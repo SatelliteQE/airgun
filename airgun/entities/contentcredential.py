@@ -1,12 +1,13 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.contentcredential import ContentCredentialCreateView
-from airgun.views.contentcredential import ContentCredentialEditView
-from airgun.views.contentcredential import ContentCredentialsTableView
+from airgun.views.contentcredential import (
+    ContentCredentialCreateView,
+    ContentCredentialEditView,
+    ContentCredentialsTableView,
+)
 from airgun.views.product import ProductEditView
 
 

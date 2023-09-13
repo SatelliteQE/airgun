@@ -16,3 +16,5 @@ settings.ini
 
 # common venv name
 .airgun/
+venv*
+
