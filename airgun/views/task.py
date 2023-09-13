@@ -1,18 +1,16 @@
 from wait_for import wait_for
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import View
+from widgetastic.widget import Table, Text, View
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly4 import Pagination
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixinPF4
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import PieChart
-from airgun.widgets import ProgressBar
-from airgun.widgets import ReadOnlyEntry
-from airgun.widgets import SatTable
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.widgets import (
+    ActionsDropdown,
+    PieChart,
+    ProgressBar,
+    ReadOnlyEntry,
+    SatTable,
+)
 
 
 class TaskReadOnlyEntry(ReadOnlyEntry):
@@ -23,7 +21,7 @@ class TaskReadOnlyEntry(ReadOnlyEntry):
 
 
 class TaskReadOnlyEntryError(ReadOnlyEntry):
-    BASE_LOCATOR = "//span[contains(., '{}')]//parent::div" "/following-sibling::pre"
+    BASE_LOCATOR = "//span[contains(., '{}')]//parent::div/following-sibling::pre"
 
 
 class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -73,6 +71,7 @@ class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
 
 class TaskDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    BREADCRUMB_LENGTH = 2
 
     @property
     def is_displayed(self):
@@ -80,7 +79,7 @@ class TaskDetailsView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Tasks'
-            and len(self.breadcrumb.locations) == 2
+            and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
         )
 
     @View.nested

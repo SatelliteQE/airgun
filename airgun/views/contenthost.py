@@ -1,35 +1,40 @@
 import re
 
-from widgetastic.widget import Checkbox
-from widgetastic.widget import GenericLocatorWidget
-from widgetastic.widget import ParametrizedView
-from widgetastic.widget import Select
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic.widget import Widget
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Button
+from widgetastic.widget import (
+    Checkbox,
+    GenericLocatorWidget,
+    ParametrizedView,
+    Select,
+    Text,
+    TextInput,
+    View,
+    Widget,
+)
+from widgetastic_patternfly import BreadCrumb, Button
 
-from airgun.views.common import AddRemoveResourcesView
-from airgun.views.common import AddRemoveSubscriptionsView
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import LCESelectorGroup
-from airgun.views.common import SatTab
-from airgun.views.common import SatTable
-from airgun.views.common import SatTabWithDropdown
-from airgun.views.common import SearchableViewMixin
-from airgun.views.common import TaskDetailsView
-from airgun.widgets import ActionDropdownWithCheckbox
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import EditableEntry
-from airgun.widgets import EditableEntryCheckbox
-from airgun.widgets import EditableEntryMultiCheckbox
-from airgun.widgets import EditableEntrySelect
-from airgun.widgets import Pagination
-from airgun.widgets import ReadOnlyEntry
-from airgun.widgets import Search
+from airgun.views.common import (
+    AddRemoveResourcesView,
+    AddRemoveSubscriptionsView,
+    BaseLoggedInView,
+    LCESelectorGroup,
+    SatTab,
+    SatTable,
+    SatTabWithDropdown,
+    SearchableViewMixin,
+    TaskDetailsView,
+)
+from airgun.widgets import (
+    ActionDropdownWithCheckbox,
+    ActionsDropdown,
+    ConfirmationDialog,
+    EditableEntry,
+    EditableEntryCheckbox,
+    EditableEntryMultiCheckbox,
+    EditableEntrySelect,
+    Pagination,
+    ReadOnlyEntry,
+    Search,
+)
 
 
 class StatusIcon(GenericLocatorWidget):
@@ -321,13 +326,15 @@ class ContentHostDetailsView(BaseLoggedInView):
 
 
 class ContentHostTaskDetailsView(TaskDetailsView):
+    BREADCRUMB_LENGTH = 2
+
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Hosts'
-            and len(self.breadcrumb.locations) > 2
+            and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
         )
 
 
@@ -344,8 +351,8 @@ class SyspurposeBulkActionView(BaseLoggedInView):
 
 
 class ErrataDetailsView(BaseLoggedInView):
-
     breadcrumb = BreadCrumb()
+    BREADCRUMB_LENGTH = 3
     advisory = Text("//h3")
     type = ReadOnlyEntry(name='Type')
     title = ReadOnlyEntry(name='Title')
@@ -363,5 +370,5 @@ class ErrataDetailsView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[1] == 'Errata'
-            and len(self.breadcrumb.locations) > 3
+            and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
         )

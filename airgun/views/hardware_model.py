@@ -1,12 +1,8 @@
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Button
+from widgetastic.widget import Text, TextInput
+from widgetastic_patternfly import BreadCrumb, Button
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixinPF4
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import SatTable
+from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
+from airgun.widgets import ConfirmationDialog, SatTable
 
 
 class DeleteHardwareModelDialog(ConfirmationDialog):

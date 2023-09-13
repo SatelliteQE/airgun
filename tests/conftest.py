@@ -1,6 +1,5 @@
 from airgun import settings
 
-
 pytest_plugins = ["airgun.fixtures"]
 
 

@@ -3,19 +3,20 @@ from urllib.parse import urlparse
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.contentview import ContentViewCopyView
-from airgun.views.contentview import ContentViewCreateView
-from airgun.views.contentview import ContentViewEditView
-from airgun.views.contentview import ContentViewRemoveView
-from airgun.views.contentview import ContentViewTableView
-from airgun.views.contentview import ContentViewVersionDetailsView
-from airgun.views.contentview import ContentViewVersionPromoteView
-from airgun.views.contentview import ContentViewVersionPublishView
-from airgun.views.contentview import ContentViewVersionRemoveConfirmationView
-from airgun.views.contentview import ContentViewVersionRemoveView
+from airgun.views.contentview import (
+    ContentViewCopyView,
+    ContentViewCreateView,
+    ContentViewEditView,
+    ContentViewRemoveView,
+    ContentViewTableView,
+    ContentViewVersionDetailsView,
+    ContentViewVersionPromoteView,
+    ContentViewVersionPublishView,
+    ContentViewVersionRemoveConfirmationView,
+    ContentViewVersionRemoveView,
+)
 
 
 class ContentViewEntity(BaseEntity):

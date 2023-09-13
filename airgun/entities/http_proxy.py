@@ -1,12 +1,13 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.http_proxy import HTTPProxyCreateView
-from airgun.views.http_proxy import HTTPProxyEditView
-from airgun.views.http_proxy import HTTPProxyView
+from airgun.views.http_proxy import (
+    HTTPProxyCreateView,
+    HTTPProxyEditView,
+    HTTPProxyView,
+)
 
 
 class HTTPProxyEntity(BaseEntity):

@@ -3,19 +3,19 @@ import time
 from navmazing import NavigateToSibling
 
 from airgun.entities.host import HostEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
-from airgun.views.host_new import AllAssignedRolesView
-from airgun.views.host_new import EditSystemPurposeView
-from airgun.views.host_new import EnableTracerView
-from airgun.views.host_new import InstallPackagesView
-from airgun.views.host_new import ManageHostCollectionModal
-from airgun.views.host_new import ModuleStreamDialog
-from airgun.views.host_new import NewHostDetailsView
-from airgun.views.host_new import ParameterDeleteDialog
-from airgun.views.host_new import RemediationView
+from airgun.navigation import NavigateStep, navigator
+from airgun.views.host_new import (
+    AllAssignedRolesView,
+    EditSystemPurposeView,
+    EnableTracerView,
+    InstallPackagesView,
+    ManageHostCollectionModal,
+    ModuleStreamDialog,
+    NewHostDetailsView,
+    ParameterDeleteDialog,
+    RemediationView,
+)
 from airgun.views.job_invocation import JobInvocationCreateView
-
 
 global available_param_types
 available_param_types = ['string', 'boolean', 'integer', 'real', 'array', 'hash', 'yaml', 'json']
@@ -131,7 +131,7 @@ class NewHostEntity(HostEntity):
             raise ValueError('No host collections found or left for addition!')
 
         if not add_to_all_collections:
-            if type(host_collection_name) is list:
+            if isinstance(host_collection_name, list):
                 if not host_collection_name:
                     raise ValueError('host_collection_name list is empty!')
                 for host_col in host_collection_name:
@@ -196,7 +196,7 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
 
         if not remove_from_all_collections:
-            if type(host_collection_name) is list:
+            if isinstance(host_collection_name, list):
                 if not host_collection_name:
                     raise ValueError('host_collection_name list is empty!')
                 for host_col in host_collection_name:
@@ -436,13 +436,13 @@ class NewHostEntity(HostEntity):
 
         networking_interface_dict = {}
         tmp = {
-            'fqdn': [i.text for i in list(dict_val_gen('FQDN'))[0]],
-            'ipv4': [i.text for i in list(dict_val_gen('IPv4'))[0]],
-            'ipv6': [i.text for i in list(dict_val_gen('IPv6'))[0]],
-            'mac': [i.text for i in list(dict_val_gen('MAC'))[0]],
+            'fqdn': [i.text for i in next(iter(dict_val_gen('FQDN')))],
+            'ipv4': [i.text for i in next(iter(dict_val_gen('IPv4')))],
+            'ipv6': [i.text for i in next(iter(dict_val_gen('IPv6')))],
+            'mac': [i.text for i in next(iter(dict_val_gen('MAC')))],
             # TODO: After RFE BZ2183086 is resolved, uncomment line below
             # 'subnet': [i.text for i in list(dict_val_gen('Subnet'))[0]],
-            'mtu': [i.text for i in list(dict_val_gen('MTU'))[0]],
+            'mtu': [i.text for i in next(iter(dict_val_gen('MTU')))],
         }
 
         for i, dev in enumerate(net_devices):
@@ -679,26 +679,26 @@ class NewHostEntity(HostEntity):
         else:
             view.insights.recommendations_table.sort_by('Recommendation', 'ascending')
 
-            if type(recommendation_to_remediate) is list:
+            if isinstance(recommendation_to_remediate, list):
                 if not recommendation_to_remediate:
                     raise ValueError('List of recommendations cannot be empty!')
                 for recommendation in recommendation_to_remediate:
                     view.insights.click()
                     # Excape double quotes in the recommendation
-                    recommendation = recommendation.replace('"', '\\"')
-                    recommendation = f'title = "{recommendation}"'
-                    view.insights.search_bar.fill(recommendation, enter_timeout=3)
+                    _rec = recommendation.replace('"', '\\"')
+                    _rec = f'title = "{_rec}"'
+                    view.insights.search_bar.fill(_rec, enter_timeout=3)
                     view.wait_displayed()
                     self.browser.plugin.ensure_page_safe()
                     time.sleep(3)
                     try:
                         # Click the checkbox of the first recommendation
                         view.insights.recommendations_table[0][0].widget.click()
-                    except IndexError:
+                    except IndexError as ie:
                         raise IndexError(
-                            f'Recommendation {recommendation} not found on {entity_name}, '
+                            f'Recommendation {_rec} not found on {entity_name}, '
                             'thus cannot be remediated.'
-                        )
+                        ) from ie
             else:
                 # Excape double quotes in the recommendation
                 recommendation_to_remediate = recommendation_to_remediate.replace('"', '\\"')
@@ -710,11 +710,11 @@ class NewHostEntity(HostEntity):
                 try:
                     # Click the checkbox of the first recommendation
                     view.insights.recommendations_table[0][0].widget.click()
-                except IndexError:
+                except IndexError as ie:
                     raise IndexError(
                         f'Recommendation {recommendation_to_remediate} not found '
                         f'on {entity_name}, thus cannot be remediated.'
-                    )
+                    ) from ie
         view.insights.remediate.click()
         view = RemediationView(self.browser)
         view.remediate.click()
@@ -746,6 +746,3 @@ class ShowNewHostAnsible(NavigateStep):
     VIEW = NewHostDetailsView
 
     prerequisite = NavigateToSibling('NewDetails')
-
-    def step(self, *args, **kwargs):
-        print(self.parent.rolesListTable)
