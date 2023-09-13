@@ -1,17 +1,16 @@
 from wait_for import wait_for
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button
-from widgetastic_patternfly4 import Radio
+from widgetastic_patternfly4 import Button, Radio
 from widgetastic_patternfly4.ouia import Select
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SatTable
-from airgun.views.common import SearchableViewMixin
-from airgun.views.common import WizardStepView
+from airgun.views.common import (
+    BaseLoggedInView,
+    SatTab,
+    SatTable,
+    SearchableViewMixin,
+    WizardStepView,
+)
 from airgun.widgets import ActionsDropdown
 
 
@@ -129,6 +128,7 @@ class JobInvocationCreateView(BaseLoggedInView):
 
 class JobInvocationStatusView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    BREADCRUMB_LENGTH = 2
 
     @property
     def is_displayed(self):
@@ -136,7 +136,7 @@ class JobInvocationStatusView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Jobs'
-            and len(self.breadcrumb.locations) == 2
+            and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
         )
 
     rerun = Text("//a[normalize-space(.)='Rerun']")

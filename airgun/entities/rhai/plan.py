@@ -3,14 +3,9 @@ from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.entities.rhai.base import InsightsNavigateStep
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
-from airgun.views.job_invocation import JobInvocationCreateView
-from airgun.views.job_invocation import JobInvocationStatusView
-from airgun.views.rhai import AddPlanView
-from airgun.views.rhai import AllPlansView
-from airgun.views.rhai import PlanEditView
-from airgun.views.rhai import PlanModalWindow
+from airgun.navigation import NavigateStep, navigator
+from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
+from airgun.views.rhai import AddPlanView, AllPlansView, PlanEditView, PlanModalWindow
 
 
 class PlanEntity(BaseEntity):

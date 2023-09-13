@@ -1,26 +1,25 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ParametrizedView
-from widgetastic.widget import Select
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import Checkbox, ParametrizedView, Select, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import AddRemoveResourcesView
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import LCESelectorGroup
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
-from airgun.views.common import TaskDetailsView
+from airgun.views.common import (
+    AddRemoveResourcesView,
+    BaseLoggedInView,
+    LCESelectorGroup,
+    SatTab,
+    SearchableViewMixin,
+    TaskDetailsView,
+)
 from airgun.views.job_invocation import JobInvocationCreateView
-from airgun.widgets import ActionDropdownWithCheckbox
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import EditableEntry
-from airgun.widgets import EditableLimitEntry
-from airgun.widgets import RadioGroup
-from airgun.widgets import ReadOnlyEntry
-from airgun.widgets import SatTable
+from airgun.widgets import (
+    ActionDropdownWithCheckbox,
+    ActionsDropdown,
+    ConfirmationDialog,
+    EditableEntry,
+    EditableLimitEntry,
+    RadioGroup,
+    ReadOnlyEntry,
+    SatTable,
+)
 
 
 class HostCollectionsView(BaseLoggedInView, SearchableViewMixin):
@@ -127,15 +126,14 @@ class HostCollectionPackageContentRadioGroup(RadioGroup):
     @property
     def selected(self):
         """Return the name of the button that is currently selected."""
-        for name in self.buttons_name_id_map.keys():
+        for name in self.buttons_name_id_map:
             btn = self.get_input_by_name(name)
             if btn and btn.get_attribute('checked') is not None:
                 return name
-        else:
-            raise ValueError(
-                "Whether no radio button is selected or proper attribute "
-                "should be added to framework"
-            )
+        raise ValueError(
+            "Whether no radio button is selected or proper attribute "
+            "should be added to framework"
+        )
 
     def select(self, name):
         """Select specific radio button in the group"""
@@ -185,7 +183,9 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
         """Return an action button by it's name"""
         action_button = getattr(self, name)
         if not isinstance(action_button, ActionsDropdown):
-            raise ValueError(f'Action with name: "{name}" does not exists')
+            raise TypeError(
+                f'Action with name: "{name}" does not exist or is not an ActionsDropdown'
+            )
         return action_button
 
     def apply_action(self, name, action_via='via Katello Agent'):

@@ -1,12 +1,7 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic_patternfly4.ouia import Button as PF4Button
-from widgetastic_patternfly4.ouia import ExpandableTable
+from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic_patternfly4.ouia import Button as PF4Button, ExpandableTable
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 
 
 class NewContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):

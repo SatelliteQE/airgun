@@ -1,27 +1,24 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic_patternfly4 import Button
-from widgetastic_patternfly4 import Drawer
-from widgetastic_patternfly4 import Dropdown
-from widgetastic_patternfly4 import FormSelect
-from widgetastic_patternfly4 import Pagination
-from widgetastic_patternfly4 import Radio
-from widgetastic_patternfly4 import Switch
-from widgetastic_patternfly4.ouia import Button as OUIAButton
-from widgetastic_patternfly4.ouia import FormSelect as OUIAFormSelect
-from widgetastic_patternfly4.ouia import PatternflyTable
-from widgetastic_patternfly4.ouia import Switch as OUIASwitch
-from widgetastic_patternfly4.ouia import Text as OUIAText
-from widgetastic_patternfly4.ouia import TextInput as OUIATextInput
+from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic_patternfly4 import (
+    Button,
+    Drawer,
+    Dropdown,
+    FormSelect,
+    Pagination,
+    Radio,
+    Switch,
+)
+from widgetastic_patternfly4.ouia import (
+    Button as OUIAButton,
+    FormSelect as OUIAFormSelect,
+    PatternflyTable,
+    Switch as OUIASwitch,
+    Text as OUIAText,
+    TextInput as OUIATextInput,
+)
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import WizardStepView
-from airgun.widgets import DualListSelector
-from airgun.widgets import EditModal
-from airgun.widgets import ItemsList
-from airgun.widgets import SearchInput
+from airgun.views.common import BaseLoggedInView, WizardStepView
+from airgun.widgets import DualListSelector, EditModal, ItemsList, SearchInput
 
 
 class EditDetailsModal(EditModal):
@@ -218,14 +215,10 @@ class RowDrawer(View):
     class details(View, AcsStackItem):
         """Class representing the Details stack item in the ACS drawer."""
 
-        ROOT = (
-            '//div[normalize-space(.)="Details" and contains(@class, "pf-c-expandable-section")]'
-        )
+        ROOT = '//div[normalize-space(.)="Details" and contains(@class, "pf-c-expandable-section")]'
 
         title = OUIAText('expandable-details-text')
-        edit_details = Button(
-            locator='//button[contains(@aria-label, "edit-details-pencil-edit")]'
-        )
+        edit_details = Button(locator='//button[contains(@aria-label, "edit-details-pencil-edit")]')
 
         @View.nested
         class details_stack_content(View):

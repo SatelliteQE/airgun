@@ -1,10 +1,7 @@
 from widgetastic.widget import Text
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Button
+from widgetastic_patternfly import BreadCrumb, Button
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTable
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import BaseLoggedInView, SatTable, SearchableViewMixin
 
 
 class ConfigReportsView(BaseLoggedInView, SearchableViewMixin):

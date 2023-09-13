@@ -1,15 +1,15 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ParametrizedLocator
-from widgetastic.widget import Select
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import (
+    Checkbox,
+    ParametrizedLocator,
+    Select,
+    Text,
+    TextInput,
+    View,
+)
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixin
-from airgun.widgets import SatTable
-from airgun.widgets import TextInputHidden
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
+from airgun.widgets import SatTable, TextInputHidden
 
 
 class MatcherAttribute(View):
@@ -64,9 +64,7 @@ class SmartClassParameterContent(View):
             column_widgets={
                 'Attribute type': MatcherAttribute(),
                 'Value': TextInputHidden(locator=".//textarea[contains(@id, 'value')]"),
-                'Omit': Checkbox(
-                    locator=".//input[contains(@name, '[omit]') and @type!='hidden']"
-                ),
+                'Omit': Checkbox(locator=".//input[contains(@name, '[omit]') and @type!='hidden']"),
             },
         )
         add_new_matcher = Text(
@@ -120,6 +118,7 @@ class SmartClassParametersView(BaseLoggedInView, SearchableViewMixin):
 
 class SmartClassParameterEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    BREADCRUMB_LENGTH = 2
     parameter = SmartClassParameterContent(locator="//div[@class='tab-pane fields']")
     submit = Text('//input[@name="commit"]')
 
@@ -129,5 +128,5 @@ class SmartClassParameterEditView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Smart Class Parameters'
-            and len(self.breadcrumb.locations) == 2
+            and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
         )
