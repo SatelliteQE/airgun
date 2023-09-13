@@ -1,14 +1,14 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.contenthost import ContentHostDetailsView
-from airgun.views.contenthost import ContentHostsView
-from airgun.views.contenthost import ContentHostTaskDetailsView
-from airgun.views.contenthost import ErrataDetailsView
-from airgun.views.contenthost import SyspurposeBulkActionView
-from airgun.views.job_invocation import JobInvocationCreateView
-from airgun.views.job_invocation import JobInvocationStatusView
+from airgun.views.contenthost import (
+    ContentHostDetailsView,
+    ContentHostsView,
+    ContentHostTaskDetailsView,
+    ErrataDetailsView,
+    SyspurposeBulkActionView,
+)
+from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 
 
 class ContentHostEntity(BaseEntity):
@@ -108,7 +108,7 @@ class ContentHostEntity(BaseEntity):
             customize_values = {}
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.module_streams.search(f'name = {module_name} and stream = {stream_version}')
-        action_type = dict(is_customize=customize, action=action_type)
+        action_type = {'is_customize': customize, 'action': action_type}
         view.module_streams.table.row(name=module_name, stream=stream_version)['Actions'].fill(
             action_type
         )

@@ -86,7 +86,7 @@ def retry_navigation(method):
         for i in range(attempts):
             try:
                 return method(*args, **kwargs)
-            except (TimedOutError):
+            except TimedOutError:
                 if i < attempts - 1:
                     args[0].view.parent.browser.refresh()
                     time.sleep(0.5)

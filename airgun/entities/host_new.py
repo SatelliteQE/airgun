@@ -1,6 +1,5 @@
 from airgun.entities.host import HostEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.views.host_new import NewHostDetailsView
 
 

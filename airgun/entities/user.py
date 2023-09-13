@@ -2,12 +2,9 @@ from navmazing import NavigateToSibling
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.user import UserCreateView
-from airgun.views.user import UserDetailsView
-from airgun.views.user import UsersView
+from airgun.views.user import UserCreateView, UserDetailsView, UsersView
 
 
 class UserEntity(BaseEntity):

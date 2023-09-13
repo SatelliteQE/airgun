@@ -1,8 +1,5 @@
 from wait_for import wait_for
-from widgetastic.widget import GenericLocatorWidget
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import GenericLocatorWidget, Text, TextInput, View
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import (
@@ -96,7 +93,7 @@ class AvailableRepositorySetWidget(GenericLocatorWidget):
 
     def read(self):
         """Return the name and label of this repository."""
-        return dict(name=self.name, label=self.label)
+        return {"name": self.name, "label": self.label}
 
     def enable(self, item):
         """Enable a repository of this repository set.
@@ -253,7 +250,7 @@ class RedHatRepositoriesView(BaseLoggedInView):
         elif category == 'Enabled':
             return self.enabled.read()
         else:
-            return dict(available=self.available.read(), enabled=self.enabled.read())
+            return {"available": self.available.read(), "enabled": self.enabled.read()}
 
     @property
     def is_displayed(self):

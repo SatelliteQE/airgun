@@ -1,20 +1,19 @@
 from widgetastic.exceptions import NoSuchElementException
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ConditionalSwitchableView
-from widgetastic.widget import GenericLocatorWidget
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic.widget import Widget
+from widgetastic.widget import (
+    Checkbox,
+    ConditionalSwitchableView,
+    GenericLocatorWidget,
+    Table,
+    Text,
+    TextInput,
+    View,
+    Widget,
+)
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.exceptions import ReadOnlyWidgetError
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import FilteredDropdown
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
+from airgun.widgets import ActionsDropdown, FilteredDropdown
 
 
 class VirtwhoConfigureStatus(GenericLocatorWidget):
@@ -229,15 +228,11 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
         kubeconfig_path = Text('.//span[contains(@class,"config-kubeconfig_path")]')
         prism_flavor = Text('.//span[contains(@class,"config-prism_flavor")]')
 
-        _label_locator = (
-            "//span[contains(@class, '{class_name}')]/../preceding-sibling::div/strong"
-        )
+        _label_locator = "//span[contains(@class, '{class_name}')]/../preceding-sibling::div/strong"
         status_label = Text(_label_locator.format(class_name="config-status"))
         debug_label = Text(_label_locator.format(class_name="config-debug"))
         hypervisor_type_label = Text(_label_locator.format(class_name="config-hypervisor_type"))
-        hypervisor_server_label = Text(
-            _label_locator.format(class_name="config-hypervisor_server")
-        )
+        hypervisor_server_label = Text(_label_locator.format(class_name="config-hypervisor_server"))
         hypervisor_username_label = Text(
             _label_locator.format(class_name="config-hypervisor_username")
         )

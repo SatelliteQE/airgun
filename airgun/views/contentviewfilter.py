@@ -1,24 +1,29 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ConditionalSwitchableView
-from widgetastic.widget import ParametrizedLocator
-from widgetastic.widget import Select
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Button
+from widgetastic.widget import (
+    Checkbox,
+    ConditionalSwitchableView,
+    ParametrizedLocator,
+    Select,
+    Table,
+    Text,
+    TextInput,
+    View,
+)
+from widgetastic_patternfly import BreadCrumb, Button
 
-from airgun.views.common import AddRemoveResourcesView
-from airgun.views.common import AddTab
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatSecondaryTab
-from airgun.views.common import SearchableViewMixin
-from airgun.widgets import DatePickerInput
-from airgun.widgets import EditableEntry
-from airgun.widgets import RadioGroup
-from airgun.widgets import SatSelect
-from airgun.widgets import SatTable
+from airgun.views.common import (
+    AddRemoveResourcesView,
+    AddTab,
+    BaseLoggedInView,
+    SatSecondaryTab,
+    SearchableViewMixin,
+)
+from airgun.widgets import (
+    DatePickerInput,
+    EditableEntry,
+    RadioGroup,
+    SatSelect,
+    SatTable,
+)
 
 ACTIONS_COLUMN = 4
 
@@ -164,8 +169,8 @@ class CreateYumFilterView(BaseLoggedInView):
 
 class EditYumFilterView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    BREADCRUMB_LENGTH = 3
     filter_type = Text('//header/small')
-
     content_tabs = ConditionalSwitchableView(reference='filter_type')
 
     @property
@@ -173,7 +178,7 @@ class EditYumFilterView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and len(self.breadcrumb.locations) > 3
+            and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
             and self.breadcrumb.locations[2] == 'Yum Filters'
             and self.breadcrumb.read() != 'Create Yum Filter'
         )
