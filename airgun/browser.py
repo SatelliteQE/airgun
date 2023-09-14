@@ -170,6 +170,10 @@ class SeleniumBrowserFactory:
 
         Note: should not be called directly, use :meth:`get_browser` instead.
         """
+        if self.test_name:
+            self.web_kaifuku.webdriver_options.desired_capabilities.update(
+                {'se:test_name': self.test_name}
+            )
         manager = BrowserManager.from_conf(self.web_kaifuku)
         self._webdriver = manager.start()
         self._set_session_cookie()
