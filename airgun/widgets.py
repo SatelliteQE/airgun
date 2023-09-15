@@ -752,7 +752,7 @@ class PF4Search(Search):
     ROOT = '//div[@class="foreman-search-bar"]'
     search_field = TextInput(locator=(".//input[@aria-label='Search input']"))
     search_button = Text(locator=(".//button[@aria-label='Search']"))
-    clear_button = Button(locator=(".//input[@aria-label='Reset search']"))
+    clear_button = Text(locator=(".//button[@aria-label='Reset search']"))
 
     def clear(self):
         """Clears search field value and re-trigger search to remove all
