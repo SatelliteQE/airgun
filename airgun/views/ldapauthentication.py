@@ -1,15 +1,13 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.widgets import AuthSourceAggregateCard
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import MultiSelect
-from airgun.widgets import SatTable
+from airgun.views.common import BaseLoggedInView, SatTab
+from airgun.widgets import (
+    AuthSourceAggregateCard,
+    FilteredDropdown,
+    MultiSelect,
+    SatTable,
+)
 
 
 class LDAPAuthenticationsView(BaseLoggedInView):

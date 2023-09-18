@@ -1,14 +1,8 @@
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixinPF4
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import MultiSelect
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.widgets import FilteredDropdown, MultiSelect
 
 
 class MediumView(BaseLoggedInView, SearchableViewMixinPF4):

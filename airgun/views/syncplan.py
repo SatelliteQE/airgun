@@ -1,22 +1,22 @@
-from widgetastic.widget import Select
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import Select, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import AddRemoveResourcesView
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import DateTime
-from airgun.widgets import EditableDateTime
-from airgun.widgets import EditableEntry
-from airgun.widgets import EditableEntryCheckbox
-from airgun.widgets import EditableEntrySelect
-from airgun.widgets import ReadOnlyEntry
+from airgun.views.common import (
+    AddRemoveResourcesView,
+    BaseLoggedInView,
+    SatTab,
+    SearchableViewMixin,
+)
+from airgun.widgets import (
+    ActionsDropdown,
+    ConfirmationDialog,
+    DateTime,
+    EditableDateTime,
+    EditableEntry,
+    EditableEntryCheckbox,
+    EditableEntrySelect,
+    ReadOnlyEntry,
+)
 
 
 class SyncPlansView(BaseLoggedInView, SearchableViewMixin):

@@ -2,8 +2,7 @@ from navmazing import NavigateToSibling
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.contentview_new import ContentViewCreateView
 from airgun.views.contentview_new import ContentViewTableView

@@ -33,8 +33,7 @@ from airgun.widgets import PF4Search
 from airgun.widgets import PF4ProgressBar
 from airgun.widgets import ReadOnlyEntry
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 
 
 class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):

@@ -2,20 +2,20 @@ from navmazing import NavigateToSibling
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.hostcollection import HostCollectionActionRemoteExecutionJobCreate
-from airgun.views.hostcollection import HostCollectionActionTaskDetailsView
-from airgun.views.hostcollection import HostCollectionChangeAssignedContentView
-from airgun.views.hostcollection import HostCollectionCreateView
-from airgun.views.hostcollection import HostCollectionEditView
-from airgun.views.hostcollection import HostCollectionInstallErrataView
-from airgun.views.hostcollection import HostCollectionManageModuleStreamsView
-from airgun.views.hostcollection import HostCollectionManagePackagesView
-from airgun.views.hostcollection import HostCollectionsView
-from airgun.views.job_invocation import JobInvocationCreateView
-from airgun.views.job_invocation import JobInvocationStatusView
+from airgun.views.hostcollection import (
+    HostCollectionActionRemoteExecutionJobCreate,
+    HostCollectionActionTaskDetailsView,
+    HostCollectionChangeAssignedContentView,
+    HostCollectionCreateView,
+    HostCollectionEditView,
+    HostCollectionInstallErrataView,
+    HostCollectionManageModuleStreamsView,
+    HostCollectionManagePackagesView,
+    HostCollectionsView,
+)
+from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 
 
 class HostCollectionEntity(BaseEntity):
@@ -222,7 +222,7 @@ class HostCollectionEntity(BaseEntity):
         view.details.manage_module_streams.click()
         view = HostCollectionManageModuleStreamsView(view.browser)
         view.search(f'name = {module_name} and stream = {stream_version}')
-        action_type = dict(is_customize=customize, action=action_type)
+        action_type = {'is_customize': customize, 'action': action_type}
         view.table.row(name=module_name, stream=stream_version)['Actions'].fill(action_type)
         if customize:
             view = JobInvocationCreateView(view.browser)

@@ -1,12 +1,12 @@
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import View
+from widgetastic.widget import Table, Text, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SatTable
-from airgun.views.common import SearchableViewMixinPF4
+from airgun.views.common import (
+    BaseLoggedInView,
+    SatTab,
+    SatTable,
+    SearchableViewMixinPF4,
+)
 from airgun.widgets import SatTableWithUnevenStructure
 
 

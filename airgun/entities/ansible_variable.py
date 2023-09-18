@@ -1,10 +1,8 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
-from airgun.views.ansible_variable import AnsibleVariablesView
-from airgun.views.ansible_variable import NewAnsibleVariableView
+from airgun.navigation import NavigateStep, navigator
+from airgun.views.ansible_variable import AnsibleVariablesView, NewAnsibleVariableView
 
 
 class AnsibleVariablesEntity(BaseEntity):

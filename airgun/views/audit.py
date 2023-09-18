@@ -1,14 +1,11 @@
-from widgetastic.widget import Text
-from widgetastic.widget import View
+from widgetastic.widget import Text, View
 
 from airgun.exceptions import ReadOnlyWidgetError
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 from airgun.widgets import SatTableWithoutHeaders
 
 
 class AuditEntry(View):
-
     ROOT = ".//div[@id='audit-list']/div/div[contains(@class, 'list-group-item')]"
     user = Text(".//a[@class='user-info']")
     action_type = Text(".//div[@class='list-group-item-text' and normalize-space(.)]")
