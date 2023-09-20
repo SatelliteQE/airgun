@@ -1,9 +1,9 @@
 from widgetastic.widget import Checkbox, Select, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Pagination
+from widgetastic_patternfly4 import Pagination as PF4Pagination
 
 from airgun.views.common import BaseLoggedInView, SatTable, SearchableViewMixinPF4
-from airgun.widgets import CustomParameter, FilteredDropdown, Pagination, SatSelect
+from airgun.widgets import CustomParameter, FilteredDropdown, SatSelect
 
 
 class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -18,7 +18,7 @@ class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixinPF4):
             'Actions': Text(".//a[@data-method='delete']"),
         },
     )
-    pagination = Pagination()
+    pagination = PF4Pagination()
 
     @property
     def is_displayed(self):
