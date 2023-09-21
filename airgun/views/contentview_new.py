@@ -1,39 +1,30 @@
 from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ParametrizedView
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Tab
-from widgetastic_patternfly4 import Button
-from widgetastic_patternfly4 import Dropdown
-from widgetastic_patternfly4.ouia import Button as PF4Button
-from widgetastic_patternfly4.ouia import ExpandableTable
-from widgetastic_patternfly4.ouia import Switch
-from widgetastic_patternfly4.ouia import PatternflyTable
+from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb, Tab
+from widgetastic_patternfly4 import Button, Dropdown
+from widgetastic_patternfly4.ouia import (
+    Button as PF4Button,
+    ExpandableTable,
+    PatternflyTable,
+    Switch,
+)
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import NewAddRemoveResourcesView
-from airgun.views.common import SearchableViewMixinPF4
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import EditableEntry
-from airgun.widgets import PF4Search
-from airgun.widgets import PF4ProgressBar
-from airgun.widgets import ReadOnlyEntry
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import NewAddRemoveResourcesView
-from airgun.views.common import SearchableViewMixinPF4
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import EditableEntry
-from airgun.widgets import PF4Search
-from airgun.widgets import PF4ProgressBar
-from airgun.widgets import ReadOnlyEntry
+from airgun.views.common import (
+    BaseLoggedInView,
+    NewAddRemoveResourcesView,
+    SearchableViewMixinPF4,
+)
+from airgun.widgets import (
+    ActionsDropdown,
+    ConfirmationDialog,
+    EditableEntry,
+    PF4ProgressBar,
+    PF4Search,
+    ReadOnlyEntry,
+)
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
+LOCATION_NUM = 3
 
 
 class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -106,7 +97,7 @@ class ContentViewEditView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and len(self.breadcrumb.locations) <= 3
+            and len(self.breadcrumb.locations) <= LOCATION_NUM
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.read() != 'New Content View'
             and self.publish.is_displayed
@@ -228,8 +219,7 @@ class NewContentViewVersionDetailsView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and len(self.breadcrumb.locations) > 3
+            and len(self.breadcrumb.locations) > LOCATION_NUM
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.locations[2] == 'Versions'
         )
-

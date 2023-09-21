@@ -1,4 +1,5 @@
 import time
+import wait_for
 from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,

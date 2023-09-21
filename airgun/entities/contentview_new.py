@@ -1,13 +1,14 @@
 from navmazing import NavigateToSibling
-from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.contentview_new import ContentViewCreateView
-from airgun.views.contentview_new import ContentViewTableView
-from airgun.views.contentview_new import ContentViewEditView
-from airgun.views.contentview_new import ContentViewVersionPublishView
+from airgun.views.contentview_new import (
+    ContentViewCreateView,
+    ContentViewEditView,
+    ContentViewTableView,
+    ContentViewVersionPublishView,
+)
 
 
 class NewContentViewEntity(BaseEntity):
@@ -97,4 +98,3 @@ class PublishContentViewVersion(NavigateStep):
     def step(self, *args, **kwargs):
         """Click 'Publish new version' button"""
         self.parent.publish.click()
-
