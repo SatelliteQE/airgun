@@ -799,14 +799,14 @@ class ManageHostStatusesView(View):
     """Manage host statuses modal"""
 
     ROOT = './/div[@data-ouia-component-id="statuses-modal"]'
-
+    close_modal = Button(locator='.//button[@aria-label="Close"]')
     host_statuses_table = PatternflyTable(
         component_id='statuses-table',
         column_widgets={
-            'Name': Text('.//td[1]'),
-            'Status': Text('.//td[2]'),
-            'Reported at': Text('.//td[3]'),
-            3: Button(locator='.//td[4]'),
+            'Name': Text('.//td[contains(@data-label, "Name")]'),
+            'Status': Text('.//td[contains(@data-label, "Status")]'),
+            'Reported at': Text('.//td[contains(@data-label, "Reported at")]'),
+            3: Button(locator='.//td[contains(@class, "action")]'),
         },
     )
 

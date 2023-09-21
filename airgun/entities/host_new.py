@@ -56,7 +56,9 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
         view.overview.host_status.manage_all_statuses.click()
         view = ManageHostStatusesView(self.browser)
-        return view.read()
+        values = view.read()
+        view.close_modal.click()
+        return values
 
     def edit_system_purpose(
         self, entity_name, role=None, sla=None, usage=None, release_ver=None, add_ons=None
