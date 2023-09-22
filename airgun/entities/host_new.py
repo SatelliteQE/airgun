@@ -2,6 +2,7 @@ from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.host_new import (
     InstallPackagesView,
+    ManageHostStatusesView,
     ModuleStreamDialog,
     NewHostDetailsView,
 )
@@ -27,6 +28,21 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe()
         return view.read(widget_names=widget_names)
+
+    def get_host_statuses(self, entity_name):
+        """Read host statuses from Host Details page
+
+        Args:
+            entity_name: Name of the host
+        """
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.overview.host_status.manage_all_statuses.click()
+        view = ManageHostStatusesView(self.browser)
+        values = view.read()
+        view.close_modal.click()
+        return values
 
     def schedule_job(self, entity_name, values):
         """Schedule a remote execution on selected host"""
