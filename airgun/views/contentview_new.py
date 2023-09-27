@@ -138,7 +138,7 @@ class ContentViewEditView(BaseLoggedInView):
             Searchbox can't search by version name, only by id, that's why in
             case version name was passed, it's transformed into recognizable
             value before filling, for example::
-                'Version 1.0' -> 'version = 1'
+            'Version 1.0' -> 'version = 1'
             """
             search_phrase = version_name
             if version_name.startswith('V') and '.' in version_name:

@@ -442,7 +442,7 @@ class NewAddRemoveResourcesView(View):
     def remove(self, value):
         """Unassign some resource(s).
         :param str or list values: string containing resource name or a list of
-            such strings.
+        such strings.
         """
         self.search(value)
         next(self.table.rows())[0].widget.fill(True)

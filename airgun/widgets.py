@@ -2033,12 +2033,12 @@ class ProgressBar(GenericLocatorWidget):
 class PF4ProgressBar(ProgressBar):
     """Generic progress bar widget.
     Example html representation::
-        <div class="progress ng-isolate-scope" type="success" ...>
-          <div class="progress-bar progress-bar-success" aria-valuenow="0"
-           aria-valuemin="0" aria-valuemax="100" aria-valuetext="0%" ...></div>
-        </div>
+    <div class="progress ng-isolate-scope" type="success" ...>
+    <div class="progress-bar progress-bar-success" aria-valuenow="0"
+    aria-valuemin="0" aria-valuemax="100" aria-valuetext="0%" ...></div>
+    </div>
     Locator example::
-        .//div[contains(@class, "progress progress-striped")]
+    .//div[contains(@class, "progress progress-striped")]
     """
 
     PROGRESSBAR = '//div[contains(@role, "progressbar") or contains(@class, "pf-c-progress__bar")]'

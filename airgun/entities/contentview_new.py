@@ -29,7 +29,7 @@ class NewContentViewEntity(BaseEntity):
         """Publishes to create new version of CV and promotes the contents to
         'Library' environment.
         :return: dict with new content view version table row; contains keys
-            like 'Version', 'Status', 'Environments' etc.
+        like 'Version', 'Status', 'Environments' etc.
         """
         view = self.navigate_to(self, 'Publish', entity_name=entity_name)
         if values:
