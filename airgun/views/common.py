@@ -1,4 +1,5 @@
 import time
+
 import wait_for
 from widgetastic.widget import (
     Checkbox,
@@ -13,9 +14,7 @@ from widgetastic.widget import (
 )
 from widgetastic_patternfly import BreadCrumb, Button, Tab, TabWithDropdown
 from widgetastic_patternfly4.navigation import Navigation
-from widgetastic_patternfly4.ouia import Dropdown
-from widgetastic_patternfly4.ouia import PatternflyTable
-from widgetastic_patternfly4.ouia import Button as PF4Button
+from widgetastic_patternfly4.ouia import Button as PF4Button, Dropdown, PatternflyTable
 
 from airgun.utils import get_widget_by_name, normalize_dict_values
 from airgun.widgets import (
@@ -434,7 +433,9 @@ class NewAddRemoveResourcesView(View):
     def fill(self, values):
         """Associate resource(s)"""
         if not isinstance(values, list):
-            values = list((values,))
+            values = [
+                values,
+            ]
         for value in values:
             self.add(value)
 
