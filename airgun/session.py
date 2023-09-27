@@ -3,6 +3,7 @@ from datetime import datetime
 import logging
 import os
 import sys
+from urllib.parse import urlparse
 
 from cached_property import cached_property
 from fauxfactory import gen_string
@@ -83,6 +84,7 @@ from airgun.entities.usergroup import UserGroupEntity
 from airgun.entities.virtwho_configure import VirtwhoConfigureEntity
 from airgun.entities.webhook import WebhookEntity
 from airgun.navigation import Navigate, navigator
+from broker.hosts import Host
 
 LOGGER = logging.getLogger(__name__)
 
@@ -193,6 +195,8 @@ class Session:
         self._login = login
         self.navigator = None
         self.browser = None
+        self.__session_id = None
+        self.__grid_url = None
 
     def __call__(self, user=None, password=None, session_cookie=None, url=None, login=None):
         """Stores provided values. This allows tests to provide additional
@@ -234,6 +238,8 @@ class Session:
         try:
             if not passed:
                 self.take_screenshot()
+            else:
+                self.__clean_video()
         except Exception as err:  # noqa: BLE001 - TODO: fix bare except
             LOGGER.exception(err)
         finally:
@@ -269,11 +275,12 @@ class Session:
             test_name=self.name, session_cookie=self._session_cookie, hostname=self._hostname
         )
         try:
-            selenium_browser = self._factory.get_browser()
+            selenium_browser, grid_url = self._factory.get_browser()
             self.browser = AirgunBrowser(selenium_browser, self)
             LOGGER.info(f'Session Id For {self.name}: {selenium_browser.session_id}')
             LOGGER.info(f'Setting initial URL to {url}')
-
+            self.__session_id = selenium_browser.session_id
+            self.__grid_url = grid_url
             self.browser.url = url
 
             self._factory.post_init()
@@ -314,6 +321,17 @@ class Session:
         LOGGER.debug('Saving screenshot %s', path)
         if not self.browser.selenium.save_screenshot(path):
             LOGGER.error('Failed to save screenshot %s', path)
+
+    def __clean_video(self):
+        LOGGER.info("Cleaning up video files for session: %s", self.__session_id)
+
+        if self.__grid_url and self.__session_id:
+            grid = urlparse(url=self.__grid_url)
+            infra_grid = Host(hostname=grid.hostname)
+            infra_grid.execute(command=f'rm -rf /var/www/html/videos/{self.__session_id}')
+            LOGGER.info("Video cleanup for session %s is complete", self.__session_id)
+        else:
+            LOGGER.warning("Missing grid_url or session_id. Unable to clean video files.")
 
     @cached_property
     def acs(self):

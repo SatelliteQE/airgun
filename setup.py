@@ -26,6 +26,7 @@ setup(
         'widgetastic.core',
         'widgetastic.patternfly',
         'widgetastic.patternfly4',
+        'broker[docker]',
     ],
     packages=find_packages(exclude=['tests*']),
     package_data={'': ['LICENSE']},

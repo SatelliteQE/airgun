@@ -87,9 +87,9 @@ class SeleniumBrowserFactory:
         :raises: ValueError: If wrong ``provider`` or ``browser`` specified.
         """
         if self.provider == 'selenium':
-            return self._get_selenium_browser()
+            return self._get_selenium_browser(), None
         elif self.provider == 'remote':
-            return self._get_remote_browser()
+            return self._get_remote_browser(), self.web_kaifuku.webdriver_options.command_executor
         else:
             raise ValueError(
                 f'"{self.provider}" browser is not supported. '
