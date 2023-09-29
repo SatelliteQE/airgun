@@ -278,6 +278,26 @@ class InstallPackagesView(View):
     cancel = Button('Cancel')
 
 
+class ManageHostStatusesView(View):
+    """Manage host statuses modal"""
+
+    ROOT = './/div[@data-ouia-component-id="statuses-modal"]'
+    close_modal = Button(locator='.//button[@aria-label="Close"]')
+    host_statuses_table = PatternflyTable(
+        component_id='statuses-table',
+        column_widgets={
+            'Name': Text('.//td[contains(@data-label, "Name")]'),
+            'Status': Text('.//td[contains(@data-label, "Status")]'),
+            'Reported at': Text('.//td[contains(@data-label, "Reported at")]'),
+            3: Button(locator='.//td[contains(@class, "action")]'),
+        },
+    )
+
+    def read(self):
+        # Parses into a dictionary of {name: {status, reported_at}}
+        return {value.pop('Name'): value for value in self.host_statuses_table.read()}
+
+
 class ModuleStreamDialog(Pf4ConfirmationDialog):
     confirm_dialog = Button(locator='.//button[@aria-label="confirm-module-action"]')
     cancel_dialog = Button(locator='.//button[@aria-label="cancel-module-action"]')
