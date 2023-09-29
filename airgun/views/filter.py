@@ -11,9 +11,10 @@ from widgetastic_patternfly import BreadCrumb
 from airgun.views.common import BaseLoggedInView, SatTab
 from airgun.widgets import (
     ActionsDropdown,
-    FilteredDropdown,
     MultiSelect,
     Pagination,
+    PF4FilteredDropdown,
+    PF4MultiSelect,
     Search,
 )
 
@@ -50,12 +51,14 @@ class FiltersView(BaseLoggedInView):
 
 class FilterDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    resource_type = FilteredDropdown(id='filter_resource_type')
-    permission = MultiSelect(id='ms-filter_permission_ids')
+    resource_type = PF4FilteredDropdown(
+        locator='.//div[@data-ouia-component-id="resource-type-select"]'
+    )
+    permission = PF4MultiSelect('.//div[@id="permission-duel-select"]')
     override = Checkbox(id='override_taxonomy_checkbox')
     unlimited = Checkbox(id='filter_unlimited')
     filter = TextInput(id='search')
-    submit = Text('//input[@name="commit"]')
+    submit = Text('//button[@data-ouia-component-id="filters-submit-button"]')
 
     @property
     def is_displayed(self):
