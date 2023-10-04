@@ -1,0 +1,22 @@
+# Catalog entry for Backstage [backstage.io]
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: airgun
+  title: Airgun
+  description: AirGun is a Python library that is built over Widgetastic and navmazing to make Satellite 6 UI testing easier.
+  links:
+    - title: Documentation
+      url: https://airgun.readthedocs.io/en/latest/
+  tags:
+    - python
+    - rh-satellite
+    - interaction-library
+  namespace: quality-community   
+  annotations:
+    github.com/project-slug: SatelliteQE/airlgun
+    backstage.io/techdocs-ref: https://airgun.readthedocs.io/en/latest/
+spec:
+  type: library
+  owner: group:redhat/satellite-qe
+  lifecycle: preproduction
