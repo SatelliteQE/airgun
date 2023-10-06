@@ -25,7 +25,7 @@ class ActivationKeysView(BaseLoggedInView, SearchableViewMixin):
 
     title = Text("//h2[contains(., 'Activation Keys')]")
     new = Text("//button[contains(@href, '/activation_keys/new')]")
-    table = Table('.//table', column_widgets={'Name': Text('./a')})
+    table = Table('.//table', column_widgets={'Name': Text('.//a')})
 
     @property
     def is_displayed(self):
