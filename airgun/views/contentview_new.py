@@ -41,8 +41,7 @@ class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        assert self.create_content_view.is_displayed()
-        return True
+        return self.create_content_view.is_displayed()
 
 
 class ContentViewCreateView(BaseLoggedInView):
@@ -82,7 +81,7 @@ class ContentViewCreateView(BaseLoggedInView):
 
 
 class ContentViewEditView(BaseLoggedInView):
-    breadcrumb = BreadCrumb()
+    breadcrumb = BreadCrumb('breadcrumbs-list')
     search = PF4Search()
     title = Text("//h2[contains(., 'Publish) or contains(@id, 'pf-wizard-title-0')]")
     actions = ActionsDropdown(
@@ -95,13 +94,7 @@ class ContentViewEditView(BaseLoggedInView):
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and len(self.breadcrumb.locations) <= LOCATION_NUM
-            and self.breadcrumb.locations[0] == 'Content Views'
-            and self.breadcrumb.read() != 'New Content View'
-            and self.publish.is_displayed
-        )
+        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Content Views'
 
     @View.nested
     class details(Tab):
@@ -165,9 +158,8 @@ class ContentViewEditView(BaseLoggedInView):
 
 class ContentViewVersionPublishView(BaseLoggedInView):
     # publishing view is a popup so adding all navigation within the same context
-    breadcrumb = BreadCrumb()
     ROOT = './/div[contains(@class,"pf-c-wizard")]'
-    title = Text("//h2[contains(., 'Publish' or contains(@id, 'pf-wizard-title-0')]")
+    title = Text(".//h2[contains(., 'Publish') and contains(@aria-label, 'Publish')]")
     # publishing screen
     description = TextInput(id='description')
     promote = Switch('promote-switch')
@@ -179,16 +171,11 @@ class ContentViewVersionPublishView(BaseLoggedInView):
     back = Button('Back')
     cancel = Button('Cancel')
     close_button = Button('Close')
-    progressbar = PF4ProgressBar()
+    progressbar = PF4ProgressBar('.//div[contains(@class, "pf-c-wizard__main-body")]')
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Content Views'
-            and self.breadcrumb.read() == 'Versions'
-        )
+        return self.title.wait_displayed()
 
     def wait_animation_end(self):
         wait_for(

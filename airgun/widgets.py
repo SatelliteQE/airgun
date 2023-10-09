@@ -28,6 +28,8 @@ from widgetastic_patternfly import (
 )
 from widgetastic_patternfly4.ouia import BaseSelect, Button as PF4Button, Dropdown
 
+from widgetastic_patternfly4.progress import Progress as PF4Progress
+
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
 from airgun.utils import get_widget_by_name
 
@@ -2030,24 +2032,23 @@ class ProgressBar(GenericLocatorWidget):
         return self.progress
 
 
-class PF4ProgressBar(ProgressBar):
-    """Generic progress bar widget.
-    Example html representation::
-        <div class="progress ng-isolate-scope" type="success" ...>
-          <div class="progress-bar progress-bar-success" aria-valuenow="0"
-           aria-valuemin="0" aria-valuemax="100" aria-valuetext="0%" ...></div>
-        </div>
-    Locator example::
-        .//div[contains(@class, "progress progress-striped")]
-    """
+class PF4ProgressBar(PF4Progress):
 
-    PROGRESSBAR = '//div[contains(@role, "progressbar") or contains(@class, "pf-c-progress__bar")]'
+    locator = './/div[contains(@class, "pf-c-wizard__main-body")]'
 
-    @property
-    def progress(self):
-        """String value with current flow rate in percent."""
-        return self.browser.get_attribute(
-            'pf-c-progress__measure', self.PROGRESSBAR, check_safe=False
+    def wait_for_result(self, timeout=600, delay=1):
+        """Waits for progress bar to finish. By default checks whether progress
+        bar is completed every second for 10 minutes.
+
+        :param timeout: integer value for timeout in seconds
+        :param delay: float value for delay between attempts in seconds
+        """
+        wait_for(lambda: self.is_displayed, timeout=30, delay=delay, logger=self.logger)
+        wait_for(
+            lambda: not self.is_displayed or self.current_progress == '100',
+            timeout=timeout,
+            delay=delay,
+            logger=self.logger,
         )
 
 

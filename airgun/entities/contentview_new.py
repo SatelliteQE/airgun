@@ -42,7 +42,7 @@ class NewContentViewEntity(BaseEntity):
             view.fill(values)
         view.next.click()
         view.finish.click()
-        view.progressbar.wait_for_result()
+        view.progressbar.wait_for_result(delay=.01)
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
@@ -50,6 +50,8 @@ class NewContentViewEntity(BaseEntity):
 
     def read_french_lang_cv(self):
         view = self.navigate_to(self, 'French')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         return view.table.read()
 
 
