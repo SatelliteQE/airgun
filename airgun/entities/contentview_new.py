@@ -1,13 +1,14 @@
 from navmazing import NavigateToSibling
-from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.contentview_new import ContentViewCreateView
-from airgun.views.contentview_new import ContentViewTableView
-from airgun.views.contentview_new import ContentViewEditView
-from airgun.views.contentview_new import ContentViewVersionPublishView
+from airgun.views.contentview_new import (
+    ContentViewCreateView,
+    ContentViewEditView,
+    ContentViewTableView,
+    ContentViewVersionPublishView,
+)
 
 
 class NewContentViewEntity(BaseEntity):
@@ -16,32 +17,41 @@ class NewContentViewEntity(BaseEntity):
     def create(self, values):
         """Create a new content view"""
         view = self.navigate_to(self, 'New')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         view.fill(values)
         view.submit.click()
 
     def search(self, value):
         """Search for content view"""
         view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         return view.search(value)
 
     def publish(self, entity_name, values=None):
         """Publishes to create new version of CV and promotes the contents to
         'Library' environment.
         :return: dict with new content view version table row; contains keys
-            like 'Version', 'Status', 'Environments' etc.
+        like 'Version', 'Status', 'Environments' etc.
         """
         view = self.navigate_to(self, 'Publish', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         if values:
             view.fill(values)
         view.next.click()
         view.finish.click()
         view.progressbar.wait_for_result()
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         return view.versions.table.read()
 
-    def check_if_blank_in_french(self):
+    def read_french_lang_cv(self):
         view = self.navigate_to(self, 'French')
         return view.table.read()
+
 
 @navigator.register(NewContentViewEntity, 'All')
 class ShowAllContentViewsScreen(NavigateStep):
@@ -111,4 +121,3 @@ class PublishContentViewVersion(NavigateStep):
     def step(self, *args, **kwargs):
         """Click 'Publish new version' button"""
         self.parent.publish.click()
-
