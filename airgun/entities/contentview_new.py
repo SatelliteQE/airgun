@@ -17,12 +17,16 @@ class NewContentViewEntity(BaseEntity):
     def create(self, values):
         """Create a new content view"""
         view = self.navigate_to(self, 'New')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         view.fill(values)
         view.submit.click()
 
     def search(self, value):
         """Search for content view"""
         view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         return view.search(value)
 
     def publish(self, entity_name, values=None):
@@ -32,12 +36,16 @@ class NewContentViewEntity(BaseEntity):
         like 'Version', 'Status', 'Environments' etc.
         """
         view = self.navigate_to(self, 'Publish', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         if values:
             view.fill(values)
         view.next.click()
         view.finish.click()
         view.progressbar.wait_for_result()
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         return view.versions.table.read()
 
 
