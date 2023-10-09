@@ -12,7 +12,6 @@ from widgetastic_patternfly4.ouia import (
 
 from airgun.views.common import (
     BaseLoggedInView,
-    NewAddRemoveResourcesView,
     SearchableViewMixinPF4,
 )
 from airgun.widgets import (
@@ -25,6 +24,67 @@ from airgun.widgets import (
 )
 
 LOCATION_NUM = 3
+
+class NewAddRemoveResourcesView(View):
+    searchbox = PF4Search()
+    type = Dropdown(
+        locator='.//div[contains(@class, "All repositories") or'
+        ' contains(@aria-haspopup="listbox")]'
+    )
+    Status = Dropdown(
+        locator='.//div[contains(@class, "All") or contains(@aria-haspopup="listbox")]'
+    )
+    add_repo = PF4Button('OUIA-Generated-Button-secondary-2')
+    # Need to add kebab menu
+    table = PatternflyTable(
+        component_id='OUIA-Generated-Table-4',
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Type': Text('.//a'),
+            'Name': Text('.//a'),
+            'Product': Text('.//a'),
+            'Sync State': Text('.//a'),
+            'Content': Text('.//a'),
+            'Status': Text('.//a'),
+        },
+    )
+
+    def search(self, value):
+        """Search for specific available resource and return the results"""
+        self.searchbox.search(value)
+        wait_for(
+            lambda: self.table.is_displayed is True,
+            timeout=60,
+            delay=1,
+        )
+        self.table.wait_displayed()
+        return self.table.read()
+
+    def add(self, value):
+        """Associate specific resource"""
+        self.search(value)
+        next(self.table.rows())[0].widget.fill(True)
+        self.add_repo.click()
+
+    def fill(self, values):
+        """Associate resource(s)"""
+        if not isinstance(values, list):
+            values = list((values,))
+        for value in values:
+            self.add(value)
+
+    def remove(self, value):
+        """Unassign some resource(s).
+        :param str or list values: string containing resource name or a list of
+            such strings.
+        """
+        self.search(value)
+        next(self.table.rows())[0].widget.fill(True)
+        self.remove_button.click()
+
+    def read(self):
+        """Read all table values from both resource tables"""
+        return self.table.read()
 
 
 class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -83,12 +143,10 @@ class ContentViewCreateView(BaseLoggedInView):
 class ContentViewEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb('breadcrumbs-list')
     search = PF4Search()
-    title = Text("//h2[contains(., 'Publish) or contains(@id, 'pf-wizard-title-0')]")
     actions = ActionsDropdown(
-        "//div[contains(@data-ouia-component-id, 'OUIA-Generated-Dropdown-2')]"
+        ".//button[contains(@id, 'toggle-dropdown')]"
     )
     publish = PF4Button('cv-details-publish-button')
-    # not sure if this is needed
     dialog = ConfirmationDialog()
 
     @property
@@ -128,7 +186,7 @@ class ContentViewEditView(BaseLoggedInView):
 
         def search(self, version_name):
             """Searches for content view version.
-            Searchbox can't search by version name, only by id, that's why in
+            Searchbox can't search by version name, only by number, that's why in
             case version name was passed, it's transformed into recognizable
             value before filling, for example::
                 'Version 1.0' -> 'version = 1'
@@ -210,3 +268,5 @@ class NewContentViewVersionDetailsView(BaseLoggedInView):
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.locations[2] == 'Versions'
         )
+
+
