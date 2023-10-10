@@ -706,7 +706,8 @@ class AcsEntity(BaseEntity):
             else:
                 view.acs_drawer.clear_search.click()
                 time.sleep(2)
-
+                
+        wait_for(lambda: view.acs_drawer.add_source.is_displayed, timeout=10, delay=1)
         view.acs_drawer.add_source.click()
         # Load wizard modal for adding new ACS
         view = AddAlternateContentSourceModal(self.browser)
