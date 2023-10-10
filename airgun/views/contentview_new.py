@@ -25,6 +25,7 @@ from airgun.widgets import (
 
 LOCATION_NUM = 3
 
+
 class NewAddRemoveResourcesView(View):
     searchbox = PF4Search()
     type = Dropdown(
@@ -69,14 +70,14 @@ class NewAddRemoveResourcesView(View):
     def fill(self, values):
         """Associate resource(s)"""
         if not isinstance(values, list):
-            values = list((values,))
+            values = [values]
         for value in values:
             self.add(value)
 
     def remove(self, value):
         """Unassign some resource(s).
         :param str or list values: string containing resource name or a list of
-            such strings.
+        such strings.
         """
         self.search(value)
         next(self.table.rows())[0].widget.fill(True)
@@ -143,9 +144,7 @@ class ContentViewCreateView(BaseLoggedInView):
 class ContentViewEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb('breadcrumbs-list')
     search = PF4Search()
-    actions = ActionsDropdown(
-        ".//button[contains(@id, 'toggle-dropdown')]"
-    )
+    actions = ActionsDropdown(".//button[contains(@id, 'toggle-dropdown')]")
     publish = PF4Button('cv-details-publish-button')
     dialog = ConfirmationDialog()
 
@@ -188,8 +187,7 @@ class ContentViewEditView(BaseLoggedInView):
             """Searches for content view version.
             Searchbox can't search by version name, only by number, that's why in
             case version name was passed, it's transformed into recognizable
-            value before filling, for example::
-                'Version 1.0' -> 'version = 1'
+            value before filling, for example - Version 1.0' -> 'version = 1'
             """
             search_phrase = version_name
             if version_name.startswith('V') and '.' in version_name:
@@ -268,5 +266,3 @@ class NewContentViewVersionDetailsView(BaseLoggedInView):
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.locations[2] == 'Versions'
         )
-
-

@@ -30,11 +30,7 @@ class NewContentViewEntity(BaseEntity):
         return view.search(value)
 
     def publish(self, entity_name, values=None):
-        """Publishes to create new version of CV and promotes the contents to
-        'Library' environment.
-        :return: dict with new content view version table row; contains keys
-        like 'Version', 'Status', 'Environments' etc.
-        """
+        """Publishes new version of CV"""
         view = self.navigate_to(self, 'Publish', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
@@ -42,13 +38,14 @@ class NewContentViewEntity(BaseEntity):
             view.fill(values)
         view.next.click()
         view.finish.click()
-        view.progressbar.wait_for_result(delay=.01)
+        view.progressbar.wait_for_result(delay=0.01)
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
         return view.versions.table.read()
 
     def read_french_lang_cv(self):
+        """Navigates to main CV page, when system is set to French, and reads table"""
         view = self.navigate_to(self, 'French')
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
@@ -91,10 +88,7 @@ class CreateContentView(NavigateStep):
 
 @navigator.register(NewContentViewEntity, 'Edit')
 class EditContentView(NavigateStep):
-    """Navigate to Edit Content View screen.
-    Args:
-        entity_name: name of content view
-    """
+    """Navigate to Edit Content View screen."""
 
     VIEW = ContentViewEditView
 
@@ -109,10 +103,7 @@ class EditContentView(NavigateStep):
 
 @navigator.register(NewContentViewEntity, 'Publish')
 class PublishContentViewVersion(NavigateStep):
-    """Navigate to Content View Publish screen.
-    Args:
-        entity_name: name of content view
-    """
+    """Navigate to Content View Publish screen."""
 
     VIEW = ContentViewVersionPublishView
 

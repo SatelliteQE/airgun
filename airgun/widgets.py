@@ -27,7 +27,6 @@ from widgetastic_patternfly import (
     VerticalNavigation,
 )
 from widgetastic_patternfly4.ouia import BaseSelect, Button as PF4Button, Dropdown
-
 from widgetastic_patternfly4.progress import Progress as PF4Progress
 
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
@@ -2033,7 +2032,6 @@ class ProgressBar(GenericLocatorWidget):
 
 
 class PF4ProgressBar(PF4Progress):
-
     locator = './/div[contains(@class, "pf-c-wizard__main-body")]'
 
     def wait_for_result(self, timeout=600, delay=1):
