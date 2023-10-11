@@ -301,10 +301,8 @@ class Session:
         session happens.
         """
         now = datetime.now()
-        path = os.path.join(
-            settings.selenium.screenshots_path,
-            now.strftime('%Y-%m-%d'),
-        )
+        path = settings.selenium.screenshots_path
+
         if not os.path.exists(path):
             os.makedirs(path)
         path = os.path.join(
