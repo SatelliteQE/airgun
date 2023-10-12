@@ -1,12 +1,13 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.configgroup import ConfigGroupCreateView
-from airgun.views.configgroup import ConfigGroupEditView
-from airgun.views.configgroup import ConfigGroupsView
+from airgun.views.configgroup import (
+    ConfigGroupCreateView,
+    ConfigGroupEditView,
+    ConfigGroupsView,
+)
 
 
 class ConfigGroupEntity(BaseEntity):

@@ -1,27 +1,25 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ParametrizedView
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Button
+from widgetastic.widget import Checkbox, ParametrizedView, Table, Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb, Button
 
-from airgun.views.common import AddRemoveResourcesView
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import LCESelectorGroup
-from airgun.views.common import SatSecondaryTab
-from airgun.views.common import SatTab
-from airgun.views.common import SatTabWithDropdown
-from airgun.views.common import SearchableViewMixin
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import EditableEntry
-from airgun.widgets import EditableEntryCheckbox
-from airgun.widgets import PublishPromoteProgressBar
-from airgun.widgets import ReadOnlyEntry
-from airgun.widgets import SatSelect
-from airgun.widgets import Search
+from airgun.views.common import (
+    AddRemoveResourcesView,
+    BaseLoggedInView,
+    LCESelectorGroup,
+    SatSecondaryTab,
+    SatTab,
+    SatTabWithDropdown,
+    SearchableViewMixin,
+)
+from airgun.widgets import (
+    ActionsDropdown,
+    ConfirmationDialog,
+    EditableEntry,
+    EditableEntryCheckbox,
+    PublishPromoteProgressBar,
+    ReadOnlyEntry,
+    SatSelect,
+    Search,
+)
 
 
 class ContentViewTableView(BaseLoggedInView, SearchableViewMixin):
@@ -56,6 +54,7 @@ class ContentViewCreateView(BaseLoggedInView):
 
 class ContentViewCopyView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    BREADCRUMB_LENGTH = 3
 
     new_name = TextInput(id='copy_name')
     create = Text(".//button[@type='submit']")
@@ -66,14 +65,14 @@ class ContentViewCopyView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'
-            and len(self.breadcrumb.locations) == 3
+            and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
             and self.breadcrumb.read() == 'Copy'
         )
 
 
 class ContentViewRemoveView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-
+    BREADCRUMB_LENGTH = 3
     conflicts = Text("//div[@ng-show='conflictingVersions.length > 0']")
     table = Table('.//table')
     remove = Text(".//button[@ng-click='delete()']")
@@ -89,7 +88,7 @@ class ContentViewRemoveView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'
-            and len(self.breadcrumb.locations) == 3
+            and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
             and self.breadcrumb.read() == 'Deletion'
             and (self.conflicts_present or self.remove.is_displayed)
         )
@@ -97,6 +96,7 @@ class ContentViewRemoveView(BaseLoggedInView):
 
 class ContentViewEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    BREADCRUMB_LENGTH = 3
     publish = Button("Publish New Version")
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
@@ -106,7 +106,7 @@ class ContentViewEditView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and len(self.breadcrumb.locations) <= 3
+            and len(self.breadcrumb.locations) <= self.BREADCRUMB_LENGTH
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.read() != 'New Content View'
         )
@@ -228,13 +228,14 @@ class EntitySearchView(SatSecondaryTab):
 
 class ContentViewVersionDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    BREADCRUMB_LENGTH = 3
 
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and len(self.breadcrumb.locations) > 3
+            and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.locations[2] == 'Versions'
         )
@@ -287,7 +288,7 @@ class ContentViewVersionPromoteView(BaseLoggedInView):
 
 class ContentViewVersionRemoveView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-
+    BREADCRUMB_LENGTH = 3
     table = Table(
         locator='.//table',
         column_widgets={
@@ -304,7 +305,7 @@ class ContentViewVersionRemoveView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'
-            and len(self.breadcrumb.locations) == 3
+            and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
             and self.breadcrumb.read() == 'Deletion'
             and self.next.is_displayed
         )
@@ -312,7 +313,7 @@ class ContentViewVersionRemoveView(BaseLoggedInView):
 
 class ContentViewVersionRemoveConfirmationView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-
+    BREADCRUMB_LENGTH = 3
     cancel = Text(".//button[normalize-space(.)='Cancel']")
     back = Text(".//button[@ng-click='transitionBack()']")
     confirm_remove = Text(".//button[@ng-click='performDeletion()']")
@@ -324,7 +325,7 @@ class ContentViewVersionRemoveConfirmationView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Content Views'
-            and len(self.breadcrumb.locations) == 3
+            and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
             and self.breadcrumb.read() == 'Deletion'
             and self.confirm_remove.is_displayed
         )

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-from setuptools import find_packages
-from setuptools import setup
+from setuptools import find_packages, setup
 
 with open('README.rst') as f:
     README = f.read()
@@ -23,6 +22,7 @@ setup(
         'pytest',
         'wait_for',
         'webdriver-kaifuku',
+        'selenium==4.11.2',
         'widgetastic.core',
         'widgetastic.patternfly',
         'widgetastic.patternfly4',

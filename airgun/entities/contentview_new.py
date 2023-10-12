@@ -1,15 +1,15 @@
 from navmazing import NavigateToSibling
-from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.contentview_new import NewContentViewCreateView
-from airgun.views.contentview_new import NewContentViewTableView
-from airgun.views.contentview_new import NewContentViewEditView
-from airgun.views.contentview_new import NewContentViewVersionPublishView
-from airgun.views.contentview_new import CreateFilterView 
+from airgun.views.contentview_new import (
+    ContentViewCreateView,
+    ContentViewEditView,
+    ContentViewTableView,
+    ContentViewVersionPublishView,
+    CreateFilterView,
+)
 
 
 class NewContentViewEntity(BaseEntity):
@@ -18,27 +18,31 @@ class NewContentViewEntity(BaseEntity):
     def create(self, values):
         """Create a new content view"""
         view = self.navigate_to(self, 'New')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         view.fill(values)
         view.submit.click()
 
     def search(self, value):
         """Search for content view"""
         view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         return view.search(value)
 
     def publish(self, entity_name, values=None):
-        """Publishes to create new version of CV and promotes the contents to
-        'Library' environment.
-        :return: dict with new content view version table row; contains keys
-            like 'Version', 'Status', 'Environments' etc.
-        """
+        """Publishes new version of CV"""
         view = self.navigate_to(self, 'Publish', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         if values:
             view.fill(values)
         view.next.click()
         view.finish.click()
-        view.progressbar.wait_for_result()
+        view.progressbar.wait_for_result(delay=0.01)
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         return view.versions.table.read()
 
     def create_filter(self, entity_name, filter_name, filter_type, filter_inclusion):
@@ -68,29 +72,46 @@ class NewContentViewEntity(BaseEntity):
         #Attempt to read the table, and if there isn't one return True, else delete failed so return False
         try:
             view.filters.table.read()
-        except:
+        except ValueError:
             return True
         else:
             return False
 
+    def read_french_lang_cv(self):
+        """Navigates to main CV page, when system is set to French, and reads table"""
+        view = self.navigate_to(self, 'French')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        return view.table.read()
 
 
 @navigator.register(NewContentViewEntity, 'All')
 class ShowAllContentViewsScreen(NavigateStep):
     """Navigate to All Content Views screen."""
 
-    VIEW = NewContentViewTableView
+    VIEW = ContentViewTableView
 
     @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Lifecycle', 'Content Views')
 
 
+@navigator.register(NewContentViewEntity, 'French')
+class ShowAllContentViewsScreenFrench(NavigateStep):
+    """Navigate to All Content Views screen ( in French )"""
+
+    VIEW = ContentViewTableView
+
+    @retry_navigation
+    def step(self, *args, **kwargs):
+        self.view.menu.select('Contenu', 'Lifecycle', 'Content Views')
+
+
 @navigator.register(NewContentViewEntity, 'New')
 class CreateContentView(NavigateStep):
     """Navigate to Create content view."""
 
-    VIEW = NewContentViewCreateView
+    VIEW = ContentViewCreateView
 
     prerequisite = NavigateToSibling('All')
 
@@ -100,12 +121,9 @@ class CreateContentView(NavigateStep):
 
 @navigator.register(NewContentViewEntity, 'Edit')
 class EditContentView(NavigateStep):
-    """Navigate to Edit Content View screen.
-    Args:
-        entity_name: name of content view
-    """
+    """Navigate to Edit Content View screen."""
 
-    VIEW = NewContentViewEditView
+    VIEW = ContentViewEditView
 
     def prerequisite(self, *args, **kwargs):
         return self.navigate_to(self.obj, 'All')
@@ -118,12 +136,9 @@ class EditContentView(NavigateStep):
 
 @navigator.register(NewContentViewEntity, 'Publish')
 class PublishContentViewVersion(NavigateStep):
-    """Navigate to Content View Publish screen.
-    Args:
-        entity_name: name of content view
-    """
+    """Navigate to Content View Publish screen."""
 
-    VIEW = NewContentViewVersionPublishView
+    VIEW = ContentViewVersionPublishView
 
     def prerequisite(self, *args, **kwargs):
         """Open Content View first."""
@@ -132,4 +147,3 @@ class PublishContentViewVersion(NavigateStep):
     def step(self, *args, **kwargs):
         """Click 'Publish new version' button"""
         self.parent.publish.click()
-

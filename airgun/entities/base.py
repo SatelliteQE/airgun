@@ -6,7 +6,6 @@ from airgun.views.common import BookmarkCreateView
 
 
 class BaseEntity:
-
     HELPER_CLASS = BaseEntityHelper
 
     def __init__(self, browser):

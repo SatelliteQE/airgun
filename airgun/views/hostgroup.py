@@ -1,20 +1,16 @@
-from widgetastic.widget import ConditionalSwitchableView
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import ConditionalSwitchableView, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly4 import Button as PF4Button
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixinPF4
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import ConfigGroupMultiSelect
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import MultiSelect
-from airgun.widgets import PuppetClassesMultiSelect
-from airgun.widgets import RadioGroup
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.widgets import (
+    ActionsDropdown,
+    ConfigGroupMultiSelect,
+    FilteredDropdown,
+    MultiSelect,
+    PuppetClassesMultiSelect,
+    RadioGroup,
+)
 
 
 class ActivationKeyDropDown(ActionsDropdown):
