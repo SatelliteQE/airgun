@@ -102,7 +102,7 @@ class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.create_content_view.is_displayed()
+        return self.create_content_view.is_displayed
 
 
 class ContentViewCreateView(BaseLoggedInView):
@@ -132,9 +132,7 @@ class ContentViewCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        self.title.is_displayed()
-        self.label.is_displayed()
-        return True
+        return self.title.is_displayed
 
     def after_fill(self, value):
         """Ensure 'Create content view' button is enabled after filling out the required fields"""
