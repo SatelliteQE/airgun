@@ -4,12 +4,15 @@ from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.contentview_new import (
+    AddRPMRuleView,
     ContentViewCreateView,
     ContentViewEditView,
     ContentViewTableView,
     ContentViewVersionPublishView,
     CreateFilterView,
+    EditFilterView
 )
+from widgetastic.exceptions import NoSuchElementException
 
 
 class NewContentViewEntity(BaseEntity):
@@ -72,10 +75,30 @@ class NewContentViewEntity(BaseEntity):
         #Attempt to read the table, and if there isn't one return True, else delete failed so return False
         try:
             view.filters.table.read()
-        except ValueError:
+        except NoSuchElementException:
             return True
         else:
             return False
+    
+    """
+    Filter Editing will be handled in discrete methods, since each type has different actions. These will be 
+    created as tests and cases are encountered.
+    """
+
+    def add_rule_rpm_filter(self, entity_name, filter_name, rpm_name, arch):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.filters.search(filter_name)
+        view.filters.table[0][1].widget.click()
+        view = EditFilterView(self.browser)
+        view.addRpmRule.click()
+        view = AddRPMRuleView(self.browser)
+        view.rpmName.fill(rpm_name)
+        view.architecture.fill(arch)
+        view.addEdit.click()
+        view = EditFilterView(self.browser)
+        return view.rpmRuleTable.read()
+
+
 
     def read_french_lang_cv(self):
         """Navigates to main CV page, when system is set to French, and reads table"""

@@ -297,3 +297,45 @@ class CreateFilterView(View):
     excludeFilter = PF4Radio(label_test='Exclude filter')
     create = PF4Button('create-filter-form-submit-button')
     cancel = PF4Button('create-filter-form-cancel-button')
+
+
+class EditFilterView(View):
+    name = Text('.//h2[@data-ouia-component-id="name-text-value"]')
+    editName = PF4Button('edit-button-name')
+    nameInput = TextInput('name text input')
+    submitName = PF4Button('submit-button-name')
+    clearName = PF4Button('clear-button-name')
+    description = Text('.//h2[@data-ouia-component-id="description-text-value"]')
+    editDescription = PF4Button('edit-button-description')
+    descriptionInput = TextInput(locator='.//textarea[@aria-label="description text area"]')
+
+    #Below this, the fields are generally not shared by each Filter Type
+
+    #RPM Rule
+    search = PF4Search()
+    addRpmRule = PF4Button('add-rpm-rule-button')
+    rpmRuleTable = PatternflyTable(
+            component_id="content-view-rpm-filter-table",
+            column_widgets={
+                0: Checkbox(locator='.//input[@type="checkbox"]'),
+                'RPM Name': Text('.//a'),
+                'Architecture': Text('.//a'),
+                'Versions': Text('.//a'),
+                4: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+            },
+        )
+
+    @property
+    def is_displayed(self):
+        return self.name.wait_displayed()
+
+
+class AddRPMRuleView(View):
+    ROOT = './/div[@data-ouia-component-id="add-edit-rpm-rule-modal"]'
+
+    rpmName = TextInput(locator=".//div[contains(.//span, 'RPM name') and @class='pf-c-form__group']/*//input")
+    architecture = TextInput(locator=".//div[contains(.//span, 'Architecture') and @class='pf-c-form__group']/*//input")
+
+    versions = PF4Select('version-comparator')
+    addEdit = PF4Button('add-edit-package-modal-submit')
+    cancel = PF4Button('add-edit-package-modal-cancel')
