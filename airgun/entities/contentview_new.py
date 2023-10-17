@@ -94,6 +94,7 @@ class PublishContentViewVersion(NavigateStep):
         """Open Content View first."""
         return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         """Click 'Publish new version' button"""
         self.parent.publish.click()
