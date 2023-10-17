@@ -229,7 +229,7 @@ class ContentViewVersionPublishView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.title.wait_displayed()
+        return self.title.is_displayed
 
     def wait_animation_end(self):
         wait_for(
