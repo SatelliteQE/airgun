@@ -2479,6 +2479,7 @@ class BaseMultiSelect(BaseSelect, Dropdown):
 
     BUTTON_LOCATOR = './/button[@aria-label="Options menu"]'
     OUIA_COMPONENT_TYPE = "PF4/Select"
+    SELECTED_ITEMS_LIST = './/div[@class="pf-c-chip-group"]'
 
     def item_select(self, items, close=True):
         """Opens the Dropdown and selects the desired items.
@@ -2509,6 +2510,12 @@ class BaseMultiSelect(BaseSelect, Dropdown):
             self.item_select(items, close=False)
         finally:
             self.close()
+
+    def read(self):
+        try:
+            return self.browser.text(self.SELECTED_ITEMS_LIST).split(' ')
+        except NoSuchElementException:
+            return None
 
 
 class InventoryBootstrapSwitch(Widget):
