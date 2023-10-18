@@ -42,6 +42,7 @@ class NewContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
+        view.versions.table.wait_displayed()
         return view.versions.table.read()
 
     def read_french_lang_cv(self):
@@ -111,6 +112,7 @@ class PublishContentViewVersion(NavigateStep):
         """Open Content View first."""
         return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         """Click 'Publish new version' button"""
         self.parent.publish.click()

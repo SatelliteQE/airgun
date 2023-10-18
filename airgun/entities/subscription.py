@@ -36,8 +36,8 @@ class SubscriptionEntity(BaseEntity):
             timeout=timeout,
             logger=view.progressbar.logger,
         )
-        view.flash.assert_no_error(ignore_messages=ignore_error_messages)
         view.flash.dismiss()
+        view.flash.assert_no_error(ignore_messages=ignore_error_messages)
         wait_for(
             lambda: self.has_manifest == has_manifest,
             handle_exception=True,
@@ -172,6 +172,11 @@ class SubscriptionEntity(BaseEntity):
         view.delete_button.click()
         view.confirm_deletion.confirm()
         self._wait_for_process_to_finish('Delete Upstream Subscription', has_manifest=True)
+
+    def read_subscriptions(self):
+        """Return subscriptions table"""
+        view = self.navigate_to(self, 'All')
+        return view.table.read()
 
 
 class SubscriptionNavigationStep(NavigateStep):

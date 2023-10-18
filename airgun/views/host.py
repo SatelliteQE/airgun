@@ -518,7 +518,7 @@ class HostRegisterView(BaseLoggedInView):
         capsule = FormSelect('reg_smart_proxy')
         insecure = Checkbox(id='reg_insecure')
         activation_keys = BaseMultiSelect('activation-keys-field')
-        activation_key_helper = Text("//div[@id='reg_katello_ak-helper']")
+        activation_key_helper = Text("//div[@id='activation_keys_field-helper']")
 
     @View.nested
     class advanced(Tab):
