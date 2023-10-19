@@ -38,8 +38,7 @@ from airgun.widgets import (
 
 
 class StatusIcon(GenericLocatorWidget):
-    """Small icon indicating subscription or katello-agent status. Can be
-    colored in either green, yellow or red.
+    """Small icon indicating subscription status. Can be colored in either green, yellow or red.
 
     Example html representation::
 
@@ -142,7 +141,6 @@ class ContentHostDetailsView(BaseLoggedInView):
         bios_uuid = ReadOnlyEntry(name='BIOS UUID')
         description = EditableEntry(name='Description')
         type = ReadOnlyEntry(name='Type')
-        katello_agent = ReadOnlyEntry(name='Katello Agent')
         virtual_guests = ReadOnlyEntry(name='Virtual Guests')
         registered_through = ReadOnlyEntry(name='Registered Through')
         # Subscriptions
