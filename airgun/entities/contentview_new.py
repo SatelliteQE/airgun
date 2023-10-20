@@ -1,4 +1,5 @@
 from navmazing import NavigateToSibling
+from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -10,9 +11,8 @@ from airgun.views.contentview_new import (
     ContentViewTableView,
     ContentViewVersionPublishView,
     CreateFilterView,
-    EditFilterView
+    EditFilterView,
 )
-from widgetastic.exceptions import NoSuchElementException
 
 
 class NewContentViewEntity(BaseEntity):
@@ -72,16 +72,16 @@ class NewContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.filters.search(filter_name)
         view.filters.table[0][6].widget.item_select('Remove')
-        #Attempt to read the table, and if there isn't one return True, else delete failed so return False
+        # Attempt to read the table, and if there isn't one return True, else delete failed so return False
         try:
             view.filters.table.read()
         except NoSuchElementException:
             return True
         else:
             return False
-    
+
     """
-    Filter Editing will be handled in discrete methods, since each type has different actions. These will be 
+    Filter Editing will be handled in discrete methods, since each type has different actions. These will be
     created as tests and cases are encountered.
     """
 
@@ -98,7 +98,18 @@ class NewContentViewEntity(BaseEntity):
         view = EditFilterView(self.browser)
         return view.rpmRuleTable.read()
 
-
+    def add_rule_tag_filter(self, entity_name, filter_name, rpm_name, arch):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.filters.search(filter_name)
+        view.filters.table[0][1].widget.click()
+        view = EditFilterView(self.browser)
+        view.addRpmRule.click()
+        view = AddRPMRuleView(self.browser)
+        view.rpmName.fill(rpm_name)
+        view.architecture.fill(arch)
+        view.addEdit.click()
+        view = EditFilterView(self.browser)
+        return view.rpmRuleTable.read()
 
     def read_french_lang_cv(self):
         """Navigates to main CV page, when system is set to French, and reads table"""
@@ -167,6 +178,7 @@ class PublishContentViewVersion(NavigateStep):
         """Open Content View first."""
         return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
 
+    @retry_navigation
     def step(self, *args, **kwargs):
         """Click 'Publish new version' button"""
         self.parent.publish.click()
