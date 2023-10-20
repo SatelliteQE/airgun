@@ -36,12 +36,31 @@ class ContainerImageTagDetailsView(TaskDetailsView):
     @View.nested
     class details(SatTab):
         product = ReadOnlyEntry(name='Product')
-        repository = ReadOnlyEntry(name='Repository')
+        schema = ReadOnlyEntry(name='Schema Version')
+        manifest_type = ReadOnlyEntry(name='Manifest Type')
+        digest = ReadOnlyEntry(name='Digest')
 
     @View.nested
     class lce(SatTab):
         TAB_NAME = 'Lifecycle Environments'
         table = SatTable(
             './/table',
-            column_widgets={'Environment': Text('./a'), 'Content View Version': Text('./a')},
+            column_widgets={
+                'Environment': Text('./a'),
+                'Content View Version': Text('./a'),
+                'Published At': Text('./a'),
+            },
+        )
+
+    @View.nested
+    class repos(SatTab):
+        TAB_NAME = 'Repositories'
+        table = SatTable(
+            './/table',
+            column_widgets={
+                'Name': Text('./a'),
+                'Product': Text('./a'),
+                'Content View': Text('./a'),
+                'Last Sync': Text('./a'),
+            },
         )
