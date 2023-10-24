@@ -204,13 +204,7 @@ class NewHostDetailsView(BaseLoggedInView):
                 './/button[@data-ouia-component-id="syspurpose-edit-button"]'
             )
 
-            role = Text('.//dd[contains(@class, "pf-c-description-list__description")][1]')
-            sla = Text('.//dd[contains(@class, "pf-c-description-list__description")][2]')
-            usage_type = Text('.//dd[contains(@class, "pf-c-description-list__description")][3]')
-            release_version = Text(
-                './/dd[contains(@class, "pf-c-description-list__description")][4]'
-            )
-            addons = Text('.//dd[contains(@class, "pf-c-description-list__description")][5]')
+            details = HostDetailsCard()
 
     @View.nested
     class details(Tab):
@@ -232,60 +226,32 @@ class NewHostDetailsView(BaseLoggedInView):
                 './/a[contains(@data-ouia-component-id, "OUIA-Generated-Button-link-1")]'
             )
             os = Text('.//a[contains(@data-ouia-component-id, "OUIA-Generated-Button-link-2")]')
-            boot_time = Text('.//div[contains(@class, "pf-c-description-list__group")][3]/dd/div')
-            kernel_release = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][4]/dd/div'
-            )
+
+            details = HostDetailsCard()
 
         @View.nested
         class provisioning(Card):
             ROOT = './/article[.//div[text()="Provisioning"]]'
 
-            build_duration = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][1]/dd/div'
-            )
-            token = Text('.//div[contains(@class, "pf-c-description-list__group")][2]/dd/div')
-            pxe_loader = Text('.//div[contains(@class, "pf-c-description-list__group")][3]/dd/div')
+            details = HostDetailsCard()
 
         @View.nested
         class bios(Card):
             ROOT = './/article[.//div[text()="BIOS"]]'
 
-            vendor = Text('.//div[contains(@class, "pf-c-description-list__group")][1]/dd/div')
-            version = Text('.//div[contains(@class, "pf-c-description-list__group")][2]/dd/div')
-            release_date = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][3]/dd/div'
-            )
+            details = HostDetailsCard()
 
         @View.nested
         class registration_details(Card):
             ROOT = './/article[.//div[text()="Registration details"]]'
 
-            registered_on = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][1]/dd/div'
-            )
-            registration_type = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][2]/ul/h4'
-            )
-            activation_key_name = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][2]//a'
-            )
-            registered_through = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][3]/dd/div'
-            )
+            details = HostDetailsCard()
 
         @View.nested
         class hw_properties(Card):
             ROOT = './/article[.//div[text()="HW properties"]]'
 
-            model = Text('.//div[contains(@class, "pf-c-description-list__group")][1]//dd')
-            number_of_cpus = Text('.//div[contains(@class, "pf-c-description-list__group")][2]//dd')
-            sockets = Text('.//div[contains(@class, "pf-c-description-list__group")][3]//dd')
-            cores_per_socket = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][4]//dd'
-            )
-            ram = Text('.//div[contains(@class, "pf-c-description-list__group")][5]//dd')
-            storage = Text('.//div[contains(@class, "pf-c-description-list__group")][6]//h4')
+            details = HostDetailsCard()
 
         @View.nested
         class provisioning_templates(Card):
