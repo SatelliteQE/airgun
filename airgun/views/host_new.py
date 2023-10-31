@@ -368,7 +368,7 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@id="errata-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-            searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
+            searchbar = SearchInput(locator='.//input[contains(@class, "pf-c-text-input")]')
             type_filter = Select(locator='.//div[@aria-label="select Type container"]/div')
             severity_filter = Select(locator='.//div[@aria-label="select Severity container"]/div')
             apply = Pf4ActionsDropdown(locator='.//div[@aria-label="errata_dropdown"]')
