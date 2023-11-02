@@ -78,6 +78,7 @@ class OrganizationEditView(BaseLoggedInView):
         name = TextInput(id='organization_name')
         label = TextInput(id='organization_label')
         default_system_sla = FilteredDropdown(id='organization_service_level')
+        sca_alert = Text('//div[contains(@class,"alert-warning")]')
         description = TextInput(id='organization_description')
 
     @View.nested

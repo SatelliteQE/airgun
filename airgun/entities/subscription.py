@@ -178,6 +178,16 @@ class SubscriptionEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.table.read()
 
+    def sca_alert(self):
+        view = self.navigate_to(self, 'All')
+        # return view.sca_alert.read()
+        wait_for(
+            lambda: view.sca_alert.read(),
+            handle_exception=True,
+            timeout=10,
+        )
+        return view.sca_alert.read()
+
 
 class SubscriptionNavigationStep(NavigateStep):
     """To ensure that we reached the destination, some targets need extra post navigation tasks"""
