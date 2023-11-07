@@ -234,7 +234,7 @@ class Session:
         try:
             if not passed:
                 self.take_screenshot()
-        except Exception as err:  # noqa: BLE001 - TODO: fix bare except
+        except Exception as err:  # - TODO: fix bare except
             LOGGER.exception(err)
         finally:
             self._factory.finalize(passed)
