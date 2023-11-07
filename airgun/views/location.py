@@ -1,6 +1,7 @@
 from widgetastic.widget import Checkbox, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly4 import Pagination as PF4Pagination
+
 from airgun.views.common import BaseLoggedInView, SatVerticalTab, SearchableViewMixinPF4
 from airgun.widgets import (
     ActionsDropdown,

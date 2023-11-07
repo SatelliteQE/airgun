@@ -13,10 +13,9 @@ from airgun.views.common import BaseLoggedInView, SatTab
 from airgun.widgets import (
     ActionsDropdown,
     MultiSelect,
-    Pagination,
-    Search,
     PF4FilteredDropdown,
-    PF4MultiSelect
+    PF4MultiSelect,
+    Search,
 )
 
 

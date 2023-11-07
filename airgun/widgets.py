@@ -1786,7 +1786,9 @@ class SatTable(Table):
         "contains(@data-block, 'no-search-results-message')]"
     )
     tbody_row = Text('./tbody/tr')
-    pagination = PF4Pagination(locator="//div[contains(@class, 'pf-c-pagination') and not(contains(@class, 'pf-m-compact'))]")
+    pagination = PF4Pagination(
+        locator="//div[contains(@class, 'pf-c-pagination') and not(contains(@class, 'pf-m-compact'))]"
+    )
 
     @property
     def has_rows(self):
