@@ -1,6 +1,6 @@
 from widgetastic.widget import Checkbox, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-
+from widgetastic_patternfly4 import Pagination as PF4Pagination
 from airgun.views.common import BaseLoggedInView, SatVerticalTab, SearchableViewMixinPF4
 from airgun.widgets import (
     ActionsDropdown,
@@ -20,6 +20,7 @@ class LocationsView(BaseLoggedInView, SearchableViewMixinPF4):
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
+    pagination = PF4Pagination()
 
     @property
     def is_displayed(self):
