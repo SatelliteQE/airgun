@@ -33,7 +33,6 @@ class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
             'Action': Text('./a'),
         },
     )
-    pagination = PF4Pagination()
 
     @property
     def is_displayed(self):

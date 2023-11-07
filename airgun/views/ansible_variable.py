@@ -18,7 +18,6 @@ class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixinPF4):
             'Actions': Text(".//a[@data-method='delete']"),
         },
     )
-    pagination = PF4Pagination()
 
     @property
     def is_displayed(self):
