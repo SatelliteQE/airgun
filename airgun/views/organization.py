@@ -30,6 +30,7 @@ class OrganizationCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     name = TextInput(id='organization_name')
     label = TextInput(id='organization_label')
+    sca = Checkbox(locator=".//input[@id='simple_content_access' and @type='checkbox']")
     description = TextInput(id='organization_description')
     submit = Text('//input[@name="commit"]')
 
