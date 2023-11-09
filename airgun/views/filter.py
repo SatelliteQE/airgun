@@ -7,13 +7,13 @@ from widgetastic.widget import (
     View,
 )
 from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly4 import Pagination as PF4Pagination
 
 from airgun.views.common import BaseLoggedInView, SatTab
 from airgun.widgets import (
     ActionsDropdown,
     FilteredDropdown,
     MultiSelect,
-    Pagination,
     Search,
 )
 
@@ -28,7 +28,7 @@ class FiltersView(BaseLoggedInView):
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
-    pagination = Pagination()
+    pagination = PF4Pagination()
 
     @property
     def is_displayed(self):
