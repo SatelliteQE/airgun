@@ -35,8 +35,14 @@ class HostDeleteDialog(View):
 
     ROOT = './/div[@data-ouia-component-id="delete-modal"]'
 
+    title = Text("//span[normalize-space(.)='Confirm Deletion']")
+
     confirm_delete = Button(locator='.//button[@data-ouia-component-id="confirm-delete"]')
     cancel_delete = Button('cancel-delete')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class BulkHostDeleteDialog(View):
@@ -44,7 +50,12 @@ class BulkHostDeleteDialog(View):
 
     ROOT = './/div[@data-ouia-component-id="bulk-delete-hosts-modal"]'
 
+    title = Text("//span[normalize-space(.)='Delete hosts?']")
     confirm_checkbox = Checkbox('dire-warning-checkbox')
 
     confirm_delete = Button('btn-modal-confirm')
     cancel_delete = Button('btn-modal-cancel')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
