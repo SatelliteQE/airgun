@@ -11,6 +11,7 @@ from airgun import settings
 from airgun.browser import AirgunBrowser, SeleniumBrowserFactory
 from airgun.entities.acs import AcsEntity
 from airgun.entities.activationkey import ActivationKeyEntity
+from airgun.entities.all_hosts import AllHostsEntity
 from airgun.entities.ansible_role import AnsibleRolesEntity
 from airgun.entities.ansible_variable import AnsibleVariablesEntity
 from airgun.entities.architecture import ArchitectureEntity
@@ -326,6 +327,11 @@ class Session:
     def activationkey(self):
         """Instance of Activation Key entity."""
         return self._open(ActivationKeyEntity)
+
+    @cached_property
+    def all_hosts(self):
+        """Instance of All Hosts entity."""
+        return self._open(AllHostsEntity)
 
     @cached_property
     def ansibleroles(self):
