@@ -32,6 +32,7 @@ from airgun.entities.dashboard import DashboardEntity
 from airgun.entities.discoveredhosts import DiscoveredHostsEntity
 from airgun.entities.discoveryrule import DiscoveryRuleEntity
 from airgun.entities.domain import DomainEntity
+from airgun.entities.eol_banner import EOLBannerEntity
 from airgun.entities.errata import ErrataEntity
 from airgun.entities.filter import FilterEntity
 from airgun.entities.hardware_model import HardwareModelEntity
@@ -349,6 +350,11 @@ class Session:
     def bookmark(self):
         """Instance of Bookmark entity."""
         return self._open(BookmarkEntity)
+
+    @cached_property
+    def eol_banner(self):
+        """Instance of Bookmark entity."""
+        return self._open(EOLBannerEntity)
 
     @cached_property
     def cloudinventory(self):
