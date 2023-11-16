@@ -26,6 +26,7 @@ from widgetastic_patternfly import (
     Kebab,
     VerticalNavigation,
 )
+from widgetastic_patternfly4 import Pagination as PF4Pagination
 from widgetastic_patternfly4.ouia import BaseSelect, Button as PF4Button, Dropdown
 
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
@@ -1744,12 +1745,6 @@ class Pagination(Widget):
                 widget.fill(value)
 
 
-class SatTablePagination(Pagination):
-    """Paginator widget for use within SatTable."""
-
-    ROOT = "//form[contains(@class, 'content-view-pf-pagination')]"
-
-
 class SatTable(Table):
     """Satellite version of table.
 
@@ -1790,7 +1785,9 @@ class SatTable(Table):
         "contains(@data-block, 'no-search-results-message')]"
     )
     tbody_row = Text('./tbody/tr')
-    pagination = SatTablePagination()
+    pagination = PF4Pagination(
+        locator="//div[contains(@class, 'pf-c-pagination') and not(contains(@class, 'pf-m-compact'))]"
+    )
 
     @property
     def has_rows(self):
