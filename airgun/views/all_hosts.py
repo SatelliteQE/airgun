@@ -16,6 +16,8 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
         locator='.//input[@data-ouia-component-id="select-all-checkbox-dropdown-toggle-checkbox"]'
     )
     bulk_actions = Dropdown(locator='.//div[@data-ouia-component-id="action-buttons-dropdown"]')
+    table_loading = Text("//h5[normalize-space(.)='Loading']")
+    no_results = Text("//h5[normalize-space(.)='No Results']")
     table = PatternflyTable(
         component_id='table',
         column_widgets={
@@ -27,18 +29,21 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.table, exception=False) is not None
+        return (
+            self.browser.wait_for_element(self.table_loading, exception=False) is None
+            and self.browser.wait_for_element(self.table, exception=False) is not None
+        )
 
 
 class HostDeleteDialog(View):
     """Confirmation dialog for deleting host"""
 
-    ROOT = './/div[@data-ouia-component-id="delete-modal"]'
+    ROOT = './/div[@data-ouia-component-id="app-confirm-modal"]'
 
-    title = Text("//span[normalize-space(.)='Confirm Deletion']")
+    title = Text("//span[normalize-space(.)='Delete host?']")
 
-    confirm_delete = Button(locator='.//button[@data-ouia-component-id="confirm-delete"]')
-    cancel_delete = Button('cancel-delete')
+    confirm_delete = Button(locator='//button[normalize-space(.)="Delete"]')
+    cancel_delete = Button(locator='//button[normalize-space(.)="Cancel"]')
 
     @property
     def is_displayed(self):
@@ -48,13 +53,13 @@ class HostDeleteDialog(View):
 class BulkHostDeleteDialog(View):
     """Confirmation dialog for bulk deleting hosts or hosts with compute resources"""
 
-    ROOT = './/div[@data-ouia-component-id="bulk-delete-hosts-modal"]'
+    ROOT = './/div[@id="bulk-delete-hosts-modal"]'
 
     title = Text("//span[normalize-space(.)='Delete hosts?']")
-    confirm_checkbox = Checkbox('dire-warning-checkbox')
+    confirm_checkbox = Checkbox(locator='.//input[@id="dire-warning-checkbox"]')
 
-    confirm_delete = Button('btn-modal-confirm')
-    cancel_delete = Button('btn-modal-cancel')
+    confirm_delete = Button(locator='//button[normalize-space(.)="Delete"]')
+    cancel_delete = Button(locator='//button[normalize-space(.)="Cancel"]')
 
     @property
     def is_displayed(self):

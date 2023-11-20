@@ -22,12 +22,17 @@ class AllHostsEntity(BaseEntity):
         """Delete host through table dropdown"""
         view = self.navigate_to(self, 'All')
         self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.table.wait_displayed()
+        view.wait_displayed()
         view.search(host_name)
         view.table[0][2].widget.item_select('Delete')
         delete_modal = HostDeleteDialog(self.browser)
         if delete_modal.is_displayed:
             delete_modal.confirm_delete.click()
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        view.search(host_name)
+        return view.no_results
 
     def bulk_delete_all(self):
         """Delete multiple hosts through bulk action dropdown"""
@@ -40,6 +45,10 @@ class AllHostsEntity(BaseEntity):
         if delete_modal.is_displayed:
             delete_modal.confirm_checkbox.fill(True)
             delete_modal.confirm_delete.click()
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        return view.no_results
 
 
 @navigator.register(AllHostsEntity, 'All')
