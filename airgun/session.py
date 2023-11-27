@@ -193,6 +193,7 @@ class Session:
         self._login = login
         self.navigator = None
         self.browser = None
+        self.ui_session_id = None
 
     def __call__(self, user=None, password=None, session_cookie=None, url=None, login=None):
         """Stores provided values. This allows tests to provide additional
@@ -273,6 +274,7 @@ class Session:
             self.browser = AirgunBrowser(selenium_browser, self)
             LOGGER.info(f'Session Id For {self.name}: {selenium_browser.session_id}')
             LOGGER.info(f'Setting initial URL to {url}')
+            self.ui_session_id = selenium_browser.session_id
 
             self.browser.url = url
 
