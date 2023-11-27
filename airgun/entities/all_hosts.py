@@ -1,3 +1,5 @@
+from widgetastic.exceptions import NoSuchElementException
+
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
@@ -28,6 +30,8 @@ class AllHostsEntity(BaseEntity):
         delete_modal = HostDeleteDialog(self.browser)
         if delete_modal.is_displayed:
             delete_modal.confirm_delete.click()
+        else:
+            raise NoSuchElementException("Delete Modal was not displayed.")
         view = self.navigate_to(self, 'All')
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
