@@ -26,7 +26,9 @@ from widgetastic_patternfly import (
     Kebab,
     VerticalNavigation,
 )
+from widgetastic_patternfly4 import Pagination as PF4Pagination
 from widgetastic_patternfly4.ouia import BaseSelect, Button as PF4Button, Dropdown
+from widgetastic_patternfly4.progress import Progress as PF4Progress
 from widgetastic_patternfly4.progress import Progress as PF4Progress
 
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
@@ -481,6 +483,58 @@ class MultiSelect(GenericLocatorWidget):
         return {
             'unassigned': self.unassigned.read(),
             'assigned': self.assigned.read(),
+        }
+
+
+class PF4MultiSelect(GenericLocatorWidget):
+    """Typical two-pane multiselect widget. Allows to move items from
+    list of ``unassigned`` entities to list of ``assigned`` ones and vice
+    versa. PF4 version.
+    """
+
+    unassigned = ItemsList(".//ul[@aria-labelledby='permission-duel-select-available-pane-status']")
+    assigned = ItemsList(".//ul[@aria-labelledby='permission-duel-select-chosen-pane-status']")
+    move_to_assigned = Text(".//button[@aria-label='Add selected']")
+    move_to_unassigned = Text(".//button[@aria-label='Remove selected']")
+
+    def __init__(self, parent, locator=None, id=None, logger=None):
+        """Supports initialization via ``locator=`` or ``id=``"""
+        if locator and id or not locator and not id:
+            raise TypeError('Please specify either locator or id')
+        locator = locator or f".//div[@id='{id}']"
+        super().__init__(parent, locator, logger)
+
+    def fill(self, values):
+        """Read current values, find the difference between current and passed
+        ones and fills the widget accordingly.
+
+        :param values: dict with keys ``assigned`` and/or ``unassigned``,
+            containing list of strings, representing item names
+        """
+        current = self.read()
+        to_add = [res for res in values.get('assigned', ()) if res not in current['assigned']]
+        to_remove = [
+            res for res in values.get('unassigned', ()) if res not in current['unassigned']
+        ]
+        if not to_add and not to_remove:
+            return False
+        if to_add:
+            for value in to_add:
+                self.unassigned.fill(value)
+                self.move_to_assigned.click()
+        if to_remove:
+            for value in to_remove:
+                self.assigned.fill(value)
+                self.move_to_unassigned.click()
+        return True
+
+    def read(self):
+        """Returns a dict with current lists values."""
+        unassigned = self.unassigned.read() if self.unassigned.is_displayed else []
+        assigned = self.assigned.read() if self.assigned.is_displayed else []
+        return {
+            'unassigned': unassigned,
+            'assigned': assigned,
         }
 
 
@@ -1005,6 +1059,30 @@ class FilteredDropdown(GenericLocatorWidget):
         self.open_filter.click()
         self.filter_criteria.fill(value)
         self.filter_content.fill(value)
+
+
+class PF4FilteredDropdown(GenericLocatorWidget):
+    """Drop-down element with filtering functionality - PatternFly 4 version"""
+
+    filter_criteria = TextInput(locator=".//input[@aria-label='Select a resource type']")
+    filter_content = ItemsList(".//ul")
+
+    def clear(self):
+        """Clear currently selected value for drop-down"""
+        self.browser.clear(self.filter_criteria)
+
+    def fill(self, value):
+        """Select specific item from the drop-down
+
+        :param value: string with item value
+        """
+        self.clear()
+        self.filter_criteria.fill(value)
+        self.filter_content.fill(value)
+
+    def read(self):
+        """Return drop-down selected item value"""
+        return self.browser.text(self.filter_criteria)
 
 
 class CustomParameter(Table):
@@ -1669,12 +1747,6 @@ class Pagination(Widget):
                 widget.fill(value)
 
 
-class SatTablePagination(Pagination):
-    """Paginator widget for use within SatTable."""
-
-    ROOT = "//form[contains(@class, 'content-view-pf-pagination')]"
-
-
 class SatTable(Table):
     """Satellite version of table.
 
@@ -1715,7 +1787,9 @@ class SatTable(Table):
         "contains(@data-block, 'no-search-results-message')]"
     )
     tbody_row = Text('./tbody/tr')
-    pagination = SatTablePagination()
+    pagination = PF4Pagination(
+        locator="//div[contains(@class, 'pf-c-pagination') and not(contains(@class, 'pf-m-compact'))]"
+    )
 
     @property
     def has_rows(self):
@@ -2038,6 +2112,24 @@ class PF4ProgressBar(PF4Progress):
         """Waits for progress bar to finish. By default checks whether progress
         bar is completed every second for 10 minutes.
 
+        :param timeout: integer value for timeout in seconds
+        :param delay: float value for delay between attempts in seconds
+        """
+        wait_for(lambda: self.is_displayed, timeout=30, delay=delay, logger=self.logger)
+        wait_for(
+            lambda: not self.is_displayed or self.current_progress == '100',
+            timeout=timeout,
+            delay=delay,
+            logger=self.logger,
+        )
+
+
+class PF4ProgressBar(PF4Progress):
+    locator = './/div[contains(@class, "pf-c-wizard__main-body")]'
+
+    def wait_for_result(self, timeout=600, delay=1):
+        """Waits for progress bar to finish. By default checks whether progress
+        bar is completed every second for 10 minutes.
         :param timeout: integer value for timeout in seconds
         :param delay: float value for delay between attempts in seconds
         """
@@ -2423,6 +2515,7 @@ class BaseMultiSelect(BaseSelect, Dropdown):
 
     BUTTON_LOCATOR = './/button[@aria-label="Options menu"]'
     OUIA_COMPONENT_TYPE = "PF4/Select"
+    SELECTED_ITEMS_LIST = './/div[@class="pf-c-chip-group"]'
 
     def item_select(self, items, close=True):
         """Opens the Dropdown and selects the desired items.
@@ -2453,6 +2546,12 @@ class BaseMultiSelect(BaseSelect, Dropdown):
             self.item_select(items, close=False)
         finally:
             self.close()
+
+    def read(self):
+        try:
+            return self.browser.text(self.SELECTED_ITEMS_LIST).split(' ')
+        except NoSuchElementException:
+            return None
 
 
 class InventoryBootstrapSwitch(Widget):

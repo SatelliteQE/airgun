@@ -11,6 +11,7 @@ from airgun import settings
 from airgun.browser import AirgunBrowser, SeleniumBrowserFactory
 from airgun.entities.acs import AcsEntity
 from airgun.entities.activationkey import ActivationKeyEntity
+from airgun.entities.all_hosts import AllHostsEntity
 from airgun.entities.ansible_role import AnsibleRolesEntity
 from airgun.entities.ansible_variable import AnsibleVariablesEntity
 from airgun.entities.architecture import ArchitectureEntity
@@ -193,6 +194,7 @@ class Session:
         self._login = login
         self.navigator = None
         self.browser = None
+        self.ui_session_id = None
 
     def __call__(self, user=None, password=None, session_cookie=None, url=None, login=None):
         """Stores provided values. This allows tests to provide additional
@@ -234,7 +236,7 @@ class Session:
         try:
             if not passed:
                 self.take_screenshot()
-        except Exception as err:  # noqa: BLE001 - TODO: fix bare except
+        except Exception as err:  # - TODO: fix bare except
             LOGGER.exception(err)
         finally:
             self._factory.finalize(passed)
@@ -273,6 +275,7 @@ class Session:
             self.browser = AirgunBrowser(selenium_browser, self)
             LOGGER.info(f'Session Id For {self.name}: {selenium_browser.session_id}')
             LOGGER.info(f'Setting initial URL to {url}')
+            self.ui_session_id = selenium_browser.session_id
 
             self.browser.url = url
 
@@ -324,6 +327,11 @@ class Session:
     def activationkey(self):
         """Instance of Activation Key entity."""
         return self._open(ActivationKeyEntity)
+
+    @cached_property
+    def all_hosts(self):
+        """Instance of All Hosts entity."""
+        return self._open(AllHostsEntity)
 
     @cached_property
     def ansibleroles(self):

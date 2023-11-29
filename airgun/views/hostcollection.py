@@ -188,7 +188,7 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
             )
         return action_button
 
-    def apply_action(self, name, action_via='via Katello Agent'):
+    def apply_action(self, name, action_via='via remote execution'):
         """Apply an action by name using action via if indicated"""
         action_button = self.get_action_button(name)
         action_button.fill(action_via)
