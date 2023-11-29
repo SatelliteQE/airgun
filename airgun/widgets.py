@@ -29,7 +29,6 @@ from widgetastic_patternfly import (
 from widgetastic_patternfly4 import Pagination as PF4Pagination
 from widgetastic_patternfly4.ouia import BaseSelect, Button as PF4Button, Dropdown
 from widgetastic_patternfly4.progress import Progress as PF4Progress
-from widgetastic_patternfly4.progress import Progress as PF4Progress
 
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
 from airgun.utils import get_widget_by_name
@@ -2103,25 +2102,6 @@ class ProgressBar(GenericLocatorWidget):
     def read(self):
         """Returns current progress."""
         return self.progress
-
-
-class PF4ProgressBar(PF4Progress):
-    locator = './/div[contains(@class, "pf-c-wizard__main-body")]'
-
-    def wait_for_result(self, timeout=600, delay=1):
-        """Waits for progress bar to finish. By default checks whether progress
-        bar is completed every second for 10 minutes.
-
-        :param timeout: integer value for timeout in seconds
-        :param delay: float value for delay between attempts in seconds
-        """
-        wait_for(lambda: self.is_displayed, timeout=30, delay=delay, logger=self.logger)
-        wait_for(
-            lambda: not self.is_displayed or self.current_progress == '100',
-            timeout=timeout,
-            delay=delay,
-            logger=self.logger,
-        )
 
 
 class PF4ProgressBar(PF4Progress):
