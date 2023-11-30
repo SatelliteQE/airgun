@@ -1,12 +1,15 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.capsule import CapsulesView, CreateCapsuleView, EditCapsuleView, CapsuleDetailsView
+from airgun.views.capsule import (
+    CapsuleDetailsView,
+    CapsulesView,
+    CreateCapsuleView,
+    EditCapsuleView,
+)
 
 
 class CapsuleEntity(BaseEntity):
-
     endpoint_path = '/smart_proxies'
 
     def get_operation_status(self, view):
@@ -28,15 +31,14 @@ class CapsuleEntity(BaseEntity):
             refresh_status = None
         return refresh_status
 
-
     def read(self, capsule_name):
         """
         Read Capsule details from Capsules page
-        
+
         Args:
             capsule_name (str): Name of capsule to be read
         """
-        
+
         view = self.navigate_to(self, 'Capsules')
         view.searchbox.search(f'name="{capsule_name}"')
         return view.read()
@@ -44,11 +46,11 @@ class CapsuleEntity(BaseEntity):
     def read_details(self, capsule_name):
         """
         Read Capsule details from Capsule details page
-        
+
         Args:
             capsule_name (str): Name of capsule to be read
         """
-        
+
         view = self.navigate_to(self, 'Capsules')
         view.searchbox.search(f'name="{capsule_name}"')
         view.table.row(name=capsule_name)['Name'].click()
@@ -70,7 +72,7 @@ class CapsuleEntity(BaseEntity):
     def create(self, values):
         """
         Function that creates capsule according to the parameters
-        
+
         Args:
             values (dict): Dictionary of values to be filled in
             Structure of this dict should be:
@@ -90,25 +92,26 @@ class CapsuleEntity(BaseEntity):
         view.submit.click()
         view = CapsulesView(self.browser)
 
-    def edit(self,
-            capsule_name_to_edit,
-            new_capsule_name=None,
-            new_capsule_url=None,
-            download_policy=None,
-            acs_http_proxy=None,
-            add_all_lces=False,
-            remove_all_lces=False,
-            assigned_lces=None,
-            add_all_locations=False,
-            remove_all_locations=False,
-            assigned_locations=None,
-            add_all_organizations=False,
-            remove_all_organizations=False,
-            assigned_organizations=None,
-            ):
+    def edit(
+        self,
+        capsule_name_to_edit,
+        new_capsule_name=None,
+        new_capsule_url=None,
+        download_policy=None,
+        acs_http_proxy=None,
+        add_all_lces=False,
+        remove_all_lces=False,
+        assigned_lces=None,
+        add_all_locations=False,
+        remove_all_locations=False,
+        assigned_locations=None,
+        add_all_organizations=False,
+        remove_all_organizations=False,
+        assigned_organizations=None,
+    ):
         """
         Function that edits capsule according to the parameters
-        
+
         Args:
             capsule_name (str): Name of capsule to be edited
         """
@@ -132,7 +135,7 @@ class CapsuleEntity(BaseEntity):
 
         if acs_http_proxy is None and view.capsule.remove_proxy_selection.is_displayed:
             view.capsule.remove_proxy_selection.click()
-            
+
         if add_all_lces:
             view.lifecycle_enviroments.resources.add_all()
 
@@ -153,7 +156,7 @@ class CapsuleEntity(BaseEntity):
             view.locations.resources.remove_all()
             view.locations.resources.fill({'assigned': assigned_locations})
 
-        if add_all_organizations:   
+        if add_all_organizations:
             view.organizations.resources.add_all()
 
         if remove_all_organizations:
@@ -166,12 +169,11 @@ class CapsuleEntity(BaseEntity):
         view.submit.click()
         view = CapsulesView(self.browser)
         view.search('')
-        #view.lifecycle_enviroments.resources.remove_all.click()
 
     def refresh(self, capsule_name):
         """
         Function that refreshes given capsule
-        
+
         Args:
             capsule_name (str): Name of capsule to be refreshed
         Returns:
@@ -180,20 +182,19 @@ class CapsuleEntity(BaseEntity):
 
         view = self.navigate_to(self, 'Capsules')
         view.table.row(name=capsule_name)['Actions'].widget.fill('Refresh')
-        return self.get_operation_status(view)
         
+        return self.get_operation_status(view)
 
     def expire_logs(self, capsule_name):
         """
         Function that expires logs of given capsule
-        
+
         Args:
             capsule_name (str): Name of capsule we want logs to expire
         """
 
         view = self.navigate_to(self, 'Capsules')
         view.table.row(name=capsule_name)['Actions'].widget.fill('Expire logs')
-
 
     def delete(self, capsule_name):
         """

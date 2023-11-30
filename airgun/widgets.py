@@ -489,7 +489,7 @@ class MultiSelect(GenericLocatorWidget):
 
     def add_all(self):
         """Function adds all from left item select."""
-        self.add_all_button.click() 
+        self.add_all_button.click()
 
     def remove_all(self):
         """Function removes all from right item select."""
