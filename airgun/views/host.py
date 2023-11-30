@@ -200,7 +200,7 @@ class HostInterface(View):
 
 class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
-    manage_columns = PF4Button("OUIA-Generated-Button-link-1")
+    manage_columns = PF4Button('manage-columns-button')
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text(".//div[@id='rails-app-content']//a[contains(normalize-space(.),'Create Host')]")
     register = PF4Button('OUIA-Generated-Button-secondary-2')
