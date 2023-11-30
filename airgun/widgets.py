@@ -446,6 +446,9 @@ class MultiSelect(GenericLocatorWidget):
     unassigned = ItemsList("./div[@class='ms-selectable']/ul")
     assigned = ItemsList("./div[@class='ms-selection']/ul")
 
+    add_all_button = Text(locator='.//a[contains(@class,"ms-select-all")]')
+    remove_all_button = Text(locator='.//a[contains(@class,"ms-deselect-all")]')
+
     def __init__(self, parent, locator=None, id=None, logger=None):
         """Supports initialization via ``locator=`` or ``id=``"""
         if locator and id or not locator and not id:
@@ -483,6 +486,14 @@ class MultiSelect(GenericLocatorWidget):
             'unassigned': self.unassigned.read(),
             'assigned': self.assigned.read(),
         }
+
+    def add_all(self):
+        """Function adds all from left item select."""
+        self.add_all_button.click() 
+
+    def remove_all(self):
+        """Function removes all from right item select."""
+        self.remove_all_button.click()
 
 
 class PF4MultiSelect(GenericLocatorWidget):
