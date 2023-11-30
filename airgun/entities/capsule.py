@@ -182,7 +182,7 @@ class CapsuleEntity(BaseEntity):
 
         view = self.navigate_to(self, 'Capsules')
         view.table.row(name=capsule_name)['Actions'].widget.fill('Refresh')
-        
+
         return self.get_operation_status(view)
 
     def expire_logs(self, capsule_name):
