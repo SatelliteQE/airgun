@@ -213,6 +213,48 @@ class CapsuleEntity(BaseEntity):
 
         return self.get_operation_status(view)
 
+    def sync(self, capsule_name, sync_type):
+        """
+        General function for syncing capsule
+
+        Args:
+            capsule_name (str): Name of capsule to be synced
+            sync_type (str): Type of sync to be performed
+        """
+
+        view = self.navigate_to(self, 'Capsules')
+        view.searchbox.search(f'name="{capsule_name}"')
+        view.table.row(name=capsule_name)['Name'].click()
+        view = CapsuleDetailsView(self.browser)
+        if sync_type == 'Optimized Sync':
+            view.overview.synchronize_action_drop.fill(
+                view.overview.synchronize_action_drop.items[0]
+            )
+        elif sync_type == 'Complete Sync':
+            view.overview.synchronize_action_drop.fill(
+                view.overview.synchronize_action_drop.items[1]
+            )
+
+    def optimized_sync(self, capsule_name):
+        """
+        Function that performs optimized sync of given capsule
+
+        Args:
+            capsule_name (str): Name of capsule to be synced
+        """
+
+        self.sync(capsule_name, 'Optimized Sync')
+
+    def complete_sync(self, capsule_name):
+        """
+        Function that performs complete sync of given capsule
+
+        Args:
+            capsule_name (str): Name of capsule to be synced
+        """
+
+        self.sync(capsule_name, 'Complete Sync')
+
 
 @navigator.register(CapsuleEntity, 'Capsules')
 class OpenAcsPage(NavigateStep):
