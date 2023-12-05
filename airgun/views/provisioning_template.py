@@ -31,7 +31,7 @@ class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixinPF4):
     table = Table(
         './/table',
         column_widgets={
-            'Name': Text('./a'),
+            'Name': Text('.'),
             'Locked': Text('.'),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
