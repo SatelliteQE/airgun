@@ -102,10 +102,13 @@ class CapsuleEntity(BaseEntity):
         add_all_lces=False,
         remove_all_lces=False,
         assigned_lces=None,
+        add_lces=None,
         add_all_locations=False,
         remove_all_locations=False,
         assigned_locations=None,
+        add_locations=None,
         add_all_organizations=False,
+        add_organizations=None,
         remove_all_organizations=False,
         assigned_organizations=None,
     ):
@@ -146,6 +149,9 @@ class CapsuleEntity(BaseEntity):
             view.lifecycle_enviroments.resources.remove_all()
             view.lifecycle_enviroments.resources.fill({'assigned': assigned_lces})
 
+        if add_lces:
+            view.lifecycle_enviroments.resources.fill({'assigned': add_lces})
+
         if add_all_locations:
             view.locations.resources.add_all()
 
@@ -156,6 +162,9 @@ class CapsuleEntity(BaseEntity):
             view.locations.resources.remove_all()
             view.locations.resources.fill({'assigned': assigned_locations})
 
+        if add_locations:
+            view.locations.resources.fill({'assigned': add_locations})
+
         if add_all_organizations:
             view.organizations.resources.add_all()
 
@@ -165,6 +174,9 @@ class CapsuleEntity(BaseEntity):
         if assigned_organizations:
             view.organizations.resources.remove_all()
             view.organizations.resources.fill({'assigned': assigned_organizations})
+
+        if add_organizations:
+            view.organizations.resources.fill({'assigned': add_organizations})
 
         view.submit.click()
         view = CapsulesView(self.browser)
@@ -234,6 +246,10 @@ class CapsuleEntity(BaseEntity):
             view.overview.synchronize_action_drop.fill(
                 view.overview.synchronize_action_drop.items[1]
             )
+        elif sync_type == 'Reclaim Space':
+            # Workauround for for selecting from ActionDropdown by value which contains double quotes
+            view.overview.synchronize_action_drop.open()
+            self.browser.element('.//ul/li/a[@ng-click="reclaimSpace()"]', parent=self).click()
 
     def optimized_sync(self, capsule_name):
         """
