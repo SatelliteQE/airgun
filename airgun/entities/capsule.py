@@ -255,6 +255,21 @@ class CapsuleEntity(BaseEntity):
 
         self.sync(capsule_name, 'Complete Sync')
 
+    def refresh_lce_counts(self, capsule_name, lce_name):
+        """
+        Function that refreshes LCE counts of given capsule
+
+        Args:
+            capsule_name (str): Name of capsule to be refreshed
+        """
+
+        view = self.navigate_to(self, 'Capsules')
+        view.table.row(name=capsule_name)['Name'].click()
+        view = CapsuleDetailsView(self.browser)
+        view.content.top_content_table.row(Environment=lce_name)[3].widget.item_select(
+            'Refresh counts'
+        )
+
 
 @navigator.register(CapsuleEntity, 'Capsules')
 class OpenAcsPage(NavigateStep):
