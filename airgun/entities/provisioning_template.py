@@ -1,4 +1,5 @@
 from navmazing import NavigateToSibling
+from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -59,10 +60,24 @@ class ProvisioningTemplateEntity(BaseEntity):
     def is_locked(self, entity_name):
         """Check if provisioning template is locked for editing"""
         view = self.navigate_to(self, 'All')
-        view.search(entity_name)
-        return "This template is locked for editing." in view.table.row(name=entity_name)[
-            'Locked'
-        ].widget.browser.element('.').get_property('innerHTML')
+        view.search(f'name="{entity_name}"')
+        try:
+            return "This template is locked for editing." in view.table.row(name=entity_name)[
+                'Locked'
+            ].widget.browser.element('.').get_property('innerHTML')
+        except NoSuchElementException:
+            return False
+
+    def is_supported(self, entity_name):
+        """Check if provisioning template is supported or not"""
+        view = self.navigate_to(self, 'All')
+        view.search(f'name="{entity_name}"')
+        try:
+            return "Supported by Red Hat" in view.table.row(name=entity_name)[
+                'Name'
+            ].widget.browser.element('./img').get_attribute('title')
+        except NoSuchElementException:
+            return False
 
     def update(self, entity_name, values):
         """Update provisioning template"""
