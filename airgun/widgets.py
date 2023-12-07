@@ -871,6 +871,7 @@ class ValidationErrors(Widget):
     ERROR_ELEMENTS = ".//*[contains(@class,'has-error') and not(contains(@style,'display:none'))]"
     ERROR_MESSAGES = (
         ".//*[(contains(@class, 'alert base in fade alert-danger')"
+        "or contains(@class,'error-msg') "
         "or contains(@class,'error-msg-block')"
         "or contains(@class,'error-message') "
         "or contains(@class,'editable-error-block')) "
