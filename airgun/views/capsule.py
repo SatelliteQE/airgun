@@ -1,3 +1,5 @@
+import re
+
 from widgetastic.widget import (
     Select,
     Text,
@@ -217,6 +219,17 @@ class CapsuleDetailsView(BaseLoggedInView):
                             col.split('\n') for col in self.expanded_repo_details.read()
                         ],
                     }
+
+                    # Following code reads html svg tag and gets color of status icon
+                    #  and assigns bool according to that
+                    svg_status_icon = self.browser.get_attribute(
+                        'outerHTML', self.mid_content_table.row(content_view=cv)[4]
+                    )
+                    color = re.search('color: (.*?);', svg_status_icon).group(1)
+                    result[lce][cv]['mid_row_content']['Synced'] = (
+                        True if color == 'green' else False if color == 'red' else None
+                    )
+
                     self.expanded_repo_details.locator = '['.join(
                         self.expanded_repo_details.locator.split('[')[:-1]
                     )
