@@ -16,6 +16,7 @@ from airgun.entities.ansible_variable import AnsibleVariablesEntity
 from airgun.entities.architecture import ArchitectureEntity
 from airgun.entities.audit import AuditEntity
 from airgun.entities.bookmark import BookmarkEntity
+from airgun.entities.capsule import CapsuleEntity
 from airgun.entities.cloud_insights import CloudInsightsEntity
 from airgun.entities.cloud_inventory import CloudInventoryEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
@@ -352,6 +353,11 @@ class Session:
     def bookmark(self):
         """Instance of Bookmark entity."""
         return self._open(BookmarkEntity)
+
+    @cached_property
+    def capsule(self):
+        """Instance of Capsule entity."""
+        return self._open(CapsuleEntity)
 
     @cached_property
     def eol_banner(self):
