@@ -45,6 +45,13 @@ class NewContentViewEntity(BaseEntity):
         view.versions.table.wait_displayed()
         return view.versions.table.read()
 
+    def read_french_lang_cv(self):
+        """Navigates to main CV page, when system is set to French, and reads table"""
+        view = self.navigate_to(self, 'French')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        return view.table.read()
+
 
 @navigator.register(NewContentViewEntity, 'All')
 class ShowAllContentViewsScreen(NavigateStep):
@@ -55,6 +62,17 @@ class ShowAllContentViewsScreen(NavigateStep):
     @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Lifecycle', 'Content Views')
+
+
+@navigator.register(NewContentViewEntity, 'French')
+class ShowAllContentViewsScreenFrench(NavigateStep):
+    """Navigate to All Content Views screen ( in French )"""
+
+    VIEW = ContentViewTableView
+
+    @retry_navigation
+    def step(self, *args, **kwargs):
+        self.view.menu.select('Contenu', 'Lifecycle', 'Content Views')
 
 
 @navigator.register(NewContentViewEntity, 'New')
