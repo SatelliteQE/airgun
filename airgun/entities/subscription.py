@@ -191,7 +191,6 @@ class SubscriptionNavigationStep(NavigateStep):
             logger=self.view.logger,
         )
 
-
     def sca_alert(self):
         view = self.navigate_to(self, 'All')
         wait_for(
