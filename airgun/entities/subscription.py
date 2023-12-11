@@ -180,7 +180,6 @@ class SubscriptionEntity(BaseEntity):
 
     def sca_alert(self):
         view = self.navigate_to(self, 'All')
-        # return view.sca_alert.read()
         wait_for(
             lambda: view.sca_alert.read(),
             handle_exception=True,
