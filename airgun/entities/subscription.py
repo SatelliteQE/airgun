@@ -192,6 +192,16 @@ class SubscriptionNavigationStep(NavigateStep):
         )
 
 
+    def sca_alert(self):
+        view = self.navigate_to(self, 'All')
+        wait_for(
+            lambda: view.sca_alert.read(),
+            handle_exception=True,
+            timeout=10,
+        )
+        return view.sca_alert.read()
+
+
 @navigator.register(SubscriptionEntity, 'All')
 class SubscriptionList(SubscriptionNavigationStep):
     """Navigate to Subscriptions main page"""
