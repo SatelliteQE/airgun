@@ -27,7 +27,7 @@ from widgetastic_patternfly import (
     VerticalNavigation,
 )
 from widgetastic_patternfly4 import Pagination as PF4Pagination
-from widgetastic_patternfly4.ouia import BaseSelect, Button as PF4Button, Dropdown
+from widgetastic_patternfly4.ouia import BaseSelect, Button as PF4Button, Dropdown, Menu
 from widgetastic_patternfly4.progress import Progress as PF4Progress
 
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
@@ -833,6 +833,62 @@ class PF4Search(Search):
         self.fill(value)
         if self.search_button.is_displayed:
             self.search_button.click()
+
+
+class PF4NavSearchMenu(Menu):
+    """PF4 vertical navigation dropdown menu with search results."""
+
+    @property
+    def items(self):
+        """Return list of :py:class:`WebElement` items in the menu."""
+        return self.browser.elements(self.ITEMS_LOCATOR)
+
+    def read(self):
+        """Return all items in the menu as strings."""
+        return [self.browser.text(el) for el in self.items]
+
+
+class PF4NavSearch(PF4Search):
+    """PF4 vertical navigation menu search"""
+
+    ROOT = '//div[@id="navigation-search"]'
+    search_field = TextInput(locator=(".//input[@aria-label='Search input']"))
+    search_button = Button(locator=(".//button[@aria-label='Search']"))
+    clear_button = Button(locator=(".//button[@aria-label='Reset']"))
+    items = PF4NavSearchMenu("navigation-search-menu")
+    results_timeout = 2
+
+    def _wait_for_results(self, results_widget):
+        """Read the search results widget `results_widget` for `self.results_timeout` seconds
+        and return the values. If timeout is exceeded, empty list is returned.
+
+        :return: list[str] if values are returned; empty list otherwise
+        """
+        return (
+            wait_for(
+                lambda: results_widget.read(),
+                timeout=self.results_timeout,
+                delay=0.5,
+                handle_exception=NoSuchElementException,
+                silent_failure=True,
+            )[0]
+            or []
+        )
+
+    def search(self, value):
+        """Search the vertical navigation menu.
+        The first clear() is a workaround for inconsistent behaviour (mostly in Chrome),
+        where the previous value is sometimes still shown.
+        Clear the input field afterward, so it does not interfere with the regular navigation menu.
+
+        :param str value: search query
+        :return: list of search results as strings
+        """
+        self.clear()
+        super().search(value)
+        results = self._wait_for_results(results_widget=self.items)
+        self.clear()
+        return results
 
 
 class SatVerticalNavigation(VerticalNavigation):
