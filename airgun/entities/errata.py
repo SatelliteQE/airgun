@@ -1,5 +1,4 @@
-import re
-
+from airgun import ERRATA_REGEXP
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
@@ -137,6 +136,6 @@ class ErrataDetails(NavigateStep):
         repo = kwargs.get('repo')
         self.parent.search(entity_name, applicable=applicable, installable=installable, repo=repo)
         row_filter = {'title': entity_name}
-        if re.search(r'\w{3,4}[:-]\d{4}[-:]\d{4}', entity_name):
+        if ERRATA_REGEXP.search(entity_name):
             row_filter = {'errata_id': entity_name}
         self.parent.table.row(**row_filter)['Errata ID'].widget.click()
