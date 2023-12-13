@@ -1,8 +1,7 @@
-import re
-
 from widgetastic.widget import Checkbox, Text, View
 from widgetastic_patternfly import BreadCrumb
 
+from airgun import ERRATA_REGEXP
 from airgun.views.common import BaseLoggedInView, SatTab, TaskDetailsView
 from airgun.widgets import ItemsList, ReadOnlyEntry, SatSelect, SatTable, Search
 
@@ -40,7 +39,7 @@ class ErratumView(BaseLoggedInView):
         if repo is not None:
             self.repo_filter.fill(repo)
 
-        if re.search(r'\w{3,4}[:-]\d{4}[-:]\d{4}', query):
+        if ERRATA_REGEXP.search(query):
             query = f'id = {query}'
         self.searchbox.search(query)
 
