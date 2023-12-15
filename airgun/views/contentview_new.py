@@ -103,7 +103,7 @@ class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.create_content_view.is_displayed()
+        return self.create_content_view.is_displayed
 
 
 class ContentViewCreateView(BaseLoggedInView):
@@ -271,8 +271,80 @@ class ContentViewVersionPublishView(BaseLoggedInView):
         )
 
 
-class NewContentViewVersionDetailsView(BaseLoggedInView):
+class ContentViewVersionDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    version = Text(locator='.//h2[@data-ouia-component-id="cv-version"]')
+    promoteButton = PF4Button(
+        locator='.//button[@data-ouia-component-id="cv-details-publish-button"]'
+    )
+    editDescription = PF4Button(
+        locator='.//button[@data-ouia-component-id="edit-button-description"]'
+    )
+
+    @View.nested
+    class repositories(Tab):
+        TAB_LOCATOR = ParametrizedLocator(
+            './/button[@data-ouia-component-id="cv-version-details-tabs-tab-repositories"]'
+        )
+        searchbox = PF4Search()
+        table = PatternflyTable(
+            component_id="content-view-version-details-repositories-table",
+            column_widgets={
+                'Name': Text('.//a'),
+                'Version': Text('.//a'),
+                'Release': Text('.//a'),
+                'Arch': Text('.//a'),
+                'Epoch': Text('.//a'),
+            },
+        )
+
+    @View.nested
+    class rpmPackages(Tab):
+        TAB_LOCATOR = ParametrizedLocator(
+            './/button[@data-ouia-component-id="cv-version-details-tabs-tab-rpmPackages"]'
+        )
+        searchbox = PF4Search()
+        table = PatternflyTable(
+            component_id="content-view-version-details-rpm-packages-table",
+            column_widgets={
+                'Name': Text('.//a'),
+                'Type': Text('.//a'),
+                'Product': Text('.//a'),
+                'Content': Text('.//a'),
+            },
+        )
+
+    @View.nested
+    class rpmPackageGroups(Tab):
+        TAB_LOCATOR = ParametrizedLocator(
+            './/button[@data-ouia-component-id="cv-version-details-tabs-tab-rpmPackageGroups"]'
+        )
+        searchbox = PF4Search()
+        table = PatternflyTable(
+            component_id="content-view-version-details-rpm-package-groups-table",
+            column_widgets={
+                'Name': Text('.//a'),
+                'Repository': Text('.//a'),
+            },
+        )
+
+    @View.nested
+    class errata(Tab):
+        TAB_LOCATOR = ParametrizedLocator(
+            './/button[@data-ouia-component-id="cv-version-details-tabs-tab-errata"]'
+        )
+        searchbox = PF4Search()
+        table = PatternflyTable(
+            component_id="content-view-version-details-errata-table",
+            column_widgets={
+                'Errata ID': Text('.//a'),
+                'Title': Text('.//a'),
+                'Type': Text('.//a'),
+                'Modular': Text('.//a'),
+                'Applicable Content Hosts': Text('.//a'),
+                'Updated': Text('.//a'),
+            },
+        )
 
     @property
     def is_displayed(self):
@@ -280,7 +352,7 @@ class NewContentViewVersionDetailsView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and len(self.breadcrumb.locations) > LOCATION_NUM
-            and self.breadcrumb.locations[0] == 'Content Views'
+            and self.breadcrumb.locations[0] == 'Content views'
             and self.breadcrumb.locations[2] == 'Versions'
         )
 
