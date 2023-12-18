@@ -399,6 +399,43 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
         return view.traces.read()
 
+    def get_os_info(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.details.operating_system.read()
+
+    def get_provisioning_info(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.details.provisioning.read()
+
+    def get_bios_info(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.details.bios.read()
+
+    def get_registration_details(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.details.registration_details.read()
+
+    def get_hw_properties(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.details.hw_properties.read()
+
+    def get_provisioning_templates(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        d = view.details.read()
+        return d['provisioning_templates']['templates_table']
+
     def get_networking_interfaces(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
