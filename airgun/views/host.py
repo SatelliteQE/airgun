@@ -200,7 +200,7 @@ class HostInterface(View):
 
 class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
-    manage_columns = PF4Button("OUIA-Generated-Button-link-1")
+    manage_columns = PF4Button('manage-columns-button')
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text(".//div[@id='rails-app-content']//a[contains(normalize-space(.),'Create Host')]")
     register = PF4Button('OUIA-Generated-Button-secondary-2')
@@ -538,10 +538,8 @@ class HostRegisterView(BaseLoggedInView):
         token_life_time = TextInput(id='reg_token_life_time_input')
         rex_interface = TextInput(id='reg_rex_interface_input')
         rex_pull_mode = FormSelect('OUIA-Generated-FormSelect-default-8')
-        life_cycle_env = FormSelect('reg-katello-lce')
         ignore_error = Checkbox(id='reg_katello_ignore')
         force = Checkbox(id='reg_katello_force')
-        life_cycle_env_helper = Text("//div[@id='reg_katello_lce-helper']")
         install_packages_helper = Text("//div[@id='reg_packages-helper']")
 
     @property

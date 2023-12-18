@@ -4,7 +4,7 @@ from widgetastic_patternfly4 import (
     Drawer,
     Dropdown,
     FormSelect,
-    Pagination,
+    Pagination as PF4Pagination,
     Radio,
     Switch,
 )
@@ -364,7 +364,7 @@ class AlternateContentSourcesView(BaseLoggedInView):
         )
 
         clear_search = OUIAButton('empty-state-secondary-action-router-link')
-        pagination = Pagination()
+        pagination = PF4Pagination()
 
     @property
     def is_displayed(self):

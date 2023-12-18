@@ -2,7 +2,13 @@ import time
 
 from widgetastic.widget import Checkbox, Text, TextInput, View, Widget
 from widgetastic.widget.table import Table
-from widgetastic_patternfly4 import Button, Dropdown, Pagination, Select, Tab
+from widgetastic_patternfly4 import (
+    Button,
+    Dropdown,
+    Pagination as PF4Pagination,
+    Select,
+    Tab,
+)
 from widgetastic_patternfly4.ouia import (
     BreadCrumb,
     Button as OUIAButton,
@@ -326,7 +332,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     5: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
                 },
             )
-            pagination = Pagination()
+            pagination = PF4Pagination()
 
         @View.nested
         class errata(Tab):
@@ -334,7 +340,7 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@id="errata-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-            searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
+            searchbar = SearchInput(locator='.//input[contains(@class, "pf-c-text-input")]')
             type_filter = Select(locator='.//div[@aria-label="select Type container"]/div')
             severity_filter = Select(locator='.//div[@aria-label="select Severity container"]/div')
             apply = Pf4ActionsDropdown(locator='.//div[@aria-label="errata_dropdown"]')
@@ -353,7 +359,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     8: Dropdown(locator='./div'),
                 },
             )
-            pagination = Pagination()
+            pagination = PF4Pagination()
 
         @View.nested
         class module_streams(Tab):
@@ -379,7 +385,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     5: DropdownWithDescripton(locator='.//div[contains(@class, "pf-c-dropdown")]'),
                 },
             )
-            pagination = Pagination()
+            pagination = PF4Pagination()
 
         @View.nested
         class repository_sets(Tab):
@@ -413,7 +419,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     6: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
                 },
             )
-            pagination = Pagination()
+            pagination = PF4Pagination()
 
     @View.nested
     class parameters(Tab):
@@ -448,7 +454,7 @@ class NewHostDetailsView(BaseLoggedInView):
                 5: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
             },
         )
-        pagination = Pagination()
+        pagination = PF4Pagination()
 
     @View.nested
     class traces(Tab):
@@ -471,7 +477,7 @@ class NewHostDetailsView(BaseLoggedInView):
                 4: Button(locator='.//button[contains(@aria-label, "Actions")]'),
             },
         )
-        pagination = Pagination()
+        pagination = PF4Pagination()
 
     @View.nested
     class ansible(Tab):
@@ -490,7 +496,7 @@ class NewHostDetailsView(BaseLoggedInView):
                 locator='.//table[contains(@class, "pf-c-table")]',
                 column_widgets={'Name': Text('.//a')},
             )
-            pagination = Pagination()
+            pagination = PF4Pagination()
 
         @View.nested
         class variables(Tab):
@@ -512,7 +518,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     7: Button(locator='.//button[@aria-label="Edit override button"]'),
                 },
             )
-            pagination = Pagination()
+            pagination = PF4Pagination()
 
         @View.nested
         class inventory(Tab):
@@ -556,7 +562,7 @@ class NewHostDetailsView(BaseLoggedInView):
                         4: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
                     },
                 )
-                pagination = Pagination()
+                pagination = PF4Pagination()
 
                 @property
                 def is_displayed(self):
@@ -576,7 +582,7 @@ class NewHostDetailsView(BaseLoggedInView):
                         'Schedule': Text('./span'),
                     },
                 )
-                pagination = Pagination()
+                pagination = PF4Pagination()
 
                 @property
                 def is_displayed(self):
@@ -600,7 +606,7 @@ class NewHostDetailsView(BaseLoggedInView):
                 7: Button(locator='.//button[contains(@aria-label, "Actions")]'),
             },
         )
-        pagination = Pagination()
+        pagination = PF4Pagination()
 
         @View.nested
         class enc_preview(Tab):
@@ -641,7 +647,7 @@ class NewHostDetailsView(BaseLoggedInView):
             },
         )
 
-        pagination = Pagination()
+        pagination = PF4Pagination()
 
     @View.nested
     class insights(Tab):
@@ -666,7 +672,7 @@ class NewHostDetailsView(BaseLoggedInView):
                 4: Button(locator='.//button[contains(@aria-label, "Actions")]'),
             },
         )
-        pagination = Pagination()
+        pagination = PF4Pagination()
 
 
 class InstallPackagesView(View):
@@ -685,7 +691,7 @@ class InstallPackagesView(View):
             'Version': Text('./parent::td'),
         },
     )
-    pagination = Pagination()
+    pagination = PF4Pagination()
 
     install = Button(locator='.//button[(normalize-space(.)="Install")]')
     cancel = Button('Cancel')
@@ -700,7 +706,7 @@ class AllAssignedRolesView(View):
         locator='.//table[contains(@class, "pf-c-table")]',
         column_widgets={'Name': Text('.//a'), 'Source': Text('.//a')},
     )
-    pagination = Pagination()
+    pagination = PF4Pagination()
 
 
 class EnableTracerView(View):
@@ -739,7 +745,7 @@ class ManageHostCollectionModal(View):
         },
     )
 
-    pagination = Pagination()
+    pagination = PF4Pagination()
 
     add = OUIAButton('add-button')
     remove = OUIAButton('add-button')

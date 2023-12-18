@@ -26,6 +26,7 @@ from widgetastic_patternfly import (
     Kebab,
     VerticalNavigation,
 )
+from widgetastic_patternfly4 import Pagination as PF4Pagination
 from widgetastic_patternfly4.ouia import BaseSelect, Button as PF4Button, Dropdown
 from widgetastic_patternfly4.progress import Progress as PF4Progress
 
@@ -445,6 +446,9 @@ class MultiSelect(GenericLocatorWidget):
     unassigned = ItemsList("./div[@class='ms-selectable']/ul")
     assigned = ItemsList("./div[@class='ms-selection']/ul")
 
+    add_all_button = Text(locator='.//a[contains(@class,"ms-select-all")]')
+    remove_all_button = Text(locator='.//a[contains(@class,"ms-deselect-all")]')
+
     def __init__(self, parent, locator=None, id=None, logger=None):
         """Supports initialization via ``locator=`` or ``id=``"""
         if locator and id or not locator and not id:
@@ -482,6 +486,14 @@ class MultiSelect(GenericLocatorWidget):
             'unassigned': self.unassigned.read(),
             'assigned': self.assigned.read(),
         }
+
+    def add_all(self):
+        """Function adds all from left item select."""
+        self.add_all_button.click()
+
+    def remove_all(self):
+        """Function removes all from right item select."""
+        self.remove_all_button.click()
 
 
 class PF4MultiSelect(GenericLocatorWidget):
@@ -921,6 +933,7 @@ class ValidationErrors(Widget):
     ERROR_ELEMENTS = ".//*[contains(@class,'has-error') and not(contains(@style,'display:none'))]"
     ERROR_MESSAGES = (
         ".//*[(contains(@class, 'alert base in fade alert-danger')"
+        "or contains(@class,'error-msg') "
         "or contains(@class,'error-msg-block')"
         "or contains(@class,'error-message') "
         "or contains(@class,'editable-error-block')) "
@@ -1745,12 +1758,6 @@ class Pagination(Widget):
                 widget.fill(value)
 
 
-class SatTablePagination(Pagination):
-    """Paginator widget for use within SatTable."""
-
-    ROOT = "//form[contains(@class, 'content-view-pf-pagination')]"
-
-
 class SatTable(Table):
     """Satellite version of table.
 
@@ -1791,7 +1798,9 @@ class SatTable(Table):
         "contains(@data-block, 'no-search-results-message')]"
     )
     tbody_row = Text('./tbody/tr')
-    pagination = SatTablePagination()
+    pagination = PF4Pagination(
+        locator="//div[contains(@class, 'pf-c-pagination') and not(contains(@class, 'pf-m-compact'))]"
+    )
 
     @property
     def has_rows(self):

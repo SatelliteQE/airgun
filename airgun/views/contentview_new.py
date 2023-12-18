@@ -2,11 +2,12 @@ from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb, Tab
-from widgetastic_patternfly4 import Button, Dropdown
+from widgetastic_patternfly4 import Button, Dropdown, Radio as PF4Radio
 from widgetastic_patternfly4.ouia import (
     Button as PF4Button,
     ExpandableTable,
     PatternflyTable,
+    Select as PF4Select,
     Switch,
 )
 
@@ -102,7 +103,7 @@ class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.create_content_view.is_displayed
+        return self.create_content_view.is_displayed()
 
 
 class ContentViewCreateView(BaseLoggedInView):
@@ -207,7 +208,25 @@ class ContentViewEditView(BaseLoggedInView):
     @View.nested
     class filters(Tab):
         TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/filters")]')
-        new_filter = Text(".//button[@ui-sref='content-view.yum.filters.new']")
+        new_filter = PF4Button('create-filter-button')
+        searchbox = PF4Search()
+        table = PatternflyTable(
+            component_id="content-view-filters-table",
+            column_widgets={
+                0: Checkbox(locator='.//input[@type="checkbox"]'),
+                'Name': Text('.//a'),
+                'Description': Text('.//a'),
+                'Updated': Text('.//a'),
+                'Content type': Text('.//a'),
+                'Inclusion type': Text('.//a'),
+                6: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+            },
+        )
+
+        def search(self, name):
+            """Searches for specific filter'"""
+            self.searchbox.search(name)
+            return self.table.read()
 
 
 class ContentViewVersionPublishView(BaseLoggedInView):
@@ -264,3 +283,137 @@ class NewContentViewVersionDetailsView(BaseLoggedInView):
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.locations[2] == 'Versions'
         )
+
+
+class CreateFilterView(View):
+    ROOT = './/div[@data-ouia-component-id="create-filter-modal"]'
+
+    name = TextInput(id='name')
+    filterType = PF4Select('content_type')
+    includeFilter = PF4Radio(label_text='Include filter')
+    excludeFilter = PF4Radio(label_test='Exclude filter')
+    create = PF4Button('create-filter-form-submit-button')
+    cancel = PF4Button('create-filter-form-cancel-button')
+
+
+class EditFilterView(View):
+    name = Text('.//h2[@data-ouia-component-id="name-text-value"]')
+    editName = PF4Button('edit-button-name')
+    nameInput = TextInput('name text input')
+    submitName = PF4Button('submit-button-name')
+    clearName = PF4Button('clear-button-name')
+    description = Text('.//h2[@data-ouia-component-id="description-text-value"]')
+    editDescription = PF4Button('edit-button-description')
+    descriptionInput = TextInput(locator='.//textarea[@aria-label="description text area"]')
+
+    # Below this, the fields are generally not shared by each Filter Type
+
+    # RPM Rule
+    search = PF4Search()
+    addRpmRule = PF4Button('add-rpm-rule-button')
+    rpmRuleTable = PatternflyTable(
+        component_id="content-view-rpm-filter-table",
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'RPM Name': Text('.//a'),
+            'Architecture': Text('.//a'),
+            'Versions': Text('.//a'),
+            4: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+        },
+    )
+
+    # Container Image Tag Rule
+    addTagRule = PF4Button('add-content-view-container-image-filter-button')
+    tagRuleTable = PatternflyTable(
+        component_id="content-view-container-image-filter",
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Tag Name': Text('.//a'),
+            2: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+        },
+    )
+
+    # Package Group Rule
+    addPackageGroupRule = PF4Button('add-package-group-filter-rule-button')
+    removePackageGroupRule = Dropdown('cv-package-group-filter-bulk-actions-dropdown')
+    packageGroupRuleTable = PatternflyTable(
+        component_id="content-view-package-group-filter-table",
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Name': Text('.//a'),
+            'Product': Text('.//a'),
+            'Repository': Text('.//a'),
+            'Description': Text('.//a'),
+            'Status': Text('.//a'),
+            6: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+        },
+    )
+
+    # Module Streams Rule
+    addModuleStreamRule = PF4Button('add-module-stream-rule-button')
+    removeModuleStreamRule = Dropdown('bulk-actions-dropdown')
+    moduleStreamRuleTable = PatternflyTable(
+        component_id="content-view-module-stream-filter-table",
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Name': Text('.//a'),
+            'Stream': Text('.//a'),
+            'Version': Text('.//a'),
+            'Context': Text('.//a'),
+            'Status': Text('.//a'),
+            6: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+        },
+    )
+
+    # Errata Rule
+    addErrataRule = PF4Button('add-errata-id-button')
+    removeErratRule = Dropdown('cv-errata-id-bulk-action-dropdown')
+    moduleErrataTable = PatternflyTable(
+        component_id="content-view-errata-by-id-filter-table",
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Errata ID': Text('.//a'),
+            'Type': Text('.//a'),
+            'Issued': Text('.//a'),
+            'Updated': Text('.//a'),
+            'Severity': Text('.//a'),
+            'Synopsis': Text('.//a'),
+            'Status': Text('.//a'),
+            8: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+        },
+    )
+
+    # Errata by Date Range
+
+    saveErrataByDate = PF4Button('save-filter-rule-button')
+    cancelErrataByDate = PF4Button('cancel-save-filter-rule-button')
+
+    @property
+    def is_displayed(self):
+        return self.name.is_displayed
+
+
+class AddRPMRuleView(View):
+    ROOT = './/div[@data-ouia-component-id="add-edit-rpm-rule-modal"]'
+
+    rpmName = TextInput(
+        locator=".//div[contains(.//span, 'RPM name') and @class='pf-c-form__group']/*//input"
+    )
+    architecture = TextInput(
+        locator=".//div[contains(.//span, 'Architecture') and @class='pf-c-form__group']/*//input"
+    )
+
+    versions = PF4Select('version-comparator')
+    addEdit = PF4Button('add-edit-package-modal-submit')
+    cancel = PF4Button('add-edit-package-modal-cancel')
+
+
+class AddContainerTagRuleView(View):
+    ROOT = './/div[@data-ouia-component-id="add-edit-container-tag-rule-modal"]'
+
+    tagName = TextInput(
+        locator=".//div[contains(.//span, 'Tag name') and @class='pf-c-form__group']/*//input"
+    )
+
+    addEdit = PF4Button('add-edit-container-tag-filter-rule-submit')
+    cancel = PF4Button('add-edit-container-tag-filter-rule-cancel')

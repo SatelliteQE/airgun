@@ -1,7 +1,6 @@
 from wait_for import wait_for
 from widgetastic.widget import Table, Text, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Pagination
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
 from airgun.widgets import (
@@ -33,7 +32,6 @@ class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
             'Action': Text('./a'),
         },
     )
-    pagination = Pagination()
 
     @property
     def is_displayed(self):
