@@ -53,10 +53,10 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'Register')
         if values is not None:
             view.fill(values)
-            if view.general.activation_keys.read():
-                self.browser.click(view.generate_command)
-                self.browser.plugin.ensure_page_safe()
-                view.registration_command.wait_displayed()
+        if view.general.activation_keys.read():
+            self.browser.click(view.generate_command)
+            self.browser.plugin.ensure_page_safe()
+            view.registration_command.wait_displayed()
         else:
             view.general.new_activation_key_link.wait_displayed()
             if view.generate_command.disabled:
