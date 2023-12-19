@@ -46,13 +46,19 @@ class HostEntity(BaseEntity):
         host_view.flash.assert_no_error()
         host_view.flash.dismiss()
 
-    def get_register_command(self, values, full_read=None):
+    def get_register_command(self, values=None, full_read=None):
         """Get curl command generated on Register Host page"""
         view = self.navigate_to(self, 'Register')
-        view.fill(values)
-        self.browser.click(view.generate_command)
-        self.browser.plugin.ensure_page_safe()
-        view.registration_command.wait_displayed()
+        if values is not None:
+            view.fill(values)
+            if view.general.activation_keys.read():
+                self.browser.click(view.generate_command)
+                self.browser.plugin.ensure_page_safe()
+                view.registration_command.wait_displayed()
+        else:
+            view.general.new_activation_key_link.wait_displayed()
+            if view.generate_command.disabled:
+                raise DisabledWidgetError('Generate registration command button is disabled')
         if full_read:
             return view.read()
         return view.registration_command.read()
