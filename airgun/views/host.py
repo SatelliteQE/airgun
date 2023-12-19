@@ -497,6 +497,7 @@ class HostCreateView(BaseLoggedInView):
 
 
 class HostRegisterView(BaseLoggedInView):
+    title = Text("//h1[normalize-space(.)='Register Host']")
     generate_command = PF4Button('registration_generate_btn')
     cancel = PF4Button('registration-cancel-button')
     registration_command = TextInput(locator="//input[@aria-label='Copyable input']")
@@ -519,6 +520,7 @@ class HostRegisterView(BaseLoggedInView):
         insecure = Checkbox(id='reg_insecure')
         activation_keys = BaseMultiSelect('activation-keys-field')
         activation_key_helper = Text("//div[@id='activation_keys_field-helper']")
+        new_activation_key_link = Link('//a[normalize-space(.)="Create new activation key"]')
 
     @View.nested
     class advanced(Tab):
@@ -544,7 +546,7 @@ class HostRegisterView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.general.operating_system, exception=False)
+        return self.browser.wait_for_element(self.title, exception=False)
 
     def before_fill(self, values):
         """Fill some of the parameters in the widgets with values.
@@ -566,12 +568,6 @@ class HostRegisterView(BaseLoggedInView):
                     logger=self.logger,
                 )
                 self.general.__getattribute__(field).fill(field_value)
-        wait_for(
-            lambda: self.general.linux_host_init_link.is_displayed,
-            timeout=30,
-            delay=2,
-            logger=self.logger,
-        )
 
 
 class RecommendationWidget(GenericLocatorWidget):
