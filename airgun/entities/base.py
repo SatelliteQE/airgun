@@ -48,3 +48,12 @@ class BaseEntity:
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
+
+    def search_menu(self, query: str) -> list[str]:
+        """Perform a search of the vertical navigation menu.
+
+        :param str query: search query for the vertical navigation menu
+        :return list[str]: search results
+        """
+        view = self.navigate_to(self, 'All')
+        return view.menu_search.search(query)

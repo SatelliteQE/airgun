@@ -25,6 +25,7 @@ from airgun.widgets import (
     ItemsList,
     LCESelector,
     Pf4ConfirmationDialog,
+    PF4NavSearch,
     PF4Search,
     ProgressBar,
     ReadOnlyEntry,
@@ -40,6 +41,7 @@ class BaseLoggedInView(View):
     """Base view for Satellite pages"""
 
     menu = Navigation("Global")
+    menu_search = PF4NavSearch()
     taxonomies = ContextSelector()
     flash = SatFlashMessages()
     validations = ValidationErrors()
