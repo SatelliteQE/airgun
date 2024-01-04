@@ -6,7 +6,6 @@ from contextlib import contextmanager
 from datetime import datetime
 import logging
 import os
-import time
 import urllib
 from urllib.parse import unquote
 
@@ -336,19 +335,12 @@ class AirgunBrowser(Browser):
         downloads_uri = 'chrome://downloads'
         if not self.url.startswith(downloads_uri):
             self.url = downloads_uri
-        time.sleep(3)
         script = (
-            'return downloads.Manager.get().items_'
-            '.filter(e => e.state === "COMPLETE")'
-            '.map(e => e.file_url || e.fileUrl);'
+            'return document.querySelector("downloads-manager")'
+            '.shadowRoot.querySelector("#downloadsList")'
+            '.items.filter(e => e.state == "2")'
+            '.map(e => e.filePath || e.file_path || e.fileUrl || e.file_url);'
         )
-        if self.browser_type == 'chrome':
-            script = (
-                'return document.querySelector("downloads-manager")'
-                '.shadowRoot.querySelector("#downloadsList")'
-                '.items.filter(e => e.state === "COMPLETE")'
-                '.map(e => e.filePath || e.file_path || e.fileUrl || e.file_url);'
-            )
         return self.execute_script(script)
 
     def get_file_content(self, uri):
