@@ -2645,7 +2645,26 @@ class InventoryBootstrapSwitch(Widget):
 
 
 class SearchInput(TextInput):
+    """Searchbar's contained input text, and buttons"""
+
+    search_field = TextInput(locator=('//input[@aria-label="Search input"]'))
+    clear_button = Text(locator=('//button[@aria-label="Reset search"]'))
+
+    def clear(self):
+        """Clear search input by clicking the clear_button.
+        Return: True if button was present, and clicking it caused it to disappear.
+        False otherwise.
+        """
+        changed = False
+        if self.clear_button.is_displayed:
+            self.clear_button.click()
+            # after clicking clear button, it should disappear
+            if not self.clear_button.is_displayed:
+                changed = True
+        return changed
+
     def fill(self, value, enter_timeout=1, after_enter_timeout=3):
+        """Fill the search input with supplied value"""
         changed = super().fill(value)
         if changed:
             # workaround for BZ #2140636
