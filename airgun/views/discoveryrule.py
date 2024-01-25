@@ -2,7 +2,7 @@ from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly4 import Button as PF4Button
 
-from airgun.views.common import BaseLoggedInView, SatTab
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
 from airgun.widgets import (
     ActionsDropdown,
     AutoCompleteTextInput,
@@ -12,7 +12,7 @@ from airgun.widgets import (
 )
 
 
-class DiscoveryRulesView(BaseLoggedInView):
+class DiscoveryRulesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Discovery Rules']")
     new = Text("//a[contains(@href, '/discovery_rules/new')]")
     new_on_blank_page = PF4Button('Create Rule')

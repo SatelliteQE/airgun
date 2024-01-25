@@ -1,7 +1,12 @@
 from widgetastic.widget import Checkbox, Select, Text, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView, ReadOnlyEntry, SatTab, SatTable
+from airgun.views.common import (
+    BaseLoggedInView,
+    ReadOnlyEntry,
+    SatTab,
+    SatTable,
+)
 from airgun.widgets import ItemsListReadOnly, Search
 
 
