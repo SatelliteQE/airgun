@@ -11,7 +11,12 @@ from widgetastic.widget import (
 )
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
+from airgun.views.common import (
+    BaseLoggedInView,
+    SatTab,
+    SearchableViewMixin,
+    SearchableViewMixinPF4,
+)
 from airgun.views.host import HostCreateView
 from airgun.widgets import (
     ActionsDropdown,
@@ -24,7 +29,7 @@ from airgun.widgets import (
 )
 
 
-class ComputeResourcesView(BaseLoggedInView, SearchableViewMixin):
+class ComputeResourcesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="Compute Resources"]')
     new = Text('//a[normalize-space(.)="Create Compute Resource"]')
     table = SatTable(
