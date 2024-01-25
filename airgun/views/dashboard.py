@@ -1,7 +1,7 @@
 from widgetastic.widget import Table, Text, View, Widget
 
-from airgun.views.common import BaseLoggedInView, SatTable
-from airgun.widgets import ActionsDropdown, PieChart, Search
+from airgun.views.common import BaseLoggedInView, SatTable, SearchableViewMixinPF4
+from airgun.widgets import ActionsDropdown, PieChart
 
 
 class ItemValueList(Widget):
@@ -71,11 +71,10 @@ class AutoRefresh(Widget):
             self.browser.element(self.AUTO_REFRESH).click()
 
 
-class DashboardView(BaseLoggedInView):
+class DashboardView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Overview']")
     manage = ActionsDropdown("//div[@class='btn-group']")
     refresh = AutoRefresh()
-    searchbox = Search()
 
     @property
     def is_displayed(self):
