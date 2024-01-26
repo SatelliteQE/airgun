@@ -393,7 +393,9 @@ class NewHostDetailsView(BaseLoggedInView):
                     8: Dropdown(locator='./div'),
                 },
             )
-            pagination = PF4Pagination()
+            pagination = PF4Pagination(
+                "//div[@class = 'pf-c-pagination pf-m-bottom tfm-pagination']"
+            )
 
         @View.nested
         class module_streams(Tab):
