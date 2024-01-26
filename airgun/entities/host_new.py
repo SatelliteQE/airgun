@@ -299,17 +299,41 @@ class NewHostEntity(HostEntity):
         view.content.errata.table.wait_displayed()
         return view.read(widget_names="content.errata.table")
 
-    def apply_erratas(self, entity_name, search):
-        """Apply errata on selected host based on errata_id"""
+    def apply_erratas(self, entity_name, search=None):
+        """Apply available errata on selected host based on searchbar result.
+
+        param: search (string): search value to filter results.
+        example: search="errata_id == {ERRATA_ID}"
+        default: None; all available errata are returned and installed.
+        """
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
-        view.content.errata.searchbar.fill(search)
+        if search is None:
+            # Return all errata, clear the searchbar
+            view.content.errata.searchbar.clear()
+        else:
+            # Return only errata by search
+            view.content.errata.searchbar.fill(search)
         # wait for filter to apply
+        view.content.errata.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         view.content.errata.select_all.click()
         view.content.errata.apply.fill('Apply')
         view.flash.assert_no_error()
         view.flash.dismiss()
+        # clear the searchbar so any input will not persist
+        view.content.errata.searchbar.clear()
+        view.content.errata.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+
+    def get_errata_pagination(self, entity_name):
+        """Get pagination info from Errata tab on selected host."""
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        view.content.errata.select()
+        view.content.errata.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.content.errata.pagination
 
     def get_module_streams(self, entity_name, search):
         """Filter module streams"""
