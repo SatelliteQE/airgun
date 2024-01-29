@@ -6,7 +6,7 @@ from airgun.widgets import ActionsDropdown, MultiSelect, SatTable
 
 
 class SCAPContentsView(BaseLoggedInView, SearchableViewMixinPF4):
-    title = Text("//h1[normalize-space(.)='SCAP Content']")
+    title = Text("//h1[normalize-space(.)='SCAP Contents']")
     new = Text("//a[contains(@href, 'scap_contents/new')]")
     table = SatTable(
         './/table',
