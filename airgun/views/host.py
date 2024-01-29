@@ -743,7 +743,7 @@ class HostsTaxonomyMismatchRadioGroup(GenericLocatorWidget):
 
     def __init__(self, parent, **kwargs):
         self.taxonomy = kwargs.pop('taxonomy')
-        super().__init__(parent, "//div[@class='modal-body']//div[@id='content']/form", **kwargs)
+        super().__init__(parent, "//div[@class='modal-body']//div[@id='content']//form", **kwargs)
 
     def _is_checked(self, widget):
         """Returns whether the widget is checked"""
