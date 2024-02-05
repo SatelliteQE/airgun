@@ -19,6 +19,7 @@ from widgetastic_patternfly4.ouia import (
     BreadCrumb as PF4BreadCrumb,
     Button as PF4Button,
     FormSelect,
+    Select as PF4Select,
 )
 from widgetastic_patternfly4.tabs import Tab
 
@@ -709,6 +710,29 @@ class HostsChangeGroup(HostsActionCommonDialog):
     host_group = Select(id='hostgroup_id')
 
 
+class HostsChangeContentSourceView(View):
+    title = Text('//h5')
+
+    hosts_to_update = Text('//span[@class="pf-c-label pf-m-green"]//a')
+    ignored_hosts = Text('//span[@class="pf-c-label pf-m-orange"]//a')
+
+    content_source_select = PF4Select('content-source-select')
+    disabled_environment_status = Text('//div[@aria-label="Info Alert"]')
+
+    lce_env_title = Text('//div[normalize-space(.)="Lifecycle environment"]')
+    lce_env_path_list = Text('//div[@class="env-path"]/div/div')
+
+    content_view_select = PF4Select('SelectContentView')
+    content_view_select_btn = Text(locator='//button[@aria-label="Options menu" and @tabindex]')
+
+    run_job_invocation = Text(locator='//*[normalize-space(.)="Run job invocation"]')
+    update_hosts_manualy = Text(locator='//*[normalize-space(.)="Update hosts manually"]')
+
+    show_more_change_content_source = Text('//button[normalize-space(.)="Show more"]')
+    show_less_change_content_source = Text('//button[normalize-space(.)="Show less"]')
+    generated_script = Text('//code')
+
+
 class HostsChangeEnvironment(HostsActionCommonDialog):
     title = Text(
         "//h4[normalize-space(.)='Change Environment - "
@@ -813,6 +837,10 @@ class HostsDeleteActionDialog(HostsActionCommonDialog):
     title = Text(
         "//h4[normalize-space(.)='Delete Hosts - The following hosts are about to be changed']"
     )
+
+
+class ChangeContentSourceView(View):
+    """Hosts Change Content Source View"""
 
 
 class HostsDeleteTaskDetailsView(TaskDetailsView):
