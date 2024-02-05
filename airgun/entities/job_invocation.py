@@ -1,4 +1,7 @@
+import time
+
 from navmazing import NavigateToSibling
+from selenium.webdriver.common.by import By
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
@@ -41,6 +44,27 @@ class JobInvocationEntity(BaseEntity):
             fail_func=view.browser.refresh,
             logger=view.logger,
         )
+
+    def submit_prefilled_view(self):
+        """This entity loads pre filled job invocation view and submits it."""
+        view = JobInvocationCreateView(self.browser)
+        time.sleep(3)
+        view.submit.click()
+
+    def get_job_category_and_template(self):
+        """Reads selected job category and template for job invocation."""
+        view = JobInvocationCreateView(self.browser)
+        time.sleep(3)
+        element = self.browser.selenium.find_element(By.XPATH, '//div/input')
+        read_values = view.category_and_template.read()
+        read_values['job_template'] = element.get_attribute('value')
+        return read_values
+
+    def get_targeted_hosts(self):
+        """Read targeted hosts for job invocation."""
+        view = JobInvocationCreateView(self.browser)
+        time.sleep(3)
+        return view.target_hosts_and_inputs.read()
 
 
 @navigator.register(JobInvocationEntity, 'All')
