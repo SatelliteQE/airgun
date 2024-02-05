@@ -51,7 +51,7 @@ class JobInvocationCreateView(BaseLoggedInView):
         options = TextInput(id='options')
 
         ansible_collections_list = TextInput(id='ansible_collections_list')
-        ansible_collections_list = TextInput(id='ansible_roles_list')
+        ansible_roles_list = TextInput(id='ansible_roles_list')
         power_action = OUIASelect('OUIA-Generated-Select-single-34')
 
     @View.nested
