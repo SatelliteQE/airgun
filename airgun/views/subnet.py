@@ -1,11 +1,16 @@
 from widgetastic.widget import Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
-from airgun.widgets import CustomParameter, FilteredDropdown, MultiSelect, RadioGroup
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.widgets import (
+    CustomParameter,
+    FilteredDropdown,
+    MultiSelect,
+    RadioGroup,
+)
 
 
-class SubnetsView(BaseLoggedInView, SearchableViewMixin):
+class SubnetsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="Subnets"]')
     new = Text('//a[normalize-space(.)="Create Subnet"]')
     table = Table(

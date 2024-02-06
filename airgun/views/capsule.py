@@ -262,7 +262,6 @@ class CapsulesView(BaseLoggedInView, SearchableViewMixinPF4):
             'Actions': ActionsDropdown('./div[contains(@class, "btn-group")]'),
         },
     )
-
     pagination = Pagination()
 
     @property
