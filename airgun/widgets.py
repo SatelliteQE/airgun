@@ -856,7 +856,7 @@ class PF4NavSearch(PF4Search):
     search_button = Button(locator=(".//button[@aria-label='Search']"))
     clear_button = Button(locator=(".//button[@aria-label='Reset']"))
     items = PF4NavSearchMenu("navigation-search-menu")
-    results_timeout = 2
+    results_timeout = search_clear_timeout = 2
 
     def _wait_for_results(self, results_widget):
         """Read the search results widget `results_widget` for `self.results_timeout` seconds
@@ -875,19 +875,30 @@ class PF4NavSearch(PF4Search):
             or []
         )
 
+    def _safe_search_clear(self):
+        """Clear the search input and return if it is actually cleared."""
+        if self.browser.text(self.search_field) != '':
+            self.clear()
+        return self.browser.text(self.search_field) == ''
+
+    def _ensure_search_is_cleared(self):
+        """Wait for `search_clear_timeout` seconds that the search input has been really cleared."""
+        wait_for(
+            lambda: self._safe_search_clear(),
+            timeout=self.search_clear_timeout,
+            delay=0.5,
+        )
+
     def search(self, value):
         """Search the vertical navigation menu.
-        The first clear() is a workaround for inconsistent behaviour (mostly in Chrome),
-        where the previous value is sometimes still shown.
         Clear the input field afterward, so it does not interfere with the regular navigation menu.
 
         :param str value: search query
         :return: list of search results as strings
         """
-        self.clear()
         super().search(value)
         results = self._wait_for_results(results_widget=self.items)
-        self.clear()
+        self._ensure_search_is_cleared()
         return results
 
 
