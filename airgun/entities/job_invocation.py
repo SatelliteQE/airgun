@@ -47,12 +47,14 @@ class JobInvocationEntity(BaseEntity):
 
     def submit_prefilled_view(self):
         """This entity loads pre filled job invocation view and submits it."""
+        time.sleep(3)
         view = JobInvocationCreateView(self.browser)
         time.sleep(3)
         view.submit.click()
 
     def get_job_category_and_template(self):
         """Reads selected job category and template for job invocation."""
+        time.sleep(3)
         view = JobInvocationCreateView(self.browser)
         time.sleep(3)
         element = self.browser.selenium.find_element(By.XPATH, '//div/input')
@@ -62,6 +64,7 @@ class JobInvocationEntity(BaseEntity):
 
     def get_targeted_hosts(self):
         """Read targeted hosts for job invocation."""
+        time.sleep(3)
         view = JobInvocationCreateView(self.browser)
         time.sleep(3)
         return view.target_hosts_and_inputs.read()
