@@ -97,6 +97,7 @@ class ErrataEntity(BaseEntity):
             installable=False,
             repo=None,
         )
+        view.content_hosts.wait_displayed()
         return view.content_hosts.search(value, environment=environment)
 
 
