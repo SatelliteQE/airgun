@@ -189,6 +189,7 @@ class HostEntity(BaseEntity):
         view = self._select_action('Change Content Source', entities_list)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
+        wait_for(lambda: view.content_source_select.is_displayed, timeout=10, delay=1)
         view.content_source_select.fill(content_source)
         wait_for(lambda: view.lce_env_title.is_displayed, timeout=10, delay=1)
         # click on the specific LCE radio button
