@@ -1,6 +1,7 @@
 from time import sleep
 
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.exceptions import DisabledWidgetError
@@ -16,6 +17,7 @@ from airgun.views.host import (
     HostsAssignCompliancePolicy,
     HostsAssignLocation,
     HostsAssignOrganization,
+    HostsChangeContentSourceView,
     HostsChangeEnvironment,
     HostsChangeGroup,
     HostsChangeOpenscapCapsule,
@@ -162,6 +164,69 @@ class HostEntity(BaseEntity):
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
+
+    def change_content_source(
+        self,
+        entities_list,
+        content_source,
+        lce,
+        content_view,
+        run_job_invocation=False,
+        update_hosts_manually=False,
+    ):
+        """
+        Apply Change Content Source action to one or more hosts
+
+        Args:
+            entities_list (list): names of the hosts for which we would like to change the content source
+            content_source (str): name of the content source to be selected
+            lce (str): name of the LCE to be selected
+            content_view (str): name of the content view to be selected
+            run_job_invocation (bool): whether to run job invocation in order to change the host's content source
+            update_hosts_manually (bool): whether to update hosts manually in order to change the host's content source
+        """
+
+        view = self._select_action('Change Content Source', entities_list)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        wait_for(lambda: view.content_source_select.is_displayed, timeout=10, delay=1)
+        view.content_source_select.fill(content_source)
+        wait_for(lambda: view.lce_env_title.is_displayed, timeout=10, delay=1)
+        # click on the specific LCE radio button
+        self.browser.click(
+            f'//input[@type="radio" and following-sibling::label[normalize-space(.)="{lce}"]]'
+        )
+        view = HostsChangeContentSourceView(self.browser)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.content_view_select.click()
+        wait_for(lambda: view.content_view_select.is_displayed, timeout=10, delay=1)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+
+        self.browser.click(f'.//*[contains(text(), "{content_view}")][1]')
+        if run_job_invocation:
+            view.run_job_invocation.click()
+            view.wait_displayed()
+            self.browser.plugin.ensure_page_safe(timeout='5s')
+        elif update_hosts_manually:
+            view.update_hosts_manualy.click()
+            view.wait_displayed()
+            self.browser.plugin.ensure_page_safe(timeout='5s')
+
+    def change_content_source_get_script(self, entities_list, content_source, lce, content_view):
+        """
+        Function that reads generated script which is generated while choosing to update hosts manually.
+        """
+
+        self.change_content_source(
+            entities_list, content_source, lce, content_view, update_hosts_manually=True
+        )
+        view = HostsChangeContentSourceView(self.browser)
+        wait_for(lambda: view.show_more_change_content_source.is_displayed, timeout=10, delay=1)
+        view.show_more_change_content_source.click()
+        script = view.generated_script.read()
+        return script
 
     def export(self):
         """Export hosts list.
@@ -397,6 +462,7 @@ class HostsSelectAction(NavigateStep):
     """
 
     ACTIONS_VIEWS = {
+        'Change Content Source': HostsChangeContentSourceView,
         'Change Environment': HostsChangeEnvironment,
         'Change Group': HostsChangeGroup,
         'Assign Compliance Policy': HostsAssignCompliancePolicy,
