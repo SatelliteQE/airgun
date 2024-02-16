@@ -629,7 +629,7 @@ class ActionsDropdown(GenericLocatorWidget):
         "contains(@ng-click, 'toggleDropdown')][contains(@class, 'btn')]"
         "[*[self::span or self::i][contains(@class, 'caret')]]"
     )
-    pf4_drop_down = Dropdown('OUIA-Generated-Dropdown-2')
+    pf4_drop_down = Text("//div[contains(@data-ouia-component-id, 'bookmarks-dropdown')]")
     button = Text(
         ".//*[self::button or self::span][contains(@class, 'btn') or "
         "contains(@aria-label, 'search button')]"
@@ -818,6 +818,8 @@ class PF4Search(Search):
     search_field = TextInput(locator=(".//input[@aria-label='Search input']"))
     search_button = Text(locator=(".//button[@aria-label='Search']"))
     clear_button = Text(locator=(".//button[@aria-label='Reset search']"))
+
+    actions = ActionsDropdown("//div[contains(@data-ouia-component-id, 'bookmarks-dropdown')]")
 
     def clear(self):
         """Clears search field value and re-trigger search to remove all
