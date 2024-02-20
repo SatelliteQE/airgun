@@ -26,8 +26,13 @@ from widgetastic_patternfly import (
     Kebab,
     VerticalNavigation,
 )
-from widgetastic_patternfly4 import Pagination as PF4Pagination
-from widgetastic_patternfly4.ouia import BaseSelect, Button as PF4Button, Dropdown, Menu
+from widgetastic_patternfly4 import Button as PF4Button, Pagination as PF4Pagination
+from widgetastic_patternfly4.ouia import (
+    BaseSelect,
+    Button as OUIAButton,
+    Dropdown,
+    Menu,
+)
 from widgetastic_patternfly4.progress import Progress as PF4Progress
 
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
@@ -855,10 +860,10 @@ class PF4NavSearch(PF4Search):
 
     ROOT = '//div[@id="navigation-search"]'
     search_field = TextInput(locator=(".//input[@aria-label='Search input']"))
-    search_button = Button(locator=(".//button[@aria-label='Search']"))
-    clear_button = Button(locator=(".//button[@aria-label='Reset']"))
+    search_button = PF4Button(locator=(".//button[@aria-label='Search']"))
+    clear_button = PF4Button(locator=(".//button[@aria-label='Reset']"))
     items = PF4NavSearchMenu("navigation-search-menu")
-    results_timeout = 2
+    results_timeout = search_clear_timeout = 2
 
     def _wait_for_results(self, results_widget):
         """Read the search results widget `results_widget` for `self.results_timeout` seconds
@@ -877,19 +882,30 @@ class PF4NavSearch(PF4Search):
             or []
         )
 
+    def _safe_search_clear(self):
+        """Clear the search input and return if it is actually cleared."""
+        if self.browser.text(self.search_field) != '':
+            self.clear()
+        return self.browser.text(self.search_field) == ''
+
+    def _ensure_search_is_cleared(self):
+        """Wait for `search_clear_timeout` seconds that the search input has been really cleared."""
+        wait_for(
+            lambda: self._safe_search_clear(),
+            timeout=self.search_clear_timeout,
+            delay=0.5,
+        )
+
     def search(self, value):
         """Search the vertical navigation menu.
-        The first clear() is a workaround for inconsistent behaviour (mostly in Chrome),
-        where the previous value is sometimes still shown.
         Clear the input field afterward, so it does not interfere with the regular navigation menu.
 
         :param str value: search query
         :return: list of search results as strings
         """
-        self.clear()
         super().search(value)
         results = self._wait_for_results(results_widget=self.items)
-        self.clear()
+        self._ensure_search_is_cleared()
         return results
 
 
@@ -1351,9 +1367,9 @@ class Pf4ConfirmationDialog(ConfirmationDialog):
     right corner."""
 
     ROOT = '//div[@id="app-confirm-modal" or @data-ouia-component-type="PF4/ModalContent"]'
-    confirm_dialog = PF4Button('btn-modal-confirm')
-    cancel_dialog = PF4Button('btn-modal-cancel')
-    discard_dialog = PF4Button('app-confirm-modal-ModalBoxCloseButton')
+    confirm_dialog = OUIAButton('btn-modal-confirm')
+    cancel_dialog = OUIAButton('btn-modal-cancel')
+    discard_dialog = OUIAButton('app-confirm-modal-ModalBoxCloseButton')
 
 
 class LCESelector(GenericLocatorWidget):
@@ -2680,7 +2696,7 @@ class EditModal(View):
     """Class representing the Edit modal header"""
 
     title = Text('.//h1')
-    close_button = PF4Button('acs-edit-details-modal-ModalBoxCloseButton')
+    close_button = OUIAButton('acs-edit-details-modal-ModalBoxCloseButton')
 
     error_message = Text('//div[contains(@aria-label, "Danger Alert")]')
 
