@@ -27,7 +27,12 @@ from widgetastic_patternfly import (
     VerticalNavigation,
 )
 from widgetastic_patternfly4 import Button as PF4Button, Pagination as PF4Pagination
-from widgetastic_patternfly4.ouia import BaseSelect, Button as OUIAButton, Dropdown, Menu
+from widgetastic_patternfly4.ouia import (
+    BaseSelect,
+    Button as OUIAButton,
+    Dropdown,
+    Menu
+)
 from widgetastic_patternfly4.progress import Progress as PF4Progress
 
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
