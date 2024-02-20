@@ -31,7 +31,7 @@ from widgetastic_patternfly4.ouia import (
     BaseSelect,
     Button as OUIAButton,
     Dropdown,
-    Menu,    
+    Menu,
 )
 from widgetastic_patternfly4.progress import Progress as PF4Progress
 
