@@ -30,8 +30,8 @@ class JobInvocationCreateView(BaseLoggedInView):
     @View.nested
     class category_and_template(WizardStepView):
         expander = Text(".//button[contains(.,'Category and template')]")
-        job_category = Select(locator='//div[button[@aria-label="Job category toggle"]]')
-        job_template = Select(locator='//div[button[@aria-label="Job template toggle"]]')
+        job_category = Select(locator='//div[*[@aria-label="Job category toggle"]]')
+        job_template = Select(locator='//div[div/*[@aria-label="Job template toggle"]]')
 
     @View.nested
     class target_hosts_and_inputs(WizardStepView):
