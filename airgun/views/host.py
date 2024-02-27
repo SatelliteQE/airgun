@@ -1,4 +1,5 @@
 import re
+import time
 
 from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
@@ -571,6 +572,7 @@ class HostRegisterView(BaseLoggedInView):
                     logger=self.logger,
                 )
                 self.general.__getattribute__(field).fill(field_value)
+                time.sleep(1)
 
 
 class RecommendationWidget(GenericLocatorWidget):
