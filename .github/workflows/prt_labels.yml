@@ -2,13 +2,18 @@ name: Remove the PRT label, for the new commit
 
 on:
   pull_request:
-    types: ["opened", "synchronize"]
+    types: ["synchronize"]
 
 jobs:
-    prt_labels:
-      name: remove the PRT label, if it is a new commit
+    prt_labels_remover:
+      name: remove the PRT label when amendments or new commits added to PR
       runs-on: ubuntu-latest
+      if: "(contains(github.event.pull_request.labels.*.name, 'PRT-Passed') || contains(github.event.pull_request.labels.*.name, 'PRT-Failed'))"
       steps:
+        - name: Avoid the race condition as PRT result will be cleaned 
+          run: |
+            echo "Avoiding the race condition if prt result will be cleaned" && sleep 60
+
         - name: Fetch the PRT status
           id: prt
           uses: omkarkhatavkar/wait-for-status-checks@main
