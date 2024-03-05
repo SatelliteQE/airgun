@@ -69,6 +69,18 @@ class JobInvocationEntity(BaseEntity):
         time.sleep(3)
         return view.target_hosts_and_inputs.read()
 
+    def read_hostgroups(self):
+        """Read host groups in selection"""
+        view = self.navigate_to(self, 'Run')
+        view.fill(
+            {
+                'category_and_template.job_category': 'Commands',
+                'category_and_template.job_template': 'Run Command - Script Default',
+                'target_hosts_and_inputs.targetting_type': 'Host groups',
+            }
+        )
+        return view.target_hosts_and_inputs.targets.items
+
 
 @navigator.register(JobInvocationEntity, 'All')
 class ShowAllJobs(NavigateStep):

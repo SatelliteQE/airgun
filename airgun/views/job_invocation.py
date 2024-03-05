@@ -54,6 +54,12 @@ class JobInvocationCreateView(BaseLoggedInView):
         ansible_roles_list = TextInput(id='ansible_roles_list')
         power_action = OUIASelect('OUIA-Generated-Select-single-34')
 
+        targetting_type = Select(locator='//div[button[@aria-haspopup="listbox"]]')
+        # https://bugzilla.redhat.com/show_bug.cgi?id=2265127
+        targets = Select(
+            locator='//div[contains(@data-ouia-component-id,"OUIA-Generated-Select-typeaheadmulti-")]'
+        )
+
     @View.nested
     class advanced_fields(WizardStepView):
         expander = Text(".//button[contains(.,'Advanced fields')]")
