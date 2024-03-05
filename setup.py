@@ -22,7 +22,7 @@ setup(
         'pytest',
         'wait_for',
         'webdriver-kaifuku',
-        'selenium==4.17.2',
+        'selenium==4.18.1',
         'widgetastic.core',
         'widgetastic.patternfly',
         'widgetastic.patternfly4',
