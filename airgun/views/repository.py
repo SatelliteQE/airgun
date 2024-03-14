@@ -140,6 +140,31 @@ class RepositoryCreateView(BaseLoggedInView):
         class SpecificHttpProxy(View):
             http_proxy = Select(id="http_proxy")
 
+    @repo_content.register('deb')
+    class DebianRepository(View):
+        upstream_url = TextInput(id='url')
+        releases = TextInput(id='deb_releases')
+        errata_url = TextInput(id='deb_errata_url')
+        components = TextInput(id='deb_components')
+        architectures = TextInput(id='deb_architectures')
+        verify_ssl = Checkbox(id='verify_ssl_on_sync')
+        upstream_username = TextInput(id='upstream_username')
+        upstream_password = TextInput(id='upstream_password')
+        auth_token = TextInput(id='ansible_collection_auth_token')
+        download_policy = Select(id='download_policy')
+        mirroring_policy = Select(id='mirroring_policy')
+        unprotected = Checkbox(id='unprotected')
+        gpg_key = Select(id='gpg_key_id')
+        ssl_ca_cert = Select(id='ssl_ca_cert_id')
+        ssl_client_cert = Select(id='ssl_client_cert_id')
+        ssl_client_key = Select(id='ssl_client_key_id')
+        http_proxy_policy = Select(id="http_proxy_policy")
+        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+
+        @proxy_policy.register('Use specific HTTP Proxy')
+        class SpecificHttpProxy(View):
+            http_proxy = Select(id="http_proxy")
+
     @repo_content.register('ansible collection')
     class AnsibleCollectionRepository(View):
         arch_restrict = Select(id='architecture_restricted')
