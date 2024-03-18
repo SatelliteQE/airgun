@@ -59,6 +59,7 @@ class ActivationKeyEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
+    sca_alert = Text('//div[contains(@class,"alert-warning")]')
 
     @property
     def is_displayed(self):
