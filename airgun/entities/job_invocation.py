@@ -21,6 +21,8 @@ class JobInvocationEntity(BaseEntity):
         """Run specific job"""
         view = self.navigate_to(self, 'Run')
         view.fill(values)
+        view.submit.expander.click()
+        self.browser.wait_for_element(view.submit.submit, exception=False)
         view.submit.click()
 
     def search(self, value):
