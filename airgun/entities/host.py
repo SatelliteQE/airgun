@@ -70,6 +70,11 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
+    def reset_search(self):
+        """This function loads a HostsView and clears the searchbox."""
+        view = HostsView(self.browser)
+        view.searchbox.clear()
+
     def host_status(self, value):
         """Get Host status"""
         view = self.navigate_to(self, 'All')
@@ -109,6 +114,12 @@ class HostEntity(BaseEntity):
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
+
+    def read_hosts_after_search(self, entity_name):
+        """read_hosts_after_search"""
+        view = self.navigate_to(self, 'All')
+        view.search(entity_name)
+        return view.table.read()
 
     def delete_interface(self, entity_name, interface_id):
         """Delete host network interface.
@@ -249,10 +260,14 @@ class HostEntity(BaseEntity):
         """
         view = self._select_action('Schedule Remote Job', entities_list)
         view.fill(values)
+        sleep(2)
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
         status_view = HostsJobInvocationStatusView(self.browser)
+        sleep(2)
+        self.browser.plugin.ensure_page_safe()
+        status_view.wait_displayed()
         if wait_for_results:
             status_view.wait_for_result(timeout=timeout)
         return status_view.read()
