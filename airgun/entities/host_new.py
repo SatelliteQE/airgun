@@ -244,11 +244,12 @@ class NewHostEntity(HostEntity):
     def schedule_job(self, entity_name, values):
         """Schedule a remote execution on selected host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe()
         view.wait_displayed()
+        self.browser.wait_for_element(view.schedule_job, exception=False)
         view.schedule_job.fill('Schedule a job')
         view = JobInvocationCreateView(self.browser)
         self.browser.plugin.ensure_page_safe()
-        view.wait_displayed()
         view.fill(values)
         view.submit.click()
 
