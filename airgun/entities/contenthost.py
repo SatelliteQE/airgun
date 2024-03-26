@@ -39,7 +39,8 @@ class ContentHostEntity(BaseEntity):
     def read(self, entity_name, widget_names=None):
         """Read content host details, optionally read only the widgets in widget_names."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.is_displayed
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
         return view.read(widget_names=widget_names)
 
     def read_legacy_ui(self, entity_name, widget_names=None):
