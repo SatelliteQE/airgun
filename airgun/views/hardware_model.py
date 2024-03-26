@@ -1,11 +1,12 @@
 from widgetastic.widget import Text, TextInput
-from widgetastic_patternfly import BreadCrumb, Button
+from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly4 import Dropdown
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
-from airgun.widgets import ConfirmationDialog, SatTable
+from airgun.widgets import Pf4ConfirmationDialog, SatTable
 
 
-class DeleteHardwareModelDialog(ConfirmationDialog):
+class DeleteHardwareModelDialog(Pf4ConfirmationDialog):
     confirm_dialog = Text(".//button[contains(normalize-space(.),'Delete')]")
     cancel_dialog = Text(".//button[normalize-space(.)='Cancel']")
 
@@ -18,7 +19,7 @@ class HardwareModelsView(BaseLoggedInView, SearchableViewMixinPF4):
         './/table',
         column_widgets={
             'Name': Text('.//a'),
-            'Actions': Button('Delete'),
+            4: Dropdown(),
         },
     )
 

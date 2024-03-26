@@ -46,7 +46,7 @@ class HardwareModelEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.click()
+        view.table.row(name=entity_name)[4].widget.item_select("Delete")
         view.delete_dialog.confirm()
         if err_message:
             view.flash.wait_displayed()
