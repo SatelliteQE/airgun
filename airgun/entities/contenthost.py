@@ -1,3 +1,5 @@
+from wait_for import wait_for
+
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
@@ -39,7 +41,6 @@ class ContentHostEntity(BaseEntity):
     def read(self, entity_name, widget_names=None):
         """Read content host details, optionally read only the widgets in widget_names."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.is_displayed
         return view.read(widget_names=widget_names)
 
     def read_legacy_ui(self, entity_name, widget_names=None):
@@ -242,6 +243,19 @@ class EditContentHost(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+    def post_navigate(self, _tries, *args, **kwargs):
+        wait_for(
+            lambda: self.am_i_here(*args, **kwargs),
+            timeout=5,
+            delay=1,
+            handle_exception=True,
+            logger=self.view.logger,
+        )
+
+    def am_i_here(self, *args, **kwargs):
+        entity_name = kwargs.get('entity_name')
+        return self.view.is_displayed and self.view.breadcrumb.locations[1].startswith(entity_name)
 
 
 @navigator.register(ContentHostEntity, 'Errata Details')

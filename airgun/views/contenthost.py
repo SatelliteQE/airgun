@@ -129,7 +129,7 @@ class ContentHostDetailsView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Content Hosts'
+            and self.breadcrumb.locations[0] == 'All Hosts'
             and len(self.breadcrumb.locations) > 1
         )
 
