@@ -49,6 +49,7 @@ class HardwareModelEntity(BaseEntity):
         view.table.row(name=entity_name)['Actions'].widget.click()
         view.delete_dialog.confirm()
         if err_message:
+            view.flash.wait_displayed()
             view.flash.assert_message(f"Danger alert: {err_message}")
             view.flash.dismiss()
             view.delete_dialog.cancel()
