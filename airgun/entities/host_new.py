@@ -1,11 +1,13 @@
 import time
 
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 
 from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.host_new import (
     AllAssignedRolesView,
+    EditAnsibleRolesView,
     EditSystemPurposeView,
     EnableTracerView,
     InstallPackagesView,
@@ -402,10 +404,24 @@ class NewHostEntity(HostEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def add_single_ansible_role(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        wait_for(lambda: view.ansible.roles.edit.is_displayed, timeout=5)
+        view.ansible.roles.edit.click()
+        wait_for(lambda: EditAnsibleRolesView(self.browser).addAnsibleRole.is_displayed, timeout=5)
+        edit_view = EditAnsibleRolesView(self.browser)
+        actions = [edit_view.addAnsibleRole, edit_view.selectRoles, edit_view.confirm]
+        for action in actions:
+            wait_for(lambda: edit_view.is_displayed, timeout=5)
+            action.click()
+
     def get_ansible_roles(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
+        wait_for(lambda: view.ansible.roles.table.is_displayed, timeout=5)
         return view.ansible.roles.table.read()
 
     def get_ansible_roles_modal(self, entity_name):
@@ -417,6 +433,18 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         return view.table.read()
+
+    def remove_ansible_role(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.ansible.roles.edit.click()
+        wait_for(lambda: view.ansible.roles.edit.click(), timeout=5)
+        edit_view = EditAnsibleRolesView(self.browser)
+        actions = [edit_view.hostAssignedAnsibleRoles, edit_view.unselectRoles, edit_view.confirm]
+        for action in actions:
+            wait_for(lambda: edit_view.is_displayed, timeout=5)
+            action.click()
 
     def enable_tracer(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
