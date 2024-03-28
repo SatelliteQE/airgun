@@ -6,6 +6,7 @@ from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.host_new import (
     AllAssignedRolesView,
+    EditAnsibleRolesView,
     EditSystemPurposeView,
     EnableTracerView,
     InstallPackagesView,
@@ -42,6 +43,7 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         # Run this read twice to navigate to the page and load it before reading
+        time.sleep(2)
         view.read(widget_names=widget_names)
         return view.read(widget_names=widget_names)
 
@@ -406,7 +408,9 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        return view.ansible.roles.table.read()
+        result = view.ansible.roles
+        time.sleep(2)
+        return result.table.read()
 
     def get_ansible_roles_modal(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
@@ -417,6 +421,20 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         return view.table.read()
+
+    def remove_ansible_roles(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.ansible.roles.edit.click()
+        ansible = EditAnsibleRolesView(self.browser)
+        if ansible.is_displayed:
+            time.sleep(2)
+            ansible.hostAssignedAnsibleRoles.click()
+        time.sleep(2)
+        ansible.unselectRoles.click()
+        time.sleep(2)
+        ansible.confirm.click()
 
     def enable_tracer(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
