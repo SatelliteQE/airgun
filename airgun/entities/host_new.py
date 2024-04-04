@@ -18,6 +18,7 @@ from airgun.views.host_new import (
     ParameterDeleteDialog,
     RemediationView,
 )
+from airgun.views.hostgroup import HostGroupEditView
 from airgun.views.job_invocation import JobInvocationCreateView
 
 global available_param_types
@@ -46,6 +47,70 @@ class NewHostEntity(HostEntity):
         # Run this read twice to navigate to the page and load it before reading
         view.read(widget_names=widget_names)
         return view.read(widget_names=widget_names)
+
+    def assign_role_to_hostgroup(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.overview.details.edit.click()
+        self.browser.switch_to_window(self.browser.window_handles[1])
+        hostgrp_view = HostGroupEditView(self.browser)
+        hostgrp_view.ansible_roles.more_item.click()
+        hostgrp_view.ansible_roles.select_pages.click()
+        assign_role = hostgrp_view.ansible_roles.available_role.read().split(". ")
+        if assign_role[1] == 'RedHatInsights.insights-client':
+            hostgrp_view.ansible_roles.available_role.click()
+        hostgrp_view.ansible_roles.submit.click()
+        self.browser.switch_to_window(self.browser.window_handles[0])
+        self.browser.close_window(self.browser.window_handles[1])
+
+    def remove_hostgroup_role(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.overview.details.edit.click()
+        self.browser.switch_to_window(self.browser.window_handles[1])
+        hostgrp_view = HostGroupEditView(self.browser)
+        assign_role = hostgrp_view.ansible_roles.assigned_role.read().split(". ")
+        if assign_role[1] == 'RedHatInsights.insights-client':
+            hostgrp_view.ansible_roles.assigned_role.click()
+        hostgrp_view.ansible_roles.submit.click()
+        self.browser.switch_to_window(self.browser.window_handles[0])
+        self.browser.close_window(self.browser.window_handles[1])
+
+    def assign_all_role_to_hostgroup(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.overview.details.edit.click()
+        self.browser.switch_to_window(self.browser.window_handles[-1])
+        self.browser.plugin.ensure_page_safe()
+        hostgrp_view = HostGroupEditView(self.browser)
+        hostgrp_view.ansible_roles.more_item.click()
+        hostgrp_view.ansible_roles.select_pages.click()
+        available_ansible_role = '//div[@class="available-roles-container col-sm-6"]/div[2]/div'
+        role_list = self.browser.selenium.find_elements("xpath", available_ansible_role)
+        for single_role in role_list:
+            single_role.click()
+        hostgrp_view.ansible_roles.submit.click()
+        self.browser.switch_to_window(self.browser.window_handles[0])
+        self.browser.close_window(self.browser.window_handles[-1])
+
+    def remove_all_role_from_hostgroup(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.overview.details.edit.click()
+        self.browser.switch_to_window(self.browser.window_handles[1])
+        hostgrp_view = HostGroupEditView(self.browser)
+        hostgrp_view.ansible_roles.click()
+        assigned_ansible_role = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
+        role_list = self.browser.selenium.find_elements("xpath", assigned_ansible_role)
+        for single_role in role_list:
+            single_role.click()
+        hostgrp_view.ansible_roles.submit.click()
+        self.browser.switch_to_window(self.browser.window_handles[0])
+        self.browser.close_window(self.browser.window_handles[1])
 
     def get_host_statuses(self, entity_name):
         """Read host statuses from Host Details page

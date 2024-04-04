@@ -1,4 +1,5 @@
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
@@ -64,6 +65,14 @@ class HostGroupEntity(BaseEntity):
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
+
+    def total_no_of_assigned_role(self, entity_name):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.ansible_roles.click()
+        assigned_ansible_role = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
+        role_list = self.browser.selenium.find_elements("xpath", assigned_ansible_role)
+        wait_for(lambda: int(role_list[-1].text.split(". ")[0]), timeout=30)
+        return int(role_list[-1].text.split(". ")[0])
 
 
 @navigator.register(HostGroupEntity, 'All')

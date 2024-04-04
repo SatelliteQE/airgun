@@ -120,7 +120,7 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class details(Card):
             ROOT = './/article[.//div[text()="Details"]]'
-
+            edit = Text('.//div[@class="pf-c-description-list__group"]/dd//div[2]')
             details = HostDetailsCard()
 
             power_operations = OUIAButton('power-status-dropdown-toggle')
