@@ -12,7 +12,6 @@ from widgetastic_patternfly import BreadCrumb
 from airgun.views.common import (
     BaseLoggedInView,
     SearchableViewMixin,
-    SearchableViewMixinPF4,
 )
 from airgun.widgets import (
     ActionsDropdown,
@@ -26,7 +25,7 @@ from airgun.widgets import (
 )
 
 
-class RepositoriesView(BaseLoggedInView, SearchableViewMixinPF4):
+class RepositoriesView(BaseLoggedInView, SearchableViewMixin):
     breadcrumb = BreadCrumb()
     new = Text("//button[contains(@href, '/repositories/new')]")
     sync = Text("//button[contains(@ng-click, 'syncSelectedRepositories')]")
