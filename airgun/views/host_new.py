@@ -528,6 +528,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
             assignedRoles = Text('.//a[contains(@href, "roles/all")]')
             edit = Button(locator='.//button[@aria-label="edit ansible roles"]')
+            noRoleAssign = Text('.//h5[contains(@class, "pf-c-title pf-m-4xl")]')
             table = Table(
                 locator='.//table[contains(@class, "pf-c-table")]',
                 column_widgets={'Name': Text('.//a')},
@@ -826,8 +827,13 @@ class ManageHostStatusesView(View):
 class EditAnsibleRolesView(View):
     """Edit Ansible Roles Modal"""
 
-    ROOT = ''
-    # No current representation for this Widget in Widgetastic
+    addAnsibleRole = Text('.//span[contains(text(),"RedHatInsights.insights-client")]')
+    confirm = Button(locator='.//button[@aria-label="submit ansible roles"]')
+    hostAssignedAnsibleRoles = Text(
+        './/button[@class="pf-c-dual-list-selector__item"]/span[1]//span[2]'
+    )
+    selectRoles = Button(locator='.//button[@aria-label="Add selected"]')
+    unselectRoles = Button(locator='.//button[@aria-label="Remove selected"]')
 
 
 class ModuleStreamDialog(Pf4ConfirmationDialog):
