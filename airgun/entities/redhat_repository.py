@@ -18,6 +18,7 @@ class RedHatRepositoryEntity(BaseEntity):
             eg: RPM, OSTree ...
         """
         view = self.navigate_to(self, 'All')
+        wait_for(lambda: view.search_box.is_displayed, timeout=10, delay=1)
         return view.search(value, category=category, types=types)
 
     def read(self, entity_name=None, category='Available', recommended_repo=None):
