@@ -159,7 +159,7 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
 
     @View.nested
     class discovered_repos(View):
-        discover_action = Text("//button[@type='submit']")
+        discover_action = Text("//button[@type='submit' and contains(., 'Discover')]")
         cancel_discovery = Text("//button[@ng-click='cancelDiscovery()']")
         repos = CreateDiscoveredReposView()
 
