@@ -29,7 +29,7 @@ class RhssoTwoFactorSuccessView(View, ClickableMixin):
 
 
 class RhssoTotpView(View, ClickableMixin):
-    totp = TextInput(id='totp')
+    totp = TextInput(id='otp')
     submit = Text('//input[@name="login"]')
 
     @property
