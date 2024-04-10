@@ -43,7 +43,8 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        wait_for(lambda: view.ansible.roles.noRoleAssign.is_displayed, timeout=5)
+        # Run this read twice to navigate to the page and load it before reading
+        view.read(widget_names=widget_names)
         return view.read(widget_names=widget_names)
 
     def get_host_statuses(self, entity_name):
@@ -420,7 +421,7 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        wait_for(lambda: view.ansible.roles.is_displayed, timeout=5)
+        wait_for(lambda: view.ansible.roles.table.is_displayed, timeout=5)
         return view.ansible.roles.table.read()
 
     def get_ansible_roles_modal(self, entity_name):
