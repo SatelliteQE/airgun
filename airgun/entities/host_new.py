@@ -300,6 +300,30 @@ class NewHostEntity(HostEntity):
         view.content.errata.table.wait_displayed()
         return view.read(widget_names="content.errata.table")
 
+    def get_errata_type_counts(self, entity_name):
+        """
+        Get errata counts for each type of errata on selected host.
+
+        Args:
+            entity_name: Name of the host.
+        Returns:
+            errata_counts (dict): Dictionary with counts of each type of errata.
+        """
+
+        errata_types = ['Security', 'Bugfix', 'Enhancement']
+        errata_counts = {type: 0 for type in errata_types}
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        view.content.errata.select()
+        for type in errata_types:
+            view.content.errata.wait_displayed()
+            view.content.errata.pagination.set_per_page(50)
+            view.content.errata.type_filter.fill(type)
+            self.browser.plugin.ensure_page_safe()
+            view.content.errata.table.wait_displayed()
+            errata_counts[type] = view.content.errata.table.row_count
+        return errata_counts
+
     def apply_erratas(self, entity_name, search=None):
         """Apply available errata on selected host based on searchbar result.
 
