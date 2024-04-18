@@ -1,4 +1,5 @@
 """Session controller which manages UI session"""
+
 from datetime import datetime
 import logging
 import os

@@ -1,6 +1,7 @@
 """Tools to help getting selenium and widgetastic browser instance to run UI
 tests.
 """
+
 import base64
 from contextlib import contextmanager
 from datetime import datetime

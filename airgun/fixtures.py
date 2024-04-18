@@ -5,6 +5,7 @@ Just add the following line into your `conftest.py`::
     pytest_plugins = ["airgun.fixtures"]
 
 """
+
 import pytest
 
 from airgun.session import Session
