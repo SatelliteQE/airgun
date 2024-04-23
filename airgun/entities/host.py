@@ -464,6 +464,7 @@ class EditHost(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Actions'].widget.fill('Edit')
+        self.view.wait_displayed()
 
 
 @navigator.register(HostEntity, 'Select Action')
