@@ -292,6 +292,46 @@ class NewHostEntity(HostEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def get_errata_table(
+        self,
+        entity_name,
+        installable=None,
+        severity=None,
+        search=None,
+        type=None,
+    ):
+        """Return the table of all errata entries, from Errata tab on selected host.
+        param: entity_name str: hostname to search for errata table
+
+        Optional: Filter by passing args (string):
+            param: installable str: filter errata by installability ('Yes' or 'No').
+            param: severity str: filter errata by severity.
+            param: search str: pass a search query to the searchbar, prior to reading.
+            param: type str: filter errata search by type.
+
+        note: all of the optional params being None, will result in no filtering.
+        """
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        view.content.errata.select()
+        # optional: filter by params that are not None
+        if installable is not None:
+            assert installable == 'Yes' or 'No', (
+                'installable_filter expected None or str, "Yes" or "No".'
+                f' Got: {installable}, ({type(installable)}).'
+            )
+            view.content.errata.installable_filter.fill(installable)
+        if type is not None:
+            view.content.errata.type_filter.fill(type)
+        if severity is not None:
+            view.content.errata.severity_filter.fill(severity)
+        if search is not None:
+            view.content.errata.searchbar.fill(search)
+        # displayed the table with or without filters
+        view.content.errata.table.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.content.errata.table.read()
+
     def get_errata_by_type(self, entity_name, type):
         """List errata based on type and return table"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
