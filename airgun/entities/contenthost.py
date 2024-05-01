@@ -161,14 +161,18 @@ class ContentHostEntity(BaseEntity):
         return view.read()
 
     def search_errata(self, entity_name, errata_id, environment=None):
-        """Search for specific errata applicable for content host.
+        """Search for specific errata applicable to content host.
+        Check the legacy Contenthost page -> Details -> Errata tab.
 
         :param str entity_name: the content hosts name.
         :param str errata_id: errata id or title, e.g. 'RHEA-2012:0055'
         :param str optional environment: lifecycle environment to filter by.
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
+        view.wait_displayed()
         view.errata.search(errata_id, lce=environment)
+        view.errata.table.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
         return view.errata.table.read()
 
     def read_errata_details(self, entity_name, errata_id, environment=None):
