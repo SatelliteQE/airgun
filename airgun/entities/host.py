@@ -25,6 +25,7 @@ from airgun.views.host import (
     HostsDeleteTaskDetailsView,
     HostsJobInvocationCreateView,
     HostsJobInvocationStatusView,
+    HostStatusesView,
     HostsUnassignCompliancePolicy,
     HostsView,
     RecommendationListView,
@@ -247,6 +248,19 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.export.click()
         return self.browser.save_downloaded_file()
+
+    def host_statuses(self):
+        view = self.navigate_to(self, 'Host Statuses')
+        view.wait_displayed()
+        statuses = []
+        view.status_green_total.wait_displayed()
+        statuses.append({'name': 'green_total', 'count': view.status_green_total.read()})
+        statuses.append({'name': 'green_owned', 'count': view.status_green_owned.read()})
+        statuses.append({'name': 'yellow_total', 'count': view.status_yellow_total.read()})
+        statuses.append({'name': 'yellow_owned', 'count': view.status_yellow_owned.read()})
+        statuses.append({'name': 'red_total', 'count': view.status_red_total.read()})
+        statuses.append({'name': 'red_owned', 'count': view.status_red_owned.read()})
+        return statuses
 
     def schedule_remote_job(self, entities_list, values, timeout=60, wait_for_results=True):
         """Apply Schedule Remote Job action to the hosts names in entities_list
@@ -544,3 +558,13 @@ class HostsManageColumns(NavigateStep):
     def step(self, *args, **kwargs):
         """Open the Manage columns dialog"""
         self.parent.manage_columns.click()
+
+
+@navigator.register(HostEntity, 'Host Statuses')
+class HostStatuses(NavigateStep):
+
+    VIEW = HostStatusesView
+
+    def step(self, *args, **kwargs):
+        """Navigate to Monitor -> Host Statuses"""
+        self.view.menu.select('Monitor', 'Host Statuses')
