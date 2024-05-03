@@ -43,22 +43,21 @@ class NewContentViewEntity(BaseEntity):
             view.fill(values)
         view.next.click()
         view.finish.click()
-        # view.progressbar.wait_for_result(delay=0.01)
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
         return view.versions.table.read()
 
-    def read_version_table(self, entity_name, version, version_table_name, search_param=None):
+    def read_version_table(self, entity_name, version, tab_name, search_param=None):
         """Reads a specific table for a CV Version"""
         view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
         # This allows dynamic access to the proper table
-        getattr(view, version_table_name).table.wait_displayed()
+        getattr(view, tab_name).table.wait_displayed()
         if search_param:
-            getattr(view, version_table_name).searchbox.search(search_param)
-        return getattr(view, version_table_name).table.read()
+            getattr(view, tab_name).searchbox.search(search_param)
+        return getattr(view, tab_name).table.read()
 
     def create_filter(self, entity_name, filter_name, filter_type, filter_inclusion):
         """Create a new filter on a CV - filter_type should be one of the available dropdown options
