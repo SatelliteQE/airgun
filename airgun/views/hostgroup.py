@@ -1,6 +1,6 @@
 from widgetastic.widget import ConditionalSwitchableView, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button as PF4Button
+from widgetastic_patternfly4 import Button as PF4Button, Pagination as PF4Pagination
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
 from airgun.widgets import (
@@ -79,6 +79,7 @@ class HostGroupCreateView(BaseLoggedInView):
     class ansible_roles(SatTab):
         TAB_NAME = 'Ansible Roles'
         resources = MultiSelect(id='ms-hostgroup_ansible_role_ids')
+        pagination = PF4Pagination()
 
     @View.nested
     class puppet_enc(SatTab):
