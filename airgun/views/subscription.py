@@ -154,6 +154,13 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
 
 class ManageManifestView(BaseLoggedInView):
     ROOT = '//div[@role="dialog" and @tabindex][div//h4[normalize-space(.)="Manage Manifest"]]'
+    manifest_alert = Text(
+        '//*[@id="manifest-history-tabs-pane-1"]/div/h3//following-sibling::div[@aria-label="Warning Alert" or @aria-label="Danger Alert"]'
+    )
+    manifest_expire_header = Text('//*[@id="manifest-history-tabs-pane-1"]//following::div/h4')
+    manifest_expire_message = Text(
+        '//*[@id="manifest-history-tabs-pane-1"]//following::div/div[2]/span'
+    )
     close_button = Button('Close')
 
     @View.nested
