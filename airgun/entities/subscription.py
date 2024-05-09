@@ -103,14 +103,18 @@ class SubscriptionEntity(BaseEntity):
             manage_view.close_button.click()
         return delete_message
 
-    def read_expire_manifest_message(self):  # new changes
+    def read_expire_manifest_message(self):
         """Read message displayed about 'manifest expiration' at Subscription Manifest section"""
+        expire_manifest_header = None
+        expire_manifest_message = None
         view = self.navigate_to(self, 'Manage Manifest')
         view.wait_animation_end()
-        if not view.manifest_alert.is_displayed:
-            return None
-        expire_manifest_header = view.manifest_expire_header.read()
-        expire_manifest_message = view.manifest_expire_message.read()
+        if view.manifest_alert.is_displayed:
+            expire_manifest_header = view.manifest_expire_header.read()
+            expire_manifest_message = view.manifest_expire_message.read()
+        else:
+            # Subscription Manifest header & message is not present
+            expire_manifest_message = 'Manifest expire alert not found'
         # close opened modal dialogs views
         manage_view = ManageManifestView(self.browser)
         if manage_view.is_displayed:
