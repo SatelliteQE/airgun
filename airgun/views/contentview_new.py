@@ -165,7 +165,9 @@ class ContentViewEditView(BaseLoggedInView):
 
     @View.nested
     class versions(Tab):
-        TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/versions")]')
+        TAB_LOCATOR = ParametrizedLocator(
+            '//a[contains(@href, "#/versions") and @data-ouia-component-id="routed-tabs-tab-versions"]'
+        )
         searchbox = PF4Search()
         table = PatternflyTable(
             component_id="content-view-versions-table",
