@@ -67,10 +67,10 @@ class HostGroupEntity(BaseEntity):
         view.flash.dismiss()
 
     def total_no_of_assigned_role(self, entity_name):
+        """Count of assigned role to the host group"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.ansible_roles.click()
-        assigned_ansible_role = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
-        role_list = self.browser.selenium.find_elements("xpath", assigned_ansible_role)
+        role_list = self.browser.elements(view.ansible_roles.assigned_ansible_role, parent=self)
         wait_for(lambda: int(role_list[-1].text.split(". ")[0]), timeout=30)
         return int(role_list[-1].text.split(". ")[0])
 

@@ -152,11 +152,8 @@ class HostGroupEditView(HostGroupCreateView):
         TAB_NAME = 'Ansible Roles'
         more_item = Text('//span[@class="pf-c-options-menu__toggle-button-icon"]')
         select_pages = Text('//ul[@class="pf-c-options-menu__menu"]/li[6]/button')
-        available_role = Text(
-            '//div[@class="available-roles-container col-sm-6"]/div[2]//div[contains(text(), "RedHatInsights.insights-client")]'
-        )
-        assigned_role = Text(
-            '//div[@class="assigned-roles-container col-sm-6"]/div[2]//div[contains(text(), "RedHatInsights.insights-client")]'
-        )
+        available_role = '//div[@class="available-roles-container col-sm-6"]/div[2]/div'
+        assigned_role = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
+        assigned_ansible_role = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
         no_of_available_role = Text('//span[@class="pf-c-options-menu__toggle-text"]//b[2]')
         submit = Text('//input[@name="commit"]')

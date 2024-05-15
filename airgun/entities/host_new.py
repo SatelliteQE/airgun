@@ -25,6 +25,22 @@ global available_param_types
 available_param_types = ['string', 'boolean', 'integer', 'real', 'array', 'hash', 'yaml', 'json']
 
 
+def navigate_to_edit_view(func):
+    def _decorator(self, entity_name=None, role_name=None):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name, role=role_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.overview.details.edit.click()
+        self.browser.switch_to_window(self.browser.window_handles[1])
+        host_group_view = HostGroupEditView(self.browser)
+        func(self, entity_name, role_name)
+        host_group_view.ansible_roles.submit.click()
+        self.browser.switch_to_window(self.browser.window_handles[0])
+        self.browser.close_window(self.browser.window_handles[1])
+
+    return _decorator
+
+
 class NewHostEntity(HostEntity):
     def create(self, values):
         """Create new host entity"""
@@ -48,69 +64,54 @@ class NewHostEntity(HostEntity):
         view.read(widget_names=widget_names)
         return view.read(widget_names=widget_names)
 
-    def assign_role_to_hostgroup(self, entity_name):
-        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
-        view.overview.details.edit.click()
-        self.browser.switch_to_window(self.browser.window_handles[1])
-        hostgrp_view = HostGroupEditView(self.browser)
-        hostgrp_view.ansible_roles.more_item.click()
-        hostgrp_view.ansible_roles.select_pages.click()
-        assign_role = hostgrp_view.ansible_roles.available_role.read().split(". ")
-        if assign_role[1] == 'RedHatInsights.insights-client':
-            hostgrp_view.ansible_roles.available_role.click()
-        hostgrp_view.ansible_roles.submit.click()
-        self.browser.switch_to_window(self.browser.window_handles[0])
-        self.browser.close_window(self.browser.window_handles[1])
+    @navigate_to_edit_view
+    def assign_role_to_hostgroup(self, entity_name, role_name):
+        """Assign a single Ansible role from the host group based on user input
 
-    def remove_hostgroup_role(self, entity_name):
-        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
-        view.overview.details.edit.click()
-        self.browser.switch_to_window(self.browser.window_handles[1])
-        hostgrp_view = HostGroupEditView(self.browser)
-        assign_role = hostgrp_view.ansible_roles.assigned_role.read().split(". ")
-        if assign_role[1] == 'RedHatInsights.insights-client':
-            hostgrp_view.ansible_roles.assigned_role.click()
-        hostgrp_view.ansible_roles.submit.click()
-        self.browser.switch_to_window(self.browser.window_handles[0])
-        self.browser.close_window(self.browser.window_handles[1])
+        Args:
+            entity_name: Name of the host
+            role_name: Name of the ansible role
+        """
+        host_group_view = HostGroupEditView(self.browser)
+        host_group_view.ansible_roles.more_item.click()
+        host_group_view.ansible_roles.select_pages.click()
+        role_list = self.browser.elements(host_group_view.ansible_roles.available_role, parent=self)
+        for single_role in role_list[1:]:
+            if single_role.text.split(". ")[1] == role_name:
+                single_role.click()
 
-    def assign_all_role_to_hostgroup(self, entity_name):
-        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
-        view.overview.details.edit.click()
-        self.browser.switch_to_window(self.browser.window_handles[-1])
-        self.browser.plugin.ensure_page_safe()
-        hostgrp_view = HostGroupEditView(self.browser)
-        hostgrp_view.ansible_roles.more_item.click()
-        hostgrp_view.ansible_roles.select_pages.click()
-        available_ansible_role = '//div[@class="available-roles-container col-sm-6"]/div[2]/div'
-        role_list = self.browser.selenium.find_elements("xpath", available_ansible_role)
+    @navigate_to_edit_view
+    def remove_hostgroup_role(self, entity_name, role_name):
+        """Remove a single Ansible role from the host group based on user input
+
+        Args:
+            entity_name: Name of the host
+            role_name: Name of the ansible role
+        """
+        host_group_view = HostGroupEditView(self.browser)
+        role_list = self.browser.elements(host_group_view.ansible_roles.assigned_role, parent=self)
+        for single_role in role_list[1:]:
+            if single_role.text.split(". ")[1] == role_name:
+                single_role.click()
+
+    @navigate_to_edit_view
+    def assign_all_role_to_hostgroup(self, entity_name, role_name=None):
+        """Assign all Ansible roles from the host group"""
+        host_group_view = HostGroupEditView(self.browser)
+        host_group_view.ansible_roles.more_item.click()
+        host_group_view.ansible_roles.select_pages.click()
+        role_list = self.browser.elements(host_group_view.ansible_roles.available_role, parent=self)
         for single_role in role_list:
             single_role.click()
-        hostgrp_view.ansible_roles.submit.click()
-        self.browser.switch_to_window(self.browser.window_handles[0])
-        self.browser.close_window(self.browser.window_handles[-1])
 
-    def remove_all_role_from_hostgroup(self, entity_name):
-        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
-        view.overview.details.edit.click()
-        self.browser.switch_to_window(self.browser.window_handles[1])
-        hostgrp_view = HostGroupEditView(self.browser)
-        hostgrp_view.ansible_roles.click()
-        assigned_ansible_role = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
-        role_list = self.browser.selenium.find_elements("xpath", assigned_ansible_role)
+    @navigate_to_edit_view
+    def remove_all_role_from_hostgroup(self, entity_name, role_name=None):
+        """Remove all Ansible roles from the host group"""
+        host_group_view = HostGroupEditView(self.browser)
+        host_group_view.ansible_roles.click()
+        role_list = self.browser.elements(host_group_view.ansible_roles.assigned_role, parent=self)
         for single_role in role_list:
             single_role.click()
-        hostgrp_view.ansible_roles.submit.click()
-        self.browser.switch_to_window(self.browser.window_handles[0])
-        self.browser.close_window(self.browser.window_handles[1])
 
     def get_host_statuses(self, entity_name):
         """Read host statuses from Host Details page
