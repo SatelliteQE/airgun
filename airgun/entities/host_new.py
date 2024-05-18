@@ -325,6 +325,7 @@ class NewHostEntity(HostEntity):
         """Filter installed packages on host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.content.packages.select()
+        view.content.packages.table.wait_displayed()
         view.content.packages.searchbar.fill(search)
         # wait for filter to apply
         self.browser.plugin.ensure_page_safe()
