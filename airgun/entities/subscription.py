@@ -118,7 +118,6 @@ class SubscriptionEntity(BaseEntity):
         if view.manifest.expire_date.is_displayed:
             expire_manifest_date = view.manifest.expire_date.read()
         else:
-            # Subscription Manifest expire date is not present
             raise Exception('Manifest expire date not found')
         # close opened modal dialogs views
         manage_view = ManageManifestView(self.browser)
