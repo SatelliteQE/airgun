@@ -161,9 +161,13 @@ class ManageManifestView(BaseLoggedInView):
         alert_message = Text(
             '//div[@id="manifest-history-tabs-pane-1"]/div/h3//following-sibling::div[@aria-label="Warning Alert" or @aria-label="Danger Alert"]'
         )
-        expire_header = Text('//div[@id="manifest-history-tabs-pane-1"]//following::div/h4')
-        expire_message = Text('//div[@id="manifest-history-tabs-pane-1"]//following::div[1]/div[2]/span')
-        expire_date = Text('//div[@id="manifest-history-tabs-pane-1"]/div[1]/div[3]/div[2]')
+        expire_header = Text('//div[@id="manifest-history-tabs-pane-1"]/div/div/h4')
+        expire_message = Text(
+            '//div[@id="manifest-history-tabs-pane-1"]/div/div/h4//following-sibling::div'
+        )
+        expire_date = Text(
+            '//div[@id="manifest-history-tabs-pane-1"]/div/hr//following-sibling::div[2]/div[2]'
+        )
         red_hat_cdn_url = TextInput(id='cdnUrl')
         manifest_file = FileInput(id='usmaFile')
         refresh_button = Button('Refresh')
