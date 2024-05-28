@@ -98,6 +98,8 @@ class DiscoveredHostsEntity(BaseEntity):
         else:
             view.customize_create.click()
             discovered_host_edit_view = DiscoveredHostEditProvisioningView(self.browser)
+            if 'operating_system.root_password' in host_values:
+                discovered_host_edit_view.operating_system.disable_passwd.click()
             discovered_host_edit_view.fill(host_values)
             self.browser.click(discovered_host_edit_view.submit, ignore_ajax=True)
             self.browser.plugin.ensure_page_safe(timeout='120s')
