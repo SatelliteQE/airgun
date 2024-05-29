@@ -375,6 +375,7 @@ class HostCreateView(BaseLoggedInView):
         ptable = FilteredDropdown(id='host_ptable')
         disk = TextInput(id='host_disk')
         root_password = TextInput(id='host_root_pass')
+        disable_passwd = Text('//a[@id="disable-pass-btn"]')
 
     @View.nested
     class interfaces(SatTab):
