@@ -129,6 +129,12 @@ class NewContentViewEntity(BaseEntity):
         view.wait_displayed()
         return view.table.read()
 
+    def click_version_dropdown(self, entity_name, version, dropdown_option):
+        """Clicks a specific dropdown option for a CV Version"""
+        view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        return view.version_dropdown.item_select(dropdown_option)
+
 
 @navigator.register(NewContentViewEntity, 'All')
 class ShowAllContentViewsScreen(NavigateStep):
