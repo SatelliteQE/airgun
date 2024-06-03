@@ -200,6 +200,20 @@ class HostInterface(View):
         return self.browser.wait_for_element(self.title, visible=True, exception=False) is not None
 
 
+class HostStatusesView(BaseLoggedInView):
+    title = Text("//h5[normalize-space(.)='Host Status Overview']")
+    status_green_total = Text("//div[contains(@class, 'status-count')][1]/a[1]")
+    status_green_owned = Text("//div[contains(@class, 'status-count')][1]/a[2]")
+    status_yellow_total = Text("//div[contains(@class, 'status-count')][2]/span[1]")
+    status_yellow_owned = Text("//div[contains(@class, 'status-count')][2]/span[2]")
+    status_red_total = Text("//div[contains(@class, 'status-count')][3]/a[1]")
+    status_red_owned = Text("//div[contains(@class, 'status-count')][3]/a[2]")
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
 class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
     manage_columns = PF4Button('manage-columns-button')
