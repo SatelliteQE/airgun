@@ -230,7 +230,7 @@ class Session:
             not risen not to shadow real session result.
         """
         if self.browser is None:
-            # browser was never started, don't do anything
+            # browser hasn't been started or was already closed, don't do anything
             return
         LOGGER.info('Stopping UI session %r for user %r', self.name, self._user)
         passed = True if exc_type is None else False
@@ -240,7 +240,7 @@ class Session:
         except Exception as err:  # - TODO: fix bare except
             LOGGER.exception(err)
         finally:
-            self._factory.finalize(passed)
+            self.browser = self._factory.finalize(passed)
 
     def _open(self, entity):
         """Initializes requested entity. If this is first time session
