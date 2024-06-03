@@ -9,6 +9,7 @@ from airgun.views.contentview_new import (
     ContentViewCreateView,
     ContentViewEditView,
     ContentViewTableView,
+    ContentViewVersionDetailsView,
     ContentViewVersionPublishView,
     CreateFilterView,
     EditFilterView,
@@ -42,11 +43,21 @@ class NewContentViewEntity(BaseEntity):
             view.fill(values)
         view.next.click()
         view.finish.click()
-        view.progressbar.wait_for_result(delay=0.01)
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
         return view.versions.table.read()
+
+    def read_version_table(self, entity_name, version, tab_name, search_param=None):
+        """Reads a specific table for a CV Version"""
+        view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        # This allows dynamic access to the proper table
+        getattr(view, tab_name).table.wait_displayed()
+        if search_param:
+            getattr(view, tab_name).searchbox.search(search_param)
+        return getattr(view, tab_name).table.read()
 
     def create_filter(self, entity_name, filter_name, filter_type, filter_inclusion):
         """Create a new filter on a CV - filter_type should be one of the available dropdown options
@@ -182,3 +193,18 @@ class EditContentView(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+
+@navigator.register(NewContentViewEntity, 'Version')
+class ShowContentViewVersionDetails(NavigateStep):
+    """Navigate to Content View Version screen for a specific Version."""
+
+    VIEW = ContentViewVersionDetailsView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'Edit', **kwargs)
+
+    def step(self, *args, **kwargs):
+        version = kwargs.get('version')
+        self.parent.versions.search(version)
+        self.parent.versions.table.row(version=version)['Version'].widget.click()
