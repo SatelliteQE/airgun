@@ -307,7 +307,7 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
         )
         searchbox = PF4Search()
         table = PatternflyTable(
-            component_id="content-view-version-details-rpm-packages-table",
+            component_id='content-view-version-details-rpm-packages-table',
             column_widgets={
                 'Name': Text('.//a'),
                 'Type': Text('.//a'),
@@ -323,7 +323,7 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
         )
         searchbox = PF4Search()
         table = PatternflyTable(
-            component_id="content-view-version-details-rpm-package-groups-table",
+            component_id='content-view-version-details-rpm-package-groups-table',
             column_widgets={
                 'Name': Text('.//a'),
                 'Repository': Text('.//a'),
@@ -337,7 +337,7 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
         )
         searchbox = PF4Search()
         table = PatternflyTable(
-            component_id="content-view-version-details-errata-table",
+            component_id='content-view-version-details-errata-table',
             column_widgets={
                 'Errata ID': Text('.//a'),
                 'Title': Text('.//a'),
