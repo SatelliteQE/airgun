@@ -18,10 +18,27 @@ from airgun.views.host_new import (
     ParameterDeleteDialog,
     RemediationView,
 )
+from airgun.views.hostgroup import HostGroupEditView
 from airgun.views.job_invocation import JobInvocationCreateView
 
 global available_param_types
 available_param_types = ['string', 'boolean', 'integer', 'real', 'array', 'hash', 'yaml', 'json']
+
+
+def navigate_to_edit_view(func):
+    def _decorator(self, entity_name=None, role_name=None):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name, role=role_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.overview.details.edit.click()
+        self.browser.switch_to_window(self.browser.window_handles[1])
+        host_group_view = HostGroupEditView(self.browser)
+        func(self, entity_name, role_name)
+        host_group_view.ansible_roles.submit.click()
+        self.browser.switch_to_window(self.browser.window_handles[0])
+        self.browser.close_window(self.browser.window_handles[1])
+
+    return _decorator
 
 
 class NewHostEntity(HostEntity):
@@ -46,6 +63,55 @@ class NewHostEntity(HostEntity):
         # Run this read twice to navigate to the page and load it before reading
         view.read(widget_names=widget_names)
         return view.read(widget_names=widget_names)
+
+    @navigate_to_edit_view
+    def assign_role_to_hostgroup(self, entity_name, role_name):
+        """Assign a single Ansible role from the host group based on user input
+
+        Args:
+            entity_name: Name of the host
+            role_name: Name of the ansible role
+        """
+        host_group_view = HostGroupEditView(self.browser)
+        host_group_view.ansible_roles.more_item.click()
+        host_group_view.ansible_roles.select_pages.click()
+        role_list = self.browser.elements(host_group_view.ansible_roles.available_role, parent=self)
+        for single_role in role_list[1:]:
+            if single_role.text.split(". ")[1] == role_name:
+                single_role.click()
+
+    @navigate_to_edit_view
+    def remove_hostgroup_role(self, entity_name, role_name):
+        """Remove a single Ansible role from the host group based on user input
+
+        Args:
+            entity_name: Name of the host
+            role_name: Name of the ansible role
+        """
+        host_group_view = HostGroupEditView(self.browser)
+        role_list = self.browser.elements(host_group_view.ansible_roles.assigned_role, parent=self)
+        for single_role in role_list[1:]:
+            if single_role.text.split(". ")[1] == role_name:
+                single_role.click()
+
+    @navigate_to_edit_view
+    def assign_all_role_to_hostgroup(self, entity_name, role_name=None):
+        """Assign all Ansible roles from the host group"""
+        host_group_view = HostGroupEditView(self.browser)
+        host_group_view.ansible_roles.more_item.click()
+        host_group_view.ansible_roles.select_pages.click()
+        role_list = self.browser.elements(host_group_view.ansible_roles.available_role, parent=self)
+        for single_role in role_list:
+            single_role.click()
+
+    @navigate_to_edit_view
+    def remove_all_role_from_hostgroup(self, entity_name, role_name=None):
+        """Remove all Ansible roles from the host group"""
+        host_group_view = HostGroupEditView(self.browser)
+        host_group_view.ansible_roles.click()
+        role_list = self.browser.elements(host_group_view.ansible_roles.assigned_role, parent=self)
+        for single_role in role_list:
+            single_role.click()
 
     def get_host_statuses(self, entity_name):
         """Read host statuses from Host Details page
