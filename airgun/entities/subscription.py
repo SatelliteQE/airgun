@@ -176,7 +176,7 @@ class SubscriptionEntity(BaseEntity):
     def read_subscriptions(self):
         """Return subscriptions table"""
         view = self.navigate_to(self, 'All')
-        view.wait_displayed(timeout=10, delay=1)
+        view.wait_displayed(timeout=60, delay=10)
         return view.table.read()
 
 
