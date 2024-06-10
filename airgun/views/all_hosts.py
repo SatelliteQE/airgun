@@ -8,6 +8,7 @@ from airgun.views.common import (
     BaseLoggedInView,
     SearchableViewMixinPF4,
 )
+from airgun.views.host_new import ManageColumnsView, PF4CheckboxTreeView
 
 
 class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -18,6 +19,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     bulk_actions = Dropdown(locator='.//div[@data-ouia-component-id="action-buttons-dropdown"]')
     table_loading = Text("//h5[normalize-space(.)='Loading']")
     no_results = Text("//h5[normalize-space(.)='No Results']")
+    manage_columns = Button("Manage columns")
     table = PatternflyTable(
         component_id='table',
         column_widgets={
@@ -64,3 +66,29 @@ class BulkHostDeleteDialog(View):
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+class AllHostsCheckboxTreeView(PF4CheckboxTreeView):
+    """Small tweaks to work with All Hosts"""
+
+    CHECKBOX_LOCATOR = './/*[self::span|self::label][contains(@class, "pf-c-tree-view__node-text")]/preceding-sibling::span/input[@type="checkbox"]'
+
+
+class AllHostsManageColumnsView(ManageColumnsView):
+    """Manage columns modal from Hosts page, small tweaks to work with All Hosts"""
+
+    ROOT = './/div[@data-ouia-component-id="manage-columns-modal"]'
+
+    def read(self):
+        """
+        Get labels and values of all checkboxes in the dialog.
+
+        :return dict: mapping of `label: value` items
+        """
+        return self.checkbox_group.read()
+
+    def fill(self, values):
+        """
+        Overwritten to ignore the "Expand tree" functionality
+        """
+        self.checkbox_group.fill(values)
