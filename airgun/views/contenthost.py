@@ -143,6 +143,7 @@ class ContentHostDetailsView(BaseLoggedInView):
         description = EditableEntry(name='Description')
         type = ReadOnlyEntry(name='Type')
         virtual_guests = ReadOnlyEntry(name='Virtual Guests')
+        virtual_host = ReadOnlyEntry(name='Virtual Host')
         registered_through = ReadOnlyEntry(name='Registered Through')
         # Subscriptions
         subscription_status = ReadOnlyEntry(name='Subscription Status')
