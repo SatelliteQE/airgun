@@ -144,6 +144,7 @@ class ContentHostDetailsView(BaseLoggedInView):
         type = ReadOnlyEntry(name='Type')
         katello_agent = ReadOnlyEntry(name='Katello Agent')
         virtual_guests = ReadOnlyEntry(name='Virtual Guests')
+        virtual_host = ReadOnlyEntry(name='Virtual Host')
         registered_through = ReadOnlyEntry(name='Registered Through')
         # Subscriptions
         subscription_status = ReadOnlyEntry(name='Subscription Status')
