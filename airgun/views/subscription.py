@@ -137,12 +137,13 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
     columns_filter_checkboxes = SubscriptionColumnsFilter(
         ".//form[div[contains(@class, 'filter')]]/div/i"
     )
+    table_loading = Text("//h5[normalize-space(.)='Loading']")
 
     @property
     def is_displayed(self):
         return (
-            self.browser.wait_for_element('div#subscriptions-table', timeout=10, exception=False)
-            is not None
+            self.browser.wait_for_element(self.table_loading, exception=False) is None
+            and self.browser.wait_for_element(self.table, exception=False) is not None
         )
 
     def is_searchable(self):
