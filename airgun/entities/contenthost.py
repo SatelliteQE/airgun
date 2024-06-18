@@ -119,7 +119,7 @@ class ContentHostEntity(BaseEntity):
 
     def search_package(self, entity_name, package_name):
         """Search for specific package installed in content host"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
         view.packages_installed.search(package_name)
         return view.packages_installed.table.read()
 
@@ -137,13 +137,14 @@ class ContentHostEntity(BaseEntity):
         """Install errata on a content host
 
         :param name: content host name to apply errata on
-        :param errata_id: errata id or title, e.g. 'RHEA-2012:0055'
+        :param errata_id: str: errata id or title, e.g. 'RHEA-2012:0055'
+            or pass "All" to select all available errata available for host,
         :param str install_via: via which mean to install errata. Available
             options: "katello", "rex", "rex_customize"
 
         :return: Returns a dict containing task status details
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
         if errata_id == "All":
             view.errata.select_all.fill(True)
         else:

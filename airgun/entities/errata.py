@@ -5,9 +5,9 @@ from airgun.utils import retry_navigation
 from airgun.views.errata import (
     ErrataDetailsView,
     ErrataInstallationConfirmationView,
-    ErrataTaskDetailsView,
     ErratumView,
 )
+from airgun.views.job_invocation import JobInvocationStatusView
 
 
 class ErrataEntity(BaseEntity):
@@ -59,11 +59,16 @@ class ErrataEntity(BaseEntity):
             view.content_hosts.environment_filter.fill(environment)
         return view.read(widget_names=widget_names)
 
-    def install(self, entity_name, host_name):
+    def install(self, entity_name, host_names, environment=None):
         """Install errata on content host.
 
         :param str entity_name: errata id or title
-        :param str host_name: content host name to apply errata on
+        :param str host_names: content host name to apply errata on.
+            pass a single str hostname,
+            or pass 'All' for any available hosts,
+            or pass a list of str hostnames.
+        :param str environment: name of lifecycle environment to scope errata.
+            default: None
         """
         view = self.navigate_to(
             self,
@@ -73,13 +78,31 @@ class ErrataEntity(BaseEntity):
             installable=False,
             repo=None,
         )
-        view.content_hosts.search(host_name)
-        view.content_hosts.table.row(name=host_name)[0].fill(True)
+        if environment:
+            view.content_hosts.environment_filter.fill(environment)
+        view.content_hosts.wait_displayed()
+
+        if host_names == 'All':
+            # select_all on table, check if single or multiple hosts
+            view.content_hosts.select_all.fill(True)
+        elif isinstance(host_names, list):
+            # find and select hostnames in table from list
+            for hostname in host_names:
+                view.content_hosts.table.row(name=hostname)[0].fill(True)
+        else:
+            # search and select the single passed hostname
+            view.content_hosts.search(host_names)
+            view.content_hosts.wait_displayed()
+            view.content_hosts.table.row(name=host_names)[0].fill(True)
+        view.content_hosts.wait_displayed()
         view.content_hosts.apply.click()
+        # brought to confirmation page
         view = ErrataInstallationConfirmationView(view.browser)
+        view.wait_displayed()
         view.confirm.click()
-        view = ErrataTaskDetailsView(view.browser)
-        view.progressbar.wait_for_result()
+        # wait for redirect to task details page
+        view = JobInvocationStatusView(view.browser)
+        view.wait_for_result(delay=0.01, timeout=1200)
         return view.read()
 
     def search_content_hosts(self, entity_name, value, environment=None):
