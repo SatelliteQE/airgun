@@ -144,12 +144,6 @@ class ContentHostDetailsView(BaseLoggedInView):
         virtual_guests = ReadOnlyEntry(name='Virtual Guests')
         virtual_host = ReadOnlyEntry(name='Virtual Host')
         registered_through = ReadOnlyEntry(name='Registered Through')
-        # Subscriptions
-        subscription_status = ReadOnlyEntry(name='Subscription Status')
-        details = ReadOnlyEntry(name='Details')
-        auto_attach = EditableEntryCheckbox(name='Auto-Attach')
-        # System Purpose
-        system_purpose_status = ReadOnlyEntry(name='System Purpose Status')
         service_level = EditableEntrySelect(name='Service Level (SLA)')
         usage_type = EditableEntrySelect(name='Usage Type')
         role = EditableEntrySelect(name='Role')
@@ -303,7 +297,6 @@ class ContentHostDetailsView(BaseLoggedInView):
     class repository_sets(SatTab, SearchableViewMixin):
         TAB_NAME = 'Repository Sets'
 
-        show_all = Checkbox(locator=".//input[contains(@ng-model, 'contentAccessModeAll')]")
         limit_to_lce = Checkbox(locator=".//input[contains(@ng-model, 'contentAccessModeEnv')]")
         actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
 
@@ -319,8 +312,8 @@ class ContentHostDetailsView(BaseLoggedInView):
             """Sometimes no checkboxes are checked off by default, selecting
             "Show All" in such case.
             """
-            if self.show_all.read() is False and self.limit_to_lce.read() is False:
-                self.show_all.fill(True)
+            if self.limit_to_lce.read() is False:
+                self.limit_to_lce.fill(True)
             return super().read()
 
 
