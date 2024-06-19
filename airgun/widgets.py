@@ -501,6 +501,46 @@ class MultiSelect(GenericLocatorWidget):
         self.remove_all_button.click()
 
 
+class MultiSelectNoFilter(MultiSelect):
+    """This widget facilitates the movement of items between the unassigned and assigned lists. After providing values,
+    they will be stored in a list. Unassigned items contains the list which compare with the values,
+    if value is present it will assign the value or vise-versa."""
+
+    more_item = Text('//span[@class="pf-c-options-menu__toggle-button-icon"]')
+    select_pages = Text('//ul[@class="pf-c-options-menu__menu"]/li[6]/button')
+    available_role_template = '//div[@class="available-roles-container col-sm-6"]/div[2]/div'
+    assigned_role_template = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
+
+    def fill(self, values):
+        """This method facilitates assigning value(s) both during creation and after creation.
+        Compare this value list with the actual list of items present in the UI.
+        If the lists match, assign the items.
+        """
+        self.more_item.click()
+        self.select_pages.click()
+        available_list = self.browser.elements(self.available_role_template)
+        for data in available_list[1:]:
+            if data.text.split(". ")[1] in values:
+                data.click()
+        return True
+
+    def unassigned_values(self, values):
+        """This method facilitates the removal of items from the assigned list, effectively unassigned them."""
+        assigned_list = self.browser.elements(self.assigned_role_template)
+        for data in assigned_list:
+            if data.text.split(". ")[1] in values.values():
+                data.click()
+        return True
+
+    def read_assigned_values(self, values):
+        """Returns a list of assigned value(s)."""
+        assigned_list = self.browser.elements(self.assigned_role_template)
+        value = [
+            data.text.split(". ")[1] for data in assigned_list if data.text.split(". ")[1] in values
+        ]
+        return value
+
+
 class PF4MultiSelect(GenericLocatorWidget):
     """Typical two-pane multiselect widget. Allows to move items from
     list of ``unassigned`` entities to list of ``assigned`` ones and vice
