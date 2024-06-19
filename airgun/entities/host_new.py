@@ -4,6 +4,7 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep, navigator
+from airgun.views.fact import HostFactView
 from airgun.views.host_new import (
     AllAssignedRolesView,
     EditSystemPurposeView,
@@ -734,6 +735,15 @@ class NewHostEntity(HostEntity):
         view.insights.remediate.click()
         view = RemediationView(self.browser)
         view.remediate.click()
+
+    def get_host_facts(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe()
+        view.wait_displayed()
+        self.browser.wait_for_element(view.dropdown, exception=False)
+        view.dropdown.item_select('Facts')
+        host_facts_view = HostFactView(self.browser)
+        return host_facts_view.table.read()
 
 
 @navigator.register(NewHostEntity, 'NewDetails')
