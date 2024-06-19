@@ -8,6 +8,7 @@ from airgun.widgets import (
     ConfigGroupMultiSelect,
     FilteredDropdown,
     MultiSelect,
+    MultiSelectNoFilter,
     PuppetClassesMultiSelect,
     RadioGroup,
 )
@@ -78,7 +79,7 @@ class HostGroupCreateView(BaseLoggedInView):
     @View.nested
     class ansible_roles(SatTab):
         TAB_NAME = 'Ansible Roles'
-        resources = MultiSelect(id='ms-hostgroup_ansible_role_ids')
+        resources = MultiSelectNoFilter(id='ansible_roles')
         pagination = PF4Pagination()
 
     @View.nested
@@ -156,4 +157,5 @@ class HostGroupEditView(HostGroupCreateView):
         assigned_role = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
         assigned_ansible_role = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
         no_of_available_role = Text('//span[@class="pf-c-options-menu__toggle-text"]//b[2]')
+        resources = MultiSelectNoFilter(id='ansible_roles')
         submit = Text('//input[@name="commit"]')
