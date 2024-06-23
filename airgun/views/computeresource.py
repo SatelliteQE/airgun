@@ -218,7 +218,7 @@ class ResourceProviderDetailView(BaseLoggedInView):
         table = SatTable(
             './/table',
             column_widgets={
-                'Compute profile': Text('./a'),
+                'Compute profile': Text('.//a'),
             },
         )
 
@@ -432,6 +432,9 @@ class ResourceProviderProfileView(BaseLoggedInView):
             ROOT = "//fieldset[@id='network_interfaces']"
             ITEM_WIDGET_CLASS = ComputeResourceVMwareProfileNetworkItem
 
+            nic_type = FilteredDropdown(id='select2-chosen-9')
+            network = FilteredDropdown(id='select2-chosen-10')
+
         @View.nested
         class storage(RemovableWidgetsItemsListView):
             ROOT = "//div[contains(concat(' ', @class, ' '), ' vmware-storage-container ')]"
@@ -440,6 +443,7 @@ class ResourceProviderProfileView(BaseLoggedInView):
             add_item_button = Text(
                 "//button[contains(concat(' ', @class, ' '), ' btn-add-controller ')]"
             )
+            data_store = FilteredDropdown(id="s2id_autogen41")
 
     @property
     def is_displayed(self):
