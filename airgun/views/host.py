@@ -556,7 +556,7 @@ class HostRegisterView(BaseLoggedInView):
         repository_gpg_key_url = TextInput(id='reg_gpg_key_url')
         token_life_time = TextInput(id='reg_token_life_time_input')
         rex_interface = TextInput(id='reg_rex_interface_input')
-        rex_pull_mode = FormSelect('OUIA-Generated-FormSelect-default-8')
+        rex_pull_mode = FormSelect('registration_setup_remote_execution_pull')
         ignore_error = Checkbox(id='reg_katello_ignore')
         force = Checkbox(id='reg_katello_force')
         install_packages_helper = Text("//div[@id='reg_packages-helper']")
