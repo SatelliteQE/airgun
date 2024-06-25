@@ -140,12 +140,10 @@ class SubscriptionEntity(BaseEntity):
         return manifest_expiration_date
 
     def is_subscription_manifest_header_message_display(self):
-        """Is header & message present in manage manifest modal box or not"""
-        result = False
+        """Checks header and massage present in the manage manifest modal"""
         view = self.navigate_to(self, 'Manage Manifest')
         view.wait_animation_end()
-        if view.manifest.alert_message.is_displayed:
-            result = True
+        result = view.manifest.alert_message.is_displayed
         # close opened modal dialogs views
         manage_view = ManageManifestView(self.browser)
         if manage_view.is_displayed:
