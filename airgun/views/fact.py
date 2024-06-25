@@ -13,6 +13,7 @@ class HostFactView(BaseLoggedInView, SearchableViewMixinPF4):
             'Name': Text("./a"),
         },
     )
+    expand_fact_value = Text("//div/a[contains(span/@class, 'glyphicon-plus')]")
 
     @property
     def is_displayed(self):
