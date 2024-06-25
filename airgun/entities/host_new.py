@@ -736,13 +736,17 @@ class NewHostEntity(HostEntity):
         view = RemediationView(self.browser)
         view.remediate.click()
 
-    def get_host_facts(self, entity_name):
+    def get_host_facts(self, entity_name, fact=None):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe()
         view.wait_displayed()
         self.browser.wait_for_element(view.dropdown, exception=False)
         view.dropdown.item_select('Facts')
         host_facts_view = HostFactView(self.browser)
+        if fact:
+            host_facts_view.searchbox.search(fact)
+            if host_facts_view.expand_fact_value.is_displayed:
+                host_facts_view.expand_fact_value.click()
         return host_facts_view.table.read()
 
 
