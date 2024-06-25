@@ -73,7 +73,7 @@ class BaseLoggedInView(View):
         values = {}
         for widget_name in widget_names:
             widget = get_widget_by_name(self, widget_name)
-            if callable(widget.read_limited):
+            if hasattr(widget, 'read_limited') and callable(widget.read_limited):
                 values[widget_name] = widget.read(limit=limit)
             else:
                 values[widget_name] = widget.read()
