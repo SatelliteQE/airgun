@@ -37,6 +37,7 @@ from airgun.entities.discoveryrule import DiscoveryRuleEntity
 from airgun.entities.domain import DomainEntity
 from airgun.entities.eol_banner import EOLBannerEntity
 from airgun.entities.errata import ErrataEntity
+from airgun.entities.file import FilesEntity
 from airgun.entities.filter import FilterEntity
 from airgun.entities.hardware_model import HardwareModelEntity
 from airgun.entities.host import HostEntity
@@ -459,6 +460,11 @@ class Session:
     def filter(self):
         """Instance of Filter entity."""
         return self._open(FilterEntity)
+
+    @cached_property
+    def file(self):
+        """Instance of Files entity."""
+        return self._open(FilesEntity)
 
     @cached_property
     def hardwaremodel(self):
