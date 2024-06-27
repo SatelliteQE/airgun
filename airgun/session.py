@@ -56,6 +56,7 @@ from airgun.entities.organization import OrganizationEntity
 from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.oscapcontent import OSCAPContentEntity
 from airgun.entities.oscappolicy import OSCAPPolicyEntity
+from airgun.entities.oscapreport import OSCAPReportEntity
 from airgun.entities.oscaptailoringfile import OSCAPTailoringFileEntity
 from airgun.entities.package import PackageEntity
 from airgun.entities.partitiontable import PartitionTableEntity
@@ -569,6 +570,11 @@ class Session:
     def oscappolicy(self):
         """Instance of OSCAP Policy entity."""
         return self._open(OSCAPPolicyEntity)
+
+    @cached_property
+    def oscapreport(self):
+        """Instance of OSCAP Report entity."""
+        return self._open(OSCAPReportEntity)
 
     @cached_property
     def oscaptailoringfile(self):
