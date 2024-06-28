@@ -136,6 +136,7 @@ class ContentHostDetailsView(BaseLoggedInView):
     @View.nested
     class details(SatTab):
         # Basic information
+        sca_alert = Text('//div[contains(@class,"alert-warning")]')
         name = EditableEntry(name='Name')
         uuid = ReadOnlyEntry(name='Subscription UUID')
         bios_uuid = ReadOnlyEntry(name='BIOS UUID')
