@@ -279,6 +279,9 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
     promoteButton = PF4Button(
         locator='.//button[@data-ouia-component-id="cv-details-publish-button"]'
     )
+    version_dropdown = Dropdown(
+        locator='.//div[@data-ouia-component-id="cv-version-header-actions-dropdown"]'
+    )
     editDescription = PF4Button(
         locator='.//button[@data-ouia-component-id="edit-button-description"]'
     )
