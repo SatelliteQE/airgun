@@ -1,5 +1,7 @@
 from navmazing import NavigateToSibling
+import pytest
 from widgetastic.exceptions import NoSuchElementException
+from widgetastic_patternfly4.dropdown import DropdownItemDisabled
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -134,6 +136,20 @@ class NewContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         return view.version_dropdown.item_select(dropdown_option)
+
+    def republish_metadata_error(self, entity_name, version):
+        """Clicks a specific dropdown option for a CV Version, that will throw an error"""
+        view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        with pytest.raises(DropdownItemDisabled) as error:
+            view.version_dropdown.item_select('Republish repository metadata')
+        if (
+            'Item "Republish repository metadata" of dropdown ".//div[@data-ouia-component-id="cv-version-header-actions-dropdown"]" is disabled'
+            in error.value.args[0]
+        ):
+            return True
+        else:
+            return 'No error was found, metadata unexpectedly was able to be published.'
 
 
 @navigator.register(NewContentViewEntity, 'All')
