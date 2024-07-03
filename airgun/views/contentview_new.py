@@ -359,6 +359,7 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
             and len(self.breadcrumb.locations) > LOCATION_NUM
             and self.breadcrumb.locations[0] == 'Content views'
             and self.breadcrumb.locations[2] == 'Versions'
+            and self.promoteButton.is_displayed
         )
 
 

@@ -135,12 +135,14 @@ class NewContentViewEntity(BaseEntity):
         """Clicks a specific dropdown option for a CV Version"""
         view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
         self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         return view.version_dropdown.item_select(dropdown_option)
 
     def republish_metadata_error(self, entity_name, version):
         """Clicks a specific dropdown option for a CV Version, that will throw an error"""
         view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
         self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         with pytest.raises(DropdownItemDisabled) as error:
             view.version_dropdown.item_select('Republish repository metadata')
         if (
