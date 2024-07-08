@@ -159,3 +159,4 @@ class HostGroupEditView(HostGroupCreateView):
         no_of_available_role = Text('//span[@class="pf-c-options-menu__toggle-text"]//b[2]')
         resources = MultiSelectNoFilter(id='ansible_roles')
         submit = Text('//input[@name="commit"]')
+        pagination = PF4Pagination()
