@@ -60,6 +60,7 @@ class BaseLoggedInView(View):
         """Reads the contents of the view and presents them as a dictionary.
 
         :param widget_names: If specified, will read only the widgets names in the list.
+        :param limit: how many entries to fetch at most
 
         :return: A :py:class:`dict` of ``widget_name: widget_read_value``
             where the values are retrieved using the :py:meth:`Widget.read`.

@@ -28,18 +28,16 @@ class OSCAPReportEntity(BaseEntity):
             SCAP Report list
 
         :param search_string:
+        :param limit: how many rules results to fetch at most
         :return: list of dictionaries with values from SCAP Report Details View
         """
         view = self.navigate_to(self, 'Details', search_string=search_string)
         return view.read(widget_names=widget_names, limit=limit)
 
     def remediate(self, search_string, resource):
-        """Read the content from corresponding SCAP Report dashboard,
-            clicking on the link in Reported At column of
-            SCAP Report list
+        """Remediate the failed rule using automatic remediation through Ansible
 
         :param search_string:
-        :return: list of dictionaries with values from SCAP Report Details View
         """
         view = self.navigate_to(self, 'Details', search_string=search_string)
         view.table.row(resource=resource).actions.fill('Remediation')
