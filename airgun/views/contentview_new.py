@@ -354,12 +354,13 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        title_loaded = self.browser.wait_for_element(self.version, exception=False)
         return (
             breadcrumb_loaded
+            and title_loaded
             and len(self.breadcrumb.locations) > LOCATION_NUM
             and self.breadcrumb.locations[0] == 'Content views'
             and self.breadcrumb.locations[2] == 'Versions'
-            and self.promoteButton.is_displayed
         )
 
 

@@ -1,5 +1,4 @@
 from navmazing import NavigateToSibling
-import pytest
 from widgetastic.exceptions import NoSuchElementException
 from widgetastic_patternfly4.dropdown import DropdownItemDisabled
 
@@ -143,15 +142,12 @@ class NewContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
-        with pytest.raises(DropdownItemDisabled) as error:
+        try:
             view.version_dropdown.item_select('Republish repository metadata')
-        if (
-            'Item "Republish repository metadata" of dropdown ".//div[@data-ouia-component-id="cv-version-header-actions-dropdown"]" is disabled'
-            in error.value.args[0]
-        ):
-            return True
-        else:
-            return 'No error was found, metadata unexpectedly was able to be published.'
+        except DropdownItemDisabled as error:
+            if 'Item "Republish repository metadata"' and 'is disabled' in error.args[0]:
+                return True
+        return 'No error was found, metadata unexpectedly was able to be published.'
 
 
 @navigator.register(NewContentViewEntity, 'All')
