@@ -100,7 +100,7 @@ class ShowAllVirtwhoConfigures(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Infrastructure', 'Virt-who configurations')
+        self.view.menu.select('Infrastructure', 'Virt-who Configurations')
 
 
 @navigator.register(VirtwhoConfigureEntity, 'New')
