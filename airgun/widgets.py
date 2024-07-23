@@ -2239,6 +2239,14 @@ class ProgressBar(GenericLocatorWidget):
 class PF4ProgressBar(PF4Progress):
     locator = './/div[contains(@class, "pf-c-wizard__main-body")]'
 
+    @property
+    def is_completed(self):
+        """Boolean value whether progress bar is finished or not"""
+        try:
+            return self.current_progress == '100'
+        except NoSuchElementException:
+            return False
+
     def wait_for_result(self, timeout=600, delay=1):
         """Waits for progress bar to finish. By default checks whether progress
         bar is completed every second for 10 minutes.
@@ -2247,7 +2255,7 @@ class PF4ProgressBar(PF4Progress):
         """
         wait_for(lambda: self.is_displayed, timeout=30, delay=delay, logger=self.logger)
         wait_for(
-            lambda: not self.is_displayed or self.current_progress == '100',
+            lambda: not self.is_displayed or self.is_completed,
             timeout=timeout,
             delay=delay,
             logger=self.logger,
