@@ -29,6 +29,7 @@ from airgun.views.host import (
     HostsUnassignCompliancePolicy,
     HostsView,
     RecommendationListView,
+    RepositoryListView,
 )
 from airgun.views.host_new import ManageColumnsView, NewHostDetailsView
 
@@ -53,6 +54,16 @@ class HostEntity(BaseEntity):
         """Get curl command generated on Register Host page"""
         view = self.navigate_to(self, 'Register')
         if values is not None:
+            if ('advanced.repository_gpg_key_url' in values) or ('advanced.repository' in values):
+                view.wait_displayed()
+                view.advanced.repository_add.click()
+                view = RepositoryListView(self.browser)
+                if 'advanced.repository' in values:
+                    view.repository.fill(values['advanced.repository'])
+                if 'advanced.repository_gpg_key_url' in values:
+                    view.repository_gpg_key_url.fill(values['advanced.repository_gpg_key_url'])
+                view.repository_list_confirm.click()
+            view = self.navigate_to(self, 'Register')
             view.fill(values)
         if view.general.activation_keys.read():
             self.browser.click(view.generate_command)
