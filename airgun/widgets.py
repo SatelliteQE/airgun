@@ -1881,6 +1881,8 @@ class SatTable(Table):
     If the table is empty, there might be only one column with an appropriate message in the table
     body, or it may have no columns or rows at all. This subclass handles both possibilities.
 
+    It also ignores all hidden columns, which some tables might contain, like the Hosts table.
+
     Example html representation::
 
         <table bst-table="table" ...>
@@ -1906,6 +1908,10 @@ class SatTable(Table):
         .//table
 
     """
+
+    HEADERS = "./thead/tr/th[not(@hidden)]|./tr/th[not(@hidden)]|./thead/tr/td[not(@hidden)]"
+    COLUMN_RESOLVER_PATH = "/td[not(@hidden)]"
+    COLUMN_AT_POSITION = "./td[not(@hidden)][{0}]"
 
     no_rows_message = (
         ".//td/span[contains(@data-block, 'no-rows-message') or "
