@@ -1,12 +1,13 @@
-from widgetastic.widget import Text
-from widgetastic.widget import View
+from widgetastic.widget import Text, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import ReadOnlyEntry
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
-from airgun.views.common import TaskDetailsView
+from airgun.views.common import (
+    BaseLoggedInView,
+    ReadOnlyEntry,
+    SatTab,
+    SearchableViewMixin,
+    TaskDetailsView,
+)
 from airgun.widgets import SatTable
 
 
@@ -21,6 +22,7 @@ class ContainerImageTagsView(BaseLoggedInView, SearchableViewMixin):
 
 class ContainerImageTagDetailsView(TaskDetailsView):
     breadcrumb = BreadCrumb()
+    BREADCRUMB_LENGTH = 2
 
     @property
     def is_displayed(self):
@@ -28,18 +30,37 @@ class ContainerImageTagDetailsView(TaskDetailsView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Container Image Tags'
-            and len(self.breadcrumb.locations) >= 2
+            and len(self.breadcrumb.locations) >= self.BREADCRUMB_LENGTH
         )
 
     @View.nested
     class details(SatTab):
         product = ReadOnlyEntry(name='Product')
-        repository = ReadOnlyEntry(name='Repository')
+        schema = ReadOnlyEntry(name='Schema Version')
+        manifest_type = ReadOnlyEntry(name='Manifest Type')
+        digest = ReadOnlyEntry(name='Digest')
 
     @View.nested
     class lce(SatTab):
         TAB_NAME = 'Lifecycle Environments'
         table = SatTable(
             './/table',
-            column_widgets={'Environment': Text('./a'), 'Content View Version': Text('./a')},
+            column_widgets={
+                'Environment': Text('./a'),
+                'Content View Version': Text('./a'),
+                'Published At': Text('./a'),
+            },
+        )
+
+    @View.nested
+    class repos(SatTab):
+        TAB_NAME = 'Repositories'
+        table = SatTable(
+            './/table',
+            column_widgets={
+                'Name': Text('./a'),
+                'Product': Text('./a'),
+                'Content View': Text('./a'),
+                'Last Sync': Text('./a'),
+            },
         )

@@ -1,18 +1,9 @@
-import re
-
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Text
-from widgetastic.widget import View
+from widgetastic.widget import Checkbox, Text, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import TaskDetailsView
-from airgun.widgets import ItemsList
-from airgun.widgets import ReadOnlyEntry
-from airgun.widgets import SatSelect
-from airgun.widgets import SatTable
-from airgun.widgets import Search
+from airgun import ERRATA_REGEXP
+from airgun.views.common import BaseLoggedInView, SatTab, TaskDetailsView
+from airgun.widgets import ItemsList, ReadOnlyEntry, SatSelect, SatTable, Search
 
 
 class ErratumView(BaseLoggedInView):
@@ -48,7 +39,7 @@ class ErratumView(BaseLoggedInView):
         if repo is not None:
             self.repo_filter.fill(repo)
 
-        if re.search(r'\w{3,4}[:-]\d{4}[-:]\d{4}', query):
+        if ERRATA_REGEXP.search(query):
             query = f'id = {query}'
         self.searchbox.search(query)
 
@@ -201,11 +192,13 @@ class ErrataInstallationConfirmationView(BaseLoggedInView):
 
 
 class ErrataTaskDetailsView(TaskDetailsView):
+    BREADCRUMB_LENGTH = 2
+
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Errata'
-            and len(self.breadcrumb.locations) > 2
+            and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
         )

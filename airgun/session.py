@@ -1,15 +1,15 @@
 """Session controller which manages UI session"""
+
+from datetime import datetime
 import logging
 import os
 import sys
-from datetime import datetime
 
 from cached_property import cached_property
 from fauxfactory import gen_string
 
 from airgun import settings
-from airgun.browser import AirgunBrowser
-from airgun.browser import SeleniumBrowserFactory
+from airgun.browser import AirgunBrowser, SeleniumBrowserFactory
 from airgun.entities.acs import AcsEntity
 from airgun.entities.activationkey import ActivationKeyEntity
 from airgun.entities.ansible_role import AnsibleRolesEntity
@@ -33,6 +33,7 @@ from airgun.entities.dashboard import DashboardEntity
 from airgun.entities.discoveredhosts import DiscoveredHostsEntity
 from airgun.entities.discoveryrule import DiscoveryRuleEntity
 from airgun.entities.domain import DomainEntity
+from airgun.entities.eol_banner import EOLBannerEntity
 from airgun.entities.errata import ErrataEntity
 from airgun.entities.filter import FilterEntity
 from airgun.entities.hardware_model import HardwareModelEntity
@@ -83,8 +84,7 @@ from airgun.entities.user import UserEntity
 from airgun.entities.usergroup import UserGroupEntity
 from airgun.entities.virtwho_configure import VirtwhoConfigureEntity
 from airgun.entities.webhook import WebhookEntity
-from airgun.navigation import Navigate
-from airgun.navigation import navigator
+from airgun.navigation import Navigate, navigator
 
 LOGGER = logging.getLogger(__name__)
 
@@ -195,6 +195,7 @@ class Session:
         self._login = login
         self.navigator = None
         self.browser = None
+        self.ui_session_id = None
 
     def __call__(self, user=None, password=None, session_cookie=None, url=None, login=None):
         """Stores provided values. This allows tests to provide additional
@@ -229,17 +230,17 @@ class Session:
             not risen not to shadow real session result.
         """
         if self.browser is None:
-            # browser was never started, don't do anything
+            # browser hasn't been started or was already closed, don't do anything
             return
         LOGGER.info('Stopping UI session %r for user %r', self.name, self._user)
         passed = True if exc_type is None else False
         try:
             if not passed:
                 self.take_screenshot()
-        except Exception as err:
+        except Exception as err:  # - TODO: fix bare except
             LOGGER.exception(err)
         finally:
-            self._factory.finalize(passed)
+            self.browser = self._factory.finalize(passed)
 
     def _open(self, entity):
         """Initializes requested entity. If this is first time session
@@ -275,6 +276,7 @@ class Session:
             self.browser = AirgunBrowser(selenium_browser, self)
             LOGGER.info(f'Session Id For {self.name}: {selenium_browser.session_id}')
             LOGGER.info(f'Setting initial URL to {url}')
+            self.ui_session_id = selenium_browser.session_id
 
             self.browser.url = url
 
@@ -351,6 +353,11 @@ class Session:
     def bookmark(self):
         """Instance of Bookmark entity."""
         return self._open(BookmarkEntity)
+
+    @cached_property
+    def eol_banner(self):
+        """Instance of Bookmark entity."""
+        return self._open(EOLBannerEntity)
 
     @cached_property
     def cloudinventory(self):

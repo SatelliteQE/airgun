@@ -1,12 +1,13 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.oscapcontent import SCAPContentCreateView
-from airgun.views.oscapcontent import SCAPContentEditView
-from airgun.views.oscapcontent import SCAPContentsView
+from airgun.views.oscapcontent import (
+    SCAPContentCreateView,
+    SCAPContentEditView,
+    SCAPContentsView,
+)
 
 
 class OSCAPContentEntity(BaseEntity):

@@ -1,13 +1,17 @@
+import time
+
 from navmazing import NavigateToSibling
+from selenium.webdriver.common.by import By
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.job_invocation import JobInvocationCreateView
-from airgun.views.job_invocation import JobInvocationStatusView
-from airgun.views.job_invocation import JobInvocationsView
+from airgun.views.job_invocation import (
+    JobInvocationCreateView,
+    JobInvocationStatusView,
+    JobInvocationsView,
+)
 
 
 class JobInvocationEntity(BaseEntity):
@@ -17,6 +21,8 @@ class JobInvocationEntity(BaseEntity):
         """Run specific job"""
         view = self.navigate_to(self, 'Run')
         view.fill(values)
+        view.submit.expander.click()
+        self.browser.wait_for_element(view.submit.submit, exception=False)
         view.submit.click()
 
     def search(self, value):
@@ -40,6 +46,30 @@ class JobInvocationEntity(BaseEntity):
             fail_func=view.browser.refresh,
             logger=view.logger,
         )
+
+    def submit_prefilled_view(self):
+        """This entity loads pre filled job invocation view and submits it."""
+        time.sleep(3)
+        view = JobInvocationCreateView(self.browser)
+        time.sleep(3)
+        view.submit.click()
+
+    def get_job_category_and_template(self):
+        """Reads selected job category and template for job invocation."""
+        time.sleep(3)
+        view = JobInvocationCreateView(self.browser)
+        time.sleep(3)
+        element = self.browser.selenium.find_element(By.XPATH, '//div/input')
+        read_values = view.category_and_template.read()
+        read_values['job_template'] = element.get_attribute('value')
+        return read_values
+
+    def get_targeted_hosts(self):
+        """Read targeted hosts for job invocation."""
+        time.sleep(3)
+        view = JobInvocationCreateView(self.browser)
+        time.sleep(3)
+        return view.target_hosts_and_inputs.read()
 
 
 @navigator.register(JobInvocationEntity, 'All')

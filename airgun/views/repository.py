@@ -1,22 +1,28 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ConditionalSwitchableView
-from widgetastic.widget import FileInput
-from widgetastic.widget import Select
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import (
+    Checkbox,
+    ConditionalSwitchableView,
+    FileInput,
+    Select,
+    Text,
+    TextInput,
+    View,
+)
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixin
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import EditableEntry
-from airgun.widgets import EditableEntryCheckbox
-from airgun.widgets import EditableEntrySelect
-from airgun.widgets import ReadOnlyEntry
-from airgun.widgets import SatTable
-from airgun.widgets import SatTableWithUnevenStructure
+from airgun.views.common import (
+    BaseLoggedInView,
+    SearchableViewMixin,
+)
+from airgun.widgets import (
+    ActionsDropdown,
+    ConfirmationDialog,
+    EditableEntry,
+    EditableEntryCheckbox,
+    EditableEntrySelect,
+    ReadOnlyEntry,
+    SatTable,
+    SatTableWithUnevenStructure,
+)
 
 
 class RepositoriesView(BaseLoggedInView, SearchableViewMixin):
@@ -167,7 +173,6 @@ class RepositoryCreateView(BaseLoggedInView):
 
 
 class AuthorizationEntry(EditableEntry):
-
     clear_button = Text(".//span[contains(@ng-hide, 'editMode')]/i[@ng-show='deletable']")
 
     @View.nested

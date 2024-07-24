@@ -1,16 +1,16 @@
 from navmazing import NavigateToSibling
-from wait_for import TimedOutError
-from wait_for import wait_for
+from wait_for import TimedOutError, wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.subscription import AddSubscriptionView
-from airgun.views.subscription import DeleteManifestConfirmationView
-from airgun.views.subscription import ManageManifestView
-from airgun.views.subscription import SubscriptionDetailsView
-from airgun.views.subscription import SubscriptionListView
+from airgun.views.subscription import (
+    AddSubscriptionView,
+    DeleteManifestConfirmationView,
+    ManageManifestView,
+    SubscriptionDetailsView,
+    SubscriptionListView,
+)
 
 
 class SubscriptionEntity(BaseEntity):
@@ -36,8 +36,8 @@ class SubscriptionEntity(BaseEntity):
             timeout=timeout,
             logger=view.progressbar.logger,
         )
-        view.flash.assert_no_error(ignore_messages=ignore_error_messages)
         view.flash.dismiss()
+        view.flash.assert_no_error(ignore_messages=ignore_error_messages)
         wait_for(
             lambda: self.has_manifest == has_manifest,
             handle_exception=True,
@@ -48,9 +48,9 @@ class SubscriptionEntity(BaseEntity):
     @property
     def has_manifest(self):
         """Is there manifest present in current organization?
-        :return: boolean value indicating whether manifest is present
-        May be None if user can't verify reliably if manifest is
-        uploaded or not due to missing permissions
+
+        :return: boolean value indicating whether manifest is present May be None if user can't verify
+            reliably if manifest is uploaded or not due to missing permissions
         """
         try:
             view = self.navigate_to(self, 'Manage Manifest')
@@ -172,6 +172,12 @@ class SubscriptionEntity(BaseEntity):
         view.delete_button.click()
         view.confirm_deletion.confirm()
         self._wait_for_process_to_finish('Delete Upstream Subscription', has_manifest=True)
+
+    def read_subscriptions(self):
+        """Return subscriptions table"""
+        view = self.navigate_to(self, 'All')
+        view.wait_displayed(timeout=60, delay=10)
+        return view.table.read()
 
 
 class SubscriptionNavigationStep(NavigateStep):

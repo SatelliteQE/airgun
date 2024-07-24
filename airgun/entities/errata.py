@@ -1,13 +1,13 @@
-import re
-
+from airgun import ERRATA_REGEXP
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.errata import ErrataDetailsView
-from airgun.views.errata import ErrataInstallationConfirmationView
-from airgun.views.errata import ErrataTaskDetailsView
-from airgun.views.errata import ErratumView
+from airgun.views.errata import (
+    ErrataDetailsView,
+    ErrataInstallationConfirmationView,
+    ErrataTaskDetailsView,
+    ErratumView,
+)
 
 
 class ErrataEntity(BaseEntity):
@@ -97,6 +97,7 @@ class ErrataEntity(BaseEntity):
             installable=False,
             repo=None,
         )
+        view.content_hosts.wait_displayed()
         return view.content_hosts.search(value, environment=environment)
 
 
@@ -136,6 +137,6 @@ class ErrataDetails(NavigateStep):
         repo = kwargs.get('repo')
         self.parent.search(entity_name, applicable=applicable, installable=installable, repo=repo)
         row_filter = {'title': entity_name}
-        if re.search(r'\w{3,4}[:-]\d{4}[-:]\d{4}', entity_name):
+        if ERRATA_REGEXP.search(entity_name):
             row_filter = {'errata_id': entity_name}
         self.parent.table.row(**row_filter)['Errata ID'].widget.click()

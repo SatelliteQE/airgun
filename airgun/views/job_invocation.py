@@ -1,17 +1,16 @@
 from wait_for import wait_for
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button
-from widgetastic_patternfly4 import Radio
-from widgetastic_patternfly4.ouia import Select
+from widgetastic_patternfly4 import Button, ChipGroup, Radio, Select
+from widgetastic_patternfly4.ouia import Select as OUIASelect
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SatTable
-from airgun.views.common import SearchableViewMixin
-from airgun.views.common import WizardStepView
+from airgun.views.common import (
+    BaseLoggedInView,
+    SatTab,
+    SatTable,
+    SearchableViewMixin,
+    WizardStepView,
+)
 from airgun.widgets import ActionsDropdown
 
 
@@ -30,26 +29,30 @@ class JobInvocationCreateView(BaseLoggedInView):
 
     @View.nested
     class category_and_template(WizardStepView):
-        expander = Text(".//button[contains(.,'Category and Template')]")
-        job_category = Select('OUIA-Generated-Select-single-1')
-        job_template = Select('OUIA-Generated-Select-typeahead-1')
+        expander = Text(".//button[contains(.,'Category and template')]")
+        job_category = Select(locator='//div[*[@aria-label="Job category toggle"]]')
+        job_template = Select(locator='//div[div/*[@aria-label="Job template toggle"]]')
 
     @View.nested
     class target_hosts_and_inputs(WizardStepView):
         expander = Text(".//button[contains(.,'Target hosts and inputs')]")
         command = TextInput(id='command')
 
-        package_action = Select('OUIA-Generated-Select-single-15')
+        selected_hosts = ChipGroup(locator='//div[@class="selected-chips"]/div')
+
+        package_action = OUIASelect('OUIA-Generated-Select-single-15')
         package = TextInput(id='package')
 
-        service_action = Select('OUIA-Generated-Select-single-28')
+        action = Select(locator='//div[button[@aria-label="action toggle"]]')
         service = TextInput(id='service')
 
-        module_action = Select('OUIA-Generated-Select-single-31')
+        module_action = OUIASelect('OUIA-Generated-Select-single-31')
         module_spec = TextInput(id='module_spec')
         options = TextInput(id='options')
 
-        power_action = Select('OUIA-Generated-Select-single-34')
+        ansible_collections_list = TextInput(id='ansible_collections_list')
+        ansible_roles_list = TextInput(id='ansible_roles_list')
+        power_action = OUIASelect('OUIA-Generated-Select-single-34')
 
     @View.nested
     class advanced_fields(WizardStepView):
@@ -98,7 +101,7 @@ class JobInvocationCreateView(BaseLoggedInView):
         start_at_date = TextInput(locator='//input[contains(@aria-label, "starts at datepicker")]')
         start_at_time = TextInput(locator='//input[contains(@aria-label, "starts at timepicker")]')
         # Repeats
-        repeats = Select('OUIA-Generated-Select-single-3')
+        repeats = OUIASelect('OUIA-Generated-Select-single-3')
         repeats_at = TextInput(locator='//input[contains(@aria-label, "repeat-at")]')
         # Ends
         ends_never = Radio(id='never-ends')
@@ -129,6 +132,7 @@ class JobInvocationCreateView(BaseLoggedInView):
 
 class JobInvocationStatusView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    BREADCRUMB_LENGTH = 2
 
     @property
     def is_displayed(self):
@@ -136,7 +140,7 @@ class JobInvocationStatusView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Jobs'
-            and len(self.breadcrumb.locations) == 2
+            and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
         )
 
     rerun = Text("//a[normalize-space(.)='Rerun']")

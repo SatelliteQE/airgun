@@ -1,26 +1,32 @@
 from wait_for import wait_for
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ConditionalSwitchableView
-from widgetastic.widget import Select
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import (
+    Checkbox,
+    ConditionalSwitchableView,
+    Select,
+    Table,
+    Text,
+    TextInput,
+    View,
+)
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
-from airgun.views.common import TaskDetailsView
+from airgun.views.common import (
+    BaseLoggedInView,
+    SatTab,
+    SearchableViewMixin,
+    TaskDetailsView,
+)
 from airgun.views.syncplan import SyncPlanCreateView
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import EditableEntry
-from airgun.widgets import EditableEntrySelect
-from airgun.widgets import ReadOnlyEntry
-from airgun.widgets import SatSelect
-from airgun.widgets import SatTable
-from airgun.widgets import Search
+from airgun.widgets import (
+    ActionsDropdown,
+    ConfirmationDialog,
+    EditableEntry,
+    EditableEntrySelect,
+    ReadOnlyEntry,
+    SatSelect,
+    SatTable,
+    Search,
+)
 
 
 class CreateDiscoveredReposView(View):
@@ -38,7 +44,7 @@ class CreateDiscoveredReposView(View):
     def fill(self, values):
         """Select necessary repo/repos to be added to new or existing product"""
         if not isinstance(values, list):
-            values = list((values,))
+            values = [values]
         for value in values:
             self.table.row(discovered_repository__contains=value)[0].fill(True)
             self.create_action.click()
@@ -94,6 +100,7 @@ class ProductCreateView(BaseLoggedInView):
 
 class ProductEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    BREADCRUMB_LENGTH = 3
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
 
@@ -104,7 +111,7 @@ class ProductEditView(BaseLoggedInView):
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Products'
             and self.breadcrumb.read() not in ('New Product', 'Discover Repositories')
-            and len(self.breadcrumb.locations) <= 3
+            and len(self.breadcrumb.locations) <= self.BREADCRUMB_LENGTH
         )
 
     @View.nested
@@ -152,7 +159,7 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
 
     @View.nested
     class discovered_repos(View):
-        discover_action = Text("//button[@type='submit']")
+        discover_action = Text("//button[@type='submit' and contains(., 'Discover')]")
         cancel_discovery = Text("//button[@ng-click='cancelDiscovery()']")
         repos = CreateDiscoveredReposView()
 
@@ -216,6 +223,8 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
 
 
 class ProductTaskDetailsView(TaskDetailsView):
+    BREADCRUMB_LENGTH = 3
+
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
@@ -223,7 +232,7 @@ class ProductTaskDetailsView(TaskDetailsView):
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Products'
             and self.breadcrumb.locations[2] == 'Tasks'
-            and len(self.breadcrumb.locations) > 3
+            and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
         )
 
 

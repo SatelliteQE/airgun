@@ -1,18 +1,22 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ConditionalSwitchableView
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import (
+    Checkbox,
+    ConditionalSwitchableView,
+    Table,
+    Text,
+    TextInput,
+    View,
+)
 from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly4 import Pagination as PF4Pagination
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import MultiSelect
-from airgun.widgets import Pagination
-from airgun.widgets import Search
+from airgun.views.common import BaseLoggedInView, SatTab
+from airgun.widgets import (
+    ActionsDropdown,
+    MultiSelect,
+    PF4FilteredDropdown,
+    PF4MultiSelect,
+    Search,
+)
 
 
 class FiltersView(BaseLoggedInView):
@@ -25,7 +29,7 @@ class FiltersView(BaseLoggedInView):
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
-    pagination = Pagination()
+    pagination = PF4Pagination()
 
     @property
     def is_displayed(self):
@@ -47,12 +51,14 @@ class FiltersView(BaseLoggedInView):
 
 class FilterDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    resource_type = FilteredDropdown(id='filter_resource_type')
-    permission = MultiSelect(id='ms-filter_permission_ids')
+    resource_type = PF4FilteredDropdown(
+        locator='.//div[@data-ouia-component-id="resource-type-select"]'
+    )
+    permission = PF4MultiSelect('.//div[@id="permission-duel-select"]')
     override = Checkbox(id='override_taxonomy_checkbox')
     unlimited = Checkbox(id='filter_unlimited')
     filter = TextInput(id='search')
-    submit = Text('//input[@name="commit"]')
+    submit = Text('//button[@data-ouia-component-id="filters-submit-button"]')
 
     @property
     def is_displayed(self):

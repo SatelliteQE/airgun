@@ -1,18 +1,19 @@
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.discoveredhosts import DiscoveredHostDetailsView
-from airgun.views.discoveredhosts import DiscoveredHostEditProvisioningView
-from airgun.views.discoveredhosts import DiscoveredHostProvisionDialog
-from airgun.views.discoveredhosts import DiscoveredHostsAssignLocationDialog
-from airgun.views.discoveredhosts import DiscoveredHostsAssignOrganizationDialog
-from airgun.views.discoveredhosts import DiscoveredHostsAutoProvisionDialog
-from airgun.views.discoveredhosts import DiscoveredHostsDeleteDialog
-from airgun.views.discoveredhosts import DiscoveredHostsRebootDialog
-from airgun.views.discoveredhosts import DiscoveredHostsView
+from airgun.views.discoveredhosts import (
+    DiscoveredHostDetailsView,
+    DiscoveredHostEditProvisioningView,
+    DiscoveredHostProvisionDialog,
+    DiscoveredHostsAssignLocationDialog,
+    DiscoveredHostsAssignOrganizationDialog,
+    DiscoveredHostsAutoProvisionDialog,
+    DiscoveredHostsDeleteDialog,
+    DiscoveredHostsRebootDialog,
+    DiscoveredHostsView,
+)
 
 
 class DiscoveredHostsEntity(BaseEntity):
@@ -86,17 +87,19 @@ class DiscoveredHostsEntity(BaseEntity):
 
         view = self.navigate_to(self, 'Provision', entity_name=entity_name)
         view.fill(
-            dict(
-                host_group=host_group,
-                organization=organization,
-                location=location,
-            )
+            {
+                'host_group': host_group,
+                'organization': organization,
+                'location': location,
+            }
         )
         if quick:
             view.quick_create.click()
         else:
             view.customize_create.click()
             discovered_host_edit_view = DiscoveredHostEditProvisioningView(self.browser)
+            if 'operating_system.root_password' in host_values:
+                discovered_host_edit_view.operating_system.disable_passwd.click()
             discovered_host_edit_view.fill(host_values)
             self.browser.click(discovered_host_edit_view.submit, ignore_ajax=True)
             self.browser.plugin.ensure_page_safe(timeout='120s')
@@ -186,7 +189,7 @@ class DiscoveredHostsSelectAction(NavigateStep):
                 f'Please provide a valid action name. action_name: "{action_name}" not found.'
             )
         entities_list = kwargs.get('entities_list')
-        if not isinstance(entities_list, (list, tuple)):
+        if not isinstance(entities_list, list | tuple):
             entities_list = [entities_list]
         for entity_name in entities_list:
             self.parent.table.row_by_cell_or_widget_value('Name', entity_name)[0].widget.click()
@@ -195,7 +198,6 @@ class DiscoveredHostsSelectAction(NavigateStep):
 
 @navigator.register(DiscoveredHostsEntity, 'Provision')
 class DiscoveredHostProvisionActionNavigation(NavigateStep):
-
     VIEW = DiscoveredHostProvisionDialog
 
     def prerequisite(self, *args, **kwargs):

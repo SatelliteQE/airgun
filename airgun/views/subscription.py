@@ -1,28 +1,31 @@
 from wait_for import wait_for
-from widgetastic.widget import Checkbox
-from widgetastic.widget import FileInput
-from widgetastic.widget import GenericLocatorWidget
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Button
+from widgetastic.widget import (
+    Checkbox,
+    FileInput,
+    GenericLocatorWidget,
+    Text,
+    TextInput,
+    View,
+)
+from widgetastic_patternfly import BreadCrumb, Button
 
 from airgun.exceptions import ReadOnlyWidgetError
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import ItemsListReadOnly
-from airgun.widgets import ProgressBar
-from airgun.widgets import SatTable
-from airgun.widgets import Search
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
+from airgun.widgets import (
+    ConfirmationDialog,
+    ItemsListReadOnly,
+    ProgressBar,
+    SatTable,
+    Search,
+)
 
 
 # Search field and button on Subscriptions page uses different locators,
 # so subclass it and use it in our custom SearchableViewMixin
 class SubscriptionSearch(Search):
-    search_field = TextInput(locator=(".//input[starts-with(@id, 'downshift-')]"))
+    search_field = TextInput(
+        locator=('//input[@aria-label="Search input" and @placeholder="Search"]')
+    )
     search_button = Button('Search')
 
 
@@ -134,12 +137,13 @@ class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
     columns_filter_checkboxes = SubscriptionColumnsFilter(
         ".//form[div[contains(@class, 'filter')]]/div/i"
     )
+    table_loading = Text("//h5[normalize-space(.)='Loading']")
 
     @property
     def is_displayed(self):
         return (
-            self.browser.wait_for_element('div#subscriptions-table', timeout=10, exception=False)
-            is not None
+            self.browser.wait_for_element(self.table_loading, exception=False) is None
+            and self.browser.wait_for_element(self.table, exception=False) is not None
         )
 
     def is_searchable(self):
@@ -231,7 +235,6 @@ class SubscriptionDetailsView(BaseLoggedInView):
 
     @View.nested
     class details(SatTab):
-
         associations = SatTable(
             locator=".//div[h2[normalize-space(.)='Associations']]/table",
             column_widgets={

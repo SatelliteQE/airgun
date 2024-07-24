@@ -3,17 +3,18 @@ import time
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.acs import AddAlternateContentSourceModal
-from airgun.views.acs import AlternateContentSourcesView
-from airgun.views.acs import EditCapsulesModal
-from airgun.views.acs import EditCredentialsModal
-from airgun.views.acs import EditDetailsModal
-from airgun.views.acs import EditProductsModal
-from airgun.views.acs import EditUrlAndSubpathsModal
-from airgun.views.acs import RowDrawer
+from airgun.views.acs import (
+    AddAlternateContentSourceModal,
+    AlternateContentSourcesView,
+    EditCapsulesModal,
+    EditCredentialsModal,
+    EditDetailsModal,
+    EditProductsModal,
+    EditUrlAndSubpathsModal,
+    RowDrawer,
+)
 
 
 class AcsEntity(BaseEntity):
@@ -456,14 +457,15 @@ class AcsEntity(BaseEntity):
                         must be specified when using credentials
         """
 
-        if check_parameters:
-            if (acs_name_to_edit is None) and (
-                sum([manual_auth, content_credentials_auth, none_auth] != 1)
-            ):
-                raise ValueError(
-                    'At least acs_name_to_edit and one of '
-                    'manual_auth, content_credentials_auth, none_auth must be specified!'
-                )
+        if (
+            check_parameters
+            and acs_name_to_edit is None
+            and (sum([manual_auth, content_credentials_auth, none_auth] != 1))
+        ):
+            raise ValueError(
+                'At least acs_name_to_edit and one of '
+                'manual_auth, content_credentials_auth, none_auth must be specified!'
+            )
 
         view = self.edit_helper(acs_name_to_edit)
         view.credentials.edit_credentials.click()
@@ -571,7 +573,7 @@ class AcsEntity(BaseEntity):
         )
         self.close_details_side_panel()
 
-    def create_new_acs(
+    def create_new_acs(  # noqa: C901 - function is too complex
         self,
         custom_type=False,
         simplified_type=False,
@@ -705,6 +707,7 @@ class AcsEntity(BaseEntity):
                 view.acs_drawer.clear_search.click()
                 time.sleep(2)
 
+        wait_for(lambda: view.acs_drawer.add_source.is_displayed, timeout=10, delay=1)
         view.acs_drawer.add_source.click()
         # Load wizard modal for adding new ACS
         view = AddAlternateContentSourceModal(self.browser)

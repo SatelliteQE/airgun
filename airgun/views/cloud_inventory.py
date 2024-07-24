@@ -1,10 +1,8 @@
 from selenium.common.exceptions import NoSuchElementException
 from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import Text
-from widgetastic.widget import View
-from widgetastic_patternfly import Button
-from widgetastic_patternfly import Tab
+from widgetastic.widget import Text, View
+from widgetastic_patternfly import Button, Tab
 from widgetastic_patternfly4.button import Button as Pf4Button
 from widgetastic_patternfly4.switch import Switch
 
@@ -83,7 +81,7 @@ class InventoryItemsView(Accordion):
     @property
     def is_active(self):
         classes = self.browser.classes(self)
-        return any(['expand-active' in class_ for class_ in classes])
+        return any('expand-active' in class_ for class_ in classes)
 
     def child_widget_accessed(self, widget):
         if not self.is_active:
@@ -109,9 +107,7 @@ class CloudInventoryListView(BaseLoggedInView):
 
     title = Text('//h1[normalize-space(.)="Red Hat Inventory"]')
     auto_update = Switch('.//label[@for="rh-cloud-switcher-allow_auto_inventory_upload"]')
-    obfuscate_hostnames = Switch(
-        './/label[@for="rh-cloud-switcher-obfuscate_inventory_hostnames"]'
-    )
+    obfuscate_hostnames = Switch('.//label[@for="rh-cloud-switcher-obfuscate_inventory_hostnames"]')
     obfuscate_ips = Switch('.//label[@for="rh-cloud-switcher-obfuscate_inventory_ips"]')
     exclude_packages = Switch('.//label[@for="rh-cloud-switcher-exclude_installed_packages"]')
     cloud_connector = Pf4Button(locator='//button[normalize-space(.)="Configure Cloud Connector"]')

@@ -1,33 +1,35 @@
 from time import sleep
 
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.exceptions import DisabledWidgetError
 from airgun.helpers.host import HostHelper
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.cloud_insights import CloudInsightsView
-from airgun.views.host import HostCreateView
-from airgun.views.host import HostDetailsView
-from airgun.views.host import HostEditView
-from airgun.views.host import HostRegisterView
-from airgun.views.host import HostsAssignCompliancePolicy
-from airgun.views.host import HostsAssignLocation
-from airgun.views.host import HostsAssignOrganization
-from airgun.views.host import HostsChangeEnvironment
-from airgun.views.host import HostsChangeGroup
-from airgun.views.host import HostsChangeOpenscapCapsule
-from airgun.views.host import HostsDeleteActionDialog
-from airgun.views.host import HostsDeleteTaskDetailsView
-from airgun.views.host import HostsJobInvocationCreateView
-from airgun.views.host import HostsJobInvocationStatusView
-from airgun.views.host import HostsUnassignCompliancePolicy
-from airgun.views.host import HostsView
-from airgun.views.host import RecommendationListView
-from airgun.views.host_new import ManageColumnsView
-from airgun.views.host_new import NewHostDetailsView
+from airgun.views.host import (
+    HostCreateView,
+    HostDetailsView,
+    HostEditView,
+    HostRegisterView,
+    HostsAssignCompliancePolicy,
+    HostsAssignLocation,
+    HostsAssignOrganization,
+    HostsChangeContentSourceView,
+    HostsChangeEnvironment,
+    HostsChangeGroup,
+    HostsChangeOpenscapCapsule,
+    HostsDeleteActionDialog,
+    HostsDeleteTaskDetailsView,
+    HostsJobInvocationCreateView,
+    HostsJobInvocationStatusView,
+    HostsUnassignCompliancePolicy,
+    HostsView,
+    RecommendationListView,
+)
+from airgun.views.host_new import ManageColumnsView, NewHostDetailsView
 
 
 class HostEntity(BaseEntity):
@@ -46,13 +48,19 @@ class HostEntity(BaseEntity):
         host_view.flash.assert_no_error()
         host_view.flash.dismiss()
 
-    def get_register_command(self, values, full_read=None):
+    def get_register_command(self, values=None, full_read=None):
         """Get curl command generated on Register Host page"""
         view = self.navigate_to(self, 'Register')
-        view.fill(values)
-        self.browser.click(view.generate_command)
-        self.browser.plugin.ensure_page_safe()
-        view.registration_command.wait_displayed()
+        if values is not None:
+            view.fill(values)
+        if view.general.activation_keys.read():
+            self.browser.click(view.generate_command)
+            self.browser.plugin.ensure_page_safe()
+            view.registration_command.wait_displayed()
+        else:
+            view.general.new_activation_key_link.wait_displayed()
+            if view.generate_command.disabled:
+                raise DisabledWidgetError('Generate registration command button is disabled')
         if full_read:
             return view.read()
         return view.registration_command.read()
@@ -61,6 +69,11 @@ class HostEntity(BaseEntity):
         """Search for existing host entity"""
         view = self.navigate_to(self, 'All')
         return view.search(value)
+
+    def reset_search(self):
+        """This function loads a HostsView and clears the searchbox."""
+        view = HostsView(self.browser)
+        view.searchbox.clear()
 
     def host_status(self, value):
         """Get Host status"""
@@ -101,6 +114,12 @@ class HostEntity(BaseEntity):
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
+
+    def read_hosts_after_search(self, entity_name):
+        """read_hosts_after_search"""
+        view = self.navigate_to(self, 'All')
+        view.search(entity_name)
+        return view.table.read()
 
     def delete_interface(self, entity_name, interface_id):
         """Delete host network interface.
@@ -157,6 +176,69 @@ class HostEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def change_content_source(
+        self,
+        entities_list,
+        content_source,
+        lce,
+        content_view,
+        run_job_invocation=False,
+        update_hosts_manually=False,
+    ):
+        """
+        Apply Change Content Source action to one or more hosts
+
+        Args:
+            entities_list (list): names of the hosts for which we would like to change the content source
+            content_source (str): name of the content source to be selected
+            lce (str): name of the LCE to be selected
+            content_view (str): name of the content view to be selected
+            run_job_invocation (bool): whether to run job invocation in order to change the host's content source
+            update_hosts_manually (bool): whether to update hosts manually in order to change the host's content source
+        """
+
+        view = self._select_action('Change Content Source', entities_list)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        wait_for(lambda: view.content_source_select.is_displayed, timeout=10, delay=1)
+        view.content_source_select.fill(content_source)
+        wait_for(lambda: view.lce_env_title.is_displayed, timeout=10, delay=1)
+        # click on the specific LCE radio button
+        self.browser.click(
+            f'//input[@type="radio" and following-sibling::label[normalize-space(.)="{lce}"]]'
+        )
+        view = HostsChangeContentSourceView(self.browser)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.content_view_select.click()
+        wait_for(lambda: view.content_view_select.is_displayed, timeout=10, delay=1)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+
+        self.browser.click(f'.//*[contains(text(), "{content_view}")][1]')
+        if run_job_invocation:
+            view.run_job_invocation.click()
+            view.wait_displayed()
+            self.browser.plugin.ensure_page_safe(timeout='5s')
+        elif update_hosts_manually:
+            view.update_hosts_manualy.click()
+            view.wait_displayed()
+            self.browser.plugin.ensure_page_safe(timeout='5s')
+
+    def change_content_source_get_script(self, entities_list, content_source, lce, content_view):
+        """
+        Function that reads generated script which is generated while choosing to update hosts manually.
+        """
+
+        self.change_content_source(
+            entities_list, content_source, lce, content_view, update_hosts_manually=True
+        )
+        view = HostsChangeContentSourceView(self.browser)
+        wait_for(lambda: view.show_more_change_content_source.is_displayed, timeout=10, delay=1)
+        view.show_more_change_content_source.click()
+        script = view.generated_script.read()
+        return script
+
     def export(self):
         """Export hosts list.
 
@@ -178,10 +260,14 @@ class HostEntity(BaseEntity):
         """
         view = self._select_action('Schedule Remote Job', entities_list)
         view.fill(values)
+        sleep(2)
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
         status_view = HostsJobInvocationStatusView(self.browser)
+        sleep(2)
+        self.browser.plugin.ensure_page_safe()
+        status_view.wait_displayed()
         if wait_for_results:
             status_view.wait_for_result(timeout=timeout)
         return status_view.read()
@@ -251,7 +337,7 @@ class HostEntity(BaseEntity):
         view.validations.assert_no_errors()
 
         # set locators based on selected UI
-        if rhel_version > 7:
+        if rhel_version > 7:  # noqa: PLR2004 - Context makes magic number clear
             hostname_element = 'span'
             hostname_id = 'system_information_hostname_text'
         else:
@@ -378,6 +464,7 @@ class EditHost(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Actions'].widget.fill('Edit')
+        self.view.wait_displayed()
 
 
 @navigator.register(HostEntity, 'Select Action')
@@ -391,6 +478,7 @@ class HostsSelectAction(NavigateStep):
     """
 
     ACTIONS_VIEWS = {
+        'Change Content Source': HostsChangeContentSourceView,
         'Change Environment': HostsChangeEnvironment,
         'Change Group': HostsChangeGroup,
         'Assign Compliance Policy': HostsAssignCompliancePolicy,

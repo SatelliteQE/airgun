@@ -1,6 +1,7 @@
 """Exceptions raised by airgun"""
+
 from selenium.common.exceptions import InvalidElementStateException
-from widgetastic.exceptions import *  # noqa: F403, F401
+from widgetastic.exceptions import *  # noqa: F403
 
 
 class ReadOnlyWidgetError(Exception):

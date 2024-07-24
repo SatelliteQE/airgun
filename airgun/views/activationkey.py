@@ -1,24 +1,23 @@
-from widgetastic.widget import ParametrizedView
-from widgetastic.widget import Select
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import ParametrizedView, Select, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import AddRemoveResourcesView
-from airgun.views.common import AddRemoveSubscriptionsView
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import LCESelectorGroup
-from airgun.views.common import SatTab
-from airgun.views.common import SatTabWithDropdown
-from airgun.views.common import SearchableViewMixin
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import EditableEntry
-from airgun.widgets import EditableEntrySelect
-from airgun.widgets import EditableLimitEntry
-from airgun.widgets import LimitInput
+from airgun.views.common import (
+    AddRemoveResourcesView,
+    AddRemoveSubscriptionsView,
+    BaseLoggedInView,
+    LCESelectorGroup,
+    SatTab,
+    SatTabWithDropdown,
+    SearchableViewMixin,
+)
+from airgun.widgets import (
+    ActionsDropdown,
+    ConfirmationDialog,
+    EditableEntry,
+    EditableEntrySelect,
+    EditableLimitEntry,
+    LimitInput,
+)
 
 
 class ActivationKeysView(BaseLoggedInView, SearchableViewMixin):
@@ -26,7 +25,7 @@ class ActivationKeysView(BaseLoggedInView, SearchableViewMixin):
 
     title = Text("//h2[contains(., 'Activation Keys')]")
     new = Text("//button[contains(@href, '/activation_keys/new')]")
-    table = Table('.//table', column_widgets={'Name': Text('./a')})
+    table = Table('.//table', column_widgets={'Name': Text('.//a')})
 
     @property
     def is_displayed(self):

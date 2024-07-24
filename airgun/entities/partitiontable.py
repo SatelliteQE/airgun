@@ -1,12 +1,13 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.partitiontable import PartitionTableCreateView
-from airgun.views.partitiontable import PartitionTableEditView
-from airgun.views.partitiontable import PartitionTablesView
+from airgun.views.partitiontable import (
+    PartitionTableCreateView,
+    PartitionTableEditView,
+    PartitionTablesView,
+)
 
 
 class PartitionTableEntity(BaseEntity):

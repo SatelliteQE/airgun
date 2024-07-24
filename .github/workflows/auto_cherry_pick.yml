@@ -3,7 +3,7 @@ name: auto_cherry_pick_commits
 
 on:
   pull_request_target:
-    types: [closed, labeled]
+    types: [closed]
 
 # Github & Parent PR Env vars
 env:
@@ -27,6 +27,7 @@ jobs:
         with:
           issue-number: ${{ env.number }}
           body-includes: "trigger: test-robottelo"
+          direction: last
 
   # Auto CherryPicking and Failure Recording
   auto-cherry-pick:
@@ -40,7 +41,7 @@ jobs:
 
     steps:
       ## Airgun Repo Checkout
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ startsWith(matrix.label, '6.') && matrix.label != github.base_ref }}
         with:
           fetch-depth: 0
@@ -70,7 +71,7 @@ jobs:
 
       - name: is autoMerging enabled for Auto CherryPicked PRs ?
         if: ${{ always() && steps.cherrypick.outcome == 'success' && contains(github.event.pull_request.labels.*.name, 'AutoMerge_Cherry_Picked') }}
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.CHERRYPICK_PAT }}
           script: |
@@ -84,7 +85,7 @@ jobs:
       ## Failure Logging to issues and GChat Group
       - name: Create Github issue on cherrypick failure
         id: create-issue
-        if: ${{ always() && steps.cherrypick.outcome == 'failure' }}
+        if: ${{ always() && steps.cherrypick.outcome != 'success' && startsWith(matrix.label, '6.') && matrix.label != github.base_ref }}
         uses: dacbd/create-issue-action@main
         with:
           token: ${{ secrets.CHERRYPICK_PAT }}

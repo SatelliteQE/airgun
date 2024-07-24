@@ -1,9 +1,10 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.smart_class_parameter import SmartClassParameterEditView
-from airgun.views.smart_class_parameter import SmartClassParametersView
+from airgun.views.smart_class_parameter import (
+    SmartClassParameterEditView,
+    SmartClassParametersView,
+)
 
 
 class SmartClassParameterEntity(BaseEntity):

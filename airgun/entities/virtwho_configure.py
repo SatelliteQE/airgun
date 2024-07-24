@@ -1,13 +1,14 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.virtwho_configure import VirtwhoConfigureCreateView
-from airgun.views.virtwho_configure import VirtwhoConfigureDetailsView
-from airgun.views.virtwho_configure import VirtwhoConfigureEditView
-from airgun.views.virtwho_configure import VirtwhoConfiguresView
+from airgun.views.virtwho_configure import (
+    VirtwhoConfigureCreateView,
+    VirtwhoConfigureDetailsView,
+    VirtwhoConfigureEditView,
+    VirtwhoConfiguresView,
+)
 
 
 class VirtwhoConfigureEntity(BaseEntity):
@@ -33,7 +34,7 @@ class VirtwhoConfigureEntity(BaseEntity):
         """Check if the config can be viewed/created"""
         try:
             view = self.navigate_to(self, 'All')
-        except Exception:
+        except Exception:  # noqa: BLE001 - TODO: determine proper exception
             return {"can_view": False, "can_create": False}
         return {"can_view": True, "can_create": view.new.is_displayed}
 
@@ -63,13 +64,21 @@ class VirtwhoConfigureEntity(BaseEntity):
         values = self._reset_values(values)
         view.fill(values)
         view.submit.click()
-        view.flash.assert_message(f"Success alert: Successfully updated {name}.")
+        if 'name' in values:
+            view.flash.assert_message(f"Success alert: Successfully updated {values['name']}.")
+        else:
+            view.flash.assert_message(f"Success alert: Successfully updated {name}.")
         view.flash.assert_no_error()
         view.flash.dismiss()
 
     def read(self, entity_name, widget_names=None):
         """Read all values for existing virtwho configure entity"""
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        return view.read(widget_names=widget_names)
+
+    def read_edit(self, entity_name, widget_names=None):
+        """Read all values for existing virtwho configure entity for Edit View"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def delete(self, value):

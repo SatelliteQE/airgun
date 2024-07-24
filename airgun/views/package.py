@@ -1,15 +1,13 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Select
-from widgetastic.widget import Text
-from widgetastic.widget import View
+from widgetastic.widget import Checkbox, Select, Text, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import ReadOnlyEntry
-from airgun.views.common import SatTab
-from airgun.views.common import SatTable
-from airgun.widgets import ItemsListReadOnly
-from airgun.widgets import Search
+from airgun.views.common import (
+    BaseLoggedInView,
+    ReadOnlyEntry,
+    SatTab,
+    SatTable,
+)
+from airgun.widgets import ItemsListReadOnly, Search
 
 
 class PackagesView(BaseLoggedInView):

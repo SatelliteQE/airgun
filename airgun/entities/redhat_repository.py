@@ -1,6 +1,7 @@
+from wait_for import wait_for
+
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.redhat_repository import RedHatRepositoriesView
 
@@ -41,15 +42,19 @@ class RedHatRepositoryEntity(BaseEntity):
             entity_data['items'] = view.available.items(name=entity_name)[0].read_items()
         return entity_data
 
-    def enable(self, entity_name, arch, version=None):
+    def enable(self, entity_name, arch, version=None, custom_query=None):
         """Enable a redhat repository.
 
         :param str entity_name: The RH repository set name.
         :param str arch: The system target repository architecture.
         :param str version: (optional) The OS release version if mandatory for this repository.
+        :param str custom_query: (optional) The custom query to search for.
+                    If custom_query is used, set entity_name to None when calling this function!!!
         """
         view = self.navigate_to(self, 'All')
-        view.search(f'name = "{entity_name}"', category='Available')
+        wait_for(lambda: view.search_box.is_displayed, timeout=10, delay=1)
+        custom_query = f'name = "{entity_name}"' if custom_query is None else custom_query
+        view.search(custom_query, category='Available')
         arch_version = f'{arch} {version}' if version else arch
         view.available.items(name=entity_name)[0].enable(arch_version)
         view.flash.assert_no_error()

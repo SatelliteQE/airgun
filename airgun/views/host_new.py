@@ -1,31 +1,33 @@
 import time
 
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic.widget import Widget
+from widgetastic.widget import Checkbox, Text, TextInput, View, Widget
 from widgetastic.widget.table import Table
-from widgetastic_patternfly4 import Button
-from widgetastic_patternfly4 import Dropdown
-from widgetastic_patternfly4 import Pagination
-from widgetastic_patternfly4 import Select
-from widgetastic_patternfly4 import Tab
-from widgetastic_patternfly4.ouia import BreadCrumb
-from widgetastic_patternfly4.ouia import Button as OUIAButton
-from widgetastic_patternfly4.ouia import ExpandableTable
-from widgetastic_patternfly4.ouia import FormSelect as OUIAFormSelect
-from widgetastic_patternfly4.ouia import PatternflyTable
-from widgetastic_patternfly4.ouia import Select as OUIASelect
+from widgetastic_patternfly4 import (
+    Button,
+    Dropdown,
+    Pagination as PF4Pagination,
+    Select,
+    Tab,
+)
+from widgetastic_patternfly4.ouia import (
+    BreadCrumb,
+    Button as OUIAButton,
+    ExpandableTable,
+    FormSelect as OUIAFormSelect,
+    PatternflyTable,
+    Select as OUIASelect,
+)
 
 from airgun.views.common import BaseLoggedInView
-from airgun.widgets import Accordion
-from airgun.widgets import CheckboxGroup
-from airgun.widgets import ItemsList
-from airgun.widgets import Pf4ActionsDropdown
-from airgun.widgets import Pf4ConfirmationDialog
-from airgun.widgets import SatTableWithoutHeaders
-from airgun.widgets import SearchInput
+from airgun.widgets import (
+    Accordion,
+    CheckboxGroup,
+    ItemsList,
+    Pf4ActionsDropdown,
+    Pf4ConfirmationDialog,
+    SatTableWithoutHeaders,
+    SearchInput,
+)
 
 
 class RemediationView(View):
@@ -82,9 +84,9 @@ class HostDetailsCard(Widget):
                 'Please double check xpaths.'
             )
         for key, value in zip(labels, values):
-            value = self.browser.text(value)
-            key = self.browser.text(key).replace(' ', '_').lower()
-            items[key] = value
+            _value = self.browser.text(value)
+            _key = self.browser.text(key).replace(' ', '_').lower()
+            items[_key] = _value
         return items
 
 
@@ -118,7 +120,7 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class details(Card):
             ROOT = './/article[.//div[text()="Details"]]'
-
+            edit = Text('.//div[@class="pf-c-description-list__group"]/dd//div[2]')
             details = HostDetailsCard()
 
             power_operations = OUIAButton('power-status-dropdown-toggle')
@@ -208,21 +210,13 @@ class NewHostDetailsView(BaseLoggedInView):
                 './/button[@data-ouia-component-id="syspurpose-edit-button"]'
             )
 
-            role = Text('.//dd[contains(@class, "pf-c-description-list__description")][1]')
-            sla = Text('.//dd[contains(@class, "pf-c-description-list__description")][2]')
-            usage_type = Text('.//dd[contains(@class, "pf-c-description-list__description")][3]')
-            release_version = Text(
-                './/dd[contains(@class, "pf-c-description-list__description")][4]'
-            )
-            addons = Text('.//dd[contains(@class, "pf-c-description-list__description")][5]')
+            details = HostDetailsCard()
 
     @View.nested
     class details(Tab):
         ROOT = './/div[contains(@class, "host-details-tab-item")]'
 
-        card_collapse_switch = Text(
-            './/button[contains(@data-ouia-component-id, "expand-button")]'
-        )
+        card_collapse_switch = Text('.//button[contains(@data-ouia-component-id, "expand-button")]')
 
         @View.nested
         class system_properties(Card):
@@ -238,62 +232,32 @@ class NewHostDetailsView(BaseLoggedInView):
                 './/a[contains(@data-ouia-component-id, "OUIA-Generated-Button-link-1")]'
             )
             os = Text('.//a[contains(@data-ouia-component-id, "OUIA-Generated-Button-link-2")]')
-            boot_time = Text('.//div[contains(@class, "pf-c-description-list__group")][3]/dd/div')
-            kernel_release = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][4]/dd/div'
-            )
+
+            details = HostDetailsCard()
 
         @View.nested
         class provisioning(Card):
             ROOT = './/article[.//div[text()="Provisioning"]]'
 
-            build_duration = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][1]/dd/div'
-            )
-            token = Text('.//div[contains(@class, "pf-c-description-list__group")][2]/dd/div')
-            pxe_loader = Text('.//div[contains(@class, "pf-c-description-list__group")][3]/dd/div')
+            details = HostDetailsCard()
 
         @View.nested
         class bios(Card):
             ROOT = './/article[.//div[text()="BIOS"]]'
 
-            vendor = Text('.//div[contains(@class, "pf-c-description-list__group")][1]/dd/div')
-            version = Text('.//div[contains(@class, "pf-c-description-list__group")][2]/dd/div')
-            release_date = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][3]/dd/div'
-            )
+            details = HostDetailsCard()
 
         @View.nested
         class registration_details(Card):
             ROOT = './/article[.//div[text()="Registration details"]]'
 
-            registered_on = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][1]/dd/div'
-            )
-            registration_type = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][2]/ul/h4'
-            )
-            activation_key_name = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][2]//a'
-            )
-            registered_through = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][3]/dd/div'
-            )
+            details = HostDetailsCard()
 
         @View.nested
         class hw_properties(Card):
             ROOT = './/article[.//div[text()="HW properties"]]'
 
-            model = Text('.//div[contains(@class, "pf-c-description-list__group")][1]//dd')
-            number_of_cpus = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][2]//dd'
-            )
-            sockets = Text('.//div[contains(@class, "pf-c-description-list__group")][3]//dd')
-            cores_per_socket = Text(
-                './/div[contains(@class, "pf-c-description-list__group")][4]//dd'
-            )
-            ram = Text('.//div[contains(@class, "pf-c-description-list__group")][5]//dd')
-            storage = Text('.//div[contains(@class, "pf-c-description-list__group")][6]//h4')
+            details = HostDetailsCard()
 
         @View.nested
         class provisioning_templates(Card):
@@ -354,9 +318,7 @@ class NewHostDetailsView(BaseLoggedInView):
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
             searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
             status_filter = Dropdown(locator='.//div[@aria-label="select Status container"]/div')
-            upgrade = Pf4ActionsDropdown(
-                locator='.//div[div/button[normalize-space(.)="Upgrade"]]'
-            )
+            upgrade = Pf4ActionsDropdown(locator='.//div[div/button[normalize-space(.)="Upgrade"]]')
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = PatternflyTable(
@@ -370,7 +332,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     5: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
                 },
             )
-            pagination = Pagination()
+            pagination = PF4Pagination()
 
         @View.nested
         class errata(Tab):
@@ -397,7 +359,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     8: Dropdown(locator='./div'),
                 },
             )
-            pagination = Pagination()
+            pagination = PF4Pagination()
 
         @View.nested
         class module_streams(Tab):
@@ -423,7 +385,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     5: DropdownWithDescripton(locator='.//div[contains(@class, "pf-c-dropdown")]'),
                 },
             )
-            pagination = Pagination()
+            pagination = PF4Pagination()
 
         @View.nested
         class repository_sets(Tab):
@@ -457,7 +419,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     6: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
                 },
             )
-            pagination = Pagination()
+            pagination = PF4Pagination()
 
     @View.nested
     class parameters(Tab):
@@ -492,7 +454,7 @@ class NewHostDetailsView(BaseLoggedInView):
                 5: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
             },
         )
-        pagination = Pagination()
+        pagination = PF4Pagination()
 
     @View.nested
     class traces(Tab):
@@ -515,7 +477,7 @@ class NewHostDetailsView(BaseLoggedInView):
                 4: Button(locator='.//button[contains(@aria-label, "Actions")]'),
             },
         )
-        pagination = Pagination()
+        pagination = PF4Pagination()
 
     @View.nested
     class ansible(Tab):
@@ -530,11 +492,12 @@ class NewHostDetailsView(BaseLoggedInView):
 
             assignedRoles = Text('.//a[contains(@href, "roles/all")]')
             edit = Button(locator='.//button[@aria-label="edit ansible roles"]')
+            noRoleAssign = Text('.//h5[contains(@class, "pf-c-title pf-m-4xl")]')
             table = Table(
                 locator='.//table[contains(@class, "pf-c-table")]',
                 column_widgets={'Name': Text('.//a')},
             )
-            pagination = Pagination()
+            pagination = PF4Pagination()
 
         @View.nested
         class variables(Tab):
@@ -556,7 +519,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     7: Button(locator='.//button[@aria-label="Edit override button"]'),
                 },
             )
-            pagination = Pagination()
+            pagination = PF4Pagination()
 
         @View.nested
         class inventory(Tab):
@@ -600,7 +563,7 @@ class NewHostDetailsView(BaseLoggedInView):
                         4: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
                     },
                 )
-                pagination = Pagination()
+                pagination = PF4Pagination()
 
                 @property
                 def is_displayed(self):
@@ -620,7 +583,7 @@ class NewHostDetailsView(BaseLoggedInView):
                         'Schedule': Text('./span'),
                     },
                 )
-                pagination = Pagination()
+                pagination = PF4Pagination()
 
                 @property
                 def is_displayed(self):
@@ -644,7 +607,7 @@ class NewHostDetailsView(BaseLoggedInView):
                 7: Button(locator='.//button[contains(@aria-label, "Actions")]'),
             },
         )
-        pagination = Pagination()
+        pagination = PF4Pagination()
 
         @View.nested
         class enc_preview(Tab):
@@ -685,7 +648,7 @@ class NewHostDetailsView(BaseLoggedInView):
             },
         )
 
-        pagination = Pagination()
+        pagination = PF4Pagination()
 
     @View.nested
     class insights(Tab):
@@ -710,7 +673,7 @@ class NewHostDetailsView(BaseLoggedInView):
                 4: Button(locator='.//button[contains(@aria-label, "Actions")]'),
             },
         )
-        pagination = Pagination()
+        pagination = PF4Pagination()
 
 
 class InstallPackagesView(View):
@@ -729,7 +692,7 @@ class InstallPackagesView(View):
             'Version': Text('./parent::td'),
         },
     )
-    pagination = Pagination()
+    pagination = PF4Pagination()
 
     install = Button(locator='.//button[(normalize-space(.)="Install")]')
     cancel = Button('Cancel')
@@ -744,7 +707,7 @@ class AllAssignedRolesView(View):
         locator='.//table[contains(@class, "pf-c-table")]',
         column_widgets={'Name': Text('.//a'), 'Source': Text('.//a')},
     )
-    pagination = Pagination()
+    pagination = PF4Pagination()
 
 
 class EnableTracerView(View):
@@ -783,7 +746,7 @@ class ManageHostCollectionModal(View):
         },
     )
 
-    pagination = Pagination()
+    pagination = PF4Pagination()
 
     add = OUIAButton('add-button')
     remove = OUIAButton('add-button')
@@ -805,21 +768,44 @@ class EditSystemPurposeView(View):
     cancel = OUIAButton('cancel-syspurpose')
 
 
+class ManageHostStatusesView(View):
+    """Manage host statuses modal"""
+
+    ROOT = './/div[@data-ouia-component-id="statuses-modal"]'
+    close_modal = Button(locator='.//button[@aria-label="Close"]')
+    host_statuses_table = PatternflyTable(
+        component_id='statuses-table',
+        column_widgets={
+            'Name': Text('.//td[contains(@data-label, "Name")]'),
+            'Status': Text('.//td[contains(@data-label, "Status")]'),
+            'Reported at': Text('.//td[contains(@data-label, "Reported at")]'),
+            3: Button(locator='.//td[contains(@class, "action")]'),
+        },
+    )
+
+    def read(self):
+        # Parses into a dictionary of {name: {status, reported_at}}
+        return {value.pop('Name'): value for value in self.host_statuses_table.read()}
+
+
 class EditAnsibleRolesView(View):
     """Edit Ansible Roles Modal"""
 
-    ROOT = ''
-    # No current representation for this Widget in Widgetastic
+    addAnsibleRole = Text('.//span[contains(text(),"RedHatInsights.insights-client")]')
+    confirm = Button(locator='.//button[@aria-label="submit ansible roles"]')
+    hostAssignedAnsibleRoles = Text(
+        './/button[@class="pf-c-dual-list-selector__item"]/span[1]//span[2]'
+    )
+    selectRoles = Button(locator='.//button[@aria-label="Add selected"]')
+    unselectRoles = Button(locator='.//button[@aria-label="Remove selected"]')
 
 
 class ModuleStreamDialog(Pf4ConfirmationDialog):
-
     confirm_dialog = Button(locator='.//button[@aria-label="confirm-module-action"]')
     cancel_dialog = Button(locator='.//button[@aria-label="cancel-module-action"]')
 
 
 class RecurringJobDialog(Pf4ConfirmationDialog):
-
     confirm_dialog = Button(locator='.//button[@data-ouia-component-id="btn-modal-confirm"]')
     cancel_dialog = Button(locator='.//button[@data-ouia-component-id="btn-modal-cancel"]')
 

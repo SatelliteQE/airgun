@@ -1,19 +1,12 @@
-from widgetastic.widget import FileInput
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import FileInput, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixinPF4
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import MultiSelect
-from airgun.widgets import SatTable
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.widgets import ActionsDropdown, MultiSelect, SatTable
 
 
 class SCAPContentsView(BaseLoggedInView, SearchableViewMixinPF4):
-    title = Text("//h1[normalize-space(.)='SCAP Content']")
+    title = Text("//h1[normalize-space(.)='SCAP Contents']")
     new = Text("//a[contains(@href, 'scap_contents/new')]")
     table = SatTable(
         './/table',

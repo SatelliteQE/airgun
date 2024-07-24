@@ -3,32 +3,33 @@ import time
 from cached_property import cached_property
 from selenium.webdriver.common.keys import Keys
 from wait_for import wait_for
-from widgetastic.exceptions import NoSuchElementException
-from widgetastic.exceptions import WidgetOperationFailed
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ClickableMixin
-from widgetastic.widget import do_not_read_this_widget
-from widgetastic.widget import GenericLocatorWidget
-from widgetastic.widget import ParametrizedLocator
-from widgetastic.widget import Select
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic.widget import Widget
+from widgetastic.exceptions import NoSuchElementException, WidgetOperationFailed
+from widgetastic.widget import (
+    Checkbox,
+    ClickableMixin,
+    GenericLocatorWidget,
+    ParametrizedLocator,
+    Select,
+    Table,
+    Text,
+    TextInput,
+    View,
+    Widget,
+    do_not_read_this_widget,
+)
 from widgetastic.xpath import quote
-from widgetastic_patternfly import AggregateStatusCard
-from widgetastic_patternfly import Button
-from widgetastic_patternfly import FlashMessage
-from widgetastic_patternfly import FlashMessages
-from widgetastic_patternfly import Kebab
-from widgetastic_patternfly import VerticalNavigation
-from widgetastic_patternfly4.ouia import BaseSelect
-from widgetastic_patternfly4.ouia import Button as PF4Button
-from widgetastic_patternfly4.ouia import Dropdown
+from widgetastic_patternfly import (
+    AggregateStatusCard,
+    Button,
+    FlashMessage,
+    FlashMessages,
+    Kebab,
+    VerticalNavigation,
+)
+from widgetastic_patternfly4 import Pagination as PF4Pagination
+from widgetastic_patternfly4.ouia import BaseSelect, Button as PF4Button, Dropdown
 
-from airgun.exceptions import DisabledWidgetError
-from airgun.exceptions import ReadOnlyWidgetError
+from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
 from airgun.utils import get_widget_by_name
 
 
@@ -101,8 +102,8 @@ class RadioGroup(GenericLocatorWidget):
             return next(
                 btn for btn in self.browser.elements(self.LABELS) if self.browser.text(btn) == name
             )
-        except StopIteration:
-            raise NoSuchElementException(f"RadioButton {name} is absent on page")
+        except StopIteration as err:
+            raise NoSuchElementException(f"RadioButton {name} is absent on page") from err
 
     @property
     def selected(self):
@@ -111,11 +112,10 @@ class RadioGroup(GenericLocatorWidget):
             btn = self.browser.element(self.BUTTON, parent=self._get_parent_label(name))
             if btn.get_attribute('checked') is not None:
                 return name
-        else:
-            raise ValueError(
-                "Whether no radio button is selected or proper attribute "
-                "should be added to framework"
-            )
+        raise ValueError(
+            "Whether no radio button is selected or proper attribute "
+            "should be added to framework"
+        )
 
     def select(self, name):
         """Select specific radio button in the group"""
@@ -163,11 +163,10 @@ class ToggleRadioGroup(RadioGroup):
             btn = self.browser.element(self._get_parent_label(name))
             if 'active' in btn.get_attribute('class'):
                 return name
-        else:
-            raise ValueError(
-                "Whether no radio button is selected or proper attribute "
-                "should be added to framework"
-            )
+        raise ValueError(
+            "Whether no radio button is selected or proper attribute "
+            "should be added to framework"
+        )
 
     def select(self, name):
         """Select specific radio button in the group"""
@@ -485,6 +484,98 @@ class MultiSelect(GenericLocatorWidget):
         }
 
 
+class MultiSelectNoFilter(MultiSelect):
+    """This widget facilitates the movement of items between the unassigned and assigned lists. After providing values,
+    they will be stored in a list. Unassigned items contains the list which compare with the values,
+    if value is present it will assign the value or vise-versa."""
+
+    more_item = Text('//span[@class="pf-c-options-menu__toggle-button-icon"]')
+    select_pages = Text('//ul[@class="pf-c-options-menu__menu"]/li[6]/button')
+    available_role_template = '//div[@class="available-roles-container col-sm-6"]/div[2]/div'
+    assigned_role_template = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
+
+    def fill(self, values):
+        """This method facilitates assigning value(s) both during creation and after creation.
+        Compare this value list with the actual list of items present in the UI.
+        If the lists match, assign the items.
+        """
+        self.more_item.click()
+        self.select_pages.click()
+        available_list = self.browser.elements(self.available_role_template)
+        for data in available_list[1:]:
+            if data.text.split(". ")[1] in values:
+                data.click()
+        return True
+
+    def unassigned_values(self, values):
+        """This method facilitates the removal of items from the assigned list, effectively unassigned them."""
+        assigned_list = self.browser.elements(self.assigned_role_template)
+        for data in assigned_list:
+            if data.text.split(". ")[1] in values.values():
+                data.click()
+        return True
+
+    def read_assigned_values(self, values):
+        """Returns a list of assigned value(s)."""
+        assigned_list = self.browser.elements(self.assigned_role_template)
+        value = [
+            data.text.split(". ")[1] for data in assigned_list if data.text.split(". ")[1] in values
+        ]
+        return value
+
+
+class PF4MultiSelect(GenericLocatorWidget):
+    """Typical two-pane multiselect widget. Allows to move items from
+    list of ``unassigned`` entities to list of ``assigned`` ones and vice
+    versa. PF4 version.
+    """
+
+    unassigned = ItemsList(".//ul[@aria-labelledby='permission-duel-select-available-pane-status']")
+    assigned = ItemsList(".//ul[@aria-labelledby='permission-duel-select-chosen-pane-status']")
+    move_to_assigned = Text(".//button[@aria-label='Add selected']")
+    move_to_unassigned = Text(".//button[@aria-label='Remove selected']")
+
+    def __init__(self, parent, locator=None, id=None, logger=None):
+        """Supports initialization via ``locator=`` or ``id=``"""
+        if locator and id or not locator and not id:
+            raise TypeError('Please specify either locator or id')
+        locator = locator or f".//div[@id='{id}']"
+        super().__init__(parent, locator, logger)
+
+    def fill(self, values):
+        """Read current values, find the difference between current and passed
+        ones and fills the widget accordingly.
+
+        :param values: dict with keys ``assigned`` and/or ``unassigned``,
+            containing list of strings, representing item names
+        """
+        current = self.read()
+        to_add = [res for res in values.get('assigned', ()) if res not in current['assigned']]
+        to_remove = [
+            res for res in values.get('unassigned', ()) if res not in current['unassigned']
+        ]
+        if not to_add and not to_remove:
+            return False
+        if to_add:
+            for value in to_add:
+                self.unassigned.fill(value)
+                self.move_to_assigned.click()
+        if to_remove:
+            for value in to_remove:
+                self.assigned.fill(value)
+                self.move_to_unassigned.click()
+        return True
+
+    def read(self):
+        """Returns a dict with current lists values."""
+        unassigned = self.unassigned.read() if self.unassigned.is_displayed else []
+        assigned = self.assigned.read() if self.assigned.is_displayed else []
+        return {
+            'unassigned': unassigned,
+            'assigned': assigned,
+        }
+
+
 class PuppetClassesMultiSelect(MultiSelect):
     """Widget has different appearance than MultiSelect, because there are no actual panes,
     but logically it is the same. It looks like two lists of items and specific for puppet
@@ -566,7 +657,7 @@ class ActionsDropdown(GenericLocatorWidget):
         "contains(@ng-click, 'toggleDropdown')][contains(@class, 'btn')]"
         "[*[self::span or self::i][contains(@class, 'caret')]]"
     )
-    pf4_drop_down = Dropdown('OUIA-Generated-Dropdown-2')
+    pf4_drop_down = Text("//div[contains(@data-ouia-component-id, 'bookmarks-dropdown')]")
     button = Text(
         ".//*[self::button or self::span][contains(@class, 'btn') or "
         "contains(@aria-label, 'search button')]"
@@ -754,7 +845,9 @@ class PF4Search(Search):
     ROOT = '//div[@class="foreman-search-bar"]'
     search_field = TextInput(locator=(".//input[@aria-label='Search input']"))
     search_button = Text(locator=(".//button[@aria-label='Search']"))
-    clear_button = Button(locator=(".//input[@aria-label='Reset search']"))
+    clear_button = Text(locator=(".//button[@aria-label='Reset search']"))
+
+    actions = ActionsDropdown("//div[contains(@data-ouia-component-id, 'bookmarks-dropdown')]")
 
     def clear(self):
         """Clears search field value and re-trigger search to remove all
@@ -870,6 +963,7 @@ class ValidationErrors(Widget):
     ERROR_ELEMENTS = ".//*[contains(@class,'has-error') and not(contains(@style,'display:none'))]"
     ERROR_MESSAGES = (
         ".//*[(contains(@class, 'alert base in fade alert-danger')"
+        "or contains(@class,'error-msg') "
         "or contains(@class,'error-msg-block')"
         "or contains(@class,'error-message') "
         "or contains(@class,'editable-error-block')) "
@@ -1008,6 +1102,30 @@ class FilteredDropdown(GenericLocatorWidget):
         self.filter_content.fill(value)
 
 
+class PF4FilteredDropdown(GenericLocatorWidget):
+    """Drop-down element with filtering functionality - PatternFly 4 version"""
+
+    filter_criteria = TextInput(locator=".//input[@aria-label='Select a resource type']")
+    filter_content = ItemsList(".//ul")
+
+    def clear(self):
+        """Clear currently selected value for drop-down"""
+        self.browser.clear(self.filter_criteria)
+
+    def fill(self, value):
+        """Select specific item from the drop-down
+
+        :param value: string with item value
+        """
+        self.clear()
+        self.filter_criteria.fill(value)
+        self.filter_content.fill(value)
+
+    def read(self):
+        """Return drop-down selected item value"""
+        return self.browser.text(self.filter_criteria)
+
+
 class CustomParameter(Table):
     """Name-Value paired input elements which can be added, edited or removed.
 
@@ -1061,7 +1179,7 @@ class CustomParameter(Table):
                 "or @title='Remove Parameter']"
             ),
         }
-        self.name = list(self.column_widgets.keys())[0]
+        self.name = next(iter(self.column_widgets.keys()))
         self.name_key = '_'.join(self.name.lower().split(' '))
         self.value = list(self.column_widgets.keys())[1]
         self.value_key = '_'.join(self.value.lower().split(' '))
@@ -1117,8 +1235,8 @@ class CustomParameter(Table):
 
         try:
             names_to_fill = [param[self.name_key] for param in params_to_fill]
-        except KeyError:
-            raise KeyError("parameter value is missing 'name' key")
+        except KeyError as err:
+            raise KeyError("parameter value is missing 'name' key") from err
         # Check if duplicate names were passed in and skip incase list
         if names_to_fill and not isinstance(names_to_fill[0], dict):
             if len(set(names_to_fill)) < len(names_to_fill):
@@ -1275,7 +1393,7 @@ class LCESelector(GenericLocatorWidget):
         :param value: dictionary that consist of single checkbox name and
             value that should be assigned to that checkbox
         """
-        checkbox_name = list(value.keys())[0]
+        checkbox_name = next(iter(value.keys()))
         checkbox_value = value[checkbox_name]
         checkbox_locator = self.CHECKBOX.format(checkbox_name)
         return self.select(checkbox_locator, checkbox_value)
@@ -1342,7 +1460,7 @@ class TextInputHidden(TextInput):
     def read(self):
         value = super().read()
         hidden = 'masked-input' in self.browser.classes(self)
-        return dict(value=value, hidden=hidden)
+        return {'value': value, 'hidden': hidden}
 
 
 class EditableEntry(GenericLocatorWidget):
@@ -1574,9 +1692,7 @@ class ACEEditor(Widget):
         :param value: string with value that should be used for field update
             procedure
         """
-        self.browser.execute_script(
-            f"ace.edit('{self.ace_edit_id}').setValue(arguments[0])", value
-        )
+        self.browser.execute_script(f"ace.edit('{self.ace_edit_id}').setValue(arguments[0])", value)
 
     def read(self):
         """Returns string with current widget value"""
@@ -1672,12 +1788,6 @@ class Pagination(Widget):
                 widget.fill(value)
 
 
-class SatTablePagination(Pagination):
-    """Paginator widget for use within SatTable."""
-
-    ROOT = "//form[contains(@class, 'content-view-pf-pagination')]"
-
-
 class SatTable(Table):
     """Satellite version of table.
 
@@ -1718,7 +1828,9 @@ class SatTable(Table):
         "contains(@data-block, 'no-search-results-message')]"
     )
     tbody_row = Text('./tbody/tr')
-    pagination = SatTablePagination()
+    pagination = PF4Pagination(
+        locator="//div[contains(@class, 'pf-c-pagination') and not(contains(@class, 'pf-m-compact'))]"
+    )
 
     @property
     def has_rows(self):
@@ -1765,7 +1877,7 @@ class SatTable(Table):
             # ensure that we are at the right page (to not read the same page twice) and
             # to escape any ui bug that will cause hanging on this loop.
             wait_for(
-                lambda: self.pagination.current_page == page_number,
+                lambda page_number=page_number: self.pagination.current_page == page_number,
                 timeout=30,
                 delay=1,
                 logger=self.logger,
@@ -2372,8 +2484,9 @@ class AuthSourceAggregateCard(AggregateStatusCard):
 
     @property
     def count(self):
-        """Count of sources
-        :return int: None if no count element is found, otherwise count of sources in the card
+        """Count of sources.
+
+        :return int or None: None if no count element is found, otherwise count of sources in the card.
         """
         try:
             return int(self.browser.text(self.browser.element(self.COUNT)))
@@ -2407,6 +2520,7 @@ class BaseMultiSelect(BaseSelect, Dropdown):
 
     BUTTON_LOCATOR = './/button[@aria-label="Options menu"]'
     OUIA_COMPONENT_TYPE = "PF4/Select"
+    SELECTED_ITEMS_LIST = './/div[@class="pf-c-chip-group"]'
 
     def item_select(self, items, close=True):
         """Opens the Dropdown and selects the desired items.
@@ -2415,7 +2529,7 @@ class BaseMultiSelect(BaseSelect, Dropdown):
             items: Items to be selected
             close: Close the dropdown when finished
         """
-        if not isinstance(items, (list, tuple, set)):
+        if not isinstance(items, list | tuple | set):
             items = [items]
         if isinstance(items, str):
             items = items.split(',')
@@ -2437,6 +2551,12 @@ class BaseMultiSelect(BaseSelect, Dropdown):
             self.item_select(items, close=False)
         finally:
             self.close()
+
+    def read(self):
+        try:
+            return self.browser.text(self.SELECTED_ITEMS_LIST).split(' ')
+        except NoSuchElementException:
+            return None
 
 
 class InventoryBootstrapSwitch(Widget):
@@ -2506,9 +2626,7 @@ class DualListSelector(EditModal):
 
     from widgetastic_patternfly4 import Button
 
-    available_options_search = SearchInput(
-        locator='.//input[@aria-label="Available search input"]'
-    )
+    available_options_search = SearchInput(locator='.//input[@aria-label="Available search input"]')
     available_options_list = ItemsList(
         locator='.//div[contains(@class, "pf-m-available")]'
         '//ul[@class="pf-c-dual-list-selector__list"]'
