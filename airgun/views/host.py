@@ -277,6 +277,9 @@ class HostCreateView(BaseLoggedInView):
             locator=".//div[label[@for='compute_resource_id']]//button"
         )
         deploy = FilteredDropdown(id='host_compute_resource')
+        inherit_compute_profile_option = ToggleButton(
+            locator=".//div[label[@for='compute_profile_id']]//button"
+        )
         compute_profile = FilteredDropdown(id='s2id_host_compute_profile_id')
         lce = FilteredDropdown(id='host_lifecycle_environment')
         content_view = FilteredDropdown(id='host_content_view')
