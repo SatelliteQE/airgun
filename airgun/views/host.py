@@ -789,6 +789,7 @@ class HostsTaxonomyMismatchRadioGroup(GenericLocatorWidget):
         </form>
     """
 
+    taxonomy = None
     fix_mismatch = Text("//input[contains(@id, 'optimistic_import_yes')]")
     fail_on_mismatch = Text("//input[contains(@id, 'optimistic_import_no')]")
     buttons_text = {
