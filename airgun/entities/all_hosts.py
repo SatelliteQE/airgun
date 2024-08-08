@@ -6,6 +6,7 @@ from airgun.utils import retry_navigation
 from airgun.views.all_hosts import (
     AllHostsManageColumnsView,
     AllHostsTableView,
+    BuildManagementDialog,
     BulkHostDeleteDialog,
     HostDeleteDialog,
 )
@@ -61,6 +62,23 @@ class AllHostsEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
         return view.no_results
+
+    def build_management(self, reboot=False, rebuild=False):
+        """Build or rebuild hosts through build management popup"""
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        view.select_all.fill(True)
+        view.bulk_actions.item_select('Build management')
+        build_management_modal = BuildManagementDialog(self.browser)
+        if build_management_modal.is_displayed:
+            if reboot:
+                build_management_modal.reboot_now.fill(True)
+            if rebuild:
+                build_management_modal.rebuild_provisioning_only.fill(True)
+            build_management_modal.confirm.click()
+        self.browser.wait_for_element(view.alert_message, exception=False)
+        return view.alert_message.read()
 
     def manage_table_columns(self, values: dict):
         """
