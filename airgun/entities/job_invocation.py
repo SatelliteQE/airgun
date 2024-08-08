@@ -20,6 +20,10 @@ class JobInvocationEntity(BaseEntity):
     def run(self, values):
         """Run specific job"""
         view = self.navigate_to(self, 'Run')
+        # This is a temporary workaround because of SAT-27090
+        view.category_and_template.job_category.fill(values['category_and_template.job_category'])
+        values.pop('category_and_template.job_category')
+        view.category_and_template.job_template.click()
         view.fill(values)
         view.submit.expander.click()
         self.browser.wait_for_element(view.submit.submit, exception=False)

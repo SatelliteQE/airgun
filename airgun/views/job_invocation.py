@@ -30,8 +30,8 @@ class JobInvocationCreateView(BaseLoggedInView):
     @View.nested
     class category_and_template(WizardStepView):
         expander = Text(".//button[contains(.,'Category and template')]")
-        job_category = Select(locator='//div[*[@aria-label="Job category toggle"]]')
-        job_template = Select(locator='//div[div/*[@aria-label="Job template toggle"]]')
+        job_category = OUIASelect('job_category')
+        job_template = OUIASelect('job_template')
 
     @View.nested
     class target_hosts_and_inputs(WizardStepView):
@@ -71,6 +71,7 @@ class JobInvocationCreateView(BaseLoggedInView):
         time_span = TextInput(id='time-span')
         execution_order_alphabetical = Radio(id='execution-order-alphabetical')
         execution_order_randomized = Radio(id='execution-order-randomized')
+        ansible_collections_path = TextInput(id='collections_path')
 
     @View.nested
     class schedule(WizardStepView):
