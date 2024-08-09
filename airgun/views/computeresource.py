@@ -355,7 +355,6 @@ class ResourceProviderProfileView(BaseLoggedInView):
     @provider_content.register('Libvirt')
     class LibvirtResourceForm(View):
         cpus = TextInput(id='compute_attribute_vm_attrs_cpus')
-        cpu_mode = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_cpu_mode')
         memory = TextInput(id='compute_attribute_vm_attrs_memory')
         image = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_image_id')
 

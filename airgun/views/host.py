@@ -330,7 +330,6 @@ class HostCreateView(BaseLoggedInView):
         class virtual_machine(SatTab):
             TAB_NAME = 'Virtual Machine'
             cpus = TextInput(id='host_compute_attributes_cpus')
-            cpu_mode = FilteredDropdown(id='s2id_host_compute_attributes_cpu_mode')
             memory = TextInput(id='host_compute_attributes_memory')
             startup = Checkbox(id='host_compute_attributes_start')
 
