@@ -971,6 +971,12 @@ class NewHostEntity(HostEntity):
                 host_facts_view.expand_fact_value.click()
         return host_facts_view.table.read()
 
+    def refresh_applicability(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.dropdown.item_select('Refresh applicability')
+
 
 @navigator.register(NewHostEntity, 'NewDetails')
 class ShowNewHostDetails(NavigateStep):

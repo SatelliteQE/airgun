@@ -1,14 +1,17 @@
 from widgetastic.widget import Checkbox, Text, View
-from widgetastic_patternfly4 import Button, Dropdown, Menu, Radio
+from widgetastic_patternfly4 import Button, Dropdown, Menu, Modal, Pagination, Radio
 from widgetastic_patternfly4.ouia import (
+    Alert as OUIAAlert,
     PatternflyTable,
 )
 
 from airgun.views.common import (
     BaseLoggedInView,
     SearchableViewMixinPF4,
+    WizardStepView,
 )
 from airgun.views.host_new import ManageColumnsView, PF4CheckboxTreeView
+from airgun.widgets import ItemsList, SearchInput
 
 
 class AllHostsMenu(Menu):
@@ -23,6 +26,9 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
         locator='.//input[@data-ouia-component-id="select-all-checkbox-dropdown-toggle-checkbox"]'
     )
     bulk_actions = AllHostsMenu()
+    bulk_actions_kebab = Button(locator='.//button[@aria-label="plain kebab"]')
+    bulk_actions_menu = Menu(locator='.//div[@data-ouia-component-id="hosts-index-actions-kebab"]')
+
     table_loading = Text("//h5[normalize-space(.)='Loading']")
     no_results = Text("//h5[normalize-space(.)='No Results']")
     manage_columns = Button("Manage columns")
@@ -35,6 +41,8 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
         },
     )
     alert_message = Text('.//div[@aria-label="Success Alert" or @aria-label="Danger Alert"]')
+
+    pagination = Pagination()
 
     @property
     def is_displayed(self):
@@ -120,3 +128,154 @@ class AllHostsManageColumnsView(ManageColumnsView):
         Overwritten to ignore the "Expand tree" functionality
         """
         self.checkbox_group.fill(values)
+
+
+class ManagePackagesModal(Modal):
+    """
+    This class represents the Manage Packages modal that is used to install or update packages on hosts.
+    It contains severeal nested views that represent the steps of the wizard.
+    """
+
+    OUIA_ID = 'bulk-packages-wizard-modal'
+
+    title = './/h2[@data-ouia-component-type="PF4/Title"]'
+    close_btn = Button(locator='//button[@class="pf-c-button pf-m-plain pf-c-wizard__close"]')
+    cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
+    back_btn = Button(locator='//button[normalize-space(.)="Back"]')
+    next_btn = Button(locator='//button[normalize-space(.)="Next"]')
+
+    @View.nested
+    class select_action(WizardStepView):
+        expander = Text('.//button[text()="Select action"]')
+        content_text = Text('.//div[@class="pf-c-content"]')
+
+        upgrade_all_packages_radio = Radio(id='r1-upgrade-all-packages')
+        upgrade_packages_radio = Radio(id='r2-upgrade-packages')
+        install_packages_radio = Radio(id='r3-install-packages')
+        remove_packages_radio = Radio(id='r4-remove-packages')
+
+    @View.nested
+    class upgrade_packages(WizardStepView):
+        locator_prefix = '//div[contains(., "Upgrade packages")]/descendant::'
+
+        expander = Text('.//button[contains(.,"Upgrade packages")]')
+        content_text = Text('.//div[@class="pf-c-content"]')
+
+        select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
+        search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
+        clear_search = Button(locator=f'{locator_prefix}button[@aria-label="Reset search"]')
+        search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
+
+        table = PatternflyTable(
+            component_id='table',
+            column_widgets={
+                0: Checkbox(locator='.//input[@type="checkbox"]'),
+                'Package': Text('.//td[2]'),
+            },
+        )
+        pagination = Pagination()
+
+    @View.nested
+    class install_packages(WizardStepView):
+        locator_prefix = './/div[contains(., "Install packages")]/descendant::'
+
+        expander = Text('.//button[contains(.,"Install packages")]')
+        content_text = Text('.//div[@class="pf-c-content"]')
+
+        select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
+        search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
+        clear_search = Button(locator=f'{locator_prefix}button[@aria-label="Reset search"]')
+        search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
+
+        table = PatternflyTable(
+            component_id='table',
+            column_widgets={
+                0: Checkbox(locator='.//input[@type="checkbox"]'),
+                'Package': Text('.//td[2]'),
+            },
+        )
+        pagination = Pagination()
+
+    @View.nested
+    class remove_packages(WizardStepView):
+        locator_prefix = './/div[contains(., "Remove packages")]/descendant::'
+
+        expander = Text('.//button[contains(.,"Remove packages")]')
+        content_text = Text('.//div[@class="pf-c-content"]')
+
+        select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
+        search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
+        clear_search = Button(locator=f'{locator_prefix}button[@aria-label="Reset search"]')
+        search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
+
+        table = PatternflyTable(
+            component_id='table',
+            column_widgets={
+                0: Checkbox(locator='.//input[@type="checkbox"]'),
+                'Package': Text('.//td[2]'),
+            },
+        )
+        pagination = Pagination()
+
+    @View.nested
+    class review_hosts(WizardStepView):
+        locator_prefix = './/div[text()="Review hosts"]/descendant::'
+
+        expander = Text('.//button[contains(.,"Review hosts")]')
+        content_text = Text('.//div[@class="pf-c-content"]')
+        error_message = OUIAAlert('no-hosts-alert')
+
+        select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
+        search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
+        search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
+
+        table = PatternflyTable(
+            component_id='table',
+            column_widgets={
+                0: Checkbox(locator='.//input[@type="checkbox"]'),
+                'Name': Text('.//td[2]'),
+                'OS': Text('.//td[3]'),
+            },
+        )
+        pagination = Pagination()
+
+    @View.nested
+    class review(WizardStepView):
+        expander = Text('.//button[text()="Review"]')
+        content_text = Text('.//div[@class="pf-c-content"]')
+
+        tree_expander_packages = Button(
+            './/button[@class="pf-c-tree-view__node" and contains(.,"Packages to")]'
+        )
+        expanded_package_list = ItemsList(
+            locator='//ul[@class="pf-c-tree-view__list" and @role="tree"][1]'
+        )
+        # using wording manage instead of install and update, because in UI
+        # it changes based on the selected action but generally it looks the same
+        # Returns 'All' or number of packages to manage
+        number_of_packages_to_manage = Text(
+            '''
+                                            .//span[contains(.,"Packages to")]/following-sibling::
+                                            span/span[@class="pf-c-badge pf-m-read"]
+                                            '''
+        )
+
+        edit_selected_packages = Button('.//button[@aria-label="Edit packages list"]')
+        # Returns number of hosts to manage
+        number_of_hosts_to_manage = Text(
+            '''
+                                        .//span[contains(.,"Hosts")]/following-sibling::
+                                        span/span[@class="pf-c-badge pf-m-read"]
+                                        '''
+        )
+        edit_selected_hosts = Button('.//button[@aria-label="Edit host selection"]')
+        manage_via_dropdown = Dropdown(
+            locator='//div[@data-ouia-component-id="bulk-packages-wizard-dropdown"]'
+        )
+        finish_package_management_btn = Button(
+            locator='//*[@data-ouia-component-type="PF4/Button" and (normalize-space(.)="Install" or normalize-space(.)="Upgrade" or normalize-space(.)="Remove")]'
+        )
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None

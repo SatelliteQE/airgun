@@ -118,7 +118,7 @@ class JobInvocationCreateView(BaseLoggedInView):
     @View.nested
     class submit(WizardStepView):
         expander = Text(".//button[contains(.,'Review')]")
-        submit = Text(".//button[contains(.,'Run')]")
+        submit = Text(".//button[contains(.,'Submit')]")
 
         def click(self):
             self.submit.click()
