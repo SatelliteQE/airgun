@@ -21,6 +21,7 @@ from widgetastic_patternfly4.ouia import (
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import (
     Accordion,
+    ActionsDropdown,
     CheckboxGroup,
     ItemsList,
     Pf4ActionsDropdown,
@@ -112,6 +113,10 @@ class NewHostDetailsView(BaseLoggedInView):
     edit = OUIAButton('host-edit-button')
     dropdown = Dropdown(locator='//button[@id="hostdetails-kebab"]/..')
     schedule_job = Pf4ActionsDropdown(locator='.//div[div/button[@aria-label="Select"]]')
+    run_job = ActionsDropdown('//button[@data-ouia-component-id="schedule-a-job-dropdown-toggle"]')
+    select = Text(
+        '//ul[@class="pf-c-dropdown__menu pf-m-align-right"]/li/a/div[normalize-space(text())="Run Ansible roles"]'
+    )
 
     @View.nested
     class overview(Tab):
@@ -791,7 +796,9 @@ class ManageHostStatusesView(View):
 class EditAnsibleRolesView(View):
     """Edit Ansible Roles Modal"""
 
-    addAnsibleRole = Text('.//span[contains(text(),"RedHatInsights.insights-client")]')
+    addAnsibleRole = Text(
+        './/span[contains(text(),"RedHatInsights.insights-client") or contains(text(),"theforeman.foreman_scap_client")]'
+    )
     confirm = Button(locator='.//button[@aria-label="submit ansible roles"]')
     hostAssignedAnsibleRoles = Text(
         './/button[@class="pf-c-dual-list-selector__item"]/span[1]//span[2]'
