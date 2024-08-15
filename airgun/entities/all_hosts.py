@@ -138,7 +138,6 @@ class AllHostsEntity(BaseEntity):
         packages_to_upgrade=None,
         packages_to_install=None,
         packages_to_remove=None,
-        manage_by_rex=False,
         manage_by_customized_rex=False,
     ):
         """
@@ -154,7 +153,6 @@ class AllHostsEntity(BaseEntity):
             packages_to_upgrade (str or list): str with one package or list of packages to upgrade
             packages_to_install (str or list): str with one package or list of packages to install
             packages_to_remove (str or list): str with one package or list of packages to remove
-            manage_by_rex (bool): manage by rex flag
             manage_by_customized_rex (bool): manage by customized rex flag
         """
 
@@ -176,10 +174,6 @@ class AllHostsEntity(BaseEntity):
         if selected_packages_options != 1 and not upgrade_all_packages:
             raise ValueError(
                 "Exactly one of the options must be selected: packages_to_upgrade, packages_to_install, packages_to_remove!"
-            )
-        if sum([manage_by_rex, manage_by_customized_rex]) != 1:
-            raise ValueError(
-                "Only one of the options can be selected: manage_by_rex, manage_by_customized_rex!"
             )
 
         # Navigate to All Hosts
@@ -242,11 +236,11 @@ class AllHostsEntity(BaseEntity):
             "//*[contains(@class, 'pf-c-dropdown__menu-item') and normalize-space(.)={}]"
         )
         # Select how to manage packages
-        if manage_by_rex:
+        if not manage_by_customized_rex:
             view.review.expander.click()
             view.review.manage_via_dropdown.item_select('via remote execution')
             view.review.finish_package_management_btn.click()
-        elif manage_by_customized_rex:
+        else:
             # In this case "Run job" page is opened on which user can specify job details
             # Here we just select tu run with prefilled values
             view.review.expander.click()
