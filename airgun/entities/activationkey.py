@@ -80,6 +80,13 @@ class ActivationKeyEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def enable_repository(self, entity_name, repo_name):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.repository_sets.click()
+        view.repository_sets.search(repo_name)
+        view.repository_sets.check_box.click()
+        view.repository_sets.actions.fill('Override to Enabled')
+
 
 @navigator.register(ActivationKeyEntity, 'All')
 class ShowAllActivationKeys(NavigateStep):

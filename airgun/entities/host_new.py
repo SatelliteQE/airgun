@@ -1,12 +1,14 @@
 import time
 
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 
 from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.views.fact import HostFactView
 from airgun.views.host_new import (
     AllAssignedRolesView,
+    EditAnsibleRolesView,
     EditSystemPurposeView,
     EnableTracerView,
     InstallPackagesView,
@@ -250,6 +252,26 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         view.fill(values)
         view.submit.click()
+
+    def run_job(self, entity_name):
+        """Run a job on selected host"""
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.run_job.wait_displayed()
+        view.run_job.click()
+        view.select.click()
+
+    def add_single_ansible_role(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        wait_for(lambda: view.ansible.roles.edit.is_displayed, timeout=5)
+        view.ansible.roles.edit.click()
+        wait_for(lambda: EditAnsibleRolesView(self.browser).addAnsibleRole.is_displayed, timeout=10)
+        edit_view = EditAnsibleRolesView(self.browser)
+        actions = [edit_view.addAnsibleRole, edit_view.selectRoles, edit_view.confirm]
+        for action in actions:
+            wait_for(lambda: edit_view.is_displayed, timeout=5)
+            action.click()
 
     def get_packages(self, entity_name, search=""):
         """Filter installed packages on host"""
