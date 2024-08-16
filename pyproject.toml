@@ -19,6 +19,8 @@ exclude = '''
 
 [tool.ruff]
 target-version = "py311"
+
+[tool.ruff.lint]
 fixable = ["ALL"]
 
 select = [
@@ -31,6 +33,7 @@ select = [
     "B014", # Exception handler with duplicate exception
     "B023", # Function definition does not bind loop variable {name}
     "B026", # Star-arg unpacking after a keyword argument is strongly discouraged
+    "B904", # Use raise from to specify exception cause
     "BLE001", # Using bare except clauses is prohibited
     "C", # complexity
     "C4", # flake8-comprehensions
@@ -73,7 +76,6 @@ select = [
     "T100", # Trace found: {name} used
     "T20", # flake8-print
     "TRY004", # Prefer TypeError exception for invalid type
-    "TRY200", # Use raise from to specify exception cause
     "TRY302", # Remove exception handler; error is immediately re-raised
     "PLR0911", # Too many return statements ({returns} > {max_returns})
     "PLR2004", # Magic value used in comparison, consider replacing {value} with a constant variable
@@ -91,7 +93,6 @@ ignore = [
     "E501", # line too long
     "E731", # do not assign a lambda expression, use a def
     "G004", # Logging statement uses string formatting
-    "PGH001", # No builtin eval() allowed
     "PLR0912", # Too many branches ({branches} > {max_branches})
     "PLR0913", # Too many arguments to function call ({c_args} > {max_args})
     "PLR0915", # Too many statements ({statements} > {max_statements})
@@ -100,21 +101,21 @@ ignore = [
     "D107", # Missing docstring in __init__
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # Allow pprint for docs formatting
 "docs/create_*.py" = ["T203"]
 
-[tool.ruff.flake8-pytest-style]
+[tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 force-sort-within-sections = true
 known-first-party = [
     "broker",
 ]
 combine-as-imports = true
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 25
 
 [tool.coverage.run]
