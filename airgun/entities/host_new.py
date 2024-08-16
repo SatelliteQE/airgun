@@ -19,7 +19,6 @@ from airgun.views.host_new import (
 )
 from airgun.views.job_invocation import JobInvocationCreateView
 
-global available_param_types
 available_param_types = ['string', 'boolean', 'integer', 'real', 'array', 'hash', 'yaml', 'json']
 
 
