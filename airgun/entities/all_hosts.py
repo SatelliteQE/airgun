@@ -9,6 +9,7 @@ from airgun.views.all_hosts import (
     BuildManagementDialog,
     BulkHostDeleteDialog,
     HostDeleteDialog,
+    ManageCVEModal,
     ManagePackagesModal,
 )
 from airgun.views.job_invocation import JobInvocationCreateView
@@ -81,6 +82,24 @@ class AllHostsEntity(BaseEntity):
             build_management_modal.confirm.click()
         self.browser.wait_for_element(view.alert_message, exception=False)
         return view.alert_message.read()
+
+    def manage_cve(self, lce=None, cv=None):
+        """Bulk reassign Content View Environments through the All Hosts page
+        args:
+            lce (str): Lifecycle Environment to swap the hosts to.
+            cv (str): CV within that LCE to assign the hosts to.
+        """
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        view.select_all.fill(True)
+        view.bulk_actions_kebab.click()
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
+        view.bulk_actions.item_select('Content view environments')
+        view = ManageCVEModal(self.browser)
+        view.lce_selector.fill({lce: True})
+        view.content_source_select.item_select(cv)
+        view.save_btn.click()
 
     def manage_table_columns(self, values: dict):
         """
