@@ -1,4 +1,12 @@
-from widgetastic.widget import ParametrizedView, Select, Table, Text, TextInput, View
+from widgetastic.widget import (
+    Checkbox,
+    ParametrizedView,
+    Select,
+    Table,
+    Text,
+    TextInput,
+    View,
+)
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
@@ -83,9 +91,16 @@ class ActivationKeyEditView(BaseLoggedInView):
         resources = View.nested(AddRemoveSubscriptionsView)
 
     @View.nested
-    class repository_sets(SatTab):
+    class repository_sets(SatTab, SearchableViewMixin):
         TAB_NAME = 'Repository Sets'
         table = Table(locator=".//table")
+        actions = ActionsDropdown('//div[contains(@class, "btn-group ng-scope")]/div')
+        repository_name = Text(
+            locator='//table[@class="table table-bordered table-striped"]/tbody/tr//td[2]'
+        )
+        check_box = Checkbox(
+            locator='//table[@class="table table-bordered table-striped"]/tbody/tr//td[1]'
+        )
 
     @View.nested
     class host_collections(SatTab):
