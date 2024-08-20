@@ -1,8 +1,13 @@
 from wait_for import wait_for
 from widgetastic.widget import Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button, ChipGroup, Radio, Select
-from widgetastic_patternfly4.ouia import Select as OUIASelect
+from widgetastic_patternfly4 import Button, ChipGroup, DescriptionList, Radio, Select
+from widgetastic_patternfly4.donutchart import DonutCircle, DonutLegend
+from widgetastic_patternfly4.ouia import (
+    Dropdown as OUIADropdown,
+    Select as OUIASelect,
+    Text as OUIAText,
+)
 
 from airgun.views.common import (
     BaseLoggedInView,
@@ -152,6 +157,7 @@ class JobInvocationStatusView(BaseLoggedInView):
     job_task = Text("//a[normalize-space(.)='Job Task']")
     cancel_job = Button(value='Cancel Job')
     abort_job = Button(value='Abort Job')
+    new_ui = Text("//a[normalize-space(.)='New UI']")
 
     @View.nested
     class overview(SatTab):
@@ -196,3 +202,66 @@ class JobInvocationStatusView(BaseLoggedInView):
             delay=1,
             logger=self.logger,
         )
+
+
+class NewJobInvocationStatusView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+    title = OUIAText('breadcrumb_title')
+    create_report = Button(value='Create report')
+    actions = OUIADropdown('job-invocation-global-actions-dropdown')
+    BREADCRUMB_LENGTH = 2
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.breadcrumb.wait_displayed()
+        title_loaded = self.title.wait_displayed()
+        data_loaded, _ = wait_for(
+            func=lambda: self.status.is_displayed,
+            timeout=60,
+            delay=15,
+            fail_func=self.browser.refresh,
+        )
+        return (
+            breadcrumb_loaded
+            and title_loaded
+            and data_loaded
+            and self.breadcrumb.locations[0] == 'Jobs'
+            and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
+        )
+
+    @View.nested
+    class overall_status(DonutCircle):
+        """The donut circle with the overall job status of '{succeeded hosts}/{total hosts}'"""
+
+        def read(self):
+            """Return `dict` with the parsed overall status numbers, for example:
+            ```{'succeeded_hosts': 2, 'total_hosts': 5}```
+            """
+            succeeded_hosts, total_hosts = self.labels[0].split('/')
+            return {'succeeded_hosts': int(succeeded_hosts), 'total_hosts': int(total_hosts)}
+
+    @View.nested
+    class status(DonutLegend):
+        """'System status' panel."""
+
+        ROOT = ".//div[contains(@class, 'chart-legend')]"
+        first_label = Text(locator="//*[@id='legend-labels-0']")
+
+        @property
+        def is_displayed(self):
+            """Any status label is displayed after all data are loaded."""
+            return self.first_label.is_displayed
+
+        def read(self):
+            """Return `dict` with the System status info.
+            Example: ```{'Succeeded': 2, 'Failed': 1, 'In Progress': 0, 'Canceled': 0}```
+            """
+            return {item['label']: int(item['value']) for item in self.all_items}
+
+    @View.nested
+    class overview(DescriptionList):
+        ROOT = ".//div[contains(@class, 'job-overview')]"
+
+        def read(self):
+            """Return `dict` without trailing ':' in the key names."""
+            return {key.replace(':', ''): val for key, val in super().read().items()}
