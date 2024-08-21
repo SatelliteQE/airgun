@@ -26,7 +26,10 @@ from widgetastic_patternfly import (
     Kebab,
     VerticalNavigation,
 )
-from widgetastic_patternfly4 import Button as PF4Button, Pagination as PF4Pagination
+from widgetastic_patternfly4 import (
+    Button as PF4Button,
+    Pagination as PF4Pagination,
+)
 from widgetastic_patternfly4.ouia import (
     BaseSelect,
     Button as OUIAButton,
@@ -1481,6 +1484,30 @@ class LCESelector(GenericLocatorWidget):
         checkbox_value = value[checkbox_name]
         checkbox_locator = self.CHECKBOX.format(checkbox_name)
         return self.select(checkbox_locator, checkbox_value)
+
+
+class PF4LCESelector(LCESelector):
+    """Group of checkboxes that goes in a line one after another. Usually used
+    to specify lifecycle environment, updated for PF4 pages
+    """
+
+    LABELS = './/label[contains(@class, "pf-c-radio__label")]'
+    CHECKBOX = (
+        './/input[contains(@class, "pf-c-radio__input") and ../label[.//*[contains(text(), "{}")]]]'
+    )
+
+    def __init__(self, parent, locator=None, logger=None):
+        """Allow to specify ``locator`` if needed or use default one otherwise.
+        Locator is needed when multiple :class:`LCESelector` are present,
+        typically as a part of :class:`airgun.views.common.LCESelectorGroup`.
+        """
+        if locator is None:
+            locator = './/div[contains(@class, "env-path")]'
+        super().__init__(parent, locator, logger=logger)
+
+    def checkbox_selected(self, locator):
+        """Identify whether specific checkbox is selected or not"""
+        return self.browser.is_selected(locator)
 
 
 class LimitInput(Widget):
