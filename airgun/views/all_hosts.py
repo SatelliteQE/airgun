@@ -23,13 +23,23 @@ from airgun.views.host_new import ManageColumnsView, PF4CheckboxTreeView
 from airgun.widgets import ItemsList, SearchInput
 
 
+class AllHostsSelect(Select):
+    BUTTON_LOCATOR = ".//button[@aria-label='Options menu']"
+    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-c-select__menu')]/li[contains(@class, 'pf-c-select__menu-wrapper')]"
+    ITEM_LOCATOR = (
+        '//*[contains(@class, "pf-c-select__menu-item") and contains(normalize-space(.), {})]'
+    )
+    SELECTED_ITEM_LOCATOR = ".//span[contains(@class, 'ins-c-conditional-filter')]"
+    TEXT_LOCATOR = ".//div[contains(@class, 'pf-c-select') and child::button]"
+
+
 class AllHostsMenu(Menu):
     IS_ALWAYS_OPEN = False
     BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-menu-toggle')]"
     ROOT = f"{BUTTON_LOCATOR}/.."
 
 
-class AllHostsSelect(Select):
+class CVESelect(Select):
     BUTTON_LOCATOR = ".//button[@aria-label='Options menu']"
     ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-c-select__menu')]/li"
     ITEM_LOCATOR = (
@@ -126,6 +136,24 @@ class BulkHostDeleteDialog(View):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
+class HostgroupDialog(View):
+    """Dialog for bulk changing Hosts' assigned hostgroup"""
+
+    ROOT = './/div[@id="bulk-reassign-hg-modal"]'
+
+    title = Text("//span[normalize-space(.)='Change host group']")
+    hostgroup_dropdown = AllHostsSelect(
+        locator='.//div[contains(@class, "pf-c-select") and @data-ouia-component-id="select-host-group"]'
+    )
+
+    save_button = Button(locator='//button[normalize-space(.)="Save"]')
+    cancel_button = Button(locator='//button[normalize-space(.)="Cancel"]')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
 class AllHostsCheckboxTreeView(PF4CheckboxTreeView):
     """Small tweaks to work with All Hosts"""
 
@@ -162,7 +190,7 @@ class ManageCVEModal(Modal):
     title = Text("//span[normalize-space(.)='Edit content view environments']")
     save_btn = Button(locator='//button[normalize-space(.)="Save"]')
     cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
-    content_source_select = AllHostsSelect()
+    content_source_select = CVESelect()
     lce_selector = ParametrizedView.nested(PF4LCESelectorGroup)
 
     @property

@@ -9,6 +9,7 @@ from airgun.views.all_hosts import (
     BuildManagementDialog,
     BulkHostDeleteDialog,
     HostDeleteDialog,
+    HostgroupDialog,
     ManageCVEModal,
     ManagePackagesModal,
 )
@@ -82,6 +83,17 @@ class AllHostsEntity(BaseEntity):
             build_management_modal.confirm.click()
         self.browser.wait_for_element(view.alert_message, exception=False)
         return view.alert_message.read()
+
+    def change_hostgroup(self, name):
+        """Change hostgroup of all hosts to chosen hostgroup"""
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        view.select_all.fill(True)
+        view.bulk_actions.item_select('Change host group')
+        view = HostgroupDialog(self.browser)
+        view.hostgroup_dropdown.item_select(name)
+        view.save_button.click()
 
     def manage_cve(self, lce=None, cv=None):
         """Bulk reassign Content View Environments through the All Hosts page
