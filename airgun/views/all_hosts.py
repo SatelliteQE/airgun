@@ -1,4 +1,4 @@
-from widgetastic.widget import Checkbox, Text, View
+from widgetastic.widget import Checkbox, ParametrizedView, Text, View
 from widgetastic_patternfly4 import (
     Button,
     Dropdown,
@@ -15,6 +15,7 @@ from widgetastic_patternfly4.ouia import (
 
 from airgun.views.common import (
     BaseLoggedInView,
+    PF4LCESelectorGroup,
     SearchableViewMixinPF4,
     WizardStepView,
 )
@@ -36,6 +37,19 @@ class AllHostsMenu(Menu):
     IS_ALWAYS_OPEN = False
     BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-menu-toggle')]"
     ROOT = f"{BUTTON_LOCATOR}/.."
+
+
+class CVESelect(Select):
+    BUTTON_LOCATOR = ".//button[@aria-label='Options menu']"
+    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-c-select__menu')]/li"
+    ITEM_LOCATOR = (
+        "//*[contains(@class, 'pf-c-select__menu-item') and .//*[contains(normalize-space(.), {})]]"
+    )
+    SELECTED_ITEM_LOCATOR = ".//span[contains(@class, 'ins-c-conditional-filter')]"
+    TEXT_LOCATOR = ".//div[contains(@class, 'pf-c-select') and child::button]"
+    DEFAULT_LOCATOR = (
+        './/div[contains(@class, "pf-c-select") and @data-ouia-component-id="select-content-view"]'
+    )
 
 
 class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -164,6 +178,24 @@ class AllHostsManageColumnsView(ManageColumnsView):
         Overwritten to ignore the "Expand tree" functionality
         """
         self.checkbox_group.fill(values)
+
+
+class ManageCVEModal(Modal):
+    """
+    This class represents the Manage Content View Environments modal that is used to update the CVE of hosts.
+    """
+
+    ROOT = './/div[@data-ouia-component-id="bulk-change-host-cv-modal"]'
+
+    title = Text("//span[normalize-space(.)='Edit content view environments']")
+    save_btn = Button(locator='//button[normalize-space(.)="Save"]')
+    cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
+    content_source_select = CVESelect()
+    lce_selector = ParametrizedView.nested(PF4LCESelectorGroup)
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ManagePackagesModal(Modal):
