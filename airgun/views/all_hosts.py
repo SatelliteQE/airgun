@@ -299,7 +299,7 @@ class ManageErrataModal(Modal):
     class select_errata(WizardStepView):
         wizard_step_name = "Select errata"
         locator_prefix = f'.//div[contains(., "{wizard_step_name}")]/descendant::'
-        expander = Text(f'.//button[contains(.,"{wizard_step_name}")]')
+        expander = Text(f'.//button[text()="{wizard_step_name}"]')
         content_text = Text('.//div[@class="pf-c-content"]')
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
@@ -325,7 +325,7 @@ class ManageErrataModal(Modal):
         wizard_step_name = "Review hosts"
         locator_prefix = f'.//div[contains(., "{wizard_step_name}")]/descendant::'
 
-        expander = Text(f'.//button[contains(., "{wizard_step_name}")]')
+        expander = Text(f'.//button[text()="{wizard_step_name}"]')
         content_text = Text('.//div[@class="pf-c-content"]')
         error_message = OUIAAlert('no-hosts-alert')
 

@@ -275,9 +275,7 @@ class AllHostsEntity(BaseEntity):
             clear_search = view.select_errata.clear_search
             if clear_search.is_displayed:
                 clear_search.click()
-            search_input = view.select_errata.search_input
-
-            search_input.fill(f'{search_query_prefix}{search_query}')
+            view.select_errata.search_input.fill(f'{search_query_prefix}{search_query}')
 
             self.browser.wait_for_element(view.select_errata.table[0][0].widget, exception=False)
             view.select_errata.table[0][0].widget.fill(True)
