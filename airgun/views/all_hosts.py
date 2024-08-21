@@ -1,5 +1,13 @@
-from widgetastic.widget import Checkbox, Text, View
-from widgetastic_patternfly4 import Button, Dropdown, Menu, Modal, Pagination, Radio
+from widgetastic.widget import Checkbox, ParametrizedView, Text, View
+from widgetastic_patternfly4 import (
+    Button,
+    Dropdown,
+    Menu,
+    Modal,
+    Pagination,
+    Radio,
+    Select,
+)
 from widgetastic_patternfly4.ouia import (
     Alert as OUIAAlert,
     PatternflyTable,
@@ -7,6 +15,7 @@ from widgetastic_patternfly4.ouia import (
 
 from airgun.views.common import (
     BaseLoggedInView,
+    PF4LCESelectorGroup,
     SearchableViewMixinPF4,
     WizardStepView,
 )
@@ -14,10 +23,33 @@ from airgun.views.host_new import ManageColumnsView, PF4CheckboxTreeView
 from airgun.widgets import ItemsList, SearchInput
 
 
+class AllHostsSelect(Select):
+    BUTTON_LOCATOR = ".//button[@aria-label='Options menu']"
+    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-c-select__menu')]/li[contains(@class, 'pf-c-select__menu-wrapper')]"
+    ITEM_LOCATOR = (
+        '//*[contains(@class, "pf-c-select__menu-item") and contains(normalize-space(.), {})]'
+    )
+    SELECTED_ITEM_LOCATOR = ".//span[contains(@class, 'ins-c-conditional-filter')]"
+    TEXT_LOCATOR = ".//div[contains(@class, 'pf-c-select') and child::button]"
+
+
 class AllHostsMenu(Menu):
     IS_ALWAYS_OPEN = False
     BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-menu-toggle')]"
     ROOT = f"{BUTTON_LOCATOR}/.."
+
+
+class CVESelect(Select):
+    BUTTON_LOCATOR = ".//button[@aria-label='Options menu']"
+    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-c-select__menu')]/li"
+    ITEM_LOCATOR = (
+        "//*[contains(@class, 'pf-c-select__menu-item') and .//*[contains(normalize-space(.), {})]]"
+    )
+    SELECTED_ITEM_LOCATOR = ".//span[contains(@class, 'ins-c-conditional-filter')]"
+    TEXT_LOCATOR = ".//div[contains(@class, 'pf-c-select') and child::button]"
+    DEFAULT_LOCATOR = (
+        './/div[contains(@class, "pf-c-select") and @data-ouia-component-id="select-content-view"]'
+    )
 
 
 class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -104,6 +136,24 @@ class BulkHostDeleteDialog(View):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
+class HostgroupDialog(View):
+    """Dialog for bulk changing Hosts' assigned hostgroup"""
+
+    ROOT = './/div[@id="bulk-reassign-hg-modal"]'
+
+    title = Text("//span[normalize-space(.)='Change host group']")
+    hostgroup_dropdown = AllHostsSelect(
+        locator='.//div[contains(@class, "pf-c-select") and @data-ouia-component-id="select-host-group"]'
+    )
+
+    save_button = Button(locator='//button[normalize-space(.)="Save"]')
+    cancel_button = Button(locator='//button[normalize-space(.)="Cancel"]')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
 class AllHostsCheckboxTreeView(PF4CheckboxTreeView):
     """Small tweaks to work with All Hosts"""
 
@@ -128,6 +178,24 @@ class AllHostsManageColumnsView(ManageColumnsView):
         Overwritten to ignore the "Expand tree" functionality
         """
         self.checkbox_group.fill(values)
+
+
+class ManageCVEModal(Modal):
+    """
+    This class represents the Manage Content View Environments modal that is used to update the CVE of hosts.
+    """
+
+    ROOT = './/div[@data-ouia-component-id="bulk-change-host-cv-modal"]'
+
+    title = Text("//span[normalize-space(.)='Edit content view environments']")
+    save_btn = Button(locator='//button[normalize-space(.)="Save"]')
+    cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
+    content_source_select = CVESelect()
+    lce_selector = ParametrizedView.nested(PF4LCESelectorGroup)
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class ManagePackagesModal(Modal):
