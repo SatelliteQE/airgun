@@ -1,3 +1,5 @@
+from asyncio import wait_for
+
 from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
@@ -390,6 +392,7 @@ class AllHostsEntity(BaseEntity):
             view.review.manage_via_dropdown.item_select('via customized remote execution')
             view.review.finish_errata_management_btn.click()
             view = JobInvocationCreateView(self.browser)
+            wait_for(lambda: view.submit.is_displayed, timeout=10)
             view.submit.click()
 
 
