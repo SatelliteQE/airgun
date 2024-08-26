@@ -75,7 +75,7 @@ class ProvisioningTemplateEntity(BaseEntity):
         try:
             return "Supported by Red Hat" in view.table.row(name=entity_name)[
                 'Name'
-            ].widget.browser.element('./img').get_attribute('title')
+            ].widget.browser.element('./parent::td/img').get_attribute('title')
         except NoSuchElementException:
             return False
 
