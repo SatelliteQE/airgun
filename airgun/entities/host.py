@@ -53,6 +53,7 @@ class HostEntity(BaseEntity):
     def get_register_command(self, values=None, full_read=None):
         """Get curl command generated on Register Host page"""
         view = self.navigate_to(self, 'Register')
+        self.browser.plugin.ensure_page_safe()
         if values is not None:
             if ('advanced.repository_gpg_key_url' in values) or ('advanced.repository' in values):
                 view.wait_displayed()
@@ -64,6 +65,7 @@ class HostEntity(BaseEntity):
                     view.repository_gpg_key_url.fill(values['advanced.repository_gpg_key_url'])
                 view.repository_list_confirm.click()
             view = self.navigate_to(self, 'Register')
+            self.browser.plugin.ensure_page_safe()
             view.fill(values)
         if view.general.activation_keys.read():
             self.browser.click(view.generate_command)
