@@ -322,19 +322,13 @@ class ManagePackagesModal(Modal):
         # it changes based on the selected action but generally it looks the same
         # Returns 'All' or number of packages to manage
         number_of_packages_to_manage = Text(
-            '''
-                                            .//span[contains(.,"Packages to")]/following-sibling::
-                                            span/span[@class="pf-c-badge pf-m-read"]
-                                            '''
+            '''.//span[contains(.,"Packages to")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]'''
         )
 
         edit_selected_packages = Button('.//button[@aria-label="Edit packages list"]')
         # Returns number of hosts to manage
         number_of_hosts_to_manage = Text(
-            '''
-                                        .//span[contains(.,"Hosts")]/following-sibling::
-                                        span/span[@class="pf-c-badge pf-m-read"]
-                                        '''
+            '''.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]'''
         )
         edit_selected_hosts = Button('.//button[@aria-label="Edit host selection"]')
         manage_via_dropdown = Dropdown(
@@ -424,19 +418,13 @@ class ManageErrataModal(Modal):
         )
 
         number_of_errata_to_manage = Text(
-            '''
-                                            .//span[contains(.,"Errata to")]/following-sibling::
-                                            span/span[@class="pf-c-badge pf-m-read"]
-                                            '''
+            '''.//span[contains(.,"Errata to")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]'''
         )
 
         edit_selected_errata = Button('.//button[@aria-label="Edit errata list"]')
         # Returns number of hosts to manage
         number_of_hosts_to_manage = Text(
-            '''
-                                        .//span[contains(.,"Hosts")]/following-sibling::
-                                        span/span[@class="pf-c-badge pf-m-read"]
-                                        '''
+            '''.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]'''
         )
         edit_selected_hosts = Button('.//button[@aria-label="Edit host selection"]')
         manage_via_dropdown = Dropdown(
