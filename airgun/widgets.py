@@ -27,7 +27,6 @@ from widgetastic_patternfly4 import Pagination as PF4Pagination
 from widgetastic_patternfly4.ouia import (
     BaseSelect,
     Button as PF4Button,
-    ContextSelector as OUIAContextSelector,
     Dropdown,
 )
 
@@ -909,8 +908,8 @@ class ValidationErrors(Widget):
 
 
 class ContextSelector(Widget):
-    CURRENT_ORG = OUIAContextSelector('OUIA-Generated-ContextSelector-1')
-    CURRENT_LOC = OUIAContextSelector('OUIA-Generated-ContextSelector-2')
+    CURRENT_ORG = '//div[@data-ouia-component-id="taxonomy-context-selector-organization"]'
+    CURRENT_LOC = '//div[@data-ouia-component-id="taxonomy-context-selector-location"]'
     ORG_LOCATOR = '//div[@id="organization-dropdown"]//li[button[contains(.,{})]]'
     LOC_LOCATOR = '//div[@id="location-dropdown"]//li[button[contains(.,{})]]'
 
