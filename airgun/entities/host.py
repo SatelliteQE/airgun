@@ -84,6 +84,13 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
+    def new_ui_button(self):
+        """Click New UI button and return the browser URL"""
+        view = self.navigate_to(self, 'All')
+        view.new_ui_button.click()
+        view.wait_displayed()
+        return self.browser.url
+
     def reset_search(self):
         """This function loads a HostsView and clears the searchbox."""
         view = HostsView(self.browser)
