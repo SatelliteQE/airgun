@@ -56,21 +56,28 @@ class BaseLoggedInView(View):
         self.account_menu.click()
         self.logout.click()
 
-    def read(self, widget_names=None):
+    def read(self, widget_names=None, limit=None):
         """Reads the contents of the view and presents them as a dictionary.
 
         :param widget_names: If specified, will read only the widgets names in the list.
+        :param limit: how many entries to fetch at most
 
         :return: A :py:class:`dict` of ``widget_name: widget_read_value``
             where the values are retrieved using the :py:meth:`Widget.read`.
         """
         if widget_names is None:
+            if limit is not None:
+                raise NotImplementedError("You must specify widgets to be able to specify limit")
             return super().read()
         if not isinstance(widget_names, list | tuple):
             widget_names = [widget_names]
         values = {}
         for widget_name in widget_names:
-            values[widget_name] = get_widget_by_name(self, widget_name).read()
+            widget = get_widget_by_name(self, widget_name)
+            if hasattr(widget, 'read_limited') and callable(widget.read_limited):
+                values[widget_name] = widget.read(limit=limit)
+            else:
+                values[widget_name] = widget.read()
         return normalize_dict_values(values)
 
 
