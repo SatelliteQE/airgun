@@ -94,6 +94,8 @@ class ReportTemplateGenerateView(BaseLoggedInView):
     generate_at = TextInput(id='report_template_report_generate_at')
     submit = Text('//input[@name="commit"]')
     generated = Text('//div[contains(@class, "alert-success")]')
+    installability = FilteredDropdown(id='s2id_Installability')
+
 
     @property
     def is_displayed(self):
