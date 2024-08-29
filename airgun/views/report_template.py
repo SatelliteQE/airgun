@@ -96,7 +96,6 @@ class ReportTemplateGenerateView(BaseLoggedInView):
     generated = Text('//div[contains(@class, "alert-success")]')
     installability = FilteredDropdown(id='s2id_Installability')
 
-
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
