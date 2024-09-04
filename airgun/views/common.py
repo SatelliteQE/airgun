@@ -25,6 +25,7 @@ from airgun.widgets import (
     ItemsList,
     LCESelector,
     Pf4ConfirmationDialog,
+    PF4LCESelector,
     PF4NavSearch,
     PF4Search,
     ProgressBar,
@@ -269,6 +270,19 @@ class LCESelectorGroup(ParametrizedView):
 
         """
         return self.lce.read()
+
+
+class PF4LCESelectorGroup(LCESelectorGroup):
+    ROOT = './/div[./div[@class="env-path"]]'
+
+    PARAMETERS = ('lce_name',)
+
+    LAST_ENV = './/div[@class="env-path"][last()]'
+    lce = PF4LCESelector(
+        locator=ParametrizedLocator(
+            './/div[@class="env-path" and .//*[contains(normalize-space(.), "{lce_name}")]]'
+        )
+    )
 
 
 class ListRemoveTab(SatSecondaryTab):
