@@ -1,20 +1,18 @@
-from widgetastic.widget import ConditionalSwitchableView
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import ConditionalSwitchableView, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button as PF4Button
+from widgetastic_patternfly4 import Button as PF4Button, Pagination as PF4Pagination
+from widgetastic_patternfly4.ouia import Select as OUIASelect
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixinPF4
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import ConfigGroupMultiSelect
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import MultiSelect
-from airgun.widgets import PuppetClassesMultiSelect
-from airgun.widgets import RadioGroup
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.widgets import (
+    ActionsDropdown,
+    ConfigGroupMultiSelect,
+    FilteredDropdown,
+    MultiSelect,
+    MultiSelectNoFilter,
+    PuppetClassesMultiSelect,
+    RadioGroup,
+)
 
 
 class ActivationKeyDropDown(ActionsDropdown):
@@ -82,7 +80,8 @@ class HostGroupCreateView(BaseLoggedInView):
     @View.nested
     class ansible_roles(SatTab):
         TAB_NAME = 'Ansible Roles'
-        resources = MultiSelect(id='ms-hostgroup_ansible_role_ids')
+        resources = MultiSelectNoFilter(id='ansible_roles')
+        pagination = PF4Pagination()
 
     @View.nested
     class puppet_enc(SatTab):
@@ -132,9 +131,7 @@ class HostGroupCreateView(BaseLoggedInView):
     @View.nested
     class activation_keys(SatTab):
         TAB_NAME = 'Activation Keys'
-        activation_keys = ActivationKeyDropDown(
-            locator=".//foreman-react-component[contains(@data-props, 'kt_activation_keys')]"
-        )
+        activation_keys = OUIASelect('ak-select')
 
 
 class HostGroupEditView(HostGroupCreateView):
@@ -149,3 +146,16 @@ class HostGroupEditView(HostGroupCreateView):
             and self.breadcrumb.locations[0] == 'Host Groups'
             and self.breadcrumb.read().startswith('Edit ')
         )
+
+    @View.nested
+    class ansible_roles(SatTab):
+        TAB_NAME = 'Ansible Roles'
+        more_item = Text('//span[@class="pf-c-options-menu__toggle-button-icon"]')
+        select_pages = Text('//ul[@class="pf-c-options-menu__menu"]/li[6]/button')
+        available_role = '//div[@class="available-roles-container col-sm-6"]/div[2]/div'
+        assigned_role = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
+        assigned_ansible_role = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
+        no_of_available_role = Text('//span[@class="pf-c-options-menu__toggle-text"]//b[2]')
+        resources = MultiSelectNoFilter(id='ansible_roles')
+        submit = Text('//input[@name="commit"]')
+        pagination = PF4Pagination()

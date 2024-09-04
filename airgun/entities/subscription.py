@@ -1,16 +1,16 @@
 from navmazing import NavigateToSibling
-from wait_for import TimedOutError
-from wait_for import wait_for
+from wait_for import TimedOutError, wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.subscription import AddSubscriptionView
-from airgun.views.subscription import DeleteManifestConfirmationView
-from airgun.views.subscription import ManageManifestView
-from airgun.views.subscription import SubscriptionDetailsView
-from airgun.views.subscription import SubscriptionListView
+from airgun.views.subscription import (
+    AddSubscriptionView,
+    DeleteManifestConfirmationView,
+    ManageManifestView,
+    SubscriptionDetailsView,
+    SubscriptionListView,
+)
 
 
 class SubscriptionEntity(BaseEntity):
@@ -36,8 +36,8 @@ class SubscriptionEntity(BaseEntity):
             timeout=timeout,
             logger=view.progressbar.logger,
         )
-        view.flash.assert_no_error(ignore_messages=ignore_error_messages)
         view.flash.dismiss()
+        view.flash.assert_no_error(ignore_messages=ignore_error_messages)
         wait_for(
             lambda: self.has_manifest == has_manifest,
             handle_exception=True,
@@ -48,9 +48,9 @@ class SubscriptionEntity(BaseEntity):
     @property
     def has_manifest(self):
         """Is there manifest present in current organization?
-        :return: boolean value indicating whether manifest is present
-        May be None if user can't verify reliably if manifest is
-        uploaded or not due to missing permissions
+
+        :return: boolean value indicating whether manifest is present May be None if user can't verify
+            reliably if manifest is uploaded or not due to missing permissions
         """
         try:
             view = self.navigate_to(self, 'Manage Manifest')
@@ -102,6 +102,53 @@ class SubscriptionEntity(BaseEntity):
         if manage_view.is_displayed:
             manage_view.close_button.click()
         return delete_message
+
+    def read_subscription_manifest_header_message_and_date(self):
+        """Read message displayed about 'manifest expiration' at Subscription Manifest section"""
+        view = self.navigate_to(self, 'Manage Manifest')
+        view.wait_animation_end()
+        # Read manifest expiration header & message
+        if view.manifest.alert_message.is_displayed:
+            expire_manifest_header = view.manifest.expire_header.read()
+            expire_manifest_message = view.manifest.expire_message.read()
+        else:
+            # Subscription Manifest header & message is not present
+            raise Exception('Manifest expire alert not found')
+        # Read manifest expiration date
+        if view.manifest.expire_date.is_displayed:
+            expire_manifest_date = view.manifest.expire_date.read()
+        else:
+            raise Exception('Manifest expire date not found')
+        # close opened modal dialogs views
+        manage_view = ManageManifestView(self.browser)
+        if manage_view.is_displayed:
+            manage_view.close_button.click()
+        return {
+            'header': expire_manifest_header,
+            'message': expire_manifest_message,
+            'date': expire_manifest_date,
+        }
+
+    def read_subscription_manifest_expiration_date_only(self):
+        """Returns the expiration date from 'Manage Manifest' modal box"""
+        view = self.navigate_to(self, 'Manage Manifest')
+        view.wait_animation_end()
+        manifest_expiration_date = view.manifest.expire_date.read()
+        manage_view = ManageManifestView(self.browser)
+        if manage_view.is_displayed:
+            manage_view.close_button.click()
+        return manifest_expiration_date
+
+    def is_subscription_manifest_header_message_display(self):
+        """Checks header and massage present in the manage manifest modal"""
+        view = self.navigate_to(self, 'Manage Manifest')
+        view.wait_animation_end()
+        result = view.manifest.alert_message.is_displayed
+        # close opened modal dialogs views
+        manage_view = ManageManifestView(self.browser)
+        if manage_view.is_displayed:
+            manage_view.close_button.click()
+        return result
 
     def add(self, entity_name, quantity=1):
         """Attach new subscriptions
@@ -172,6 +219,11 @@ class SubscriptionEntity(BaseEntity):
         view.delete_button.click()
         view.confirm_deletion.confirm()
         self._wait_for_process_to_finish('Delete Upstream Subscription', has_manifest=True)
+
+    def read_subscriptions(self):
+        """Return subscriptions table"""
+        view = self.navigate_to(self, 'All')
+        return view.table.read()
 
 
 class SubscriptionNavigationStep(NavigateStep):

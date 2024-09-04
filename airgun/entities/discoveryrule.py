@@ -2,13 +2,14 @@ from navmazing import NavigateToSibling
 from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.discoveredhosts import DiscoveredHostsView
-from airgun.views.discoveryrule import DiscoveryRuleCreateView
-from airgun.views.discoveryrule import DiscoveryRuleEditView
-from airgun.views.discoveryrule import DiscoveryRulesView
+from airgun.views.discoveryrule import (
+    DiscoveryRuleCreateView,
+    DiscoveryRuleEditView,
+    DiscoveryRulesView,
+)
 from airgun.views.host import HostsView
 
 
@@ -49,13 +50,17 @@ class DiscoveryRuleEntity(BaseEntity):
         return view.read(widget_names=widget_names)
 
     def read_all(self):
-        """Reads the whole discovery rules table.
+        """Reads the entire discovery rules page
 
-        :return: list of table rows, each row is dict,
-            attribute as key with correct value
+        :return:
+            1) list of table rows, each row is dict, attribute as key with correct value
+            2) After deleting the rule, the page context is displayed
         """
         view = self.navigate_to(self, 'All')
-        return view.table.read()
+        if view.table.is_displayed:
+            return view.table.read()
+        elif view.page_info.is_displayed:
+            return view.page_info.read()
 
     def update(self, entity_name, values):
         """Update existing Discovery rule

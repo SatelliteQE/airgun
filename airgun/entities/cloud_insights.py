@@ -1,10 +1,7 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.cloud_insights import CloudInsightsView
-from airgun.views.cloud_insights import CloudTokenView
-from airgun.views.job_invocation import JobInvocationCreateView
+from airgun.views.cloud_insights import CloudInsightsView, CloudTokenView
 
 
 class CloudInsightsEntity(BaseEntity):
@@ -26,7 +23,6 @@ class CloudInsightsEntity(BaseEntity):
         view.select_all_hits.click()
         view.remediate.click()
         view.remediation_window.remediate.click()
-        self.run_job()
 
     def sync_hits(self):
         """Sync RH Cloud - Insights recommendations."""
@@ -52,12 +48,6 @@ class CloudInsightsEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.fill(values)
 
-    def run_job(self):
-        """Run remediation job"""
-        view = self.navigate_to(self, 'Run')
-        view.search_query.wait_displayed()
-        view.submit.click()
-
 
 @navigator.register(CloudInsightsEntity, 'Token')
 class SaveCloudTokenView(NavigateStep):
@@ -79,10 +69,3 @@ class ShowCloudInsightsView(NavigateStep):
     @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Configure', 'RH Cloud', 'Insights')
-
-
-@navigator.register(CloudInsightsEntity, 'Run')
-class RunJob(NavigateStep):
-    """Navigate to Job Invocation screen."""
-
-    VIEW = JobInvocationCreateView

@@ -1,12 +1,13 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.activationkey import ActivationKeyCreateView
-from airgun.views.activationkey import ActivationKeyEditView
-from airgun.views.activationkey import ActivationKeysView
+from airgun.views.activationkey import (
+    ActivationKeyCreateView,
+    ActivationKeyEditView,
+    ActivationKeysView,
+)
 
 
 class ActivationKeyEntity(BaseEntity):
@@ -84,6 +85,13 @@ class ActivationKeyEntity(BaseEntity):
         assert view.flash.is_displayed
         view.flash.assert_no_error()
         view.flash.dismiss()
+
+    def enable_repository(self, entity_name, repo_name):
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.repository_sets.click()
+        view.repository_sets.search(repo_name)
+        view.repository_sets.check_box.click()
+        view.repository_sets.actions.fill('Override to Enabled')
 
 
 @navigator.register(ActivationKeyEntity, 'All')

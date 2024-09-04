@@ -1,24 +1,44 @@
 import time
 
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 
 from airgun.entities.host import HostEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
-from airgun.views.host_new import AllAssignedRolesView
-from airgun.views.host_new import EditSystemPurposeView
-from airgun.views.host_new import EnableTracerView
-from airgun.views.host_new import InstallPackagesView
-from airgun.views.host_new import ManageHostCollectionModal
-from airgun.views.host_new import ModuleStreamDialog
-from airgun.views.host_new import NewHostDetailsView
-from airgun.views.host_new import ParameterDeleteDialog
-from airgun.views.host_new import RemediationView
+from airgun.navigation import NavigateStep, navigator
+from airgun.views.fact import HostFactView
+from airgun.views.host_new import (
+    AllAssignedRolesView,
+    EditAnsibleRolesView,
+    EditSystemPurposeView,
+    EnableTracerView,
+    InstallPackagesView,
+    ManageHostCollectionModal,
+    ManageHostStatusesView,
+    ModuleStreamDialog,
+    NewHostDetailsView,
+    ParameterDeleteDialog,
+    RemediationView,
+)
+from airgun.views.hostgroup import HostGroupEditView
 from airgun.views.job_invocation import JobInvocationCreateView
 
-
-global available_param_types
 available_param_types = ['string', 'boolean', 'integer', 'real', 'array', 'hash', 'yaml', 'json']
+
+
+def navigate_to_edit_view(func):
+    def _decorator(self, entity_name=None, role_name=None):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name, role=role_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.overview.details.edit.click()
+        self.browser.switch_to_window(self.browser.window_handles[1])
+        host_group_view = HostGroupEditView(self.browser)
+        func(self, entity_name, role_name)
+        host_group_view.ansible_roles.submit.click()
+        self.browser.switch_to_window(self.browser.window_handles[0])
+        self.browser.close_window(self.browser.window_handles[1])
+
+    return _decorator
 
 
 class NewHostEntity(HostEntity):
@@ -43,6 +63,70 @@ class NewHostEntity(HostEntity):
         # Run this read twice to navigate to the page and load it before reading
         view.read(widget_names=widget_names)
         return view.read(widget_names=widget_names)
+
+    @navigate_to_edit_view
+    def assign_role_to_hostgroup(self, entity_name, role_name):
+        """Assign a single Ansible role from the host group based on user input
+
+        Args:
+            entity_name: Name of the host
+            role_name: Name of the ansible role
+        """
+        host_group_view = HostGroupEditView(self.browser)
+        host_group_view.ansible_roles.more_item.click()
+        host_group_view.ansible_roles.select_pages.click()
+        role_list = self.browser.elements(host_group_view.ansible_roles.available_role, parent=self)
+        for single_role in role_list[1:]:
+            if single_role.text.split(". ")[1] == role_name:
+                single_role.click()
+
+    @navigate_to_edit_view
+    def remove_hostgroup_role(self, entity_name, role_name):
+        """Remove a single Ansible role from the host group based on user input
+
+        Args:
+            entity_name: Name of the host
+            role_name: Name of the ansible role
+        """
+        host_group_view = HostGroupEditView(self.browser)
+        role_list = self.browser.elements(host_group_view.ansible_roles.assigned_role, parent=self)
+        for single_role in role_list[1:]:
+            if single_role.text.split(". ")[1] == role_name:
+                single_role.click()
+
+    @navigate_to_edit_view
+    def assign_all_role_to_hostgroup(self, entity_name, role_name=None):
+        """Assign all Ansible roles from the host group"""
+        host_group_view = HostGroupEditView(self.browser)
+        host_group_view.ansible_roles.more_item.click()
+        host_group_view.ansible_roles.select_pages.click()
+        role_list = self.browser.elements(host_group_view.ansible_roles.available_role, parent=self)
+        for single_role in role_list:
+            single_role.click()
+
+    @navigate_to_edit_view
+    def remove_all_role_from_hostgroup(self, entity_name, role_name=None):
+        """Remove all Ansible roles from the host group"""
+        host_group_view = HostGroupEditView(self.browser)
+        host_group_view.ansible_roles.click()
+        role_list = self.browser.elements(host_group_view.ansible_roles.assigned_role, parent=self)
+        for single_role in role_list:
+            single_role.click()
+
+    def get_host_statuses(self, entity_name):
+        """Read host statuses from Host Details page
+
+        Args:
+            entity_name: Name of the host
+        """
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.overview.host_status.manage_all_statuses.click()
+        view = ManageHostStatusesView(self.browser)
+        values = view.read()
+        view.close_modal.click()
+        return values
 
     def edit_system_purpose(
         self, entity_name, role=None, sla=None, usage=None, release_ver=None, add_ons=None
@@ -133,7 +217,7 @@ class NewHostEntity(HostEntity):
             raise ValueError('No host collections found or left for addition!')
 
         if not add_to_all_collections:
-            if type(host_collection_name) is list:
+            if isinstance(host_collection_name, list):
                 if not host_collection_name:
                     raise ValueError('host_collection_name list is empty!')
                 for host_col in host_collection_name:
@@ -198,7 +282,7 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
 
         if not remove_from_all_collections:
-            if type(host_collection_name) is list:
+            if isinstance(host_collection_name, list):
                 if not host_collection_name:
                     raise ValueError('host_collection_name list is empty!')
                 for host_col in host_collection_name:
@@ -228,18 +312,27 @@ class NewHostEntity(HostEntity):
     def schedule_job(self, entity_name, values):
         """Schedule a remote execution on selected host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe()
         view.wait_displayed()
+        self.browser.wait_for_element(view.schedule_job, exception=False)
         view.schedule_job.fill('Schedule a job')
         view = JobInvocationCreateView(self.browser)
         self.browser.plugin.ensure_page_safe()
-        view.wait_displayed()
         view.fill(values)
         view.submit.click()
+
+    def run_job(self, entity_name):
+        """Run a job on selected host"""
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.run_job.wait_displayed()
+        view.run_job.click()
+        view.select.click()
 
     def get_packages(self, entity_name, search=""):
         """Filter installed packages on host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.content.packages.select()
+        view.content.packages.table.wait_displayed()
         view.content.packages.searchbar.fill(search)
         # wait for filter to apply
         self.browser.plugin.ensure_page_safe()
@@ -273,6 +366,46 @@ class NewHostEntity(HostEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def get_errata_table(
+        self,
+        entity_name,
+        installable=None,
+        severity=None,
+        search=None,
+        type=None,
+    ):
+        """Return the table of all errata entries, from Errata tab on selected host.
+        param: entity_name str: hostname to search for errata table
+
+        Optional: Filter by passing args (string):
+            param: installable str: filter errata by installability ('Yes' or 'No').
+            param: severity str: filter errata by severity.
+            param: search str: pass a search query to the searchbar, prior to reading.
+            param: type str: filter errata search by type.
+
+        note: all of the optional params being None, will result in no filtering.
+        """
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        view.content.errata.select()
+        # optional: filter by params that are not None
+        if installable is not None:
+            assert installable == 'Yes' or 'No', (
+                'installable_filter expected None or str, "Yes" or "No".'
+                f' Got: {installable}, ({type(installable)}).'
+            )
+            view.content.errata.installable_filter.fill(installable)
+        if type is not None:
+            view.content.errata.type_filter.fill(type)
+        if severity is not None:
+            view.content.errata.severity_filter.fill(severity)
+        if search is not None:
+            view.content.errata.searchbar.fill(search)
+        # displayed the table with or without filters
+        view.content.errata.table.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.content.errata.table.read()
+
     def get_errata_by_type(self, entity_name, type):
         """List errata based on type and return table"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
@@ -283,17 +416,65 @@ class NewHostEntity(HostEntity):
         view.content.errata.table.wait_displayed()
         return view.read(widget_names="content.errata.table")
 
-    def apply_erratas(self, entity_name, search):
-        """Apply errata on selected host based on errata_id"""
+    def get_errata_type_counts(self, entity_name):
+        """
+        Get errata counts for each type of errata on selected host.
+
+        Args:
+            entity_name: Name of the host.
+        Returns:
+            errata_counts (dict): Dictionary with counts of each type of errata.
+        """
+
+        errata_types = ['Security', 'Bugfix', 'Enhancement']
+        errata_counts = {type: 0 for type in errata_types}
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
-        view.content.errata.searchbar.fill(search)
+        view.content.errata.select()
+        for type in errata_types:
+            view.content.errata.wait_displayed()
+            view.content.errata.pagination.set_per_page(50)
+            view.content.errata.type_filter.fill(type)
+            self.browser.plugin.ensure_page_safe()
+            view.content.errata.table.wait_displayed()
+            errata_counts[type] = view.content.errata.table.row_count
+        return errata_counts
+
+    def apply_erratas(self, entity_name, search=None):
+        """Apply available errata on selected host based on searchbar result.
+
+        param: search (string): search value to filter results.
+        example: search="errata_id == {ERRATA_ID}"
+        default: None; all available errata are returned and installed.
+        """
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        if search is None:
+            # Return all errata, clear the searchbar
+            view.content.errata.searchbar.clear()
+        else:
+            # Return only errata by search
+            view.content.errata.searchbar.fill(search)
         # wait for filter to apply
+        view.content.errata.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         view.content.errata.select_all.click()
         view.content.errata.apply.fill('Apply')
         view.flash.assert_no_error()
         view.flash.dismiss()
+        # clear the searchbar so any input will not persist
+        view.content.errata.searchbar.clear()
+        view.content.errata.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+
+    def get_errata_pagination(self, entity_name):
+        """Get pagination info from Errata tab on selected host."""
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        view.content.errata.select()
+        view.content.errata.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.content.errata.pagination
 
     def get_module_streams(self, entity_name, search):
         """Filter module streams"""
@@ -339,6 +520,17 @@ class NewHostEntity(HostEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def override_multiple_repo_sets(self, entity_name, repo_set, repo_type, action):
+        """Change override for multiple repository sets without using the Select All method"""
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.content.repository_sets.searchbar.fill(repo_set)
+        view.content.repository_sets.table[0][0].widget.click()
+        view.content.repository_sets.dropdown.item_select(action)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
     def bulk_override_repo_sets(self, entity_name, repo_type, action):
         """Change override for repository set"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
@@ -350,10 +542,24 @@ class NewHostEntity(HostEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def add_single_ansible_role(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        wait_for(lambda: view.ansible.roles.edit.is_displayed, timeout=5)
+        view.ansible.roles.edit.click()
+        wait_for(lambda: EditAnsibleRolesView(self.browser).addAnsibleRole.is_displayed, timeout=10)
+        edit_view = EditAnsibleRolesView(self.browser)
+        actions = [edit_view.addAnsibleRole, edit_view.selectRoles, edit_view.confirm]
+        for action in actions:
+            wait_for(lambda: edit_view.is_displayed, timeout=5)
+            action.click()
+
     def get_ansible_roles(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
+        wait_for(lambda: view.ansible.roles.table.is_displayed, timeout=5)
         return view.ansible.roles.table.read()
 
     def get_ansible_roles_modal(self, entity_name):
@@ -365,6 +571,19 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         return view.table.read()
+
+    def remove_single_ansible_role(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.ansible.roles.edit.click()
+        wait_for(lambda: view.ansible.roles.edit.click(), timeout=5)
+        edit_view = EditAnsibleRolesView(self.browser)
+        edit_view.wait_displayed()
+        actions = [edit_view.hostAssignedAnsibleRoles, edit_view.unselectRoles, edit_view.confirm]
+        for action in actions:
+            action.click()
+        wait_for(lambda: view.ansible.roles.noRoleAssign.is_displayed, timeout=5)
 
     def enable_tracer(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
@@ -449,13 +668,13 @@ class NewHostEntity(HostEntity):
 
         networking_interface_dict = {}
         tmp = {
-            'fqdn': [i.text for i in list(dict_val_gen('FQDN'))[0]],
-            'ipv4': [i.text for i in list(dict_val_gen('IPv4'))[0]],
-            'ipv6': [i.text for i in list(dict_val_gen('IPv6'))[0]],
-            'mac': [i.text for i in list(dict_val_gen('MAC'))[0]],
+            'fqdn': [i.text for i in next(iter(dict_val_gen('FQDN')))],
+            'ipv4': [i.text for i in next(iter(dict_val_gen('IPv4')))],
+            'ipv6': [i.text for i in next(iter(dict_val_gen('IPv6')))],
+            'mac': [i.text for i in next(iter(dict_val_gen('MAC')))],
             # TODO: After RFE BZ2183086 is resolved, uncomment line below
             # 'subnet': [i.text for i in list(dict_val_gen('Subnet'))[0]],
-            'mtu': [i.text for i in list(dict_val_gen('MTU'))[0]],
+            'mtu': [i.text for i in next(iter(dict_val_gen('MTU')))],
         }
 
         for i, dev in enumerate(net_devices):
@@ -478,7 +697,7 @@ class NewHostEntity(HostEntity):
 
     def get_virtualization(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
+        view.details.virtualization.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         return view.details.virtualization.read()
 
@@ -698,26 +917,26 @@ class NewHostEntity(HostEntity):
         else:
             view.insights.recommendations_table.sort_by('Recommendation', 'ascending')
 
-            if type(recommendation_to_remediate) is list:
+            if isinstance(recommendation_to_remediate, list):
                 if not recommendation_to_remediate:
                     raise ValueError('List of recommendations cannot be empty!')
                 for recommendation in recommendation_to_remediate:
                     view.insights.click()
                     # Excape double quotes in the recommendation
-                    recommendation = recommendation.replace('"', '\\"')
-                    recommendation = f'title = "{recommendation}"'
-                    view.insights.search_bar.fill(recommendation, enter_timeout=3)
+                    _rec = recommendation.replace('"', '\\"')
+                    _rec = f'title = "{_rec}"'
+                    view.insights.search_bar.fill(_rec, enter_timeout=3)
                     view.wait_displayed()
                     self.browser.plugin.ensure_page_safe()
                     time.sleep(3)
                     try:
                         # Click the checkbox of the first recommendation
                         view.insights.recommendations_table[0][0].widget.click()
-                    except IndexError:
+                    except IndexError as ie:
                         raise IndexError(
-                            f'Recommendation {recommendation} not found on {entity_name}, '
+                            f'Recommendation {_rec} not found on {entity_name}, '
                             'thus cannot be remediated.'
-                        )
+                        ) from ie
             else:
                 # Excape double quotes in the recommendation
                 recommendation_to_remediate = recommendation_to_remediate.replace('"', '\\"')
@@ -729,14 +948,33 @@ class NewHostEntity(HostEntity):
                 try:
                     # Click the checkbox of the first recommendation
                     view.insights.recommendations_table[0][0].widget.click()
-                except IndexError:
+                except IndexError as ie:
                     raise IndexError(
                         f'Recommendation {recommendation_to_remediate} not found '
                         f'on {entity_name}, thus cannot be remediated.'
-                    )
+                    ) from ie
         view.insights.remediate.click()
         view = RemediationView(self.browser)
         view.remediate.click()
+
+    def get_host_facts(self, entity_name, fact=None):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe()
+        view.wait_displayed()
+        self.browser.wait_for_element(view.dropdown, exception=False)
+        view.dropdown.item_select('Facts')
+        host_facts_view = HostFactView(self.browser)
+        if fact:
+            host_facts_view.searchbox.search(fact)
+            if host_facts_view.expand_fact_value.is_displayed:
+                host_facts_view.expand_fact_value.click()
+        return host_facts_view.table.read()
+
+    def refresh_applicability(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.dropdown.item_select('Refresh applicability')
 
 
 @navigator.register(NewHostEntity, 'NewDetails')
@@ -765,6 +1003,3 @@ class ShowNewHostAnsible(NavigateStep):
     VIEW = NewHostDetailsView
 
     prerequisite = NavigateToSibling('NewDetails')
-
-    def step(self, *args, **kwargs):
-        print(self.parent.rolesListTable)

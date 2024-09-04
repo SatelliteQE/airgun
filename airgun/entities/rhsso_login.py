@@ -1,16 +1,16 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.views.common import BaseLoggedInView
-from airgun.views.rhsso_login import RhssoExternalLogoutView
-from airgun.views.rhsso_login import RhssoLoginView
-from airgun.views.rhsso_login import RhssoTotpView
-from airgun.views.rhsso_login import RhssoTwoFactorSuccessView
+from airgun.views.rhsso_login import (
+    RhssoExternalLogoutView,
+    RhssoLoginView,
+    RhssoTotpView,
+    RhssoTwoFactorSuccessView,
+)
 
 
 class RHSSOLoginEntity(BaseEntity):
     def login(self, values, external_login=False, totp=None):
-
         if external_login:
             view = RhssoExternalLogoutView(self.browser)
             view.login_again.click()

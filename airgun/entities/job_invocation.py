@@ -1,13 +1,18 @@
+import time
+
 from navmazing import NavigateToSibling
+from selenium.webdriver.common.by import By
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.job_invocation import JobInvocationCreateView
-from airgun.views.job_invocation import JobInvocationStatusView
-from airgun.views.job_invocation import JobInvocationsView
+from airgun.views.job_invocation import (
+    JobInvocationCreateView,
+    JobInvocationStatusView,
+    JobInvocationsView,
+    NewJobInvocationStatusView,
+)
 
 
 class JobInvocationEntity(BaseEntity):
@@ -17,6 +22,8 @@ class JobInvocationEntity(BaseEntity):
         """Run specific job"""
         view = self.navigate_to(self, 'Run')
         view.fill(values)
+        view.submit.expander.click()
+        self.browser.wait_for_element(view.submit.submit, exception=False)
         view.submit.click()
 
     def search(self, value):
@@ -24,9 +31,10 @@ class JobInvocationEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def read(self, entity_name, host_name, widget_names=None):
+    def read(self, entity_name, host_name, widget_names=None, new_ui=False):
         """Read values for scheduled or already executed job"""
-        view = self.navigate_to(self, 'Job Status', entity_name=entity_name, host_name=host_name)
+        nav_step = 'Job Status' if not new_ui else 'Job Status New UI'
+        view = self.navigate_to(self, nav_step, entity_name=entity_name, host_name=host_name)
         return view.read(widget_names=widget_names)
 
     def wait_job_invocation_state(self, entity_name, host_name, expected_state='succeeded'):
@@ -40,6 +48,42 @@ class JobInvocationEntity(BaseEntity):
             fail_func=view.browser.refresh,
             logger=view.logger,
         )
+
+    def submit_prefilled_view(self):
+        """This entity loads pre filled job invocation view and submits it."""
+        time.sleep(3)
+        view = JobInvocationCreateView(self.browser)
+        time.sleep(3)
+        view.submit.click()
+
+    def get_job_category_and_template(self):
+        """Reads selected job category and template for job invocation."""
+        time.sleep(3)
+        view = JobInvocationCreateView(self.browser)
+        time.sleep(3)
+        element = self.browser.selenium.find_element(By.XPATH, '//div/input')
+        read_values = view.category_and_template.read()
+        read_values['job_template'] = element.get_attribute('value')
+        return read_values
+
+    def get_targeted_hosts(self):
+        """Read targeted hosts for job invocation."""
+        time.sleep(3)
+        view = JobInvocationCreateView(self.browser)
+        time.sleep(3)
+        return view.target_hosts_and_inputs.read()
+
+    def read_hostgroups(self):
+        """Read host groups in selection"""
+        view = self.navigate_to(self, 'Run')
+        view.fill(
+            {
+                'category_and_template.job_category': 'Commands',
+                'category_and_template.job_template': 'Run Command - Script Default',
+                'target_hosts_and_inputs.targetting_type': 'Host groups',
+            }
+        )
+        return view.target_hosts_and_inputs.targets.items
 
 
 @navigator.register(JobInvocationEntity, 'All')
@@ -82,3 +126,29 @@ class JobStatus(NavigateStep):
     def step(self, *args, **kwargs):
         self.parent.search(f'host = {kwargs.get("host_name")}')
         self.parent.table.row(description=kwargs.get('entity_name'))['Description'].widget.click()
+
+
+@navigator.register(JobInvocationEntity, 'Job Status New UI')
+class NewJobStatus(NavigateStep):
+    """Navigate to the new job invocation details page.
+    Note: `Show Experimental Labs` setting must be enabled.
+
+    Args:
+       entity_name: name of the job
+       host_name: name of the host to which job was applied
+    """
+
+    VIEW = NewJobInvocationStatusView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(
+            self.obj,
+            'Job Status',
+            entity_name=kwargs.get('entity_name'),
+            host_name=kwargs.get('host_name'),
+        )
+
+    def step(self, *args, **kwargs):
+        self.parent.new_ui.click()
+        self.view.browser.plugin.ensure_page_safe()
+        self.view.wait_displayed()

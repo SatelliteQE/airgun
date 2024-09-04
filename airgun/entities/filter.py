@@ -1,16 +1,17 @@
 from airgun.entities.base import BaseEntity
 from airgun.entities.role import RoleEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
-from airgun.views.filter import FilterCreateView
-from airgun.views.filter import FilterDetailsView
-from airgun.views.filter import FiltersView
+from airgun.navigation import NavigateStep, navigator
+from airgun.views.filter import FilterCreateView, FilterDetailsView, FiltersView
 
 
 class FilterEntity(BaseEntity):
     def create(self, role_name, values):
         """Create new filter for specific role"""
         view = self.navigate_to(self, 'New', role_name=role_name)
+        view.wait_displayed()
+        # we need to wait explicitly for this element for some reason
+        view.resource_type.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()

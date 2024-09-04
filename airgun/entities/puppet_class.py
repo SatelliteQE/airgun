@@ -1,9 +1,7 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.puppet_class import PuppetClassDetailsView
-from airgun.views.puppet_class import PuppetClassesView
+from airgun.views.puppet_class import PuppetClassDetailsView, PuppetClassesView
 
 
 class PuppetClassEntity(BaseEntity):
@@ -51,7 +49,7 @@ class ShowAllPuppetClasses(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Classes')
+        self.view.menu.select('Configure', 'Puppet ENC', 'Classes')
 
 
 @navigator.register(PuppetClassEntity, 'Edit')

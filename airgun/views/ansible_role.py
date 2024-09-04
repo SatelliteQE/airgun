@@ -1,19 +1,14 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Table
-from widgetastic.widget import Text
+from widgetastic.widget import Checkbox, Table, Text
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button
-from widgetastic_patternfly4 import PatternflyTable
+from widgetastic_patternfly4 import (
+    Button,
+    CompactPagination,
+    Pagination as PF4Pagination,
+    PatternflyTable,
+)
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 from airgun.widgets import ActionsDropdown
-from airgun.widgets import Pagination
-
-
-class ImportPagination(Pagination):
-    PER_PAGE_BUTTON_DROPDOWN = ".//div[button[@id='pagination-options-menu-toggle-2']]"
-    total_items = Text("//span[@class='pf-c-optionsmenu__toggle-text']/b[2]")
 
 
 class AnsibleRolesView(BaseLoggedInView, SearchableViewMixin):
@@ -31,7 +26,7 @@ class AnsibleRolesView(BaseLoggedInView, SearchableViewMixin):
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
-    pagination = Pagination()
+    pagination = PF4Pagination()
 
     @property
     def is_displayed(self):
@@ -50,7 +45,7 @@ class AnsibleRolesImportView(BaseLoggedInView):
             0: Checkbox(locator='.//input[@type="checkbox"]'),
         },
     )
-    pagination = ImportPagination()
+    pagination = CompactPagination()
     submit = Button('Submit')
     cancel = Button('Cancel')
 

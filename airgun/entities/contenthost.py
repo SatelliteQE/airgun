@@ -1,15 +1,14 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.contenthost import ContentHostDetailsView
-from airgun.views.contenthost import ContentHostsView
-from airgun.views.contenthost import ContentHostTaskDetailsView
-from airgun.views.contenthost import ErrataDetailsView
-from airgun.views.contenthost import SyspurposeBulkActionView
+from airgun.views.contenthost import (
+    ContentHostDetailsView,
+    ContentHostsView,
+    ErrataDetailsView,
+    SyspurposeBulkActionView,
+)
 from airgun.views.host_new import NewHostDetailsView
-from airgun.views.job_invocation import JobInvocationCreateView
-from airgun.views.job_invocation import JobInvocationStatusView
+from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 
 
 class ContentHostEntity(BaseEntity):
@@ -40,6 +39,8 @@ class ContentHostEntity(BaseEntity):
     def read(self, entity_name, widget_names=None):
         """Read content host details, optionally read only the widgets in widget_names."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
         return view.read(widget_names=widget_names)
 
     def read_legacy_ui(self, entity_name, widget_names=None):
@@ -49,22 +50,16 @@ class ContentHostEntity(BaseEntity):
         view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
-    def execute_package_action(self, entity_name, action_type, value, installed_via='rex'):
+    def execute_package_action(self, entity_name, action_type, value):
         """Execute remote package action on a content host.
-
-        The installation method is not set here, but the path changes according to the method used.
-        For katello-agent, the Content Hosts' Task tab displays the progress. If REX is used,
-        the Job Invocation view displays the progress. In 6.10, REX became the default method.
 
         :param entity_name: content host name to remotely execute package
             action on
         :param action_type: remote action to execute. Can be one of 5: 'Package
             Install', 'Package Update', 'Package Remove', 'Group Install' or
             'Group Remove'
-        :param value: Package or package group group name to remotely
+        :param value: Package or package group name to remotely
             install/upgrade/remove (depending on `action_type`)
-
-        :param installed_via: what installation method was used (REX or katello-agent)
 
         :return: Returns a dict containing task status details
         """
@@ -72,12 +67,8 @@ class ContentHostEntity(BaseEntity):
         view.packages_actions.action_type.fill(action_type)
         view.packages_actions.name.fill(value)
         view.packages_actions.perform.click()
-        if installed_via == 'katello':
-            view = ContentHostTaskDetailsView(view.browser)
-            view.progressbar.wait_for_result()
-        else:
-            view = JobInvocationStatusView(view.browser)
-            view.wait_for_result()
+        view = JobInvocationStatusView(view.browser)
+        view.wait_for_result()
         return view.read()
 
     def bulk_set_syspurpose(self, hosts, values):
@@ -116,7 +107,7 @@ class ContentHostEntity(BaseEntity):
             customize_values = {}
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.module_streams.search(f'name = {module_name} and stream = {stream_version}')
-        action_type = dict(is_customize=customize, action=action_type)
+        action_type = {'is_customize': customize, 'action': action_type}
         view.module_streams.table.row(name=module_name, stream=stream_version)['Actions'].fill(
             action_type
         )
@@ -130,7 +121,8 @@ class ContentHostEntity(BaseEntity):
 
     def search_package(self, entity_name, package_name):
         """Search for specific package installed in content host"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
+        view.packages_installed.wait_displayed()
         view.packages_installed.search(package_name)
         return view.packages_installed.table.read()
 
@@ -144,7 +136,7 @@ class ContentHostEntity(BaseEntity):
         view.module_streams.search(query, status)
         return view.module_streams.table.read()
 
-    def install_errata(self, entity_name, errata_id, install_via=None):
+    def install_errata(self, entity_name, errata_id, install_via='rex'):
         """Install errata on a content host
 
         :param name: content host name to apply errata on
@@ -154,35 +146,35 @@ class ContentHostEntity(BaseEntity):
 
         :return: Returns a dict containing task status details
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
+        view.errata.wait_displayed()
         if errata_id == "All":
             view.errata.select_all.fill(True)
         else:
             view.errata.search(errata_id)
             view.errata.table.row(id=errata_id)[0].widget.fill(True)
         install_via_dict = {
-            'katello': 'via Katello agent',
             'rex': 'via remote execution',
             'rex_customize': 'via remote execution - customize first',
         }
         view.errata.apply_selected.fill(install_via_dict[install_via])
-        if install_via == 'katello':
-            view = ContentHostTaskDetailsView(view.browser)
-            view.progressbar.wait_for_result()
-        else:
-            view = JobInvocationStatusView(view.browser)
-            view.wait_for_result()
+        view = JobInvocationStatusView(view.browser)
+        view.wait_for_result()
         return view.read()
 
     def search_errata(self, entity_name, errata_id, environment=None):
-        """Search for specific errata applicable for content host.
+        """Search for specific errata applicable to content host.
+        Check the legacy Contenthost page -> Details -> Errata tab.
 
         :param str entity_name: the content hosts name.
         :param str errata_id: errata id or title, e.g. 'RHEA-2012:0055'
         :param str optional environment: lifecycle environment to filter by.
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
+        view.wait_displayed()
         view.errata.search(errata_id, lce=environment)
+        view.errata.table.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
         return view.errata.table.read()
 
     def read_errata_details(self, entity_name, errata_id, environment=None):

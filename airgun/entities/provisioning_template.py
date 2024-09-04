@@ -1,12 +1,14 @@
 from navmazing import NavigateToSibling
+from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.provisioning_template import ProvisioningTemplateCreateView
-from airgun.views.provisioning_template import ProvisioningTemplateDetailsView
-from airgun.views.provisioning_template import ProvisioningTemplatesView
+from airgun.views.provisioning_template import (
+    ProvisioningTemplateCreateView,
+    ProvisioningTemplateDetailsView,
+    ProvisioningTemplatesView,
+)
 
 
 class ProvisioningTemplateEntity(BaseEntity):
@@ -58,10 +60,24 @@ class ProvisioningTemplateEntity(BaseEntity):
     def is_locked(self, entity_name):
         """Check if provisioning template is locked for editing"""
         view = self.navigate_to(self, 'All')
-        view.search(entity_name)
-        return "This template is locked for editing." in view.table.row(name=entity_name)[
-            'Locked'
-        ].widget.browser.element('.').get_property('innerHTML')
+        view.search(f'name="{entity_name}"')
+        try:
+            return "This template is locked for editing." in view.table.row(name=entity_name)[
+                'Locked'
+            ].widget.browser.element('.').get_property('innerHTML')
+        except NoSuchElementException:
+            return False
+
+    def is_supported(self, entity_name):
+        """Check if provisioning template is supported or not"""
+        view = self.navigate_to(self, 'All')
+        view.search(f'name="{entity_name}"')
+        try:
+            return "Supported by Red Hat" in view.table.row(name=entity_name)[
+                'Name'
+            ].widget.browser.element('./parent::td/img').get_attribute('title')
+        except NoSuchElementException:
+            return False
 
     def update(self, entity_name, values):
         """Update provisioning template"""

@@ -1,29 +1,35 @@
 import re
 
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ConditionalSwitchableView
-from widgetastic.widget import Select
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import (
+    Checkbox,
+    ConditionalSwitchableView,
+    Select,
+    Table,
+    Text,
+    TextInput,
+    View,
+)
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
+from airgun.views.common import (
+    BaseLoggedInView,
+    SatTab,
+    SearchableViewMixin,
+    SearchableViewMixinPF4,
+)
 from airgun.views.host import HostCreateView
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import GenericRemovableWidgetItem
-from airgun.widgets import MultiSelect
-from airgun.widgets import RadioGroup
-from airgun.widgets import RemovableWidgetsItemsListView
-from airgun.widgets import SatTable
+from airgun.widgets import (
+    ActionsDropdown,
+    FilteredDropdown,
+    GenericRemovableWidgetItem,
+    MultiSelect,
+    RadioGroup,
+    RemovableWidgetsItemsListView,
+    SatTable,
+)
 
 
-class ComputeResourcesView(BaseLoggedInView, SearchableViewMixin):
-
+class ComputeResourcesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="Compute Resources"]')
     new = Text('//a[normalize-space(.)="Create Compute Resource"]')
     table = SatTable(
@@ -212,7 +218,7 @@ class ResourceProviderDetailView(BaseLoggedInView):
         table = SatTable(
             './/table',
             column_widgets={
-                'Compute profile': Text('./a'),
+                'Compute profile': Text('.//a'),
             },
         )
 
@@ -319,9 +325,7 @@ class ComputeResourceVMwareProfileStorageItem(GenericRemovableWidgetItem):
     controller = FilteredDropdown(
         locator=".//div[@class='controller-header']//div[contains(@class, 'form-control')]"
     )
-    remove_button = Text(
-        ".//button[contains(concat(' ', @class, ' '), ' btn-remove-controller ')]"
-    )
+    remove_button = Text(".//button[contains(concat(' ', @class, ' '), ' btn-remove-controller ')]")
     disks = ComputeResourceVMwareProfileControllerVolumeList()
 
 
@@ -351,7 +355,6 @@ class ResourceProviderProfileView(BaseLoggedInView):
     @provider_content.register('Libvirt')
     class LibvirtResourceForm(View):
         cpus = TextInput(id='compute_attribute_vm_attrs_cpus')
-        cpu_mode = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_cpu_mode')
         memory = TextInput(id='compute_attribute_vm_attrs_memory')
         image = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_image_id')
 
@@ -370,9 +373,7 @@ class ResourceProviderProfileView(BaseLoggedInView):
     class EC2ResourceForm(View):
         flavor = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_flavor_id')
         image = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_image_id')
-        availability_zone = FilteredDropdown(
-            id='s2id_compute_attribute_vm_attrs_availability_zone'
-        )
+        availability_zone = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_availability_zone')
         subnet = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_subnet_id')
         security_groups = MultiSelect(id='ms-compute_attribute_vm_attrs_security_group_ids')
         managed_ip = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_managed_ip')
@@ -418,9 +419,7 @@ class ResourceProviderProfileView(BaseLoggedInView):
         resource_pool = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_resource_pool')
         folder = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_path')
         guest_os = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_guest_id')
-        virtual_hw_version = FilteredDropdown(
-            id='s2id_compute_attribute_vm_attrs_hardware_version'
-        )
+        virtual_hw_version = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_hardware_version')
         memory_hot_add = Checkbox(id='compute_attribute_vm_attrs_memoryHotAddEnabled')
         cpu_hot_add = Checkbox(id='compute_attribute_vm_attrs_cpuHotAddEnabled')
         cdrom_drive = Checkbox(id='compute_attribute_vm_attrs_add_cdrom')
@@ -432,6 +431,9 @@ class ResourceProviderProfileView(BaseLoggedInView):
             ROOT = "//fieldset[@id='network_interfaces']"
             ITEM_WIDGET_CLASS = ComputeResourceVMwareProfileNetworkItem
 
+            nic_type = FilteredDropdown(id='select2-chosen-9')
+            network = FilteredDropdown(id='select2-chosen-10')
+
         @View.nested
         class storage(RemovableWidgetsItemsListView):
             ROOT = "//div[contains(concat(' ', @class, ' '), ' vmware-storage-container ')]"
@@ -439,6 +441,9 @@ class ResourceProviderProfileView(BaseLoggedInView):
             ITEM_WIDGET_CLASS = ComputeResourceVMwareProfileStorageItem
             add_item_button = Text(
                 "//button[contains(concat(' ', @class, ' '), ' btn-add-controller ')]"
+            )
+            data_store = FilteredDropdown(
+                "//div[@class='select2-container form-control select2-allowclear']/a/span[1]"
             )
 
     @property

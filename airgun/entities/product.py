@@ -1,18 +1,19 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.product import ProductAdvancedSync
-from airgun.views.product import ProductCreateView
-from airgun.views.product import ProductEditView
-from airgun.views.product import ProductManageHttpProxy
-from airgun.views.product import ProductRepoDiscoveryView
-from airgun.views.product import ProductsTableView
-from airgun.views.product import ProductSyncPlanView
-from airgun.views.product import ProductTaskDetailsView
-from airgun.views.product import ProductVerifyContentChecksum
+from airgun.views.product import (
+    ProductAdvancedSync,
+    ProductCreateView,
+    ProductEditView,
+    ProductManageHttpProxy,
+    ProductRepoDiscoveryView,
+    ProductsTableView,
+    ProductSyncPlanView,
+    ProductTaskDetailsView,
+    ProductVerifyContentChecksum,
+)
 from airgun.views.task import TaskDetailsView
 
 

@@ -1,21 +1,20 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Button
+from widgetastic.widget import Checkbox, Table, Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb, Button
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixinPF4
-from airgun.views.common import TemplateEditor
-from airgun.views.common import TemplateInputItem
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import MultiSelect
-from airgun.widgets import RemovableWidgetsItemsListView
-from airgun.widgets import TextInputsGroup
+from airgun.views.common import (
+    BaseLoggedInView,
+    SatTab,
+    SearchableViewMixinPF4,
+    TemplateEditor,
+    TemplateInputItem,
+)
+from airgun.widgets import (
+    ActionsDropdown,
+    FilteredDropdown,
+    MultiSelect,
+    RemovableWidgetsItemsListView,
+    TextInputsGroup,
+)
 
 
 class ReportTemplatesView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -95,6 +94,7 @@ class ReportTemplateGenerateView(BaseLoggedInView):
     generate_at = TextInput(id='report_template_report_generate_at')
     submit = Text('//input[@name="commit"]')
     generated = Text('//div[contains(@class, "alert-success")]')
+    installability = FilteredDropdown(id='s2id_Installability')
 
     @property
     def is_displayed(self):

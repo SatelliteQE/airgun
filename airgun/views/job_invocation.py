@@ -1,17 +1,21 @@
 from wait_for import wait_for
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button
-from widgetastic_patternfly4 import Radio
-from widgetastic_patternfly4.ouia import Select
+from widgetastic_patternfly4 import Button, ChipGroup, DescriptionList, Radio, Select
+from widgetastic_patternfly4.donutchart import DonutCircle, DonutLegend
+from widgetastic_patternfly4.ouia import (
+    Dropdown as OUIADropdown,
+    Select as OUIASelect,
+    Text as OUIAText,
+)
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SatTable
-from airgun.views.common import SearchableViewMixin
-from airgun.views.common import WizardStepView
+from airgun.views.common import (
+    BaseLoggedInView,
+    SatTab,
+    SatTable,
+    SearchableViewMixin,
+    WizardStepView,
+)
 from airgun.widgets import ActionsDropdown
 
 
@@ -30,26 +34,33 @@ class JobInvocationCreateView(BaseLoggedInView):
 
     @View.nested
     class category_and_template(WizardStepView):
-        expander = Text(".//button[contains(.,'Category and Template')]")
-        job_category = Select('OUIA-Generated-Select-single-1')
-        job_template = Select('OUIA-Generated-Select-typeahead-1')
+        expander = Text(".//button[contains(.,'Category and template')]")
+        job_category = Select(locator='//div[*[@aria-label="Job category toggle"]]')
+        job_template = Select(locator='//div[div/*[@aria-label="Job template toggle"]]')
 
     @View.nested
     class target_hosts_and_inputs(WizardStepView):
         expander = Text(".//button[contains(.,'Target hosts and inputs')]")
         command = TextInput(id='command')
 
-        package_action = Select('OUIA-Generated-Select-single-15')
+        selected_hosts = ChipGroup(locator='//div[@class="selected-chips"]/div')
+
+        package_action = OUIASelect('OUIA-Generated-Select-single-15')
         package = TextInput(id='package')
 
-        service_action = Select('OUIA-Generated-Select-single-28')
+        action = Select(locator='//div[button[@aria-label="action toggle"]]')
         service = TextInput(id='service')
 
-        module_action = Select('OUIA-Generated-Select-single-31')
+        module_action = OUIASelect('OUIA-Generated-Select-single-31')
         module_spec = TextInput(id='module_spec')
         options = TextInput(id='options')
 
-        power_action = Select('OUIA-Generated-Select-single-34')
+        ansible_collections_list = TextInput(id='ansible_collections_list')
+        ansible_roles_list = TextInput(id='ansible_roles_list')
+        power_action = OUIASelect('OUIA-Generated-Select-single-34')
+
+        targetting_type = Select(locator='//div[button[@aria-haspopup="listbox"]]')
+        targets = Select(locator='//div[contains(@data-ouia-component-id,"hosts")]')
 
     @View.nested
     class advanced_fields(WizardStepView):
@@ -65,6 +76,7 @@ class JobInvocationCreateView(BaseLoggedInView):
         time_span = TextInput(id='time-span')
         execution_order_alphabetical = Radio(id='execution-order-alphabetical')
         execution_order_randomized = Radio(id='execution-order-randomized')
+        ansible_collections_path = TextInput(id='collections_path')
 
     @View.nested
     class schedule(WizardStepView):
@@ -98,7 +110,7 @@ class JobInvocationCreateView(BaseLoggedInView):
         start_at_date = TextInput(locator='//input[contains(@aria-label, "starts at datepicker")]')
         start_at_time = TextInput(locator='//input[contains(@aria-label, "starts at timepicker")]')
         # Repeats
-        repeats = Select('OUIA-Generated-Select-single-3')
+        repeats = OUIASelect('OUIA-Generated-Select-single-3')
         repeats_at = TextInput(locator='//input[contains(@aria-label, "repeat-at")]')
         # Ends
         ends_never = Radio(id='never-ends')
@@ -112,7 +124,7 @@ class JobInvocationCreateView(BaseLoggedInView):
     @View.nested
     class submit(WizardStepView):
         expander = Text(".//button[contains(.,'Review')]")
-        submit = Text(".//button[contains(.,'Run')]")
+        submit = Text(".//button[contains(.,'Submit')]")
 
         def click(self):
             self.submit.click()
@@ -129,6 +141,7 @@ class JobInvocationCreateView(BaseLoggedInView):
 
 class JobInvocationStatusView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    BREADCRUMB_LENGTH = 2
 
     @property
     def is_displayed(self):
@@ -136,7 +149,7 @@ class JobInvocationStatusView(BaseLoggedInView):
         return (
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Jobs'
-            and len(self.breadcrumb.locations) == 2
+            and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
         )
 
     rerun = Text("//a[normalize-space(.)='Rerun']")
@@ -144,6 +157,7 @@ class JobInvocationStatusView(BaseLoggedInView):
     job_task = Text("//a[normalize-space(.)='Job Task']")
     cancel_job = Button(value='Cancel Job')
     abort_job = Button(value='Abort Job')
+    new_ui = Text("//a[normalize-space(.)='New UI']")
 
     @View.nested
     class overview(SatTab):
@@ -188,3 +202,66 @@ class JobInvocationStatusView(BaseLoggedInView):
             delay=1,
             logger=self.logger,
         )
+
+
+class NewJobInvocationStatusView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+    title = OUIAText('breadcrumb_title')
+    create_report = Button(value='Create report')
+    actions = OUIADropdown('job-invocation-global-actions-dropdown')
+    BREADCRUMB_LENGTH = 2
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.breadcrumb.wait_displayed()
+        title_loaded = self.title.wait_displayed()
+        data_loaded, _ = wait_for(
+            func=lambda: self.status.is_displayed,
+            timeout=60,
+            delay=15,
+            fail_func=self.browser.refresh,
+        )
+        return (
+            breadcrumb_loaded
+            and title_loaded
+            and data_loaded
+            and self.breadcrumb.locations[0] == 'Jobs'
+            and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
+        )
+
+    @View.nested
+    class overall_status(DonutCircle):
+        """The donut circle with the overall job status of '{succeeded hosts}/{total hosts}'"""
+
+        def read(self):
+            """Return `dict` with the parsed overall status numbers, for example:
+            ```{'succeeded_hosts': 2, 'total_hosts': 5}```
+            """
+            succeeded_hosts, total_hosts = self.labels[0].split('/')
+            return {'succeeded_hosts': int(succeeded_hosts), 'total_hosts': int(total_hosts)}
+
+    @View.nested
+    class status(DonutLegend):
+        """'System status' panel."""
+
+        ROOT = ".//div[contains(@class, 'chart-legend')]"
+        first_label = Text(locator="//*[@id='legend-labels-0']")
+
+        @property
+        def is_displayed(self):
+            """Any status label is displayed after all data are loaded."""
+            return self.first_label.is_displayed
+
+        def read(self):
+            """Return `dict` with the System status info.
+            Example: ```{'Succeeded': 2, 'Failed': 1, 'In Progress': 0, 'Canceled': 0}```
+            """
+            return {item['label']: int(item['value']) for item in self.all_items}
+
+    @View.nested
+    class overview(DescriptionList):
+        ROOT = ".//div[contains(@class, 'job-overview')]"
+
+        def read(self):
+            """Return `dict` without trailing ':' in the key names."""
+            return {key.replace(':', ''): val for key, val in super().read().items()}

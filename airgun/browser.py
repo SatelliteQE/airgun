@@ -1,29 +1,25 @@
 """Tools to help getting selenium and widgetastic browser instance to run UI
 tests.
 """
+
 import base64
-import logging
-import os
-import time
-import urllib
 from contextlib import contextmanager
 from datetime import datetime
+import logging
+import os
+import urllib
 from urllib.parse import unquote
 
-import yaml
 from box import Box
 from selenium import webdriver
-from wait_for import TimedOutError
-from wait_for import wait_for
+from wait_for import TimedOutError, wait_for
 from webdriver_kaifuku import BrowserManager
-from widgetastic.browser import Browser
-from widgetastic.browser import DefaultPlugin
-from widgetastic.exceptions import NoAlertPresentException
-from widgetastic.exceptions import NoSuchElementException
+from widgetastic.browser import Browser, DefaultPlugin
+from widgetastic.exceptions import NoAlertPresentException, NoSuchElementException
+import yaml
 
 from airgun import settings
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import Pf4ConfirmationDialog
+from airgun.widgets import ConfirmationDialog, Pf4ConfirmationDialog
 
 LOGGER = logging.getLogger(__name__)
 
@@ -116,7 +112,7 @@ class SeleniumBrowserFactory:
             or not. Is only used for ``saucelabs`` provider.
         :return: None
         """
-        if self.provider == 'selenium' or self.provider == 'remote':
+        if self.provider in ('selenium', 'remote'):
             self._webdriver.quit()
             return
 
@@ -174,6 +170,10 @@ class SeleniumBrowserFactory:
 
         Note: should not be called directly, use :meth:`get_browser` instead.
         """
+        if self.test_name:
+            self.web_kaifuku.webdriver_options.desired_capabilities.update(
+                {'se:test_name': self.test_name}
+            )
         manager = BrowserManager.from_conf(self.web_kaifuku)
         self._webdriver = manager.start()
         self._set_session_cookie()
@@ -344,19 +344,12 @@ class AirgunBrowser(Browser):
         downloads_uri = 'chrome://downloads'
         if not self.url.startswith(downloads_uri):
             self.url = downloads_uri
-        time.sleep(3)
         script = (
-            'return downloads.Manager.get().items_'
-            '.filter(e => e.state === "COMPLETE")'
-            '.map(e => e.file_url || e.fileUrl);'
+            'return document.querySelector("downloads-manager")'
+            '.shadowRoot.querySelector("#downloadsList")'
+            '.items.filter(e => e.state == "2")'
+            '.map(e => e.filePath || e.file_path || e.fileUrl || e.file_url);'
         )
-        if self.browser_type == 'chrome' and self.browser_version >= 79:
-            script = (
-                'return document.querySelector("downloads-manager")'
-                '.shadowRoot.querySelector("#downloadsList")'
-                '.items.filter(e => e.state === "COMPLETE")'
-                '.map(e => e.filePath || e.file_path || e.fileUrl || e.file_url);'
-            )
         return self.execute_script(script)
 
     def get_file_content(self, uri):
@@ -485,7 +478,7 @@ class AirgunBrowser(Browser):
     ):
         """Extend the behaviour of widgetstatic.browser.handle_alert to handle PF4 alerts"""
         popup = self.get_alert(squash=squash)
-        if isinstance(popup, (Pf4ConfirmationDialog, ConfirmationDialog)):
+        if isinstance(popup, Pf4ConfirmationDialog | ConfirmationDialog):
             if cancel:
                 self.logger.info("  dismissing")
                 popup.cancel()

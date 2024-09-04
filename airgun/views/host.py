@@ -1,46 +1,51 @@
 import re
+import time
 
 from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ConditionalSwitchableView
-from widgetastic.widget import GenericLocatorWidget
-from widgetastic.widget import NoSuchElementException
-from widgetastic.widget import Select
-from widgetastic.widget import Table
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic.widget import Widget
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Button
-from widgetastic_patternfly4.ouia import BreadCrumb as PF4BreadCrumb
-from widgetastic_patternfly4.ouia import Button as PF4Button
-from widgetastic_patternfly4.ouia import FormSelect
+from widgetastic.widget import (
+    Checkbox,
+    ConditionalSwitchableView,
+    GenericLocatorWidget,
+    NoSuchElementException,
+    Select,
+    Table,
+    Text,
+    TextInput,
+    View,
+    Widget,
+)
+from widgetastic_patternfly import BreadCrumb, Button
+from widgetastic_patternfly4.ouia import (
+    BreadCrumb as PF4BreadCrumb,
+    Button as PF4Button,
+    FormSelect,
+    Select as PF4Select,
+    TextInput as OUIATextInput,
+)
 from widgetastic_patternfly4.tabs import Tab
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixinPF4
-from airgun.views.job_invocation import JobInvocationCreateView
-from airgun.views.job_invocation import JobInvocationStatusView
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 from airgun.views.task import TaskDetailsView
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import BaseMultiSelect
-from airgun.widgets import CheckboxWithAlert
-from airgun.widgets import ConfigGroupMultiSelect
-from airgun.widgets import CustomParameter
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import GenericRemovableWidgetItem
-from airgun.widgets import Link
-from airgun.widgets import MultiSelect
-from airgun.widgets import Pf4ConfirmationDialog
-from airgun.widgets import PuppetClassesMultiSelect
-from airgun.widgets import RadioGroup
-from airgun.widgets import RemovableWidgetsItemsListView
-from airgun.widgets import SatTable
-from airgun.widgets import SatTableWithUnevenStructure
-from airgun.widgets import ToggleButton
+from airgun.widgets import (
+    ActionsDropdown,
+    BaseMultiSelect,
+    CheckboxWithAlert,
+    ConfigGroupMultiSelect,
+    CustomParameter,
+    FilteredDropdown,
+    GenericRemovableWidgetItem,
+    Link,
+    MultiSelect,
+    Pf4ConfirmationDialog,
+    PuppetClassesMultiSelect,
+    RadioGroup,
+    RemovableWidgetsItemsListView,
+    SatTable,
+    SatTableWithUnevenStructure,
+    ToggleButton,
+)
 
 
 class TableActions(View):
@@ -196,12 +201,27 @@ class HostInterface(View):
         return self.browser.wait_for_element(self.title, visible=True, exception=False) is not None
 
 
+class HostStatusesView(BaseLoggedInView):
+    title = Text("//h5[normalize-space(.)='Host Status Overview']")
+    status_green_total = Text("//div[contains(@class, 'status-count')][1]/a[1]")
+    status_green_owned = Text("//div[contains(@class, 'status-count')][1]/a[2]")
+    status_yellow_total = Text("//div[contains(@class, 'status-count')][2]/span[1]")
+    status_yellow_owned = Text("//div[contains(@class, 'status-count')][2]/span[2]")
+    status_red_total = Text("//div[contains(@class, 'status-count')][3]/a[1]")
+    status_red_owned = Text("//div[contains(@class, 'status-count')][3]/a[2]")
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
 class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
-    manage_columns = PF4Button("OUIA-Generated-Button-link-1")
+    manage_columns = PF4Button('manage-columns-button')
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text(".//div[@id='rails-app-content']//a[contains(normalize-space(.),'Create Host')]")
     register = PF4Button('OUIA-Generated-Button-secondary-2')
+    new_ui_button = Text(".//a[contains(@class, 'btn')][contains(@href, 'new/hosts')]")
     select_all = Checkbox(locator="//input[@id='check_all']")
     table = SatTable(
         './/table',
@@ -258,6 +278,9 @@ class HostCreateView(BaseLoggedInView):
             locator=".//div[label[@for='compute_resource_id']]//button"
         )
         deploy = FilteredDropdown(id='host_compute_resource')
+        inherit_compute_profile_option = ToggleButton(
+            locator=".//div[label[@for='compute_profile_id']]//button"
+        )
         compute_profile = FilteredDropdown(id='s2id_host_compute_profile_id')
         lce = FilteredDropdown(id='host_lifecycle_environment')
         content_view = FilteredDropdown(id='host_content_view')
@@ -308,7 +331,6 @@ class HostCreateView(BaseLoggedInView):
         class virtual_machine(SatTab):
             TAB_NAME = 'Virtual Machine'
             cpus = TextInput(id='host_compute_attributes_cpus')
-            cpu_mode = FilteredDropdown(id='s2id_host_compute_attributes_cpu_mode')
             memory = TextInput(id='host_compute_attributes_memory')
             startup = Checkbox(id='host_compute_attributes_start')
 
@@ -371,6 +393,7 @@ class HostCreateView(BaseLoggedInView):
         ptable = FilteredDropdown(id='host_ptable')
         disk = TextInput(id='host_disk')
         root_password = TextInput(id='host_root_pass')
+        disable_passwd = Text('//a[@id="disable-pass-btn"]')
 
     @View.nested
     class interfaces(SatTab):
@@ -428,16 +451,14 @@ class HostCreateView(BaseLoggedInView):
                 """Return a list of dictionaries. Each dictionary consists of
                 global parameter name, value and whether overridden or not.
                 """
-                parameters = []
-                for row in self.rows():
-                    parameters.append(
-                        {
-                            'name': row['Name'].widget.read(),
-                            'value': row['Value'].widget.read(),
-                            'overridden': not row['Actions'].widget.is_displayed,
-                        }
-                    )
-                return parameters
+                return [
+                    {
+                        'name': row['Name'].widget.read(),
+                        'value': row['Value'].widget.read(),
+                        'overridden': not row['Actions'].widget.is_displayed,
+                    }
+                    for row in self.rows()
+                ]
 
             def override(self, name):
                 """Override a single global parameter.
@@ -497,6 +518,7 @@ class HostCreateView(BaseLoggedInView):
 
 
 class HostRegisterView(BaseLoggedInView):
+    title = Text("//h1[normalize-space(.)='Register Host']")
     generate_command = PF4Button('registration_generate_btn')
     cancel = PF4Button('registration-cancel-button')
     registration_command = TextInput(locator="//input[@aria-label='Copyable input']")
@@ -518,7 +540,8 @@ class HostRegisterView(BaseLoggedInView):
         capsule = FormSelect('reg_smart_proxy')
         insecure = Checkbox(id='reg_insecure')
         activation_keys = BaseMultiSelect('activation-keys-field')
-        activation_key_helper = Text("//div[@id='reg_katello_ak-helper']")
+        activation_key_helper = Text("//div[@id='activation_keys_field-helper']")
+        new_activation_key_link = Link('//a[normalize-space(.)="Create new activation key"]')
 
     @View.nested
     class advanced(Tab):
@@ -528,25 +551,21 @@ class HostRegisterView(BaseLoggedInView):
             "/li[button[normalize-space(.)={@tab_name|quote}]]"
         )
         ROOT = '//section[@id="advancedSection"]'
-
         setup_rex = FormSelect('registration_setup_remote_execution')
         setup_insights = FormSelect('registration_setup_insights')
         install_packages = TextInput(id='reg_packages')
         update_packages = Checkbox(id='reg_update_packages')
-        repository = TextInput(id='reg_repo')
-        repository_gpg_key_url = TextInput(id='reg_gpg_key_url')
         token_life_time = TextInput(id='reg_token_life_time_input')
         rex_interface = TextInput(id='reg_rex_interface_input')
-        rex_pull_mode = FormSelect('OUIA-Generated-FormSelect-default-8')
-        life_cycle_env = FormSelect('reg-katello-lce')
+        rex_pull_mode = FormSelect('registration_setup_remote_execution_pull')
         ignore_error = Checkbox(id='reg_katello_ignore')
         force = Checkbox(id='reg_katello_force')
-        life_cycle_env_helper = Text("//div[@id='reg_katello_lce-helper']")
         install_packages_helper = Text("//div[@id='reg_packages-helper']")
+        repository_add = PF4Button('host_reg_add_more_repositories')
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.general.operating_system, exception=False)
+        return self.browser.wait_for_element(self.title, exception=False)
 
     def before_fill(self, values):
         """Fill some of the parameters in the widgets with values.
@@ -562,18 +581,26 @@ class HostRegisterView(BaseLoggedInView):
             field_value = values.get('general').get(field)
             if field_value:
                 wait_for(
-                    lambda: self.general.__getattribute__(field).is_enabled,
+                    lambda field=field: self.general.__getattribute__(field).is_enabled,
                     timeout=30,
                     delay=2,
                     logger=self.logger,
                 )
                 self.general.__getattribute__(field).fill(field_value)
-        wait_for(
-            lambda: self.general.linux_host_init_link.is_displayed,
-            timeout=30,
-            delay=2,
-            logger=self.logger,
-        )
+                time.sleep(1)
+
+
+class RepositoryListView(View):
+    """Repository List view"""
+
+    ROOT = '//div[@id="pf-modal-part-0" or @data-ouia-component-type="PF4/ModalContent"]'
+    repository = OUIATextInput('host_reg_repo')
+    repository_gpg_key_url = OUIATextInput('host_reg_gpg_key')
+    repository_list_confirm = PF4Button('reg_modal_confirm')
+    repository_list_reset = PF4Button('reg_modal_reset')
+    repository_list_add_new = PF4Button('host_reg_modal_add_new_repo')
+    repository_list_remove = PF4Button('0')
+    repository_list_popup_close = PF4Button('host_reg_repo_modal-ModalBoxCloseButton')
 
 
 class RecommendationWidget(GenericLocatorWidget):
@@ -616,10 +643,10 @@ class RecommendationWidget(GenericLocatorWidget):
 
     def read(self):
         if self.expanded:
-            return dict(name=self.name, label=self.label, text=self.text)
+            return {'name': self.name, 'label': self.label, 'text': self.text}
         else:
             self.expand()
-            return dict(name=self.name, label=self.label, text=self.text)
+            return {'name': self.name, 'label': self.label, 'text': self.text}
 
 
 class RecommendationListView(View):
@@ -715,6 +742,29 @@ class HostsChangeGroup(HostsActionCommonDialog):
     host_group = Select(id='hostgroup_id')
 
 
+class HostsChangeContentSourceView(View):
+    title = Text('//h5')
+
+    hosts_to_update = Text('//span[@class="pf-c-label pf-m-green"]//a')
+    ignored_hosts = Text('//span[@class="pf-c-label pf-m-orange"]//a')
+
+    content_source_select = PF4Select('content-source-select')
+    disabled_environment_status = Text('//div[@aria-label="Info Alert"]')
+
+    lce_env_title = Text('//div[normalize-space(.)="Lifecycle environment"]')
+    lce_env_path_list = Text('//div[@class="env-path"]/div/div')
+
+    content_view_select = PF4Select('SelectContentView')
+    content_view_select_btn = Text(locator='//button[@aria-label="Options menu" and @tabindex]')
+
+    run_job_invocation = Text(locator='//*[normalize-space(.)="Run job invocation"]')
+    update_hosts_manualy = Text(locator='//*[normalize-space(.)="Update hosts manually"]')
+
+    show_more_change_content_source = Text('//button[normalize-space(.)="Show more"]')
+    show_less_change_content_source = Text('//button[normalize-space(.)="Show less"]')
+    generated_script = Text('//code')
+
+
 class HostsChangeEnvironment(HostsActionCommonDialog):
     title = Text(
         "//h4[normalize-space(.)='Change Environment - "
@@ -742,13 +792,14 @@ class HostsTaxonomyMismatchRadioGroup(GenericLocatorWidget):
     taxonomy = None
     fix_mismatch = Text("//input[contains(@id, 'optimistic_import_yes')]")
     fail_on_mismatch = Text("//input[contains(@id, 'optimistic_import_no')]")
-    buttons_text = dict(
-        fix_mismatch='Fix {taxonomy} on Mismatch', fail_on_mismatch='Fail on Mismatch'
-    )
+    buttons_text = {
+        'fix_mismatch': 'Fix {taxonomy} on Mismatch',
+        'fail_on_mismatch': 'Fail on Mismatch',
+    }
 
     def __init__(self, parent, **kwargs):
         self.taxonomy = kwargs.pop('taxonomy')
-        super().__init__(parent, "//div[@class='modal-body']//div[@id='content']/form", **kwargs)
+        super().__init__(parent, "//div[@class='modal-body']//div[@id='content']//form", **kwargs)
 
     def _is_checked(self, widget):
         """Returns whether the widget is checked"""
@@ -763,9 +814,9 @@ class HostsTaxonomyMismatchRadioGroup(GenericLocatorWidget):
     def fill(self, value):
         """Select the button with text equal to value"""
         for name, text in self.buttons_text.items():
-            text = text.replace('{taxonomy}', self.taxonomy)
+            _text = text.replace('{taxonomy}', self.taxonomy)
             widget = getattr(self, name)
-            if text == value and not self._is_checked(widget):
+            if _text == value and not self._is_checked(widget):
                 widget.click()
 
     @property
@@ -818,6 +869,10 @@ class HostsDeleteActionDialog(HostsActionCommonDialog):
     title = Text(
         "//h4[normalize-space(.)='Delete Hosts - The following hosts are about to be changed']"
     )
+
+
+class ChangeContentSourceView(View):
+    """Hosts Change Content Source View"""
 
 
 class HostsDeleteTaskDetailsView(TaskDetailsView):

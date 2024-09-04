@@ -1,12 +1,13 @@
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.hardware_model import HardwareModelCreateView
-from airgun.views.hardware_model import HardwareModelEditView
-from airgun.views.hardware_model import HardwareModelsView
+from airgun.views.hardware_model import (
+    HardwareModelCreateView,
+    HardwareModelEditView,
+    HardwareModelsView,
+)
 
 
 class HardwareModelEntity(BaseEntity):
@@ -45,9 +46,10 @@ class HardwareModelEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.click()
+        view.table.row(name=entity_name)[4].widget.item_select("Delete")
         view.delete_dialog.confirm()
         if err_message:
+            view.flash.wait_displayed()
             view.flash.assert_message(f"Danger alert: {err_message}")
             view.flash.dismiss()
             view.delete_dialog.cancel()

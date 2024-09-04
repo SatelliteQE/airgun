@@ -1,22 +1,23 @@
 from wait_for import wait_for
-from widgetastic.widget import Checkbox
-from widgetastic.widget import FileInput
-from widgetastic.widget import GenericLocatorWidget
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Button
+from widgetastic.widget import (
+    Checkbox,
+    FileInput,
+    GenericLocatorWidget,
+    Text,
+    TextInput,
+    View,
+)
+from widgetastic_patternfly import BreadCrumb, Button
 
 from airgun.exceptions import ReadOnlyWidgetError
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.views.common import SearchableViewMixin
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import ItemsListReadOnly
-from airgun.widgets import ProgressBar
-from airgun.widgets import SatTable
-from airgun.widgets import Search
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
+from airgun.widgets import (
+    ConfirmationDialog,
+    ItemsListReadOnly,
+    ProgressBar,
+    SatTable,
+    Search,
+)
 
 
 # Search field and button on Subscriptions page uses different locators,
@@ -157,6 +158,16 @@ class ManageManifestView(BaseLoggedInView):
 
     @View.nested
     class manifest(SatTab):
+        alert_message = Text(
+            '//div[@id="manifest-history-tabs-pane-1"]/div/h3//following-sibling::div[@aria-label="Warning Alert" or @aria-label="Danger Alert"]'
+        )
+        expire_header = Text('//div[@id="manifest-history-tabs-pane-1"]/div/div/h4')
+        expire_message = Text(
+            '//div[@id="manifest-history-tabs-pane-1"]/div/div/h4//following-sibling::div'
+        )
+        expire_date = Text(
+            '//div[@id="manifest-history-tabs-pane-1"]/div/hr//following-sibling::div[2]/div[2]'
+        )
         red_hat_cdn_url = TextInput(id='cdnUrl')
         manifest_file = FileInput(id='usmaFile')
         refresh_button = Button('Refresh')
@@ -231,7 +242,6 @@ class SubscriptionDetailsView(BaseLoggedInView):
 
     @View.nested
     class details(SatTab):
-
         associations = SatTable(
             locator=".//div[h2[normalize-space(.)='Associations']]/table",
             column_widgets={

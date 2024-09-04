@@ -1,7 +1,4 @@
-from widgetastic.widget import ClickableMixin
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import ClickableMixin, Text, TextInput, View
 
 
 class RhssoLoginView(View, ClickableMixin):
@@ -32,7 +29,7 @@ class RhssoTwoFactorSuccessView(View, ClickableMixin):
 
 
 class RhssoTotpView(View, ClickableMixin):
-    totp = TextInput(id='totp')
+    totp = TextInput(id='otp')
     submit = Text('//input[@name="login"]')
 
     @property

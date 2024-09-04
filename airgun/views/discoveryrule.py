@@ -1,27 +1,25 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import Checkbox, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly4 import Button as PF4Button
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SatTab
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import AutoCompleteTextInput
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import MultiSelect
-from airgun.widgets import SatTable
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.widgets import (
+    ActionsDropdown,
+    AutoCompleteTextInput,
+    FilteredDropdown,
+    MultiSelect,
+)
 
 
-class DiscoveryRulesView(BaseLoggedInView):
+class DiscoveryRulesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Discovery Rules']")
+    page_info = Text("//foreman-react-component[contains(@name, 'DiscoveryRules')]/div/div")
     new = Text("//a[contains(@href, '/discovery_rules/new')]")
     new_on_blank_page = PF4Button('Create Rule')
-    table = SatTable(
+    table = Table(
         './/table',
         column_widgets={
-            'Name': Text('./a'),
+            'Name': Text('.//a'),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )

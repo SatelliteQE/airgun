@@ -1,8 +1,5 @@
 from wait_for import wait_for
-from widgetastic.widget import GenericLocatorWidget
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
+from widgetastic.widget import GenericLocatorWidget, Text, TextInput, View
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import (
@@ -96,7 +93,7 @@ class AvailableRepositorySetWidget(GenericLocatorWidget):
 
     def read(self):
         """Return the name and label of this repository."""
-        return dict(name=self.name, label=self.label)
+        return {"name": self.name, "label": self.label}
 
     def enable(self, item):
         """Enable a repository of this repository set.
@@ -211,8 +208,12 @@ class RedHatRepositoriesView(BaseLoggedInView):
 
     title = Text("//h1[contains(., 'Red Hat Repositories')]")
     search_category = RepositorySearchCategory(".//div[button[@id='search-list-select']]")
-    search_box = TextInput(locator=".//input[@aria-label='Search input']")
-    search_button = Text(".//button[@aria-label='Search']")
+    search_box = TextInput(
+        locator='//*[@id="redhatRepositoriesPage"]//following::input[@aria-label="Search input"]'
+    )
+    search_button = Text(
+        '//*[@id="redhatRepositoriesPage"]//following::button[@aria-label="Search"]'
+    )
     search_types = RepositorySearchTypes(".//div[button[@data-id='formControlsSelectMultiple']]")
     search_clear = Text(".//span[@class = 'fa fa-times']")
     recommended_repos = Text(".//div[contains(@class, 'bootstrap-switch wrapper')]")
@@ -253,7 +254,7 @@ class RedHatRepositoriesView(BaseLoggedInView):
         elif category == 'Enabled':
             return self.enabled.read()
         else:
-            return dict(available=self.available.read(), enabled=self.enabled.read())
+            return {"available": self.available.read(), "enabled": self.enabled.read()}
 
     @property
     def is_displayed(self):

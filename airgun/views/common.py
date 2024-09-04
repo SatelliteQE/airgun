@@ -1,48 +1,49 @@
 import time
 
+import wait_for
 from wait_for import wait_for
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ConditionalSwitchableView
-from widgetastic.widget import do_not_read_this_widget
-from widgetastic.widget import ParametrizedLocator
-from widgetastic.widget import ParametrizedView
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic.widget import WTMixin
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Button
-from widgetastic_patternfly import Tab
-from widgetastic_patternfly import TabWithDropdown
+from widgetastic.widget import (
+    Checkbox,
+    ConditionalSwitchableView,
+    ParametrizedLocator,
+    ParametrizedView,
+    Text,
+    TextInput,
+    View,
+    WTMixin,
+    do_not_read_this_widget,
+)
+from widgetastic_patternfly import BreadCrumb, Button, Tab, TabWithDropdown
 from widgetastic_patternfly4.navigation import Navigation
-from widgetastic_patternfly4.ouia import Dropdown
-from widgetastic_patternfly4.ouia import PatternflyTable
-from widgetastic_patternfly4.ouia import Button as PF4Button
+from widgetastic_patternfly4.ouia import Button as PF4Button, Dropdown, PatternflyTable
 
-from airgun.utils import get_widget_by_name
-from airgun.utils import normalize_dict_values
-from airgun.widgets import ACEEditor
-from airgun.widgets import ContextSelector
-from airgun.widgets import FilteredDropdown
-from airgun.widgets import GenericRemovableWidgetItem
-from airgun.widgets import ItemsList
-from airgun.widgets import LCESelector
-from airgun.widgets import PF4LCESelector
-from airgun.widgets import Pf4ConfirmationDialog
-from airgun.widgets import PF4Search
-from airgun.widgets import ProgressBar
-from airgun.widgets import ReadOnlyEntry
-from airgun.widgets import SatFlashMessages
-from airgun.widgets import SatSubscriptionsTable
-from airgun.widgets import SatTable
-from airgun.widgets import Search
-from airgun.widgets import ValidationErrors
+from airgun.utils import get_widget_by_name, normalize_dict_values
+from airgun.widgets import (
+    ACEEditor,
+    ContextSelector,
+    FilteredDropdown,
+    GenericRemovableWidgetItem,
+    ItemsList,
+    LCESelector,
+    Pf4ConfirmationDialog,
+    PF4LCESelector,
+    PF4NavSearch,
+    PF4Search,
+    ProgressBar,
+    ReadOnlyEntry,
+    SatFlashMessages,
+    SatSubscriptionsTable,
+    SatTable,
+    Search,
+    ValidationErrors,
+)
 
 
 class BaseLoggedInView(View):
     """Base view for Satellite pages"""
 
     menu = Navigation("Global")
+    menu_search = PF4NavSearch()
     taxonomies = ContextSelector()
     flash = SatFlashMessages()
     validations = ValidationErrors()
@@ -57,21 +58,28 @@ class BaseLoggedInView(View):
         self.account_menu.click()
         self.logout.click()
 
-    def read(self, widget_names=None):
+    def read(self, widget_names=None, limit=None):
         """Reads the contents of the view and presents them as a dictionary.
 
         :param widget_names: If specified, will read only the widgets names in the list.
+        :param limit: how many entries to fetch at most
 
         :return: A :py:class:`dict` of ``widget_name: widget_read_value``
             where the values are retrieved using the :py:meth:`Widget.read`.
         """
         if widget_names is None:
+            if limit is not None:
+                raise NotImplementedError("You must specify widgets to be able to specify limit")
             return super().read()
-        if not isinstance(widget_names, (list, tuple)):
+        if not isinstance(widget_names, list | tuple):
             widget_names = [widget_names]
         values = {}
         for widget_name in widget_names:
-            values[widget_name] = get_widget_by_name(self, widget_name).read()
+            widget = get_widget_by_name(self, widget_name)
+            if hasattr(widget, 'read_limited') and callable(widget.read_limited):
+                values[widget_name] = widget.read(limit=limit)
+            else:
+                values[widget_name] = widget.read()
         return normalize_dict_values(values)
 
 
@@ -266,29 +274,15 @@ class LCESelectorGroup(ParametrizedView):
 
 
 class PF4LCESelectorGroup(LCESelectorGroup):
-    """Group of :class:`airgun.widgets.PF4LCESelector`, typically present on page
-    for selecting desired lifecycle environment.
-
-    Usage::
-
-        lce = View.nested(PF4LCESelectorGroup)
-
-        #or
-
-        @View.nested
-        class lce(PF4LCESelectorGroup):
-            pass
-    """
-
-    ROOT = (
-        ".//*[self::div or self::span][@class='env-path']/parent::*"
-    )
+    ROOT = './/div[./div[@class="env-path"]]'
 
     PARAMETERS = ('lce_name',)
 
-    LAST_ENV = ".//*[self::div or self::span][@class='env-path'][last()]"
+    LAST_ENV = './/div[@class="env-path"][last()]'
     lce = PF4LCESelector(
-        locator=ParametrizedLocator(""".//label[contains(@class, 'pf-c-check__label')][normalize-space(.)='{lce_name}']""")
+        locator=ParametrizedLocator(
+            './/div[@class="env-path" and .//*[contains(normalize-space(.), "{lce_name}")]]'
+        )
     )
 
 
@@ -318,7 +312,7 @@ class ListRemoveTab(SatSecondaryTab):
     def fill(self, values):
         """Remove associated resource(s)."""
         if not isinstance(values, list):
-            values = list((values,))
+            values = [values]
         for value in values:
             self.remove(value)
 
@@ -349,7 +343,7 @@ class AddTab(SatSecondaryTab):
     def fill(self, values):
         """Associate resource(s)"""
         if not isinstance(values, list):
-            values = list((values,))
+            values = [values]
         for value in values:
             self.add(value)
 
@@ -462,7 +456,6 @@ class NewAddRemoveResourcesView(View):
         return self.table.read()
 
 
-
 class AddRemoveSubscriptionsView(AddRemoveResourcesView):
     """A variant of :class:`AddRemoveResourcesView` for managing subscriptions.
     Subscriptions table has different structure - entity label is located in
@@ -480,6 +473,73 @@ class AddRemoveSubscriptionsView(AddRemoveResourcesView):
         table = SatSubscriptionsTable(
             locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
         )
+
+
+class NewAddRemoveResourcesView(View):
+    searchbox = PF4Search()
+    type = Dropdown(
+        locator='.//div[contains(@class, "All repositories") or'
+        ' contains(@aria-haspopup="listbox")]'
+    )
+    Status = Dropdown(
+        locator='.//div[contains(@class, "All") or contains(@aria-haspopup="listbox")]'
+    )
+    add_repo = PF4Button('OUIA-Generated-Button-secondary-2')
+    # Need to add kebab menu
+    table = PatternflyTable(
+        component_id='OUIA-Generated-Table-4',
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Type': Text('.//a'),
+            'Name': Text('.//a'),
+            'Product': Text('.//a'),
+            'Sync State': Text('.//a'),
+            'Content': Text('.//a'),
+            'Status': Text('.//a'),
+        },
+    )
+
+    def search(self, value):
+        """Search for specific available resource and return the results"""
+        self.searchbox.search(value)
+        # Tried following ways to wait for table to be displayed, only sleep worked
+        # Might need a before/after fill
+        wait_for(
+            lambda: self.table.is_displayed is True,
+            timeout=60,
+            delay=1,
+        )
+        time.sleep(3)
+        self.table.wait_displayed()
+        return self.table.read()
+
+    def add(self, value):
+        """Associate specific resource"""
+        self.search(value)
+        next(self.table.rows())[0].widget.fill(True)
+        self.add_repo.click()
+
+    def fill(self, values):
+        """Associate resource(s)"""
+        if not isinstance(values, list):
+            values = [
+                values,
+            ]
+        for value in values:
+            self.add(value)
+
+    def remove(self, value):
+        """Unassign some resource(s).
+        :param str or list values: string containing resource name or a list of
+        such strings.
+        """
+        self.search(value)
+        next(self.table.rows())[0].widget.fill(True)
+        self.remove_button.click()
+
+    def read(self):
+        """Read all table values from both resource tables"""
+        return self.table.read()
 
 
 class TemplateEditor(View):

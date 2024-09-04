@@ -1,47 +1,96 @@
 from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import Checkbox
-from widgetastic.widget import ParametrizedView
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly import Tab
-from widgetastic_patternfly4 import Button
-from widgetastic_patternfly4 import Dropdown
-from widgetastic_patternfly4.ouia import Button as PF4Button
-from widgetastic_patternfly4.ouia import ExpandableTable
-from widgetastic_patternfly4.ouia import Switch
-from widgetastic_patternfly4.ouia import PatternflyTable
-from widgetastic_patternfly4.ouia import Modal
+from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb, Tab
+from widgetastic_patternfly4 import Button, Dropdown, Radio as PF4Radio
+from widgetastic_patternfly4.ouia import (
+    Button as PF4Button,
+    ExpandableTable,
+    PatternflyTable,
+    Select as PF4Select,
+    Switch,
+)
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import NewAddRemoveResourcesView
-from airgun.views.common import SearchableViewMixinPF4
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import EditableEntry
-from airgun.widgets import PF4Search
-from airgun.widgets import ProgressBarPF4
-from airgun.widgets import PF4LCESelector 
-from airgun.widgets import ReadOnlyEntry
-from airgun.widgets import SatTable
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import PF4LCESelectorGroup
-from airgun.views.common import NewAddRemoveResourcesView
-from airgun.views.common import SearchableViewMixinPF4
-from airgun.widgets import ActionsDropdown
-from airgun.widgets import ConfirmationDialog
-from airgun.widgets import EditableEntry
-from airgun.widgets import PF4Search
-from airgun.widgets import ProgressBarPF4
-from airgun.widgets import ReadOnlyEntry
+from airgun.views.common import (
+    BaseLoggedInView,
+    NewAddRemoveResourcesView,
+    SearchableViewMixinPF4,
+)
+from airgun.widgets import (
+    ActionsDropdown,
+    ConfirmationDialog,
+    EditableEntry,
+    PF4ProgressBar,
+    PF4Search,
+    ReadOnlyEntry,
+)
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixinPF4
+LOCATION_NUM = 3
 
 
-class NewContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
+class NewAddRemoveResourcesView(View):
+    searchbox = PF4Search()
+    type = Dropdown(
+        locator='.//div[contains(@class, "All repositories") or'
+        ' contains(@aria-haspopup="listbox")]'
+    )
+    Status = Dropdown(
+        locator='.//div[contains(@class, "All") or contains(@aria-haspopup="listbox")]'
+    )
+    add_repo = PF4Button('OUIA-Generated-Button-secondary-2')
+    # Need to add kebab menu
+    table = PatternflyTable(
+        component_id='OUIA-Generated-Table-4',
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Type': Text('.//a'),
+            'Name': Text('.//a'),
+            'Product': Text('.//a'),
+            'Sync State': Text('.//a'),
+            'Content': Text('.//a'),
+            'Status': Text('.//a'),
+        },
+    )
+
+    def search(self, value):
+        """Search for specific available resource and return the results"""
+        self.searchbox.search(value)
+        wait_for(
+            lambda: self.table.is_displayed is True,
+            timeout=60,
+            delay=1,
+        )
+        self.table.wait_displayed()
+        return self.table.read()
+
+    def add(self, value):
+        """Associate specific resource"""
+        self.search(value)
+        next(self.table.rows())[0].widget.fill(True)
+        self.add_repo.click()
+
+    def fill(self, values):
+        """Associate resource(s)"""
+        if not isinstance(values, list):
+            values = [values]
+        for value in values:
+            self.add(value)
+
+    def remove(self, value):
+        """Unassign some resource(s).
+        :param str or list values: string containing resource name or a list of
+        such strings.
+        """
+        self.search(value)
+        next(self.table.rows())[0].widget.fill(True)
+        self.remove_button.click()
+
+    def read(self):
+        """Read all table values from both resource tables"""
+        return self.table.read()
+
+
+class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text('.//h1[@data-ouia-component-id="cvPageHeaderText"]')
     create_content_view = PF4Button('create-content-view')
     table = ExpandableTable(
@@ -57,11 +106,10 @@ class NewContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        assert self.create_content_view.is_displayed()
-        return True
+        return self.create_content_view.is_displayed
 
 
-class NewContentViewCreateView(BaseLoggedInView):
+class ContentViewCreateView(BaseLoggedInView):
     title = Text('.//div[@data-ouia-component-id="create-content-view-modal"]')
     name = TextInput(id='name')
     label = TextInput(id='label')
@@ -88,36 +136,24 @@ class NewContentViewCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        self.title.is_displayed()
-        self.label.is_displayed()
-        return True
+        return self.title.is_displayed
 
     def after_fill(self, value):
         """Ensure 'Create content view' button is enabled after filling out the required fields"""
         self.submit.wait_displayed()
 
 
-class NewContentViewEditView(BaseLoggedInView):
-    breadcrumb = BreadCrumb()
+class ContentViewEditView(BaseLoggedInView):
+    breadcrumb = BreadCrumb('breadcrumbs-list')
     search = PF4Search()
-    title = Text("//h2[contains(., 'Publish) or contains(@id, 'pf-wizard-title-0')]")
-    actions = ActionsDropdown(
-        "//div[contains(@data-ouia-component-id, 'OUIA-Generated-Dropdown-2')]"
-    )
+    actions = ActionsDropdown(".//button[contains(@id, 'toggle-dropdown')]")
     publish = PF4Button('cv-details-publish-button')
-    # not sure if this is needed
     dialog = ConfirmationDialog()
 
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and len(self.breadcrumb.locations) <= 3
-            and self.breadcrumb.locations[0] == 'Content Views'
-            and self.breadcrumb.read() != 'New Content View'
-            and self.publish.is_displayed
-        )
+        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Content Views'
 
     @View.nested
     class details(Tab):
@@ -132,7 +168,9 @@ class NewContentViewEditView(BaseLoggedInView):
 
     @View.nested
     class versions(Tab):
-        TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/versions")]')
+        TAB_LOCATOR = ParametrizedLocator(
+            '//a[contains(@href, "#/versions") and @data-ouia-component-id="routed-tabs-tab-versions"]'
+        )
         searchbox = PF4Search()
         table = PatternflyTable(
             component_id="content-view-versions-table",
@@ -151,10 +189,9 @@ class NewContentViewEditView(BaseLoggedInView):
 
         def search(self, version_name):
             """Searches for content view version.
-            Searchbox can't search by version name, only by id, that's why in
+            Searchbox can't search by version name, only by number, that's why in
             case version name was passed, it's transformed into recognizable
-            value before filling, for example::
-                'Version 1.0' -> 'version = 1'
+            value before filling, for example - Version 1.0' -> 'version = 1'
             """
             search_phrase = version_name
             if version_name.startswith('V') and '.' in version_name:
@@ -176,18 +213,34 @@ class NewContentViewEditView(BaseLoggedInView):
     @View.nested
     class filters(Tab):
         TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/filters")]')
-        new_filter = Text(".//button[@ui-sref='content-view.yum.filters.new']")
+        new_filter = PF4Button('create-filter-button')
+        searchbox = PF4Search()
+        table = PatternflyTable(
+            component_id="content-view-filters-table",
+            column_widgets={
+                0: Checkbox(locator='.//input[@type="checkbox"]'),
+                'Name': Text('.//a'),
+                'Description': Text('.//a'),
+                'Updated': Text('.//a'),
+                'Content type': Text('.//a'),
+                'Inclusion type': Text('.//a'),
+                6: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+            },
+        )
+
+        def search(self, name):
+            """Searches for specific filter'"""
+            self.searchbox.search(name)
+            return self.table.read()
 
 
-class NewContentViewVersionPublishView(BaseLoggedInView):
+class ContentViewVersionPublishView(BaseLoggedInView):
     # publishing view is a popup so adding all navigation within the same context
-    breadcrumb = BreadCrumb()
     ROOT = './/div[contains(@class,"pf-c-wizard")]'
-    title = Text("//h2[contains(., 'Publish' or contains(@id, 'pf-wizard-title-0')]")
+    title = Text(".//h2[contains(., 'Publish') and contains(@aria-label, 'Publish')]")
     # publishing screen
     description = TextInput(id='description')
     promote = Switch('promote-switch')
-    lce = ParametrizedView.nested(PF4LCESelectorGroup)
 
     # review screen only has info to review
     # shared buttons at bottom for popup for both push and review section
@@ -196,16 +249,11 @@ class NewContentViewVersionPublishView(BaseLoggedInView):
     back = Button('Back')
     cancel = Button('Cancel')
     close_button = Button('Close')
-    progressbar = ProgressBarPF4()
+    progressbar = PF4ProgressBar('.//div[contains(@class, "pf-c-wizard__main-body")]')
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Content Views'
-            and self.breadcrumb.read() == 'Versions'
-        )
+        return self.title.is_displayed
 
     def wait_animation_end(self):
         wait_for(
@@ -228,24 +276,221 @@ class NewContentViewVersionPublishView(BaseLoggedInView):
         )
 
 
-class NewContentViewVersionDetailsView(BaseLoggedInView):
+class ContentViewVersionDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    version = Text(locator='.//h2[@data-ouia-component-id="cv-version"]')
+    promoteButton = PF4Button(
+        locator='.//button[@data-ouia-component-id="cv-details-publish-button"]'
+    )
+    editDescription = PF4Button(
+        locator='.//button[@data-ouia-component-id="edit-button-description"]'
+    )
+
+    @View.nested
+    class repositories(Tab):
+        TAB_LOCATOR = ParametrizedLocator(
+            './/button[@data-ouia-component-id="cv-version-details-tabs-tab-repositories"]'
+        )
+        searchbox = PF4Search()
+        table = PatternflyTable(
+            component_id="content-view-version-details-repositories-table",
+            column_widgets={
+                'Name': Text('.//a'),
+                'Version': Text('.//a'),
+                'Release': Text('.//a'),
+                'Arch': Text('.//a'),
+                'Epoch': Text('.//a'),
+            },
+        )
+
+    @View.nested
+    class rpmPackages(Tab):
+        TAB_LOCATOR = ParametrizedLocator(
+            './/button[@data-ouia-component-id="cv-version-details-tabs-tab-rpmPackages"]'
+        )
+        searchbox = PF4Search()
+        table = PatternflyTable(
+            component_id='content-view-version-details-rpm-packages-table',
+            column_widgets={
+                'Name': Text('.//a'),
+                'Type': Text('.//a'),
+                'Product': Text('.//a'),
+                'Content': Text('.//a'),
+            },
+        )
+
+    @View.nested
+    class rpmPackageGroups(Tab):
+        TAB_LOCATOR = ParametrizedLocator(
+            './/button[@data-ouia-component-id="cv-version-details-tabs-tab-rpmPackageGroups"]'
+        )
+        searchbox = PF4Search()
+        table = PatternflyTable(
+            component_id='content-view-version-details-rpm-package-groups-table',
+            column_widgets={
+                'Name': Text('.//a'),
+                'Repository': Text('.//a'),
+            },
+        )
+
+    @View.nested
+    class errata(Tab):
+        TAB_LOCATOR = ParametrizedLocator(
+            './/button[@data-ouia-component-id="cv-version-details-tabs-tab-errata"]'
+        )
+        searchbox = PF4Search()
+        table = PatternflyTable(
+            component_id='content-view-version-details-errata-table',
+            column_widgets={
+                'Errata ID': Text('.//a'),
+                'Title': Text('.//a'),
+                'Type': Text('.//a'),
+                'Modular': Text('.//a'),
+                'Applicable Content Hosts': Text('.//a'),
+                'Updated': Text('.//a'),
+            },
+        )
 
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and len(self.breadcrumb.locations) > 3
-            and self.breadcrumb.locations[0] == 'Content Views'
+            and len(self.breadcrumb.locations) > LOCATION_NUM
+            and self.breadcrumb.locations[0] == 'Content views'
             and self.breadcrumb.locations[2] == 'Versions'
         )
 
 
-class NewContentViewVersionPromote(View):
-    """Promote CV Modal"""
-    ROOT = './/div[@data-ouia-component-id="promote-version"]'
-    description = TextInput(id='description')
-    lce = ParametrizedView.nested(PF4LCESelectorGroup)
-    promote = Button('Promote')
-    cancel = Button('Cancel')
+class CreateFilterView(View):
+    ROOT = './/div[@data-ouia-component-id="create-filter-modal"]'
+
+    name = TextInput(id='name')
+    filterType = PF4Select('content_type')
+    includeFilter = PF4Radio(label_text='Include filter')
+    excludeFilter = PF4Radio(label_test='Exclude filter')
+    create = PF4Button('create-filter-form-submit-button')
+    cancel = PF4Button('create-filter-form-cancel-button')
+
+
+class EditFilterView(View):
+    name = Text('.//h2[@data-ouia-component-id="name-text-value"]')
+    editName = PF4Button('edit-button-name')
+    nameInput = TextInput('name text input')
+    submitName = PF4Button('submit-button-name')
+    clearName = PF4Button('clear-button-name')
+    description = Text('.//h2[@data-ouia-component-id="description-text-value"]')
+    editDescription = PF4Button('edit-button-description')
+    descriptionInput = TextInput(locator='.//textarea[@aria-label="description text area"]')
+
+    # Below this, the fields are generally not shared by each Filter Type
+
+    # RPM Rule
+    search = PF4Search()
+    addRpmRule = PF4Button('add-rpm-rule-button')
+    rpmRuleTable = PatternflyTable(
+        component_id="content-view-rpm-filter-table",
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'RPM Name': Text('.//a'),
+            'Architecture': Text('.//a'),
+            'Versions': Text('.//a'),
+            4: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+        },
+    )
+
+    # Container Image Tag Rule
+    addTagRule = PF4Button('add-content-view-container-image-filter-button')
+    tagRuleTable = PatternflyTable(
+        component_id="content-view-container-image-filter",
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Tag Name': Text('.//a'),
+            2: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+        },
+    )
+
+    # Package Group Rule
+    addPackageGroupRule = PF4Button('add-package-group-filter-rule-button')
+    removePackageGroupRule = Dropdown('cv-package-group-filter-bulk-actions-dropdown')
+    packageGroupRuleTable = PatternflyTable(
+        component_id="content-view-package-group-filter-table",
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Name': Text('.//a'),
+            'Product': Text('.//a'),
+            'Repository': Text('.//a'),
+            'Description': Text('.//a'),
+            'Status': Text('.//a'),
+            6: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+        },
+    )
+
+    # Module Streams Rule
+    addModuleStreamRule = PF4Button('add-module-stream-rule-button')
+    removeModuleStreamRule = Dropdown('bulk-actions-dropdown')
+    moduleStreamRuleTable = PatternflyTable(
+        component_id="content-view-module-stream-filter-table",
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Name': Text('.//a'),
+            'Stream': Text('.//a'),
+            'Version': Text('.//a'),
+            'Context': Text('.//a'),
+            'Status': Text('.//a'),
+            6: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+        },
+    )
+
+    # Errata Rule
+    addErrataRule = PF4Button('add-errata-id-button')
+    removeErratRule = Dropdown('cv-errata-id-bulk-action-dropdown')
+    moduleErrataTable = PatternflyTable(
+        component_id="content-view-errata-by-id-filter-table",
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Errata ID': Text('.//a'),
+            'Type': Text('.//a'),
+            'Issued': Text('.//a'),
+            'Updated': Text('.//a'),
+            'Severity': Text('.//a'),
+            'Synopsis': Text('.//a'),
+            'Status': Text('.//a'),
+            8: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+        },
+    )
+
+    # Errata by Date Range
+
+    saveErrataByDate = PF4Button('save-filter-rule-button')
+    cancelErrataByDate = PF4Button('cancel-save-filter-rule-button')
+
+    @property
+    def is_displayed(self):
+        return self.name.is_displayed
+
+
+class AddRPMRuleView(View):
+    ROOT = './/div[@data-ouia-component-id="add-edit-rpm-rule-modal"]'
+
+    rpmName = TextInput(
+        locator=".//div[contains(.//span, 'RPM name') and @class='pf-c-form__group']/*//input"
+    )
+    architecture = TextInput(
+        locator=".//div[contains(.//span, 'Architecture') and @class='pf-c-form__group']/*//input"
+    )
+
+    versions = PF4Select('version-comparator')
+    addEdit = PF4Button('add-edit-package-modal-submit')
+    cancel = PF4Button('add-edit-package-modal-cancel')
+
+
+class AddContainerTagRuleView(View):
+    ROOT = './/div[@data-ouia-component-id="add-edit-container-tag-rule-modal"]'
+
+    tagName = TextInput(
+        locator=".//div[contains(.//span, 'Tag name') and @class='pf-c-form__group']/*//input"
+    )
+
+    addEdit = PF4Button('add-edit-container-tag-filter-rule-submit')
+    cancel = PF4Button('add-edit-container-tag-filter-rule-cancel')

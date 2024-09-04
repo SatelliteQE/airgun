@@ -1,16 +1,9 @@
-from widgetastic.widget import Checkbox
-from widgetastic.widget import Text
-from widgetastic.widget import TextInput
-from widgetastic.widget import View
-from widgetastic_patternfly4 import Button
-from widgetastic_patternfly4 import Pagination
+from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic_patternfly4 import Button, Pagination as PF4Pagination
 from widgetastic_patternfly4.dropdown import Dropdown
-from widgetastic_patternfly4.ouia import Modal
-from widgetastic_patternfly4.ouia import PatternflyTable
-from widgetastic_patternfly4.ouia import Switch
+from widgetastic_patternfly4.ouia import Modal, PatternflyTable, Switch
 
-from airgun.views.common import BaseLoggedInView
-from airgun.views.common import SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 
 
 class CloudTokenView(BaseLoggedInView):
@@ -65,7 +58,7 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
     )
     select_all_hits = Button('Select recommendations from all pages')
     clear_hits_selection = Button('Clear Selection')
-    pagination = Pagination()
+    pagination = PF4Pagination()
     remediation_window = View.nested(RemediationView)
 
     @property

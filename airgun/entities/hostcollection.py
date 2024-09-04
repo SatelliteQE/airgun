@@ -2,20 +2,20 @@ from navmazing import NavigateToSibling
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep
-from airgun.navigation import navigator
+from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.hostcollection import HostCollectionActionRemoteExecutionJobCreate
-from airgun.views.hostcollection import HostCollectionActionTaskDetailsView
-from airgun.views.hostcollection import HostCollectionChangeAssignedContentView
-from airgun.views.hostcollection import HostCollectionCreateView
-from airgun.views.hostcollection import HostCollectionEditView
-from airgun.views.hostcollection import HostCollectionInstallErrataView
-from airgun.views.hostcollection import HostCollectionManageModuleStreamsView
-from airgun.views.hostcollection import HostCollectionManagePackagesView
-from airgun.views.hostcollection import HostCollectionsView
-from airgun.views.job_invocation import JobInvocationCreateView
-from airgun.views.job_invocation import JobInvocationStatusView
+from airgun.views.hostcollection import (
+    HostCollectionActionRemoteExecutionJobCreate,
+    HostCollectionActionTaskDetailsView,
+    HostCollectionChangeAssignedContentView,
+    HostCollectionCreateView,
+    HostCollectionEditView,
+    HostCollectionInstallErrataView,
+    HostCollectionManageModuleStreamsView,
+    HostCollectionManagePackagesView,
+    HostCollectionsView,
+)
+from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 
 
 class HostCollectionEntity(BaseEntity):
@@ -70,7 +70,7 @@ class HostCollectionEntity(BaseEntity):
         content_type='Package',
         packages=None,
         action='install',
-        action_via='via Katello Agent',
+        action_via='via remote execution',
         job_values=None,
     ):
         """Manage host collection packages.
@@ -83,8 +83,7 @@ class HostCollectionEntity(BaseEntity):
         :param str action: The action to apply. Available options: install,
             update, update_all, delete.
         :param str action_via: Via which mean to apply action. Available
-            options: "via Katello Agent", "via remote execution",
-            "via remote execution - customize first"
+            options: "via remote execution", "via remote execution - customize first"
         :param dict job_values: Remote Execution Job custom form values.
             When action_via is: "via remote execution - customize first",
             the new remote execution job form is opened and we can set custom
@@ -102,8 +101,6 @@ class HostCollectionEntity(BaseEntity):
         view.apply_action(action, action_via=action_via)
         view.flash.assert_no_error()
         view.flash.dismiss()
-        if action_via == 'via Katello Agent':
-            view.done.click()
         if action_via == 'via remote execution - customize first':
             # After this step the user is redirected to remote execution job
             # create view.
@@ -111,19 +108,18 @@ class HostCollectionEntity(BaseEntity):
             job_create_view.fill(job_values)
             job_create_view.submit.click()
 
-        if action_via in ('via remote execution', 'via remote execution - customize first'):
-            # After this step the user is redirected to job status view.
-            job_status_view = JobInvocationStatusView(view.browser)
-            wait_for(
-                lambda: (
-                    job_status_view.overview.job_status.read() != 'Pending'
-                    and job_status_view.overview.job_status_progress.read() == '100%'
-                ),
-                timeout=300,
-                delay=10,
-                logger=view.logger,
-            )
-            return job_status_view.overview.read()
+        # After this step the user is redirected to job status view.
+        job_status_view = JobInvocationStatusView(view.browser)
+        wait_for(
+            lambda: (
+                job_status_view.overview.job_status.read() != 'Pending'
+                and job_status_view.overview.job_status_progress.read() == '100%'
+            ),
+            timeout=300,
+            delay=10,
+            logger=view.logger,
+        )
+        return job_status_view.overview.read()
 
     def search_applicable_hosts(self, entity_name, errata_id):
         """Check for search URI in Host Collection errata view.
@@ -141,21 +137,19 @@ class HostCollectionEntity(BaseEntity):
         return uri
 
     def install_errata(
-        self, entity_name, errata_id, install_via='via Katello agent', job_values=None
+        self, entity_name, errata_id, install_via='via remote execution', job_values=None
     ):
         """Install host collection errata
 
         :param str entity_name:  The host collection name.
         :param str errata_id: the errata id to install.
         :param str install_via: Via which mean to install errata. Available
-            options: "via Katello Agent", "via remote execution",
-            "via remote execution - customize first"
+            options: "via remote execution", "via remote execution - customize first"
         :param dict job_values: Remote Execution Job custom form values.
             When install_via is: "via remote execution - customize first",
             the new remote execution job form is opened and we can set custom
             values.
-        :return: Task details view values when install "via kattelo agent" else
-            returns job status view values.
+        :return: Job status view values.
         """
         if job_values is None:
             job_values = {}
@@ -176,23 +170,18 @@ class HostCollectionEntity(BaseEntity):
             job_create_view.fill(job_values)
             job_create_view.submit.click()
 
-        if install_via == 'via Katello agent':
-            task_view = HostCollectionActionTaskDetailsView(view.browser)
-            task_view.progressbar.wait_for_result()
-            return task_view.read()
-        else:
-            # After this step the user is redirected to job status view.
-            job_status_view = JobInvocationStatusView(view.browser)
-            wait_for(
-                lambda: (
-                    job_status_view.overview.job_status.read() != 'Pending'
-                    and job_status_view.overview.job_status_progress.read() == '100%'
-                ),
-                timeout=300,
-                delay=10,
-                logger=view.logger,
-            )
-            return job_status_view.overview.read()
+        # After this step the user is redirected to job status view.
+        job_status_view = JobInvocationStatusView(view.browser)
+        wait_for(
+            lambda: (
+                job_status_view.overview.job_status.read() != 'Pending'
+                and job_status_view.overview.job_status_progress.read() == '100%'
+            ),
+            timeout=300,
+            delay=10,
+            logger=view.logger,
+        )
+        return job_status_view.overview.read()
 
     def manage_module_streams(
         self,
@@ -222,7 +211,7 @@ class HostCollectionEntity(BaseEntity):
         view.details.manage_module_streams.click()
         view = HostCollectionManageModuleStreamsView(view.browser)
         view.search(f'name = {module_name} and stream = {stream_version}')
-        action_type = dict(is_customize=customize, action=action_type)
+        action_type = {'is_customize': customize, 'action': action_type}
         view.table.row(name=module_name, stream=stream_version)['Actions'].fill(action_type)
         if customize:
             view = JobInvocationCreateView(view.browser)
