@@ -1936,8 +1936,12 @@ class SatTable(Table):
 
     """
 
-    HEADERS = "./thead/tr/th[not(@hidden)]|./tr/th[not(@hidden)]|./thead/tr/td[not(@hidden)]"
-    COLUMN_RESOLVER_PATH = "/td[not(@hidden)]"
+    HEADER_IN_ROWS = "./tbody/tr[1]/th[not(@hidden)]"
+    HEADERS = (
+        "./thead/tr/th[not(@hidden)]|./tr/th[not(@hidden)]|./thead/tr/td[not(@hidden)]"
+        + "|"
+        + HEADER_IN_ROWS
+    )
     COLUMN_AT_POSITION = "./td[not(@hidden)][{0}]"
 
     no_rows_message = (
