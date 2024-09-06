@@ -175,7 +175,7 @@ class NewContentViewEntity(BaseEntity):
     def promote(self, entity_name, version_name, lce_name):
         """Promotes the selected version of content view to given environment.
         :return: dict with new content view version table row; contains keys
-            like 'Version', 'Status', 'Environments' etc.
+        like 'Version', 'Status', 'Environments' etc.
         """
         view = self.navigate_to(self, 'Promote', entity_name=entity_name, version_name=version_name)
         modal = ContentViewVersionPromoteView(self.browser)

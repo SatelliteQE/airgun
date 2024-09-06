@@ -455,8 +455,7 @@ class NewAddRemoveResourcesView(View):
 
     def remove(self, value):
         """Unassign some resource(s).
-        :param str or list values: string containing resource name or a list of
-            such strings.
+        :param str or list values: string containing resource name or a list of such strings.
         """
         self.select_status("Added")
         self.search(value)
