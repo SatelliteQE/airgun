@@ -1511,6 +1511,13 @@ class PF4LCESelector(LCESelector):
         return self.browser.is_selected(locator)
 
 
+class PF4LCECheckSelector(PF4LCESelector):
+    """Checkbox version of PF4 LCE Selector"""
+
+    LABELS = './/label[contains(@class, "pf-c-check__label")]'
+    CHECKBOX = './/input[contains(@class, "pf-c-check") and ../label[.//*[contains(text(), "{}")]]]'
+
+
 class LimitInput(Widget):
     """Input for managing limits (e.g. Hosts limit). Consists of 'Unlimited'
     checkbox and text input for specifying the limit, which is only visible if
