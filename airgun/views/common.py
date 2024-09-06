@@ -464,6 +464,7 @@ class NewAddRemoveResourcesView(View):
 
     def read(self):
         """Read all table values from both resource tables"""
+        self.browser.wait_for_element(self.table, exception=False, visible=True)
         self.select_status("All")
         return self.table.read()
 
