@@ -1,4 +1,3 @@
-from time import sleep
 from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
@@ -439,7 +438,7 @@ class NewAddRemoveResourcesView(View):
     def search(self, value):
         """Search for specific available resource and return the results"""
         self.searchbox.search(value)
-        return self.table.read()
+        return self.read()
 
     def add(self, value):
         """Associate specific resource"""
@@ -465,8 +464,12 @@ class NewAddRemoveResourcesView(View):
 
     def read(self):
         """Read all table values from both resource tables"""
-        self.browser.wait_for_element(self.table, exception=False, visible=True)
-        sleep(3)
+        self.browser.wait_for_element(locator='//h4[text()="Loading"]', exception=False)
+        self.browser.wait_for_element(
+            self.table, exception=False, ensure_page_safe=True, timeout=10
+        )
+        self.browser.plugin.ensure_page_safe(timeout='60s')
+        self.table.wait_displayed()
         self.select_status("All")
         return self.table.read()
 
