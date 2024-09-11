@@ -55,7 +55,7 @@ class FilterDetailsView(BaseLoggedInView):
         locator='.//div[@data-ouia-component-id="resource-type-select"]'
     )
     permission = PF4MultiSelect('.//div[@id="permission-duel-select"]')
-    override = Checkbox(id='override_taxonomy_checkbox')
+    override = Checkbox(id='override-check')
     unlimited = Checkbox(id='filter_unlimited')
     filter = TextInput(id='search')
     submit = Text('//button[@data-ouia-component-id="filters-submit-button"]')
