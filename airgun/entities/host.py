@@ -53,6 +53,7 @@ class HostEntity(BaseEntity):
     def get_register_command(self, values=None, full_read=None):
         """Get curl command generated on Register Host page"""
         view = self.navigate_to(self, 'Register')
+        self.browser.plugin.ensure_page_safe()
         if values is not None:
             if ('advanced.repository_gpg_key_url' in values) or ('advanced.repository' in values):
                 view.wait_displayed()
@@ -64,6 +65,7 @@ class HostEntity(BaseEntity):
                     view.repository_gpg_key_url.fill(values['advanced.repository_gpg_key_url'])
                 view.repository_list_confirm.click()
             view = self.navigate_to(self, 'Register')
+            self.browser.plugin.ensure_page_safe()
             view.fill(values)
         if view.general.activation_keys.read():
             self.browser.click(view.generate_command)
@@ -81,6 +83,13 @@ class HostEntity(BaseEntity):
         """Search for existing host entity"""
         view = self.navigate_to(self, 'All')
         return view.search(value)
+
+    def new_ui_button(self):
+        """Click New UI button and return the browser URL"""
+        view = self.navigate_to(self, 'All')
+        view.new_ui_button.click()
+        view.wait_displayed()
+        return self.browser.url
 
     def reset_search(self):
         """This function loads a HostsView and clears the searchbox."""

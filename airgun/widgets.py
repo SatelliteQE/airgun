@@ -1049,7 +1049,8 @@ class ValidationErrors(Widget):
 
     ERROR_ELEMENTS = ".//*[contains(@class,'has-error') and not(contains(@style,'display:none'))]"
     ERROR_MESSAGES = (
-        ".//*[(contains(@class, 'alert base in fade alert-danger')"
+        ".//*[(contains(@class, 'alert base in fade alert-danger') "
+        "or contains(@class, 'alert base in fade alert-warning') "
         "or contains(@class,'error-msg') "
         "or contains(@class,'error-msg-block')"
         "or contains(@class,'error-message') "
@@ -1936,8 +1937,12 @@ class SatTable(Table):
 
     """
 
-    HEADERS = "./thead/tr/th[not(@hidden)]|./tr/th[not(@hidden)]|./thead/tr/td[not(@hidden)]"
-    COLUMN_RESOLVER_PATH = "/td[not(@hidden)]"
+    HEADER_IN_ROWS = "./tbody/tr[1]/th[not(@hidden)]"
+    HEADERS = (
+        "./thead/tr/th[not(@hidden)]|./tr/th[not(@hidden)]|./thead/tr/td[not(@hidden)]"
+        + "|"
+        + HEADER_IN_ROWS
+    )
     COLUMN_AT_POSITION = "./td[not(@hidden)][{0}]"
 
     no_rows_message = (
@@ -1962,11 +1967,56 @@ class SatTable(Table):
             return False
         return True
 
-    def read(self):
+    def read_limited(self, limit):
+        """This is almost the same as inherited read but has a limit. Use it for tables that take too long to read.
+        Reads the table. Returns a list, every item in the list is contents read from the row."""
+        rows = list(self)
+        # Cut the unwanted rows if necessary
+        if self.rows_ignore_top is not None:
+            rows = rows[self.rows_ignore_top :]
+        if self.rows_ignore_bottom is not None and self.rows_ignore_bottom > 0:
+            rows = rows[: -self.rows_ignore_bottom]
+        if self.assoc_column_position is None:
+            ret = []
+            rows_read = 0
+            for row in rows:
+                if rows_read >= limit:
+                    break
+                ret.append(row.read())
+                rows_read = rows_read + 1
+            return ret
+        else:
+            result = {}
+            rows_read = 0
+            for row in rows:
+                if rows_read >= limit:
+                    break
+                row_read = row.read()
+                try:
+                    key = row_read.pop(self.header_index_mapping[self.assoc_column_position])
+                except KeyError:
+                    try:
+                        key = row_read.pop(self.assoc_column_position)
+                    except KeyError:
+                        try:
+                            key = row_read.pop(self.assoc_column)
+                        except KeyError as e:
+                            raise ValueError(
+                                f"The assoc_column={self.assoc_column!r} could not be retrieved"
+                            ) from e
+                if key in result:
+                    raise ValueError(f"Duplicate value for {key}={result[key]!r}")
+                result[key] = row_read
+                rows_read = rows_read + 1
+            return result
+
+    def read(self, limit=None):
         """Return empty list in case table is empty"""
         if not self.has_rows:
             self.logger.debug(f'Table {self.locator} is empty')
             return []
+        if limit is not None:
+            return self.read_limited(limit)
         if self.pagination.is_displayed:
             return self._read_all()
         return super().read()
