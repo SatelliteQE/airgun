@@ -1,3 +1,5 @@
+import time
+
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
@@ -22,6 +24,7 @@ class TaskEntity(BaseEntity):
     def read(self, entity_name, widget_names=None):
         """Read specific task values from details page"""
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        time.sleep(3)
         return view.read(widget_names=widget_names)
 
     def set_chart_filter(self, chart_name, index=None):
