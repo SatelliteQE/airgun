@@ -1,3 +1,5 @@
+from asyncio import wait_for
+
 from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
@@ -9,7 +11,9 @@ from airgun.views.all_hosts import (
     BuildManagementDialog,
     BulkHostDeleteDialog,
     HostDeleteDialog,
+    HostgroupDialog,
     ManageCVEModal,
+    ManageErrataModal,
     ManagePackagesModal,
 )
 from airgun.views.job_invocation import JobInvocationCreateView
@@ -82,6 +86,17 @@ class AllHostsEntity(BaseEntity):
             build_management_modal.confirm.click()
         self.browser.wait_for_element(view.alert_message, exception=False)
         return view.alert_message.read()
+
+    def change_hostgroup(self, name):
+        """Change hostgroup of all hosts to chosen hostgroup"""
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        view.select_all.fill(True)
+        view.bulk_actions.item_select('Change host group')
+        view = HostgroupDialog(self.browser)
+        view.hostgroup_dropdown.item_select(name)
+        view.save_button.click()
 
     def manage_cve(self, lce=None, cv=None):
         """Bulk reassign Content View Environments through the All Hosts page
@@ -266,6 +281,118 @@ class AllHostsEntity(BaseEntity):
             view.review.manage_via_dropdown.item_select('via customized remote execution')
             view.review.finish_package_management_btn.click()
             view = JobInvocationCreateView(self.browser)
+            view.submit.click()
+
+    def manage_errata_helper(self, view, erratas_to_apply_by_id, individual_search_queries):
+        """
+        Helper function to manage errata for selected hosts.
+        Based on the user input it finds errata by provied ids or by individual search queries.
+
+        args:
+            view (ManageErrataModal): ManageErrataModal view
+            erratas_to_apply_by_id (list): list of erratas to apply by their ids
+            individual_search_queries (list): list of search queries for each errata
+        """
+
+        values_to_iterate = None
+        search_query_prefix = ''
+
+        if erratas_to_apply_by_id is not None:
+            values_to_iterate = erratas_to_apply_by_id
+            search_query_prefix = 'errata_id = '
+
+        elif individual_search_queries is not None:
+            values_to_iterate = individual_search_queries
+
+        for search_query in values_to_iterate:
+            clear_search = view.select_errata.clear_search
+            if clear_search.is_displayed:
+                clear_search.click()
+            view.select_errata.search_input.fill(f'{search_query_prefix}{search_query}')
+
+            self.browser.wait_for_element(view.select_errata.table[0][0].widget, exception=False)
+            view.select_errata.table[0][0].widget.fill(True)
+
+    def manage_errata(
+        self,
+        host_names=None,
+        select_all_hosts=False,
+        erratas_to_apply_by_id=None,
+        individual_search_queries=None,
+        manage_by_customized_rex=False,
+    ):
+        """
+        Navigate to Manage Errata for selected hosts and run the management action based on user input.
+
+        args:
+            host_names (str or list): str with one host or list of hosts to select
+            select_all_hosts (bool): select all hosts flag
+            erratas_to_apply_by_id (str or list): str with one errata or list of erratas to apply by their ids
+            individual_search_queries (list): list of string of search queries for each errata, use only if not using erratas_to_apply_by_id!
+            manage_by_customized_rex (bool): manage by customized rex flag
+        """
+
+        # Check validity of user input
+        if select_all_hosts and host_names:
+            raise ValueError("Cannot select all and specify host names at the same time!")
+
+        # if both erratas_to_apply_by_id and individual_search_queries are specified, raise an error
+        if erratas_to_apply_by_id is not None and individual_search_queries is not None:
+            raise ValueError(
+                "Cannot specify both erratas_to_apply_by_id and individual_search_queries at the same time!"
+            )
+
+        # if erratas_to_apply_by_id is specified, make sure it is a list
+        if erratas_to_apply_by_id is not None and not isinstance(erratas_to_apply_by_id, list):
+            erratas_to_apply_by_id = [erratas_to_apply_by_id]
+
+        # Navigate to All Hosts
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+
+        # Select all hosts from the table
+        if select_all_hosts:
+            view.select_all.fill(True)
+        # Select user-specified hosts
+        else:
+            if not isinstance(host_names, list):
+                host_names = [host_names]
+            for host_name in host_names:
+                view.search(host_name)
+                view.table[0][0].widget.fill(True)
+
+        # Open Manage Erratas modal
+        view.bulk_actions_kebab.click()
+        # This is here beacuse there is nested flyout menu which needs to be hovered over first so we can use item_select in the next step
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
+        view.bulk_actions.item_select('Errata')
+
+        view = ManageErrataModal(self.browser)
+
+        # Select erratas to apply
+        self.manage_errata_helper(view, erratas_to_apply_by_id, individual_search_queries)
+
+        # In this particular case dropdown has slightly different structure that what is defined in widgetastic
+        view.review.manage_via_dropdown.ITEMS_LOCATOR = (
+            "//ul[contains(@class, 'pf-c-dropdown__menu')]/li"
+        )
+        view.review.manage_via_dropdown.ITEM_LOCATOR = (
+            "//*[contains(@class, 'pf-c-dropdown__menu-item') and normalize-space(.)={}]"
+        )
+        # Select how to manage errata
+        if not manage_by_customized_rex:
+            view.review.expander.click()
+            view.review.manage_via_dropdown.item_select('via remote execution')
+            view.review.finish_errata_management_btn.click()
+        else:
+            # In this case "Run job" page is opened on which user can specify job details
+            # Here we just select tu run with prefilled values
+            view.review.expander.click()
+            view.review.manage_via_dropdown.item_select('via customized remote execution')
+            view.review.finish_errata_management_btn.click()
+            view = JobInvocationCreateView(self.browser)
+            wait_for(lambda: view.submit.is_displayed, timeout=10)
             view.submit.click()
 
 
