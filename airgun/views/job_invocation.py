@@ -174,7 +174,7 @@ class JobInvocationStatusView(BaseLoggedInView):
             './/table',
             column_widgets={
                 'Host': Text('./a'),
-                'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+                'Actions': ActionsDropdown('.//div[contains(@class, "btn-group")]'),
             },
         )
         total_hosts = Text(
