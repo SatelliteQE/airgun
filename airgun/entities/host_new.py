@@ -542,7 +542,7 @@ class NewHostEntity(HostEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def add_single_ansible_role(self, entity_name):
+    def add_single_ansible_role(self, entity_name, role=None):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
@@ -550,10 +550,8 @@ class NewHostEntity(HostEntity):
         view.ansible.roles.edit.click()
         wait_for(lambda: EditAnsibleRolesView(self.browser).addAnsibleRole.is_displayed, timeout=10)
         edit_view = EditAnsibleRolesView(self.browser)
-        actions = [edit_view.addAnsibleRole, edit_view.selectRoles, edit_view.confirm]
-        for action in actions:
-            wait_for(lambda: edit_view.is_displayed, timeout=5)
-            action.click()
+        edit_view.addAnsibleRole.select_and_move([role])
+        edit_view.confirm.click()
 
     def get_ansible_roles(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
