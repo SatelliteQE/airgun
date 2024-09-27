@@ -68,6 +68,7 @@ class JobInvocationCreateView(BaseLoggedInView):
         time_span = TextInput(id='time-span')
         execution_order_alphabetical = Radio(id='execution-order-alphabetical')
         execution_order_randomized = Radio(id='execution-order-randomized')
+        ansible_collections_path = TextInput(id='collections_path')
 
     @View.nested
     class schedule(WizardStepView):
