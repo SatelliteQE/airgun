@@ -4,11 +4,13 @@ from wait_for import wait_for
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
+from airgun.views.dynflowconsole import DynflowConsoleView
 from airgun.views.job_invocation import (
     JobInvocationCreateView,
     JobInvocationStatusView,
     JobInvocationsView,
 )
+from airgun.views.task import TaskDetailsView
 
 
 class JobInvocationEntity(BaseEntity):
@@ -41,6 +43,22 @@ class JobInvocationEntity(BaseEntity):
             fail_func=view.browser.refresh,
             logger=view.logger,
         )
+
+    def read_dynflow_output(self, entity_name, host_name):
+        """Read dynflow console output"""
+        view = self.navigate_to(self, 'Job Status', entity_name=entity_name, host_name=host_name)
+        wait_for(lambda: view.overview.hosts_table.is_displayed, timeout=10)
+        view.overview.hosts_table.row(host=host_name)['Actions'].widget.fill('Host task')
+        view = TaskDetailsView(self.browser)
+        wait_for(lambda: view.task.dynflow_console.is_displayed, timeout=10)
+        view.task.dynflow_console.click()
+        self.browser.switch_to_window(self.browser.window_handles[1])
+        console = DynflowConsoleView(self.browser)
+        wait_for(lambda: console.is_displayed, timeout=100)
+        result = console.output.read()
+        self.browser.switch_to_window(self.browser.window_handles[0])
+        self.browser.close_window(self.browser.window_handles[1])
+        return result
 
 
 @navigator.register(JobInvocationEntity, 'All')
