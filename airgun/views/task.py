@@ -1,6 +1,6 @@
 from wait_for import wait_for
 from widgetastic.widget import Table, Text, View
-from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly import BreadCrumb, Button
 from widgetastic_patternfly4 import Pagination as PF4Pagination
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
@@ -97,6 +97,7 @@ class TaskDetailsView(BaseLoggedInView):
         progressbar = ProgressBar(locator='//div[contains(@class,"progress-bar")]')
         output = TaskReadOnlyEntry(name='Output')
         errors = TaskReadOnlyEntryError(name='Errors')
+        dynflow_console = Button('Dynflow console')
 
     def wait_for_result(self, timeout=60, delay=1):
         """Wait for invocation job to finish"""
