@@ -391,6 +391,19 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
         return view.table.read()
 
+    def remove_single_ansible_role(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.ansible.roles.edit.click()
+        wait_for(lambda: view.ansible.roles.edit.click(), timeout=5)
+        edit_view = EditAnsibleRolesView(self.browser)
+        edit_view.wait_displayed()
+        actions = [edit_view.hostAssignedAnsibleRoles, edit_view.unselectRoles, edit_view.confirm]
+        for action in actions:
+            action.click()
+        wait_for(lambda: view.ansible.roles.noRoleAssign.is_displayed, timeout=5)
+
     def enable_tracer(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
