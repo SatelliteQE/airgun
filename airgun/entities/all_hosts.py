@@ -30,7 +30,7 @@ class AllHostsEntity(BaseEntity):
         return view.search(host_name)
 
     def read_filled_searchbox(self):
-        """Read filled search bar"""
+        """Read filled searchbox"""
         view = self.navigate_to(self, 'All')
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
