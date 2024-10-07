@@ -29,6 +29,13 @@ class AllHostsEntity(BaseEntity):
         view.wait_displayed()
         return view.search(host_name)
 
+    def read_filled_searchbox(self):
+        """Read filled search bar"""
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        return view.searchbox.read()
+
     def read_table(self):
         """Read All Hosts table"""
         view = self.navigate_to(self, 'All')
