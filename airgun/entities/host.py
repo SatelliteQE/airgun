@@ -426,6 +426,19 @@ class HostEntity(BaseEntity):
         view.wait_displayed()
         return view.displayed_table_header_names
 
+    def build_mode(self, entity_name, value=None):
+        """On the host, it checks the facts and returns the value.
+
+        :steps: select host - click 3 dot - facts
+        """
+        view = self.navigate_to(self, 'All')
+        view.table.row(name=entity_name)['Name'].widget.click()
+        host_view = NewHostDetailsView(self.browser)
+        host_view.wait_displayed()
+        host_view.dropdown.wait_displayed()
+        host_view.dropdown.item_select(value)
+        return host_view.read()
+
 
 @navigator.register(HostEntity, 'All')
 class ShowAllHosts(NavigateStep):
