@@ -2,6 +2,7 @@ import time
 
 from navmazing import NavigateToSibling
 from widgetastic.exceptions import NoSuchElementException
+from widgetastic_patternfly4.dropdown import DropdownItemDisabled
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -32,6 +33,12 @@ class NewContentViewEntity(BaseEntity):
             view.composite_tile.click()
         view.fill(values)
         view.submit.click()
+
+    def delete(self, entity_name):
+        """Deletes the supplied content view"""
+
+    def delete_version(self, entity_name, version):
+        """Deletes the supplied version of the content view"""
 
     def search(self, value):
         """Search for content view"""
@@ -171,6 +178,25 @@ class NewContentViewEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
         return view.table.read()
+
+    def click_version_dropdown(self, entity_name, version, dropdown_option):
+        """Clicks a specific dropdown option for a CV Version"""
+        view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        return view.version_dropdown.item_select(dropdown_option)
+
+    def republish_metadata_error(self, entity_name, version):
+        """Clicks a specific dropdown option for a CV Version, that will throw an error"""
+        view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        try:
+            view.version_dropdown.item_select('Republish repository metadata')
+        except DropdownItemDisabled as error:
+            if 'Item "Republish repository metadata"' and 'is disabled' in error.args[0]:
+                return True
+        return 'No error was found, metadata unexpectedly was able to be published.'
 
     def promote(self, entity_name, version_name, lce_name):
         """Promotes the selected version of content view to given environment.
