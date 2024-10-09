@@ -1,15 +1,20 @@
+import time
+
 from navmazing import NavigateToSibling
 from widgetastic.exceptions import NoSuchElementException
+from widgetastic_patternfly4.dropdown import DropdownItemDisabled
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.contentview_new import (
+    AddContentViewModal,
     AddRPMRuleView,
     ContentViewCreateView,
     ContentViewEditView,
     ContentViewTableView,
     ContentViewVersionDetailsView,
+    ContentViewVersionPromoteView,
     ContentViewVersionPublishView,
     CreateFilterView,
     EditFilterView,
@@ -19,13 +24,21 @@ from airgun.views.contentview_new import (
 class NewContentViewEntity(BaseEntity):
     endpoint_path = '/content_views'
 
-    def create(self, values):
+    def create(self, values, composite=False):
         """Create a new content view"""
         view = self.navigate_to(self, 'New')
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
+        if composite:
+            view.composite_tile.click()
         view.fill(values)
         view.submit.click()
+
+    def delete(self, entity_name):
+        """Deletes the supplied content view"""
+
+    def delete_version(self, entity_name, version):
+        """Deletes the supplied version of the content view"""
 
     def search(self, value):
         """Search for content view"""
@@ -34,19 +47,58 @@ class NewContentViewEntity(BaseEntity):
         view.wait_displayed()
         return view.search(value)
 
-    def publish(self, entity_name, values=None):
-        """Publishes new version of CV"""
+    def publish(self, entity_name, values=None, promote=False, lce=None):
+        """Publishes new version of CV, optionally allowing for instant promotion"""
         view = self.navigate_to(self, 'Publish', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
         if values:
             view.fill(values)
-        view.next.click()
-        view.finish.click()
+        if promote:
+            view.promote.click()
+            view.lce_selector.fill({lce: True})
+        view.next_button.click()
+        view.finish_button.click()
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
         return view.versions.table.read()
+
+    def add_content(self, entity_name, content_name):
+        """Add specified content to the given Content View"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        view.repositories.resources.add(content_name)
+        return view.repositories.resources.read()
+
+    def add_cv(self, ccv_name, cv_name, always_update=False, version=None):
+        """Adds selected CV to selected CCV, optionally with support for always_update and specified version"""
+        view = self.navigate_to(self, 'Edit', entity_name=ccv_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        view.content_views.resources.add(cv_name)
+        view = AddContentViewModal(self.browser)
+        if always_update:
+            view.always_update.fill(True)
+        if version:
+            view.version_select.item_select(version)
+        view.submit_button.click()
+        view = self.navigate_to(self, 'Edit', entity_name=ccv_name)
+        return view.content_views.resources.read()
+
+    def read_cv(self, entity_name, version_name):
+        """Reads the table for a specified Content View's specified Version"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        view.versions.search(version_name)
+        return view.versions.table.row(version=version_name).read()
+
+    def read_repositories(self, entity_name):
+        """Reads the repositories table for a specified Content View"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        return view.repositories.resources.read()
 
     def read_version_table(self, entity_name, version, tab_name, search_param=None):
         """Reads a specific table for a CV Version"""
@@ -129,6 +181,50 @@ class NewContentViewEntity(BaseEntity):
         view.wait_displayed()
         return view.table.read()
 
+    def click_version_dropdown(self, entity_name, version, dropdown_option):
+        """Clicks a specific dropdown option for a CV Version"""
+        view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        return view.version_dropdown.item_select(dropdown_option)
+
+    def republish_metadata_error(self, entity_name, version):
+        """Clicks a specific dropdown option for a CV Version, that will throw an error"""
+        view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        try:
+            view.version_dropdown.item_select('Republish repository metadata')
+        except DropdownItemDisabled as error:
+            if 'Item "Republish repository metadata"' and 'is disabled' in error.args[0]:
+                return True
+        return 'No error was found, metadata unexpectedly was able to be published.'
+
+    def promote(self, entity_name, version_name, lce_name):
+        """Promotes the selected version of content view to given environment.
+        :return: dict with new content view version table row; contains keys
+        like 'Version', 'Status', 'Environments' etc.
+        """
+        view = self.navigate_to(self, 'Promote', entity_name=entity_name, version_name=version_name)
+        modal = ContentViewVersionPromoteView(self.browser)
+        if modal.is_displayed:
+            modal.lce.fill({lce_name: True})
+            modal.promote_btn.click()
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.versions.search(version_name)
+        return view.versions.table.row(version=version_name).read()
+
+    def update(self, entity_name, values):
+        """Update existing content view"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        # need a wait to recognize the loading is complete
+        # sleep works for now
+        time.sleep(3)
+        filled_values = view.fill(values)
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+        return filled_values
+
 
 @navigator.register(NewContentViewEntity, 'All')
 class ShowAllContentViewsScreen(NavigateStep):
@@ -164,22 +260,6 @@ class CreateContentView(NavigateStep):
         self.parent.create_content_view.click()
 
 
-@navigator.register(NewContentViewEntity, 'Publish')
-class PublishContentViewVersion(NavigateStep):
-    """Navigate to Content View Publish screen."""
-
-    VIEW = ContentViewVersionPublishView
-
-    def prerequisite(self, *args, **kwargs):
-        """Open Content View first."""
-        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
-
-    @retry_navigation
-    def step(self, *args, **kwargs):
-        """Click 'Publish new version' button"""
-        self.parent.publish.click()
-
-
 @navigator.register(NewContentViewEntity, 'Edit')
 class EditContentView(NavigateStep):
     """Navigate to Edit Content View screen."""
@@ -208,3 +288,40 @@ class ShowContentViewVersionDetails(NavigateStep):
         version = kwargs.get('version')
         self.parent.versions.search(version)
         self.parent.versions.table.row(version=version)['Version'].widget.click()
+
+
+@navigator.register(NewContentViewEntity, 'Publish')
+class PublishContentViewVersion(NavigateStep):
+    """Navigate to Content View Publish screen.
+    Args:
+        entity_name: name of content view
+    """
+
+    VIEW = ContentViewVersionPublishView
+
+    def prerequisite(self, *args, **kwargs):
+        """Open Content View first."""
+        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
+
+    def step(self, *args, **kwargs):
+        """Click 'Publish new version' button"""
+        self.parent.publish.click()
+
+
+@navigator.register(NewContentViewEntity, 'Promote')
+class PromoteContentViewVersion(NavigateStep):
+    """Navigate to Content View Promote screen.
+    Args:
+        entity_name: name of content view
+        version_name: name of content view version to promote
+    """
+
+    VIEW = ContentViewEditView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
+
+    def step(self, *args, **kwargs):
+        version_name = kwargs.get('version_name')
+        self.parent.versions.search(version_name)
+        self.parent.versions.table[0][7].widget.item_select('Promote')
