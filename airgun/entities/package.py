@@ -32,6 +32,16 @@ class PackageEntity(BaseEntity):
         view = self.navigate_to(self, 'Details', entity_name=entity_name, repository=repository)
         return view.read(widget_names=widget_names)
 
+    def click_install_on_link(self, entity_name, repository='All Repositories'):
+        """Click on host link 'Installed On' which is present on Package detail tab
+
+        :param str entity_name: the package name to read.
+        :param str repository: repository name to select when searching for the
+            package.
+        """
+        view = self.navigate_to(self, 'Details', entity_name=entity_name, repository=repository)
+        view.install_on_host_link.click()
+
 
 @navigator.register(PackageEntity, 'All')
 class ShowAllPackages(NavigateStep):
