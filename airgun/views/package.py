@@ -51,6 +51,7 @@ class PackagesView(BaseLoggedInView):
 
 class PackageDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    install_on_host_link = Text(locator='*//span[contains(@ng-show, "installedPackageCount")]')
 
     @property
     def is_displayed(self):
