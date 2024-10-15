@@ -83,6 +83,8 @@ class NewContentViewEntity(BaseEntity):
     def read_cv(self, entity_name, version_name):
         """Reads the table for a specified Content View's specified Version"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
         view.versions.search(version_name)
         return view.versions.table.row(version=version_name).read()
 
