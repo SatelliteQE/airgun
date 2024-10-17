@@ -37,6 +37,7 @@ from widgetastic_patternfly4.ouia import (
     Menu,
 )
 from widgetastic_patternfly4.progress import Progress as PF4Progress
+from widgetastic_patternfly4.table import BaseExpandableTable, BasePatternflyTable
 
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
 from airgun.utils import get_widget_by_name
@@ -1511,6 +1512,13 @@ class PF4LCESelector(LCESelector):
         return self.browser.is_selected(locator)
 
 
+class PF4LCECheckSelector(PF4LCESelector):
+    """Checkbox version of PF4 LCE Selector"""
+
+    LABELS = './/label[contains(@class, "pf-c-check__label")]'
+    CHECKBOX = './/input[contains(@class, "pf-c-check") and ../label[.//*[contains(text(), "{}")]]]'
+
+
 class LimitInput(Widget):
     """Input for managing limits (e.g. Hosts limit). Consists of 'Unlimited'
     checkbox and text input for specifying the limit, which is only visible if
@@ -1603,6 +1611,10 @@ class EditableEntry(GenericLocatorWidget):
     save_button = Text(".//button[normalize-space(.)='Save']")
     cancel_button = Text(".//button[span[normalize-space(.)='Cancel']]")
     entry_value = Text(".//span[contains(@class, 'editable-value')]")
+    pf4_edit_button = Text("//button[@aria-label='edit name']")
+    pf4_edit_field = TextInput(locator=".//input[@aria-label='name text input']")
+    pf4_save_button = Text("//button[@aria-label='submit name']")
+    pf4_cancel_button = Text("//button[@aria-label='clear name']")
 
     def __init__(self, parent, locator=None, name=None, logger=None):
         """Supports initialization via ``locator=`` or ``name=``"""
@@ -1622,8 +1634,12 @@ class EditableEntry(GenericLocatorWidget):
         # not required for it
         if self.edit_button.is_displayed:
             self.edit_button.click()
-        self.edit_field.fill(value)
-        self.save_button.click()
+            self.edit_field.fill(value)
+            self.save_button.click()
+        if self.pf4_edit_button.is_displayed:
+            self.pf4_edit_button.click()
+            self.pf4_edit_field.fill(value)
+            self.pf4_save_button.click()
 
     def read(self):
         """Returns string with current widget value"""
@@ -2302,7 +2318,7 @@ class ProgressBar(GenericLocatorWidget):
         """
         wait_for(lambda: self.is_displayed, timeout=30, delay=delay, logger=self.logger)
         wait_for(
-            lambda: self.is_completed is True or not self.is_displayed,
+            lambda: not self.is_displayed or self.is_completed is True,
             timeout=timeout,
             delay=delay,
             logger=self.logger,
@@ -2854,3 +2870,33 @@ class DualListSelector(EditModal):
         locator='.//div[contains(@class, "pf-m-chosen")]'
         '//ul[@class="pf-c-dual-list-selector__list"]'
     )
+
+
+class SatPatternflyTable(BasePatternflyTable, Table):
+    def __init__(
+        self,
+        parent,
+        column_widgets=None,
+        assoc_column=None,
+        rows_ignore_top=None,
+        rows_ignore_bottom=None,
+        top_ignore_fill=False,
+        bottom_ignore_fill=False,
+        logger=None,
+    ):
+        self.component_type = "PF4/Table"
+        super().__init__(
+            parent,
+            locator=(f".//*[@data-ouia-component-type={quote(self.component_type)}]"),
+            column_widgets=column_widgets,
+            assoc_column=assoc_column,
+            rows_ignore_top=rows_ignore_top,
+            rows_ignore_bottom=rows_ignore_bottom,
+            top_ignore_fill=top_ignore_fill,
+            bottom_ignore_fill=bottom_ignore_fill,
+            logger=logger,
+        )
+
+
+class SatExpandableTable(BaseExpandableTable, SatPatternflyTable):
+    pass
