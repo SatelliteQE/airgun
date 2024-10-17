@@ -198,8 +198,6 @@ class NewContentViewEntity(BaseEntity):
     def update(self, entity_name, values):
         """Update existing content view"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        # need a wait to recognize the loading is complete
-        # sleep works for now
         time.sleep(3)
         filled_values = view.fill(values)
         view.flash.assert_no_error()
