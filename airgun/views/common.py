@@ -1,3 +1,4 @@
+from selenium.common.exceptions import ElementNotInteractableException
 from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
@@ -79,6 +80,35 @@ class BaseLoggedInView(View):
             else:
                 values[widget_name] = widget.read()
         return normalize_dict_values(values)
+
+    def documentation_links(self):
+        """Return Documentation links present on the given page if any.
+        Note: This is not a full-proof helper. For example, it can't get links hidden behind a dropdown button.
+        """
+        doc_link_elements = (
+            '//a[contains(text(), "documentation") or contains(text(), "Documentation") or '
+            'contains(@class, "btn-docs") or contains(@href, "console.redhat.com") or '
+            'contains(@href, "access.redhat.com") or contains(@href, "docs.redhat.com") or '
+            'contains(@href, "www.redhat.com") or contains(@href, "links")]'
+        )
+        doc_links = []
+        for item in self.browser.elements(doc_link_elements):
+            try:
+                item.click()
+                if len(self.browser.window_handles) == 1:
+                    doc_links.extend([self.browser.url])
+                    self.browser.selenium.back()
+                else:
+                    self.browser.switch_to_window(self.browser.window_handles[1])
+                    doc_links.extend([self.browser.url])
+                    self.browser.switch_to_window(self.browser.window_handles[0])
+                    self.browser.close_window(self.browser.window_handles[1])
+            except ElementNotInteractableException:
+                # Adding this because some links are hidden behind dropdown button.
+                # To Do: Handle doc buttons hidden behind drop down buttons.
+                doc_links.extend([item.get_attribute('href')])
+                continue
+        return doc_links
 
 
 class WrongContextAlert(View):
