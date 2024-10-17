@@ -39,6 +39,9 @@ class NewContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
+        if not view.table.is_displayed:
+            # no table present, no CVs in this Org
+            return None
         return view.search(value)
 
     def publish(self, entity_name, values=None, promote=False, lce=None):
@@ -59,6 +62,45 @@ class NewContentViewEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
         return view.versions.table.read()
+
+    def delete(self, entity_name):
+        """Deletes the content view by name"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        # click the 'cv-details-action' dropdown, then click 'Delete'
+        view.cv_actions.click()
+        view.cv_delete.click()
+        view.wait_displayed()
+        # Remove from environment(s) wizard, if it appears
+        if view.next_button.is_displayed:
+            view.next_button.click()
+            view.delete_finish.click()
+
+    def delete_version(self, entity_name, version):
+        """Deletes the specified version of the content view
+        :return: bool
+        True if specified version was found and clicked 'Delete'
+        False (default) if not found in table by version name
+        """
+        result = False
+        view = self.navigate_to(
+            self,
+            'Version',
+            entity_name=entity_name,
+            version=version,
+            timeout=60,
+        )
+        time.sleep(5)  # 'Loading' widget on page
+        self.browser.plugin.ensure_page_safe(timeout='10s')
+        wait_for(lambda: view.table.is_displayed, timeout=20)
+        result = view.version_dropdown.item_select('Delete')
+        view.wait_displayed()
+        # Remove from environment(s) wizard, if it appears
+        if view.next_button.is_displayed:
+            view.next_button.click()
+            view.delete_finish.click()
+        return result
 
     def add_content(self, entity_name, content_name):
         """Add specified content to the given Content View"""
@@ -102,9 +144,15 @@ class NewContentViewEntity(BaseEntity):
 
     def read_version_table(self, entity_name, version, tab_name, search_param=None):
         """Reads a specific table for a CV Version"""
-        view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
+        view = self.navigate_to(
+            self,
+            'Version',
+            entity_name=entity_name,
+            version=version,
+            timeout=60,
+        )
+        time.sleep(5)
         self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
         # This allows dynamic access to the proper table
         wait_for(lambda: getattr(view, tab_name).table.wait_displayed(), timeout=10)
         if search_param:
@@ -265,7 +313,9 @@ class ShowContentViewVersionDetails(NavigateStep):
 
     def step(self, *args, **kwargs):
         version = kwargs.get('version')
+        self.parent.versions.wait_displayed()
         self.parent.versions.search(version)
+        self.parent.versions.table.wait_displayed()
         self.parent.versions.table.row(version=version)['Version'].widget.click()
 
 
@@ -280,10 +330,11 @@ class PublishContentViewVersion(NavigateStep):
 
     def prerequisite(self, *args, **kwargs):
         """Open Content View first."""
-        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
+        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'), timeout=20)
 
     def step(self, *args, **kwargs):
         """Click 'Publish new version' button"""
+        self.parent.publish.wait_displayed()
         self.parent.publish.click()
 
 
@@ -302,5 +353,7 @@ class PromoteContentViewVersion(NavigateStep):
 
     def step(self, *args, **kwargs):
         version_name = kwargs.get('version_name')
+        self.parent.versions.wait_displayed()
         self.parent.versions.search(version_name)
+        self.parent.version.table.wait_displayed()
         self.parent.versions.table[0][7].widget.item_select('Promote')
