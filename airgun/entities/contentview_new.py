@@ -60,6 +60,33 @@ class NewContentViewEntity(BaseEntity):
         view.wait_displayed()
         return view.versions.table.read()
 
+    def delete(self, entity_name):
+        """Deletes the content view by name"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        # click the 'cv-details-action' dropdown, then click 'Delete'
+        view.cv_actions.click()
+        view.cv_delete.click()
+        view.wait_displayed()
+        # Remove from environment(s) wizard, if it appears
+        if view.next_button.is_displayed:
+            view.next_button.click()
+            view.delete_finish.click()
+
+    def delete_version(self, entity_name, version):
+        """Deletes the specified version of the content view"""
+        view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
+        self.browser.plugin.ensure_page_safe(timeout='10s')
+        view.wait_displayed()
+        result = view.version_dropdown.item_select('Delete')
+        view.wait_displayed()
+        # Remove from environment(s) wizard, if it appears
+        if view.next_button.is_displayed:
+            view.next_button.click()
+            view.delete_finish.click()
+        return result
+
     def add_content(self, entity_name, content_name):
         """Add specified content to the given Content View"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
