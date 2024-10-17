@@ -48,6 +48,10 @@ class ContentViewAddResourcesView(NewAddRemoveResourcesView):
         },
     )
 
+    @property
+    def is_displayed(self):
+        return self.table.is_displayed
+
 
 class AddContentViewModal(BaseLoggedInView):
     title = Text('.//div[@data-ouia-component-id="add-content-views"]')

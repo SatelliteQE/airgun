@@ -1,3 +1,4 @@
+from asyncio import wait_for
 import time
 
 from navmazing import NavigateToSibling
@@ -52,6 +53,8 @@ class NewContentViewEntity(BaseEntity):
             view.lce_selector.fill({lce: True})
         view.next_button.click()
         view.finish_button.click()
+        wait_for(lambda: view.progressbar.is_displayed, timeout=10)
+        view.progressbar.wait_for_result()
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
@@ -62,6 +65,7 @@ class NewContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
+        wait_for(lambda: view.repositories.resources.is_displayed, timeout=10)
         view.repositories.resources.add(content_name)
         return view.repositories.resources.read()
 
@@ -78,6 +82,9 @@ class NewContentViewEntity(BaseEntity):
             view.version_select.item_select(version)
         view.submit_button.click()
         view = self.navigate_to(self, 'Edit', entity_name=ccv_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        wait_for(lambda: view.content_views.resources.is_displayed, timeout=10)
         return view.content_views.resources.read()
 
     def read_cv(self, entity_name, version_name):
@@ -99,7 +106,7 @@ class NewContentViewEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
         # This allows dynamic access to the proper table
-        getattr(view, tab_name).table.wait_displayed()
+        wait_for(lambda: getattr(view, tab_name).table.wait_displayed(), timeout=10)
         if search_param:
             getattr(view, tab_name).searchbox.search(search_param)
         return getattr(view, tab_name).table.read()
