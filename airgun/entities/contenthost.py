@@ -121,7 +121,8 @@ class ContentHostEntity(BaseEntity):
 
     def search_package(self, entity_name, package_name):
         """Search for specific package installed in content host"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
+        view.packages_installed.wait_displayed()
         view.packages_installed.search(package_name)
         return view.packages_installed.table.read()
 
@@ -145,7 +146,8 @@ class ContentHostEntity(BaseEntity):
 
         :return: Returns a dict containing task status details
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
+        view.errata.wait_displayed()
         if errata_id == "All":
             view.errata.select_all.fill(True)
         else:

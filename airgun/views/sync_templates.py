@@ -17,7 +17,7 @@ class SyncTemplatesView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     title = Text("//h2[contains(., 'Import or Export Templates')]")
     sync_type = RadioGroup("//div[label[contains(., 'Action type')]]")
-    submit = Text("//button[@type='submit']")
+    submit = Text(".//button[contains(.,'Submit')]")
 
     template = ConditionalSwitchableView(reference='sync_type')
 

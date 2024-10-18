@@ -139,6 +139,17 @@ class SubscriptionEntity(BaseEntity):
             manage_view.close_button.click()
         return manifest_expiration_date
 
+    def is_subscription_manifest_header_message_display(self):
+        """Checks header and massage present in the manage manifest modal"""
+        view = self.navigate_to(self, 'Manage Manifest')
+        view.wait_animation_end()
+        result = view.manifest.alert_message.is_displayed
+        # close opened modal dialogs views
+        manage_view = ManageManifestView(self.browser)
+        if manage_view.is_displayed:
+            manage_view.close_button.click()
+        return result
+
     def add(self, entity_name, quantity=1):
         """Attach new subscriptions
         :param entity_name: Name of subscription to attach

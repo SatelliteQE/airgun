@@ -26,7 +26,10 @@ from widgetastic_patternfly import (
     Kebab,
     VerticalNavigation,
 )
-from widgetastic_patternfly4 import Button as PF4Button, Pagination as PF4Pagination
+from widgetastic_patternfly4 import (
+    Button as PF4Button,
+    Pagination as PF4Pagination,
+)
 from widgetastic_patternfly4.ouia import (
     BaseSelect,
     Button as OUIAButton,
@@ -34,6 +37,7 @@ from widgetastic_patternfly4.ouia import (
     Menu,
 )
 from widgetastic_patternfly4.progress import Progress as PF4Progress
+from widgetastic_patternfly4.table import BaseExpandableTable, BasePatternflyTable
 
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
 from airgun.utils import get_widget_by_name
@@ -499,6 +503,46 @@ class MultiSelect(GenericLocatorWidget):
     def remove_all(self):
         """Function removes all from right item select."""
         self.remove_all_button.click()
+
+
+class MultiSelectNoFilter(MultiSelect):
+    """This widget facilitates the movement of items between the unassigned and assigned lists. After providing values,
+    they will be stored in a list. Unassigned items contains the list which compare with the values,
+    if value is present it will assign the value or vise-versa."""
+
+    more_item = Text('//span[@class="pf-c-options-menu__toggle-button-icon"]')
+    select_pages = Text('//ul[@class="pf-c-options-menu__menu"]/li[6]/button')
+    available_role_template = '//div[@class="available-roles-container col-sm-6"]/div[2]/div'
+    assigned_role_template = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
+
+    def fill(self, values):
+        """This method facilitates assigning value(s) both during creation and after creation.
+        Compare this value list with the actual list of items present in the UI.
+        If the lists match, assign the items.
+        """
+        self.more_item.click()
+        self.select_pages.click()
+        available_list = self.browser.elements(self.available_role_template)
+        for data in available_list[1:]:
+            if data.text.split(". ")[1] in values:
+                data.click()
+        return True
+
+    def unassigned_values(self, values):
+        """This method facilitates the removal of items from the assigned list, effectively unassigned them."""
+        assigned_list = self.browser.elements(self.assigned_role_template)
+        for data in assigned_list:
+            if data.text.split(". ")[1] in values.values():
+                data.click()
+        return True
+
+    def read_assigned_values(self, values):
+        """Returns a list of assigned value(s)."""
+        assigned_list = self.browser.elements(self.assigned_role_template)
+        value = [
+            data.text.split(". ")[1] for data in assigned_list if data.text.split(". ")[1] in values
+        ]
+        return value
 
 
 class PF4MultiSelect(GenericLocatorWidget):
@@ -1006,7 +1050,8 @@ class ValidationErrors(Widget):
 
     ERROR_ELEMENTS = ".//*[contains(@class,'has-error') and not(contains(@style,'display:none'))]"
     ERROR_MESSAGES = (
-        ".//*[(contains(@class, 'alert base in fade alert-danger')"
+        ".//*[(contains(@class, 'alert base in fade alert-danger') "
+        "or contains(@class, 'alert base in fade alert-warning') "
         "or contains(@class,'error-msg') "
         "or contains(@class,'error-msg-block')"
         "or contains(@class,'error-message') "
@@ -1443,6 +1488,37 @@ class LCESelector(GenericLocatorWidget):
         return self.select(checkbox_locator, checkbox_value)
 
 
+class PF4LCESelector(LCESelector):
+    """Group of checkboxes that goes in a line one after another. Usually used
+    to specify lifecycle environment, updated for PF4 pages
+    """
+
+    LABELS = './/label[contains(@class, "pf-c-radio__label")]'
+    CHECKBOX = (
+        './/input[contains(@class, "pf-c-radio__input") and ../label[.//*[contains(text(), "{}")]]]'
+    )
+
+    def __init__(self, parent, locator=None, logger=None):
+        """Allow to specify ``locator`` if needed or use default one otherwise.
+        Locator is needed when multiple :class:`LCESelector` are present,
+        typically as a part of :class:`airgun.views.common.LCESelectorGroup`.
+        """
+        if locator is None:
+            locator = './/div[contains(@class, "env-path")]'
+        super().__init__(parent, locator, logger=logger)
+
+    def checkbox_selected(self, locator):
+        """Identify whether specific checkbox is selected or not"""
+        return self.browser.is_selected(locator)
+
+
+class PF4LCECheckSelector(PF4LCESelector):
+    """Checkbox version of PF4 LCE Selector"""
+
+    LABELS = './/label[contains(@class, "pf-c-check__label")]'
+    CHECKBOX = './/input[contains(@class, "pf-c-check") and ../label[.//*[contains(text(), "{}")]]]'
+
+
 class LimitInput(Widget):
     """Input for managing limits (e.g. Hosts limit). Consists of 'Unlimited'
     checkbox and text input for specifying the limit, which is only visible if
@@ -1535,6 +1611,10 @@ class EditableEntry(GenericLocatorWidget):
     save_button = Text(".//button[normalize-space(.)='Save']")
     cancel_button = Text(".//button[span[normalize-space(.)='Cancel']]")
     entry_value = Text(".//span[contains(@class, 'editable-value')]")
+    pf4_edit_button = Text("//button[@aria-label='edit name']")
+    pf4_edit_field = TextInput(locator=".//input[@aria-label='name text input']")
+    pf4_save_button = Text("//button[@aria-label='submit name']")
+    pf4_cancel_button = Text("//button[@aria-label='clear name']")
 
     def __init__(self, parent, locator=None, name=None, logger=None):
         """Supports initialization via ``locator=`` or ``name=``"""
@@ -1554,8 +1634,12 @@ class EditableEntry(GenericLocatorWidget):
         # not required for it
         if self.edit_button.is_displayed:
             self.edit_button.click()
-        self.edit_field.fill(value)
-        self.save_button.click()
+            self.edit_field.fill(value)
+            self.save_button.click()
+        if self.pf4_edit_button.is_displayed:
+            self.pf4_edit_button.click()
+            self.pf4_edit_field.fill(value)
+            self.pf4_save_button.click()
 
     def read(self):
         """Returns string with current widget value"""
@@ -1841,6 +1925,8 @@ class SatTable(Table):
     If the table is empty, there might be only one column with an appropriate message in the table
     body, or it may have no columns or rows at all. This subclass handles both possibilities.
 
+    It also ignores all hidden columns, which some tables might contain, like the Hosts table.
+
     Example html representation::
 
         <table bst-table="table" ...>
@@ -1867,6 +1953,14 @@ class SatTable(Table):
 
     """
 
+    HEADER_IN_ROWS = "./tbody/tr[1]/th[not(@hidden)]"
+    HEADERS = (
+        "./thead/tr/th[not(@hidden)]|./tr/th[not(@hidden)]|./thead/tr/td[not(@hidden)]"
+        + "|"
+        + HEADER_IN_ROWS
+    )
+    COLUMN_AT_POSITION = "./td[not(@hidden)][{0}]"
+
     no_rows_message = (
         ".//td/span[contains(@data-block, 'no-rows-message') or "
         "contains(@data-block, 'no-search-results-message')]"
@@ -1889,11 +1983,56 @@ class SatTable(Table):
             return False
         return True
 
-    def read(self):
+    def read_limited(self, limit):
+        """This is almost the same as inherited read but has a limit. Use it for tables that take too long to read.
+        Reads the table. Returns a list, every item in the list is contents read from the row."""
+        rows = list(self)
+        # Cut the unwanted rows if necessary
+        if self.rows_ignore_top is not None:
+            rows = rows[self.rows_ignore_top :]
+        if self.rows_ignore_bottom is not None and self.rows_ignore_bottom > 0:
+            rows = rows[: -self.rows_ignore_bottom]
+        if self.assoc_column_position is None:
+            ret = []
+            rows_read = 0
+            for row in rows:
+                if rows_read >= limit:
+                    break
+                ret.append(row.read())
+                rows_read = rows_read + 1
+            return ret
+        else:
+            result = {}
+            rows_read = 0
+            for row in rows:
+                if rows_read >= limit:
+                    break
+                row_read = row.read()
+                try:
+                    key = row_read.pop(self.header_index_mapping[self.assoc_column_position])
+                except KeyError:
+                    try:
+                        key = row_read.pop(self.assoc_column_position)
+                    except KeyError:
+                        try:
+                            key = row_read.pop(self.assoc_column)
+                        except KeyError as e:
+                            raise ValueError(
+                                f"The assoc_column={self.assoc_column!r} could not be retrieved"
+                            ) from e
+                if key in result:
+                    raise ValueError(f"Duplicate value for {key}={result[key]!r}")
+                result[key] = row_read
+                rows_read = rows_read + 1
+            return result
+
+    def read(self, limit=None):
         """Return empty list in case table is empty"""
         if not self.has_rows:
             self.logger.debug(f'Table {self.locator} is empty')
             return []
+        if limit is not None:
+            return self.read_limited(limit)
         if self.pagination.is_displayed:
             return self._read_all()
         return super().read()
@@ -2179,7 +2318,7 @@ class ProgressBar(GenericLocatorWidget):
         """
         wait_for(lambda: self.is_displayed, timeout=30, delay=delay, logger=self.logger)
         wait_for(
-            lambda: self.is_completed is True or not self.is_displayed,
+            lambda: not self.is_displayed or self.is_completed is True,
             timeout=timeout,
             delay=delay,
             logger=self.logger,
@@ -2193,6 +2332,14 @@ class ProgressBar(GenericLocatorWidget):
 class PF4ProgressBar(PF4Progress):
     locator = './/div[contains(@class, "pf-c-wizard__main-body")]'
 
+    @property
+    def is_completed(self):
+        """Boolean value whether progress bar is finished or not"""
+        try:
+            return self.current_progress == '100'
+        except NoSuchElementException:
+            return False
+
     def wait_for_result(self, timeout=600, delay=1):
         """Waits for progress bar to finish. By default checks whether progress
         bar is completed every second for 10 minutes.
@@ -2201,7 +2348,7 @@ class PF4ProgressBar(PF4Progress):
         """
         wait_for(lambda: self.is_displayed, timeout=30, delay=delay, logger=self.logger)
         wait_for(
-            lambda: not self.is_displayed or self.current_progress == '100',
+            lambda: not self.is_displayed or self.is_completed,
             timeout=timeout,
             delay=delay,
             logger=self.logger,
@@ -2723,3 +2870,33 @@ class DualListSelector(EditModal):
         locator='.//div[contains(@class, "pf-m-chosen")]'
         '//ul[@class="pf-c-dual-list-selector__list"]'
     )
+
+
+class SatPatternflyTable(BasePatternflyTable, Table):
+    def __init__(
+        self,
+        parent,
+        column_widgets=None,
+        assoc_column=None,
+        rows_ignore_top=None,
+        rows_ignore_bottom=None,
+        top_ignore_fill=False,
+        bottom_ignore_fill=False,
+        logger=None,
+    ):
+        self.component_type = "PF4/Table"
+        super().__init__(
+            parent,
+            locator=(f".//*[@data-ouia-component-type={quote(self.component_type)}]"),
+            column_widgets=column_widgets,
+            assoc_column=assoc_column,
+            rows_ignore_top=rows_ignore_top,
+            rows_ignore_bottom=rows_ignore_bottom,
+            top_ignore_fill=top_ignore_fill,
+            bottom_ignore_fill=bottom_ignore_fill,
+            logger=logger,
+        )
+
+
+class SatExpandableTable(BaseExpandableTable, SatPatternflyTable):
+    pass

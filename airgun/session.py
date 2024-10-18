@@ -37,6 +37,7 @@ from airgun.entities.discoveryrule import DiscoveryRuleEntity
 from airgun.entities.domain import DomainEntity
 from airgun.entities.eol_banner import EOLBannerEntity
 from airgun.entities.errata import ErrataEntity
+from airgun.entities.file import FilesEntity
 from airgun.entities.filter import FilterEntity
 from airgun.entities.hardware_model import HardwareModelEntity
 from airgun.entities.host import HostEntity
@@ -56,6 +57,7 @@ from airgun.entities.organization import OrganizationEntity
 from airgun.entities.os import OperatingSystemEntity
 from airgun.entities.oscapcontent import OSCAPContentEntity
 from airgun.entities.oscappolicy import OSCAPPolicyEntity
+from airgun.entities.oscapreport import OSCAPReportEntity
 from airgun.entities.oscaptailoringfile import OSCAPTailoringFileEntity
 from airgun.entities.package import PackageEntity
 from airgun.entities.partitiontable import PartitionTableEntity
@@ -461,6 +463,11 @@ class Session:
         return self._open(FilterEntity)
 
     @cached_property
+    def file(self):
+        """Instance of Files entity."""
+        return self._open(FilesEntity)
+
+    @cached_property
     def hardwaremodel(self):
         """Instance of Hardware Model entity."""
         return self._open(HardwareModelEntity)
@@ -569,6 +576,11 @@ class Session:
     def oscappolicy(self):
         """Instance of OSCAP Policy entity."""
         return self._open(OSCAPPolicyEntity)
+
+    @cached_property
+    def oscapreport(self):
+        """Instance of OSCAP Report entity."""
+        return self._open(OSCAPReportEntity)
 
     @cached_property
     def oscaptailoringfile(self):

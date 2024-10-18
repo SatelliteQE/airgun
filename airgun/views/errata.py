@@ -80,6 +80,7 @@ class ErrataDetailsView(BaseLoggedInView):
         TAB_NAME = 'Content Hosts'
         environment_filter = SatSelect(".//select[@ng-model='environmentFilter']")
         searchbox = Search()
+        select_all = Checkbox(locator=".//input[@type='checkbox'][@ng-change='allSelected()']")
         apply = Text(".//button[@ng-click='goToNextStep()']")
         table = SatTable(
             locator=".//table",
@@ -188,7 +189,7 @@ class ApplyErrataView(BaseLoggedInView):
 
 class ErrataInstallationConfirmationView(BaseLoggedInView):
     cancel = Text(".//button[@ng-click='transitionBack()']")
-    confirm = Text(".//button[@type='submit']")
+    confirm = Text(".//span[text()='Confirm']")
 
 
 class ErrataTaskDetailsView(TaskDetailsView):

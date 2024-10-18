@@ -5,6 +5,7 @@ from widgetastic.widget.table import Table
 from widgetastic_patternfly4 import (
     Button,
     Dropdown,
+    DualListSelector,
     Pagination as PF4Pagination,
     Select,
     Tab,
@@ -21,6 +22,7 @@ from widgetastic_patternfly4.ouia import (
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import (
     Accordion,
+    ActionsDropdown,
     CheckboxGroup,
     ItemsList,
     Pf4ActionsDropdown,
@@ -112,6 +114,10 @@ class NewHostDetailsView(BaseLoggedInView):
     edit = OUIAButton('host-edit-button')
     dropdown = Dropdown(locator='//button[@id="hostdetails-kebab"]/..')
     schedule_job = Pf4ActionsDropdown(locator='.//div[div/button[@aria-label="Select"]]')
+    run_job = ActionsDropdown('//button[@data-ouia-component-id="schedule-a-job-dropdown-toggle"]')
+    select = Text(
+        '//ul[@class="pf-c-dropdown__menu pf-m-align-right"]/li/a/div[normalize-space(text())="Run Ansible roles"]'
+    )
 
     @View.nested
     class overview(Tab):
@@ -120,7 +126,7 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class details(Card):
             ROOT = './/article[.//div[text()="Details"]]'
-
+            edit = Text('.//div[@class="pf-c-description-list__group"]/dd//div[2]')
             details = HostDetailsCard()
 
             power_operations = OUIAButton('power-status-dropdown-toggle')
@@ -316,7 +322,9 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@id="packages-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-            searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
+            searchbar = SearchInput(
+                locator='.//input[contains(@class, "pf-c-text-input-group__text-input")]'
+            )
             status_filter = Dropdown(locator='.//div[@aria-label="select Status container"]/div')
             upgrade = Pf4ActionsDropdown(locator='.//div[div/button[normalize-space(.)="Upgrade"]]')
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
@@ -793,7 +801,7 @@ class ManageHostStatusesView(View):
 class EditAnsibleRolesView(View):
     """Edit Ansible Roles Modal"""
 
-    addAnsibleRole = Text('.//span[contains(text(),"RedHatInsights.insights-client")]')
+    addAnsibleRole = DualListSelector('//div[@class = "pf-c-dual-list-selector"]')
     confirm = Button(locator='.//button[@aria-label="submit ansible roles"]')
     hostAssignedAnsibleRoles = Text(
         './/button[@class="pf-c-dual-list-selector__item"]/span[1]//span[2]'

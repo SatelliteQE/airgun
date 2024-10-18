@@ -218,7 +218,7 @@ class ResourceProviderDetailView(BaseLoggedInView):
         table = SatTable(
             './/table',
             column_widgets={
-                'Compute profile': Text('./a'),
+                'Compute profile': Text('.//a'),
             },
         )
 
@@ -355,7 +355,6 @@ class ResourceProviderProfileView(BaseLoggedInView):
     @provider_content.register('Libvirt')
     class LibvirtResourceForm(View):
         cpus = TextInput(id='compute_attribute_vm_attrs_cpus')
-        cpu_mode = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_cpu_mode')
         memory = TextInput(id='compute_attribute_vm_attrs_memory')
         image = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_image_id')
 
@@ -432,6 +431,9 @@ class ResourceProviderProfileView(BaseLoggedInView):
             ROOT = "//fieldset[@id='network_interfaces']"
             ITEM_WIDGET_CLASS = ComputeResourceVMwareProfileNetworkItem
 
+            nic_type = FilteredDropdown(id='select2-chosen-9')
+            network = FilteredDropdown(id='select2-chosen-10')
+
         @View.nested
         class storage(RemovableWidgetsItemsListView):
             ROOT = "//div[contains(concat(' ', @class, ' '), ' vmware-storage-container ')]"
@@ -439,6 +441,9 @@ class ResourceProviderProfileView(BaseLoggedInView):
             ITEM_WIDGET_CLASS = ComputeResourceVMwareProfileStorageItem
             add_item_button = Text(
                 "//button[contains(concat(' ', @class, ' '), ' btn-add-controller ')]"
+            )
+            data_store = FilteredDropdown(
+                "//div[@class='select2-container form-control select2-allowclear']/a/span[1]"
             )
 
     @property

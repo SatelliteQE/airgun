@@ -21,6 +21,7 @@ from widgetastic_patternfly4.ouia import (
     Button as PF4Button,
     FormSelect,
     Select as PF4Select,
+    TextInput as OUIATextInput,
 )
 from widgetastic_patternfly4.tabs import Tab
 
@@ -220,6 +221,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text(".//div[@id='rails-app-content']//a[contains(normalize-space(.),'Create Host')]")
     register = PF4Button('OUIA-Generated-Button-secondary-2')
+    new_ui_button = Text(".//a[contains(@class, 'btn')][contains(@href, 'new/hosts')]")
     select_all = Checkbox(locator="//input[@id='check_all']")
     table = SatTable(
         './/table',
@@ -276,6 +278,9 @@ class HostCreateView(BaseLoggedInView):
             locator=".//div[label[@for='compute_resource_id']]//button"
         )
         deploy = FilteredDropdown(id='host_compute_resource')
+        inherit_compute_profile_option = ToggleButton(
+            locator=".//div[label[@for='compute_profile_id']]//button"
+        )
         compute_profile = FilteredDropdown(id='s2id_host_compute_profile_id')
         lce = FilteredDropdown(id='host_lifecycle_environment')
         content_view = FilteredDropdown(id='host_content_view')
@@ -326,7 +331,6 @@ class HostCreateView(BaseLoggedInView):
         class virtual_machine(SatTab):
             TAB_NAME = 'Virtual Machine'
             cpus = TextInput(id='host_compute_attributes_cpus')
-            cpu_mode = FilteredDropdown(id='s2id_host_compute_attributes_cpu_mode')
             memory = TextInput(id='host_compute_attributes_memory')
             startup = Checkbox(id='host_compute_attributes_start')
 
@@ -547,19 +551,17 @@ class HostRegisterView(BaseLoggedInView):
             "/li[button[normalize-space(.)={@tab_name|quote}]]"
         )
         ROOT = '//section[@id="advancedSection"]'
-
         setup_rex = FormSelect('registration_setup_remote_execution')
         setup_insights = FormSelect('registration_setup_insights')
         install_packages = TextInput(id='reg_packages')
         update_packages = Checkbox(id='reg_update_packages')
-        repository = TextInput(id='reg_repo')
-        repository_gpg_key_url = TextInput(id='reg_gpg_key_url')
         token_life_time = TextInput(id='reg_token_life_time_input')
         rex_interface = TextInput(id='reg_rex_interface_input')
-        rex_pull_mode = FormSelect('OUIA-Generated-FormSelect-default-8')
+        rex_pull_mode = FormSelect('registration_setup_remote_execution_pull')
         ignore_error = Checkbox(id='reg_katello_ignore')
         force = Checkbox(id='reg_katello_force')
         install_packages_helper = Text("//div[@id='reg_packages-helper']")
+        repository_add = PF4Button('host_reg_add_more_repositories')
 
     @property
     def is_displayed(self):
@@ -586,6 +588,19 @@ class HostRegisterView(BaseLoggedInView):
                 )
                 self.general.__getattribute__(field).fill(field_value)
                 time.sleep(1)
+
+
+class RepositoryListView(View):
+    """Repository List view"""
+
+    ROOT = '//div[@id="pf-modal-part-0" or @data-ouia-component-type="PF4/ModalContent"]'
+    repository = OUIATextInput('host_reg_repo')
+    repository_gpg_key_url = OUIATextInput('host_reg_gpg_key')
+    repository_list_confirm = PF4Button('reg_modal_confirm')
+    repository_list_reset = PF4Button('reg_modal_reset')
+    repository_list_add_new = PF4Button('host_reg_modal_add_new_repo')
+    repository_list_remove = PF4Button('0')
+    repository_list_popup_close = PF4Button('host_reg_repo_modal-ModalBoxCloseButton')
 
 
 class RecommendationWidget(GenericLocatorWidget):

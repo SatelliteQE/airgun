@@ -5,6 +5,7 @@ from wait_for import wait_for
 
 from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep, navigator
+from airgun.views.fact import HostFactView
 from airgun.views.host_new import (
     AllAssignedRolesView,
     EditAnsibleRolesView,
@@ -18,10 +19,26 @@ from airgun.views.host_new import (
     ParameterDeleteDialog,
     RemediationView,
 )
+from airgun.views.hostgroup import HostGroupEditView
 from airgun.views.job_invocation import JobInvocationCreateView
 
-global available_param_types
 available_param_types = ['string', 'boolean', 'integer', 'real', 'array', 'hash', 'yaml', 'json']
+
+
+def navigate_to_edit_view(func):
+    def _decorator(self, entity_name=None, role_name=None):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name, role=role_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.overview.details.edit.click()
+        self.browser.switch_to_window(self.browser.window_handles[1])
+        host_group_view = HostGroupEditView(self.browser)
+        func(self, entity_name, role_name)
+        host_group_view.ansible_roles.submit.click()
+        self.browser.switch_to_window(self.browser.window_handles[0])
+        self.browser.close_window(self.browser.window_handles[1])
+
+    return _decorator
 
 
 class NewHostEntity(HostEntity):
@@ -46,6 +63,55 @@ class NewHostEntity(HostEntity):
         # Run this read twice to navigate to the page and load it before reading
         view.read(widget_names=widget_names)
         return view.read(widget_names=widget_names)
+
+    @navigate_to_edit_view
+    def assign_role_to_hostgroup(self, entity_name, role_name):
+        """Assign a single Ansible role from the host group based on user input
+
+        Args:
+            entity_name: Name of the host
+            role_name: Name of the ansible role
+        """
+        host_group_view = HostGroupEditView(self.browser)
+        host_group_view.ansible_roles.more_item.click()
+        host_group_view.ansible_roles.select_pages.click()
+        role_list = self.browser.elements(host_group_view.ansible_roles.available_role, parent=self)
+        for single_role in role_list[1:]:
+            if single_role.text.split(". ")[1] == role_name:
+                single_role.click()
+
+    @navigate_to_edit_view
+    def remove_hostgroup_role(self, entity_name, role_name):
+        """Remove a single Ansible role from the host group based on user input
+
+        Args:
+            entity_name: Name of the host
+            role_name: Name of the ansible role
+        """
+        host_group_view = HostGroupEditView(self.browser)
+        role_list = self.browser.elements(host_group_view.ansible_roles.assigned_role, parent=self)
+        for single_role in role_list[1:]:
+            if single_role.text.split(". ")[1] == role_name:
+                single_role.click()
+
+    @navigate_to_edit_view
+    def assign_all_role_to_hostgroup(self, entity_name, role_name=None):
+        """Assign all Ansible roles from the host group"""
+        host_group_view = HostGroupEditView(self.browser)
+        host_group_view.ansible_roles.more_item.click()
+        host_group_view.ansible_roles.select_pages.click()
+        role_list = self.browser.elements(host_group_view.ansible_roles.available_role, parent=self)
+        for single_role in role_list:
+            single_role.click()
+
+    @navigate_to_edit_view
+    def remove_all_role_from_hostgroup(self, entity_name, role_name=None):
+        """Remove all Ansible roles from the host group"""
+        host_group_view = HostGroupEditView(self.browser)
+        host_group_view.ansible_roles.click()
+        role_list = self.browser.elements(host_group_view.ansible_roles.assigned_role, parent=self)
+        for single_role in role_list:
+            single_role.click()
 
     def get_host_statuses(self, entity_name):
         """Read host statuses from Host Details page
@@ -255,10 +321,18 @@ class NewHostEntity(HostEntity):
         view.fill(values)
         view.submit.click()
 
+    def run_job(self, entity_name):
+        """Run a job on selected host"""
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.run_job.wait_displayed()
+        view.run_job.click()
+        view.select.click()
+
     def get_packages(self, entity_name, search=""):
         """Filter installed packages on host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.content.packages.select()
+        view.content.packages.table.wait_displayed()
         view.content.packages.searchbar.fill(search)
         # wait for filter to apply
         self.browser.plugin.ensure_page_safe()
@@ -468,18 +542,16 @@ class NewHostEntity(HostEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def add_single_ansible_role(self, entity_name):
+    def add_single_ansible_role(self, entity_name, role=None):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         wait_for(lambda: view.ansible.roles.edit.is_displayed, timeout=5)
         view.ansible.roles.edit.click()
-        wait_for(lambda: EditAnsibleRolesView(self.browser).addAnsibleRole.is_displayed, timeout=5)
+        wait_for(lambda: EditAnsibleRolesView(self.browser).addAnsibleRole.is_displayed, timeout=10)
         edit_view = EditAnsibleRolesView(self.browser)
-        actions = [edit_view.addAnsibleRole, edit_view.selectRoles, edit_view.confirm]
-        for action in actions:
-            wait_for(lambda: edit_view.is_displayed, timeout=5)
-            action.click()
+        edit_view.addAnsibleRole.select_and_move([role])
+        edit_view.confirm.click()
 
     def get_ansible_roles(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
@@ -882,6 +954,25 @@ class NewHostEntity(HostEntity):
         view.insights.remediate.click()
         view = RemediationView(self.browser)
         view.remediate.click()
+
+    def get_host_facts(self, entity_name, fact=None):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe()
+        view.wait_displayed()
+        self.browser.wait_for_element(view.dropdown, exception=False)
+        view.dropdown.item_select('Facts')
+        host_facts_view = HostFactView(self.browser)
+        if fact:
+            host_facts_view.searchbox.search(fact)
+            if host_facts_view.expand_fact_value.is_displayed:
+                host_facts_view.expand_fact_value.click()
+        return host_facts_view.table.read()
+
+    def refresh_applicability(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.dropdown.item_select('Refresh applicability')
 
 
 @navigator.register(NewHostEntity, 'NewDetails')

@@ -1,8 +1,8 @@
 from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic.widget import Checkbox, ParametrizedView, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb, Tab
-from widgetastic_patternfly4 import Button, Dropdown, Radio as PF4Radio
+from widgetastic_patternfly4 import Button, Dropdown, Modal, Radio as PF4Radio, Select
 from widgetastic_patternfly4.ouia import (
     Button as PF4Button,
     ExpandableTable,
@@ -13,6 +13,9 @@ from widgetastic_patternfly4.ouia import (
 
 from airgun.views.common import (
     BaseLoggedInView,
+    NewAddRemoveResourcesView,
+    PF4LCECheckSelectorGroup,
+    PF4LCESelectorGroup,
     SearchableViewMixinPF4,
 )
 from airgun.widgets import (
@@ -27,66 +30,40 @@ from airgun.widgets import (
 LOCATION_NUM = 3
 
 
-class NewAddRemoveResourcesView(View):
-    searchbox = PF4Search()
-    type = Dropdown(
-        locator='.//div[contains(@class, "All repositories") or'
-        ' contains(@aria-haspopup="listbox")]'
-    )
-    Status = Dropdown(
-        locator='.//div[contains(@class, "All") or contains(@aria-haspopup="listbox")]'
-    )
-    add_repo = PF4Button('OUIA-Generated-Button-secondary-2')
-    # Need to add kebab menu
+class ContentViewAddResourcesView(NewAddRemoveResourcesView):
+    remove_button = Dropdown(locator='.//div[@data-ouia-component-id="cv-components-bulk-actions"]')
+    add_button = Button(locator='.//button[@data-ouia-component-id="add-content-views"]')
     table = PatternflyTable(
-        component_id='OUIA-Generated-Table-4',
+        component_id='content-view-components-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Type': Text('.//a'),
             'Name': Text('.//a'),
-            'Product': Text('.//a'),
-            'Sync State': Text('.//a'),
-            'Content': Text('.//a'),
+            'Version': Text('.//a'),
+            'Environments': Text('.//td[5]'),
+            'Repositories': Text('.//a'),
             'Status': Text('.//a'),
+            'Description': Text('.//a'),
+            8: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
         },
     )
 
-    def search(self, value):
-        """Search for specific available resource and return the results"""
-        self.searchbox.search(value)
-        wait_for(
-            lambda: self.table.is_displayed is True,
-            timeout=60,
-            delay=1,
-        )
-        self.table.wait_displayed()
-        return self.table.read()
+    @property
+    def is_displayed(self):
+        return self.table.is_displayed
 
-    def add(self, value):
-        """Associate specific resource"""
-        self.search(value)
-        next(self.table.rows())[0].widget.fill(True)
-        self.add_repo.click()
 
-    def fill(self, values):
-        """Associate resource(s)"""
-        if not isinstance(values, list):
-            values = [values]
-        for value in values:
-            self.add(value)
+class AddContentViewModal(BaseLoggedInView):
+    title = Text('.//div[@data-ouia-component-id="add-content-views"]')
+    submit_button = PF4Button('add-components-modal-add')
+    cancel_button = PF4Button('add-components-modal-cancel')
 
-    def remove(self, value):
-        """Unassign some resource(s).
-        :param str or list values: string containing resource name or a list of
-        such strings.
-        """
-        self.search(value)
-        next(self.table.rows())[0].widget.fill(True)
-        self.remove_button.click()
+    version_select = Select(locator=".//div[@data-ouia-component-id='add-content-views']")
+    always_update = Checkbox(locator=".//input[@class='pf-c-check__input']")
 
-    def read(self):
-        """Read all table values from both resource tables"""
-        return self.table.read()
+    @property
+    def is_displayed(self):
+        return self.title.is_displayed
 
 
 class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -95,7 +72,9 @@ class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
     table = ExpandableTable(
         component_id='content-views-table',
         column_widgets={
+            'Type': Text('./a'),
             'Name': Text('./a'),
+            'Last Published': ('./a'),
             'Last task': Text('.//a'),
             'Latest version': Text('.//a'),
         },
@@ -114,22 +93,11 @@ class ContentViewCreateView(BaseLoggedInView):
     submit = PF4Button('create-content-view-form-submit')
     cancel = PF4Button('create-content-view-form-cancel')
 
-    @View.nested
-    class component(View):
-        component_tile = Text('//div[contains(@id, "component")]')
-        solve_dependencies = Checkbox(id='dependencies')
-        import_only = Checkbox(id='importOnly')
-
-        def child_widget_accessed(self, widget):
-            self.component_tile.click()
-
-    @View.nested
-    class composite(View):
-        composite_tile = Text('//div[contains(@id, "composite")]')
-        auto_publish = Checkbox(id='autoPublish')
-
-        def child_widget_accessed(self, widget):
-            self.composite_tile.click()
+    component_tile = Text('//div[contains(@id, "component")]')
+    solve_dependencies = Checkbox(id='dependencies')
+    import_only = Checkbox(id='importOnly')
+    composite_tile = Text('//div[contains(@id, "composite")]')
+    auto_publish = Checkbox(id='autoPublish')
 
     @property
     def is_displayed(self):
@@ -174,7 +142,7 @@ class ContentViewEditView(BaseLoggedInView):
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
                 'Version': Text('.//a'),
-                'Environments': Text('.//a'),
+                'Environments': Text('.//td[3]'),
                 'Packages': Text('.//a'),
                 'Errata': Text('.//a'),
                 'Additional content': Text('.//a'),
@@ -200,7 +168,7 @@ class ContentViewEditView(BaseLoggedInView):
     class content_views(Tab):
         TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/contentviews")]')
 
-        resources = View.nested(NewAddRemoveResourcesView)
+        resources = View.nested(ContentViewAddResourcesView)
 
     @View.nested
     class repositories(Tab):
@@ -239,14 +207,13 @@ class ContentViewVersionPublishView(BaseLoggedInView):
     description = TextInput(id='description')
     promote = Switch('promote-switch')
 
-    # review screen only has info to review
-    # shared buttons at bottom for popup for both push and review section
-    next = Button('Next')
-    finish = Button('Finish')
-    back = Button('Back')
-    cancel = Button('Cancel')
+    next_button = Button('Next')
+    finish_button = Button('Finish')
+    back_button = Button('Back')
+    cancel_button = Button('Cancel')
     close_button = Button('Close')
     progressbar = PF4ProgressBar('.//div[contains(@class, "pf-c-wizard__main-body")]')
+    lce_selector = ParametrizedView.nested(PF4LCECheckSelectorGroup)
 
     @property
     def is_displayed(self):
@@ -271,6 +238,15 @@ class ContentViewVersionPublishView(BaseLoggedInView):
             delay=1,
             logger=self.logger,
         )
+
+
+class ContentViewVersionPromoteView(Modal):
+    ROOT = './/div[@data-ouia-component-id="promote-version"]'
+
+    description = Text('.//h2[@data-ouia-component-id="description-text-value"]')
+    lce_selector = ParametrizedView.nested(PF4LCESelectorGroup)
+    promote_btn = Button(locator='//button[normalize-space(.)="Promote"]')
+    cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
 
 
 class ContentViewVersionDetailsView(BaseLoggedInView):
