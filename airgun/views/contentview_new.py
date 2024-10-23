@@ -111,9 +111,19 @@ class ContentViewCreateView(BaseLoggedInView):
 class ContentViewEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb('breadcrumbs-list')
     search = PF4Search()
-    actions = ActionsDropdown(".//button[contains(@id, 'toggle-dropdown')]")
-    publish = PF4Button('cv-details-publish-button')
     dialog = ConfirmationDialog()
+    publish = PF4Button('cv-details-publish-button')
+    # click the cv_actions dropdown, then click copy or delete
+    cv_actions = ActionsDropdown('//div[@data-ouia-component-id="cv-details-actions"]')
+    cv_copy = Text('//a[@data-ouia-component-id="cv-copy"]')
+    cv_delete = Text('//a[@data-ouia-component-id="cv-delete"]')
+
+    # buttons for wizard: deleting a CV with Version promoted to environment(s)
+    next_button = Button('Next')
+    delete_finish = Button('Delete')
+    back_button = Button('Back')
+    cancel_button = Button('Cancel')
+    close_button = Button('Close')
 
     @property
     def is_displayed(self):
@@ -252,12 +262,22 @@ class ContentViewVersionPromoteView(Modal):
 class ContentViewVersionDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     version = Text(locator='.//h2[@data-ouia-component-id="cv-version"]')
+    version_dropdown = Dropdown(
+        locator='.//div[@data-ouia-component-id="cv-version-header-actions-dropdown"]'
+    )
     promoteButton = PF4Button(
         locator='.//button[@data-ouia-component-id="cv-details-publish-button"]'
     )
     editDescription = PF4Button(
         locator='.//button[@data-ouia-component-id="edit-button-description"]'
     )
+    # buttons for wizard: deleting a version promoted to environment(s)
+    next_button = Button('Next')
+    delete_finish = Button('Delete')
+    back_button = Button('Back')
+    cancel_button = Button('Cancel')
+    close_button = Button('Close')
+    progressbar = PF4ProgressBar('.//div[contains(@class, "pf-c-wizard__main-body")]')
 
     @View.nested
     class repositories(Tab):
