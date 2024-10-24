@@ -314,9 +314,9 @@ class ComputeResourceVMwareProfileControllerVolumeList(RemovableWidgetsItemsList
     """VMware Compute Resource Profile SCSI Controller Volumes List"""
 
     ROOT = "."
+    add_item_button = Text(".//button[contains(@class, 'add-disk')]")
     ITEMS = ".//div[@class='disk-container']"
     ITEM_WIDGET_CLASS = ComputeResourceVMwareProfileControllerVolumeItem
-    add_item_button = Text(".//button[contains(@class, 'add-disk')]")
 
 
 class ComputeResourceVMwareProfileStorageItem(GenericRemovableWidgetItem):
