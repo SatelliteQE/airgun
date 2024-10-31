@@ -10,6 +10,7 @@ from fauxfactory import gen_string
 
 from airgun import settings
 from airgun.browser import AirgunBrowser, SeleniumBrowserFactory
+from airgun.entities.about import AboutEntity
 from airgun.entities.acs import AcsEntity
 from airgun.entities.activationkey import ActivationKeyEntity
 from airgun.entities.all_hosts import AllHostsEntity
@@ -37,8 +38,10 @@ from airgun.entities.discoveryrule import DiscoveryRuleEntity
 from airgun.entities.domain import DomainEntity
 from airgun.entities.eol_banner import EOLBannerEntity
 from airgun.entities.errata import ErrataEntity
+from airgun.entities.fact_value import FactValueEntity
 from airgun.entities.file import FilesEntity
 from airgun.entities.filter import FilterEntity
+from airgun.entities.global_parameter import GlobalParameterEntity
 from airgun.entities.hardware_model import HardwareModelEntity
 from airgun.entities.host import HostEntity
 from airgun.entities.host_new import NewHostEntity
@@ -329,6 +332,11 @@ class Session:
         return self._open(AcsEntity)
 
     @cached_property
+    def about(self):
+        """Instance of About entity."""
+        return self._open(AboutEntity)
+
+    @cached_property
     def activationkey(self):
         """Instance of Activation Key entity."""
         return self._open(ActivationKeyEntity)
@@ -458,6 +466,11 @@ class Session:
         return self._open(ErrataEntity)
 
     @cached_property
+    def factvalue(self):
+        """Instance of Fact Value entity."""
+        return self._open(FactValueEntity)
+
+    @cached_property
     def filter(self):
         """Instance of Filter entity."""
         return self._open(FilterEntity)
@@ -466,6 +479,11 @@ class Session:
     def file(self):
         """Instance of Files entity."""
         return self._open(FilesEntity)
+
+    @cached_property
+    def global_parameter(self):
+        """Instance of Global Parameters entity."""
+        return self._open(GlobalParameterEntity)
 
     @cached_property
     def hardwaremodel(self):
