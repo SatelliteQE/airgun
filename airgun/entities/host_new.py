@@ -331,6 +331,7 @@ class NewHostEntity(HostEntity):
     def get_packages(self, entity_name, search=""):
         """Filter installed packages on host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.content.packages.wait_displayed()
         view.content.packages.select()
         view.content.packages.table.wait_displayed()
         view.content.packages.searchbar.fill(search)
