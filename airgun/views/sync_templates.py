@@ -44,6 +44,13 @@ class SyncTemplatesView(BaseLoggedInView):
         negate = Checkbox(name='import.negate')
         prefix = TextInput(name='import.prefix')
         repo = TextInput(name='import.repo')
+        http_proxy_policy = Select(name='import.http_proxy_policy')
+        http_proxy_id = Select(name='import.http_proxy_id')
+
+        def fill(self, items):
+            if 'http_proxy_id' in items:
+                self.http_proxy_policy.fill(items['http_proxy_policy'])
+            super().fill(items)
 
     @template.register('Export')
     class ExportTemplates(View):
@@ -53,6 +60,8 @@ class SyncTemplatesView(BaseLoggedInView):
         metadata_export_mode = Select(name='export.metadata_export_mode')
         negate = Checkbox(name='export.negate')
         repo = TextInput(name='export.repo')
+        http_proxy_policy = Select(name='export.http_proxy_policy')
+        http_proxy_id = Select(name='export.http_proxy_id')
 
 
 class TemplatesReportView(BaseLoggedInView):
