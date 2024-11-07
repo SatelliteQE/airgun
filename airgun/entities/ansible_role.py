@@ -51,6 +51,13 @@ class AnsibleRolesEntity(BaseEntity):
         view.submit.click()
         return available_roles_count
 
+    def read_all(self):
+        """Read all roles before importing"""
+        view = self.navigate_to(self, 'Import')
+        view.dropdown.click()
+        view.max_per_pg.click()
+        return view.roles.read()
+
 
 @navigator.register(AnsibleRolesEntity, 'All')
 class ShowAllRoles(NavigateStep):
