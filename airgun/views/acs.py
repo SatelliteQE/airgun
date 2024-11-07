@@ -132,7 +132,7 @@ class AddAlternateContentSourceModal(View):
     @View.nested
     class select_capsule(WizardStepView, DualListSelector):
         expander = Text(
-            './/button[contains(.,"Select smart proxy") or contains(.,"Select capsule")]'
+            './/button[contains(.,"Select Smart proxy") or contains(.,"Select Capsule")]'
         )
         use_http_proxies = OUIASwitch('use-http-proxies-switch')
 
