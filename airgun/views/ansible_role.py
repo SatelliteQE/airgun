@@ -45,6 +45,9 @@ class AnsibleRolesImportView(BaseLoggedInView):
             0: Checkbox(locator='.//input[@type="checkbox"]'),
         },
     )
+    roles = Text("//table[contains(@class, 'pf-c-table')]")
+    dropdown = Text("//button[contains(@class, 'pf-c-options-menu')]")
+    max_per_pg = Text("//ul[contains(@class, 'pf-c-options-menu')]/li[6]")
     pagination = CompactPagination()
     submit = Button('Submit')
     cancel = Button('Cancel')
