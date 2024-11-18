@@ -28,6 +28,7 @@ class RedHatRepositoryEntity(BaseEntity):
         :param recommended_repo: on/off RH recommended repositories
         """
         view = self.navigate_to(self, 'All')
+        view.wait_displayed()
 
         if recommended_repo:
             current_value = self.browser.get_attribute(
@@ -67,6 +68,7 @@ class RedHatRepositoryEntity(BaseEntity):
         :param bool orphaned: Whether the repository is Orphaned
         """
         view = self.navigate_to(self, 'All')
+        view.wait_displayed()
         view.search(f'name = "{entity_name}"', category='Enabled')
         entity_text = f'{entity_name} (Orphaned)' if orphaned else entity_name
         view.enabled.items(name=entity_text)[0].disable()
