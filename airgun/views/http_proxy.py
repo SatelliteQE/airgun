@@ -1,4 +1,4 @@
-from widgetastic.widget import Table, Text, TextInput, View
+from widgetastic.widget import Checkbox, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
@@ -46,6 +46,7 @@ class HTTPProxyCreateView(BaseLoggedInView):
         password = TextInput(id='http_proxy_password')
         test_url = TextInput(id='http_proxy_test_url')
         test_connection = Text('//a[@id="test_connection_button"]')
+        content_default_http_proxy = Checkbox(id='content_default_http_proxy')
 
     @View.nested
     class locations(SatTab):
