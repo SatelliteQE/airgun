@@ -16,7 +16,6 @@ from widgetastic_patternfly4.ouia import (
     ExpandableTable,
     FormSelect as OUIAFormSelect,
     PatternflyTable,
-    Select as OUIASelect,
 )
 
 from airgun.views.common import BaseLoggedInView
@@ -772,7 +771,6 @@ class EditSystemPurposeView(View):
     sla = OUIAFormSelect('service-level-select')
     usage = OUIAFormSelect('usage-select')
     release_version = OUIAFormSelect('release-version-select')
-    add_ons = OUIASelect('syspurpose-addons-select')
 
     save = OUIAButton('save-syspurpose')
     cancel = OUIAButton('cancel-syspurpose')

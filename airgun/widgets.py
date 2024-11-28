@@ -1685,7 +1685,7 @@ class CheckboxGroup(GenericLocatorWidget):
         """Check or uncheck one of the checkboxes
 
         :param value: string with specification of fields' values
-            Example: value={'details.addons': {'Test addon 1': True, 'Test addon 2': False}}
+            Example: value={'details.role': {'Test role 1': True, 'Test role 2': False}}
         """
         for name, value in values.items():
             self.checkboxes[name].fill(value)
