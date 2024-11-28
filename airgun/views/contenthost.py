@@ -29,7 +29,6 @@ from airgun.widgets import (
     ConfirmationDialog,
     EditableEntry,
     EditableEntryCheckbox,
-    EditableEntryMultiCheckbox,
     EditableEntrySelect,
     Pagination,
     ReadOnlyEntry,
@@ -147,7 +146,6 @@ class ContentHostDetailsView(BaseLoggedInView):
         service_level = EditableEntrySelect(name='Service Level (SLA)')
         usage_type = EditableEntrySelect(name='Usage Type')
         role = EditableEntrySelect(name='Role')
-        addons = EditableEntryMultiCheckbox(name='Add ons')
         # Content Host Properties
         os = ReadOnlyEntry(
             locator=".//dt[.='OS']/following-sibling::dd[not(contains(@class, 'ng-hide'))]"
