@@ -268,6 +268,9 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
     promoteButton = PF4Button(
         locator='.//button[@data-ouia-component-id="cv-details-publish-button"]'
     )
+    version_dropdown = Dropdown(
+        locator='.//div[@data-ouia-component-id="cv-version-header-actions-dropdown"]'
+    )
     editDescription = PF4Button(
         locator='.//button[@data-ouia-component-id="edit-button-description"]'
     )
@@ -347,8 +350,10 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        title_loaded = self.browser.wait_for_element(self.version, exception=False)
         return (
             breadcrumb_loaded
+            and title_loaded
             and len(self.breadcrumb.locations) > LOCATION_NUM
             and self.breadcrumb.locations[0] == 'Content views'
             and self.breadcrumb.locations[2] == 'Versions'
