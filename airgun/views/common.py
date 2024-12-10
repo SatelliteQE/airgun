@@ -539,6 +539,7 @@ class TemplateEditor(View):
     rendering_options = ItemsList(".//div[contains(@class,'navbar-editor')]/ul")
     import_template = Button(id='import-btn')
     fullscreen = Button(id='fullscreen-btn')
+    error = Text(".//div[@id='preview_error_toast']")
     editor = ACEEditor()
 
 
