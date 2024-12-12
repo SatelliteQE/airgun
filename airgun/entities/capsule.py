@@ -281,12 +281,14 @@ class CapsuleEntity(BaseEntity):
 
         self.sync(capsule_name, 'Complete Sync')
 
-    def refresh_lce_counts(self, capsule_name, lce_name):
+    def refresh_lce_counts(self, capsule_name, lce_name, cv_name=None):
         """
-        Function that refreshes LCE counts of given capsule
+        Function that refreshes the content counts of given capsule
 
         Args:
             capsule_name (str): Name of capsule to be refreshed
+            lce_name (str): Name of LCE to be refreshed
+            cv_name (str, optional): Name of CV within LCE to be refreshed only
         """
 
         view = self.navigate_to(self, 'Capsules')
@@ -294,9 +296,15 @@ class CapsuleEntity(BaseEntity):
         view.table.row(name=capsule_name)['Name'].click()
         view = CapsuleDetailsView(self.browser)
         view.wait_displayed()
-        view.content.top_content_table.row(Environment=lce_name)[3].widget.item_select(
-            'Refresh counts'
-        )
+        if not cv_name:
+            view.content.top_content_table.row(Environment=lce_name)[3].widget.item_select(
+                'Refresh counts'
+            )
+        else:
+            view.content.top_content_table.row(Environment=lce_name)[0].click()
+            view.content.mid_content_table.row(content_view=cv_name)[5].widget.item_select(
+                'Refresh counts'
+            )
 
 
 @navigator.register(CapsuleEntity, 'Capsules')
