@@ -194,7 +194,9 @@ class RepositoryCategoryView(View):
         items = []
         for index, _ in enumerate(self.browser.elements(self.ITEMS, parent=self)):
             item = self.ITEM_WIDGET(self, f'{self.ITEMS}[{index + 1}]')
-            if name is not None and item.name != name or label is not None and item.label != label:
+            if (name is not None and item.name != name) or (
+                label is not None and item.label != label
+            ):
                 continue
             items.append(item)
         return items
