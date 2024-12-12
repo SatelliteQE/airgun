@@ -248,7 +248,7 @@ class NewContentViewEntity(BaseEntity):
             if 'Item "Republish repository metadata"' and 'is disabled' in error.args[0]:
                 return True
         return 'No error was found, metadata unexpectedly was able to be published.'
-      
+
     def promote(self, entity_name, version_name, lce_name):
         """Promotes the selected version of content view to given environment.
         :return: dict with new content view version table row; contains keys
