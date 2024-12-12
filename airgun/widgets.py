@@ -449,7 +449,7 @@ class MultiSelect(GenericLocatorWidget):
 
     def __init__(self, parent, locator=None, id=None, logger=None):
         """Supports initialization via ``locator=`` or ``id=``"""
-        if locator and id or not locator and not id:
+        if (locator and id) or (not locator and not id):
             raise TypeError('Please specify either locator or id')
         locator = locator or f".//div[@id='{id}']"
         super().__init__(parent, locator, logger)
@@ -986,7 +986,7 @@ class FilteredDropdown(GenericLocatorWidget):
 
     def __init__(self, parent, id=None, locator=None, logger=None):
         """Supports initialization via ``id=`` or ``locator=``"""
-        if locator and id or not locator and not id:
+        if (locator and id) or (not locator and not id):
             raise ValueError('Please specify either locator or id')
         locator = locator or f".//div[contains(@id, '{id}')]"
         super().__init__(parent, locator, logger)
@@ -1036,11 +1036,8 @@ class CustomParameter(Table):
 
     def __init__(self, parent, **kwargs):
         """Supports initialization via ``locator=`` or ``id=``"""
-        if (
-            kwargs.get('locator')
-            and kwargs.get('id')
-            or not kwargs.get('locator')
-            and not kwargs.get('id')
+        if (kwargs.get('locator') and kwargs.get('id')) or (
+            not kwargs.get('locator') and not kwargs.get('id')
         ):
             raise ValueError('Please specify either locator or id')
         locator = kwargs.get('locator') or f".//table[@id='{kwargs.pop('id')}']"
@@ -1380,7 +1377,7 @@ class EditableEntry(GenericLocatorWidget):
 
     def __init__(self, parent, locator=None, name=None, logger=None):
         """Supports initialization via ``locator=`` or ``name=``"""
-        if locator and name or not locator and not name:
+        if (locator and name) or (not locator and not name):
             raise TypeError('Please specify either locator or name')
         locator = locator or f".//dt[normalize-space(.)='{name}']/following-sibling::dd[1]"
         super().__init__(parent, locator, logger)
@@ -1536,7 +1533,7 @@ class ReadOnlyEntry(GenericLocatorWidget):
 
     def __init__(self, parent, locator=None, name=None, logger=None):
         """Supports initialization via ``locator=`` or ``name=``"""
-        if locator and name or not locator and not name:
+        if (locator and name) or (not locator and not name):
             raise TypeError('Please specify either locator or name')
         locator = locator or self.BASE_LOCATOR.format(name)
         super().__init__(parent, locator, logger)
