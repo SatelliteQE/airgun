@@ -76,7 +76,7 @@ select = [
     "T100", # Trace found: {name} used
     "T20", # flake8-print
     "TRY004", # Prefer TypeError exception for invalid type
-    "TRY302", # Remove exception handler; error is immediately re-raised
+    "TRY203", # Remove exception handler; error is immediately re-raised
     "PLR0911", # Too many return statements ({returns} > {max_returns})
     "PLR2004", # Magic value used in comparison, consider replacing {value} with a constant variable
     "PLW2901", # Outer {outer_kind} variable {name} overwritten by inner {inner_kind} target

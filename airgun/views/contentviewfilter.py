@@ -99,7 +99,7 @@ class CVFEditableEntry(EditableEntry):
 
     def __init__(self, parent, locator=None, name=None, logger=None):
         """Supports initialization via ``locator=`` or ``name=``"""
-        if locator and name or not locator and not name:
+        if (locator and name) or (not locator and not name):
             raise TypeError('Please specify either locator or name')
         locator = (
             locator
