@@ -383,12 +383,12 @@ class Session:
 
     @cached_property
     def cloudinventory(self):
-        """Instance of RH Cloud Inventory Upload entity."""
+        """Instance of Insights Inventory Upload entity."""
         return self._open(CloudInventoryEntity)
 
     @cached_property
     def cloudinsights(self):
-        """Instance of RH Cloud Insights entity."""
+        """Instance of Insights entity."""
         return self._open(CloudInsightsEntity)
 
     @cached_property
