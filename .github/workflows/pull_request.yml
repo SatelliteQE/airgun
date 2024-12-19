@@ -7,6 +7,7 @@ on:
 
 env:
     PYCURL_SSL_LIBRARY: openssl
+    UV_SYSTEM_PYTHON: 1
 
 jobs:
   codechecks:
@@ -24,11 +25,19 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install the latest version of uv and set the Python version
+        uses: astral-sh/setup-uv@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+          cache-dependency-glob: |
+            **/requirements*.txt
+            **/setup.py
+
       - name: Install Dependencies
         run: |
           sudo apt update
-          pip install -U pip
-          pip install -U -r requirements.txt -r requirements-optional.txt
+          uv pip install -U -r requirements.txt -r requirements-optional.txt
 
       - name: Analysis (git diff)
         if: failure()
@@ -41,6 +50,7 @@ jobs:
   robottelo-cross-check:
     name: Robottelo installation cross-check
     runs-on: ubuntu-latest
+    needs: codechecks
     steps:
       - name: Checkout Airgun
         uses: actions/checkout@v4
@@ -49,6 +59,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Install the latest version of uv and set the Python version
+        uses: astral-sh/setup-uv@v4
+        with:
+          python-version: '3.12'
+          enable-cache: true
+          cache-dependency-glob: |
+            **/requirements*.txt
+            **/setup.py
 
       - name: Download robottelo's requirements.txt
         run: |
@@ -60,5 +79,4 @@ jobs:
 
       - name: Robottelo Installability
         run: |
-          pip install -U pip
-          pip install -U -r requirements-robottelo.txt -r requirements.txt -r requirements-optional.txt
+          uv pip install -U -r requirements-robottelo.txt -r requirements.txt -r requirements-optional.txt
