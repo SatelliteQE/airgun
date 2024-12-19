@@ -37,3 +37,28 @@ jobs:
       - name: Docs Build
         run: |
          make docs-html
+
+  robottelo-cross-check:
+    name: Robottelo installation cross-check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Airgun
+        uses: actions/checkout@v4
+
+      - name: Set Up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Download robottelo's requirements.txt
+        run: |
+          curl -s https://raw.githubusercontent.com/SatelliteQE/robottelo/$GITHUB_BASE_REF/requirements.txt -o requirements-robottelo.txt
+
+      - name: Remove airgun from robottelo requirements
+        run: |
+          sed -i '/airgun/d' requirements-robottelo.txt
+
+      - name: Robottelo Installability
+        run: |
+          pip install -U pip
+          pip install -U -r requirements-robottelo.txt -r requirements.txt -r requirements-optional.txt
