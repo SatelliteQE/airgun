@@ -103,6 +103,19 @@ class JobInvocationEntity(BaseEntity):
         self.browser.close_window(self.browser.window_handles[1])
         return result
 
+    def leapp_fix_inhibitor(self, entity_name, host_name, expected_state='Success'):
+        """Fix inhibitors in leapp preupgrade report"""
+        view = self.navigate_to(self, 'Job Status', entity_name=entity_name, host_name=host_name)
+        view.leapp_preupgrade_report.leapp_report_title.click()
+        wait_for(lambda: view.leapp_preupgrade_report.fix_selected.is_displayed, timeout=10)
+        view.leapp_preupgrade_report.fix_selected.click()
+        wait_for(
+            lambda: view.overview.read()['job_status'] == expected_state,
+            timeout=300,
+            delay=10,
+            logger=view.logger,
+        )
+
 
 @navigator.register(JobInvocationEntity, 'All')
 class ShowAllJobs(NavigateStep):

@@ -1,5 +1,5 @@
 from wait_for import wait_for
-from widgetastic.widget import Text, TextInput, View
+from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly4 import Button, ChipGroup, DescriptionList, Radio, Select
 from widgetastic_patternfly4.donutchart import DonutCircle, DonutLegend
@@ -180,6 +180,17 @@ class JobInvocationStatusView(BaseLoggedInView):
         total_hosts = Text(
             "//h2[contains(., 'Total hosts')]/span[@class='card-pf-aggregate-status-count']"
         )
+
+    @View.nested
+    class leapp_preupgrade_report(SatTab):
+        ROOT = '//div[@id="content"]//ul/li/a[contains(text(), "Leapp preupgrade report")][@href="#leapp_preupgrade_report"]'
+        TAB_NAME = 'Leapp preupgrade report'
+
+        leapp_report_title = Checkbox(
+            locator='//*[@id="preupgrade-report-entries-list-view"]//input[@type="checkbox"]'
+        )
+        fix_selected = Text('//*[@id="leapp_preupgrade_report"]//button[text()="Fix Selected"]')
+        run_upgrade = Text('//*[@id="leapp_preupgrade_report"]//button[text()="Run Upgrade"]')
 
     def wait_for_result(self, timeout=600, delay=1):
         """Wait for invocation job to finish"""
