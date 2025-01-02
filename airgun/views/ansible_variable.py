@@ -32,7 +32,7 @@ class MatcherActions(View):
     text input field."""
 
     matcher_key = Select(".//select")
-    matcher_value = TextInput(locator=".//input[@class='matcher_value']")
+    matcher_value = TextInput(locator=".//div[@class='matcher-group']/input")
 
 
 class NewAnsibleVariableView(BaseLoggedInView):
