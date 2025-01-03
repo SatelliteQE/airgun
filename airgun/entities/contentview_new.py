@@ -64,6 +64,21 @@ class NewContentViewEntity(BaseEntity):
         view.wait_displayed()
         return view.versions.table.read()
 
+    def check_publish_banner(self, cv_name):
+        """Check if the needs_publish banner is displayed on the content view index page"""
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        if not view.table.is_displayed:
+            # no table present, no CVs in this Org
+            return None
+        view.search(cv_name)
+        view.table[0][6].widget.item_select('Publish')
+        view = ContentViewVersionPublishView(self.browser)
+        is_displayed = view.publish_alert.is_displayed
+        view.cancel_button.click()
+        return is_displayed
+
     def delete(self, entity_name):
         """Deletes the content view by name"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
