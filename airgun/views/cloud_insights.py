@@ -7,7 +7,7 @@ from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 
 
 class CloudTokenView(BaseLoggedInView):
-    """RH Cloud Insights Landing page for adding RH Cloud Token."""
+    """Insights Landing page for adding RH Cloud Token."""
 
     rhcloud_token = TextInput(locator='//input[contains(@aria-label, "input-cloud-token")]')
     save_token = Button('Save setting and sync recommendations')
@@ -18,7 +18,7 @@ class CloudTokenView(BaseLoggedInView):
 
 
 class RemediationView(Modal):
-    """Remediation window view"""
+    """Insights Remediations modal view"""
 
     OUIA_ID = 'OUIA-Generated-Modal-large-1'
     remediate = Button('Remediate')
@@ -39,7 +39,7 @@ class RemediationView(Modal):
 
 
 class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
-    """Main RH Cloud Insights view."""
+    """Main Insights view."""
 
     title = Text('//h1[normalize-space(.)="Red Hat Insights"]')
     insights_sync_switcher = Switch('OUIA-Generated-Switch-1')

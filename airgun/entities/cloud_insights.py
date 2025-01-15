@@ -25,14 +25,14 @@ class CloudInsightsEntity(BaseEntity):
         view.remediation_window.remediate.click()
 
     def sync_hits(self):
-        """Sync RH Cloud - Insights recommendations."""
+        """Sync Insights recommendations."""
         view = self.navigate_to(self, 'All')
         view.insights_dropdown.wait_displayed()
         view.insights_dropdown.item_select('Sync recommendations')
         self.browser.plugin.ensure_page_safe(timeout='60s')
 
     def read(self, widget_names=None):
-        """Read all values for created activation key entity"""
+        """Read all values."""
         view = self.navigate_to(self, 'All')
         return view.read(widget_names=widget_names)
 
@@ -44,7 +44,7 @@ class CloudInsightsEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe(timeout='60s')
 
     def update(self, values):
-        """Update RH Cloud - Insights view."""
+        """Update Insights view."""
         view = self.navigate_to(self, 'All')
         view.fill(values)
 
@@ -68,4 +68,4 @@ class ShowCloudInsightsView(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'RH Cloud', 'Insights')
+        self.view.menu.select('Configure', 'Insights', 'Recommendations')
