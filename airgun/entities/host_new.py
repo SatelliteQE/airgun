@@ -868,6 +868,26 @@ class NewHostEntity(HostEntity):
                 host_facts_view.expand_fact_value.click()
         return host_facts_view.table.read()
 
+    def update_variable_value(self, entity_name, key, value):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        wait_for(lambda: view.ansible.variables.table.is_displayed, timeout=10)
+        # Index [5] essentially refers to the button used to edit the value. The same index is then applied to either 'Yes' or 'No' options to update the value
+        view.ansible.variables.table.row(name=key)[5].widget.click()
+        view.ansible.variables.table.row(name=key)['Value'].click()
+        view.ansible.variables.table.row(name=key)['Value'].widget.fill(value)
+        view.ansible.variables.table1.row(name=key)[5].widget.click()
+
+    def del_variable_value(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.ansible.variables.actions.click()
+        view.ansible.variables.delete.click()
+        view.ansible.variables.confirm.click()
+
+    def read_variable_value(self, entity_name, key):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        value = view.ansible.variables.table.row(name=key)['Value'].read()
+        return value
+
 
 @navigator.register(NewHostEntity, 'NewDetails')
 class ShowNewHostDetails(NavigateStep):
