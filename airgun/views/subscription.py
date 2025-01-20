@@ -23,7 +23,7 @@ from airgun.widgets import (
 # Search field and button on Subscriptions page uses different locators,
 # so subclass it and use it in our custom SearchableViewMixin
 class SubscriptionSearch(Search):
-    search_field = TextInput(locator=(".//input[starts-with(@id, 'downshift-')]"))
+    search_field = TextInput(locator=(".//input[@placeholder = 'Search']"))
     search_button = Button('Search')
 
 
