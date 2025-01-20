@@ -10,7 +10,7 @@ from widgetastic.widget import (
 from widgetastic_patternfly import BreadCrumb, Button
 
 from airgun.exceptions import ReadOnlyWidgetError
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
 from airgun.widgets import (
     ConfirmationDialog,
     ItemsListReadOnly,
@@ -23,11 +23,11 @@ from airgun.widgets import (
 # Search field and button on Subscriptions page uses different locators,
 # so subclass it and use it in our custom SearchableViewMixin
 class SubscriptionSearch(Search):
-    search_field = TextInput(locator=(".//input[@placeholder = 'Search']"))
+    search_field = TextInput(locator=(".//input[starts-with(@id, 'downshift-')]"))
     search_button = Button('Search')
 
 
-class SubscriptionSearchableViewMixin(SearchableViewMixin):
+class SubscriptionSearchableViewMixin(SearchableViewMixinPF4):
     searchbox = SubscriptionSearch()
 
 
