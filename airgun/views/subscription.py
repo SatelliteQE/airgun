@@ -115,7 +115,7 @@ class SubscriptionColumnsFilter(GenericLocatorWidget):
         self.close()
 
 
-class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
+class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
     """List of all subscriptions."""
 
     table = SatSubscriptionsViewTable(
