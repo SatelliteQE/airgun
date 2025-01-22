@@ -16,19 +16,7 @@ from airgun.widgets import (
     ItemsListReadOnly,
     ProgressBar,
     SatTable,
-    Search,
 )
-
-
-# Search field and button on Subscriptions page uses different locators,
-# so subclass it and use it in our custom SearchableViewMixin
-class SubscriptionSearch(Search):
-    search_field = TextInput(locator=(".//input[starts-with(@id, 'downshift-')]"))
-    search_button = Button('Search')
-
-
-class SubscriptionSearchableViewMixin(SearchableViewMixinPF4):
-    searchbox = SubscriptionSearch()
 
 
 class DeleteSubscriptionConfirmationDialog(ConfirmationDialog):
@@ -115,7 +103,7 @@ class SubscriptionColumnsFilter(GenericLocatorWidget):
         self.close()
 
 
-class SubscriptionListView(BaseLoggedInView, SubscriptionSearchableViewMixin):
+class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
     """List of all subscriptions."""
 
     table = SatSubscriptionsViewTable(
