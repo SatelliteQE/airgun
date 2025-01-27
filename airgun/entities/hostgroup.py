@@ -42,7 +42,9 @@ class HostGroupEntity(BaseEntity):
     def read(self, entity_name, widget_names=None):
         """Read values from host group edit page"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.read(widget_names=widget_names)
+        value = view.read(widget_names=widget_names)
+        view.submit.click()
+        return value
 
     def read_all(self):
         """Read values from host groups title page"""
