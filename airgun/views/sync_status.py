@@ -58,6 +58,11 @@ class SyncStatusTableNode:
         """Return whether this node is a child of node"""
         return f'child-of-{node.id}' in self.browser.get_attribute('class', self.row)
 
+    @property
+    def is_displayed(self):
+        """Returns whether this node is displayed"""
+        return 'display: none' not in self.browser.get_attribute('style', self.row)
+
     @cached_property
     def name(self):
         """Return the name of this node, the node name is the text content of
@@ -132,16 +137,17 @@ class SyncStatusTableNode:
         self.children[node.name] = node
 
     def read(self):
-        """Read this node and sub nodes if exist"""
-        if self.is_section:
-            data = {}
-            # ensure expanded before read
-            self.expand()
-            for child_name, child_node in self.children.items():
-                data[child_name] = child_node.read()
-        else:
-            data = self.row.read()
-        return data
+        """Read this node and sub nodes if exist and displayed"""
+        if self.is_displayed:
+            if self.is_section:
+                data = {}
+                # ensure expanded before read
+                self.expand()
+                for child_name, child_node in self.children.items():
+                    data[child_name] = child_node.read()
+            else:
+                data = self.row.read()
+            return data
 
     def select(self, value):
         """Select or un-select if checkbox is in the row, the checkbox exist
@@ -191,31 +197,32 @@ class SyncStatusTable(SatTable):
         last_section_node = None
         for row_index, row in enumerate(self):
             node = SyncStatusTableNode(row=row)
-            if node.is_root:
-                # Root nodes are essentially product names.
-                node.expand()
-                nodes[node.name] = node
-                last_section_node = node
-            else:
-                # go throw last node parents to find the parent, if that parent
-                # is found set it as last section parent.
-                parent_node = last_section_node
-                while parent_node:
-                    if node.is_child_of(parent_node):
-                        parent_node.add_child(node)
-                        if node.is_section:
-                            node.expand()
-                            last_section_node = node
-                        else:
-                            last_section_node = parent_node
-                        break
-                    parent_node = parent_node.parent
+            if node.is_displayed:
+                if node.is_root:
+                    # Root nodes are essentially product names.
+                    node.expand()
+                    nodes[node.name] = node
+                    last_section_node = node
                 else:
-                    # We have not found a parent for this node,
-                    # this has not to happen, but in any case raise exception
-                    raise ParentNodeNotFoundError(
-                        f'Parent node for row index = {row_index} not found'
-                    )
+                    # go throw last node parents to find the parent, if that parent
+                    # is found set it as last section parent.
+                    parent_node = last_section_node
+                    while parent_node:
+                        if node.is_child_of(parent_node):
+                            parent_node.add_child(node)
+                            if node.is_section:
+                                node.expand()
+                                last_section_node = node
+                            else:
+                                last_section_node = parent_node
+                            break
+                        parent_node = parent_node.parent
+                    else:
+                        # We have not found a parent for this node,
+                        # this has not to happen, but in any case raise exception
+                        raise ParentNodeNotFoundError(
+                            f'Parent node for row index = {row_index} not found'
+                        )
         return nodes
 
     def read(self):
