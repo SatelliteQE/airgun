@@ -9,16 +9,18 @@ from airgun.views.sync_status import SyncStatusView
 class SyncStatusEntity(BaseEntity):
     endpoint_path = '/katello/sync_management'
 
-    def read(self, widget_names=None):
+    def read(self, widget_names=None, active_only=False):
         """Read all widgets at Sync status entity"""
         view = self.navigate_to(self, 'All')
+        view.active_only.fill(active_only)
         return view.read(widget_names=widget_names)
 
-    def synchronize(self, repository_paths, timeout=3600):
+    def synchronize(self, repository_paths, synchronous=True, timeout=3600):
         """Synchronize repositories
 
         :param repository_paths: A list of repositories to synchronize
             where each element of the list is path to repository represented by a list or tuple.
+        :param synchrounous: bool if to wait for all repos sync, defaults to True.
         :param timeout: time to wait for all repositories to be synchronized.
 
         Usage::
@@ -38,12 +40,13 @@ class SyncStatusEntity(BaseEntity):
         for repo_node in repo_nodes:
             repo_node.fill(True)
         view.synchronize_now.click()
-        wait_for(
-            lambda: all(node.progress is None for node in repo_nodes),
-            timeout=timeout,
-            delay=5,
-            logger=view.logger,
-        )
+        if synchronous:
+            wait_for(
+                lambda: all(node.progress is None for node in repo_nodes),
+                timeout=timeout,
+                delay=5,
+                logger=view.logger,
+            )
 
         return [node.result for node in repo_nodes]
 
