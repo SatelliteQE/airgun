@@ -56,4 +56,4 @@ class ShowCloudInventoryListView(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Insights', 'Inventory Upload')
+        self.view.menu.select('Insights', 'Inventory Upload')
