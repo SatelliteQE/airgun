@@ -49,6 +49,17 @@ class UserEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def invalidate_jwt(self, entity_name):
+        """Invalidate JSON Web Token of an user entity"""
+        view = self.navigate_to(self, 'All')
+        view.search(entity_name)
+        if view.dropdown.is_displayed:
+            view.dropdown.click()
+        view.invalidate_jwt.click()
+        view.dialog.confirm_dialog.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
 
 @navigator.register(UserEntity, 'All')
 class ShowAllUsers(NavigateStep):
