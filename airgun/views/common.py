@@ -326,6 +326,7 @@ class PF4LCECheckSelectorGroup(PF4LCESelectorGroup):
 
 class PF4LCEGroup(ParametrizedLocator):
     "Group of LCE indicators"
+
     ROOT = './/td and '
 
     PARAMETERS = ('lce_name',)
