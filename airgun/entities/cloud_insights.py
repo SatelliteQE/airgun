@@ -57,7 +57,7 @@ class SaveCloudTokenView(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Insights')
+        self.view.menu.select('Insights')
 
 
 @navigator.register(CloudInsightsEntity, 'All')
@@ -68,4 +68,4 @@ class ShowCloudInsightsView(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Insights', 'Recommendations')
+        self.view.menu.select('Insights', 'Recommendations')
