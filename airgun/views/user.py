@@ -8,6 +8,9 @@ from airgun.widgets import FilteredDropdown, MultiSelect
 class UsersView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Users']")
     new = Text("//a[contains(@href, '/users/new')]")
+    dropdown = Text("//a[@href='#' and contains(@class, 'dropdown-toggle')]")
+    invalidate_jwt = Text('.//a[@data-method="patch"]')
+    impersonate_user = Text('.//a[@data-method="post"]')
     table = Table(
         './/table',
         column_widgets={
