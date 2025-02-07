@@ -40,7 +40,7 @@ class InventoryItemsView(Accordion):
     @View.nested
     class generating(InventoryTab):
         process = Text('.//div[contains(@class, "tab-header")]/div[1]')
-        restart = Button('Restart')
+        restart = Button('Generate and upload report')
         terminal = Text(
             './/div[contains(@class, "report-generate")]//div[contains(@class, "terminal")]'
         )
@@ -110,11 +110,11 @@ class CloudInventoryListView(BaseLoggedInView):
     obfuscate_hostnames = Switch('.//label[@for="rh-cloud-switcher-obfuscate_inventory_hostnames"]')
     obfuscate_ips = Switch('.//label[@for="rh-cloud-switcher-obfuscate_inventory_ips"]')
     exclude_packages = Switch('.//label[@for="rh-cloud-switcher-exclude_installed_packages"]')
-    cloud_connector = Pf4Button(locator='//button[normalize-space(.)="Configure Cloud Connector"]')
+    cloud_connector = Pf4Button(locator='//button[normalize-space(.)="Configure cloud connector"]')
     reconfigure_cloud_connector = Pf4Button(
-        locator='//button[normalize-space(.)="Reconfigure Cloud Connector"]'
+        locator='//button[normalize-space(.)="Reconfigure cloud connector"]'
     )
-    sync_status = Pf4Button(locator='//button[normalize-space(.)="Sync inventory status"]')
+    sync_status = Pf4Button(locator='//button[normalize-space(.)="Sync all inventory status"]')
     inventory_list = View.nested(InventoryItemsView)
 
     @property
