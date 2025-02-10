@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12', '3.13']
     steps:
       - name: Checkout Airgun
         uses: actions/checkout@v4
@@ -51,6 +51,9 @@ jobs:
     name: Robottelo installation cross-check
     runs-on: ubuntu-latest
     needs: codechecks
+    strategy:
+      matrix:
+        python-version: ['3.13']
     steps:
       - name: Checkout Airgun
         uses: actions/checkout@v4
@@ -58,12 +61,12 @@ jobs:
       - name: Set Up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: ${{ matrix.python-version }}
 
       - name: Install the latest version of uv and set the Python version
         uses: astral-sh/setup-uv@v5
         with:
-          python-version: '3.12'
+          python-version: ${{ matrix.python-version }}
           enable-cache: true
           cache-dependency-glob: |
             **/requirements*.txt
