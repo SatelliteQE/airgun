@@ -1155,19 +1155,21 @@ class FilteredDropdown(GenericLocatorWidget):
 
     """
 
-    selected_value = Text("./a/span[contains(@class, 'chosen')]")
-    open_filter = Text("./a/span[contains(@class, 'arrow')]")
+    selected_value = Text("./ancestor::div[1]//span/span[contains(@class, 'rendered')]")
+    open_filter = Text("./ancestor::div[1]//span/span[contains(@class, 'arrow')]")
     clear_filter = Text("./a/abbr")
-    filter_criteria = TextInput(locator="//div[@id='select2-drop']//input")
+    filter_criteria = TextInput(
+        locator="//span[@class='select2-search select2-search--dropdown']//input"
+    )
     filter_content = ItemsList(
-        "//div[not(contains(@style, 'display: none')) and @id='select2-drop']/ul"
+        "//span[not(contains(@style, 'display: none')) and @class='select2-results']/ul"
     )
 
     def __init__(self, parent, id=None, locator=None, logger=None):
         """Supports initialization via ``id=`` or ``locator=``"""
         if (locator and id) or (not locator and not id):
             raise ValueError('Please specify either locator or id')
-        locator = locator or f".//div[contains(@id, '{id}')]"
+        locator = locator or f".//select[contains(@id, '{id}')]"
         super().__init__(parent, locator, logger)
 
     def read(self):

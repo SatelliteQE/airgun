@@ -52,7 +52,7 @@ class ResourceProviderCreateView(BaseLoggedInView):
     description = TextInput(id='compute_resource_description')
     submit = Text('//input[@name="commit"]')
 
-    provider = FilteredDropdown(id='s2id_compute_resource_provider')
+    provider = FilteredDropdown(id='compute_resource_provider')
     provider_content = ConditionalSwitchableView(reference='provider')
 
     @provider_content.register('EC2')

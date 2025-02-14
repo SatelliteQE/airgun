@@ -377,7 +377,7 @@ class HostCreateView(BaseLoggedInView):
 
             architecture = FilteredDropdown(id='s2id_host_architecture_id')
             operating_system = FilteredDropdown(id='s2id_host_operatingsystem_id')
-            image = FilteredDropdown(id='s2id_azure_rm_image_id')
+            image = FilteredDropdown(id='azure_rm_image_id')
             root_password = TextInput(id='host_root_pass')
 
     @View.nested
