@@ -1,4 +1,4 @@
-from widgetastic.widget import Table, Text, TextInput, View
+from widgetastic.widget import Checkbox, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
@@ -6,8 +6,8 @@ from airgun.widgets import MultiSelect
 
 
 class HTTPProxyView(BaseLoggedInView, SearchableViewMixin):
-    title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="HTTP Proxies"]')
-    new = Text('//a[normalize-space(.)="New HTTP Proxy"]')
+    title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="HTTP proxies"]')
+    new = Text('//a[normalize-space(.)="New HTTP proxy"]')
     table = Table(
         './/table',
         column_widgets={
@@ -32,13 +32,13 @@ class HTTPProxyCreateView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'HTTP Proxies'
-            and self.breadcrumb.read() == 'New HTTP Proxy'
+            and self.breadcrumb.locations[0] == 'HTTP proxies'
+            and self.breadcrumb.read() == 'New HTTP proxy'
         )
 
     @View.nested
     class http_proxy(SatTab):
-        TAB_NAME = 'HTTP Proxy'
+        TAB_NAME = 'HTTP proxy'
         name = TextInput(id='http_proxy_name')
         url = TextInput(id='http_proxy_url')
         username = TextInput(id='http_proxy_username')
@@ -46,6 +46,7 @@ class HTTPProxyCreateView(BaseLoggedInView):
         password = TextInput(id='http_proxy_password')
         test_url = TextInput(id='http_proxy_test_url')
         test_connection = Text('//a[@id="test_connection_button"]')
+        content_default_http_proxy = Checkbox(id='content_default_http_proxy')
 
     @View.nested
     class locations(SatTab):
@@ -62,6 +63,6 @@ class HTTPProxyEditView(HTTPProxyCreateView):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Http Proxies'
+            and self.breadcrumb.locations[0] == 'Http proxies'
             and self.breadcrumb.read().startswith('Edit ')
         )
