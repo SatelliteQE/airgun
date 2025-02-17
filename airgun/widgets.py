@@ -2901,3 +2901,43 @@ class SatPatternflyTable(BasePatternflyTable, Table):
 
 class SatExpandableTable(BaseExpandableTable, SatPatternflyTable):
     pass
+
+
+class ExpandableSection(Widget):
+    ROOT = ParametrizedLocator(
+        '//div[contains(@class, "pf-c-expandable-section")]/button[normalize-space(.)={@label|quote}]/..'
+    )
+    TOGGLE_BUTTON = ParametrizedLocator('./button[normalize-space(.)={@label|quote}]')
+    EXPANDED_CLASS_NAME = 'pf-m-expanded'
+
+    @property
+    def is_expanded(self):
+        return self.EXPANDED_CLASS_NAME in self.browser.classes(self.ROOT)
+
+    def expand(self):
+        if not self.is_expanded:
+            self.browser.click(self.TOGGLE_BUTTON)
+
+    def collapse(self):
+        if self.is_expanded:
+            self.browser.click(self.TOGGLE_BUTTON)
+
+    def read(self):
+        self.expand()
+
+
+class PF4DataList(Widget):
+    """Widget for PatternFly 4 Data list: https://pf4.patternfly.org/components/data-list"""
+
+    ROOT = './/ul[contains(@class, "pf-c-data-list")]'
+    ITEMS = './li//div[contains(@class, "pf-c-data-list__item-content")]/div[1]'
+    VALUES = './li//div[contains(@class, "pf-c-data-list__item-content")]/div[2]'
+
+    def read(self):
+        items = [self.browser.text(item) for item in self.browser.elements(self.ITEMS)]
+        values = [self.browser.text(value) for value in self.browser.elements(self.VALUES)]
+        if len(items) != len(values):
+            raise ValueError(
+                f'The count of data list labels and values does not match. Labels: {items}. Values: {values}'
+            )
+        return dict(zip(items, values))

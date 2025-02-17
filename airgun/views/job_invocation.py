@@ -16,7 +16,7 @@ from airgun.views.common import (
     SearchableViewMixin,
     WizardStepView,
 )
-from airgun.widgets import ActionsDropdown
+from airgun.widgets import ActionsDropdown, ExpandableSection, PF4DataList
 
 
 class JobInvocationsView(BaseLoggedInView, SearchableViewMixin):
@@ -276,3 +276,20 @@ class NewJobInvocationStatusView(BaseLoggedInView):
         def read(self):
             """Return `dict` without trailing ':' in the key names."""
             return {key.replace(':', ''): val for key, val in super().read().items()}
+
+    @View.nested
+    class target_hosts(ExpandableSection):
+        label = 'Target Hosts'
+        search_query = Text('./div[contains(@class, "pf-c-expandable-section__content")]/pre')
+        data = PF4DataList()
+
+        def read(self):
+            return {'search_query': self.search_query.read(), 'data': self.data.read()}
+
+    @View.nested
+    class user_inputs(ExpandableSection):
+        label = 'User Inputs'
+        data = PF4DataList()
+
+        def read(self):
+            return {'data': self.data.read()}
