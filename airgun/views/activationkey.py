@@ -82,6 +82,20 @@ class ActivationKeyEditView(BaseLoggedInView):
         name = EditableEntry(name='Name')
         description = EditableEntry(name='Description')
         hosts_limit = EditableLimitEntry(name='Host Limit')
+        host_limit_edit_btn = Text(
+            locator='//dd[@bst-edit-custom="activationKey.max_hosts"]//div[@ng-click="edit()"]'
+        )
+        unlimited_content_host_checkbox = Checkbox(
+            locator='//input[@ng-model="activationKey.unlimited_hosts"]'
+        )
+        host_limit_input = TextInput(locator='//input[@ng-model="activationKey.max_hosts"]')
+        host_limit_save_btn = Text(
+            locator='//dd[contains(@bst-edit-custom, "activationKey.max_hosts")]//button[@ng-click="save()"]'
+        )
+        host_limit_cancel_btn = Text(
+            locator='//dd[contains(@bst-edit-custom, "activationKey.max_hosts")]//button[@ng-click="cancel()"]'
+        )
+
         service_level = EditableEntrySelect(name='Service Level')
         lce = ParametrizedView.nested(LCESelectorGroup)
         content_view = EditableEntrySelect(name='Content View')
