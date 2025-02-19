@@ -51,6 +51,35 @@ class ActivationKeyEntity(BaseEntity):
         view.flash.dismiss()
         return filled_values
 
+    def update_ak_host_limit(self, entity_name, host_limit):
+        """
+        Update activation key host limit
+
+        args:
+            entity_name: Activation key name
+            host_limit: Host limit for activation key. Can be either string 'unlimited' or an integer
+        raises:
+            ValueError: If host limit is not string 'unlimited' or an integer
+        """
+
+        if isinstance(host_limit, (str)):
+            host_limit = host_limit.lower()
+        # Check that host limit is string 'unlimited' or integer
+        if (host_limit != 'unlimited') and (not isinstance(host_limit, (int))):
+            raise ValueError("Host limit must be either string 'unlimited' or an integer")
+
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.details.host_limit_edit_btn.click()
+
+        if host_limit == 'unlimited':
+            view.details.unlimited_content_host_checkbox.fill(True)
+        elif host_limit != 'unlimited' and view.details.unlimited_content_host_checkbox.selected:
+            view.details.unlimited_content_host_checkbox.fill(False)
+            view.details.host_limit_input.fill(host_limit)
+        view.details.host_limit_save_btn.click()
+
     def add_subscription(self, entity_name, subscription_name):
         """Add subscription to activation key
 
