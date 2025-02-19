@@ -72,11 +72,8 @@ class ActivationKeyEntity(BaseEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         view.details.host_limit_edit_btn.click()
-
-        if host_limit == 'unlimited':
-            view.details.unlimited_content_host_checkbox.fill(True)
-        elif host_limit != 'unlimited' and view.details.unlimited_content_host_checkbox.selected:
-            view.details.unlimited_content_host_checkbox.fill(False)
+        view.details.unlimited_content_host_checkbox.fill(host_limit == 'unlimited')
+        if host_limit != 'unlimited':
             view.details.host_limit_input.fill(host_limit)
         view.details.host_limit_save_btn.click()
 
