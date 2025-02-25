@@ -65,12 +65,12 @@ class HostGroupCreateView(BaseLoggedInView):
     class host_group(SatTab):
         TAB_NAME = 'Host Group'
 
-        parent_name = FilteredDropdown(id='s2id_hostgroup_parent_id')
+        parent_name = FilteredDropdown(id='hostgroup_parent_id')
         name = TextInput(id='hostgroup_name')
         description = TextInput(id='hostgroup_description')
         lce = FilteredDropdown(id='hostgroup_lifecycle_environment')
         content_view = FilteredDropdown(id='hostgroup_content_view')
-        content_source = FilteredDropdown(id='s2id_content_source_id')
+        content_source = FilteredDropdown(id='content_source_id')
         puppet_environment = FilteredDropdown(id='hostgroup_puppet_attributes_environment')
         deploy = FilteredDropdown(id='hostgroup_compute_resource')
         puppet_master = FilteredDropdown(id='hostgroup_puppet_proxy')
