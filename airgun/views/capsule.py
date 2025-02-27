@@ -47,8 +47,8 @@ class CreateCapsuleView(BaseLoggedInView):
     class capsule(SatTab):
         name = TextInput(locator='//input[@id="smart_proxy_name"]')
         url = TextInput(locator='//input[@id="smart_proxy_url"]')
-        acs_http_proxy = FilteredDropdown(id='s2id_smart_proxy_http_proxy_id')
-        remove_proxy_selection = Text(locator='//*[@id="s2id_smart_proxy_http_proxy_id"]/a/abbr')
+        acs_http_proxy = FilteredDropdown(id='smart_proxy_http_proxy_id')
+        remove_proxy_selection = Text(locator='//*[@id="smart_proxy_http_proxy_id"]/a/abbr')
 
     @View.nested
     class locations(SatTab):
@@ -68,9 +68,9 @@ class EditCapsuleView(CreateCapsuleView):
     class capsule(SatTab):
         name = TextInput(locator='//input[@id="smart_proxy_name"]')
         url = TextInput(locator='//input[@id="smart_proxy_url"]')
-        download_policy = FilteredDropdown(id='s2id_smart_proxy_download_policy')
-        acs_http_proxy = FilteredDropdown(id='s2id_smart_proxy_http_proxy_id')
-        remove_proxy_selection = Text(locator='//*[@id="s2id_smart_proxy_http_proxy_id"]/a/abbr')
+        download_policy = FilteredDropdown(id='smart_proxy_download_policy')
+        acs_http_proxy = FilteredDropdown(id='smart_proxy_http_proxy_id')
+        remove_proxy_selection = Text(locator='//*[@id="smart_proxy_http_proxy_id"]/a/abbr')
 
     @View.nested
     class lifecycle_enviroments(SatTab):

@@ -281,10 +281,10 @@ class HostCreateView(BaseLoggedInView):
         inherit_compute_profile_option = ToggleButton(
             locator=".//div[label[@for='compute_profile_id']]//button"
         )
-        compute_profile = FilteredDropdown(id='s2id_host_compute_profile_id')
+        compute_profile = FilteredDropdown(id='host_compute_profile_id')
         lce = FilteredDropdown(id='host_lifecycle_environment')
         content_view = FilteredDropdown(id='host_content_view')
-        content_source = FilteredDropdown(id='s2id_content_source_id')
+        content_source = FilteredDropdown(id='content_source_id')
         reset_puppet_environment = Link(".//a[@id='reset_puppet_environment']")
         inherit_puppet_environment = ToggleButton(
             locator=".//div[label[@for='environment_id']]//button"
@@ -345,8 +345,8 @@ class HostCreateView(BaseLoggedInView):
         @View.nested
         class virtual_machine(SatTab):
             TAB_NAME = 'Virtual Machine'
-            machine_type = FilteredDropdown(id='s2id_host_compute_attributes_machine_type')
-            network = FilteredDropdown(id='s2id_host_compute_attributes_network')
+            machine_type = FilteredDropdown(id='host_compute_attributes_machine_type')
+            network = FilteredDropdown(id='host_compute_attributes_network')
             external_ip = Checkbox(id='host_compute_attributes_associate_external_ip')
 
             @View.nested
@@ -360,14 +360,14 @@ class HostCreateView(BaseLoggedInView):
         @View.nested
         class virtual_machine(SatTab):
             TAB_NAME = 'Virtual Machine'
-            resource_group = FilteredDropdown(id='s2id_azure_rm_rg')
-            vm_size = FilteredDropdown(id='s2id_azure_rm_size')
-            platform = FilteredDropdown(id='s2id_host_compute_attributes_platform')
+            resource_group = FilteredDropdown(id='azure_rm_rg')
+            vm_size = FilteredDropdown(id='azure_rm_size')
+            platform = FilteredDropdown(id='host_compute_attributes_platform')
             username = TextInput(id='host_compute_attributes_username')
             password = TextInput(id='host_compute_attributes_password')
             ssh_key = TextInput(id='host_compute_attributes_ssh_key_data')
             premium_os_disk = Checkbox(id='host_compute_attributes_premium_os_disk')
-            os_disk_caching = FilteredDropdown(id="s2id_host_compute_attributes_os_disk_caching")
+            os_disk_caching = FilteredDropdown(id="host_compute_attributes_os_disk_caching")
             custom_script_command = TextInput(id="host_compute_attributes_script_command")
             file_uris = TextInput(id="host_compute_attributes_script_uris")
 
@@ -375,8 +375,8 @@ class HostCreateView(BaseLoggedInView):
         class operating_system(SatTab):
             TAB_NAME = 'Operating System'
 
-            architecture = FilteredDropdown(id='s2id_host_architecture_id')
-            operating_system = FilteredDropdown(id='s2id_host_operatingsystem_id')
+            architecture = FilteredDropdown(id='host_architecture_id')
+            operating_system = FilteredDropdown(id='host_operatingsystem_id')
             image = FilteredDropdown(id='azure_rm_image_id')
             root_password = TextInput(id='host_root_pass')
 

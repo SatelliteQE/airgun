@@ -56,7 +56,7 @@ class PartitionTableEditView(BaseLoggedInView):
 
         @os_family_selection.register(False)
         class OSFamilyOption(View):
-            os_family = FilteredDropdown(id='s2id_ptable_os_family')
+            os_family = FilteredDropdown(id='ptable_os_family')
 
         template_editor = ACEEditor()
         audit_comment = TextInput(id='ptable_audit_comment')
