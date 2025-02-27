@@ -14,7 +14,7 @@ class BootcEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'All')
         self.browser.plugin.ensure_page_safe(timeout='5s')
-        # Workaround for a current bug with the page
+        # Workaround for SAT-31160
         script = "document.querySelector('tbody').remove();"
         self.browser.execute_script(script)
         view.search(f"bootc_booted_image = {booted_image_name}")
