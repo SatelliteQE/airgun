@@ -683,7 +683,7 @@ class TemplateInputItem(GenericRemovableWidgetItem):
     remove_button = Text(".//a[contains(@class, 'remove_nested_fields')]")
     name = TextInput(locator=".//input[contains(@name, '[name]')]")
     required = Checkbox(locator=".//input[contains(@id, 'required')]")
-    input_type = FilteredDropdown(locator=".//div[contains(@id, 'input_type')]")
+    input_type = FilteredDropdown(locator=".//span[contains(@id, 'input_type')]")
 
     input_content = ConditionalSwitchableView(reference='input_type')
 
