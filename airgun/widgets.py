@@ -1173,8 +1173,8 @@ class FilteredDropdown(GenericLocatorWidget):
         super().__init__(parent, locator, logger)
 
     def read(self):
-        """Return drop-down selected item value"""
-        return self.browser.text(self.selected_value)
+        """Return drop-down selected item value and remove special character using unicode u00d7"""
+        return self.browser.text(self.selected_value).replace('\u00d7', '').strip()
 
     def clear(self):
         """Clear currently selected value for drop-down"""
