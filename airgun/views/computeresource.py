@@ -63,7 +63,7 @@ class ResourceProviderCreateView(BaseLoggedInView):
         @View.nested
         class region(View):
             load_regions = Text("//a[contains(@id,'test_connection_button')]")
-            value = FilteredDropdown(id='s2id_compute_resource_region')
+            value = FilteredDropdown(id='compute_resource_region')
 
             def before_fill(self, values=None):
                 self.load_regions.click()
@@ -80,7 +80,7 @@ class ResourceProviderCreateView(BaseLoggedInView):
         @View.nested
         class zone(View):
             load_zones = Text("//a[contains(@id,'test_connection_button')]")
-            value = FilteredDropdown(id='s2id_compute_resource_zone')
+            value = FilteredDropdown(id='compute_resource_zone')
 
             def before_fill(self, values=None):
                 self.load_zones.click()
@@ -121,7 +121,7 @@ class ResourceProviderCreateView(BaseLoggedInView):
         @View.nested
         class datacenter(View):
             load_datacenters = Text("//a[contains(@id,'test_connection_button')]")
-            value = FilteredDropdown(id='s2id_compute_resource_datacenter')
+            value = FilteredDropdown(id='compute_resource_datacenter')
 
             def before_fill(self, values=None):
                 self.load_datacenters.click()
@@ -136,7 +136,7 @@ class ResourceProviderCreateView(BaseLoggedInView):
         @View.nested
         class datacenter(View):
             load_datacenters = Text("//a[contains(@id,'test_connection_button')]")
-            value = FilteredDropdown(id='s2id_compute_resource_uuid')
+            value = FilteredDropdown(id='compute_resource_uuid')
 
             def before_fill(self, values=None):
                 self.load_datacenters.click()
@@ -331,8 +331,8 @@ class ComputeResourceVMwareProfileStorageItem(GenericRemovableWidgetItem):
 
 class ResourceProviderProfileView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    compute_profile = FilteredDropdown(id='s2id_compute_attribute_compute_profile_id')
-    compute_resource = FilteredDropdown(id='s2id_compute_attribute_compute_resource_id')
+    compute_profile = FilteredDropdown(id='compute_attribute_compute_profile_id')
+    compute_resource = FilteredDropdown(id='compute_attribute_compute_resource_id')
 
     provider_content = ConditionalSwitchableView(reference='current_provider')
 
@@ -356,7 +356,7 @@ class ResourceProviderProfileView(BaseLoggedInView):
     class LibvirtResourceForm(View):
         cpus = TextInput(id='compute_attribute_vm_attrs_cpus')
         memory = TextInput(id='compute_attribute_vm_attrs_memory')
-        image = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_image_id')
+        image = FilteredDropdown(id='compute_attribute_vm_attrs_image_id')
 
         @View.nested
         class network_interfaces(RemovableWidgetsItemsListView):
@@ -371,26 +371,26 @@ class ResourceProviderProfileView(BaseLoggedInView):
 
     @provider_content.register('EC2')
     class EC2ResourceForm(View):
-        flavor = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_flavor_id')
-        image = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_image_id')
-        availability_zone = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_availability_zone')
-        subnet = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_subnet_id')
+        flavor = FilteredDropdown(id='compute_attribute_vm_attrs_flavor_id')
+        image = FilteredDropdown(id='compute_attribute_vm_attrs_image_id')
+        availability_zone = FilteredDropdown(id='compute_attribute_vm_attrs_availability_zone')
+        subnet = FilteredDropdown(id='compute_attribute_vm_attrs_subnet_id')
         security_groups = MultiSelect(id='ms-compute_attribute_vm_attrs_security_group_ids')
-        managed_ip = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_managed_ip')
+        managed_ip = FilteredDropdown(id='compute_attribute_vm_attrs_managed_ip')
 
     @provider_content.register('Google')
     class GCEResourceForm(View):
-        machine_type = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_machine_type')
-        image = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_image_id')
-        network = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_network')
+        machine_type = FilteredDropdown(id='compute_attribute_vm_attrs_machine_type')
+        image = FilteredDropdown(id='compute_attribute_vm_attrs_image_id')
+        network = FilteredDropdown(id='compute_attribute_vm_attrs_network')
         external_ip = Checkbox(id='compute_attribute_vm_attrs_associate_external_ip')
         default_disk_size = TextInput(id='compute_attribute_vm_attrs_volumes_attributes_0_size_gb')
 
     @provider_content.register('RHV')
     class RHVResourceForm(View):
-        cluster = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_cluster')
-        template = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_template')
-        instance_type = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_instance_type')
+        cluster = FilteredDropdown(id='compute_attribute_vm_attrs_cluster')
+        template = FilteredDropdown(id='compute_attribute_vm_attrs_template')
+        instance_type = FilteredDropdown(id='compute_attribute_vm_attrs_instance_type')
         cores = TextInput(id='compute_attribute_vm_attrs_cores')
         sockets = TextInput(id='compute_attribute_vm_attrs_sockets')
         memory = TextInput(id='compute_attribute_vm_attrs_memory')
@@ -415,16 +415,16 @@ class ResourceProviderProfileView(BaseLoggedInView):
         firmware = RadioGroup(
             "//div[label[input[contains(@id, 'compute_attribute_vm_attrs_firmware')]]]"
         )
-        cluster = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_cluster')
-        resource_pool = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_resource_pool')
-        folder = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_path')
-        guest_os = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_guest_id')
-        virtual_hw_version = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_hardware_version')
+        cluster = FilteredDropdown(id='compute_attribute_vm_attrs_cluster')
+        resource_pool = FilteredDropdown(id='compute_attribute_vm_attrs_resource_pool')
+        folder = FilteredDropdown(id='compute_attribute_vm_attrs_path')
+        guest_os = FilteredDropdown(id='compute_attribute_vm_attrs_guest_id')
+        virtual_hw_version = FilteredDropdown(id='compute_attribute_vm_attrs_hardware_version')
         memory_hot_add = Checkbox(id='compute_attribute_vm_attrs_memoryHotAddEnabled')
         cpu_hot_add = Checkbox(id='compute_attribute_vm_attrs_cpuHotAddEnabled')
         cdrom_drive = Checkbox(id='compute_attribute_vm_attrs_add_cdrom')
         annotation_notes = TextInput(id='compute_attribute_vm_attrs_annotation')
-        image = FilteredDropdown(id='s2id_compute_attribute_vm_attrs_image_id')
+        image = FilteredDropdown(id='compute_attribute_vm_attrs_image_id')
 
         @View.nested
         class network_interfaces(RemovableWidgetsItemsListView):

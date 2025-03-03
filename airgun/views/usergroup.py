@@ -68,7 +68,7 @@ class UserGroupDetailsView(BaseLoggedInView):
         )
         auth_source = FilteredDropdown(
             locator=(
-                "//div[starts-with(@id, 's2id_usergroup_external_usergroups_attributes')]"
+                "//div[starts-with(@id, 'usergroup_external_usergroups_attributes')]"
                 "[contains(@id, 'auth_source_id')]"
             )
         )

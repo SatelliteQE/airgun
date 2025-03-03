@@ -89,12 +89,12 @@ class ReportTemplateGenerateView(BaseLoggedInView):
     email = Checkbox(id='report_template_report_send_mail')
     email_to = TextInput(id='report_template_report_mail_to')
     inputs = TextInputsGroup(locator='.//form')
-    output_format = FilteredDropdown(id='s2id_report_template_report_format')
+    output_format = FilteredDropdown(id='report_template_report_format')
     hosts_filter = TextInput(locator='//input[contains(@class,"search-input")]')
     generate_at = TextInput(id='report_template_report_generate_at')
     submit = Text('//input[@name="commit"]')
     generated = Text('//div[contains(@class, "alert-success")]')
-    installability = FilteredDropdown(id='s2id_Installability')
+    installability = FilteredDropdown(id='Installability')
 
     @property
     def is_displayed(self):

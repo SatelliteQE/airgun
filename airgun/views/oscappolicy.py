@@ -97,10 +97,10 @@ class SCAPPolicyCreateView(BaseLoggedInView):
     class scap_content(BaseLoggedInView):
         TAB_NAME = 'SCAP Content'
         next_step = Text("//input[contains(@value, 'Next')]")
-        scap_content_resource = FilteredDropdown(id='s2id_policy_scap_content_id')
-        xccdf_profile = FilteredDropdown(id='s2id_policy_scap_content_profile_id')
-        tailoring_file = FilteredDropdown(id='s2id_policy_tailoring_file_id')
-        xccdf_profile_tailoring_file = FilteredDropdown(id='s2id_policy_tailoring_file_profile_id')
+        scap_content_resource = FilteredDropdown(id='policy_scap_content_id')
+        xccdf_profile = FilteredDropdown(id='policy_scap_content_profile_id')
+        tailoring_file = FilteredDropdown(id='policy_tailoring_file_id')
+        xccdf_profile_tailoring_file = FilteredDropdown(id='policy_tailoring_file_profile_id')
 
         def after_fill(self, was_change):
             self.next_step.click()
@@ -108,16 +108,16 @@ class SCAPPolicyCreateView(BaseLoggedInView):
     @View.nested
     class schedule(BaseLoggedInView):
         next_step = Text("//input[contains(@value, 'Next')]")
-        period = FilteredDropdown(id='s2id_policy_period')
+        period = FilteredDropdown(id='policy_period')
         period_selection = ConditionalSwitchableView(reference='period')
 
         @period_selection.register('Weekly')
         class WeeklyPeriodForm(View):
-            weekday = FilteredDropdown(id='s2id_policy_weekday')
+            weekday = FilteredDropdown(id='policy_weekday')
 
         @period_selection.register('Monthly')
         class MonthlyPeriodForm(View):
-            day_of_month = FilteredDropdown(id='s2id_policy_day_of_month')
+            day_of_month = FilteredDropdown(id='policy_day_of_month')
 
         @period_selection.register('Custom')
         class CustomPeriodForm(View):
@@ -176,23 +176,23 @@ class SCAPPolicyEditView(BaseLoggedInView):
     @View.nested
     class scap_content(SatTab):
         TAB_NAME = 'SCAP Content'
-        scap_content = FilteredDropdown(id='s2id_policy_scap_content_id')
-        xccdf_profile = FilteredDropdown(id='s2id_policy_scap_content_profile_id')
-        tailoring_file = FilteredDropdown(id='s2id_policy_tailoring_file_id')
-        xccdf_profile_tailoring_file = FilteredDropdown(id='s2id_policy_tailoring_file_profile_id')
+        scap_content = FilteredDropdown(id='policy_scap_content_id')
+        xccdf_profile = FilteredDropdown(id='policy_scap_content_profile_id')
+        tailoring_file = FilteredDropdown(id='policy_tailoring_file_id')
+        xccdf_profile_tailoring_file = FilteredDropdown(id='policy_tailoring_file_profile_id')
 
     @View.nested
     class schedule(SatTab):
-        period = FilteredDropdown(id='s2id_policy_period')
+        period = FilteredDropdown(id='policy_period')
         period_selection = ConditionalSwitchableView(reference='period')
 
         @period_selection.register('Weekly')
         class WeeklyPeriodForm(View):
-            weekday = FilteredDropdown(id='s2id_policy_weekday')
+            weekday = FilteredDropdown(id='policy_weekday')
 
         @period_selection.register('Monthly')
         class MonthlyPeriodForm(View):
-            day_of_month = FilteredDropdown(id='s2id_policy_day_of_month')
+            day_of_month = FilteredDropdown(id='policy_day_of_month')
 
         @period_selection.register('Custom')
         class CustomPeriodForm(View):
