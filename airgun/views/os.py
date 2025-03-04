@@ -32,7 +32,7 @@ class TemplatesList(View):
 
     SELECT = (
         "//label[@for='provisioning_template_id'][contains(.,'{}')]"
-        "/following-sibling::div/div[contains(@id, 'default_templates')]"
+        "/following-sibling::div/select[contains(@id, 'default_templates')]"
     )
     TITLES = "//label[@for='provisioning_template_id']"
 
