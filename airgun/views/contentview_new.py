@@ -77,6 +77,7 @@ class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
             'Last Published': ('./a'),
             'Last task': Text('.//a'),
             'Latest version': Text('.//a'),
+            6: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
         },
     )
 
@@ -213,6 +214,7 @@ class ContentViewVersionPublishView(BaseLoggedInView):
     # publishing view is a popup so adding all navigation within the same context
     ROOT = './/div[contains(@class,"pf-c-wizard")]'
     title = Text(".//h2[contains(., 'Publish') and contains(@aria-label, 'Publish')]")
+    publish_alert = Text(".//h4[contains(., 'No available repository or filter updates')]")
     # publishing screen
     description = TextInput(id='description')
     promote = Switch('promote-switch')
