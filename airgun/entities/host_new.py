@@ -64,6 +64,27 @@ class NewHostEntity(HostEntity):
         view.read(widget_names=widget_names)
         return view.read(widget_names=widget_names)
 
+    def run_bootc_job(self, entity_name, job_name, job_options=None):
+        """Navigate to the Host Details UI, and run a specified job from the link on the bootc card."""
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.details.bootc.remote_execution_link.click()
+        # Loading the wizard pre-filled takes time
+        if job_options:
+            job_input = {
+                'target_hosts_and_inputs.action': f'{job_name}',
+                'target_hosts_and_inputs.options': f'{job_options}',
+            }
+        else:
+            job_input = {'target_hosts_and_inputs.action': f'{job_name}'}
+        time.sleep(3)
+        view = JobInvocationCreateView(self.browser)
+        time.sleep(3)
+        self.browser.plugin.ensure_page_safe()
+        view.fill(job_input)
+        view.submit.click()
+
     @navigate_to_edit_view
     def assign_role_to_hostgroup(self, entity_name, role_name):
         """Assign a single Ansible role from the host group based on user input
