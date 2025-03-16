@@ -106,6 +106,7 @@ class SubscriptionColumnsFilter(GenericLocatorWidget):
 class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
     """List of all subscriptions."""
 
+    sca_alert = Text('//div[contains(@class,"alert-warning")]')
     table = SatSubscriptionsViewTable(
         locator='//div[@id="subscriptions-table"]//table',
         column_widgets={
