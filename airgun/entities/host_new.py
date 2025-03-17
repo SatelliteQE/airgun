@@ -78,9 +78,8 @@ class NewHostEntity(HostEntity):
             }
         else:
             job_input = {'target_hosts_and_inputs.action': f'{job_name}'}
-        time.sleep(3)
         view = JobInvocationCreateView(self.browser)
-        time.sleep(3)
+        view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         view.fill(job_input)
         view.submit.click()
