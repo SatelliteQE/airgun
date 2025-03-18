@@ -70,7 +70,6 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         view.details.bootc.remote_execution_link.click()
-        # Loading the wizard pre-filled takes time
         if job_options:
             job_input = {
                 'target_hosts_and_inputs.action': f'{job_name}',
@@ -79,8 +78,6 @@ class NewHostEntity(HostEntity):
         else:
             job_input = {'target_hosts_and_inputs.action': f'{job_name}'}
         view = JobInvocationCreateView(self.browser)
-        wait_for(lambda: view.submit.is_displayed, timeout=10)
-        self.browser.plugin.ensure_page_safe()
         view.fill(job_input)
         view.submit.click()
 
