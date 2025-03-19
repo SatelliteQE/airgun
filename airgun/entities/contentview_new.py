@@ -45,16 +45,19 @@ class NewContentViewEntity(BaseEntity):
             return None
         return view.search(value)
 
-    def publish(self, entity_name, values=None, promote=False, lce=None):
+    def publish(self, entity_name, values=None, promote=False, multi_promote=False, lce=None):
         """Publishes new version of CV, optionally allowing for instant promotion"""
         view = self.navigate_to(self, 'Publish', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
         if values:
             view.fill(values)
-        if promote:
+        if promote and not multi_promote:
             view.promote.click()
             view.lce_selector.fill({lce: True})
+        if promote and multi_promote:
+            view.promote.click()
+            view.lce_selector.fill(lce)
         view.next_button.click()
         view.finish_button.click()
         wait_for(lambda: view.progressbar.is_displayed, timeout=10)
