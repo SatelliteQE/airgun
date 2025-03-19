@@ -428,7 +428,7 @@ class NewHostEntity(HostEntity):
         """
 
         errata_types = ['Security', 'Bugfix', 'Enhancement']
-        errata_counts = {type: 0 for type in errata_types}
+        errata_counts = dict.fromkeys(errata_types, 0)
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         view.content.errata.select()
