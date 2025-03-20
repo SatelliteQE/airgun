@@ -54,9 +54,11 @@ class NewContentViewEntity(BaseEntity):
             view.fill(values)
         if promote and not multi_promote:
             view.promote.click()
+            wait_for(lambda: view.lce_selector.is_displayed, timeout=10)
             view.lce_selector.fill({lce: True})
         if promote and multi_promote:
             view.promote.click()
+            wait_for(lambda: view.lce_selector.is_displayed, timeout=10)
             view.lce_selector.fill(lce)
         view.next_button.click()
         view.finish_button.click()
