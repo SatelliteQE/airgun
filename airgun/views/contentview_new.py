@@ -15,7 +15,6 @@ from airgun.views.common import (
     BaseLoggedInView,
     NewAddRemoveResourcesView,
     PF4LCECheckSelectorGroup,
-    PF4LCESelectorGroup,
     SearchableViewMixinPF4,
 )
 from airgun.widgets import (
@@ -226,6 +225,7 @@ class ContentViewVersionPublishView(BaseLoggedInView):
     close_button = Button('Close')
     progressbar = PF4ProgressBar('.//div[contains(@class, "pf-c-wizard__main-body")]')
     lce_selector = ParametrizedView.nested(PF4LCECheckSelectorGroup)
+    close = Button('Close')
 
     @property
     def is_displayed(self):
@@ -256,7 +256,7 @@ class ContentViewVersionPromoteView(Modal):
     ROOT = './/div[@data-ouia-component-id="promote-version"]'
 
     description = Text('.//h2[@data-ouia-component-id="description-text-value"]')
-    lce_selector = ParametrizedView.nested(PF4LCESelectorGroup)
+    lce_selector = ParametrizedView.nested(PF4LCECheckSelectorGroup)
     promote_btn = Button(locator='//button[normalize-space(.)="Promote"]')
     cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
 
@@ -269,9 +269,6 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
     )
     promoteButton = PF4Button(
         locator='.//button[@data-ouia-component-id="cv-details-publish-button"]'
-    )
-    version_dropdown = Dropdown(
-        locator='.//div[@data-ouia-component-id="cv-version-header-actions-dropdown"]'
     )
     editDescription = PF4Button(
         locator='.//button[@data-ouia-component-id="edit-button-description"]'
