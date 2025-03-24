@@ -73,9 +73,19 @@ class HostGroupCreateView(BaseLoggedInView):
         content_source = FilteredDropdown(id='content_source_id')
         puppet_environment = FilteredDropdown(id='hostgroup_puppet_attributes_environment')
         deploy = FilteredDropdown(id='hostgroup_compute_resource')
+        deploy_inherit_toggle = Text('.//button[@name="is_overridden_btn"]')
         puppet_master = FilteredDropdown(id='hostgroup_puppet_proxy')
         puppet_ca = FilteredDropdown(id='hostgroup_puppet_ca_proxy')
         openscap_capsule = FilteredDropdown(id='hostgroup_openscap_proxy')
+
+        def fill(self, values):
+            """For nested group, click on 'inherit' toggle button next to the Deploy On select to enable it."""
+            if 'parent_name' in values and 'deploy' in values:
+                self.parent_name.fill(values.pop('parent_name'))
+                if not self.deploy.is_enabled:
+                    self.deploy_inherit_toggle.click()
+                self.deploy.fill(values.pop('deploy'))
+            super().fill(values)
 
     @View.nested
     class ansible_roles(SatTab):
