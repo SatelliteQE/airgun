@@ -128,6 +128,7 @@ class AddNewHostGroup(NavigateStep):
             self.parent.new.click()
         except NoSuchElementException:
             self.parent.new_on_blank_page.click()
+        self.view.wait_displayed()
 
 
 @navigator.register(HostGroupEntity, 'Edit')
