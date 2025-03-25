@@ -309,6 +309,14 @@ class NewHostDetailsView(BaseLoggedInView):
 
             details = HostDetailsCard()
 
+        @View.nested
+        class bootc(Card):
+            # Will file issue for this to be fixed
+            ROOT = './/article[contains(@data-ouia-component-id, "card-template-[object Object]")]'
+
+            remote_execution_link = Text(".//a[normalize-space(.)='Modify via remote execution']")
+            details = HostDetailsCard()
+
     @View.nested
     class content(Tab):
         # TODO Setting ROOT is just a workaround because of BZ 2119076,
