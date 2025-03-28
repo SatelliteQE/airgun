@@ -312,7 +312,7 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class bootc(Card):
             # Will file issue for this to be fixed
-            ROOT = './/article[contains(@data-ouia-component-id, "card-template-[object Object]")]'
+            ROOT = './/article[contains(@data-ouia-component-id, "card-template-image-mode")]'
 
             remote_execution_link = Text(".//a[normalize-space(.)='Modify via remote execution']")
             details = HostDetailsCard()
