@@ -15,6 +15,7 @@ class UsersView(BaseLoggedInView, SearchableViewMixinPF4):
         './/table',
         column_widgets={
             'Username': Text('./a'),
+            'Last login time': Text('./span'),
             'Actions': Text('.//a[@data-method="delete"]'),
         },
     )
