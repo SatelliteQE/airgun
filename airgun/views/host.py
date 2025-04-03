@@ -222,19 +222,21 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
     manage_columns = PF5Button('manage-columns-button')
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
-    new = Text(".//div[@id='rails-app-content']//a[contains(normalize-space(.),'Create Host')]")
+    new = Text(".//div[@id='foreman-page']//a[@data-ouia-component-id='create-host-button']")
     register = PF4Button('OUIA-Generated-Button-secondary-2')
     new_ui_button = Text(".//a[contains(@class, 'btn')][contains(@href, 'new/hosts')]")
     select_all = Checkbox(locator="//input[@id='check_all']")
     table = SatTable(
         './/table',
         column_widgets={
-            0: Checkbox(locator=".//input[@class='host_select_boxes']"),
+            0: Checkbox(locator=".//input[@type='checkbox']"),
             'Name': Text(
                 ".//a[contains(@href, '/new/hosts/') and not(contains(@href, 'Red Hat Lightspeed'))]"
             ),
             'Recommendations': Text("./a"),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            'Actions': ActionsDropdown(
+                ".//button[contains(@class, 'pf-v5-c-menu-toggle pf-m-plain') and @aria-label='Kebab toggle']"
+            ),
         },
     )
     displayed_table_headers = ".//table/thead/tr/th[not(@hidden)]"
