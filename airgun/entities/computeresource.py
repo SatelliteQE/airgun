@@ -179,6 +179,11 @@ class ComputeResourceEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def refresh_cache(self, entity_name):
+        view = self.navigate_to(self, 'Detail', entity_name=entity_name)
+        with self.browser.ignore_ensure_page_safe_timeout():
+            view.refresh_cache.click()
+
 
 @navigator.register(ComputeResourceEntity, 'All')
 class ShowAllComputeResources(NavigateStep):

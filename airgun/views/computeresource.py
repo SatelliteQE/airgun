@@ -176,6 +176,7 @@ class ResourceProviderEditView(ResourceProviderCreateView):
 
 class ResourceProviderDetailView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
+    refresh_cache = Text('//div[@id="title_action"]//a[2]')
     submit = Text('//input[@name="commit"]')
     create_image = Text("//a[contains(@class,'btn-primary')]")
 
