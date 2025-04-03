@@ -222,7 +222,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
     manage_columns = PF5Button('manage-columns-button')
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
-    new = Text(".//div[@id='rails-app-content']//a[contains(normalize-space(.),'Create Host')]")
+    new = Text(".//div[@id='foreman-page']//a[@data-ouia-component-id='create-host-button']")
     register = PF4Button('OUIA-Generated-Button-secondary-2')
     new_ui_button = Text(".//a[contains(@class, 'btn')][contains(@href, 'new/hosts')]")
     select_all = Checkbox(locator="//input[@id='check_all']")
