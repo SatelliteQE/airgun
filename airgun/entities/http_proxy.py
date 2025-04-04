@@ -55,6 +55,14 @@ class HTTPProxyEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+    def test_connection(self, entity_name):
+        """Test connection from http-proxy"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.test_button.click()
+        view.validations.assert_no_errors()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+
 
 @navigator.register(HTTPProxyEntity, 'All')
 class ShowAllHTTPProxy(NavigateStep):
