@@ -534,7 +534,8 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         view.content.repository_sets.searchbar.fill(repo_set)
         self.browser.plugin.ensure_page_safe()
-        view.content.repository_sets.table[0][6].widget.item_select(action)
+        view.content.repository_sets.table[0][6].widget.click()
+        view.content.repository_sets.repo_set_action.item_select(action)
         view.flash.assert_no_error()
         view.flash.dismiss()
 

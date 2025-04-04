@@ -17,6 +17,15 @@ from widgetastic_patternfly4.ouia import (
     FormSelect as OUIAFormSelect,
     PatternflyTable,
 )
+from widgetastic_patternfly5 import (
+    Button as PF5Button,
+    Dropdown as PF5Dropdown,
+    Menu as PF5Menu,
+    Tab as PF5Tab,
+)
+from widgetastic_patternfly5.ouia import (
+    PatternflyTable as PF5OUIATable,
+)
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import (
@@ -111,7 +120,7 @@ class NewHostDetailsView(BaseLoggedInView):
         return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Hosts'
 
     edit = OUIAButton('host-edit-button')
-    dropdown = Dropdown(locator='//button[@id="hostdetails-kebab"]/..')
+    dropdown = PF5Dropdown(locator='//button[@id="hostdetails-kebab"]/..')
     schedule_job = Pf4ActionsDropdown(locator='.//div[div/button[@aria-label="Select"]]')
     run_job = ActionsDropdown('//button[@data-ouia-component-id="schedule-a-job-dropdown-toggle"]')
     select = Text(
@@ -119,7 +128,7 @@ class NewHostDetailsView(BaseLoggedInView):
     )
 
     @View.nested
-    class overview(Tab):
+    class overview(PF5Tab):
         ROOT = './/div[contains(@class, "host-details-tab-item")]'
 
         @View.nested
@@ -218,7 +227,7 @@ class NewHostDetailsView(BaseLoggedInView):
             details = HostDetailsCard()
 
     @View.nested
-    class details(Tab):
+    class details(PF5Tab):
         ROOT = './/div[contains(@class, "host-details-tab-item")]'
 
         card_collapse_switch = Text('.//button[contains(@data-ouia-component-id, "expand-button")]')
@@ -318,13 +327,13 @@ class NewHostDetailsView(BaseLoggedInView):
             details = HostDetailsCard()
 
     @View.nested
-    class content(Tab):
+    class content(PF5Tab):
         # TODO Setting ROOT is just a workaround because of BZ 2119076,
         # once this gets fixed we should use the parametrized locator from Tab class
         ROOT = './/div'
 
         @View.nested
-        class packages(Tab):
+        class packages(PF5Tab):
             # workaround for BZ 2119076
             ROOT = './/div[@id="packages-tab"]'
 
@@ -350,7 +359,7 @@ class NewHostDetailsView(BaseLoggedInView):
             pagination = PF4Pagination()
 
         @View.nested
-        class errata(Tab):
+        class errata(PF5Tab):
             # workaround for BZ 2119076
             ROOT = './/div[@id="errata-tab"]'
 
@@ -379,7 +388,7 @@ class NewHostDetailsView(BaseLoggedInView):
             )
 
         @View.nested
-        class module_streams(Tab):
+        class module_streams(PF5Tab):
             TAB_NAME = 'Module streams'
             # workaround for BZ 2119076
             ROOT = './/div[@id="modulestreams-tab"]'
@@ -405,14 +414,14 @@ class NewHostDetailsView(BaseLoggedInView):
             pagination = PF4Pagination()
 
         @View.nested
-        class repository_sets(Tab):
+        class repository_sets(PF5Tab):
             TAB_NAME = 'Repository sets'
             # workaround for BZ 2119076
             ROOT = './/div[@id="repo-sets-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
             searchbar = SearchInput(
-                locator='.//input[contains(@class, "pf-c-text-input-group__text-input")]'
+                locator='.//input[contains(@class, "pf-v5-c-text-input-group__text")]'
             )
             show_all = Button(locator='.//div[button[@aria-label="No limit"]]')
             limit_to_environemnt = Button(
@@ -424,8 +433,8 @@ class NewHostDetailsView(BaseLoggedInView):
             )
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
-            table = Table(
-                locator='.//table[@data-ouia-component-id="host-repository-sets-table"]',
+            table = PF5OUIATable(
+                component_id='host-repository-sets-table',
                 column_widgets={
                     0: Checkbox(locator='.//input[@type="checkbox"]'),
                     'Repository': Text('./span'),
@@ -433,13 +442,16 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Repository path': Text('./span'),
                     'Status': Text('.//span[contains(@class, "pf-c-label__content")]'),
                     'Repository Type': Text('./span'),
-                    6: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                    6: PF5Button(locator='./button'),
                 },
+            )
+            repo_set_action = PF5Menu(
+                locator='.//td[contains(@class, "pf-v5-c-table__action")]/div[contains(@class, "pf-v5-c-menu")]/div'
             )
             pagination = PF4Pagination()
 
     @View.nested
-    class parameters(Tab):
+    class parameters(PF5Tab):
         ROOT = './/div'
 
         add_parameter = Button(locator='.//button[text()="Add parameter"]')
@@ -474,7 +486,7 @@ class NewHostDetailsView(BaseLoggedInView):
         pagination = PF4Pagination()
 
     @View.nested
-    class traces(Tab):
+    class traces(PF5Tab):
         ROOT = './/div'
 
         title = Text('//h2')
@@ -497,13 +509,13 @@ class NewHostDetailsView(BaseLoggedInView):
         pagination = PF4Pagination()
 
     @View.nested
-    class ansible(Tab):
+    class ansible(PF5Tab):
         """View comprising the subtabs under the Ansible Tab"""
 
         ROOT = './/div'
 
         @View.nested
-        class roles(Tab):
+        class roles(PF5Tab):
             TAB_NAME = 'Roles'
             ROOT = './/div[@class="ansible-host-detail"]'
 
@@ -517,7 +529,7 @@ class NewHostDetailsView(BaseLoggedInView):
             pagination = PF4Pagination()
 
         @View.nested
-        class variables(Tab):
+        class variables(PF5Tab):
             TAB_NAME = 'Variables'
             ROOT = './/div[@class="ansible-host-detail"]'
 
@@ -549,12 +561,12 @@ class NewHostDetailsView(BaseLoggedInView):
             pagination = PF4Pagination()
 
         @View.nested
-        class inventory(Tab):
+        class inventory(PF5Tab):
             TAB_NAME = 'Inventory'
             ROOT = './/div[@class="ansible-host-detail"]'
 
         @View.nested
-        class jobs(Tab):
+        class jobs(PF5Tab):
             TAB_NAME = 'Jobs'
             ROOT = './/div[@class="ansible-host-detail"]'
 
@@ -567,7 +579,7 @@ class NewHostDetailsView(BaseLoggedInView):
                 )
 
             @View.nested
-            class schedule(Tab):
+            class schedule(PF5Tab):
                 # Only displays when there isn't a Job scheduled for this host
                 scheduleRecurringJob = Button(
                     locator='.//button[@aria-label="schedule recurring job"]'
@@ -578,7 +590,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     return self.scheduleRecurringJob.is_displayed
 
             @View.nested
-            class jobs(Tab):
+            class jobs(PF5Tab):
                 # Mutually Exclusive with the above button
                 scheduledText = './/h3[text()="Scheduled recurring jobs"]'
                 scheduledJobsTable = Table(
@@ -597,7 +609,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     return self.scheduledText.is_displayed
 
             @View.nested
-            class previous(Tab):
+            class previous(PF5Tab):
                 # Only displayed on Refresh when there are previously executed jobs
                 previousText = './/h3[text()="Previously executed jobs"]'
                 previousJobsTable = Table(
@@ -617,7 +629,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     return self.previousText.is_displayed
 
     @View.nested
-    class puppet(Tab):
+    class puppet(PF5Tab):
         ROOT = './/div'
 
         search_bar = SearchInput(locator='.//input[contains(@class, "search-input")]')
@@ -637,7 +649,7 @@ class NewHostDetailsView(BaseLoggedInView):
         pagination = PF4Pagination()
 
         @View.nested
-        class enc_preview(Tab):
+        class enc_preview(PF5Tab):
             ROOT = './/div[@class="enc-preview-tab"]'
             TAB_NAME = "ENC Preview"
             preview = Text('.//code')
@@ -656,7 +668,7 @@ class NewHostDetailsView(BaseLoggedInView):
             )
 
     @View.nested
-    class reports(Tab):
+    class reports(PF5Tab):
         ROOT = './/div'
 
         search_bar = SearchInput(locator='.//input[contains(@class, "search-input")]')
@@ -678,7 +690,7 @@ class NewHostDetailsView(BaseLoggedInView):
         pagination = PF4Pagination()
 
     @View.nested
-    class insights(Tab):
+    class insights(PF5Tab):
         ROOT = './/div'
 
         search_bar = SearchInput(locator='.//input[contains(@class, "search-input")]')

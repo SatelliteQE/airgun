@@ -2,7 +2,6 @@ from widgetastic.widget import Checkbox, ParametrizedView, Text, View
 from widgetastic_patternfly4 import (
     Button,
     Dropdown,
-    Menu,
     Modal,
     Pagination,
     Radio,
@@ -11,6 +10,13 @@ from widgetastic_patternfly4 import (
 from widgetastic_patternfly4.ouia import (
     Alert as OUIAAlert,
     PatternflyTable,
+)
+from widgetastic_patternfly5 import (
+    Button as PF5Button,
+    Menu as PF5Menu,
+)
+from widgetastic_patternfly5.ouia import (
+    PatternflyTable as PF5OUIATable,
 )
 
 from airgun.views.common import (
@@ -33,9 +39,9 @@ class AllHostsSelect(Select):
     TEXT_LOCATOR = ".//div[contains(@class, 'pf-c-select') and child::button]"
 
 
-class AllHostsMenu(Menu):
+class AllHostsMenu(PF5Menu):
     IS_ALWAYS_OPEN = False
-    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-menu-toggle')]"
+    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-v5-c-menu-toggle')]"
     ROOT = f"{BUTTON_LOCATOR}/.."
 
 
@@ -59,12 +65,17 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     )
     bulk_actions = AllHostsMenu()
     bulk_actions_kebab = Button(locator='.//button[@aria-label="plain kebab"]')
-    bulk_actions_menu = Menu(locator='.//div[@data-ouia-component-id="hosts-index-actions-kebab"]')
+    bulk_actions_menu = PF5Menu(
+        locator='.//div[@data-ouia-component-id="hosts-index-actions-kebab"]'
+    )
+    bulk_actions_manage_content_menu = PF5Menu(
+        locator='//li[contains(@class, "pf-v5-c-menu__list-item")]//button[span/span[text()="Manage content"]]/following-sibling::div[contains(@class, "pf-v5-c-menu")]'
+    )
 
     table_loading = Text("//h5[normalize-space(.)='Loading']")
     no_results = Text("//h5[normalize-space(.)='No Results']")
-    manage_columns = Button("Manage columns")
-    table = PatternflyTable(
+    manage_columns = PF5Button("Manage columns")
+    table = PF5OUIATable(
         component_id='table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
