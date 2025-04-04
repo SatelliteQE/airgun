@@ -19,12 +19,13 @@ from widgetastic_patternfly import BreadCrumb, Button
 from widgetastic_patternfly4.ouia import (
     BreadCrumb as PF4BreadCrumb,
     Button as PF4Button,
-    FormSelect,
-    TextInput as OUIATextInput,
 )
-from widgetastic_patternfly4.tabs import Tab
+from widgetastic_patternfly5.components.tabs import Tab
 from widgetastic_patternfly5.ouia import (
+    Button as PF5Button,
+    FormSelect as PF5FormSelect,
     Select as PF5OUIASelect,
+    TextInput as PF5OUIATextInput,
 )
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
@@ -521,25 +522,25 @@ class HostCreateView(BaseLoggedInView):
 
 class HostRegisterView(BaseLoggedInView):
     title = Text("//h1[normalize-space(.)='Register Host']")
-    generate_command = PF4Button('registration_generate_btn')
-    cancel = PF4Button('registration-cancel-button')
+    generate_command = PF5Button('registration_generate_btn')
+    cancel = PF5Button('registration-cancel-button')
     registration_command = TextInput(locator="//input[@aria-label='Copyable input']")
 
     @View.nested
     class general(Tab):
         TAB_NAME = 'General'
         TAB_LOCATOR = ParametrizedLocator(
-            './/div[contains(@class, "pf-c-tabs")]//ul'
+            './/div[contains(@class, "pf-v5-c-tabs")]//ul'
             "/li[button[normalize-space(.)={@tab_name|quote}]]"
         )
         ROOT = '//section[@id="generalSection"]'
 
-        organization = FormSelect('reg_organization')
-        location = FormSelect('reg_location')
-        host_group = FormSelect('reg_host_group')
-        operating_system = FormSelect('os-select')
+        organization = PF5FormSelect('reg_organization')
+        location = PF5FormSelect('reg_location')
+        host_group = PF5FormSelect('reg_host_group')
+        operating_system = PF5FormSelect('os-select')
         linux_host_init_link = Link('//a[normalize-space(.)="Linux host_init_config default"]')
-        capsule = FormSelect('reg_smart_proxy')
+        capsule = PF5FormSelect('reg_smart_proxy')
         insecure = Checkbox(id='reg_insecure')
         activation_keys = BaseMultiSelect('activation-keys-field')
         activation_key_helper = Text("//div[@id='activation_keys_field-helper']")
@@ -549,21 +550,21 @@ class HostRegisterView(BaseLoggedInView):
     class advanced(Tab):
         TAB_NAME = 'Advanced'
         TAB_LOCATOR = ParametrizedLocator(
-            './/div[contains(@class, "pf-c-tabs")]//ul'
+            './/div[contains(@class, "pf-v5-c-tabs")]//ul'
             "/li[button[normalize-space(.)={@tab_name|quote}]]"
         )
         ROOT = '//section[@id="advancedSection"]'
-        setup_rex = FormSelect('registration_setup_remote_execution')
-        setup_insights = FormSelect('registration_setup_insights')
+        setup_rex = PF5FormSelect('registration_setup_remote_execution')
+        setup_insights = PF5FormSelect('registration_setup_insights')
         install_packages = TextInput(id='reg_packages')
         update_packages = Checkbox(id='reg_update_packages')
         token_life_time = TextInput(id='reg_token_life_time_input')
         rex_interface = TextInput(id='reg_rex_interface_input')
-        rex_pull_mode = FormSelect('registration_setup_remote_execution_pull')
+        rex_pull_mode = PF5FormSelect('registration_setup_remote_execution_pull')
         ignore_error = Checkbox(id='reg_katello_ignore')
         force = Checkbox(id='reg_katello_force')
         install_packages_helper = Text("//div[@id='reg_packages-helper']")
-        repository_add = PF4Button('host_reg_add_more_repositories')
+        repository_add = PF5Button('host_reg_add_more_repositories')
 
     @property
     def is_displayed(self):
@@ -595,14 +596,14 @@ class HostRegisterView(BaseLoggedInView):
 class RepositoryListView(View):
     """Repository List view"""
 
-    ROOT = '//div[@id="pf-modal-part-0" or @data-ouia-component-type="PF4/ModalContent"]'
-    repository = OUIATextInput('host_reg_repo')
-    repository_gpg_key_url = OUIATextInput('host_reg_gpg_key')
-    repository_list_confirm = PF4Button('reg_modal_confirm')
-    repository_list_reset = PF4Button('reg_modal_reset')
-    repository_list_add_new = PF4Button('host_reg_modal_add_new_repo')
-    repository_list_remove = PF4Button('0')
-    repository_list_popup_close = PF4Button('host_reg_repo_modal-ModalBoxCloseButton')
+    ROOT = '//div[@id="pf-modal-part-0" or @data-ouia-component-type="PF5/ModalContent"]'
+    repository = PF5OUIATextInput('host_reg_repo')
+    repository_gpg_key_url = PF5OUIATextInput('host_reg_gpg_key')
+    repository_list_confirm = PF5Button('reg_modal_confirm')
+    repository_list_reset = PF5Button('reg_modal_reset')
+    repository_list_add_new = PF5Button('host_reg_modal_add_new_repo')
+    repository_list_remove = PF5Button('0')
+    repository_list_popup_close = PF5Button('host_reg_repo_modal-ModalBoxCloseButton')
 
 
 class RecommendationWidget(GenericLocatorWidget):
