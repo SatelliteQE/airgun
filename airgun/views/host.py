@@ -527,7 +527,7 @@ class HostRegisterView(BaseLoggedInView):
     class general(Tab):
         TAB_NAME = 'General'
         TAB_LOCATOR = ParametrizedLocator(
-            './/div[contains(@class, "pf-c-tabs")]//ul'
+            './/div[contains(@class, "pf-v5-c-tabs")]//ul'
             "/li[button[normalize-space(.)={@tab_name|quote}]]"
         )
         ROOT = '//section[@id="generalSection"]'
@@ -547,7 +547,7 @@ class HostRegisterView(BaseLoggedInView):
     class advanced(Tab):
         TAB_NAME = 'Advanced'
         TAB_LOCATOR = ParametrizedLocator(
-            './/div[contains(@class, "pf-c-tabs")]//ul'
+            './/div[contains(@class, "pf-v5-c-tabs")]//ul'
             "/li[button[normalize-space(.)={@tab_name|quote}]]"
         )
         ROOT = '//section[@id="advancedSection"]'
