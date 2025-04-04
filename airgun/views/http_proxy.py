@@ -26,6 +26,7 @@ class HTTPProxyCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     submit = Text('//input[@name="commit"]')
     cancel = Text('//a[normalize-space(.)="Cancel"]')
+    test_button = Text('//a[@id="test_connection_button"]')
 
     @property
     def is_displayed(self):
