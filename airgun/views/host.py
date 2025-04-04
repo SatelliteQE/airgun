@@ -23,6 +23,7 @@ from widgetastic_patternfly4.ouia import (
     TextInput as OUIATextInput,
 )
 from widgetastic_patternfly4.tabs import Tab
+from widgetastic_patternfly5 import Button as PF5Button
 from widgetastic_patternfly5.ouia import (
     Select as PF5OUIASelect,
 )
@@ -529,7 +530,7 @@ class HostRegisterView(BaseLoggedInView):
     class general(Tab):
         TAB_NAME = 'General'
         TAB_LOCATOR = ParametrizedLocator(
-            './/div[contains(@class, "pf-c-tabs")]//ul'
+            './/div[contains(@class, "pf-v5-c-tabs")]//ul'
             "/li[button[normalize-space(.)={@tab_name|quote}]]"
         )
         ROOT = '//section[@id="generalSection"]'
@@ -549,7 +550,7 @@ class HostRegisterView(BaseLoggedInView):
     class advanced(Tab):
         TAB_NAME = 'Advanced'
         TAB_LOCATOR = ParametrizedLocator(
-            './/div[contains(@class, "pf-c-tabs")]//ul'
+            './/div[contains(@class, "pf-v5-c-tabs")]//ul'
             "/li[button[normalize-space(.)={@tab_name|quote}]]"
         )
         ROOT = '//section[@id="advancedSection"]'
@@ -563,7 +564,7 @@ class HostRegisterView(BaseLoggedInView):
         ignore_error = Checkbox(id='reg_katello_ignore')
         force = Checkbox(id='reg_katello_force')
         install_packages_helper = Text("//div[@id='reg_packages-helper']")
-        repository_add = PF4Button('host_reg_add_more_repositories')
+        repository_add = PF5Button('host_reg_add_more_repositories')
 
     @property
     def is_displayed(self):
