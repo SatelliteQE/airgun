@@ -21,6 +21,7 @@ from widgetastic_patternfly5 import (
     Button as PF5Button,
     Dropdown as PF5Dropdown,
     Menu as PF5Menu,
+    Pagination as PF5Pagination,
     Tab as PF5Tab,
 )
 from widgetastic_patternfly5.ouia import (
@@ -141,7 +142,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class host_status(Card):
-            ROOT = './/article[.//span[text()="Host status"]]'
+            ROOT = './/div[@data-ouia-component-id="card-aggregate-status"]'
 
             status = Text('.//h4[contains(@data-ouia-component-id, "global-state-title")]')
             manage_all_statuses = Text('.//a[normalize-space(.)="Manage all statuses"]')
@@ -693,7 +694,7 @@ class NewHostDetailsView(BaseLoggedInView):
     class insights(PF5Tab):
         ROOT = './/div'
 
-        search_bar = SearchInput(locator='.//input[contains(@class, "search-input")]')
+        search_bar = SearchInput(locator='.//input[contains(@class, "pf-v5-c-text-input")]')
         remediate = Button(locator='.//button[text()="Remediate"]')
         insights_dropdown = Dropdown(locator='.//div[contains(@class, "insights-dropdown")]')
 
@@ -702,7 +703,7 @@ class NewHostDetailsView(BaseLoggedInView):
             locator='.//button[text()="Select recommendations from all pages"]'
         )
 
-        recommendations_table = PatternflyTable(
+        recommendations_table = PF5OUIATable(
             component_id='OUIA-Generated-Table-2',
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -712,7 +713,7 @@ class NewHostDetailsView(BaseLoggedInView):
                 4: Button(locator='.//button[contains(@aria-label, "Actions")]'),
             },
         )
-        pagination = PF4Pagination()
+        pagination = PF5Pagination()
 
 
 class InstallPackagesView(View):
@@ -811,7 +812,7 @@ class ManageHostStatusesView(View):
 
     ROOT = './/div[@data-ouia-component-id="statuses-modal"]'
     close_modal = Button(locator='.//button[@aria-label="Close"]')
-    host_statuses_table = PatternflyTable(
+    host_statuses_table = PF5OUIATable(
         component_id='statuses-table',
         column_widgets={
             'Name': Text('.//td[contains(@data-label, "Name")]'),

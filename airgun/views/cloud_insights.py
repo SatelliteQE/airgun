@@ -1,7 +1,6 @@
 from widgetastic.widget import Checkbox, Text, TextInput, View
-from widgetastic_patternfly4 import Button, Pagination as PF4Pagination
-from widgetastic_patternfly4.dropdown import Dropdown
-from widgetastic_patternfly4.ouia import Modal, PatternflyTable, Switch
+from widgetastic_patternfly5 import Button, Pagination as PF5Pagination
+from widgetastic_patternfly5.ouia import Dropdown, Modal, PatternflyTable, Switch
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 
@@ -44,7 +43,7 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text('//h1[normalize-space(.)="Red Hat Insights"]')
     insights_sync_switcher = Switch('OUIA-Generated-Switch-1')
     remediate = Button('Remediate')
-    insights_dropdown = Dropdown(locator='.//div[contains(@class, "title-dropdown")]')
+    insights_dropdown = Dropdown('OUIA-Generated-Dropdown-2')
     select_all = Checkbox(locator='.//input[@aria-label="Select all rows"]')
     table = PatternflyTable(
         component_id='OUIA-Generated-Table-2',
@@ -58,7 +57,7 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
     )
     select_all_hits = Button('Select recommendations from all pages')
     clear_hits_selection = Button('Clear Selection')
-    pagination = PF4Pagination()
+    pagination = PF5Pagination()
     remediation_window = View.nested(RemediationView)
 
     @property
