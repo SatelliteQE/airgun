@@ -67,7 +67,8 @@ class AllHostsEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
         view.select_all.fill(True)
-        view.bulk_actions.item_select('Delete')
+        view.bulk_actions_kebab.click()
+        view.bulk_actions_menu.item_select('Delete')
         delete_modal = BulkHostDeleteDialog(self.browser)
         if delete_modal.is_displayed:
             delete_modal.confirm_checkbox.fill(True)
