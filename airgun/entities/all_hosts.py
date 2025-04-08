@@ -84,7 +84,8 @@ class AllHostsEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
         view.select_all.fill(True)
-        view.bulk_actions.item_select('Build management')
+        view.bulk_actions_kebab.click()
+        view.bulk_actions_menu.item_select('Build management')
         build_management_modal = BuildManagementDialog(self.browser)
         if build_management_modal.is_displayed:
             if reboot:

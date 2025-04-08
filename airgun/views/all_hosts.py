@@ -83,7 +83,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
             2: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
         },
     )
-    alert_message = Text('.//div[@aria-label="Success Alert" or @aria-label="Danger Alert"]')
+    alert_message = Text('.//div[contains(@class, "pf-v5-c-alert")]')
 
     pagination = Pagination()
 
