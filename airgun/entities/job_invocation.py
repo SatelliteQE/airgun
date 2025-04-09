@@ -1,7 +1,6 @@
 import time
 
 from navmazing import NavigateToSibling
-from selenium.webdriver.common.by import By
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
@@ -63,9 +62,10 @@ class JobInvocationEntity(BaseEntity):
         time.sleep(3)
         view = JobInvocationCreateView(self.browser)
         time.sleep(3)
-        element = self.browser.selenium.find_element(By.XPATH, '//div/input')
-        read_values = view.category_and_template.read()
-        read_values['job_template'] = element.get_attribute('value')
+        read_values = {
+            'job_category': view.category_and_template.job_category.read(),
+            'job_template': view.category_and_template.job_template_text_input.read(),
+        }
         return read_values
 
     def get_targeted_hosts(self):

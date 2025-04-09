@@ -1,12 +1,18 @@
 from wait_for import wait_for
 from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button, ChipGroup, DescriptionList, Radio, Select
+from widgetastic_patternfly4 import Button, DescriptionList, Radio, Select
 from widgetastic_patternfly4.donutchart import DonutCircle, DonutLegend
 from widgetastic_patternfly4.ouia import (
     Dropdown as OUIADropdown,
     Select as OUIASelect,
     Text as OUIAText,
+)
+from widgetastic_patternfly5 import (
+    ChipGroup as PF5ChipGroup,
+)
+from widgetastic_patternfly5.ouia import (
+    Select as PF5OUIASelect,
 )
 
 from airgun.views.common import (
@@ -35,15 +41,18 @@ class JobInvocationCreateView(BaseLoggedInView):
     @View.nested
     class category_and_template(WizardStepView):
         expander = Text(".//button[contains(.,'Category and template')]")
-        job_category = Select(locator='//div[*[@aria-label="Job category toggle"]]')
-        job_template = Select(locator='//div[div/*[@aria-label="Job template toggle"]]')
+        job_category = PF5OUIASelect('job_category')
+        job_template = PF5OUIASelect('job_template')
+        job_template_text_input = TextInput(
+            locator='//div[contains(@class, "pf-v5-c-form__group") and .//label[.//span[text()="Job template"]]]//input[@type="text"]'
+        )
 
     @View.nested
     class target_hosts_and_inputs(WizardStepView):
         expander = Text(".//button[contains(.,'Target hosts and inputs')]")
         command = TextInput(id='command')
 
-        selected_hosts = ChipGroup(locator='//div[@class="selected-chips"]/div')
+        selected_hosts = PF5ChipGroup(locator='//div[@class="selected-chips"]/div')
 
         package_action = OUIASelect('OUIA-Generated-Select-single-15')
         package = TextInput(id='package')
