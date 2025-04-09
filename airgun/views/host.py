@@ -20,10 +20,12 @@ from widgetastic_patternfly4.ouia import (
     BreadCrumb as PF4BreadCrumb,
     Button as PF4Button,
     FormSelect,
-    Select as PF4Select,
     TextInput as OUIATextInput,
 )
 from widgetastic_patternfly4.tabs import Tab
+from widgetastic_patternfly5.ouia import (
+    Select as PF5OUIASelect,
+)
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
 from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
@@ -745,16 +747,16 @@ class HostsChangeGroup(HostsActionCommonDialog):
 class HostsChangeContentSourceView(View):
     title = Text('//h5')
 
-    hosts_to_update = Text('//span[@class="pf-c-label pf-m-green"]//a')
-    ignored_hosts = Text('//span[@class="pf-c-label pf-m-orange"]//a')
+    hosts_to_update = Text('//span[@class="pf-v5-c-label pf-m-green"]//a')
+    ignored_hosts = Text('//span[@class="pf-v5-c-label pf-m-orange"]//a')
 
-    content_source_select = PF4Select('content-source-select')
+    content_source_select = PF5OUIASelect('content-source-select')
     disabled_environment_status = Text('//div[@aria-label="Info Alert"]')
 
     lce_env_title = Text('//div[normalize-space(.)="Lifecycle environment"]')
     lce_env_path_list = Text('//div[@class="env-path"]/div/div')
 
-    content_view_select = PF4Select('SelectContentView')
+    content_view_select = PF5OUIASelect('SelectContentView')
     content_view_select_btn = Text(locator='//button[@aria-label="Options menu" and @tabindex]')
 
     run_job_invocation = Text(locator='//*[normalize-space(.)="Run job invocation"]')
