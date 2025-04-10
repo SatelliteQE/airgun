@@ -625,9 +625,9 @@ class SearchableViewMixinPF4(SearchableViewMixin):
             return None
         self.searchbox.search(query)
         self.browser.plugin.ensure_page_safe(timeout='60s')
-        self.table.wait_displayed()
         if hasattr(self, 'title'):
             self.title.click()
+        self.table.wait_displayed()
         return self.table.read()
 
 
