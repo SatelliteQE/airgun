@@ -375,7 +375,7 @@ class AllHostsEntity(BaseEntity):
         view.bulk_actions_kebab.click()
         # This is here beacuse there is nested flyout menu which needs to be hovered over first so we can use item_select in the next step
         self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
-        view.bulk_actions.item_select('Errata')
+        view.bulk_actions_manage_content_menu.item_select('Errata')
 
         view = ManageErrataModal(self.browser)
 
