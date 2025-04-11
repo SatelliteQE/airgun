@@ -246,14 +246,14 @@ class ProductSyncPlanView(SyncPlanCreateView):
 
 
 class ProductManageHttpProxy(BaseLoggedInView):
-    """Represents Http Proxy Management page for Products."""
+    """Represents Http proxy Management page for Products."""
 
-    title = Text("//h4[normalize-space(.)='Http Proxy Management']")
+    title = Text("//h4[normalize-space(.)='HTTP proxy Management']")
     http_proxy_policy = Select(id="http_proxy_policy")
     proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
     update = Text('//button[@ng-click="update()"]')
 
-    @proxy_policy.register('Use specific HTTP Proxy')
+    @proxy_policy.register('Use specific HTTP proxy')
     class ExistingProductForm(View):
         http_proxy = Select(id="http_proxy")
 

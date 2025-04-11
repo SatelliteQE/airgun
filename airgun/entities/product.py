@@ -81,9 +81,9 @@ class ProductEntity(BaseEntity):
         return view.read()
 
     def manage_http_proxy(self, entities_list, values):
-        """Manage HTTP Proxy for product/products
+        """Manage HTTP proxy for product/products
 
-        :param entities_list: The product names to perform Manage HTTP Proxy action.
+        :param entities_list: The product names to perform Manage HTTP proxy action.
         :param values: dict containing http_proxy_policy and http_proxy values.
             eg: {'http_proxy_policy': 'No HTTP Proxy'}, {'http_proxy_policy': 'Global Default'},
             {'http_proxy_policy': 'Use specific HTTP Proxy', 'http_proxy': 'proxy_name'}
@@ -91,7 +91,7 @@ class ProductEntity(BaseEntity):
         view = self.navigate_to(
             self,
             'Select Action',
-            action_name='Manage HTTP Proxy',
+            action_name='Manage HTTP proxy',
             entities_list=entities_list,
         )
         if values['http_proxy_policy'] == "Global Default":
@@ -208,7 +208,7 @@ class ProductsSelectAction(NavigateStep):
     """
 
     ACTIONS_VIEWS = {
-        'Manage HTTP Proxy': ProductManageHttpProxy,
+        'Manage HTTP proxy': ProductManageHttpProxy,
         'Advanced Sync': ProductAdvancedSync,
         'Verify Content Checksum': ProductVerifyContentChecksum,
     }

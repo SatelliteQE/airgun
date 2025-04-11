@@ -74,7 +74,7 @@ class RepositoryCreateView(BaseLoggedInView):
         ssl_client_cert = Select(id='ssl_client_cert_id')
         ssl_client_key = Select(id='ssl_client_key_id')
 
-        @proxy_policy.register('Use specific HTTP Proxy')
+        @proxy_policy.register('Use specific HTTP proxy')
         class SpecificHttpProxy(View):
             http_proxy = Select(id="http_proxy")
 
@@ -93,7 +93,7 @@ class RepositoryCreateView(BaseLoggedInView):
         ssl_client_cert = Select(id='ssl_client_cert_id')
         ssl_client_key = Select(id='ssl_client_key_id')
 
-        @proxy_policy.register('Use specific HTTP Proxy')
+        @proxy_policy.register('Use specific HTTP proxy')
         class SpecificHttpProxy(View):
             http_proxy = Select(id="http_proxy")
 
@@ -108,7 +108,7 @@ class RepositoryCreateView(BaseLoggedInView):
         http_proxy_policy = Select(id="http_proxy_policy")
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
 
-        @proxy_policy.register('Use specific HTTP Proxy')
+        @proxy_policy.register('Use specific HTTP proxy')
         class SpecificHttpProxy(View):
             http_proxy = Select(id="http_proxy")
 
@@ -135,7 +135,7 @@ class RepositoryCreateView(BaseLoggedInView):
         http_proxy_policy = Select(id="http_proxy_policy")
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
 
-        @proxy_policy.register('Use specific HTTP Proxy')
+        @proxy_policy.register('Use specific HTTP proxy')
         class SpecificHttpProxy(View):
             http_proxy = Select(id="http_proxy")
 
@@ -160,7 +160,7 @@ class RepositoryCreateView(BaseLoggedInView):
         http_proxy_policy = Select(id="http_proxy_policy")
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
 
-        @proxy_policy.register('Use specific HTTP Proxy')
+        @proxy_policy.register('Use specific HTTP proxy')
         class SpecificHttpProxy(View):
             http_proxy = Select(id="http_proxy")
 
@@ -182,7 +182,7 @@ class RepositoryCreateView(BaseLoggedInView):
         ssl_client_cert = Select(id='ssl_client_cert_id')
         ssl_client_key = Select(id='ssl_client_key_id')
 
-        @proxy_policy.register('Use specific HTTP Proxy')
+        @proxy_policy.register('Use specific HTTP proxy')
         class SpecificHttpProxy(View):
             http_proxy = Select(id="http_proxy")
 
@@ -232,7 +232,7 @@ class RepositoryEditView(BaseLoggedInView):
         repo_name = ReadOnlyEntry(name='Name')
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
         upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
-        http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
+        http_proxy_policy = EditableEntrySelect(name='HTTP proxy')
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
         mirroring_policy = EditableEntrySelect(name='Mirroring Policy')
         include_tags = EditableEntry(name='Include Tags')
@@ -251,7 +251,7 @@ class RepositoryEditView(BaseLoggedInView):
         upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
         metadata_type = EditableEntrySelect(name='Yum Metadata Checksum')
         retain_package_versions = EditableEntry(name='Retain package versions')
-        http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
+        http_proxy_policy = EditableEntrySelect(name='HTTP proxy')
         ignore_srpms = EditableEntryCheckbox(name='Ignore SRPMs')
         unprotected = EditableEntryCheckbox(name='Unprotected')
         gpg_key = EditableEntrySelect(name='GPG Key')
@@ -274,7 +274,7 @@ class RepositoryEditView(BaseLoggedInView):
         upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
         upload_content = FileInput(name='content[]')
         upload = Text("//button[contains(., 'Upload')]")
-        http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
+        http_proxy_policy = EditableEntrySelect(name='HTTP proxy')
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
         mirroring_policy = EditableEntrySelect(name='Mirroring Policy')
 
@@ -288,7 +288,7 @@ class RepositoryEditView(BaseLoggedInView):
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
         upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
         published_at = ReadOnlyEntry(name='Published At')
-        http_proxy_policy = EditableEntrySelect(name='HTTP Proxy')
+        http_proxy_policy = EditableEntrySelect(name='HTTP proxy')
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
 
         @proxy_policy.register(True, default=True)
