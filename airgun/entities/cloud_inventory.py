@@ -15,6 +15,43 @@ class CloudInventoryEntity(BaseEntity):
             result.update(view.inventory_list.read())
         return result
 
+    def get_displayed_settings_options(self):
+        """Get displayed settings options on Red Hat Inventory page"""
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        result = {
+            'auto_update': view.auto_update.is_displayed,
+            'obfuscate_hostnames': view.obfuscate_hostnames.is_displayed,
+            'obfuscate_ips': view.obfuscate_ips.is_displayed,
+            'exclude_packages': view.exclude_packages.is_displayed,
+            'auto_mismatch_deletion': view.auto_mismatch_deletion.is_displayed,
+        }
+        return result
+
+    def get_displayed_buttons(self):
+        """Get displayed buttons on Red Hat Inventory page"""
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        result = {
+            'cloud_connector': view.cloud_connector.is_displayed,
+            'reconfigure_cloud_connector': view.reconfigure_cloud_connector.is_displayed,
+            'sync_status': view.sync_status.is_displayed,
+        }
+        return result
+
+    def get_displayed_descriptions(self):
+        """Get displayed descriptions on Red Hat Inventory page"""
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        result = {
+            'auto_upload_desc': view.auto_upload_desc.is_displayed,
+            'manual_upload_desc': view.manual_upload_desc.is_displayed,
+        }
+        return result
+
     def configure_cloud_connector(self):
         """Configure Cloud Connector"""
         view = self.navigate_to(self, 'All')

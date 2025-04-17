@@ -3,8 +3,9 @@ from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Text, View
 from widgetastic_patternfly import Button, Tab
-from widgetastic_patternfly4.button import Button as Pf4Button
 from widgetastic_patternfly4.switch import Switch
+from widgetastic_patternfly5 import Button as PF5Button
+from widgetastic_patternfly5.ouia import Text as PF5OUIAText
 
 from airgun.exceptions import ReadOnlyWidgetError
 from airgun.views.common import BaseLoggedInView
@@ -31,9 +32,9 @@ class InventoryTab(Tab):
 class InventoryItemsView(Accordion):
     """Item related to one organization on Insights Inventory Upload page."""
 
-    ROOT = './/dl[contains(@class, "pf-c-accordion account-list")]'
+    ROOT = './/dl[contains(@class, "pf-v5-c-accordion account-list")]'
     DESCRIPTION_LOCATOR = (
-        './/span[contains(@class, "pf-c-label pf-m-blue pf-m-outline account-icon")]'
+        './/span[contains(@class, "pf-v5-c-label pf-m-blue pf-m-outline account-icon")]'
     )
     STATUS_ELEMENTS = './/div[contains(@class, "status")]/div[contains(@class, "item")]'
 
@@ -110,11 +111,18 @@ class CloudInventoryListView(BaseLoggedInView):
     obfuscate_hostnames = Switch('.//label[@for="rh-cloud-switcher-obfuscate_inventory_hostnames"]')
     obfuscate_ips = Switch('.//label[@for="rh-cloud-switcher-obfuscate_inventory_ips"]')
     exclude_packages = Switch('.//label[@for="rh-cloud-switcher-exclude_installed_packages"]')
-    cloud_connector = Pf4Button(locator='//button[normalize-space(.)="Configure cloud connector"]')
-    reconfigure_cloud_connector = Pf4Button(
+    auto_mismatch_deletion = Switch(
+        './/label[@for="rh-cloud-switcher-allow_auto_insights_mismatch_delete"]'
+    )
+
+    auto_upload_desc = PF5OUIAText('OUIA-Generated-Text-6')
+    manual_upload_desc = PF5OUIAText('OUIA-Generated-Text-7')
+
+    cloud_connector = PF5Button(locator='//button[normalize-space(.)="Configure cloud connector"]')
+    reconfigure_cloud_connector = PF5Button(
         locator='//button[normalize-space(.)="Reconfigure cloud connector"]'
     )
-    sync_status = Pf4Button(locator='//button[normalize-space(.)="Sync all inventory status"]')
+    sync_status = PF5Button(locator='//button[normalize-space(.)="Sync all inventory status"]')
     inventory_list = View.nested(InventoryItemsView)
 
     @property
@@ -128,4 +136,5 @@ class CloudInventoryListView(BaseLoggedInView):
             'obfuscate_hostnames': self.obfuscate_hostnames.read(),
             'obfuscate_ips': self.obfuscate_ips.read(),
             'exclude_packages': self.exclude_packages.read(),
+            'auto_mismatch_deletion': self.auto_mismatch_deletion.read(),
         }
