@@ -19,7 +19,11 @@ from widgetastic.exceptions import NoAlertPresentException, NoSuchElementExcepti
 import yaml
 
 from airgun import settings
-from airgun.widgets import ConfirmationDialog, Pf4ConfirmationDialog
+from airgun.widgets import (
+    ConfirmationDialog,
+    Pf4ConfirmationDialog,
+    Pf5ConfirmationDialog,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -453,8 +457,13 @@ class AirgunBrowser(Browser):
             :py:class:`selenium.common.exceptions.NoAlertPresentException`
         """
         pf4_modal_locator = "//div[@data-ouia-component-type='PF4/ModalContent']"
+        pf5_modal_locator = "//div[@data-ouia-component-type='PF5/ModalContent']"
         modal_locator = "//div[@class='modal-content']"
-        modal_map = {pf4_modal_locator: Pf4ConfirmationDialog, modal_locator: ConfirmationDialog}
+        modal_map = {
+            pf4_modal_locator: Pf4ConfirmationDialog,
+            modal_locator: ConfirmationDialog,
+            pf5_modal_locator: Pf5ConfirmationDialog,
+        }
         if not self.handles_alerts:
             return None
         try:
@@ -478,7 +487,7 @@ class AirgunBrowser(Browser):
     ):
         """Extend the behaviour of widgetstatic.browser.handle_alert to handle PF4 alerts"""
         popup = self.get_alert(squash=squash)
-        if isinstance(popup, Pf4ConfirmationDialog | ConfirmationDialog):
+        if isinstance(popup, Pf4ConfirmationDialog | ConfirmationDialog | Pf5ConfirmationDialog):
             if cancel:
                 self.logger.info("  dismissing")
                 popup.cancel()
