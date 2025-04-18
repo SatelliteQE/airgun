@@ -93,7 +93,7 @@ class JobInvocationEntity(BaseEntity):
         wait_for(lambda: view.overview.hosts_table.is_displayed, timeout=10)
         view.overview.hosts_table.row(host=host_name)['Actions'].widget.fill('Host task')
         view = TaskDetailsView(self.browser)
-        wait_for(lambda: view.task.dynflow_console.is_displayed, timeout=10)
+        view.wait_for_result()
         view.task.dynflow_console.click()
         self.browser.switch_to_window(self.browser.window_handles[1])
         console = DynflowConsoleView(self.browser)
