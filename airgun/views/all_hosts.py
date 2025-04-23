@@ -427,7 +427,7 @@ class ManageErrataModal(PF5Modal):
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
 
         tree_expander_errata = Button(
-            './/button[@class="pf-v5vc-tree-view__node" and contains(.,"Errata to")]'
+            './/button[@class="pf-v5-c-tree-view__node" and contains(.,"Errata to")]'
         )
         expanded_errata_list = ItemsList(
             locator='//ul[@class="pf-v5-c-tree-view__list" and @role="tree"][1]'
