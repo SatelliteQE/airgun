@@ -2,18 +2,19 @@ from widgetastic.widget import Checkbox, ParametrizedView, Text, View
 from widgetastic_patternfly4 import (
     Button,
     Dropdown,
-    Modal,
     Pagination,
     Radio,
     Select,
 )
 from widgetastic_patternfly4.ouia import (
     Alert as OUIAAlert,
-    PatternflyTable,
 )
 from widgetastic_patternfly5 import (
     Button as PF5Button,
+    Dropdown as PF5Dropdown,
     Menu as PF5Menu,
+    Modal as PF5Modal,
+    Radio as PF5Radio,
 )
 from widgetastic_patternfly5.ouia import (
     PatternflyTable as PF5OUIATable,
@@ -191,7 +192,7 @@ class AllHostsManageColumnsView(ManageColumnsView):
         self.checkbox_group.fill(values)
 
 
-class ManageCVEModal(Modal):
+class ManageCVEModal(PF5Modal):
     """
     This class represents the Manage Content View Environments modal that is used to update the CVE of hosts.
     """
@@ -209,7 +210,7 @@ class ManageCVEModal(Modal):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
-class ManagePackagesModal(Modal):
+class ManagePackagesModal(PF5Modal):
     """
     This class represents the Manage Packages modal that is used to install or update packages on hosts.
     It contains severeal nested views that represent the steps of the wizard.
@@ -218,34 +219,36 @@ class ManagePackagesModal(Modal):
     OUIA_ID = 'bulk-packages-wizard-modal'
 
     title = './/h2[@data-ouia-component-type="PF4/Title"]'
-    close_btn = Button(locator='//button[@class="pf-c-button pf-m-plain pf-c-wizard__close"]')
-    cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
-    back_btn = Button(locator='//button[normalize-space(.)="Back"]')
-    next_btn = Button(locator='//button[normalize-space(.)="Next"]')
+    close_btn = PF5Button(
+        locator='//button[@class="pf-v5-c-button pf-m-plain pf-v5-c-wizard__close"]'
+    )
+    cancel_btn = PF5Button(locator='//button[normalize-space(.)="Cancel"]')
+    back_btn = PF5Button(locator='//button[normalize-space(.)="Back"]')
+    next_btn = PF5Button(locator='//button[normalize-space(.)="Next"]')
 
     @View.nested
     class select_action(WizardStepView):
         expander = Text('.//button[text()="Select action"]')
-        content_text = Text('.//div[@class="pf-c-content"]')
+        content_text = Text('.//div[@class="pf-v5-c-content"]')
 
-        upgrade_all_packages_radio = Radio(id='r1-upgrade-all-packages')
-        upgrade_packages_radio = Radio(id='r2-upgrade-packages')
-        install_packages_radio = Radio(id='r3-install-packages')
-        remove_packages_radio = Radio(id='r4-remove-packages')
+        upgrade_all_packages_radio = PF5Radio(id='r1-upgrade-all-packages')
+        upgrade_packages_radio = PF5Radio(id='r2-upgrade-packages')
+        install_packages_radio = PF5Radio(id='r3-install-packages')
+        remove_packages_radio = PF5Radio(id='r4-remove-packages')
 
     @View.nested
     class upgrade_packages(WizardStepView):
         locator_prefix = '//div[contains(., "Upgrade packages")]/descendant::'
 
         expander = Text('.//button[contains(.,"Upgrade packages")]')
-        content_text = Text('.//div[@class="pf-c-content"]')
+        content_text = Text('.//div[@class="pf-v5-c-content"]')
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
         search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
         clear_search = Button(locator=f'{locator_prefix}button[@aria-label="Reset search"]')
         search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
 
-        table = PatternflyTable(
+        table = PF5OUIATable(
             component_id='table',
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -259,14 +262,14 @@ class ManagePackagesModal(Modal):
         locator_prefix = './/div[contains(., "Install packages")]/descendant::'
 
         expander = Text('.//button[contains(.,"Install packages")]')
-        content_text = Text('.//div[@class="pf-c-content"]')
+        content_text = Text('.//div[@class="pf-v5-c-content"]')
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
         search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
         clear_search = Button(locator=f'{locator_prefix}button[@aria-label="Reset search"]')
         search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
 
-        table = PatternflyTable(
+        table = PF5OUIATable(
             component_id='table',
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -280,14 +283,14 @@ class ManagePackagesModal(Modal):
         locator_prefix = './/div[contains(., "Remove packages")]/descendant::'
 
         expander = Text('.//button[contains(.,"Remove packages")]')
-        content_text = Text('.//div[@class="pf-c-content"]')
+        content_text = Text('.//div[@class="pf-v5-c-content"]')
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
         search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
         clear_search = Button(locator=f'{locator_prefix}button[@aria-label="Reset search"]')
         search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
 
-        table = PatternflyTable(
+        table = PF5OUIATable(
             component_id='table',
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -301,14 +304,14 @@ class ManagePackagesModal(Modal):
         locator_prefix = './/div[contains(.,"Review hosts")]/descendant::'
 
         expander = Text('.//button[contains(.,"Review hosts")]')
-        content_text = Text('.//div[@class="pf-c-content"]')
+        content_text = Text('.//div[@class="pf-v5-c-content"]')
         error_message = OUIAAlert('no-hosts-alert')
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
         search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
         search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
 
-        table = PatternflyTable(
+        table = PF5OUIATable(
             component_id='table',
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -321,32 +324,32 @@ class ManagePackagesModal(Modal):
     @View.nested
     class review(WizardStepView):
         expander = Text('.//button[text()="Review"]')
-        content_text = Text('.//div[@class="pf-c-content"]')
+        content_text = Text('.//div[@class="pf-v5-c-content"]')
 
         tree_expander_packages = Button(
-            './/button[@class="pf-c-tree-view__node" and contains(.,"Packages to")]'
+            './/button[@class="pf-v5-c-tree-view__node" and contains(.,"Packages to")]'
         )
         expanded_package_list = ItemsList(
-            locator='//ul[@class="pf-c-tree-view__list" and @role="tree"][1]'
+            locator='//ul[@class="pf-v5-c-tree-view__list" and @role="tree"][1]'
         )
         # using wording manage instead of install and update, because in UI
         # it changes based on the selected action but generally it looks the same
         # Returns 'All' or number of packages to manage
         number_of_packages_to_manage = Text(
-            '''.//span[contains(.,"Packages to")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]'''
+            '''.//span[contains(.,"Packages to")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]'''
         )
 
         edit_selected_packages = Button('.//button[@aria-label="Edit packages list"]')
         # Returns number of hosts to manage
         number_of_hosts_to_manage = Text(
-            '''.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]'''
+            '''.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]'''
         )
         edit_selected_hosts = Button('.//button[@aria-label="Edit host selection"]')
-        manage_via_dropdown = Dropdown(
+        manage_via_dropdown = PF5Dropdown(
             locator='//div[@data-ouia-component-id="bulk-packages-wizard-dropdown"]'
         )
-        finish_package_management_btn = Button(
-            locator='//*[@data-ouia-component-type="PF4/Button" and (normalize-space(.)="Install" or normalize-space(.)="Upgrade" or normalize-space(.)="Remove")]'
+        finish_package_management_btn = PF5Button(
+            locator='//*[@data-ouia-component-type="PF5/Button" and (normalize-space(.)="Install" or normalize-space(.)="Upgrade" or normalize-space(.)="Remove")]'
         )
 
     @property
@@ -354,7 +357,7 @@ class ManagePackagesModal(Modal):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
-class ManageErrataModal(Modal):
+class ManageErrataModal(PF5Modal):
     """
     This class represents the Manage Errata modal that is used to apply errata on hosts.
     It contains several nested views that represent the steps of the wizard.
@@ -363,24 +366,26 @@ class ManageErrataModal(Modal):
     OUIA_ID = 'bulk-errata-wizard-modal'
 
     title = './/h2[@data-ouia-component-type="PF4/Title"]'
-    close_btn = Button(locator='//button[@class="pf-c-button pf-m-plain pf-c-wizard__close"]')
-    cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
-    back_btn = Button(locator='//button[normalize-space(.)="Back"]')
-    next_btn = Button(locator='//button[normalize-space(.)="Next"]')
+    close_btn = PF5Button(
+        locator='//button[@class="pf-v5-c-button pf-m-plain pf-v5-c-wizard__close"]'
+    )
+    cancel_btn = PF5Button(locator='//button[normalize-space(.)="Cancel"]')
+    back_btn = PF5Button(locator='//button[normalize-space(.)="Back"]')
+    next_btn = PF5Button(locator='//button[normalize-space(.)="Next"]')
 
     @View.nested
     class select_errata(WizardStepView):
         wizard_step_name = "Select errata"
         locator_prefix = f'.//div[contains(., "{wizard_step_name}")]/descendant::'
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
-        content_text = Text('.//div[@class="pf-c-content"]')
+        content_text = Text('.//div[@class="pf-v5-c-content"]')
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
         search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
         clear_search = Button(locator=f'{locator_prefix}button[@aria-label="Reset search"]')
         search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
 
-        table = PatternflyTable(
+        table = PF5OUIATable(
             component_id='table',
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -399,14 +404,14 @@ class ManageErrataModal(Modal):
         locator_prefix = f'.//div[contains(., "{wizard_step_name}")]/descendant::'
 
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
-        content_text = Text('.//div[@class="pf-c-content"]')
+        content_text = Text('.//div[@class="pf-v5-c-content"]')
         error_message = OUIAAlert('no-hosts-alert')
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
         search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
         search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
 
-        table = PatternflyTable(
+        table = PF5OUIATable(
             component_id='table',
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -422,29 +427,27 @@ class ManageErrataModal(Modal):
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
 
         tree_expander_errata = Button(
-            './/button[@class="pf-c-tree-view__node" and contains(.,"Errata to")]'
+            './/button[@class="pf-v5-c-tree-view__node" and contains(.,"Errata to")]'
         )
         expanded_errata_list = ItemsList(
-            locator='//ul[@class="pf-c-tree-view__list" and @role="tree"][1]'
+            locator='//ul[@class="pf-v5-c-tree-view__list" and @role="tree"][1]'
         )
 
         number_of_errata_to_manage = Text(
-            '''.//span[contains(.,"Errata to")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]'''
+            '''.//span[contains(.,"Errata to")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]'''
         )
 
         edit_selected_errata = Button('.//button[@aria-label="Edit errata list"]')
         # Returns number of hosts to manage
         number_of_hosts_to_manage = Text(
-            '''.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]'''
+            '''.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]'''
         )
         edit_selected_hosts = Button('.//button[@aria-label="Edit host selection"]')
         manage_via_dropdown = Dropdown(
             locator='//div[@data-ouia-component-id="bulk-errata-wizard-dropdown"]'
         )
 
-        finish_errata_management_btn = Button(
-            locator='//*[@data-ouia-component-type="PF4/Button" and normalize-space(.)="Apply"]'
-        )
+        finish_errata_management_btn = PF5Button(locator='//*[normalize-space(.)="Apply"]')
 
     @property
     def is_displayed(self):

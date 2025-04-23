@@ -865,7 +865,7 @@ class PF4CheckboxTreeView(CheckboxGroup):
 class ManageColumnsView(BaseLoggedInView):
     """Manage columns modal."""
 
-    ROOT = '//div[contains(@class, "pf-c-modal-box")]'
+    ROOT = '//div[contains(@class, "pf-v5-c-modal-box")]'
 
     CHECKBOX_SECTION_TOGGLE = (
         './/*[self::span|self::label][contains(@class, "pf-c-tree-view__node-text")]'
@@ -879,7 +879,7 @@ class ManageColumnsView(BaseLoggedInView):
     ]
     is_tree_collapsed = True
     title = Text(
-        './/header//span[contains(@class, "pf-c-modal-box__title")]'
+        './/header//span[contains(@class, "pf-v5-c-modal-box__title")]'
         '[normalize-space(.)="Manage columns"]'
     )
     confirm_dialog = Button(locator='.//button[normalize-space(.)="Save"]')
