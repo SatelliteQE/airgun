@@ -443,11 +443,13 @@ class ManageErrataModal(PF5Modal):
             '''.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]'''
         )
         edit_selected_hosts = Button('.//button[@aria-label="Edit host selection"]')
-        manage_via_dropdown = Dropdown(
+        manage_via_dropdown = PF5Dropdown(
             locator='//div[@data-ouia-component-id="bulk-errata-wizard-dropdown"]'
         )
 
-        finish_errata_management_btn = PF5Button(locator='//*[normalize-space(.)="Apply"]')
+        finish_errata_management_btn = PF5Button(
+            locator='//*[@data-ouia-component-type="PF5/Button" and normalize-space(.)="Apply"]'
+        )
 
     @property
     def is_displayed(self):
