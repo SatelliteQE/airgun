@@ -849,15 +849,15 @@ class RecurringJobDialog(Pf4ConfirmationDialog):
     cancel_dialog = Button(locator='.//button[@data-ouia-component-id="btn-modal-cancel"]')
 
 
-class PF4CheckboxTreeView(CheckboxGroup):
+class PF5CheckboxTreeView(CheckboxGroup):
     """
-    Modified :class:`airgun.widgets.CheckboxGroup` for PF4 tree view with checkboxes:
-        https://www.patternfly.org/v4/components/tree-view#with-checkboxes
+    Modified :class:`airgun.widgets.CheckboxGroup` for PF5 tree view with checkboxes:
+       https://v5-archive.patternfly.org/components/tree-view#with-checkboxes
     """
 
-    ITEMS_LOCATOR = './/*[self::span|self::label][contains(@class, "pf-c-tree-view__node-text")]'
+    ITEMS_LOCATOR = './/*[self::span|self::label][contains(@class, "pf-v5-c-tree-view__node-text")]'
     CHECKBOX_LOCATOR = (
-        './/*[self::span|self::label][contains(@class, "pf-c-tree-view__node-text")]'
+        './/*[self::span|self::label][contains(@class, "pf-v5-c-tree-view__node-text")]'
         '[normalize-space(.)="{}"]/preceding-sibling::span/input[@type="checkbox"]'
     )
 
@@ -868,7 +868,7 @@ class ManageColumnsView(BaseLoggedInView):
     ROOT = '//div[contains(@class, "pf-v5-c-modal-box")]'
 
     CHECKBOX_SECTION_TOGGLE = (
-        './/*[self::span|self::label][contains(@class, "pf-c-tree-view__node-text")]'
+        './/*[self::span|self::label][contains(@class, "pf-v5-c-tree-view__node-text")]'
         '[normalize-space(.)="{}"]/preceding-sibling::button'
     )
     DEFAULT_COLLAPSED_SECTIONS = [
@@ -884,7 +884,7 @@ class ManageColumnsView(BaseLoggedInView):
     )
     confirm_dialog = Button(locator='.//button[normalize-space(.)="Save"]')
     cancel_dialog = Button(locator='.//button[normalize-space(.)="Cancel"]')
-    checkbox_group = PF4CheckboxTreeView(locator='.//div[contains(@class, "pf-c-tree-view")]')
+    checkbox_group = PF5CheckboxTreeView(locator='.//div[contains(@class, "pf-v5-c-tree-view")]')
 
     def collapsed_sections(self):
         return (self.browser.element(locator) for locator in self.DEFAULT_COLLAPSED_SECTIONS)
@@ -892,7 +892,7 @@ class ManageColumnsView(BaseLoggedInView):
     @property
     def is_displayed(self):
         title = self.browser.wait_for_element(self.title, exception=False)
-        return title is not None and title.is_diaplyed()
+        return title is not None and title.is_displayed()
 
     def expand_all(self):
         """Expand all tree sections that are collapsed by default"""
