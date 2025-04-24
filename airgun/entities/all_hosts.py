@@ -384,10 +384,10 @@ class AllHostsEntity(BaseEntity):
 
         # In this particular case dropdown has slightly different structure that what is defined in widgetastic
         view.review.manage_via_dropdown.ITEMS_LOCATOR = (
-            "//ul[contains(@class, 'pf-c-dropdown__menu')]/li"
+            "//ul[contains(@class, 'pf-v5-c-dropdown__menu')]/li"
         )
         view.review.manage_via_dropdown.ITEM_LOCATOR = (
-            "//*[contains(@class, 'pf-c-dropdown__menu-item') and normalize-space(.)={}]"
+            "//*[contains(@class, 'pf-v5-c-dropdown__menu-item') and normalize-space(.)={}]"
         )
         # Select how to manage errata
         if not manage_by_customized_rex:
@@ -401,6 +401,7 @@ class AllHostsEntity(BaseEntity):
             view.review.manage_via_dropdown.item_select('via customized remote execution')
             view.review.finish_errata_management_btn.click()
             view = JobInvocationCreateView(self.browser)
+            self.browser.plugin.ensure_page_safe(timeout='5s')
             wait_for(lambda: view.submit.is_displayed, timeout=10)
             view.submit.click()
 
