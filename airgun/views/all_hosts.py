@@ -26,7 +26,7 @@ from airgun.views.common import (
     SearchableViewMixinPF4,
     WizardStepView,
 )
-from airgun.views.host_new import ManageColumnsView, PF4CheckboxTreeView
+from airgun.views.host_new import ManageColumnsView, PF5CheckboxTreeView
 from airgun.widgets import ItemsList, SearchInput
 
 
@@ -166,10 +166,10 @@ class HostgroupDialog(View):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
-class AllHostsCheckboxTreeView(PF4CheckboxTreeView):
+class AllHostsCheckboxTreeView(PF5CheckboxTreeView):
     """Small tweaks to work with All Hosts"""
 
-    CHECKBOX_LOCATOR = './/*[self::span|self::label][contains(@class, "pf-c-tree-view__node-text")]/preceding-sibling::span/input[@type="checkbox"]'
+    CHECKBOX_LOCATOR = './/*[self::span|self::label][contains(@class, "pf-v5-c-tree-view__node-text")]/preceding-sibling::span/input[@type="checkbox"]'
 
 
 class AllHostsManageColumnsView(ManageColumnsView):
