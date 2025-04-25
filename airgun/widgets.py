@@ -38,6 +38,9 @@ from widgetastic_patternfly4.ouia import (
 )
 from widgetastic_patternfly4.progress import Progress as PF4Progress
 from widgetastic_patternfly4.table import BaseExpandableTable, BasePatternflyTable
+from widgetastic_patternfly5.ouia import (
+    Button as PF5OUIAButton,
+)
 
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
 from airgun.utils import get_widget_by_name
@@ -1414,6 +1417,16 @@ class Pf4ConfirmationDialog(ConfirmationDialog):
     confirm_dialog = OUIAButton('btn-modal-confirm')
     cancel_dialog = OUIAButton('btn-modal-cancel')
     discard_dialog = OUIAButton('app-confirm-modal-ModalBoxCloseButton')
+
+
+class Pf5ConfirmationDialog(ConfirmationDialog):
+    """PF5 confirmation dialog with two buttons and close 'x' button in the
+    right corner."""
+
+    ROOT = '//div[@id="app-confirm-modal" or @data-ouia-component-type="PF5/ModalContent"]'
+    confirm_dialog = PF5OUIAButton('btn-modal-confirm')
+    cancel_dialog = PF5OUIAButton('btn-modal-cancel')
+    discard_dialog = PF5OUIAButton('app-confirm-modal-ModalBoxCloseButton')
 
 
 class LCESelector(GenericLocatorWidget):
