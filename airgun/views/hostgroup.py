@@ -1,7 +1,7 @@
 from widgetastic.widget import ConditionalSwitchableView, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button as PF4Button, Pagination as PF4Pagination
 from widgetastic_patternfly4.ouia import Select as OUIASelect
+from widgetastic_patternfly5 import Button as PF5Button, Pagination as PF5Pagination
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
 from airgun.widgets import (
@@ -32,7 +32,7 @@ class HostGroupsView(BaseLoggedInView, SearchableViewMixinPF4):
         "//h1[contains(., 'Host Group Configuration') or normalize-space(.)='Host Groups']"
     )
     new = Text("//a[contains(@href, '/hostgroups/new')]")
-    new_on_blank_page = PF4Button('Create Host Group')
+    new_on_blank_page = PF5Button('Create Host Group')
     table = Table(
         './/table',
         column_widgets={
@@ -43,9 +43,10 @@ class HostGroupsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
+        page_loaded = self.browser.wait_for_element(
             self.title, exception=False
-        ) is not None and self.browser.url.endswith('hostgroups')
+        ) or self.browser.wait_for_element(self.new_on_blank_page, exception=False)
+        return page_loaded and self.browser.url.endswith('hostgroups')
 
 
 class HostGroupCreateView(BaseLoggedInView):
@@ -81,7 +82,7 @@ class HostGroupCreateView(BaseLoggedInView):
     class ansible_roles(SatTab):
         TAB_NAME = 'Ansible Roles'
         resources = MultiSelectNoFilter(id='ansible_roles')
-        pagination = PF4Pagination()
+        pagination = PF5Pagination()
 
     @View.nested
     class puppet_enc(SatTab):
@@ -158,4 +159,4 @@ class HostGroupEditView(HostGroupCreateView):
         no_of_available_role = Text('//span[@class="pf-c-options-menu__toggle-text"]//b[2]')
         resources = MultiSelectNoFilter(id='ansible_roles')
         submit = Text('//input[@name="commit"]')
-        pagination = PF4Pagination()
+        pagination = PF5Pagination()
