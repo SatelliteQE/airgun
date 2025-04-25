@@ -43,7 +43,6 @@ class HostGroupEntity(BaseEntity):
         """Read values from host group edit page"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         value = view.read(widget_names=widget_names)
-        view.submit.click()
         return value
 
     def read_all(self):
@@ -67,6 +66,7 @@ class HostGroupEntity(BaseEntity):
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
+        self.browser.plugin.ensure_page_safe()
 
     def total_no_of_assigned_role(self, entity_name):
         """Count of assigned role to the host group"""
@@ -113,6 +113,7 @@ class ShowAllHostGroups(NavigateStep):
     @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Configure', 'Host Groups')
+        self.view.wait_displayed()
 
 
 @navigator.register(HostGroupEntity, 'New')
@@ -128,6 +129,7 @@ class AddNewHostGroup(NavigateStep):
             self.parent.new.click()
         except NoSuchElementException:
             self.parent.new_on_blank_page.click()
+        self.view.wait_displayed()
 
 
 @navigator.register(HostGroupEntity, 'Edit')
@@ -147,3 +149,4 @@ class EditHostGroup(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
+        self.view.wait_displayed()
