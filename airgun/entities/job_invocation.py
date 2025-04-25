@@ -81,11 +81,11 @@ class JobInvocationEntity(BaseEntity):
         view.fill(
             {
                 'category_and_template.job_category': 'Commands',
-                'category_and_template.job_template': 'Run Command - Script Default',
+                'category_and_template.job_template_text_input': 'Run Command - Script Default',
                 'target_hosts_and_inputs.targetting_type': 'Host groups',
             }
         )
-        return view.target_hosts_and_inputs.targets.items
+        return view.target_hosts_and_inputs.targets_host_groups.items
 
     def read_dynflow_output(self, entity_name, host_name):
         """Read dynflow console output"""
