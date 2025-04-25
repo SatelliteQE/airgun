@@ -1,7 +1,13 @@
+import time
+
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.cloud_insights import CloudInsightsView, CloudTokenView
+from airgun.views.cloud_insights import (
+    CloudInsightsView,
+    CloudTokenView,
+    RemediationView,
+)
 
 
 class CloudInsightsEntity(BaseEntity):
@@ -22,13 +28,25 @@ class CloudInsightsEntity(BaseEntity):
         view.select_all.fill(True)
         view.select_all_hits.click()
         view.remediate.click()
-        view.remediation_window.remediate.click()
+
+        view = RemediationView(self.browser)
+        self.browser.plugin.ensure_page_safe()
+        view.wait_displayed()
+
+        view.remediate.click()
+
+        # FIXME sleep to allow API call to complete
+        time.sleep(2)
+        self.browser.plugin.ensure_page_safe()
 
     def sync_hits(self):
         """Sync Insights recommendations."""
         view = self.navigate_to(self, 'All')
         view.insights_dropdown.wait_displayed()
         view.insights_dropdown.item_select('Sync recommendations')
+
+        # FIXME sleep to allow API call to complete.
+        time.sleep(2)
         self.browser.plugin.ensure_page_safe(timeout='60s')
 
     def read(self, widget_names=None):

@@ -1,4 +1,4 @@
-from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic.widget import Checkbox, Text, TextInput
 from widgetastic_patternfly5 import Button, Pagination as PF5Pagination
 from widgetastic_patternfly5.ouia import Dropdown, Modal, PatternflyTable, Switch
 
@@ -19,7 +19,6 @@ class CloudTokenView(BaseLoggedInView):
 class RemediationView(Modal):
     """Insights Remediations modal view"""
 
-    OUIA_ID = 'OUIA-Generated-Modal-large-1'
     remediate = Button('Remediate')
     cancel = Button('Cancel')
     table = PatternflyTable(
@@ -34,7 +33,7 @@ class RemediationView(Modal):
 
     @property
     def is_displayed(self):
-        return self.title.wait_displayed()
+        return self.title == 'Remediation summary'
 
 
 class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -58,7 +57,6 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
     select_all_hits = Button('Select recommendations from all pages')
     clear_hits_selection = Button('Clear Selection')
     pagination = PF5Pagination()
-    remediation_window = View.nested(RemediationView)
 
     @property
     def is_displayed(self):
