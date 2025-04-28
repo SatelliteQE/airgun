@@ -8,12 +8,18 @@ from widgetastic.widget import (
 )
 from widgetastic_patternfly import BreadCrumb, Button
 from widgetastic_patternfly4 import (
-    Dropdown,
     Pagination,
 )
 from widgetastic_patternfly4.ouia import (
     Button as OUIAButton,
-    ExpandableTable,
+)
+from widgetastic_patternfly5 import (
+    Button as PF5Button,
+    Menu as PF5Menu,
+    Pagination as PF5Pagination,
+)
+from widgetastic_patternfly5.ouia import (
+    ExpandableTable as PF5ExpandableTable,
 )
 
 from airgun.views.common import (
@@ -26,12 +32,12 @@ from airgun.widgets import (
     FilteredDropdown,
     ItemsList,
     MultiSelect,
-    Pf4ConfirmationDialog,
+    Pf5ConfirmationDialog,
     SatTable,
 )
 
 
-class DeleteCapsuleConfirmationDialog(Pf4ConfirmationDialog):
+class DeleteCapsuleConfirmationDialog(Pf5ConfirmationDialog):
     confirm_dialog = OUIAButton('btn-modal-confirm')
     cancel_dialog = OUIAButton('btn-modal-cancel')
 
@@ -173,17 +179,17 @@ class CapsuleDetailsView(BaseLoggedInView):
     class content(SatTab):
         TAB_NAME = 'Content'
 
-        top_content_table = ExpandableTable(
+        top_content_table = PF5ExpandableTable(
             component_id='capsule-content-table',
             column_widgets={
-                0: Button(locator='./button[@aria-label="Details"]'),
+                0: PF5Button(locator='./button[@aria-label="Details"]'),
                 'Environment': Text('./a'),
                 'Last sync': Text('./span[contains(@class, "pf-c-label ")]'),
-                3: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                3: PF5Menu(locator='.//div[contains(@class, "pf-v5-c-menu")]'),
             },
         )
 
-        mid_content_table = ExpandableTable(
+        mid_content_table = PF5ExpandableTable(
             component_id='expandable-content-views',
             column_widgets={
                 0: Button(locator='./button[@aria-label="Details"]'),
@@ -191,7 +197,7 @@ class CapsuleDetailsView(BaseLoggedInView):
                 'Version': Text('./a'),
                 'Last published': Text('./span'),
                 'Synced': Text('./svg'),
-                5: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                5: PF5Menu(locator='.//div[contains(@class, "pf-v5-c-menu")]'),
             },
         )
 
@@ -268,7 +274,7 @@ class CapsulesView(BaseLoggedInView, SearchableViewMixinPF4):
             'Actions': ActionsDropdown('./div[contains(@class, "btn-group")]'),
         },
     )
-    pagination = Pagination()
+    pagination = PF5Pagination()
 
     @property
     def is_displayed(self):
