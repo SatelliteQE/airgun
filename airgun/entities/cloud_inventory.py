@@ -52,6 +52,17 @@ class CloudInventoryEntity(BaseEntity):
         }
         return result
 
+    def get_displayed_inventory_tabs(self):
+        """Get displayed inventory tabs on Red Hat Inventory page"""
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        result = {
+            'generating': view.inventory_list.generating.is_displayed,
+            'uploading': view.inventory_list.uploading.is_displayed,
+        }
+        return result
+
     def configure_cloud_connector(self):
         """Configure Cloud Connector"""
         view = self.navigate_to(self, 'All')
