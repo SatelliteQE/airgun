@@ -14,6 +14,7 @@ from widgetastic_patternfly import BreadCrumb, Tab, TabWithDropdown
 from widgetastic_patternfly4 import Button, Select
 from widgetastic_patternfly4.navigation import Navigation
 from widgetastic_patternfly4.ouia import Dropdown, PatternflyTable
+from widgetastic_patternfly5.ouia import Dropdown as PF5OUIADropdown
 
 from airgun.utils import get_widget_by_name, normalize_dict_values
 from airgun.widgets import (
@@ -48,8 +49,8 @@ class BaseLoggedInView(View):
     validations = ValidationErrors()
     dialog = Pf4ConfirmationDialog()
     logout = Text("//a[@href='/users/logout']")
-    current_user = Dropdown('user-info-dropdown')
-    account_menu = Dropdown('user-info-dropdown')
+    current_user = PF5OUIADropdown('user-info-dropdown')
+    account_menu = PF5OUIADropdown('user-info-dropdown')
     permission_denied = Text('//*[@id="content"]')
 
     def select_logout(self):
