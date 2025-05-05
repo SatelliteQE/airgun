@@ -19,12 +19,17 @@ from widgetastic_patternfly import BreadCrumb, Button
 from widgetastic_patternfly4.ouia import (
     BreadCrumb as PF4BreadCrumb,
     Button as PF4Button,
-    FormSelect,
     TextInput as OUIATextInput,
 )
 from widgetastic_patternfly4.tabs import Tab
-from widgetastic_patternfly5.ouia import (
+from widgetastic_patternfly5 import (
+    Button as PF5Button,
     Select as PF5OUIASelect,
+    Tab as PF5Tab,
+)
+from widgetastic_patternfly5.ouia import (
+    FormSelect as PF5FormSelect,
+    Text as PF5Text,
 )
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
@@ -521,29 +526,29 @@ class HostCreateView(BaseLoggedInView):
 
 class HostRegisterView(BaseLoggedInView):
     title = Text("//h1[normalize-space(.)='Register Host']")
-    generate_command = PF4Button('registration_generate_btn')
-    cancel = PF4Button('registration-cancel-button')
+    generate_command = PF5Button('registration_generate_btn')
+    cancel = PF5Button('registration-cancel-button')
     registration_command = TextInput(locator="//input[@aria-label='Copyable input']")
 
     @View.nested
-    class general(Tab):
+    class general(PF5Tab):
         TAB_NAME = 'General'
         TAB_LOCATOR = ParametrizedLocator(
-            './/div[contains(@class, "pf-c-tabs")]//ul'
+            './/div[contains(@class, "pf-v5-c-tabs")]//ul'
             "/li[button[normalize-space(.)={@tab_name|quote}]]"
         )
         ROOT = '//section[@id="generalSection"]'
 
-        organization = FormSelect('reg_organization')
-        location = FormSelect('reg_location')
-        host_group = FormSelect('reg_host_group')
-        operating_system = FormSelect('os-select')
+        organization = PF5FormSelect('reg_organization')
+        location = PF5FormSelect('reg_location')
+        host_group = PF5FormSelect('reg_host_group')
+        operating_system = PF5FormSelect('os-select')
         linux_host_init_link = Link('//a[normalize-space(.)="Linux host_init_config default"]')
-        capsule = FormSelect('reg_smart_proxy')
+        capsule = PF5FormSelect('reg_smart_proxy')
         insecure = Checkbox(id='reg_insecure')
         activation_keys = BaseMultiSelect('activation-keys-field')
-        activation_key_helper = Text("//div[@id='activation_keys_field-helper']")
-        new_activation_key_link = Link('//a[normalize-space(.)="Create new activation key"]')
+        activation_key_helper = PF5Text("//div[@id='activation_keys_field-helper']")
+        new_activation_key_link = PF5Text("//a[contains(@href, '/activation_keys/new')]")
 
     @View.nested
     class advanced(Tab):
@@ -553,13 +558,13 @@ class HostRegisterView(BaseLoggedInView):
             "/li[button[normalize-space(.)={@tab_name|quote}]]"
         )
         ROOT = '//section[@id="advancedSection"]'
-        setup_rex = FormSelect('registration_setup_remote_execution')
-        setup_insights = FormSelect('registration_setup_insights')
+        setup_rex = PF5FormSelect('registration_setup_remote_execution')
+        setup_insights = PF5FormSelect('registration_setup_insights')
         install_packages = TextInput(id='reg_packages')
         update_packages = Checkbox(id='reg_update_packages')
         token_life_time = TextInput(id='reg_token_life_time_input')
         rex_interface = TextInput(id='reg_rex_interface_input')
-        rex_pull_mode = FormSelect('registration_setup_remote_execution_pull')
+        rex_pull_mode = PF5FormSelect('registration_setup_remote_execution_pull')
         ignore_error = Checkbox(id='reg_katello_ignore')
         force = Checkbox(id='reg_katello_force')
         install_packages_helper = Text("//div[@id='reg_packages-helper']")
