@@ -310,7 +310,7 @@ class CapsuleEntity(BaseEntity):
 
 
 @navigator.register(CapsuleEntity, 'Capsules')
-class OpenAcsPage(NavigateStep):
+class OpenCapsulesPage(NavigateStep):
     """Navigate to the Capsules page"""
 
     VIEW = CapsulesView
