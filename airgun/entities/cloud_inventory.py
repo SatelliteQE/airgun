@@ -15,6 +15,13 @@ class CloudInventoryEntity(BaseEntity):
             result.update(view.inventory_list.read())
         return result
 
+    def read_org(self, org_name):
+        """Read organization details from the inventory list."""
+        view = self.navigate_to(self, 'All')
+        view.inventory_list.toggle(org_name)
+        result = view.inventory_list.read()
+        return result
+
     def get_displayed_settings_options(self):
         """Get displayed settings options on Red Hat Inventory page"""
         view = self.navigate_to(self, 'All')
