@@ -41,7 +41,7 @@ class InventoryItemsView(Accordion):
     @View.nested
     class generating(InventoryTab):
         process = Text('.//div[contains(@class, "tab-header")]/div[1]')
-        restart = Button('Generate and upload report')
+        restart = Button('contains', 'Generate')
         terminal = Text(
             './/div[contains(@class, "report-generate")]//div[contains(@class, "terminal")]'
         )
@@ -89,15 +89,24 @@ class InventoryItemsView(Accordion):
             self.click()
 
     def read(self, widget_names=None):
-        return {
+
+        final_dict = {
             'generating': self.generating.read(),
-            'uploading': self.uploading.read(),
+            'uploading': self.uploading.read() if self.uploading.is_displayed else None,
             'status': self.status,
-            'auto_update': self.parent.auto_update.read(),
+            'auto_update': (
+                self.parent.auto_update.read() if self.parent.auto_update.is_displayed else None
+            ),
             'obfuscate_hostnames': self.parent.obfuscate_hostnames.read(),
             'obfuscate_ips': self.parent.obfuscate_ips.read(),
             'exclude_packages': self.parent.exclude_packages.read(),
         }
+        # Remove 'uploading' if not displayed (based on SubscriptionConnectionSetting)
+        if not self.uploading.is_displayed:
+            final_dict.pop('uploading')
+        if not self.parent.auto_update.is_displayed:
+            final_dict.pop('auto_update')
+        return final_dict
 
     def fill(self, values):
         raise ReadOnlyWidgetError('View is read only, fill is prohibited')
