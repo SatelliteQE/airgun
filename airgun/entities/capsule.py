@@ -297,18 +297,20 @@ class CapsuleEntity(BaseEntity):
         view = CapsuleDetailsView(self.browser)
         view.wait_displayed()
         if not cv_name:
+            view.content.top_content_table.row(Environment=lce_name)[3].click()
             view.content.top_content_table.row(Environment=lce_name)[3].widget.item_select(
                 'Refresh counts'
             )
         else:
             view.content.top_content_table.row(Environment=lce_name)[0].click()
+            view.content.mid_content_table.row(content_view=cv_name)[5].click()
             view.content.mid_content_table.row(content_view=cv_name)[5].widget.item_select(
                 'Refresh counts'
             )
 
 
 @navigator.register(CapsuleEntity, 'Capsules')
-class OpenAcsPage(NavigateStep):
+class OpenCapsulesPage(NavigateStep):
     """Navigate to the Capsules page"""
 
     VIEW = CapsulesView
