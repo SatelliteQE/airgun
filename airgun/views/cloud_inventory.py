@@ -4,12 +4,20 @@ from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Text, View
 from widgetastic_patternfly import Button, Tab
 from widgetastic_patternfly4.switch import Switch
-from widgetastic_patternfly5 import Button as PF5Button
+from widgetastic_patternfly5 import Button as PF5Button, Menu
 from widgetastic_patternfly5.ouia import Text as PF5OUIAText
 
 from airgun.exceptions import ReadOnlyWidgetError
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import Accordion
+
+
+class DataCollectionMenu(Menu):
+    """ """
+
+    IS_ALWAYS_OPEN = False
+    BUTTON_LOCATOR = ".//button[contains(@class, '-c-menu-toggle')]"
+    ROOT = f"{BUTTON_LOCATOR}/.."
 
 
 class InventoryTab(Tab):
@@ -112,6 +120,7 @@ class CloudInventoryListView(BaseLoggedInView):
 
     title = Text('//h1[normalize-space(.)="Red Hat Inventory"]')
     auto_update = Switch('.//label[@for="rh-cloud-switcher-allow_auto_inventory_upload"]')
+    data_collection = DataCollectionMenu()
     obfuscate_hostnames = Switch('.//label[@for="rh-cloud-switcher-obfuscate_inventory_hostnames"]')
     obfuscate_ips = Switch('.//label[@for="rh-cloud-switcher-obfuscate_inventory_ips"]')
     exclude_packages = Switch('.//label[@for="rh-cloud-switcher-exclude_installed_packages"]')
