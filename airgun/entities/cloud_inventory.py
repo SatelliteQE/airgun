@@ -1,3 +1,5 @@
+import time
+
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
@@ -89,12 +91,13 @@ class CloudInventoryEntity(BaseEntity):
     def generate_report(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.inventory_list.toggle(entity_name)
-        view.browser.click(view.inventory_list.generating.restart, ignore_ajax=True)
+        view.browser.click(view.inventory_list.generating.generate, ignore_ajax=True)
 
     def download_report(self, entity_name):
         view = self.navigate_to(self, 'All')
         view.inventory_list.toggle(entity_name)
-        view.browser.click(view.inventory_list.uploading.download_report, ignore_ajax=True)
+        view.browser.click(view.inventory_list.generating.download_report, ignore_ajax=True)
+        time.sleep(3)
         return self.browser.save_downloaded_file()
 
     def update(self, values):

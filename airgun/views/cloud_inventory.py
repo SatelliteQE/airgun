@@ -41,7 +41,8 @@ class InventoryItemsView(Accordion):
     @View.nested
     class generating(InventoryTab):
         process = Text('.//div[contains(@class, "tab-header")]/div[1]')
-        restart = Button('contains', 'Generate')
+        generate = Button('contains', 'Generate')
+        download_report = Button('Download Report')
         terminal = Text(
             './/div[contains(@class, "report-generate")]//div[contains(@class, "terminal")]'
         )
@@ -50,7 +51,6 @@ class InventoryItemsView(Accordion):
     @View.nested
     class uploading(InventoryTab):
         process = Text('.//div[contains(@class, "tab-header")]/div[1]')
-        download_report = Button('Download Report')
         terminal = Text(
             './/div[contains(@class, "report-upload")]//div[contains(@class, "terminal")]'
         )
@@ -134,11 +134,14 @@ class CloudInventoryListView(BaseLoggedInView):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
     def read(self, widget_names=None):
-        return {
+        final_dict = {
             'title': self.title.text,
-            'auto_update': self.auto_update.read(),
             'obfuscate_hostnames': self.obfuscate_hostnames.read(),
             'obfuscate_ips': self.obfuscate_ips.read(),
             'exclude_packages': self.exclude_packages.read(),
             'auto_mismatch_deletion': self.auto_mismatch_deletion.read(),
         }
+        if self.auto_update.is_displayed:
+            final_dict['auto_update'] = self.auto_update.read()
+
+        return final_dict
