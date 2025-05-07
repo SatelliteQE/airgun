@@ -31,15 +31,16 @@ from widgetastic_patternfly4 import (
     Pagination as PF4Pagination,
 )
 from widgetastic_patternfly4.ouia import (
-    BaseSelect,
     Button as OUIAButton,
-    Dropdown,
     Menu,
 )
 from widgetastic_patternfly4.progress import Progress as PF4Progress
 from widgetastic_patternfly4.table import BaseExpandableTable, BasePatternflyTable
 from widgetastic_patternfly5.ouia import (
     Button as PF5OUIAButton,
+    Dropdown as PF5Dropdown,
+    PF5BaseSelect,
+    Text as PF5Text,
 )
 
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
@@ -2600,7 +2601,7 @@ class ToggleButton(Button):
         return self.active
 
 
-class Link(Text):
+class Link(PF5Text):
     """A link representation that we can read/click via the standard view functions read/fill."""
 
     def fill(self, value):
@@ -2735,14 +2736,14 @@ class Accordion(View, ClickableMixin):
         self.browser.click(self.ITEM.format(value))
 
 
-class BaseMultiSelect(BaseSelect, Dropdown):
+class BaseMultiSelect(PF5BaseSelect, PF5Dropdown):
     """Represents the Patternfly Multi Select.
 
     https://www.patternfly.org/v4/documentation/react/components/select#multiple
     """
 
     BUTTON_LOCATOR = './/button[@aria-label="Options menu"]'
-    OUIA_COMPONENT_TYPE = "PF4/Select"
+    OUIA_COMPONENT_TYPE = "PF5/Select"
     SELECTED_ITEMS_LIST = './/div[@class="pf-c-chip-group"]'
 
     def item_select(self, items, close=True):
