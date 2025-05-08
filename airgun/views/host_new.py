@@ -25,6 +25,7 @@ from widgetastic_patternfly5 import (
     Tab as PF5Tab,
 )
 from widgetastic_patternfly5.ouia import (
+    Button as PF5OUIAButton,
     PatternflyTable as PF5OUIATable,
 )
 
@@ -491,7 +492,7 @@ class NewHostDetailsView(BaseLoggedInView):
         ROOT = './/div'
 
         title = Text('//h2')
-        enable_traces = OUIAButton('enable-traces-button')
+        enable_traces = PF5OUIAButton('enable-traces-button')
         select_all = Checkbox(locator='.//input[contains(@aria-label, "Select all")]')
         searchbar = SearchInput(locator='.//input[contains(@aria-label, "Select all")]')
         Pf4ActionsDropdown = Button(
@@ -755,7 +756,7 @@ class EnableTracerView(View):
 
     ROOT = './/div[@data-ouia-component-id="enable-tracer-modal"]'
 
-    confirm = Button(locator='//*[@data-ouia-component-id="enable-tracer-modal"]/footer/button[1]')
+    confirm = PF5OUIAButton('enable-button-via-rex')
 
 
 class ParameterDeleteDialog(View):
