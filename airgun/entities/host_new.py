@@ -619,6 +619,15 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
         return view.traces.read()
 
+    def get_tracer_tab_title(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.traces.click()
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.traces.title.text
+
     def get_os_info(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
