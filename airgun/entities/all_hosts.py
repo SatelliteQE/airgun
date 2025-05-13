@@ -119,7 +119,7 @@ class AllHostsEntity(BaseEntity):
         view.select_all.fill(True)
         view.bulk_actions_kebab.click()
         self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
-        view.bulk_actions.item_select('Content view environments')
+        view.bulk_actions_manage_content_menu.item_select('Content view environments')
         view = ManageCVEModal(self.browser)
         view.lce_selector.fill({lce: True})
         view.content_source_select.item_select(cv)

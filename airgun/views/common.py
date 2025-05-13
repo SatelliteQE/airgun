@@ -25,10 +25,10 @@ from airgun.widgets import (
     ItemsList,
     LCESelector,
     Pf4ConfirmationDialog,
-    PF4LCECheckSelector,
-    PF4LCESelector,
     PF4NavSearch,
     PF4Search,
+    PF5LCECheckSelector,
+    PF5LCESelector,
     ProgressBar,
     ReadOnlyEntry,
     SatFlashMessages,
@@ -302,30 +302,30 @@ class LCESelectorGroup(ParametrizedView):
         return self.lce.read()
 
 
-class PF4LCESelectorGroup(LCESelectorGroup):
+class PF5LCESelectorGroup(LCESelectorGroup):
     ROOT = './/div[./div[@class="env-path"]]'
 
     PARAMETERS = ('lce_name',)
 
     LAST_ENV = './/div[@class="env-path"][last()]'
-    lce = PF4LCESelector(
+    lce = PF5LCESelector(
         locator=ParametrizedLocator(
             './/div[@class="env-path" and .//*[contains(normalize-space(.), "{lce_name}")]]'
         )
     )
 
 
-class PF4LCECheckSelectorGroup(PF4LCESelectorGroup):
-    """Checkbox version of PF4 LCE Selector"""
+class PF5LCECheckSelectorGroup(PF5LCESelectorGroup):
+    """Checkbox version of PF5 LCE Selector"""
 
-    lce = PF4LCECheckSelector(
+    lce = PF5LCECheckSelector(
         locator=ParametrizedLocator(
             './/div[@class="env-path" and .//*[contains(normalize-space(.), "{lce_name}")]]'
         )
     )
 
 
-class PF4LCEGroup(ParametrizedLocator):
+class PF5LCEGroup(ParametrizedLocator):
     "Group of LCE indicators"
 
     ROOT = './/td and '
@@ -333,7 +333,7 @@ class PF4LCEGroup(ParametrizedLocator):
     PARAMETERS = ('lce_name',)
 
     LAST_ENV = './/div[@class="env-path"][last()]'
-    lce = PF4LCESelector(
+    lce = PF5LCESelector(
         locator=ParametrizedLocator(
             './/div[@class="env-path" and .//*[contains(normalize-space(.), "{lce_name}")]]'
         )

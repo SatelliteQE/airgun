@@ -1500,15 +1500,13 @@ class LCESelector(GenericLocatorWidget):
         return self.select(checkbox_locator, checkbox_value)
 
 
-class PF4LCESelector(LCESelector):
+class PF5LCESelector(LCESelector):
     """Group of checkboxes that goes in a line one after another. Usually used
-    to specify lifecycle environment, updated for PF4 pages
+    to specify lifecycle environment, updated for PF5 pages
     """
 
-    LABELS = './/label[contains(@class, "pf-c-radio__label")]'
-    CHECKBOX = (
-        './/input[contains(@class, "pf-c-radio__input") and ../label[.//*[contains(text(), "{}")]]]'
-    )
+    LABELS = './/label[contains(@class, "pf-v5-c-radio__label")]'
+    CHECKBOX = './/input[contains(@class, "pf-v5-c-radio__input") and ../label[.//*[contains(text(), "{}")]]]'
 
     def __init__(self, parent, locator=None, logger=None):
         """Allow to specify ``locator`` if needed or use default one otherwise.
@@ -1524,11 +1522,13 @@ class PF4LCESelector(LCESelector):
         return self.browser.is_selected(locator)
 
 
-class PF4LCECheckSelector(PF4LCESelector):
-    """Checkbox version of PF4 LCE Selector"""
+class PF5LCECheckSelector(PF5LCESelector):
+    """Checkbox version of PF5 LCE Selector"""
 
-    LABELS = './/label[contains(@class, "pf-c-check__label")]'
-    CHECKBOX = './/input[contains(@class, "pf-c-check") and ../label[.//*[contains(text(), "{}")]]]'
+    LABELS = './/label[contains(@class, "pf-v5-c-check__label")]'
+    CHECKBOX = (
+        './/input[contains(@class, "pf-v5-c-check") and ../label[.//*[contains(text(), "{}")]]]'
+    )
 
 
 class LimitInput(Widget):
