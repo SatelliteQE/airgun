@@ -88,6 +88,7 @@ from airgun.entities.sync_status import SyncStatusEntity
 from airgun.entities.sync_templates import SyncTemplatesEntity
 from airgun.entities.syncplan import SyncPlanEntity
 from airgun.entities.task import TaskEntity
+from airgun.entities.upgrade import UpgradeEntity
 from airgun.entities.user import UserEntity
 from airgun.entities.usergroup import UserGroupEntity
 from airgun.entities.virtwho_configure import VirtwhoConfigureEntity
@@ -715,6 +716,11 @@ class Session:
     def task(self):
         """Instance of Task entity."""
         return self._open(TaskEntity)
+
+    @cached_property
+    def upgrade(self):
+        """Instance of Upgrade entity."""
+        return self._open(UpgradeEntity)
 
     @cached_property
     def user(self):

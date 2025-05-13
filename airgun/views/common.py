@@ -90,7 +90,9 @@ class BaseLoggedInView(View):
             '//a[contains(text(), "documentation") or contains(text(), "Documentation") or '
             'contains(@class, "btn-docs") or contains(@href, "console.redhat.com") or '
             'contains(@href, "access.redhat.com") or contains(@href, "docs.redhat.com") or '
-            'contains(@href, "www.redhat.com") or contains(@href, "links")]'
+            'contains(@href, "www.redhat.com") or contains(@href, "links") or '
+            'contains(text(), "Try the Satellite upgrade helper") or '
+            'contains(text(), "Contact support")]'
         )
         doc_links = []
         for item in self.browser.elements(doc_link_elements):
