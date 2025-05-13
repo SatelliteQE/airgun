@@ -14,8 +14,8 @@ from widgetastic_patternfly4.ouia import (
 from airgun.views.common import (
     BaseLoggedInView,
     NewAddRemoveResourcesView,
-    PF4LCECheckSelectorGroup,
-    PF4LCESelectorGroup,
+    PF5LCECheckSelectorGroup,
+    PF5LCESelectorGroup,
     SearchableViewMixinPF4,
 )
 from airgun.widgets import (
@@ -225,7 +225,7 @@ class ContentViewVersionPublishView(BaseLoggedInView):
     cancel_button = Button('Cancel')
     close_button = Button('Close')
     progressbar = PF4ProgressBar('.//div[contains(@class, "pf-c-wizard__main-body")]')
-    lce_selector = ParametrizedView.nested(PF4LCECheckSelectorGroup)
+    lce_selector = ParametrizedView.nested(PF5LCECheckSelectorGroup)
 
     @property
     def is_displayed(self):
@@ -256,7 +256,7 @@ class ContentViewVersionPromoteView(Modal):
     ROOT = './/div[@data-ouia-component-id="promote-version"]'
 
     description = Text('.//h2[@data-ouia-component-id="description-text-value"]')
-    lce_selector = ParametrizedView.nested(PF4LCESelectorGroup)
+    lce_selector = ParametrizedView.nested(PF5LCESelectorGroup)
     promote_btn = Button(locator='//button[normalize-space(.)="Promote"]')
     cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
 

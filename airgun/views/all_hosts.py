@@ -22,7 +22,7 @@ from widgetastic_patternfly5.ouia import (
 
 from airgun.views.common import (
     BaseLoggedInView,
-    PF4LCESelectorGroup,
+    PF5LCESelectorGroup,
     SearchableViewMixinPF4,
     WizardStepView,
 )
@@ -47,20 +47,18 @@ class AllHostsMenu(PF5Menu):
 
 
 class CVESelect(Select):
-    BUTTON_LOCATOR = ".//button[@aria-label='Options menu']"
-    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-c-select__menu')]/li"
-    ITEM_LOCATOR = (
-        "//*[contains(@class, 'pf-c-select__menu-item') and .//*[contains(normalize-space(.), {})]]"
-    )
-    SELECTED_ITEM_LOCATOR = ".//span[contains(@class, 'ins-c-conditional-filter')]"
-    TEXT_LOCATOR = ".//div[contains(@class, 'pf-c-select') and child::button]"
-    DEFAULT_LOCATOR = (
-        './/div[contains(@class, "pf-c-select") and @data-ouia-component-id="select-content-view"]'
-    )
+    BUTTON_LOCATOR = './/button[@aria-label="Options menu"]'
+    ITEMS_LOCATOR = './/ul[contains(@class, "pf-v5-c-select__menu")]/li'
+    ITEM_LOCATOR = '//*[contains(@class, "pf-v5-c-select__menu-item") and .//*[contains(normalize-space(.), {})]]'
+    SELECTED_ITEM_LOCATOR = './/span[contains(@class, "ins-c-conditional-filter")]'
+    TEXT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and child::button]'
+    DEFAULT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and @data-ouia-component-id="select-content-view"]'
 
 
 class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
+
+    legacy_kebab = PF5Dropdown(locator='.//div[@id="legacy-ui-kebab"]')
     select_all = Checkbox(
         locator='.//input[@data-ouia-component-id="select-all-checkbox-dropdown-toggle-checkbox"]'
     )
@@ -203,7 +201,7 @@ class ManageCVEModal(PF5Modal):
     save_btn = Button(locator='//button[normalize-space(.)="Save"]')
     cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
     content_source_select = CVESelect()
-    lce_selector = ParametrizedView.nested(PF4LCESelectorGroup)
+    lce_selector = ParametrizedView.nested(PF5LCESelectorGroup)
 
     @property
     def is_displayed(self):
