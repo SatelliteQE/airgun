@@ -146,9 +146,7 @@ class ManageManifestView(BaseLoggedInView):
 
     @View.nested
     class manifest(SatTab):
-        alert_message = Text(
-            '//div[@id="manifest-history-tabs-pane-1"]/div/h3//following-sibling::div[@aria-label="Warning Alert" or @aria-label="Danger Alert"]'
-        )
+        alert_message = Text('.//div[contains(@class, "pf-v5-c-alert")]')
         expire_header = Text('//div[@id="manifest-history-tabs-pane-1"]/div/div/h4')
         expire_message = Text(
             '//div[@id="manifest-history-tabs-pane-1"]/div/div/h4//following-sibling::div'
