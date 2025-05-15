@@ -27,19 +27,18 @@ from widgetastic_patternfly import (
     VerticalNavigation,
 )
 from widgetastic_patternfly4 import (
-    Button as PF4Button,
     Pagination as PF4Pagination,
 )
 from widgetastic_patternfly4.ouia import (
-    BaseSelect,
     Button as OUIAButton,
-    Dropdown,
     Menu,
 )
 from widgetastic_patternfly4.progress import Progress as PF4Progress
 from widgetastic_patternfly4.table import BaseExpandableTable, BasePatternflyTable
 from widgetastic_patternfly5.ouia import (
+    BaseSelect as PF5BaseSelect,
     Button as PF5OUIAButton,
+    Dropdown as PF5Dropdown,
 )
 
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
@@ -907,8 +906,8 @@ class PF4NavSearch(PF4Search):
 
     ROOT = '//div[@id="navigation-search"]'
     search_field = TextInput(locator=(".//input[@aria-label='Search input']"))
-    search_button = PF4Button(locator=(".//button[@aria-label='Search']"))
-    clear_button = PF4Button(locator=(".//button[@aria-label='Reset']"))
+    search_button = PF5OUIAButton(locator=(".//button[@aria-label='Search']"))
+    clear_button = PF5OUIAButton(locator=(".//button[@aria-label='Reset']"))
     items = PF4NavSearchMenu("navigation-search-menu")
     results_timeout = search_clear_timeout = 2
 
@@ -2735,15 +2734,15 @@ class Accordion(View, ClickableMixin):
         self.browser.click(self.ITEM.format(value))
 
 
-class BaseMultiSelect(BaseSelect, Dropdown):
+class BaseMultiSelect(PF5BaseSelect, PF5Dropdown):
     """Represents the Patternfly Multi Select.
 
     https://www.patternfly.org/v4/documentation/react/components/select#multiple
     """
 
     BUTTON_LOCATOR = './/button[@aria-label="Options menu"]'
-    OUIA_COMPONENT_TYPE = "PF4/Select"
-    SELECTED_ITEMS_LIST = './/div[@class="pf-c-chip-group"]'
+    OUIA_COMPONENT_TYPE = "PF5/Select"
+    SELECTED_ITEMS_LIST = './/div[@class="pf-v5-c-chip-group"]'
 
     def item_select(self, items, close=True):
         """Opens the Dropdown and selects the desired items.
