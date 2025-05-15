@@ -42,6 +42,7 @@ from airgun.entities.errata import ErrataEntity
 from airgun.entities.fact_value import FactValueEntity
 from airgun.entities.file import FilesEntity
 from airgun.entities.filter import FilterEntity
+from airgun.entities.flatpak import FlatpakRemotesEntity
 from airgun.entities.global_parameter import GlobalParameterEntity
 from airgun.entities.hardware_model import HardwareModelEntity
 from airgun.entities.host import HostEntity
@@ -476,6 +477,11 @@ class Session:
     def factvalue(self):
         """Instance of Fact Value entity."""
         return self._open(FactValueEntity)
+
+    @cached_property
+    def flatpak_remotes(self):
+        """Instance of Flatpak Remotes entity."""
+        return self._open(FlatpakRemotesEntity)
 
     @cached_property
     def filter(self):
