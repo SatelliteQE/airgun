@@ -512,8 +512,8 @@ class MultiSelectNoFilter(MultiSelect):
     they will be stored in a list. Unassigned items contains the list which compare with the values,
     if value is present it will assign the value or vise-versa."""
 
-    more_item = Text('//span[@class="pf-c-options-menu__toggle-button-icon"]')
-    select_pages = Text('//ul[@class="pf-c-options-menu__menu"]/li[6]/button')
+    more_item = Text('//span[@class="pf-v5-c-menu-toggle__toggle-icon"]')
+    select_pages = Text('//ul[@class="pf-v5-c-menu__list"]/li[6]/button')
     available_role_template = '//div[@class="available-roles-container col-sm-6"]/div[2]/div'
     assigned_role_template = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
 
