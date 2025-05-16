@@ -53,7 +53,8 @@ class NewContentViewEntity(BaseEntity):
             view.fill(values)
         if promote:
             view.promote.click()
-            view.lce_selector.fill({lce: True})
+            wait_for(lambda: view.lce_selector.is_displayed, timeout=10)
+            view.lce_selector.fill(lce or {lce: True})
         view.next_button.click()
         view.finish_button.click()
         wait_for(lambda: view.progressbar.is_displayed, timeout=10)
