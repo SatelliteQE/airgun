@@ -1,7 +1,6 @@
 from widgetastic.widget import Checkbox, ParametrizedView, Text, View
 from widgetastic_patternfly4 import (
     Button,
-    Dropdown,
     Pagination,
     Radio,
     Select,
@@ -28,6 +27,24 @@ from airgun.views.common import (
 )
 from airgun.views.host_new import ManageColumnsView, PF5CheckboxTreeView
 from airgun.widgets import ItemsList, SearchInput
+
+
+class MenuToggleDropdownInTable(PF5Dropdown):
+    """
+    This class is PF5 implementation of dropdown component within the table row.
+    Which is MenuToggle->Dropdown and not just Dropdown as it was in PF4.
+    """
+
+    IS_ALWAYS_OPEN = False
+    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-v5-c-menu-toggle')]"
+    DEFAULT_LOCATOR = (
+        './/div[contains(@class, "pf-v5-c-menu") and @data-ouia-component-id="PF5/Dropdown"]'
+    )
+    ROOT = f"{BUTTON_LOCATOR}/.."
+    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
+    ITEM_LOCATOR = (
+        "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
+    )
 
 
 class AllHostsSelect(Select):
@@ -62,6 +79,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     select_all = Checkbox(
         locator='.//input[@data-ouia-component-id="select-all-checkbox-dropdown-toggle-checkbox"]'
     )
+    top_bulk_actions = MenuToggleDropdownInTable(locator='.//button[@aria-label="plain kebab"]')
     bulk_actions = AllHostsMenu()
     bulk_actions_kebab = Button(locator='.//button[@aria-label="plain kebab"]')
     bulk_actions_menu = PF5Menu(
@@ -79,7 +97,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Name': Text('./a'),
-            2: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+            2: MenuToggleDropdownInTable(),
         },
     )
     alert_message = Text('.//div[contains(@class, "pf-v5-c-alert")]')
