@@ -2865,12 +2865,11 @@ class EditModal(View):
 class DualListSelector(EditModal):
     """Class representing the Dual List Selector in a modal."""
 
-    from widgetastic_patternfly4 import Button
+    from widgetastic_patternfly5 import Button
 
     available_options_search = SearchInput(locator='.//input[@aria-label="Available search input"]')
     available_options_list = ItemsList(
-        locator='.//div[contains(@class, "pf-m-available")]'
-        '//ul[@class="pf-c-dual-list-selector__list"]'
+        locator='.//ul[contains(@aria-labelledby, "selector-available-pane-status")]'
     )
 
     add_selected = Button(locator='.//button[@aria-label="Add selected"]')

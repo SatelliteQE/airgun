@@ -1,14 +1,14 @@
 from widgetastic.widget import Checkbox, Text, TextInput, View
-from widgetastic_patternfly4 import (
+from widgetastic_patternfly5 import (
     Button,
     Drawer,
     Dropdown,
     FormSelect,
-    Pagination as PF4Pagination,
+    Pagination as PF5Pagination,
     Radio,
     Switch,
 )
-from widgetastic_patternfly4.ouia import (
+from widgetastic_patternfly5.ouia import (
     Button as OUIAButton,
     FormSelect as OUIAFormSelect,
     PatternflyTable,
@@ -112,7 +112,7 @@ class AddAlternateContentSourceModal(View):
 
     ROOT = '//div[contains(@data-ouia-component-id, "OUIA-Generated-Modal-large-")]'
 
-    title = Text('.//h2[contains(@class, "pf-c-title")]')
+    title = OUIAText('wizard-header-text')
     close_modal = Button(locator='.//button[@aria-label="Close"]')
 
     @View.nested
@@ -215,7 +215,9 @@ class RowDrawer(View):
     class details(View, AcsStackItem):
         """Class representing the Details stack item in the ACS drawer."""
 
-        ROOT = '//div[normalize-space(.)="Details" and contains(@class, "pf-c-expandable-section")]'
+        ROOT = (
+            '//div[normalize-space(.)="Details" and contains(@class, "pf-v5-c-expandable-section")]'
+        )
 
         title = OUIAText('expandable-details-text')
         edit_details = Button(locator='//button[contains(@aria-label, "edit-details-pencil-edit")]')
@@ -224,7 +226,7 @@ class RowDrawer(View):
         class details_stack_content(View):
             """Class representing content of the Details stack item."""
 
-            ROOT = '//div[@id="showDetails"]'
+            ROOT = '//div[@id="showDetails-content"]'
 
             name = Text('//dd[@aria-label="name_text_value"]')
             description = Text('//dd[@aria-label="description_text_value"]')
@@ -237,7 +239,7 @@ class RowDrawer(View):
 
         ROOT = (
             '//div[(normalize-space(.)="Capsules")'
-            ' and contains(@class, "pf-c-expandable-section")]'
+            ' and contains(@class, "pf-v5-c-expandable-section")]'
         )
         title = OUIAText('expandable-smart-proxies-text')
         edit_capsules = Button(
@@ -248,9 +250,9 @@ class RowDrawer(View):
         class capsules_stack_content(View):
             """Class representing content of the Capsules stack item."""
 
-            ROOT = '//div[@id="showSmartProxies"]'
+            ROOT = '//div[@id="showSmartProxies-content"]'
 
-            capsules_list = ItemsList(locator='.//ul[contains(@class, "pf-c-list")]')
+            capsules_list = ItemsList(locator='.//ul[contains(@class, "pf-v5-c-list")]')
             use_http_proxies = Text('//dd[@aria-label="useHttpProxies_value"]')
 
     @View.nested
@@ -262,7 +264,7 @@ class RowDrawer(View):
 
         ROOT = (
             '//div[normalize-space(.)="URL and subpaths" '
-            'and contains(@class, "pf-c-expandable-section")]'
+            'and contains(@class, "pf-v5-c-expandable-section")]'
         )
 
         title = OUIAText('expandable-url-paths-text')
@@ -274,7 +276,7 @@ class RowDrawer(View):
         class url_and_subpaths_stack_content(View):
             """Class representing content of the URL and subpaths stack item."""
 
-            ROOT = '//div[@id="showUrlPaths"]'
+            ROOT = '//div[@id="showUrlPaths-content"]'
 
             url = Text('//dd[@aria-label="url_text_value"]')
             subpaths = Text('//dd[@aria-label="subpaths_text_value"]')
@@ -288,7 +290,7 @@ class RowDrawer(View):
 
         ROOT = (
             '//div[normalize-space(.)="Credentials" '
-            'and contains(@class, "pf-c-expandable-section")]'
+            'and contains(@class, "pf-v5-c-expandable-section")]'
         )
 
         title = OUIAText('expandable-credentials-text')
@@ -300,7 +302,7 @@ class RowDrawer(View):
         class credentials_stack_content(View):
             """Class representing content of the Credentials stack item."""
 
-            ROOT = '//div[@id="showCredentials"]'
+            ROOT = '//div[@id="showCredentials-content"]'
 
             verify_ssl = Text('//dd[@aria-label="verifySSL_value"]')
             ssl_ca_certificate = Text('//dd[@aria-label="sslCaCert_value"]')
@@ -316,9 +318,7 @@ class RowDrawer(View):
         Present only if ACS is of type 'Simplified'.
         """
 
-        ROOT = (
-            '//div[normalize-space(.)="Products" and contains(@class, "pf-c-expandable-section")]'
-        )
+        ROOT = '//div[normalize-space(.)="Products" and contains(@class, "pf-v5-c-expandable-section")]'
 
         title = OUIAText('expandable-products-text')
         edit_products = Button(
@@ -329,9 +329,9 @@ class RowDrawer(View):
         class products_stack_content(View):
             """Class representing content of the Products stack item."""
 
-            ROOT = '//div[@id="showProducts"]'
+            ROOT = '//div[@id="showProducts-content"]'
 
-            products_list = ItemsList(locator='.//ul[contains(@class, "pf-c-list")]')
+            products_list = ItemsList(locator='.//ul[contains(@class, "pf-v5-c-list")]')
 
 
 class AlternateContentSourcesView(BaseLoggedInView):
@@ -339,13 +339,14 @@ class AlternateContentSourcesView(BaseLoggedInView):
 
     title = Text('//h1[contains(., "Alternate Content Sources")]')
     error_message = Text('//div[contains(@aria-label, "Danger Alert")]')
+    blank_page = Text("//div[contains(@class, 'pf-v5-c-empty-state')]")
 
     @View.nested
     class acs_drawer(Drawer):
         """Class that describes drawer of the Alternate Content Sources page"""
 
         select_all = Checkbox(locator='//input[contains(@aria-label, "Select all")]')
-        search_bar = SearchInput(locator='.//div[contains(@class, "pf-c-input-group")]//input')
+        search_bar = SearchInput(locator='.//div[contains(@class, "pf-v5-c-input-group")]//input')
         clear_search_btn = Button(locator='//button[@aria-label="Reset search"]')
         add_source = OUIAButton('create-acs')
         kebab_menu = Dropdown(
@@ -359,13 +360,18 @@ class AlternateContentSourcesView(BaseLoggedInView):
                 'Name': Text('.//a[contains(@data-ouia-component-id, "acs-link-text-")]'),
                 'Type': Text('.//td[3]'),
                 'LastRefresh': Text('.//td[4]'),
-                4: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                4: Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]'),
             },
         )
 
         clear_search = OUIAButton('empty-state-secondary-action-router-link')
-        pagination = PF4Pagination()
+        pagination = PF5Pagination()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        blank_page = self.browser.wait_for_element(self.blank_page, exception=False) is not None
+        table = (
+            self.browser.wait_for_element(self.acs_drawer.content_table, exception=False)
+            is not None
+        )
+        return blank_page or table
