@@ -815,6 +815,7 @@ class AcsEntity(BaseEntity):
         if view.error_message.is_displayed:
             raise ValueError(f'Error while adding ACS: {view.error_message.read()}')
         # Wait for ACS to be added to the table
+        time.sleep(4)
         wait_for(lambda: view.acs_drawer.content_table.is_displayed, timeout=10, delay=1)
         # Close the side panel
         view = AlternateContentSourcesView(self.browser)
