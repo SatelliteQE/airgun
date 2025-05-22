@@ -345,7 +345,7 @@ class NewHostDetailsView(BaseLoggedInView):
             )
             status_filter = Dropdown(locator='.//div[@aria-label="select Status container"]/div')
             upgrade = Pf4ActionsDropdown(locator='.//div[div/button[normalize-space(.)="Upgrade"]]')
-            dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
+            dropdown = PF5Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = PatternflyTable(
                 component_id="host-packages-table",
@@ -395,12 +395,14 @@ class NewHostDetailsView(BaseLoggedInView):
             # workaround for BZ 2119076
             ROOT = './/div[@id="modulestreams-tab"]'
 
-            searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
+            searchbar = SearchInput(
+                locator='.//input[contains(@class, "pf-v5-c-text-input-group__text-input")]'
+            )
             status_filter = Select(locator='.//div[@aria-label="select Status container"]/div')
             installation_status_filter = Select(
                 locator='.//div[@aria-label="select Installation status container"]/div'
             )
-            dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
+            dropdown = PF5Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = Table(
                 locator='.//table[@aria-label="Content View Table"]',
@@ -723,7 +725,9 @@ class InstallPackagesView(View):
     ROOT = './/div[@id="package-install-modal"]'
 
     select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-    searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
+    searchbar = SearchInput(
+        locator='.//input[contains(@class, "pf-v5-c-text-input-group__text-input")]'
+    )
 
     table = Table(
         locator='.//table[@aria-label="Content View Table"]',
