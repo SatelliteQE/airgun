@@ -1,6 +1,8 @@
 from widgetastic.widget import Checkbox, ParametrizedView, Text, View
 from widgetastic_patternfly4 import (
     Button,
+    Dropdown,
+    ExpandableTable,
     Pagination,
     Radio,
     Select,
@@ -21,30 +23,12 @@ from widgetastic_patternfly5.ouia import (
 
 from airgun.views.common import (
     BaseLoggedInView,
-    PF5LCESelectorGroup,
+    PF4LCESelectorGroup,
     SearchableViewMixinPF4,
     WizardStepView,
 )
 from airgun.views.host_new import ManageColumnsView, PF5CheckboxTreeView
 from airgun.widgets import ItemsList, SearchInput
-
-
-class MenuToggleDropdownInTable(PF5Dropdown):
-    """
-    This class is PF5 implementation of dropdown component within the table row.
-    Which is MenuToggle->Dropdown and not just Dropdown as it was in PF4.
-    """
-
-    IS_ALWAYS_OPEN = False
-    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-v5-c-menu-toggle')]"
-    DEFAULT_LOCATOR = (
-        './/div[contains(@class, "pf-v5-c-menu") and @data-ouia-component-id="PF5/Dropdown"]'
-    )
-    ROOT = f"{BUTTON_LOCATOR}/.."
-    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
-    ITEM_LOCATOR = (
-        "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
-    )
 
 
 class AllHostsSelect(Select):
@@ -64,22 +48,23 @@ class AllHostsMenu(PF5Menu):
 
 
 class CVESelect(Select):
-    BUTTON_LOCATOR = './/button[@aria-label="Options menu"]'
-    ITEMS_LOCATOR = './/ul[contains(@class, "pf-v5-c-select__menu")]/li'
-    ITEM_LOCATOR = '//*[contains(@class, "pf-v5-c-select__menu-item") and .//*[contains(normalize-space(.), {})]]'
-    SELECTED_ITEM_LOCATOR = './/span[contains(@class, "ins-c-conditional-filter")]'
-    TEXT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and child::button]'
-    DEFAULT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and @data-ouia-component-id="select-content-view"]'
+    BUTTON_LOCATOR = ".//button[@aria-label='Options menu']"
+    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-c-select__menu')]/li"
+    ITEM_LOCATOR = (
+        "//*[contains(@class, 'pf-c-select__menu-item') and .//*[contains(normalize-space(.), {})]]"
+    )
+    SELECTED_ITEM_LOCATOR = ".//span[contains(@class, 'ins-c-conditional-filter')]"
+    TEXT_LOCATOR = ".//div[contains(@class, 'pf-c-select') and child::button]"
+    DEFAULT_LOCATOR = (
+        './/div[contains(@class, "pf-c-select") and @data-ouia-component-id="select-content-view"]'
+    )
 
 
 class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
-
-    legacy_kebab = PF5Dropdown(locator='.//div[@id="legacy-ui-kebab"]')
     select_all = Checkbox(
         locator='.//input[@data-ouia-component-id="select-all-checkbox-dropdown-toggle-checkbox"]'
     )
-    top_bulk_actions = MenuToggleDropdownInTable(locator='.//button[@aria-label="plain kebab"]')
     bulk_actions = AllHostsMenu()
     bulk_actions_kebab = Button(locator='.//button[@aria-label="plain kebab"]')
     bulk_actions_menu = PF5Menu(
@@ -97,7 +82,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Name': Text('./a'),
-            2: MenuToggleDropdownInTable(),
+            2: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
         },
     )
     alert_message = Text('.//div[contains(@class, "pf-v5-c-alert")]')
@@ -219,7 +204,7 @@ class ManageCVEModal(PF5Modal):
     save_btn = Button(locator='//button[normalize-space(.)="Save"]')
     cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
     content_source_select = CVESelect()
-    lce_selector = ParametrizedView.nested(PF5LCESelectorGroup)
+    lce_selector = ParametrizedView.nested(PF4LCESelectorGroup)
 
     @property
     def is_displayed(self):
@@ -465,6 +450,111 @@ class ManageErrataModal(PF5Modal):
 
         finish_errata_management_btn = PF5Button(
             locator='//*[@data-ouia-component-type="PF5/Button" and normalize-space(.)="Apply"]'
+        )
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+class RepositorySetsMenu(PF5Menu):
+    IS_ALWAYS_OPEN = False
+    BUTTON_LOCATOR = ".//button[contains(@class, '-c-menu-toggle')]"
+    ROOT = f"{BUTTON_LOCATOR}/.."
+
+
+class ManageRepositorySetsModal(PF5Modal):
+    """
+    This class represents the Manage Repository Sets modal that is used to apply content overrides actions
+    on one or more repository.
+    It contains several nested views that represent the steps of the wizard.
+    """
+
+    OUIA_ID = 'bulk-repo-sets-wizard-modal'
+
+    # Hidden alert - Change the status of at least one repository.
+    repo_set_alert_icon = './/div[@class="pf-v5-c-alert__icon"]'
+    repo_set_alert_msg_xpath = (
+        f'{repo_set_alert_icon}/following-sibling::h4[@class="pf-v5-c-alert__title"]'
+    )
+
+    title = './/h2[@class="pf-v5-c-wizard__title-text"]'
+    content_override_action_dropdown = Dropdown(
+        locator='.//button[@data-ouia-component-id="OUIA-Generated-MenuToggle-primary-1"]'
+    )
+
+    close_btn = PF5Button(locator='.//div[@class="pf-v5-c-wizard__close"]')
+    cancel_btn = PF5Button(locator='//button[normalize-space(.)="Cancel"]')
+    back_btn = PF5Button(locator='//button[normalize-space(.)="Back"]')
+    next_btn = PF5Button(locator='//button[normalize-space(.)="Next"]')
+
+    @View.nested
+    class select_repository_sets(WizardStepView):
+        wizard_step_name = 'Select repository sets'
+        locator_prefix = f'.//div[contains(., "{wizard_step_name}")]/descendant::'
+        expander = Text(f'.//button[text()="{wizard_step_name}"]')
+        content_text = Text('.//div[@class="pf-c-content"]')
+
+        select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
+        search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
+        clear_search = Button(locator=f'{locator_prefix}button[@aria-label="Reset search"]')
+        search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
+
+        # no_change_status_dropdown = PF5Dropdown(
+        #     locator='//button[@type="button"]/span[text()="No change"]'
+        # )
+        # status_options = PF5Dropdown(
+        #     locator='//div[@class="pf-v5-c-menu__content"]/ul/li/button/span/span[normalize-space(.)={}]'
+        # )
+
+        table = PF5OUIATable(
+            component_id='table',
+            column_widgets={
+                0: ExpandableTable(locator='.//button[@id="expand-toggle0" and @type="button"]'),
+                1: Checkbox(locator='.//input[@type="checkbox"]'),
+                'Name': Text('.//td[2]'),
+                'Status': RepositorySetsMenu()
+            },
+        )
+        pagination = Pagination()
+
+    @View.nested
+    class review_hosts(WizardStepView):
+        wizard_step_name = "Review hosts"
+        locator_prefix = f'.//div[contains(., "{wizard_step_name}")]/descendant::'
+
+        expander = Text(f'.//button[text()="{wizard_step_name}"]')
+        content_text = Text('.//div[@class="pf-c-content"]')
+        error_message = OUIAAlert('no-hosts-alert')
+
+        select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
+        search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
+        search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
+
+        table = PF5OUIATable(
+            component_id='table',
+            column_widgets={
+                0: Checkbox(locator='.//input[@type="checkbox"]'),
+                'Name': Text('.//td[2]'),
+                'OS': Text('.//td[3]'),
+            },
+        )
+        pagination = Pagination()
+
+    @View.nested
+    class review(WizardStepView):
+        wizard_step_name = "Review"
+        expander = Text(f'.//button[text()="{wizard_step_name}"]')
+
+        number_of_repository_status_changed = Text(
+            './/div/h4[contains(.,"Changed status")]/following::div/span[@class="pf-v5-c-badge pf-m-read"]'
+        )
+
+        edit_selected_repository_sets = Button(
+            './/button[@data-ouia-component-id="brsw-review-step-edit-btn"]'
+        )
+        set_content_overrides = Button(
+            locator='//button[@type="submit" and @data-ouia-component-id="bulk-repo-sets-wizard-finish-button"]'
         )
 
     @property
