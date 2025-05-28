@@ -1,3 +1,5 @@
+from functools import partial
+
 from selenium.common.exceptions import ElementNotInteractableException
 from widgetastic.widget import (
     Checkbox,
@@ -11,10 +13,14 @@ from widgetastic.widget import (
     do_not_read_this_widget,
 )
 from widgetastic_patternfly import BreadCrumb, Tab, TabWithDropdown
-from widgetastic_patternfly4 import Button, Select
+from widgetastic_patternfly4 import Button
 from widgetastic_patternfly4.navigation import Navigation
-from widgetastic_patternfly4.ouia import Dropdown, PatternflyTable
-from widgetastic_patternfly5.ouia import Dropdown as PF5OUIADropdown
+from widgetastic_patternfly5 import OptionsMenu
+from widgetastic_patternfly5.ouia import (
+    Dropdown as PF5OUIADropdown,
+    PatternflyTable,
+    Select as PF5OUIASelect,
+)
 
 from airgun.utils import get_widget_by_name, normalize_dict_values
 from airgun.widgets import (
@@ -327,6 +333,12 @@ class PF5LCECheckSelectorGroup(PF5LCESelectorGroup):
     )
 
 
+# PF5 kebab menu present in table rows
+TableRowKebabMenu = partial(
+    OptionsMenu, './/button[contains(@data-ouia-component-type, "MenuToggle")]/..'
+)
+
+
 class PF5LCEGroup(ParametrizedLocator):
     "Group of LCE indicators"
 
@@ -449,8 +461,8 @@ class AddRemoveResourcesView(View):
 
 class NewAddRemoveResourcesView(View):
     searchbox = PF4Search()
-    status = Select(locator='.//div[@data-ouia-component-id="select Status"]')
-    remove_button = Dropdown(locator='.//div[@data-ouia-component-id="repositoies-bulk-actions"]')
+    status = PF5OUIASelect(component_id='select Status')
+    remove_button = PF5OUIADropdown(component_id='repositoies-bulk-actions')
     add_button = Button(locator='.//button[@data-ouia-component-id="add-repositories"]')
     table = PatternflyTable(
         component_id='content-view-repositories-table',

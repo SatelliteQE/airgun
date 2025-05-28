@@ -33,8 +33,8 @@ from widgetastic_patternfly4.ouia import (
     Button as OUIAButton,
     Menu,
 )
-from widgetastic_patternfly4.progress import Progress as PF4Progress
 from widgetastic_patternfly4.table import BaseExpandableTable, BasePatternflyTable
+from widgetastic_patternfly5 import Progress as PF5Progress
 from widgetastic_patternfly5.ouia import (
     BaseSelect as PF5BaseSelect,
     Button as PF5OUIAButton,
@@ -2342,8 +2342,21 @@ class ProgressBar(GenericLocatorWidget):
         return self.progress
 
 
-class PF4ProgressBar(PF4Progress):
-    locator = './/div[contains(@class, "pf-c-wizard__main-body")]'
+class PF5ProgressBar(PF5Progress):
+    ROOT = './/div[contains(@class, "pf-v5-c-wizard__main-body")]'
+
+    def __init__(self, parent, locator=None, logger=None):
+        """Overrides `locator` parameter to be optional with default of `PF5ProgressBar.ROOT`"""
+        self.locator = locator or self.ROOT
+        super().__init__(parent, self.locator, logger=logger)
+
+    @property
+    def is_displayed(self):
+        if progress_bar := self.browser.wait_for_element(
+            self.PROGRESS_BAR, timeout=1, exception=False
+        ):
+            return progress_bar.is_displayed
+        return False
 
     @property
     def is_completed(self):
