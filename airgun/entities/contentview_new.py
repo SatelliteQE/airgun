@@ -1,7 +1,7 @@
-from asyncio import wait_for
 import time
 
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 from widgetastic.exceptions import NoSuchElementException
 from widgetastic_patternfly4.dropdown import DropdownItemDisabled
 
@@ -54,11 +54,10 @@ class NewContentViewEntity(BaseEntity):
             view.fill(values)
         if promote:
             view.promote.click()
-            wait_for(lambda: view.lce_selector.is_displayed, timeout=10)
-            view.lce_selector.fill(lce or {lce: True})
+            wait_for(lambda: view.lce_selector(lce_name=lce).is_displayed, timeout=10)
+            view.lce_selector.fill({lce: True})
         view.next_button.click()
         view.finish_button.click()
-        wait_for(lambda: view.progressbar.is_displayed, timeout=10)
         view.progressbar.wait_for_result()
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe(timeout='5s')
@@ -85,9 +84,7 @@ class NewContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
-        # click the 'cv-details-action' dropdown, then click 'Delete'
-        view.cv_actions.click()
-        view.cv_delete.click()
+        view.cv_actions.item_select('Delete')
         view.wait_displayed()
         # Remove from environment(s) wizard, if it appears
         if view.next_button.is_displayed:
