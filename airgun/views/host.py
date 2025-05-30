@@ -543,7 +543,9 @@ class HostRegisterView(BaseLoggedInView):
         capsule = PF5FormSelect('reg_smart_proxy')
         insecure = Checkbox(id='reg_insecure')
         activation_keys = BaseMultiSelect('activation-keys-field')
-        activation_key_helper = Text("//div[@id='activation_keys_field-helper']")
+        activation_key_helper = Text(
+            locator='//div[@data-ouia-component-id="activation-keys-field"]/..//div[contains(@class, "-c-helper-text")]'
+        )
         new_activation_key_link = Link('//a[normalize-space(.)="Create new activation key"]')
 
     @View.nested
@@ -563,7 +565,9 @@ class HostRegisterView(BaseLoggedInView):
         rex_pull_mode = PF5FormSelect('registration_setup_remote_execution_pull')
         ignore_error = Checkbox(id='reg_katello_ignore')
         force = Checkbox(id='reg_katello_force')
-        install_packages_helper = Text("//div[@id='reg_packages-helper']")
+        install_packages_helper = Text(
+            locator='//input[@id="reg_packages"]/../..//div[contains(@class, "-c-helper-text")]'
+        )
         repository_add = PF5Button('host_reg_add_more_repositories')
 
     @property
