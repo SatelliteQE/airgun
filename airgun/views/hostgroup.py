@@ -1,7 +1,7 @@
 from widgetastic.widget import ConditionalSwitchableView, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4.ouia import Select as OUIASelect
 from widgetastic_patternfly5 import Button as PF5Button, Pagination as PF5Pagination
+from widgetastic_patternfly5.ouia import Select as PF5OUIASelect
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
 from airgun.widgets import (
@@ -132,7 +132,7 @@ class HostGroupCreateView(BaseLoggedInView):
     @View.nested
     class activation_keys(SatTab):
         TAB_NAME = 'Activation Keys'
-        activation_keys = OUIASelect('ak-select')
+        activation_keys = PF5OUIASelect(component_id='ak-select')
 
 
 class HostGroupEditView(HostGroupCreateView):
