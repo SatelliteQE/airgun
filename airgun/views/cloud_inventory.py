@@ -9,7 +9,7 @@ from widgetastic_patternfly5.ouia import Text as PF5OUIAText
 
 from airgun.exceptions import ReadOnlyWidgetError
 from airgun.views.common import BaseLoggedInView
-from airgun.widgets import Accordion
+from airgun.widgets import Accordion, Pf5ConfirmationDialog
 
 
 class DataCollectionMenu(Menu):
@@ -130,7 +130,7 @@ class CloudInventoryListView(BaseLoggedInView):
 
     auto_upload_desc = PF5OUIAText('OUIA-Generated-Text-6')
     manual_upload_desc = PF5OUIAText('OUIA-Generated-Text-7')
-
+    dialog = Pf5ConfirmationDialog()
     cloud_connector = PF5Button(locator='//button[normalize-space(.)="Configure cloud connector"]')
     reconfigure_cloud_connector = PF5Button(
         locator='//button[normalize-space(.)="Reconfigure cloud connector"]'
