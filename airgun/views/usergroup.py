@@ -67,10 +67,8 @@ class UserGroupDetailsView(BaseLoggedInView):
             )
         )
         auth_source = FilteredDropdown(
-            locator=(
-                "//div[starts-with(@id, 'usergroup_external_usergroups_attributes')]"
-                "[contains(@id, 'auth_source_id')]"
-            )
+            # this locator fails when there are multiple user groups, it doesn't specify which
+            locator=("//span[contains(@class, 'select2-selection__rendered')]")
         )
 
         def before_fill(self, values):
