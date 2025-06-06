@@ -2,6 +2,7 @@ from time import sleep
 
 from navmazing import NavigateToSibling
 from wait_for import wait_for
+from widgetastic.widget import Text
 
 from airgun.entities.base import BaseEntity
 from airgun.exceptions import DisabledWidgetError
@@ -9,6 +10,7 @@ from airgun.helpers.host import HostHelper
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.cloud_insights import CloudInsightsView
+from airgun.views.common import BaseLoggedInView
 from airgun.views.host import (
     HostCreateView,
     HostDetailsView,
@@ -425,6 +427,12 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.wait_displayed()
         return view.displayed_table_header_names
+
+    def permission_denied(self):
+        """Return permission denied error text"""
+        view = BaseLoggedInView(self.browser)
+        view.permission_denied = Text('//div[@class="pf-v5-c-empty-state pf-m-xl"]')
+        return view.permission_denied.text
 
 
 @navigator.register(HostEntity, 'All')
