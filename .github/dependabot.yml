@@ -15,8 +15,6 @@ updates:
       - "CherryPick"
       - "dependencies"
       - "6.15.z"
-      - "6.14.z"
-      - "6.13.z"
     ignore:
       - dependency-name: "selenium"
 
@@ -31,5 +29,3 @@ updates:
       - "CherryPick"
       - "dependencies"
       - "6.15.z"
-      - "6.14.z"
-      - "6.13.z"
