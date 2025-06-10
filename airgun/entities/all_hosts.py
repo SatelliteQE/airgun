@@ -1,5 +1,7 @@
 from asyncio import wait_for
+import contextlib
 
+import anytree
 from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
@@ -418,7 +420,7 @@ class AllHostsEntity(BaseEntity):
         Navigate to Manage repository sets and change the repository status by selection management action
 
         args:
-             host_names (str or list): str with one host or list of hosts to select
+            host_names (str or list): str with one host or list of hosts to select
             select_all_hosts (bool): select all hosts flag
             repository_names (str or list): str with one repository or list of repositories to change status
             status_to_change (str): str which has status to be changed for one or more repositories, default set to
@@ -461,13 +463,12 @@ class AllHostsEntity(BaseEntity):
         # Open Manage Repository sets modal
         view.bulk_actions_kebab.click()
 
-        # This is here because there is nested flyout menu which needs to be hovered over first so we can use item_select in the next step
         self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
         view.bulk_actions_manage_content_menu.item_select('Repository sets')
 
         view = ManageRepositorySetsModal(self.browser)
 
-        # select repositories those need to be changes
+        # select one or more repositories and change status
         self.manage_repository_sets_helper(
             view, repository_names, individual_search_queries, status_to_change
         )
@@ -491,7 +492,7 @@ class AllHostsEntity(BaseEntity):
         # List repository_names contains some repo names
         if repository_names is not None:
             all_repositories = repository_names
-        # invididual_search_queries contain repository name
+        # individual_search_queries contain repository name
         elif individual_search_queries is not None:
             all_repositories = individual_search_queries
 
@@ -500,7 +501,14 @@ class AllHostsEntity(BaseEntity):
                 clear_search_cross_button.click()
             view.select_repository_sets.search_input.fill(search_query.format(repo))
 
-            view.select_repository_sets.table[0]['Status'].item_select(status_to_change)
+            self.browser.plugin.ensure_page_safe(timeout='5s')
+            view.wait_displayed()
+            # For some reason it is needed to read the widget first, it fails, but enables filling in the next step
+            try:
+                _ = view.select_repository_sets.table[0]['Status'].widget
+            except anytree.resolver.ResolverError:
+                contextlib.suppress(Exception)
+            view.select_repository_sets.table[0]['Status'].widget.item_select(status_to_change)
 
         view.next_btn.click()  # Next button from 'Select repository sets'
         view.next_btn.click()  # Next button from 'Review hosts'
