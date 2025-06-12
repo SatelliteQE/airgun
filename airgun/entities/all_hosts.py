@@ -1,5 +1,7 @@
 from asyncio import wait_for
+import contextlib
 
+import anytree
 from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
@@ -15,6 +17,7 @@ from airgun.views.all_hosts import (
     ManageCVEModal,
     ManageErrataModal,
     ManagePackagesModal,
+    ManageRepositorySetsModal,
 )
 from airgun.views.job_invocation import JobInvocationCreateView
 
@@ -404,6 +407,114 @@ class AllHostsEntity(BaseEntity):
             self.browser.plugin.ensure_page_safe(timeout='5s')
             wait_for(lambda: view.submit.is_displayed, timeout=10)
             view.submit.click()
+
+    def manage_repository_sets(
+        self,
+        host_names=None,
+        select_all_hosts=False,
+        repository_names=None,
+        status_to_change='No change',
+        individual_search_queries=None,
+    ):
+        """
+        Navigate to Manage repository sets and change the repository status by selection management action
+
+        args:
+            host_names (str or list): str with one host or list of hosts to select
+            select_all_hosts (bool): select all hosts flag
+            repository_names (str or list): str with one repository or list of repositories to change status
+            status_to_change (str): str which has status to be changed for one or more repositories, default set to
+            'No change'
+            individual_search_queries (list): list of string of search queries for each repo
+        """
+
+        # Check validity of user input
+        if select_all_hosts and host_names:
+            raise ValueError('Cannot select all and specify host names at the same time!')
+
+        # if both repository_names and individual_search_queries are specified, raise an error
+        if repository_names is not None and individual_search_queries is not None:
+            raise ValueError(
+                'Cannot specify both repository_names and individual_search_queries at the same time!'
+            )
+
+        # if status_to_change is 'No change', then it will not allow to move ahead so raise an exception
+        if status_to_change == 'No change':
+            raise ValueError(
+                'Value of status_to_change should not be "No change", it will not allow to move next page'
+            )
+
+        # Navigate to All Hosts
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+
+        # Select all hosts from the table
+        if select_all_hosts:
+            view.select_all.fill(True)
+        # Select user-specified hosts
+        else:
+            if not isinstance(host_names, list):
+                host_names = [host_names]
+            for host_name in host_names:
+                view.search(host_name)
+                view.table[0][0].widget.fill(True)
+
+        # Open Manage Repository sets modal
+        view.bulk_actions_kebab.click()
+
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
+        view.bulk_actions_manage_content_menu.item_select('Repository sets')
+
+        view = ManageRepositorySetsModal(self.browser)
+
+        # select one or more repositories and change status
+        self.manage_repository_sets_helper(
+            view, repository_names, individual_search_queries, status_to_change
+        )
+
+    def manage_repository_sets_helper(
+        self, view, repository_names, individual_search_queries, status_to_change
+    ):
+        """
+        Helper function to manage Repository sets for selected hosts.
+        Based on the user input it finds repos by names or by individual search queries.
+
+        args:
+            view (ManageRepositorySetsModal): ManageRepositorySetsModal view
+            repository_names (list): list of repositories to change
+            individual_search_queries (list): list of search queries for each repository
+            status_to_change (str): str containing status to change for repositories
+        """
+        search_query = 'name = "{}"'
+        clear_search_cross_button = view.select_repository_sets.clear_search
+
+        # List repository_names contains some repo names
+        if repository_names is not None:
+            all_repositories = repository_names
+        # individual_search_queries contain repository name
+        elif individual_search_queries is not None:
+            all_repositories = individual_search_queries
+
+        for repo in all_repositories:
+            if clear_search_cross_button.is_displayed:
+                clear_search_cross_button.click()
+            view.select_repository_sets.search_input.fill(search_query.format(repo))
+
+            self.browser.plugin.ensure_page_safe(timeout='5s')
+            view.wait_displayed()
+            # For some reason it is needed to read the widget first, it fails, but enables filling in the next step
+            try:
+                _ = view.select_repository_sets.table[0]['Status'].widget
+            except anytree.resolver.ResolverError:
+                contextlib.suppress(Exception)
+            view.select_repository_sets.table[0]['Status'].widget.item_select(status_to_change)
+
+        view.next_btn.click()  # Next button from 'Select repository sets'
+        view.next_btn.click()  # Next button from 'Review hosts'
+        if view.review.number_of_repository_status_changed.text != str(len(repository_names)):
+            raise Exception("Repository count not matches")
+        view.review.set_content_overrides.click()
 
 
 @navigator.register(AllHostsEntity, 'All')
