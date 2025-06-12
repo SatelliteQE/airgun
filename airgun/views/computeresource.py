@@ -295,13 +295,13 @@ class ComputeResourceVMwareProfileControllerVolumeItem(GenericRemovableWidgetIte
     """VMware Compute Resource Profile "Storage Controller Volume" item widget"""
 
     storage_pod = FilteredDropdown(
-        locator=".//div[label[contains(., 'Storage Pod')]]//div[contains(@class, 'form-control')]"
+        locator=".//div[label[contains(., 'Storage Pod')]]//select[contains(@class, 'form-control')]"
     )
     data_store = FilteredDropdown(
-        locator=".//div[label[contains(., 'Data store')]]//div[contains(@class, 'form-control')]"
+        locator=".//div[label[contains(., 'Data store')]]//select[contains(@class, 'form-control')]"
     )
     disk_mode = FilteredDropdown(
-        locator=".//div[label[contains(., 'Disk Mode')]]//div[contains(@class, 'form-control')]"
+        locator=".//div[label[contains(., 'Disk Mode')]]//select[contains(@class, 'form-control')]"
     )
     size = TextInput(locator=".//div[label[contains(., 'Size')]]//input")
     thin_provision = Checkbox(locator=".//div[label[contains(., 'Thin provision')]]/div/input")
@@ -323,7 +323,7 @@ class ComputeResourceVMwareProfileStorageItem(GenericRemovableWidgetItem):
     """VMware  Compute Resource Profile Storage Controller item widget"""
 
     controller = FilteredDropdown(
-        locator=".//div[@class='controller-header']//div[contains(@class, 'form-control')]"
+        locator=".//div[@class='controller-header']//select[contains(@class, 'form-control')]"
     )
     remove_button = Text(".//button[contains(concat(' ', @class, ' '), ' btn-remove-controller ')]")
     disks = ComputeResourceVMwareProfileControllerVolumeList()
