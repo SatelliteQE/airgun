@@ -66,7 +66,7 @@ class RemediationView(View):
 class Card(View):
     """Each card in host view has it's own title with same locator"""
 
-    title = Text('.//div[@class="pf-c-card__title"]')
+    title = Text('.//div[@class="pf-v5-c-card__title"]')
 
 
 class DropdownWithDescripton(Dropdown):
@@ -78,8 +78,8 @@ class DropdownWithDescripton(Dropdown):
 class HostDetailsCard(Widget):
     """Overview/Details & Details/SystemProperties card body contains multiple host detail info"""
 
-    LABELS = '//div[@class="pf-c-description-list__group"]//dt//span'
-    VALUES = '//div[@class="pf-c-description-list__group"]//*[self::dd or self::ul]'
+    LABELS = '//div[@class="pf-v5-c-description-list__group"]//dt//span'
+    VALUES = '//div[@class="pf-v5-c-description-list__group"]//*[self::dd or self::ul]'
 
     def read(self):
         """Return a dictionary where keys are property names and values are property values.
@@ -236,48 +236,50 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class system_properties(Card):
-            ROOT = './/article[.//div[text()="System properties"]]'
+            ROOT = './/div[contains(@data-ouia-component-id, "card-template-System properties")]'
 
             sys_properties = HostDetailsCard()
 
         @View.nested
         class operating_system(Card):
-            ROOT = './/article[.//div[text()="Operating system"]]'
+            ROOT = './/div[contains(@data-ouia-component-id, "card-template-Operating system")]'
 
             architecture = Text(
-                './/a[contains(@data-ouia-component-id, "OUIA-Generated-Button-link-1")]'
+                './/a[contains(@data-ouia-component-id, "host-architecture-button")]'
             )
-            os = Text('.//a[contains(@data-ouia-component-id, "OUIA-Generated-Button-link-2")]')
+            os = Text('.//a[contains(@data-ouia-component-id, "host-os-button")]')
 
             details = HostDetailsCard()
 
         @View.nested
         class provisioning(Card):
-            ROOT = './/article[.//div[text()="Provisioning"]]'
+            ROOT = './/div[@data-ouia-component-type="PF5/Card" and .//div[text()="Provisioning"]]'
 
             details = HostDetailsCard()
 
         @View.nested
         class bios(Card):
-            ROOT = './/article[.//div[text()="BIOS"]]'
+            ROOT = './/div[contains(@data-ouia-component-id, "card-template-BIOS")]'
 
             details = HostDetailsCard()
 
         @View.nested
         class registration_details(Card):
-            ROOT = './/article[.//div[text()="Registration details"]]'
+            ROOT = './/div[contains(@data-ouia-component-id, "card-template-Registration details")]'
 
             details = HostDetailsCard()
 
         @View.nested
         class hw_properties(Card):
-            ROOT = './/article[.//div[text()="HW properties"]]'
+            ROOT = './/div[contains(@data-ouia-component-id, "card-template-HW properties")]'
 
             details = HostDetailsCard()
 
         @View.nested
         class provisioning_templates(Card):
-            ROOT = './/article[.//div[text()="Provisioning templates"]]'
+            ROOT = (
+                './/div[contains(@data-ouia-component-id, "card-template-Provisioning templates")]'
+            )
 
             templates_table = SatTableWithoutHeaders(
                 locator='.//table[@aria-label="templates table"]'
@@ -285,13 +287,15 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class installed_products(Card):
-            ROOT = './/article[.//div[text()="Installed products"]]'
+            ROOT = './/div[contains(@data-ouia-component-id, "card-template-Installed products")]'
 
             installed_products_list = ItemsList(locator='.//ul[contains(@class, "pf-c-list")]')
 
         @View.nested
         class networking_interfaces(Card):
-            ROOT = './/article[.//div[text()="Networking interfaces"]]'
+            ROOT = (
+                './/div[contains(@data-ouia-component-id, "card-template-Networking interfaces")]'
+            )
 
             networking_interfaces_accordion = Accordion(
                 locator='.//div[contains(@class, "pf-c-card__expandable-content")]'
@@ -316,14 +320,14 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class virtualization(Card):
-            ROOT = './/article[contains(@data-ouia-component-id, "card-template-Virtualization")]'
+            ROOT = './/div[contains(@data-ouia-component-id, "card-template-Virtualization")]'
 
             details = HostDetailsCard()
 
         @View.nested
         class bootc(Card):
             # Will file issue for this to be fixed
-            ROOT = './/article[contains(@data-ouia-component-id, "card-template-image-mode")]'
+            ROOT = './/div[contains(@data-ouia-component-id, "card-template-image-mode")]'
 
             remote_execution_link = Text(".//a[normalize-space(.)='Modify via remote execution']")
             details = HostDetailsCard()
