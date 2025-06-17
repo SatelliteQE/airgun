@@ -310,8 +310,7 @@ class HostCreateView(BaseLoggedInView):
         Note: The provider name is always appended to the end of the compute resource name,
         for example: compute resource name "foo"
 
-        1. For RHV provider, the compute resource name will be displayed as: "foo (RHV)"
-        2. For Libvirt provider, the compute resource name will be displayed as: "foo (Libvirt)"
+        1. For Libvirt provider, the compute resource name will be displayed as: "foo (Libvirt)"
 
         Return "Compute resource is not specified" value in case no compute resource specified
         in deployment procedure (e.g. "Bare Metal")
