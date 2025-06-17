@@ -19,7 +19,6 @@ class VirtwhoConfigureEntity(BaseEntity):
             'esx': 'VMware vSphere / vCenter (esx)',
             'xen': 'XenServer (xen)',
             'hyperv': 'Microsoft Hyper-V (hyperv)',
-            'rhevm': 'Red Hat Virtualization Hypervisor (rhevm)',
             'libvirt': 'libvirt',
             'kubevirt': 'Container-native virtualization',
             'ahv': 'Nutanix AHV (ahv)',

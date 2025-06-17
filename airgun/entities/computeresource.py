@@ -4,8 +4,6 @@ from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.computeresource import (
-    ComputeResourceRHVImageCreateView,
-    ComputeResourceRHVImageEditView,
     ComputeResourcesView,
     ComputeResourceVMwareImageCreateView,
     ComputeResourceVMwareImageEditView,
@@ -299,7 +297,6 @@ class ComputeResourceImageProvider(NavigateStep):
 @navigator.register(ComputeResourceEntity, 'Create Image')
 class ComputeResourceImageCreate(ComputeResourceImageProvider):
     PROVIDER_VIEWS = {
-        'RHV': ComputeResourceRHVImageCreateView,
         'VMware': ComputeResourceVMwareImageCreateView,
     }
 
@@ -310,7 +307,6 @@ class ComputeResourceImageCreate(ComputeResourceImageProvider):
 @navigator.register(ComputeResourceEntity, 'Edit Image')
 class ComputeResourceImageEdit(ComputeResourceImageProvider):
     PROVIDER_VIEWS = {
-        'RHV': ComputeResourceRHVImageEditView,
         'VMware': ComputeResourceVMwareImageEditView,
     }
 
