@@ -1631,10 +1631,12 @@ class EditableEntry(GenericLocatorWidget):
         # not required for it
         if self.edit_button.is_displayed:
             self.edit_button.click()
+        if self.edit_field.is_displayed:
             self.edit_field.fill(value)
             self.save_button.click()
         if self.pf4_edit_button.is_displayed:
             self.pf4_edit_button.click()
+        if self.pf4_edit_field.is_displayed:
             self.pf4_edit_field.fill(value)
             self.pf4_save_button.click()
 
