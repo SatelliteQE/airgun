@@ -385,7 +385,8 @@ class NewHostEntity(HostEntity):
         # wait for filter to apply
         self.browser.plugin.ensure_page_safe()
         view.content.packages.table.wait_displayed()
-        view.content.packages.table[0][5].widget.item_select(action)
+        view.content.packages.table[0][5].widget.click()
+        view.content.packages.table[0][5].item_select(action)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -517,7 +518,8 @@ class NewHostEntity(HostEntity):
         view.content.module_streams.searchbar.fill(module_stream)
         # wait for filter to apply
         self.browser.plugin.ensure_page_safe()
-        view.content.module_streams.table[0][5].widget.item_select(action)
+        view.content.module_streams.table[0][5].widget.click()
+        view.content.module_streams.table[0][5].item_select(action)
         modal = ModuleStreamDialog(self.browser)
         if modal.is_displayed:
             modal.confirm()
