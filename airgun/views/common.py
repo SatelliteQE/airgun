@@ -31,10 +31,10 @@ from airgun.widgets import (
     ItemsList,
     LCESelector,
     Pf4ConfirmationDialog,
-    PF4NavSearch,
     PF4Search,
     PF5LCECheckSelector,
     PF5LCESelector,
+    PF5NavSearch,
     ProgressBar,
     ReadOnlyEntry,
     SatFlashMessages,
@@ -49,7 +49,7 @@ class BaseLoggedInView(View):
     """Base view for Satellite pages"""
 
     menu = Navigation("Global")
-    menu_search = PF4NavSearch()
+    menu_search = PF5NavSearch()
     taxonomies = ContextSelector()
     flash = SatFlashMessages()
     validations = ValidationErrors()
