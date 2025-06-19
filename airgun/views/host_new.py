@@ -345,7 +345,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
             searchbar = SearchInput(
-                locator='.//input[contains(@class, "pf-c-text-input-group__text-input")]'
+                locator='.//input[contains(@class, "pf-v5-c-text-input-group__text-input")]'
             )
             status_filter = Dropdown(locator='.//div[@aria-label="select Status container"]/div')
             upgrade = Pf4ActionsDropdown(locator='.//div[div/button[normalize-space(.)="Upgrade"]]')
@@ -359,7 +359,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Status': Text('./span'),
                     'Installed version': Text('./parent::td'),
                     'Upgradable to': Text('./span'),
-                    5: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                    5: Dropdown(locator='.//div[button(@aria-label="Kebab toggle")]'),
                 },
             )
             pagination = PF4Pagination()
@@ -386,7 +386,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Installable': Text('./span'),
                     'Synopsis': Text('./span'),
                     'Published date': Text('./span/span'),
-                    8: Dropdown(locator='./div'),
+                    8: Dropdown(locator='.//div[button(@aria-label="Kebab toggle")]'),
                 },
             )
             pagination = PF4Pagination(
@@ -416,7 +416,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Stream': Text('./parent::td'),
                     'Installation status': Text('.//small'),
                     'Installed profile': Text('./parent::td'),
-                    5: DropdownWithDescripton(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                    5: Dropdown(locator='.//div[button(@aria-label="Kebab toggle")]'),
                 },
             )
             pagination = PF4Pagination()
