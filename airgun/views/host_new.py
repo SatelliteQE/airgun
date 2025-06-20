@@ -359,7 +359,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Status': Text('./span'),
                     'Installed version': Text('./parent::td'),
                     'Upgradable to': Text('./span'),
-                    5: Button(locator='.//div[button(@aria-label="Kebab toggle")]'),
+                    5: PF5Button(locator='./button'),
                 },
             )
             package_action = PF5Menu(
@@ -391,7 +391,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Installable': Text('./span'),
                     'Synopsis': Text('./span'),
                     'Published date': Text('./span/span'),
-                    8: Button(locator='.//div[button(@aria-label="Kebab toggle")]'),
+                    8: PF5Button(locator='./button'),
                 },
             )
             erratum_action = PF5Menu(
@@ -424,7 +424,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Stream': Text('./parent::td'),
                     'Installation status': Text('.//small'),
                     'Installed profile': Text('./parent::td'),
-                    5: Button(locator='.//div[button(@aria-label="Kebab toggle")]'),
+                    5: PF5Button(locator='./button'),
                 },
             )
             module_stream_action = PF5Menu(
