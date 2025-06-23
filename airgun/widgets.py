@@ -26,19 +26,18 @@ from widgetastic_patternfly import (
     Kebab,
     VerticalNavigation,
 )
-from widgetastic_patternfly4 import (
-    Pagination as PF4Pagination,
-)
+from widgetastic_patternfly4 import Pagination as PF4Pagination
 from widgetastic_patternfly4.ouia import (
     Button as OUIAButton,
-    Menu,
 )
 from widgetastic_patternfly4.table import BaseExpandableTable, BasePatternflyTable
-from widgetastic_patternfly5 import Progress as PF5Progress
+from widgetastic_patternfly5 import Button as PF5Button, Progress as PF5Progress
 from widgetastic_patternfly5.ouia import (
     BaseSelect as PF5BaseSelect,
     Button as PF5OUIAButton,
     Dropdown as PF5Dropdown,
+    Menu as PF5Menu,
+    OUIAGenericWidget,
 )
 
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
@@ -888,8 +887,8 @@ class PF4Search(Search):
             self.search_button.click()
 
 
-class PF4NavSearchMenu(Menu):
-    """PF4 vertical navigation dropdown menu with search results."""
+class PF5NavSearchMenu(PF5Menu, OUIAGenericWidget):
+    """PF5 vertical navigation dropdown menu with search results."""
 
     @property
     def items(self):
@@ -901,14 +900,14 @@ class PF4NavSearchMenu(Menu):
         return [self.browser.text(el) for el in self.items]
 
 
-class PF4NavSearch(PF4Search):
-    """PF4 vertical navigation menu search"""
+class PF5NavSearch(PF4Search):
+    """PF5 vertical navigation menu search."""
 
     ROOT = '//div[@id="navigation-search"]'
-    search_field = TextInput(locator=(".//input[@aria-label='Search input']"))
-    search_button = PF5OUIAButton(locator=(".//button[@aria-label='Search']"))
-    clear_button = PF5OUIAButton(locator=(".//button[@aria-label='Reset']"))
-    items = PF4NavSearchMenu("navigation-search-menu")
+    search_field = TextInput(locator=".//input[@aria-label='Search input']")
+    search_button = PF5Button(locator=".//button[@aria-label='Search']")
+    clear_button = PF5Button(locator=".//button[@aria-label='Reset']")
+    items = PF5NavSearchMenu(component_id="navigation-search-menu")
     results_timeout = search_clear_timeout = 2
 
     def _wait_for_results(self, results_widget):
