@@ -5,7 +5,7 @@ from airgun.views.cloud_vulnerabilities import CloudVulnerabilityView
 
 
 class CloudVulnerabilityEntity(BaseEntity):
-    endpoint_path = '/foreman_rh_cloud/insights_vulnerabilities'
+    endpoint_path = '/foreman_rh_cloud/insights_vulnerability'
 
     def read(self, entity_name=None, widget_names=None):
         view = self.navigate_to(self, 'All')
