@@ -12,10 +12,9 @@ metadata:
     - python
     - rh-satellite
     - interaction-library
-  namespace: quality-community   
+  namespace: quality-community
   annotations:
     github.com/project-slug: SatelliteQE/airgun
-    backstage.io/techdocs-ref: https://airgun.readthedocs.io/en/latest/
 spec:
   type: library
   owner: group:redhat/satellite-qe
