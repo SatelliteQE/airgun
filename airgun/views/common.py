@@ -57,7 +57,9 @@ class BaseLoggedInView(View):
     logout = Text("//a[@href='/users/logout']")
     current_user = PF5OUIADropdown('user-info-dropdown')
     account_menu = PF5OUIADropdown('user-info-dropdown')
-    permission_denied = Text('//*[@id="content"]')
+    permission_denied = Text(
+        '//*[@id="content" or contains(@class, "pf-v5-c-empty-state pf-m-xl")]'
+    )
 
     def select_logout(self):
         """logout from satellite"""
