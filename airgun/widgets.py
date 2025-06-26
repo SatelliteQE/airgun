@@ -774,14 +774,14 @@ class Pf4ActionsDropdown(ActionsDropdown):
     """
 
     button = Text(
-        './/button[contains(@class,"pf-c-dropdown__toggle-button")'
-        'and not(@data-ouia-component-type="PF4/DropdownToggle")]'
+        './/button[contains(@class,"pf-v5-c-dropdown__toggle-button")'
+        'and not(@data-ouia-component-type="PF5/DropdownToggle")]'
     )
     dropdown = Text(
-        './/button[contains(@class,"pf-c-dropdown__toggle-button")'
-        'and @data-ouia-component-type="PF4/DropdownToggle"]'
+        './/button[contains(@class,"pf-v5-c-dropdown__toggle-button")'
+        'and @data-ouia-component-type="PF5/DropdownToggle"]'
     )
-    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-c-dropdown__menu')]/li"
+    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-dropdown__menu')]/li"
     ITEM_LOCATOR = ".//ul/li[@role='menuitem' and contains(normalize-space(.), '{}')]"
 
     @property
@@ -819,17 +819,9 @@ class Search(Widget):
         'or contains(@class, "dataTables_filter") or @id="search-bar"]'
     )
     search_field = TextInput(
-        locator=(
-            ".//input[@id='search' or contains(@placeholder, 'Filter') or "
-            "@ng-model='table.searchTerm' or contains(@ng-model, 'Filter') or "
-            "@data-autocomplete-id='searchBar' or contains(@placeholder, 'Search') "
-            "or contains(@class, 'search-input')]"
-        )
+        locator=("//div[@class='title_filter']//input[contains(@aria-label, 'Search input')]")
     )
-    search_button = Text(
-        ".//button[contains(@id, 'btn-search') or contains(@type,'submit') or "
-        "contains(@class, 'search-btn') or @ng-click='table.search(table.searchTerm)']"
-    )
+    search_button = PF5Button(locator=(".//button[@aria-label='Search']"))
     clear_button = Text(
         ".//span[contains(@class,'autocomplete-clear-button') or contains(@class,'fa-close')]"
     )
