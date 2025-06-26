@@ -31,7 +31,11 @@ from widgetastic_patternfly4.ouia import (
     Button as OUIAButton,
 )
 from widgetastic_patternfly4.table import BaseExpandableTable, BasePatternflyTable
-from widgetastic_patternfly5 import Button as PF5Button, Progress as PF5Progress
+from widgetastic_patternfly5 import (
+    Button as PF5Button,
+    ExpandableSection as PF5ExpandableSection,
+    Progress as PF5Progress,
+)
 from widgetastic_patternfly5.ouia import (
     BaseSelect as PF5BaseSelect,
     Button as PF5OUIAButton,
@@ -2926,35 +2930,29 @@ class SatExpandableTable(BaseExpandableTable, SatPatternflyTable):
     pass
 
 
-class ExpandableSection(Widget):
+class PF5LabeledExpandableSection(PF5ExpandableSection):
+    """PF5 Expandable section (https://pf5.patternfly.org/components/expandable-section/)
+    with a labeled button as the section expand/collapse toggle.
+
+    Note: You need to set the `label` attribute yourself in your inherited class!
+    """
+
     ROOT = ParametrizedLocator(
-        '//div[contains(@class, "pf-c-expandable-section")]/button[normalize-space(.)={@label|quote}]/..'
+        '//div[contains(@class, "-c-expandable-section")]/button[normalize-space(.)={@label|quote}]/..'
     )
-    TOGGLE_BUTTON = ParametrizedLocator('./button[normalize-space(.)={@label|quote}]')
-    EXPANDED_CLASS_NAME = 'pf-m-expanded'
-
-    @property
-    def is_expanded(self):
-        return self.EXPANDED_CLASS_NAME in self.browser.classes(self.ROOT)
-
-    def expand(self):
-        if not self.is_expanded:
-            self.browser.click(self.TOGGLE_BUTTON)
-
-    def collapse(self):
-        if self.is_expanded:
-            self.browser.click(self.TOGGLE_BUTTON)
+    BUTTON_LOCATOR = ParametrizedLocator('.//button[normalize-space(.)={@label|quote}]')
+    label = 'You need to set this `label` attribute yourself!'
 
     def read(self):
         self.expand()
 
 
-class PF4DataList(Widget):
-    """Widget for PatternFly 4 Data list: https://pf4.patternfly.org/components/data-list"""
+class PF5DataList(Widget):
+    """Widget for PatternFly 5 Data list: https://pf5.patternfly.org/components/data-list"""
 
-    ROOT = './/ul[contains(@class, "pf-c-data-list")]'
-    ITEMS = './li//div[contains(@class, "pf-c-data-list__item-content")]/div[1]'
-    VALUES = './li//div[contains(@class, "pf-c-data-list__item-content")]/div[2]'
+    ROOT = './/ul[contains(@class, "-c-data-list")]'
+    ITEMS = './li//div[contains(@class, "-c-data-list__item-content")]/div[1]'
+    VALUES = './li//div[contains(@class, "-c-data-list__item-content")]/div[2]'
 
     def read(self):
         items = [self.browser.text(item) for item in self.browser.elements(self.ITEMS)]
