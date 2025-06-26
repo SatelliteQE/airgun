@@ -2,7 +2,12 @@ from widgetastic.widget import Checkbox, Select, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import BaseLoggedInView, SatTable, SearchableViewMixinPF4
-from airgun.widgets import CustomParameter, FilteredDropdown, SatSelect
+from airgun.widgets import (
+    CustomParameter,
+    FilteredDropdown,
+    Pf5ConfirmationDialog,
+    SatSelect,
+)
 
 
 class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -10,13 +15,14 @@ class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixinPF4):
 
     title = Text("//h1[contains(normalize-space(.),'Ansible Variables')]")
     new_variable = Text("//a[contains(@href, '/ansible/ansible_variables/new')]")
-    total_variables = Text("//span[@class='pf-c-options-menu__toggle-text']//b[2]")
+    total_variables = Text("//span[@class='pf5-c-options-menu__toggle-text']//b[2]")
     table = SatTable(
         './/table',
         column_widgets={
             'Actions': Text(".//a[@data-method='delete']"),
         },
     )
+    dialog = Pf5ConfirmationDialog()
 
     @property
     def is_displayed(self):
