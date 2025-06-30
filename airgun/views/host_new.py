@@ -359,8 +359,11 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Status': Text('./span'),
                     'Installed version': Text('./parent::td'),
                     'Upgradable to': Text('./span'),
-                    5: Dropdown(locator='.//div[button(@aria-label="Kebab toggle")]'),
+                    5: PF5Button(locator='./button'),
                 },
+            )
+            package_action = PF5Menu(
+                locator='.//td[contains(@class, "pf-v5-c-table__action")]/div[contains(@class, "pf-v5-c-menu")]/div'
             )
             pagination = PF4Pagination()
 
@@ -370,7 +373,9 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@id="errata-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-            searchbar = SearchInput(locator='.//input[contains(@class, "pf-c-text-input")]')
+            searchbar = SearchInput(
+                locator='.//input[contains(@class, "pf-v5-c-text-input-group__text-input")]'
+            )
             type_filter = Select(locator='.//div[@aria-label="select Type container"]/div')
             severity_filter = Select(locator='.//div[@aria-label="select Severity container"]/div')
             apply = Pf4ActionsDropdown(locator='.//div[@aria-label="errata_dropdown"]')
@@ -386,8 +391,11 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Installable': Text('./span'),
                     'Synopsis': Text('./span'),
                     'Published date': Text('./span/span'),
-                    8: Dropdown(locator='.//div[button(@aria-label="Kebab toggle")]'),
+                    8: PF5Button(locator='./button'),
                 },
+            )
+            erratum_action = PF5Menu(
+                locator='.//td[contains(@class, "pf-v5-c-table__action")]/div[contains(@class, "pf-v5-c-menu")]/div'
             )
             pagination = PF4Pagination(
                 "//div[@class = 'pf-c-pagination pf-m-bottom tfm-pagination']"
@@ -416,8 +424,11 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Stream': Text('./parent::td'),
                     'Installation status': Text('.//small'),
                     'Installed profile': Text('./parent::td'),
-                    5: Dropdown(locator='.//div[button(@aria-label="Kebab toggle")]'),
+                    5: PF5Button(locator='./button'),
                 },
+            )
+            module_stream_action = PF5Menu(
+                locator='.//td[contains(@class, "pf-v5-c-table__action")]/div[contains(@class, "pf-v5-c-menu")]/div'
             )
             pagination = PF4Pagination()
 
