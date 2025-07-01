@@ -521,7 +521,7 @@ class AllHostsEntity(BaseEntity):
         """
         Navigate to the Disassociate hosts modal for selected hosts and disassociate them.
 
-        :param hosts_to_disassociate: List of host names to disassociate.
+        :param host_names: List of host names to disassociate.
         :param select_all_hosts: If True, all hosts will be selected for disassociation.
         """
 
