@@ -591,7 +591,8 @@ class ManageRepositorySetsModal(PF5Modal):
 class DisassociateHostsModal(PF5Modal):
     """
     This class represents the Disassociate Hosts modal
-    that is used to disassociate hosts from a repository set.
+    which is used to disassociate hosts from their UUID
+    and compute_resource_id associations.
     """
 
     OUIA_ID = 'bulk-disassociate-modal'
