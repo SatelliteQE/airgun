@@ -58,7 +58,7 @@ class ComputeResourceEntity(BaseEntity):
         """Returns all the VMs on the CR or VM with specified name"""
         view = self.navigate_to(self, 'Detail', entity_name=entity_name)
         if expected_vm_name:
-            view.virtual_machines.search(expected_vm_name)
+            view.virtual_machines.search.fill(expected_vm_name)
             return view.virtual_machines.table.row(name=expected_vm_name)
         return view.virtual_machines.table.rows()
 
@@ -71,7 +71,8 @@ class ComputeResourceEntity(BaseEntity):
         :return: The Compute resource virtual machines table rows values.
         """
         view = self.navigate_to(self, 'Detail', entity_name=entity_name)
-        return view.virtual_machines.search(value)
+        view.virtual_machines.search.fill(value)
+        return view.virtual_machines.table.read()
 
     def vm_status(self, entity_name, vm_name):
         """Returns True if the machine is running, False otherwise"""
@@ -267,7 +268,7 @@ class ComputeResourceVMImport(NavigateStep):
 
     def step(self, *args, **kwargs):
         vm_name = kwargs.get('vm_name')
-        self.parent.virtual_machines.search(vm_name)
+        self.parent.virtual_machines.search.fill(vm_name)
         self.parent.virtual_machines.actions.fill("Import as managed Host")
 
 
