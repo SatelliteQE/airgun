@@ -69,7 +69,7 @@ class Card(View):
     title = Text('.//div[@class="pf-v5-c-card__title"]')
 
 
-class DropdownWithDescripton(PF5Dropdown):
+class DropdownWithDescription(PF5Dropdown):
     """Dropdown with description below items"""
 
     ITEM_LOCATOR = ".//*[contains(@class, 'pf-v5-c-dropdown__menu-item') and contains(text(), {})]"
