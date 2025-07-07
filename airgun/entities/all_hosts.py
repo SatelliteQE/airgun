@@ -525,18 +525,15 @@ class AllHostsEntity(BaseEntity):
         :param select_all_hosts: If True, all hosts will be selected for disassociation.
         """
 
-        # Check validity of user input
         if select_all_hosts and host_names:
             raise ValueError('Cannot select all and specify host names at the same time!')
-        # Navigate to All Hosts
+
         view = self.navigate_to(self, 'All')
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
 
-        # Select all hosts from the table
         if select_all_hosts:
             view.select_all.fill(True)
-        # Select user-specified hosts
         else:
             if not isinstance(host_names, list):
                 host_names = [host_names]
