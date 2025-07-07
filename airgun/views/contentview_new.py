@@ -227,6 +227,7 @@ class ContentViewVersionPublishView(BaseLoggedInView):
     close_button = Button('Close')
     progressbar = PF5ProgressBar()
     lce_selector = ParametrizedView.nested(PF5LCECheckSelectorGroup)
+    close = Button('Close')
 
     @property
     def is_displayed(self):
