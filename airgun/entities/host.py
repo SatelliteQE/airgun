@@ -113,6 +113,12 @@ class HostEntity(BaseEntity):
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        wait_for(
+            lambda: view.flash.assert_message(
+                f"Success alert: Successfully deleted {entity_name}."
+            ),
+            timeout=120,
+        )
         view.flash.assert_no_error()
         view.flash.dismiss()
 
