@@ -19,7 +19,6 @@ from airgun.views.common import (
     BaseLoggedInView,
     NewAddRemoveResourcesView,
     PF5LCECheckSelectorGroup,
-    PF5LCESelectorGroup,
     SearchableViewMixinPF4,
     TableRowKebabMenu,
 )
@@ -73,6 +72,7 @@ class AddContentViewModal(BaseLoggedInView):
 class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
     title = PF5Text(component_id='cvPageHeaderText')
     create_content_view = PF5Button(component_id='create-content-view')
+    search = PF4Search()
     table = ExpandableTable(
         component_id='content-views-table',
         column_widgets={
@@ -227,6 +227,7 @@ class ContentViewVersionPublishView(BaseLoggedInView):
     close_button = Button('Close')
     progressbar = PF5ProgressBar()
     lce_selector = ParametrizedView.nested(PF5LCECheckSelectorGroup)
+    close = Button('Close')
 
     @property
     def is_displayed(self):
@@ -257,7 +258,7 @@ class ContentViewVersionPromoteView(Modal):
     ROOT = './/div[@data-ouia-component-id="promote-version"]'
 
     description = Text('.//h2[@data-ouia-component-id="description-text-value"]')
-    lce_selector = ParametrizedView.nested(PF5LCESelectorGroup)
+    lce_selector = ParametrizedView.nested(PF5LCECheckSelectorGroup)
     promote_btn = Button(locator='//button[normalize-space(.)="Promote"]')
     cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
 
