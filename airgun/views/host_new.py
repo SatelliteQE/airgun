@@ -59,7 +59,7 @@ class Card(View):
     title = Text('.//div[@class="pf-c-card__title"]')
 
 
-class DropdownWithDescripton(Dropdown):
+class DropdownWithDescription(Dropdown):
     """Dropdown with description below items"""
 
     ITEM_LOCATOR = ".//*[contains(@class, 'pf-c-dropdown__menu-item') and contains(text(), {})]"
@@ -426,7 +426,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Stream': Text('./parent::td'),
                     'Installation status': Text('.//small'),
                     'Installed profile': Text('./parent::td'),
-                    5: DropdownWithDescripton(locator='.//div[contains(@class, "pf-c-dropdown")]'),
+                    5: DropdownWithDescription(locator='.//div[contains(@class, "pf-c-dropdown")]'),
                 },
             )
             pagination = PF4Pagination()
