@@ -18,6 +18,7 @@ from widgetastic_patternfly5 import (
     Radio as PF5Radio,
 )
 from widgetastic_patternfly5.ouia import (
+    Button as PF5OUIAButton,
     PatternflyTable as PF5OUIATable,
 )
 
@@ -581,6 +582,25 @@ class ManageRepositorySetsModal(PF5Modal):
         set_content_overrides = Button(
             locator='//button[@type="submit" and @data-ouia-component-id="bulk-repo-sets-wizard-finish-button"]'
         )
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+class DisassociateHostsModal(PF5Modal):
+    """
+    This class represents the Disassociate Hosts modal
+    which is used to disassociate hosts from their UUID
+    and compute_resource_id associations.
+    """
+
+    OUIA_ID = 'bulk-disassociate-modal'
+
+    title = './/h1[@class="pf-v5-c-modal-box__title"]'
+    close_btn = PF5OUIAButton('bulk-disassociate-modal-ModalBoxCloseButton')
+    confirm_btn = PF5OUIAButton('bulk-disassociate-modal-add-button')
+    cancel_btn = PF5OUIAButton('bulk-disassociate-modal-cancel-button')
 
     @property
     def is_displayed(self):
