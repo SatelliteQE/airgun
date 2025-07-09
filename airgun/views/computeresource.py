@@ -194,6 +194,7 @@ class ResourceProviderDetailView(BaseLoggedInView):
                 'Power': Text('.//span[contains(@class,"label")]'),
             },
         )
+        search = TextInput(locator=".//input[contains(@aria-controls, 'DataTables_Table')]")
 
     @View.nested
     class compute_profiles(SatTab):
