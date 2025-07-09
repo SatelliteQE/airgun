@@ -322,7 +322,7 @@ class ManagePackagesModal(PF5Modal):
         locator_prefix = './/div[contains(.,"Review hosts")]/descendant::'
 
         expander = Text('.//button[contains(.,"Review hosts")]')
-        content_text = Text('.//div[@class="pf-v5-c-content"]')
+        content_text = Text('.//p[@data-ouia-component-id="mpw-step-3-content"]')
         error_message = OUIAAlert('no-hosts-alert')
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')

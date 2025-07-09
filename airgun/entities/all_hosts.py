@@ -516,6 +516,42 @@ class AllHostsEntity(BaseEntity):
             raise Exception("Repository count not matches")
         view.review.set_content_overrides.click()
 
+    def get_package_and_errata_wizard_review_hosts_text(
+        self,
+    ):
+        """Return the text from both the manage packages and manage errata modals review hosts step"""
+        # Navigate to All Hosts
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        view.select_all.fill(True)
+
+        # Get text from Manage Packages -> Review Hosts
+        view.bulk_actions_kebab.click()
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
+        view.bulk_actions_manage_content_menu.item_select('Packages')
+
+        view = ManagePackagesModal(self.browser)
+        view.select_action.upgrade_all_packages_radio.fill(True)
+        manage_package_text = view.review_hosts.content_text.read()
+        view.cancel_btn.click()
+
+        # Get text from Manage Errata -> Review Hosts
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        view.select_all.fill(True)
+
+        # Get text from Manage Packages -> Review Hosts
+        view.bulk_actions_kebab.click()
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
+        view.bulk_actions_manage_content_menu.item_select('Errata')
+
+        view = ManageErrataModal(self.browser)
+        view.next_btn.click()
+        manage_errata_text = view.review_hosts.content_text.read()
+        return [manage_package_text, manage_errata_text]
+
 
 @navigator.register(AllHostsEntity, 'All')
 class ShowAllHostsScreen(NavigateStep):
