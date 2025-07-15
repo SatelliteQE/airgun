@@ -279,7 +279,7 @@ class NewContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.wait_displayed()
         view.versions.search(version)
-        return view.versions.table.row(version=version).read()
+        return view.versions.table.row().read()
 
     def update(self, entity_name, values):
         """Update existing content view"""
