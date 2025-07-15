@@ -21,9 +21,9 @@ class DataCollectionMenu(Menu):
 
 
 class InventoryTab(Tab):
-    """Insights Inventory Upload Tab element.
+    """Red Hat Lightspeed Inventory Upload Tab element.
 
-    This is lightweight subclass needed because Insights Inventory Upload
+    This is lightweight subclass needed because Red Hat Lightspeed Inventory Upload
     tabs contain icons, and widgetastic_patternfly Tab looks for exact match.
     """
 
@@ -38,7 +38,7 @@ class InventoryTab(Tab):
 
 
 class InventoryItemsView(Accordion):
-    """Item related to one organization on Insights Inventory Upload page."""
+    """Item related to one organization on Red Hat Lightspeed Inventory Upload page."""
 
     ROOT = './/dl[contains(@class, "pf-v5-c-accordion account-list")]'
     DESCRIPTION_LOCATOR = (
@@ -116,7 +116,7 @@ class InventoryItemsView(Accordion):
 
 
 class CloudInventoryListView(BaseLoggedInView):
-    """Main Insights Inventory Upload view."""
+    """Main Red Hat Lightspeed Inventory Upload view."""
 
     title = Text('//h1[normalize-space(.)="Red Hat Inventory"]')
     auto_update = Switch('.//label[@for="rh-cloud-switcher-allow_auto_inventory_upload"]')
