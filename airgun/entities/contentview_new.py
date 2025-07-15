@@ -262,19 +262,24 @@ class NewContentViewEntity(BaseEntity):
                 return True
         return 'No error was found, metadata unexpectedly was able to be published.'
 
-    def promote(self, entity_name, version_name, lce_name):
+    def promote(self, entity_name, version, lce_name, err_message=''):
         """Promotes the selected version of content view to given environment.
         :return: dict with new content view version table row; contains keys
         like 'Version', 'Status', 'Environments' etc.
         """
-        view = self.navigate_to(self, 'Promote', entity_name=entity_name, version_name=version_name)
+        view = self.navigate_to(self, 'Promote', entity_name=entity_name, version=version)
         modal = ContentViewVersionPromoteView(self.browser)
         if modal.is_displayed:
-            modal.lce.fill({lce_name: True})
+            modal.lce_selector.fill({lce_name: True})
             modal.promote_btn.click()
+            if err_message:
+                view.flash.wait_displayed()
+                message = view.flash.read()
+                return message
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.versions.search(version_name)
-        return view.versions.table.row(version=version_name).read()
+        view.wait_displayed()
+        view.versions.search(version)
+        return view.versions.table.row(version=version).read()
 
     def update(self, entity_name, values):
         """Update existing content view"""
@@ -326,12 +331,12 @@ class EditContentView(NavigateStep):
 
     VIEW = ContentViewEditView
 
-    def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+    prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
-        self.parent.search(entity_name)
+        self.parent.search.search(entity_name)
+        self.parent.table.wait_displayed()
         self.parent.table.row(name=entity_name)['Name'].widget.click()
 
 
@@ -349,6 +354,7 @@ class ShowContentViewVersionDetails(NavigateStep):
         self.parent.versions.wait_displayed()
         self.parent.versions.search(version)
         self.parent.versions.table.wait_displayed()
+        self.parent.versions.search(version).click()
         self.parent.versions.table.row(version=version)['Version'].widget.click()
 
 
@@ -385,8 +391,8 @@ class PromoteContentViewVersion(NavigateStep):
         return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
 
     def step(self, *args, **kwargs):
-        version_name = kwargs.get('version_name')
+        version = kwargs.get('version')
         self.parent.versions.wait_displayed()
-        self.parent.versions.search(version_name)
-        self.parent.version.table.wait_displayed()
+        self.parent.versions.search(version)
+        self.parent.versions.table.wait_displayed()
         self.parent.versions.table[0][7].widget.item_select('Promote')
