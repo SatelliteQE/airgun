@@ -34,7 +34,7 @@ LOCATION_NUM = 3
 
 
 class ContentViewAddResourcesView(NewAddRemoveResourcesView):
-    remove_button = PF5Dropdown(component_id='cv-components-bulk-actions')
+    remove_button = PF5Dropdown('cv-components-bulk-actions')
     add_button = PF5Button(component_id='add-content-views')
     table = PatternflyTable(
         component_id='content-view-components-table',
@@ -118,7 +118,7 @@ class ContentViewEditView(BaseLoggedInView):
     search = PF4Search()
     dialog = ConfirmationDialog()
     publish = PF5Button(component_id='cv-details-publish-button')
-    cv_actions = PF5Dropdown(component_id='cv-details-actions')
+    cv_actions = PF5Dropdown('cv-details-actions')
 
     # buttons for wizard: deleting a CV with Version promoted to environment(s)
     next_button = Button('Next')
@@ -266,7 +266,7 @@ class ContentViewVersionPromoteView(Modal):
 class ContentViewVersionDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     version = Text(locator='.//h2[@data-ouia-component-id="cv-version"]')
-    version_dropdown = PF5Dropdown(component_id='cv-version-header-actions-dropdown')
+    version_dropdown = PF5Dropdown('cv-version-header-actions-dropdown')
     promoteButton = PF5Button(component_id='cv-details-publish-button')
     editDescription = PF5Button(component_id='edit-button-description')
     # buttons for wizard: deleting a version promoted to environment(s)
@@ -405,9 +405,7 @@ class EditFilterView(View):
 
     # Package Group Rule
     addPackageGroupRule = PF5Button(component_id='add-package-group-filter-rule-button')
-    removePackageGroupRule = PF5Dropdown(
-        component_id='cv-package-group-filter-bulk-actions-dropdown'
-    )
+    removePackageGroupRule = PF5Dropdown('cv-package-group-filter-bulk-actions-dropdown')
     packageGroupRuleTable = PatternflyTable(
         component_id="content-view-package-group-filter-table",
         column_widgets={
@@ -423,7 +421,7 @@ class EditFilterView(View):
 
     # Module Streams Rule
     addModuleStreamRule = PF5Button(component_id='add-module-stream-rule-button')
-    removeModuleStreamRule = PF5Dropdown(component_id='bulk-actions-dropdown')
+    removeModuleStreamRule = PF5Dropdown('bulk-actions-dropdown')
     moduleStreamRuleTable = PatternflyTable(
         component_id="content-view-module-stream-filter-table",
         column_widgets={
@@ -439,7 +437,7 @@ class EditFilterView(View):
 
     # Errata Rule
     addErrataRule = PF5Button(component_id='add-errata-id-button')
-    removeErratRule = PF5Dropdown(component_id='cv-errata-id-bulk-action-dropdown')
+    removeErratRule = PF5Dropdown('cv-errata-id-bulk-action-dropdown')
     moduleErrataTable = PatternflyTable(
         component_id="content-view-errata-by-id-filter-table",
         column_widgets={
