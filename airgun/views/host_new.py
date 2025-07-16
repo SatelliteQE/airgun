@@ -42,6 +42,24 @@ from airgun.widgets import (
 )
 
 
+class MenuToggleButtonMenu(PF5Dropdown):
+    """
+    This class is PF5 implementation of a PF5 MenuToggle which is implemented like Button->Dropdown
+    i.e. the kebab menu in the host/content/packages table
+    """
+
+    IS_ALWAYS_OPEN = False
+    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-v5-c-menu-toggle')]"
+    DEFAULT_LOCATOR = (
+        './/button[contains(@class, "pf-v5-c-menu-toggle") and @aria-label="Kebab toggle"]'
+    )
+    ROOT = f"{BUTTON_LOCATOR}/.."
+    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
+    ITEM_LOCATOR = (
+        "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
+    )
+
+
 class RemediationView(View):
     """Remediation window view"""
 
@@ -349,8 +367,11 @@ class NewHostDetailsView(BaseLoggedInView):
             status_filter = Dropdown(locator='.//div[@aria-label="select Status container"]/div')
             upgrade = Pf4ActionsDropdown(locator='.//div[div/button[normalize-space(.)="Upgrade"]]')
             dropdown = PF5Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
+            no_matching_packages = Text(
+                './/h2[contains(@class, "pf-v5-c-empty-state__title-text")]'
+            )
 
-            table = PatternflyTable(
+            table = PF5OUIATable(
                 component_id="host-packages-table",
                 column_widgets={
                     0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -358,7 +379,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Status': Text('./span'),
                     'Installed version': Text('./parent::td'),
                     'Upgradable to': Text('./span'),
-                    5: Dropdown(locator='.//div[button(@aria-label="Kebab toggle")]'),
+                    5: MenuToggleButtonMenu(locator='.//button[@aria-label="Kebab toggle"]'),
                 },
             )
             pagination = PF4Pagination()
