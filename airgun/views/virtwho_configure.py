@@ -158,7 +158,7 @@ class VirtwhoConfigureCreateView(BaseLoggedInView):
     submit = Text('//input[@name="commit"]')
 
     @hypervisor_content.register(
-        lambda hypervisor_type: hypervisor_type.endswith(('(esx)', '(rhevm)', '(hyperv)', '(xen)'))
+        lambda hypervisor_type: hypervisor_type.endswith(('(esx)', '(hyperv)', '(xen)'))
     )
     class HypervisorForm(View):
         server = TextInput(id='foreman_virt_who_configure_config_hypervisor_server')

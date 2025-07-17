@@ -1,6 +1,6 @@
 from widgetastic.widget import Checkbox, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button as PF4Button
+from widgetastic_patternfly5 import Button as PF5Button
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
 from airgun.widgets import (
@@ -15,7 +15,7 @@ class DiscoveryRulesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Discovery Rules']")
     page_info = Text("//foreman-react-component[contains(@name, 'DiscoveryRules')]/div/div")
     new = Text("//a[contains(@href, '/discovery_rules/new')]")
-    new_on_blank_page = PF4Button('Create Rule')
+    new_on_blank_page = PF5Button('Create Rule')
     table = Table(
         './/table',
         column_widgets={

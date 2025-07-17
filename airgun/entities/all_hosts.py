@@ -12,6 +12,7 @@ from airgun.views.all_hosts import (
     AllHostsTableView,
     BuildManagementDialog,
     BulkHostDeleteDialog,
+    DisassociateHostsModal,
     HostDeleteDialog,
     HostgroupDialog,
     ManageCVEModal,
@@ -551,6 +552,36 @@ class AllHostsEntity(BaseEntity):
         view.next_btn.click()
         manage_errata_text = view.review_hosts.content_text.read()
         return [manage_package_text, manage_errata_text]
+      
+    def disassociate_hosts(self, host_names, select_all_hosts=False):
+        """
+        Navigate to the Disassociate hosts modal for selected hosts and disassociate them.
+
+        :param host_names: List of host names to disassociate.
+        :param select_all_hosts: If True, all hosts will be selected for disassociation.
+        """
+
+        if select_all_hosts and host_names:
+            raise ValueError('Cannot select all and specify host names at the same time!')
+
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+
+        if select_all_hosts:
+            view.select_all.fill(True)
+        else:
+            if not isinstance(host_names, list):
+                host_names = [host_names]
+            for host_name in host_names:
+                view.search(host_name)
+                view.table[0][0].widget.fill(True)
+
+        view.bulk_actions_kebab.click()
+        view.bulk_actions_menu.item_select('Disassociate hosts')
+
+        view = DisassociateHostsModal(self.browser)
+        view.confirm_btn.click()
 
 
 @navigator.register(AllHostsEntity, 'All')

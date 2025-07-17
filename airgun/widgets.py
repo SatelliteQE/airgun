@@ -26,19 +26,22 @@ from widgetastic_patternfly import (
     Kebab,
     VerticalNavigation,
 )
-from widgetastic_patternfly4 import (
-    Pagination as PF4Pagination,
-)
+from widgetastic_patternfly4 import Pagination as PF4Pagination
 from widgetastic_patternfly4.ouia import (
     Button as OUIAButton,
-    Menu,
 )
 from widgetastic_patternfly4.table import BaseExpandableTable, BasePatternflyTable
-from widgetastic_patternfly5 import Progress as PF5Progress
+from widgetastic_patternfly5 import (
+    Button as PF5Button,
+    ExpandableSection as PF5ExpandableSection,
+    Progress as PF5Progress,
+)
 from widgetastic_patternfly5.ouia import (
     BaseSelect as PF5BaseSelect,
     Button as PF5OUIAButton,
     Dropdown as PF5Dropdown,
+    Menu as PF5Menu,
+    OUIAGenericWidget,
 )
 
 from airgun.exceptions import DisabledWidgetError, ReadOnlyWidgetError
@@ -512,8 +515,8 @@ class MultiSelectNoFilter(MultiSelect):
     they will be stored in a list. Unassigned items contains the list which compare with the values,
     if value is present it will assign the value or vise-versa."""
 
-    more_item = Text('//span[@class="pf-c-options-menu__toggle-button-icon"]')
-    select_pages = Text('//ul[@class="pf-c-options-menu__menu"]/li[6]/button')
+    more_item = Text('//span[@class="pf-v5-c-menu-toggle__toggle-icon"]')
+    select_pages = Text('//ul[@class="pf-v5-c-menu__list"]/li[6]/button')
     available_role_template = '//div[@class="available-roles-container col-sm-6"]/div[2]/div'
     assigned_role_template = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
 
@@ -771,14 +774,14 @@ class Pf4ActionsDropdown(ActionsDropdown):
     """
 
     button = Text(
-        './/button[contains(@class,"pf-c-dropdown__toggle-button")'
-        'and not(@data-ouia-component-type="PF4/DropdownToggle")]'
+        './/button[contains(@class,"pf-v5-c-dropdown__toggle-button")'
+        'and not(@data-ouia-component-type="PF5/DropdownToggle")]'
     )
     dropdown = Text(
-        './/button[contains(@class,"pf-c-dropdown__toggle-button")'
-        'and @data-ouia-component-type="PF4/DropdownToggle"]'
+        './/button[contains(@class,"pf-v5-c-dropdown__toggle-button")'
+        'and @data-ouia-component-type="PF5/DropdownToggle"]'
     )
-    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-c-dropdown__menu')]/li"
+    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-dropdown__menu')]/li"
     ITEM_LOCATOR = ".//ul/li[@role='menuitem' and contains(normalize-space(.), '{}')]"
 
     @property
@@ -816,17 +819,9 @@ class Search(Widget):
         'or contains(@class, "dataTables_filter") or @id="search-bar"]'
     )
     search_field = TextInput(
-        locator=(
-            ".//input[@id='search' or contains(@placeholder, 'Filter') or "
-            "@ng-model='table.searchTerm' or contains(@ng-model, 'Filter') or "
-            "@data-autocomplete-id='searchBar' or contains(@placeholder, 'Search') "
-            "or contains(@class, 'search-input')]"
-        )
+        locator=("//div[@class='title_filter']//input[contains(@aria-label, 'Search input')]")
     )
-    search_button = Text(
-        ".//button[contains(@id, 'btn-search') or contains(@type,'submit') or "
-        "contains(@class, 'search-btn') or @ng-click='table.search(table.searchTerm)']"
-    )
+    search_button = PF5Button(locator=(".//button[@aria-label='Search']"))
     clear_button = Text(
         ".//span[contains(@class,'autocomplete-clear-button') or contains(@class,'fa-close')]"
     )
@@ -888,8 +883,8 @@ class PF4Search(Search):
             self.search_button.click()
 
 
-class PF4NavSearchMenu(Menu):
-    """PF4 vertical navigation dropdown menu with search results."""
+class PF5NavSearchMenu(PF5Menu, OUIAGenericWidget):
+    """PF5 vertical navigation dropdown menu with search results."""
 
     @property
     def items(self):
@@ -901,14 +896,14 @@ class PF4NavSearchMenu(Menu):
         return [self.browser.text(el) for el in self.items]
 
 
-class PF4NavSearch(PF4Search):
-    """PF4 vertical navigation menu search"""
+class PF5NavSearch(PF4Search):
+    """PF5 vertical navigation menu search."""
 
     ROOT = '//div[@id="navigation-search"]'
-    search_field = TextInput(locator=(".//input[@aria-label='Search input']"))
-    search_button = PF5OUIAButton(locator=(".//button[@aria-label='Search']"))
-    clear_button = PF5OUIAButton(locator=(".//button[@aria-label='Reset']"))
-    items = PF4NavSearchMenu("navigation-search-menu")
+    search_field = TextInput(locator=".//input[@aria-label='Search input']")
+    search_button = PF5Button(locator=".//button[@aria-label='Search']")
+    clear_button = PF5Button(locator=".//button[@aria-label='Reset']")
+    items = PF5NavSearchMenu(component_id="navigation-search-menu")
     results_timeout = search_clear_timeout = 2
 
     def _wait_for_results(self, results_widget):
@@ -2878,17 +2873,15 @@ class EditModal(View):
 class DualListSelector(EditModal):
     """Class representing the Dual List Selector in a modal."""
 
-    from widgetastic_patternfly5 import Button
-
     available_options_search = SearchInput(locator='.//input[@aria-label="Available search input"]')
     available_options_list = ItemsList(
         locator='.//ul[contains(@aria-labelledby, "selector-available-pane-status")]'
     )
 
-    add_selected = Button(locator='.//button[@aria-label="Add selected"]')
-    add_all = Button(locator='.//button[@aria-label="Add all"]')
-    remove_all = Button(locator='.//button[@aria-label="Remove all"]')
-    remove_selected = Button(locator='.//button[@aria-label="Remove selected"]')
+    add_selected = PF5Button(locator='.//button[@aria-label="Add selected"]')
+    add_all = PF5Button(locator='.//button[@aria-label="Add all"]')
+    remove_all = PF5Button(locator='.//button[@aria-label="Remove all"]')
+    remove_selected = PF5Button(locator='.//button[@aria-label="Remove selected"]')
 
     chosen_options_search = SearchInput(locator='.//input[@aria-label="Chosen search input"]')
     chosen_options_list = ItemsList(
@@ -2927,35 +2920,29 @@ class SatExpandableTable(BaseExpandableTable, SatPatternflyTable):
     pass
 
 
-class ExpandableSection(Widget):
+class PF5LabeledExpandableSection(PF5ExpandableSection):
+    """PF5 Expandable section (https://pf5.patternfly.org/components/expandable-section/)
+    with a labeled button as the section expand/collapse toggle.
+
+    Note: You need to set the `label` attribute yourself in your inherited class!
+    """
+
     ROOT = ParametrizedLocator(
-        '//div[contains(@class, "pf-c-expandable-section")]/button[normalize-space(.)={@label|quote}]/..'
+        '//div[contains(@class, "-c-expandable-section")]/button[normalize-space(.)={@label|quote}]/..'
     )
-    TOGGLE_BUTTON = ParametrizedLocator('./button[normalize-space(.)={@label|quote}]')
-    EXPANDED_CLASS_NAME = 'pf-m-expanded'
-
-    @property
-    def is_expanded(self):
-        return self.EXPANDED_CLASS_NAME in self.browser.classes(self.ROOT)
-
-    def expand(self):
-        if not self.is_expanded:
-            self.browser.click(self.TOGGLE_BUTTON)
-
-    def collapse(self):
-        if self.is_expanded:
-            self.browser.click(self.TOGGLE_BUTTON)
+    BUTTON_LOCATOR = ParametrizedLocator('.//button[normalize-space(.)={@label|quote}]')
+    label = 'You need to set this `label` attribute yourself!'
 
     def read(self):
         self.expand()
 
 
-class PF4DataList(Widget):
-    """Widget for PatternFly 4 Data list: https://pf4.patternfly.org/components/data-list"""
+class PF5DataList(Widget):
+    """Widget for PatternFly 5 Data list: https://pf5.patternfly.org/components/data-list"""
 
-    ROOT = './/ul[contains(@class, "pf-c-data-list")]'
-    ITEMS = './li//div[contains(@class, "pf-c-data-list__item-content")]/div[1]'
-    VALUES = './li//div[contains(@class, "pf-c-data-list__item-content")]/div[2]'
+    ROOT = './/ul[contains(@class, "-c-data-list")]'
+    ITEMS = './li//div[contains(@class, "-c-data-list__item-content")]/div[1]'
+    VALUES = './li//div[contains(@class, "-c-data-list__item-content")]/div[2]'
 
     def read(self):
         items = [self.browser.text(item) for item in self.browser.elements(self.ITEMS)]

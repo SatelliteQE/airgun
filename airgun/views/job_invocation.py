@@ -1,18 +1,17 @@
 from wait_for import wait_for
 from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button, DescriptionList
-from widgetastic_patternfly4.donutchart import DonutCircle, DonutLegend
-from widgetastic_patternfly4.ouia import (
-    Dropdown as OUIADropdown,
-    Text as OUIAText,
-)
+from widgetastic_patternfly4 import Button
 from widgetastic_patternfly5 import (
     ChipGroup as PF5ChipGroup,
+    DescriptionList,
     Radio as PF5Radio,
 )
+from widgetastic_patternfly5.charts.donut_chart import DonutCircle, DonutLegend
 from widgetastic_patternfly5.ouia import (
+    Dropdown as PF5OUIADropdown,
     Select as PF5OUIASelect,
+    Text as PF5OUIAText,
     TextInput as PF5OUIATextInput,
 )
 
@@ -23,7 +22,7 @@ from airgun.views.common import (
     SearchableViewMixin,
     WizardStepView,
 )
-from airgun.widgets import ActionsDropdown, ExpandableSection, PF4DataList
+from airgun.widgets import ActionsDropdown, PF5DataList, PF5LabeledExpandableSection
 
 
 class JobInvocationsView(BaseLoggedInView, SearchableViewMixin):
@@ -229,9 +228,9 @@ class JobInvocationStatusView(BaseLoggedInView):
 
 class NewJobInvocationStatusView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    title = OUIAText('breadcrumb_title')
+    title = PF5OUIAText(component_id='breadcrumb_title')
     create_report = Button(value='Create report')
-    actions = OUIADropdown('job-invocation-global-actions-dropdown')
+    actions = PF5OUIADropdown(component_id='job-invocation-global-actions-dropdown')
     BREADCRUMB_LENGTH = 2
 
     @property
@@ -290,18 +289,18 @@ class NewJobInvocationStatusView(BaseLoggedInView):
             return {key.replace(':', ''): val for key, val in super().read().items()}
 
     @View.nested
-    class target_hosts(ExpandableSection):
+    class target_hosts(PF5LabeledExpandableSection):
         label = 'Target Hosts'
-        search_query = Text('./div[contains(@class, "pf-c-expandable-section__content")]/pre')
-        data = PF4DataList()
+        search_query = Text('./div[contains(@class, "-c-expandable-section__content")]/pre')
+        data = PF5DataList()
 
         def read(self):
             return {'search_query': self.search_query.read(), 'data': self.data.read()}
 
     @View.nested
-    class user_inputs(ExpandableSection):
+    class user_inputs(PF5LabeledExpandableSection):
         label = 'User Inputs'
-        data = PF4DataList()
+        data = PF5DataList()
 
         def read(self):
             return {'data': self.data.read()}

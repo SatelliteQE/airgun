@@ -1,10 +1,10 @@
 from widgetastic.widget import Checkbox, Table, Text
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import (
-    Button,
-    CompactPagination,
-    Pagination as PF4Pagination,
-    PatternflyTable,
+from widgetastic_patternfly5 import (
+    Button as PF5button,
+    CompactPagination as PF5CompactPagination,
+    Pagination as PF5Pagination,
+    PatternflyTable as PF5PatternflyTable,
 )
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
@@ -18,7 +18,7 @@ class AnsibleRolesView(BaseLoggedInView, SearchableViewMixin):
 
     title = Text("//h1[contains(normalize-space(.),'Ansible Roles')]")
     import_button = Text("//a[contains(@href, '/ansible_roles/import')]")
-    submit = Button('Submit')
+    submit = PF5button('Submit')
     total_imported_roles = Text("//span[@class='pf-c-options-menu__toggle-text']//b[2]")
     table = Table(
         './/table',
@@ -26,7 +26,7 @@ class AnsibleRolesView(BaseLoggedInView, SearchableViewMixin):
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
-    pagination = PF4Pagination()
+    pagination = PF5Pagination()
 
     @property
     def is_displayed(self):
@@ -37,20 +37,20 @@ class AnsibleRolesImportView(BaseLoggedInView):
     """View while selecting Ansible roles to import."""
 
     breadcrumb = BreadCrumb()
-    total_available_roles = Text("//span[@class='pf-c-options-menu__toggle-text']/b[2]")
+    total_available_roles = Text("//span[@class='pf-v5-c-menu-toggle__text']/b[2]")
     select_all = Checkbox(locator="//input[@id='select-all']")
-    table = PatternflyTable(
-        component_id='OUIA-Generated-Table-2',
+    table = PF5PatternflyTable(
+        component_id='ansible-roles-and-variables-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
         },
     )
-    roles = Text("//table[contains(@class, 'pf-c-table')]")
-    dropdown = Text("//button[contains(@class, 'pf-c-options-menu')]")
-    max_per_pg = Text("//ul[contains(@class, 'pf-c-options-menu')]/li[6]")
-    pagination = CompactPagination()
-    submit = Button('Submit')
-    cancel = Button('Cancel')
+    roles = Text("//table[contains(@class, 'pf-v5-c-table')]")
+    dropdown = Text("//button[contains(@class, 'pf-v5-c-menu-toggle')]")
+    max_per_pg = Text("//ul[contains(@class, 'pf-v5-c-menu__list')]/li[6]")
+    pagination = PF5CompactPagination()
+    submit = PF5button('Submit')
+    cancel = PF5button('Cancel')
 
     @property
     def is_displayed(self):

@@ -126,21 +126,6 @@ class ResourceProviderCreateView(BaseLoggedInView):
             def before_fill(self, values=None):
                 self.load_datacenters.click()
 
-    @provider_content.register('RHV')
-    class RHVProviderForm(View):
-        url = TextInput(id='compute_resource_url')
-        user = TextInput(id='compute_resource_user')
-        password = TextInput(id='compute_resource_password')
-        certification_authorities = TextInput(id='compute_resource_public_key')
-
-        @View.nested
-        class datacenter(View):
-            load_datacenters = Text("//a[contains(@id,'test_connection_button')]")
-            value = FilteredDropdown(id='compute_resource_uuid')
-
-            def before_fill(self, values=None):
-                self.load_datacenters.click()
-
     @View.nested
     class compute_resource(SatTab):
         TAB_NAME = 'Compute Resource'
@@ -209,6 +194,7 @@ class ResourceProviderDetailView(BaseLoggedInView):
                 'Power': Text('.//span[contains(@class,"label")]'),
             },
         )
+        search = TextInput(locator=".//input[contains(@aria-controls, 'DataTables_Table')]")
 
     @View.nested
     class compute_profiles(SatTab):
@@ -252,38 +238,6 @@ class ComputeResourceLibvirtProfileStorageItem(GenericRemovableWidgetItem):
     storage_type = FilteredDropdown(id="format_type")
 
 
-class ComputeResourceRHVProfileNetworkItem(GenericRemovableWidgetItem):
-    """RHV Compute Resource profile "Network interface" item widget"""
-
-    name = TextInput(locator=".//input[contains(@id, 'name')]")
-    network = FilteredDropdown(id="network")
-    interface_type = FilteredDropdown(id="interface")
-
-
-class ComputeResourceRHVProfileStorageItem(GenericRemovableWidgetItem):
-    """RHV Compute Resource profile "Storage" item widget"""
-
-    size = TextInput(locator=".//input[contains(@id, 'size_gb')]")
-    storage_domain = FilteredDropdown(id="storage_domain")
-    preallocate_disk = Checkbox(locator=".//input[contains(@id, 'preallocate')]")
-    wipe_disk_after_delete = Checkbox(locator=".//input[contains(@id, 'wipe_after_delete')]")
-    disk_interface = FilteredDropdown(id="interface")
-
-    @View.nested
-    class bootable(View):
-        ROOT = ".//input[contains(@id, 'bootable')]"
-
-        def _is_checked(self):
-            return self.browser.get_attribute('checked', self)
-
-        def read(self):
-            return self.browser.is_selected(self)
-
-        def fill(self, value):
-            if value is True and not self.browser.is_selected(self):
-                self.browser.click(self)
-
-
 class ComputeResourceVMwareProfileNetworkItem(GenericRemovableWidgetItem):
     """VMware Compute Resource Profile "Network interface" item widget"""
 
@@ -295,13 +249,13 @@ class ComputeResourceVMwareProfileControllerVolumeItem(GenericRemovableWidgetIte
     """VMware Compute Resource Profile "Storage Controller Volume" item widget"""
 
     storage_pod = FilteredDropdown(
-        locator=".//div[label[contains(., 'Storage Pod')]]//div[contains(@class, 'form-control')]"
+        locator=".//div[label[contains(., 'Storage Pod')]]//select[contains(@class, 'form-control')]"
     )
     data_store = FilteredDropdown(
-        locator=".//div[label[contains(., 'Data store')]]//div[contains(@class, 'form-control')]"
+        locator=".//div[label[contains(., 'Data store')]]//select[contains(@class, 'form-control')]"
     )
     disk_mode = FilteredDropdown(
-        locator=".//div[label[contains(., 'Disk Mode')]]//div[contains(@class, 'form-control')]"
+        locator=".//div[label[contains(., 'Disk Mode')]]//select[contains(@class, 'form-control')]"
     )
     size = TextInput(locator=".//div[label[contains(., 'Size')]]//input")
     thin_provision = Checkbox(locator=".//div[label[contains(., 'Thin provision')]]/div/input")
@@ -323,7 +277,7 @@ class ComputeResourceVMwareProfileStorageItem(GenericRemovableWidgetItem):
     """VMware  Compute Resource Profile Storage Controller item widget"""
 
     controller = FilteredDropdown(
-        locator=".//div[@class='controller-header']//div[contains(@class, 'form-control')]"
+        locator=".//div[@class='controller-header']//select[contains(@class, 'form-control')]"
     )
     remove_button = Text(".//button[contains(concat(' ', @class, ' '), ' btn-remove-controller ')]")
     disks = ComputeResourceVMwareProfileControllerVolumeList()
@@ -345,8 +299,7 @@ class ResourceProviderProfileView(BaseLoggedInView):
         Note: The provider name is always appended to the end of the compute resource name,
         for example: compute resource name "foo"
 
-        1. For RHV provider, the compute resource name will be displayed as: "foo (RHV)"
-        2. For EC2 provider, the compute resource name will be displayed as:
+        1. For EC2 provider, the compute resource name will be displayed as:
             "foo (ca-central-1-EC2)" where "ca-central-1" is the region.
         """
         compute_resource_name = self.compute_resource.read()
@@ -385,27 +338,6 @@ class ResourceProviderProfileView(BaseLoggedInView):
         network = FilteredDropdown(id='compute_attribute_vm_attrs_network')
         external_ip = Checkbox(id='compute_attribute_vm_attrs_associate_external_ip')
         default_disk_size = TextInput(id='compute_attribute_vm_attrs_volumes_attributes_0_size_gb')
-
-    @provider_content.register('RHV')
-    class RHVResourceForm(View):
-        cluster = FilteredDropdown(id='compute_attribute_vm_attrs_cluster')
-        template = FilteredDropdown(id='compute_attribute_vm_attrs_template')
-        instance_type = FilteredDropdown(id='compute_attribute_vm_attrs_instance_type')
-        cores = TextInput(id='compute_attribute_vm_attrs_cores')
-        sockets = TextInput(id='compute_attribute_vm_attrs_sockets')
-        memory = TextInput(id='compute_attribute_vm_attrs_memory')
-        highly_available = Checkbox(id='compute_attribute_vm_attrs_ha')
-
-        @View.nested
-        class network_interfaces(RemovableWidgetsItemsListView):
-            ROOT = "//fieldset[@id='network_interfaces']"
-            ITEM_WIDGET_CLASS = ComputeResourceRHVProfileNetworkItem
-
-        @View.nested
-        class storage(RemovableWidgetsItemsListView):
-            ROOT = "//fieldset[@id='storage_volumes']"
-            ITEMS = "./div/div[contains(@class, 'removable-item')]"
-            ITEM_WIDGET_CLASS = ComputeResourceRHVProfileStorageItem
 
     @provider_content.register('VMware')
     class VMwareResourceForm(View):
@@ -514,16 +446,6 @@ class ComputeResourceGenericImageEditViewMixin:
             and self.breadcrumb.locations[2] == 'Images'
             and self.breadcrumb.read().startswith('Edit ')
         )
-
-
-class ComputeResourceRHVImageCreateView(ComputeResourceGenericImageCreateView):
-    """RHV Compute resource Image create view."""
-
-
-class ComputeResourceRHVImageEditView(
-    ComputeResourceRHVImageCreateView, ComputeResourceGenericImageEditViewMixin
-):
-    """RHV Compute resource Image edit view."""
 
 
 class ComputeResourceVMwareImageCreateView(ComputeResourceGenericImageCreateView):

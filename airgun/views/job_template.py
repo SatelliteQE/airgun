@@ -53,7 +53,7 @@ class JobTemplateCreateView(BaseLoggedInView):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Job templates'
+            and self.breadcrumb.locations[0] == 'Job Templates'
             and self.breadcrumb.read() == 'New Job Template'
         )
 

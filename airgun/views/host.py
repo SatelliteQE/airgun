@@ -220,7 +220,7 @@ class HostStatusesView(BaseLoggedInView):
 
 class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
-    manage_columns = PF4Button('manage-columns-button')
+    manage_columns = PF5Button('manage-columns-button')
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text(".//div[@id='rails-app-content']//a[contains(normalize-space(.),'Create Host')]")
     register = PF4Button('OUIA-Generated-Button-secondary-2')
@@ -310,8 +310,7 @@ class HostCreateView(BaseLoggedInView):
         Note: The provider name is always appended to the end of the compute resource name,
         for example: compute resource name "foo"
 
-        1. For RHV provider, the compute resource name will be displayed as: "foo (RHV)"
-        2. For Libvirt provider, the compute resource name will be displayed as: "foo (Libvirt)"
+        1. For Libvirt provider, the compute resource name will be displayed as: "foo (Libvirt)"
 
         Return "Compute resource is not specified" value in case no compute resource specified
         in deployment procedure (e.g. "Bare Metal")
@@ -543,7 +542,9 @@ class HostRegisterView(BaseLoggedInView):
         capsule = PF5FormSelect('reg_smart_proxy')
         insecure = Checkbox(id='reg_insecure')
         activation_keys = BaseMultiSelect('activation-keys-field')
-        activation_key_helper = Text("//div[@id='activation_keys_field-helper']")
+        activation_key_helper = Text(
+            locator='//div[@data-ouia-component-id="activation-keys-field"]/..//div[contains(@class, "-c-helper-text")]'
+        )
         new_activation_key_link = Link('//a[normalize-space(.)="Create new activation key"]')
 
     @View.nested
@@ -563,7 +564,9 @@ class HostRegisterView(BaseLoggedInView):
         rex_pull_mode = PF5FormSelect('registration_setup_remote_execution_pull')
         ignore_error = Checkbox(id='reg_katello_ignore')
         force = Checkbox(id='reg_katello_force')
-        install_packages_helper = Text("//div[@id='reg_packages-helper']")
+        install_packages_helper = Text(
+            locator='//input[@id="reg_packages"]/../..//div[contains(@class, "-c-helper-text")]'
+        )
         repository_add = PF5Button('host_reg_add_more_repositories')
 
     @property

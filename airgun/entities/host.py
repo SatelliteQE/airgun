@@ -9,6 +9,7 @@ from airgun.helpers.host import HostHelper
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.cloud_insights import CloudInsightsView
+from airgun.views.common import BaseLoggedInView
 from airgun.views.host import (
     HostCreateView,
     HostDetailsView,
@@ -140,6 +141,10 @@ class HostEntity(BaseEntity):
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        wait_for(
+            lambda: view.flash.assert_message(f"Successfully deleted {entity_name}."),
+            timeout=120,
+        )
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -425,6 +430,11 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.wait_displayed()
         return view.displayed_table_header_names
+
+    def permission_denied(self):
+        """Return permission denied error text"""
+        view = BaseLoggedInView(self.browser)
+        return view.permission_denied.text
 
 
 @navigator.register(HostEntity, 'All')
