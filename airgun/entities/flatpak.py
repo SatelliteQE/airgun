@@ -1,6 +1,6 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.views.flatpak import FlatpakRemotesView
+from airgun.views.flatpak import FlatpakRemoteDetailsView, FlatpakRemotesView
 
 
 class FlatpakRemotesEntity(BaseEntity):
@@ -39,6 +39,24 @@ class FlatpakRemotesEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.wait_displayed()
         return view.table.read()
+
+    def read_remote_details(self, name, repo_search=None):
+        """
+        Read details from the Flatpak remote details page
+
+        Args:
+            name (str): Name of the flatpak remote to be read
+            repo_search (str, optional): Name of scanned remote repository to be searched
+        """
+        view = self.navigate_to(self, 'All')
+        view.wait_displayed()
+        view.search(name)
+        view.table.row(name=name)['Name'].widget.click()
+        view = FlatpakRemoteDetailsView(self.browser)
+        view.wait_displayed()
+        if repo_search:
+            view.search(repo_search)
+        return view.read()
 
     def scan(self, entity_name):
         """Scan a Flatpak remote.
