@@ -1,5 +1,3 @@
-from functools import partial
-
 from selenium.common.exceptions import ElementNotInteractableException
 from widgetastic.widget import (
     Checkbox,
@@ -15,7 +13,7 @@ from widgetastic.widget import (
 from widgetastic_patternfly import BreadCrumb, Tab, TabWithDropdown
 from widgetastic_patternfly4 import Button
 from widgetastic_patternfly4.navigation import Navigation
-from widgetastic_patternfly5 import OptionsMenu
+from widgetastic_patternfly5 import Dropdown as PF5Dropdown
 from widgetastic_patternfly5.ouia import (
     Dropdown as PF5OUIADropdown,
     PatternflyTable,
@@ -336,9 +334,11 @@ class PF5LCECheckSelectorGroup(PF5LCESelectorGroup):
 
 
 # PF5 kebab menu present in table rows
-TableRowKebabMenu = partial(
-    OptionsMenu, './/button[contains(@data-ouia-component-type, "MenuToggle")]/..'
-)
+class TableRowKebabMenu(PF5Dropdown):
+    """Dropdown for PF5 kebab menus used in table rows."""
+
+    ROOT = '.'
+    DEFAULT_LOCATOR = './/button[contains(@class, "-c-menu-toggle") and @aria-label="Kebab toggle"]'
 
 
 class PF5LCEGroup(ParametrizedLocator):
