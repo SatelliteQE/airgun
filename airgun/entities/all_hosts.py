@@ -12,7 +12,8 @@ from airgun.views.all_hosts import (
     AllHostsTableView,
     BuildManagementDialog,
     BulkHostDeleteDialog,
-    DisassociateHostsModal,
+    ChangeLocationModal,
+    ChangeOrganizationModal,
     HostDeleteDialog,
     HostgroupDialog,
     ManageCVEModal,
@@ -517,23 +518,22 @@ class AllHostsEntity(BaseEntity):
             raise Exception("Repository count not matches")
         view.review.set_content_overrides.click()
 
-    def disassociate_hosts(self, host_names, select_all_hosts=False):
-        """
-        Navigate to the Disassociate hosts modal for selected hosts and disassociate them.
+    def select_any_number_of_hosts(
+        self,
+        host_names=None,
+        select_all_hosts=False,
+    ):
+        """This helper will select all hosts or any number of hosts and return view"""
 
-        :param host_names: List of host names to disassociate.
-        :param select_all_hosts: If True, all hosts will be selected for disassociation.
-        """
-
-        if select_all_hosts and host_names:
-            raise ValueError('Cannot select all and specify host names at the same time!')
-
+        # Navigate to All Hosts
         view = self.navigate_to(self, 'All')
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
 
+        # Select all hosts from the table
         if select_all_hosts:
             view.select_all.fill(True)
+        # Select user-specified hosts
         else:
             if not isinstance(host_names, list):
                 host_names = [host_names]
@@ -541,11 +541,98 @@ class AllHostsEntity(BaseEntity):
                 view.search(host_name)
                 view.table[0][0].widget.fill(True)
 
-        view.bulk_actions_kebab.click()
-        view.bulk_actions_menu.item_select('Disassociate hosts')
+        return view
 
-        view = DisassociateHostsModal(self.browser)
-        view.confirm_btn.click()
+    def change_associations_organization(
+        self,
+        host_names=None,
+        new_organization=None,
+        select_all_hosts=False,
+        option="Fix on mismatch",
+    ):
+        """
+        Navigate to change organization modal after selecting number of hosts,
+        select desire organization, consider one of the options and apply changes.
+
+        args:
+            host_names (str or list): str with one host or list of hosts to select
+            new_organization (str): str organization name which will be selected
+            select_all_hosts (bool): select all hosts flag
+            option (str): str options either 'Fix on mismatch' or 'Fail on mismatch'
+        """
+        # Check validity of user input
+        if select_all_hosts and host_names:
+            raise ValueError('Cannot select all and specify host names at the same time!')
+
+        # if new_organization is None then raise an error
+        if new_organization is None:
+            raise ValueError('new_organization argument is None, it will not allow to Save changes')
+
+        view = self.select_any_number_of_hosts(host_names, select_all_hosts)
+
+        # Open change organization modal
+        view.bulk_actions_kebab.click()
+
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Change associations'))
+        if new_organization:
+            view.bulk_actions_change_associations_menu.item_select('Organisation')
+            view = ChangeOrganizationModal(self.browser)
+            view.organization_menu.item_select(new_organization)
+            # view.organization_menu.fill(new_organization)
+
+        if option == "Fix on mismatch":
+            view.organization_fix_on_mismatch.fill(True)
+            view.save_button.click()
+            view.success_alert_title.assert_no_error()
+
+        elif option == "Fail on mismatch":
+            view.organization_fail_on_mismatch.fill(True)
+            view.save_button.click()
+            assert "error" in view.Error_alert_title.title()
+
+    def change_associations_location(
+        self, host_names=None, new_location=None, select_all_hosts=False, option="Fix on mismatch"
+    ):
+        """
+        Navigate to change location modal after selecting number of hosts,
+        select desire location, consider one of the options and apply changes.
+
+        args:
+            host_names (str or list): str with one host or list of hosts to select
+            new_location (str): str location name which will be selected
+            select_all_hosts (bool): select all hosts flag
+            option (str): str options either 'Fix on mismatch' or 'Fail on mismatch'
+        """
+        # Check validity of user input
+        if select_all_hosts and host_names:
+            raise ValueError('Cannot select all and specify host names at the same time!')
+
+        # if new_location is None then raise an error
+        if new_location is None:
+            raise ValueError('new_location argument is None, it will not allow to Save changes')
+
+        view = self.select_any_number_of_hosts(host_names, select_all_hosts)
+
+        # Open change location modal
+        view.bulk_actions_kebab.click()
+
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Change associations'))
+
+        if new_location:
+            view.bulk_actions_change_associations_menu.item_select('Location')
+            view = ChangeLocationModal(self.browser)
+            view.location_menu.item_select(new_location)
+            # view.location_menu.fill(new_location)
+
+        if option == "Fix on mismatch":
+            view.location_fix_on_mismatch.fill(True)
+            view.save_button.click()
+            view.success_alert_title.assert_no_error()
+
+        elif option == "Fail on mismatch":
+            view.location_fail_on_mismatch.fill(True)
+            view.save_button.click()
+            assert "error" in view.Error_alert_title.title()
 
 
 @navigator.register(AllHostsEntity, 'All')

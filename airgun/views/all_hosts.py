@@ -11,14 +11,15 @@ from widgetastic_patternfly4.ouia import (
     Alert as OUIAAlert,
 )
 from widgetastic_patternfly5 import (
+    Alert as PF5Alert,
     Button as PF5Button,
     Dropdown as PF5Dropdown,
     Menu as PF5Menu,
     Modal as PF5Modal,
     Radio as PF5Radio,
+    Select as PF5Select,
 )
 from widgetastic_patternfly5.ouia import (
-    Button as PF5OUIAButton,
     PatternflyTable as PF5OUIATable,
 )
 
@@ -91,7 +92,9 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     bulk_actions_manage_content_menu = PF5Menu(
         locator='//li[contains(@class, "pf-v5-c-menu__list-item")]//button[span/span[text()="Manage content"]]/following-sibling::div[contains(@class, "pf-v5-c-menu")]'
     )
-
+    bulk_actions_change_associations_menu = PF5Menu(
+        locator='//li[contains(@class, "pf-v5-c-menu__list-item")]//button[span/span[text()="Change associations"]]/following-sibling::div[contains(@class, "pf-v5-c-menu")]'
+    )
     table_loading = Text("//h5[normalize-space(.)='Loading']")
     no_results = Text("//h5[normalize-space(.)='No Results']")
     manage_columns = PF5Button("Manage columns")
@@ -588,19 +591,78 @@ class ManageRepositorySetsModal(PF5Modal):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
-class DisassociateHostsModal(PF5Modal):
+class ChangeOrganizationModal(PF5Modal):
     """
-    This class represents the Disassociate Hosts modal
-    which is used to disassociate hosts from their UUID
-    and compute_resource_id associations.
+    This class represents 'Change organization' modal that is used to change organization
+    for one or more hosts
     """
 
-    OUIA_ID = 'bulk-disassociate-modal'
+    OUIA_ID = 'bulk-assign-taxonomy-modal'
 
-    title = './/h1[@class="pf-v5-c-modal-box__title"]'
-    close_btn = PF5OUIAButton('bulk-disassociate-modal-ModalBoxCloseButton')
-    confirm_btn = PF5OUIAButton('bulk-disassociate-modal-add-button')
-    cancel_btn = PF5OUIAButton('bulk-disassociate-modal-cancel-button')
+    # Organization section
+    organization_menu_toggle = PF5Menu(
+        locator='.//button[@data-ouia-component-id="OUIA-Generated-MenuToggle-1"]'
+    )
+    organization_menu = PF5Select(locator='.//div[@data-ouia-component-id="select-organization"]')
+
+    # Radio buttons for organization
+    organization_fix_on_mismatch = PF5Radio(id='radio-fix-on-mismatch-organization')
+    organization_fail_on_mismatch = PF5Radio(id='radio-fail-on-mismatch-organization')
+
+    # Action buttons
+    save_button = PF5Button(
+        locator='.//button[@data-ouia-component-id="bulk-assign-organization-modal-add-button"]'
+    )
+    cancel_button = PF5Button(
+        locator='.//button[@data-ouia-component-id="bulk-assign-organization-modal-cancel-button"]'
+    )
+
+    # Alert messages
+    success_alert_title = PF5Alert(
+        locator='.//div[contains(@class,"pf-v5-c-alert pf-m-success")]//following-sibling::h4[contains(@class, "-c-alert__title")]'
+    )
+    Error_alert_title = PF5Alert(
+        locator='.//div[contains(@class,"pf-v5-c-alert pf-m-danger")]//following-sibling::h4[contains(@class, "-c-alert__title")]'
+    )
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+class ChangeLocationModal(PF5Modal):
+    """
+    This class represents 'Change location' modal that is used to change location
+    for one or more hosts
+    """
+
+    OUIA_ID = 'bulk-assign-location-modal'
+
+    # Location section
+    location_menu_toggle = Button(
+        locator='.//button[@data-ouia-component-id="OUIA-Generated-MenuToggle-1"]'
+    )
+    location_menu = PF5Menu(locator='.//div[@data-ouia-component-id="select-location"]')
+
+    # Radio buttons for location
+    location_fix_on_mismatch = PF5Radio(id='radio-fix-on-mismatch-location')
+    location_fail_on_mismatch = PF5Radio(id='radio-fail-on-mismatch-location')
+
+    # Action buttons
+    save_button = PF5Button(
+        locator='.//button[@data-ouia-component-id="bulk-assign-organization-modal-add-button"]'
+    )
+    cancel_button = PF5Button(
+        locator='.//button[@data-ouia-component-id="bulk-assign-organization-modal-cancel-button"]'
+    )
+
+    # Alert messages
+    success_alert_title = PF5Alert(
+        locator='.//div[contains(@class,"pf-v5-c-alert pf-m-success")]//following-sibling::h4[contains(@class, "-c-alert__title")]'
+    )
+    Error_alert_title = PF5Alert(
+        locator='.//div[contains(@class,"pf-v5-c-alert pf-m-danger")]//following-sibling::h4[contains(@class, "-c-alert__title")]'
+    )
 
     @property
     def is_displayed(self):
