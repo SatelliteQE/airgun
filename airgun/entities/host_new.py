@@ -350,12 +350,15 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.content.packages.wait_displayed()
         view.content.packages.select()
-        view.content.packages.table.wait_displayed()
+        wait_for(lambda: view.content.packages.table.is_displayed, timeout=5)
         view.content.packages.searchbar.fill(search)
-        # wait for filter to apply
         self.browser.plugin.ensure_page_safe()
-        view.content.packages.table.wait_displayed()
-        return view.content.packages.read()
+        # Check if there is a match
+        if view.content.packages.no_matching_packages.is_displayed:
+            return None
+        else:
+            view.content.packages.table.wait_displayed()
+            return view.content.packages.table.read()
 
     def install_package(self, entity_name, package):
         """Installs package on host using the installation modal"""
@@ -369,7 +372,7 @@ class NewHostEntity(HostEntity):
         view.searchbar.fill(package)
         # wait for filter to apply
         self.browser.plugin.ensure_page_safe()
-        view.select_all.click()
+        view.table[0][0].widget.fill(True)
         view.install.click()
 
     def apply_package_action(self, entity_name, package_name, action):

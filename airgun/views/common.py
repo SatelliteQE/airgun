@@ -335,10 +335,10 @@ class PF5LCECheckSelectorGroup(PF5LCESelectorGroup):
 
 # PF5 kebab menu present in table rows
 class TableRowKebabMenu(PF5Dropdown):
-    """Dropdown that supports both PF5 dropdown and menu-toggle kebab buttons."""
+    """Dropdown for PF5 kebab menus used in table rows."""
 
     ROOT = '.'
-    TOGGLE = './/button[contains(@class, "pf-v5-c-menu-toggle") and contains(@aria-label, "Kebab toggle")]'
+    DEFAULT_LOCATOR = './/button[contains(@class, "-c-menu-toggle") and @aria-label="Kebab toggle"]'
 
 
 class PF5LCEGroup(ParametrizedLocator):
