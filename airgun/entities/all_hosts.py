@@ -479,13 +479,15 @@ class AllHostsEntity(BaseEntity):
         :param host_names: str with one host or list of hosts to select
         :param select_all_hosts: bool, if True, all hosts will be selected
 
-        :raises ValueError: if both select_all_hosts and host_names are specified
+        :raises ValueError: if both or neither select_all_hosts and host_names are specified
 
         :return: view (AllHostsTableView)
         """
 
         if select_all_hosts and host_names:
             raise ValueError('Cannot select all and specify host names at the same time!')
+        if not select_all_hosts and not host_names:
+            raise ValueError('Must specify either host_names or select_all_hosts.')
 
         view = self.navigate_to(self, 'All')
         self.browser.plugin.ensure_page_safe(timeout='5s')
@@ -578,10 +580,9 @@ class AllHostsEntity(BaseEntity):
         view.bulk_actions_kebab.click()
         self.browser.move_to_element(view.bulk_actions_menu.item_element('Change associations'))
 
-        if new_location:
-            view.bulk_actions_change_associations_menu.item_select('Location')
-            view = ChangeLocationModal(self.browser)
-            view.location_menu.item_select(new_location)
+        view.bulk_actions_change_associations_menu.item_select('Location')
+        view = ChangeLocationModal(self.browser)
+        view.location_menu.item_select(new_location)
 
         if option == "Fix on mismatch":
             view.location_fix_on_mismatch.fill(True)
