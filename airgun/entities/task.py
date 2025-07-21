@@ -55,7 +55,10 @@ class ShowAllTasks(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Monitor', 'Satellite Tasks', 'Tasks')
+        product = (
+            'Foreman' if self.view.product.is_displayed else 'Satellite'
+        )  # make it work on nightly
+        self.view.menu.select('Monitor', f'{product} Tasks', 'Tasks')
 
 
 @navigator.register(TaskEntity, 'Details')

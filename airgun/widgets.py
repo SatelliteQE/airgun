@@ -34,12 +34,13 @@ from widgetastic_patternfly4.table import BaseExpandableTable, BasePatternflyTab
 from widgetastic_patternfly5 import (
     Button as PF5Button,
     ExpandableSection as PF5ExpandableSection,
+    FormSelect,
     Progress as PF5Progress,
 )
 from widgetastic_patternfly5.ouia import (
     BaseSelect as PF5BaseSelect,
     Button as PF5OUIAButton,
-    Dropdown as PF5Dropdown,
+    Dropdown as PF5OUIADropdown,
     Menu as PF5Menu,
     OUIAGenericWidget,
 )
@@ -2685,6 +2686,34 @@ class PopOverWidget(View):
         return self.column_value.read()
 
 
+class FieldWithEditBtn(Widget):
+    """A pair of a field and a button that makes the field editable.
+    After editing, confirm by checkmark or cancel by X.
+    Is present e.g. in PF5 Settings.
+    """
+
+    ROOT = '//td[2]'
+    textinput = TextInput(locator=".//input[@data-ouia-component-type='PF5/TextInput']")
+    textarea = TextInput(locator=".//textarea")
+    dropdown = FormSelect(locator=".//select[@data-ouia-component-type='PF5/FormSelect']")
+    editBtn = PF5Button(locator=".//button[contains(@data-ouia-component-id, 'edit-row')]")
+    confirmBtn = PF5Button(locator=".//button[@data-ouia-component-id='submit-edit-btn']")
+    cancelBtn = PF5Button(locator=".//button[@data-ouia-component-id='cancel-edit-btn']")
+    text = Text(locator=".//span")
+
+    def fill(self, item):
+        self.editBtn.click()
+        for widget_name in ['textinput', 'textarea', 'dropdown']:
+            widget = getattr(self, widget_name)
+            if widget.is_displayed:
+                widget.fill(item)
+                break
+        self.confirmBtn.click()
+
+    def read(self):
+        return self.text.read()
+
+
 class AuthSourceAggregateCard(AggregateStatusCard):
     """This is a customizable card widget which has the title, count and kebab widget
 
@@ -2742,7 +2771,7 @@ class Accordion(View, ClickableMixin):
         self.browser.click(self.ITEM.format(value))
 
 
-class BaseMultiSelect(PF5BaseSelect, PF5Dropdown):
+class BaseMultiSelect(PF5BaseSelect, PF5OUIADropdown):
     """Represents the Patternfly Multi Select.
 
     https://www.patternfly.org/v4/documentation/react/components/select#multiple
