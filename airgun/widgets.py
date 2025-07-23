@@ -1046,14 +1046,15 @@ class ValidationErrors(Widget):
 
     """
 
-    ERROR_ELEMENTS = ".//*[contains(@class,'has-error') and not(contains(@style,'display:none'))]"
+    ERROR_ELEMENTS = ".//*[(contains(@class,'has-error') or (contains(@class, 'pf-m-error') and string-length(normalize-space(string())) > 0)) and not(contains(@style,'display:none'))]"
     ERROR_MESSAGES = (
         ".//*[(contains(@class, 'alert base in fade alert-danger') "
         "or contains(@class, 'alert base in fade alert-warning') "
         "or contains(@class,'error-msg') "
-        "or contains(@class,'error-msg-block')"
+        "or contains(@class,'error-msg-block') "
         "or contains(@class,'error-message') "
-        "or contains(@class,'editable-error-block')) "
+        "or contains(@class,'editable-error-block') "
+        "or contains(@class,'pf-v5-c-helper-text__item-text')) "
         "and not(contains(@style,'display:none'))]"
     )
 
@@ -1062,6 +1063,9 @@ class ValidationErrors(Widget):
         """Returns boolean value whether view has fields with invalid data or
         not.
         """
+        time.sleep(
+            1
+        )  # ensure_page_safe doesn't help here and there's nothing to wait_for because the error won't always be there
         return self.browser.elements(self.ERROR_ELEMENTS) != []
 
     @property
@@ -1070,6 +1074,12 @@ class ValidationErrors(Widget):
         fields. Example: ["can't be blank"]
         """
         error_msgs = self.browser.elements(self.ERROR_MESSAGES)
+        if len(error_msgs) > 0:
+            wait_for(
+                lambda: any(self.browser.text(error_msg) for error_msg in error_msgs),
+                timeout=10,
+                delay=1,
+            )
         return [self.browser.text(error_msg) for error_msg in error_msgs]
 
     def assert_no_errors(self):
