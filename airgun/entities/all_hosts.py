@@ -12,6 +12,9 @@ from airgun.views.all_hosts import (
     AllHostsTableView,
     BuildManagementDialog,
     BulkHostDeleteDialog,
+    ChangeHostsOwnerModal,
+    ChangeLocationModal,
+    ChangeOrganizationModal,
     DisassociateHostsModal,
     HostDeleteDialog,
     HostgroupDialog,
@@ -49,10 +52,7 @@ class AllHostsEntity(BaseEntity):
 
     def delete(self, host_name):
         """Delete host through table dropdown"""
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
-        view.search(host_name)
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names=host_name)
         view.table[0][2].widget.item_select('Delete')
         delete_modal = HostDeleteDialog(self.browser)
         if delete_modal.is_displayed:
@@ -67,10 +67,7 @@ class AllHostsEntity(BaseEntity):
 
     def bulk_delete_all(self):
         """Delete multiple hosts through bulk action dropdown"""
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
-        view.select_all.fill(True)
+        view = self.all_hosts_navigate_and_select_hosts_helper(select_all_hosts=True)
         view.bulk_actions_kebab.click()
         view.bulk_actions_menu.item_select('Delete')
         delete_modal = BulkHostDeleteDialog(self.browser)
@@ -84,10 +81,7 @@ class AllHostsEntity(BaseEntity):
 
     def build_management(self, reboot=False, rebuild=False):
         """Build or rebuild hosts through build management popup"""
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
-        view.select_all.fill(True)
+        view = self.all_hosts_navigate_and_select_hosts_helper(select_all_hosts=True)
         view.bulk_actions_kebab.click()
         view.bulk_actions_menu.item_select('Build management')
         build_management_modal = BuildManagementDialog(self.browser)
@@ -102,10 +96,7 @@ class AllHostsEntity(BaseEntity):
 
     def change_hostgroup(self, name):
         """Change hostgroup of all hosts to chosen hostgroup"""
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
-        view.select_all.fill(True)
+        view = self.all_hosts_navigate_and_select_hosts_helper(select_all_hosts=True)
         view.bulk_actions.item_select('Change host group')
         view = HostgroupDialog(self.browser)
         view.hostgroup_dropdown.item_select(name)
@@ -203,9 +194,6 @@ class AllHostsEntity(BaseEntity):
             manage_by_customized_rex (bool): manage by customized rex flag
         """
 
-        # Check validity of user input
-        if select_all_hosts and host_names:
-            raise ValueError("Cannot select all and specify host names at the same time!")
         if sum([upgrade_packages, install_packages, remove_packages]) != 1:
             raise ValueError(
                 "Only one of the options can be selected: upgrade_packages, install_packages, remove_packages!"
@@ -223,21 +211,7 @@ class AllHostsEntity(BaseEntity):
                 "Exactly one of the options must be selected: packages_to_upgrade, packages_to_install, packages_to_remove!"
             )
 
-        # Navigate to All Hosts
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
-
-        # Select all hosts from the table
-        if select_all_hosts:
-            view.select_all.fill(True)
-        # Select user-specified hosts
-        else:
-            if not isinstance(host_names, list):
-                host_names = [host_names]
-            for host_name in host_names:
-                view.search(host_name)
-                view.table[0][0].widget.fill(True)
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
 
         # Open Manage Packages modal
         view.bulk_actions_kebab.click()
@@ -345,10 +319,6 @@ class AllHostsEntity(BaseEntity):
             manage_by_customized_rex (bool): manage by customized rex flag
         """
 
-        # Check validity of user input
-        if select_all_hosts and host_names:
-            raise ValueError("Cannot select all and specify host names at the same time!")
-
         # if both erratas_to_apply_by_id and individual_search_queries are specified, raise an error
         if erratas_to_apply_by_id is not None and individual_search_queries is not None:
             raise ValueError(
@@ -359,21 +329,7 @@ class AllHostsEntity(BaseEntity):
         if erratas_to_apply_by_id is not None and not isinstance(erratas_to_apply_by_id, list):
             erratas_to_apply_by_id = [erratas_to_apply_by_id]
 
-        # Navigate to All Hosts
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
-
-        # Select all hosts from the table
-        if select_all_hosts:
-            view.select_all.fill(True)
-        # Select user-specified hosts
-        else:
-            if not isinstance(host_names, list):
-                host_names = [host_names]
-            for host_name in host_names:
-                view.search(host_name)
-                view.table[0][0].widget.fill(True)
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
 
         # Open Manage Erratas modal
         view.bulk_actions_kebab.click()
@@ -429,10 +385,6 @@ class AllHostsEntity(BaseEntity):
             individual_search_queries (list): list of string of search queries for each repo
         """
 
-        # Check validity of user input
-        if select_all_hosts and host_names:
-            raise ValueError('Cannot select all and specify host names at the same time!')
-
         # if both repository_names and individual_search_queries are specified, raise an error
         if repository_names is not None and individual_search_queries is not None:
             raise ValueError(
@@ -445,21 +397,7 @@ class AllHostsEntity(BaseEntity):
                 'Value of status_to_change should not be "No change", it will not allow to move next page'
             )
 
-        # Navigate to All Hosts
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
-
-        # Select all hosts from the table
-        if select_all_hosts:
-            view.select_all.fill(True)
-        # Select user-specified hosts
-        else:
-            if not isinstance(host_names, list):
-                host_names = [host_names]
-            for host_name in host_names:
-                view.search(host_name)
-                view.table[0][0].widget.fill(True)
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
 
         # Open Manage Repository sets modal
         view.bulk_actions_kebab.click()
@@ -525,8 +463,31 @@ class AllHostsEntity(BaseEntity):
         :param select_all_hosts: If True, all hosts will be selected for disassociation.
         """
 
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+
+        view.bulk_actions_kebab.click()
+        view.bulk_actions_menu.item_select('Disassociate hosts')
+
+        view = DisassociateHostsModal(self.browser)
+        view.confirm_btn.click()
+
+    def all_hosts_navigate_and_select_hosts_helper(self, host_names=None, select_all_hosts=False):
+        """
+        Helper function to navigate to All Hosts and select specified hosts or all hosts.
+        This function is used to avoid code duplication in methods that require host selection.
+
+        :param host_names: str with one host or list of hosts to select
+        :param select_all_hosts: bool, if True, all hosts will be selected
+
+        :raises ValueError: if both or neither select_all_hosts and host_names are specified
+
+        :return: view (AllHostsTableView)
+        """
+
         if select_all_hosts and host_names:
             raise ValueError('Cannot select all and specify host names at the same time!')
+        if not select_all_hosts and not host_names:
+            raise ValueError('Must specify either host_names or select_all_hosts.')
 
         view = self.navigate_to(self, 'All')
         self.browser.plugin.ensure_page_safe(timeout='5s')
@@ -541,11 +502,95 @@ class AllHostsEntity(BaseEntity):
                 view.search(host_name)
                 view.table[0][0].widget.fill(True)
 
-        view.bulk_actions_kebab.click()
-        view.bulk_actions_menu.item_select('Disassociate hosts')
+        return view
 
-        view = DisassociateHostsModal(self.browser)
+    def change_hosts_owner(self, host_names, new_owner_name, select_all_hosts=False):
+        """
+        Change owner of selected hosts.
+
+        :param host_names: str with one host or list of hosts to select
+        :param new_owner_name: str with new owner name
+        :param select_all_hosts: bool, if True, all hosts will be selected
+        """
+
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+
+        view.bulk_actions_kebab.click()
+        view.bulk_actions_menu.item_select('Change owner')
+
+        view = ChangeHostsOwnerModal(self.browser)
+        view.owner_select.item_select(new_owner_name)
         view.confirm_btn.click()
+
+    def change_associations_organization(
+        self,
+        host_names=None,
+        new_organization=None,
+        select_all_hosts=False,
+        option="Fix on mismatch",
+    ):
+        """
+        Navigate to change organization modal after selecting number of hosts,
+        select desired organization, select one of the options and apply changes.
+
+        :param host_names: str with one host or list of hosts to select
+        :param new_organization: str organization name which will be selected
+        :param select_all_hosts: bool select all hosts flag
+        :param option: str options either 'Fix on mismatch' or 'Fail on mismatch'
+        """
+
+        if new_organization is None:
+            raise ValueError('new_organization argument is None, it will not allow to Save changes')
+
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+
+        view.bulk_actions_kebab.click()
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Change associations'))
+        view.bulk_actions_change_associations_menu.item_select('Organization')
+
+        view = ChangeOrganizationModal(self.browser)
+        view.organization_menu.item_select(new_organization)
+
+        if option == "Fix on mismatch":
+            view.organization_fix_on_mismatch.fill(True)
+            view.save_button.click()
+
+        elif option == "Fail on mismatch":
+            view.organization_fail_on_mismatch.fill(True)
+            view.save_button.click()
+
+    def change_associations_location(
+        self, host_names=None, new_location=None, select_all_hosts=False, option="Fix on mismatch"
+    ):
+        """
+        Navigate to change location modal after selecting number of hosts,
+        select desired location, select one of the options and apply changes.
+
+        :param host_names: str with one host or list of hosts to select
+        :param new_location: str location name which will be selected
+        :param select_all_hosts: select all hosts flag
+        :param option: str options either 'Fix on mismatch' or 'Fail on mismatch'
+        """
+
+        if new_location is None:
+            raise ValueError('new_location argument is None, it will not allow to Save changes')
+
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+
+        view.bulk_actions_kebab.click()
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Change associations'))
+
+        view.bulk_actions_change_associations_menu.item_select('Location')
+        view = ChangeLocationModal(self.browser)
+        view.location_menu.item_select(new_location)
+
+        if option == "Fix on mismatch":
+            view.location_fix_on_mismatch.fill(True)
+            view.save_button.click()
+
+        elif option == "Fail on mismatch":
+            view.location_fail_on_mismatch.fill(True)
+            view.save_button.click()
 
 
 @navigator.register(AllHostsEntity, 'All')
