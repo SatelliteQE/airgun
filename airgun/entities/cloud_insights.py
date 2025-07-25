@@ -51,21 +51,21 @@ class CloudInsightsEntity(BaseEntity):
 
 @navigator.register(CloudInsightsEntity, 'Token')
 class SaveCloudTokenView(NavigateStep):
-    """Navigate to main Red Hat Insights page"""
+    """Navigate to main Red Hat Lightspeed page"""
 
     VIEW = CloudTokenView
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Insights')
+        self.view.menu.select('Red Hat Lightspeed')
 
 
 @navigator.register(CloudInsightsEntity, 'All')
 class ShowCloudInsightsView(NavigateStep):
-    """Navigate to main Red Hat Insights page"""
+    """Navigate to main Red Hat Lightspeed page"""
 
     VIEW = CloudInsightsView
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Insights', 'Recommendations')
+        self.view.menu.select('Red Hat Lightspeed', 'Recommendations')
