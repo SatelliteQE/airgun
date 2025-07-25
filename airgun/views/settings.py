@@ -3,14 +3,14 @@ from widgetastic.widget import Table, Text
 from widgetastic_patternfly import Button
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
-from airgun.widgets import FieldWithEditBtn
+from airgun.widgets import FieldWithEditButton
 
 
 class SettingsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Settings']")
     table = Table(
         './/table',
-        column_widgets={'Value': FieldWithEditBtn()},
+        column_widgets={'Value': FieldWithEditButton()},
     )
 
     @SatTab.nested

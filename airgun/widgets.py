@@ -2696,29 +2696,29 @@ class PopOverWidget(View):
         return self.column_value.read()
 
 
-class FieldWithEditBtn(Widget):
+class FieldWithEditButton(Widget):
     """A pair of a field and a button that makes the field editable.
     After editing, confirm by checkmark or cancel by X.
     Is present e.g. in PF5 Settings.
     """
 
     ROOT = '//td[2]'
-    textinput = TextInput(locator=".//input[@data-ouia-component-type='PF5/TextInput']")
-    textarea = TextInput(locator=".//textarea")
-    dropdown = FormSelect(locator=".//select[@data-ouia-component-type='PF5/FormSelect']")
-    editBtn = PF5Button(locator=".//button[contains(@data-ouia-component-id, 'edit-row')]")
-    confirmBtn = PF5Button(locator=".//button[@data-ouia-component-id='submit-edit-btn']")
-    cancelBtn = PF5Button(locator=".//button[@data-ouia-component-id='cancel-edit-btn']")
+    text_input = TextInput(locator=".//input[@data-ouia-component-type='PF5/TextInput']")
+    text_area = TextInput(locator=".//textarea")
+    drop_down = FormSelect(locator=".//select[@data-ouia-component-type='PF5/FormSelect']")
+    edit_button = PF5Button(locator=".//button[contains(@data-ouia-component-id, 'edit-row')]")
+    confirm_button = PF5OUIAButton('submit-edit-btn')
+    cancel_button = PF5OUIAButton('cancel-edit-btn')
     text = Text(locator=".//span")
 
     def fill(self, item):
-        self.editBtn.click()
-        for widget_name in ['textinput', 'textarea', 'dropdown']:
+        self.edit_button.click()
+        for widget_name in ['text_input', 'text_area', 'drop_down']:
             widget = getattr(self, widget_name)
             if widget.is_displayed:
                 widget.fill(item)
                 break
-        self.confirmBtn.click()
+        self.confirm_button.click()
 
     def read(self):
         return self.text.read()
