@@ -26,6 +26,7 @@ from widgetastic_patternfly5 import (
 )
 from widgetastic_patternfly5.ouia import (
     Button as PF5OUIAButton,
+    Dropdown as PF5OUIADropdown,
     PatternflyTable as PF5OUIATable,
 )
 
@@ -129,6 +130,20 @@ class HostColectionsList(Widget):
     def read(self):
         """Return a list of assigned host collections"""
         return [self.browser.text(item) for item in self.browser.elements(self.ITEMS)]
+
+
+class HostsView(BaseLoggedInView):
+    """New All Hosts view.
+    Note: This is a minimal implementation of the new Hosts page, and currently it serves only to transition
+    to the now-legacy UI page.
+    """
+
+    title = Text('//h1[normalize-space(.)="Hosts"]')
+    actions = PF5OUIADropdown(component_id='legacy-ui-kebab')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class NewHostDetailsView(BaseLoggedInView):

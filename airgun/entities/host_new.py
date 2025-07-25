@@ -5,12 +5,14 @@ from wait_for import wait_for
 
 from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep, navigator
+from airgun.utils import retry_navigation
 from airgun.views.fact import HostFactView
 from airgun.views.host_new import (
     AllAssignedRolesView,
     EditAnsibleRolesView,
     EditSystemPurposeView,
     EnableTracerView,
+    HostsView,
     InstallPackagesView,
     ManageHostCollectionModal,
     ManageHostStatusesView,
@@ -1024,6 +1026,17 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         value = view.ansible.variables.table.row(name=key)['Value'].read()
         return value
+
+
+@navigator.register(HostEntity, 'NewUIAll')
+class ShowAllHosts(NavigateStep):
+    """Navigate to new UI All Hosts page"""
+
+    VIEW = HostsView
+
+    @retry_navigation
+    def step(self, *args, **kwargs):
+        self.view.menu.select('Hosts', 'All Hosts')
 
 
 @navigator.register(NewHostEntity, 'NewDetails')

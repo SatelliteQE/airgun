@@ -439,13 +439,19 @@ class HostEntity(BaseEntity):
 
 @navigator.register(HostEntity, 'All')
 class ShowAllHosts(NavigateStep):
-    """Navigate to All Hosts page"""
+    """Navigate to legacy All Hosts page.
+    Note: Due to incomplete implementation of the new Hosts page in `airgun.views.host_new.HostsView`,
+    'All' currently navigates to the legacy UI for proper test functionality.
+    Once all functionality is covered, feel free to remove this navigation step and rename 'NewUIAll' step to 'All'.
+    """
 
     VIEW = HostsView
 
+    prerequisite = NavigateToSibling('NewUIAll')
+
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'All Hosts')
+        self.view.actions.item_select('Legacy UI')
 
 
 @navigator.register(HostEntity, 'New')
