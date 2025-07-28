@@ -819,7 +819,12 @@ class Search(Widget):
         'or contains(@class, "dataTables_filter") or @id="search-bar"]'
     )
     search_field = TextInput(
-        locator=("//div[@class='title_filter']//input[contains(@aria-label, 'Search input')]")
+        locator=(
+            ".//input[@id='search' or contains(@placeholder, 'Filter') or "
+            "@ng-model='table.searchTerm' or contains(@ng-model, 'Filter') or "
+            "@data-autocomplete-id='searchBar' or contains(@placeholder, 'Search') "
+            "or contains(@class, 'search-input') or contains(@aria-label, 'Search input')]"
+        )
     )
     search_button = PF5Button(locator=(".//button[@aria-label='Search']"))
     clear_button = Text(
