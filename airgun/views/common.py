@@ -58,6 +58,7 @@ class BaseLoggedInView(View):
     permission_denied = Text(
         '//*[@id="content" or contains(@class, "pf-v5-c-empty-state pf-m-xl")]'
     )
+    product = Text('//span[@class="navbar-brand-txt"]/span')
 
     def select_logout(self):
         """logout from satellite"""

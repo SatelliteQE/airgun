@@ -11,7 +11,6 @@ from widgetastic_patternfly4 import (
     Tab,
 )
 from widgetastic_patternfly4.ouia import (
-    BreadCrumb,
     Button as OUIAButton,
     ExpandableTable,
     FormSelect as OUIAFormSelect,
@@ -25,6 +24,7 @@ from widgetastic_patternfly5 import (
     Tab as PF5Tab,
 )
 from widgetastic_patternfly5.ouia import (
+    BreadCrumb,
     Button as PF5OUIAButton,
     PatternflyTable as PF5OUIATable,
 )
