@@ -1,6 +1,14 @@
 from widgetastic.widget import Checkbox, Text, TextInput, View
-from widgetastic_patternfly5 import Button, Pagination as PF5Pagination
-from widgetastic_patternfly5.ouia import Dropdown, Modal, PatternflyTable, Switch
+from widgetastic_patternfly5 import (
+    Button as PF5Button,
+    Pagination as PF5Pagination,
+)
+from widgetastic_patternfly5.ouia import (
+    Dropdown as PF5OUIADropdown,
+    Modal as PF5OUIAModal,
+    PatternflyTable as PF5OUIAPatternflyTable,
+    Switch as PF5OUIASwitch,
+)
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 
@@ -9,21 +17,21 @@ class CloudTokenView(BaseLoggedInView):
     """Red Hat Lightspeed Landing page for adding RH Cloud Token."""
 
     rhcloud_token = TextInput(locator='//input[contains(@aria-label, "input-cloud-token")]')
-    save_token = Button('Save setting and sync recommendations')
+    save_token = PF5Button('Save setting and sync recommendations')
 
     @property
     def is_displayed(self):
         return self.rhcloud_token.wait_displayed()
 
 
-class RemediationView(Modal):
+class RemediationView(PF5OUIAModal):
     """Red Hat Lightspeed Remediations modal view"""
 
-    OUIA_ID = 'OUIA-Generated-Modal-large-1'
-    remediate = Button('Remediate')
-    cancel = Button('Cancel')
-    table = PatternflyTable(
-        component_id='OUIA-Generated-Table-2',
+    OUIA_ID = 'remediation-modal'
+    remediate = PF5Button('Remediate')
+    cancel = PF5Button('Cancel')
+    table = PF5OUIAPatternflyTable(
+        component_id='remediations-table',
         column_widgets={
             'Hostname': Text('./a'),
             'Recommendation': Text('./a'),
@@ -41,12 +49,12 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
     """Main Red Hat Lightspeed view."""
 
     title = Text('//h1[normalize-space(.)="Red Hat Lightspeed"]')
-    insights_sync_switcher = Switch('OUIA-Generated-Switch-1')
-    remediate = Button('Remediate')
-    insights_dropdown = Dropdown('OUIA-Generated-Dropdown-2')
+    insights_sync_switcher = PF5OUIASwitch('foreman-rh-cloud-switcher')
+    remediate = PF5Button('Remediate')
+    insights_dropdown = PF5OUIADropdown('title-dropdown')
     select_all = Checkbox(locator='.//input[@aria-label="Select all rows"]')
-    table = PatternflyTable(
-        component_id='OUIA-Generated-Table-2',
+    table = PF5OUIAPatternflyTable(
+        component_id='rh-cloud-recommendations-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Hostname': Text('.//a'),
@@ -55,8 +63,8 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
             'Playbook': Text('.//a'),
         },
     )
-    select_all_hits = Button('Select recommendations from all pages')
-    clear_hits_selection = Button('Clear Selection')
+    select_all_hits = PF5Button('Select recommendations from all pages')
+    clear_hits_selection = PF5Button('Clear Selection')
     pagination = PF5Pagination()
     remediation_window = View.nested(RemediationView)
 
