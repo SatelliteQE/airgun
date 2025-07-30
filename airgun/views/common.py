@@ -674,7 +674,7 @@ class BookmarkCreateView(BaseLoggedInView):
     widgets have special locators.
     """
 
-    ROOT = ".//div[contains(@class, 'modal-dialog')]"
+    ROOT = ".//div[@aria-label='bookmark-modal' or contains(@class, 'modal-dialog')]"
 
     title = Text(
         "//*[self::div[@data-block='modal-header'] or self::h4]"
@@ -683,12 +683,16 @@ class BookmarkCreateView(BaseLoggedInView):
     )
     name = TextInput(name='name')
     query = TextInput(name='query')
-    error_message = Text(".//span[@class='error-message']")
-    public = Checkbox(locator="//input[@type='checkbox'][@name='public' or @name='publik']")
-    # text can be either 'Submit' or 'Save'
-    submit = Text(".//button[@type='submit' or @ng-click='ok()']")
-    # may contain <span> inside, using normalize-space
-    cancel = Text(".//button[normalize-space(.)='Cancel']")
+    error_message = Text(
+        ".//span[@class='error-message' or (ancestor::div[contains(@class, 'pf-m-error')] and contains(@class, 'item-text'))]"
+    )
+    public = Checkbox(
+        locator="//input[@data-ouia-component-id='isPublic-checkbox' or (@type='checkbox' and (@name='public' or @name='publik'))]"
+    )
+    submit = Text(
+        ".//button[@data-ouia-component-id='submit-btn' or @type='submit' or @ng-click='ok()']"
+    )
+    cancel = Text(".//button[@data-ouia-component-id='cancel-btn' or normalize-space(.)='Cancel']")
 
     @property
     def is_displayed(self):
