@@ -827,7 +827,7 @@ class Search(Widget):
             "or contains(@class, 'search-input') or contains(@aria-label, 'Search input')]"
         )
     )
-    search_button = PF5Button(locator=(".//button[@aria-label='Search']"))
+    search_button = PF5Button(locator=".//button[span[normalize-space(.)='Search']] | .//button[@aria-label='Search']")
     clear_button = Text(
         ".//span[contains(@class,'autocomplete-clear-button') or contains(@class,'fa-close')]"
     )
