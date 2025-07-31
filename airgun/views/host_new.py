@@ -759,6 +759,16 @@ class NewHostDetailsView(BaseLoggedInView):
         )
         pagination = PF5Pagination()
 
+    @View.nested
+    class cves(PF5Tab):
+        ROOT = './/div'
+
+        title = Text('//h1[contains(text(), "CVEs tab for host:")]')
+
+        @property
+        def is_displayed(self):
+            return self.title.wait_displayed()
+
 
 class InstallPackagesView(View):
     """Install packages modal"""
