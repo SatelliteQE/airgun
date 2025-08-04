@@ -16,6 +16,7 @@ class ActivationKeyEntity(BaseEntity):
     def create(self, values):
         """Create new activation key entity"""
         view = self.navigate_to(self, 'New')
+        view.wait_displayed()
         view.fill(values)
         view.submit.click()
 
