@@ -516,7 +516,8 @@ class AllHostsEntity(BaseEntity):
         view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
 
         view.bulk_actions_kebab.click()
-        view.bulk_actions_menu.item_select('Change owner')
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Change associations'))
+        view.bulk_actions_change_associations_menu.item_select('Owner')
 
         view = ChangeHostsOwnerModal(self.browser)
         view.owner_select.item_select(new_owner_name)
@@ -579,8 +580,8 @@ class AllHostsEntity(BaseEntity):
 
         view.bulk_actions_kebab.click()
         self.browser.move_to_element(view.bulk_actions_menu.item_element('Change associations'))
-
         view.bulk_actions_change_associations_menu.item_select('Location')
+
         view = ChangeLocationModal(self.browser)
         view.location_menu.item_select(new_location)
 
