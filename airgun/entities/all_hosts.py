@@ -603,6 +603,8 @@ class ShowAllHostsScreen(NavigateStep):
     @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'All Hosts')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.view.wait_displayed()
 
 
 @navigator.register(AllHostsEntity, 'ManageColumns')
