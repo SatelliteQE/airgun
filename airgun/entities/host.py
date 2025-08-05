@@ -44,7 +44,7 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         self.browser.click(view.submit, ignore_ajax=True)
-        self.browser.plugin.ensure_page_safe(timeout='600s')
+        self.browser.plugin.ensure_page_safe(timeout='800s')
         host_view = NewHostDetailsView(self.browser)
         host_view.wait_displayed()
         host_view.flash.assert_no_error()
@@ -140,6 +140,10 @@ class HostEntity(BaseEntity):
         view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
+        wait_for(
+            lambda: view.flash.assert_message(f"Successfully deleted {entity_name}."),
+            timeout=120,
+        )
         view.flash.assert_no_error()
         view.flash.dismiss()
 
