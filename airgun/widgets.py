@@ -2761,18 +2761,16 @@ class EditModal(View):
 class DualListSelector(EditModal):
     """Class representing the Dual List Selector in a modal."""
 
-    from widgetastic_patternfly4 import Button
-
     available_options_search = SearchInput(locator='.//input[@aria-label="Available search input"]')
     available_options_list = ItemsList(
         locator='.//div[contains(@class, "pf-m-available")]'
         '//ul[@class="pf-c-dual-list-selector__list"]'
     )
 
-    add_selected = Button(locator='.//button[@aria-label="Add selected"]')
-    add_all = Button(locator='.//button[@aria-label="Add all"]')
-    remove_all = Button(locator='.//button[@aria-label="Remove all"]')
-    remove_selected = Button(locator='.//button[@aria-label="Remove selected"]')
+    add_selected = PF4Button(locator='.//button[@aria-label="Add selected"]')
+    add_all = PF4Button(locator='.//button[@aria-label="Add all"]')
+    remove_all = PF4Button(locator='.//button[@aria-label="Remove all"]')
+    remove_selected = PF4Button(locator='.//button[@aria-label="Remove selected"]')
 
     chosen_options_search = SearchInput(locator='.//input[@aria-label="Chosen search input"]')
     chosen_options_list = ItemsList(
