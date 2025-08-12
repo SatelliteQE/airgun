@@ -18,7 +18,7 @@ jobs:
         python-version: ['3.11', '3.12', '3.13']
     steps:
       - name: Checkout Airgun
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set Up Python-${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -56,7 +56,7 @@ jobs:
         python-version: ['3.13']
     steps:
       - name: Checkout Airgun
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set Up Python
         uses: actions/setup-python@v5
