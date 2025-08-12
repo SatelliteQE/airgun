@@ -251,7 +251,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     table = PF5OUIATable(
         component_id="table",
         column_widgets={
-            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            0: Checkbox(locator=".//input[@type='checkbox']"),
             'Name': Text(
                 ".//a[contains(@href, '/new/hosts/') and not(contains(@href, 'Red Hat Lightspeed'))]"
             ),

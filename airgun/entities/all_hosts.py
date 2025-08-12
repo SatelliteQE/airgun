@@ -603,6 +603,7 @@ class ShowAllHostsScreen(NavigateStep):
     @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'All Hosts')
+        self.view.wait_displayed()
 
 
 @navigator.register(AllHostsEntity, 'ManageColumns')
