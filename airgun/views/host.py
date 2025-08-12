@@ -28,8 +28,9 @@ from widgetastic_patternfly5.ouia import (
     Select as PF5OUIASelect,
     TextInput as PF5OUIATextInput,
 )
-from airgun.views.host_new import MenuToggleButtonMenu
+
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.host_new import MenuToggleButtonMenu
 from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 from airgun.views.task import TaskDetailsView
 from airgun.widgets import (
@@ -51,14 +52,18 @@ from airgun.widgets import (
     ToggleButton,
 )
 
+
 class MenuToggleButtonWithKebab(MenuToggleButtonMenu):
     """
     This class is PF5 implementation of a PF5 MenuToggle which is implemented like Button->Dropdown
     i.e. the kebab menu in the host/content/packages table
     """
+
     BUTTON_LOCATOR = (
         './/button[contains(@class, "pf-v5-c-menu-toggle") and @aria-label="Kebab toggle"]'
     )
+
+
 class TableActions(View):
     """Interface table has Action column that contains only two buttons,
     without any extra controls, so we cannot re-use any existing widgets
@@ -243,10 +248,10 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
             ),
             'Recommendations': Text("./a"),
             6: MenuToggleButtonWithKebab(
-                locator='.//button[contains(@class, "pf-v5-c-menu-toggle") and @aria-label="Kebab toggle"]'),
+                locator='.//button[contains(@class, "pf-v5-c-menu-toggle") and @aria-label="Kebab toggle"]'
+            ),
         },
     )
-
 
     displayed_table_headers = ".//table/thead/tr/th[not(@hidden)]"
     host_status = "//span[contains(@class, 'host-status')]"
