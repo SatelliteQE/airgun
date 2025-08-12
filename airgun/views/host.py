@@ -238,6 +238,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
             6: MenuToggleButtonMenu(),
         },
     )
+
     displayed_table_headers = ".//table/thead/tr/th[not(@hidden)]"
     host_status = "//span[contains(@class, 'host-status')]"
     actions = ActionsDropdown("//div[@id='submit_multiple']")
