@@ -128,8 +128,8 @@ class CloudInventoryListView(BaseLoggedInView):
         './/label[@for="rh-cloud-switcher-allow_auto_insights_mismatch_delete"]'
     )
 
-    auto_upload_desc = PF5OUIAText('OUIA-Generated-Text-6')
-    manual_upload_desc = PF5OUIAText('OUIA-Generated-Text-7')
+    auto_upload_desc = PF5OUIAText('text-enable-report')
+    manual_upload_desc = PF5OUIAText('text-restart-button')
     dialog = Pf5ConfirmationDialog()
     cloud_connector = PF5Button(locator='//button[normalize-space(.)="Configure cloud connector"]')
     reconfigure_cloud_connector = PF5Button(
