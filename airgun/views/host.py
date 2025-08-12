@@ -251,7 +251,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     new_ui_button = Text(".//a[contains(@class, 'btn')][contains(@href, 'new/hosts')]")
     select_all = Checkbox(locator="//input[@id='check_all']")
     table = PF5OUIATable(
-        component_id="table",
+        component_id='table',
         column_widgets={
             0: Checkbox(locator=".//input[@type='checkbox']"),
             'Name': Text(
