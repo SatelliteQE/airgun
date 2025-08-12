@@ -20,9 +20,6 @@ from widgetastic_patternfly4.ouia import (
     BreadCrumb as PF4BreadCrumb,
     Button as PF4Button,
 )
-from widgetastic_patternfly5 import (
-    Dropdown as PF5Dropdown,
-)
 from widgetastic_patternfly5.components.tabs import Tab
 from widgetastic_patternfly5.ouia import (
     Button as PF5Button,
@@ -31,7 +28,7 @@ from widgetastic_patternfly5.ouia import (
     Select as PF5OUIASelect,
     TextInput as PF5OUIATextInput,
 )
-
+from airgun.views.host_new import MenuToggleButtonMenu
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
 from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 from airgun.views.task import TaskDetailsView
@@ -54,27 +51,14 @@ from airgun.widgets import (
     ToggleButton,
 )
 
-
-class MenuToggleButtonMenu(PF5Dropdown):
+class MenuToggleButtonWithKebab(MenuToggleButtonMenu):
     """
     This class is PF5 implementation of a PF5 MenuToggle which is implemented like Button->Dropdown
     i.e. the kebab menu in the host/content/packages table
     """
-
-    IS_ALWAYS_OPEN = False
     BUTTON_LOCATOR = (
         './/button[contains(@class, "pf-v5-c-menu-toggle") and @aria-label="Kebab toggle"]'
     )
-    DEFAULT_LOCATOR = (
-        './/button[contains(@class, "pf-v5-c-menu-toggle") and @aria-label="Kebab toggle"]'
-    )
-    ROOT = f"{BUTTON_LOCATOR}/.."
-    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
-    ITEM_LOCATOR = (
-        "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
-    )
-
-
 class TableActions(View):
     """Interface table has Action column that contains only two buttons,
     without any extra controls, so we cannot re-use any existing widgets
@@ -253,16 +237,16 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     table = PF5OUIATable(
         component_id='table',
         column_widgets={
-            0: Checkbox(locator=".//input[@type='checkbox']"),
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Name': Text(
                 ".//a[contains(@href, '/new/hosts/') and not(contains(@href, 'Red Hat Lightspeed'))]"
             ),
             'Recommendations': Text("./a"),
-            6: MenuToggleButtonMenu(
-                locator='.//button[contains(@class, "pf-v5-c-menu-toggle") and @aria-label="Kebab toggle"]'
-            ),
+            6: MenuToggleButtonWithKebab(
+                locator='.//button[contains(@class, "pf-v5-c-menu-toggle") and @aria-label="Kebab toggle"]'),
         },
     )
+
 
     displayed_table_headers = ".//table/thead/tr/th[not(@hidden)]"
     host_status = "//span[contains(@class, 'host-status')]"
