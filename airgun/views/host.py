@@ -26,8 +26,15 @@ from widgetastic_patternfly5.ouia import (
     FormSelect as PF5FormSelect,
     Select as PF5OUIASelect,
     TextInput as PF5OUIATextInput,
+    PatternflyTable as PF5OUIATable,
+    Dropdown as PF5OUIADropdown,
 )
-
+from widgetastic_patternfly5 import (
+    Dropdown as PF5Dropdown,
+    Menu as PF5Menu,
+    Pagination as PF5Pagination,
+    Tab as PF5Tab,
+)
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
 from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 from airgun.views.task import TaskDetailsView
@@ -50,7 +57,22 @@ from airgun.widgets import (
     ToggleButton,
 )
 
+class MenuToggleButtonMenu(PF5Dropdown):
+    """
+    This class is PF5 implementation of a PF5 MenuToggle which is implemented like Button->Dropdown
+    i.e. the kebab menu in the host/content/packages table
+    """
 
+    IS_ALWAYS_OPEN = False
+    BUTTON_LOCATOR = './/button[contains(@class, "pf-v5-c-menu-toggle") and @aria-label="Kebab toggle"]'
+    DEFAULT_LOCATOR = (
+        './/button[contains(@class, "pf-v5-c-menu-toggle") and @aria-label="Kebab toggle"]'
+    )
+    ROOT = f"{BUTTON_LOCATOR}/.."
+    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
+    ITEM_LOCATOR = (
+        "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
+    )
 class TableActions(View):
     """Interface table has Action column that contains only two buttons,
     without any extra controls, so we cannot re-use any existing widgets
@@ -222,21 +244,24 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
     manage_columns = PF5Button('manage-columns-button')
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
-    new = Text(".//div[@id='rails-app-content']//a[contains(normalize-space(.),'Create Host')]")
+    new = Text(".//div[@id='foreman-page']//a[@data-ouia-component-id='create-host-button']")
     register = PF4Button('OUIA-Generated-Button-secondary-2')
     new_ui_button = Text(".//a[contains(@class, 'btn')][contains(@href, 'new/hosts')]")
     select_all = Checkbox(locator="//input[@id='check_all']")
-    table = SatTable(
-        './/table',
+    table = PF5OUIATable(
+        component_id="table",
         column_widgets={
-            0: Checkbox(locator=".//input[@class='host_select_boxes']"),
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Name': Text(
                 ".//a[contains(@href, '/new/hosts/') and not(contains(@href, 'Red Hat Lightspeed'))]"
             ),
             'Recommendations': Text("./a"),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            6: MenuToggleButtonMenu(
+                locator='.//button[contains(@class, "pf-v5-c-menu-toggle") and @aria-label="Kebab toggle"]'),
         },
     )
+
+
     displayed_table_headers = ".//table/thead/tr/th[not(@hidden)]"
     host_status = "//span[contains(@class, 'host-status')]"
     actions = ActionsDropdown("//div[@id='submit_multiple']")
