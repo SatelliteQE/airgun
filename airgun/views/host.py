@@ -28,8 +28,9 @@ from widgetastic_patternfly5.ouia import (
     Select as PF5OUIASelect,
     TextInput as PF5OUIATextInput,
 )
-from airgun.views.host_new import MenuToggleButtonMenu
+
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.host_new import MenuToggleButtonMenu
 from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 from airgun.views.task import TaskDetailsView
 from airgun.widgets import (
