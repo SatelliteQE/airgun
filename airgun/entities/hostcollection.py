@@ -17,7 +17,11 @@ from airgun.views.hostcollection import (
     HostCollectionManagePackagesView,
     HostCollectionsView,
 )
-from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
+from airgun.views.job_invocation import (
+    JobInvocationCreateView,
+    JobInvocationStatusView,
+    NewJobInvocationStatusView,
+)
 
 
 class HostCollectionEntity(BaseEntity):
@@ -114,17 +118,14 @@ class HostCollectionEntity(BaseEntity):
         # wait for the job deatils to load
         time.sleep(3)
         # After this step the user is redirected to job status view.
-        job_status_view = JobInvocationStatusView(view.browser)
+        job_status_view = NewJobInvocationStatusView(view.browser)
         wait_for(
-            lambda: (
-                job_status_view.overview.job_status.read() != 'Pending'
-                and job_status_view.overview.job_status_progress.read() == '100%'
-            ),
+            lambda: (job_status_view.status.read()['In Progress'] != 1),
             timeout=300,
             delay=10,
             logger=view.logger,
         )
-        return job_status_view.overview.read()
+        return job_status_view.read()
 
     def search_applicable_hosts(self, entity_name, errata_id):
         """Check for search URI in Host Collection errata view.
@@ -176,17 +177,14 @@ class HostCollectionEntity(BaseEntity):
             job_create_view.submit.click()
 
         # After this step the user is redirected to job status view.
-        job_status_view = JobInvocationStatusView(view.browser)
+        job_status_view = NewJobInvocationStatusView(view.browser)
         wait_for(
-            lambda: (
-                job_status_view.overview.job_status.read() != 'Pending'
-                and job_status_view.overview.job_status_progress.read() == '100%'
-            ),
+            lambda: (job_status_view.status.read()['In Progress'] != 1),
             timeout=300,
             delay=10,
             logger=view.logger,
         )
-        return job_status_view.overview.read()
+        return job_status_view.read()
 
     def manage_module_streams(
         self,
