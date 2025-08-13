@@ -139,7 +139,7 @@ class HostEntity(BaseEntity):
         """Delete host from the system"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
+        view.table.row(name=entity_name)[6].widget.item_select('Delete')
         self.browser.handle_alert()
         wait_for(
             lambda: view.flash.assert_message(
@@ -522,7 +522,7 @@ class EditHost(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Actions'].widget.fill('Edit')
+        self.parent.table.row(name=entity_name)[6].widget.item_select('Edit')
         self.view.wait_displayed()
 
 
