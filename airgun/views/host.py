@@ -24,11 +24,13 @@ from widgetastic_patternfly5.components.tabs import Tab
 from widgetastic_patternfly5.ouia import (
     Button as PF5Button,
     FormSelect as PF5FormSelect,
+    PatternflyTable as PF5OUIATable,
     Select as PF5OUIASelect,
     TextInput as PF5OUIATextInput,
 )
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.host_new import MenuToggleButtonMenu
 from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 from airgun.views.task import TaskDetailsView
 from airgun.widgets import (
@@ -222,19 +224,19 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
     manage_columns = PF5Button('manage-columns-button')
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
-    new = Text(".//div[@id='rails-app-content']//a[contains(normalize-space(.),'Create Host')]")
+    new = Text(".//div[@id='foreman-page']//a[@data-ouia-component-id='create-host-button']")
     register = PF4Button('OUIA-Generated-Button-secondary-2')
     new_ui_button = Text(".//a[contains(@class, 'btn')][contains(@href, 'new/hosts')]")
     select_all = Checkbox(locator="//input[@id='check_all']")
-    table = SatTable(
-        './/table',
+    table = PF5OUIATable(
+        component_id='table',
         column_widgets={
-            0: Checkbox(locator=".//input[@class='host_select_boxes']"),
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Name': Text(
-                ".//a[contains(@href, '/new/hosts/') and not(contains(@href, 'Insights'))]"
+                ".//a[contains(@href, '/new/hosts/') and not(contains(@href, 'Red Hat Lightspeed'))]"
             ),
             'Recommendations': Text("./a"),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            6: MenuToggleButtonMenu(),
         },
     )
     displayed_table_headers = ".//table/thead/tr/th[not(@hidden)]"

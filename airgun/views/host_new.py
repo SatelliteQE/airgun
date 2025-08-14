@@ -11,9 +11,7 @@ from widgetastic_patternfly4 import (
     Tab,
 )
 from widgetastic_patternfly4.ouia import (
-    BreadCrumb,
     Button as OUIAButton,
-    ExpandableTable,
     FormSelect as OUIAFormSelect,
     PatternflyTable,
 )
@@ -26,8 +24,12 @@ from widgetastic_patternfly5 import (
 )
 from widgetastic_patternfly5.ouia import (
     Alert as PF5OUIAAlert,
+    BreadCrumb,
     Button as PF5OUIAButton,
+    Dropdown as PF5OUIADropdown,
+    ExpandableTable as PF5OUIAExpandableTable,
     PatternflyTable as PF5OUIATable,
+    Select as PF5OUIASelect,
 )
 
 from airgun.views.common import BaseLoggedInView
@@ -41,6 +43,22 @@ from airgun.widgets import (
     SatTableWithoutHeaders,
     SearchInput,
 )
+
+
+class MenuToggleButtonMenu(PF5Dropdown):
+    """
+    This class is implementation of PF5 Dropdown/MenuToggle which is implemented like Button->Dropdown
+    kebab menus in host -> Content -> Packages / Errata / Module streams tables.
+
+    Note: Some table row kebab menu is implemented as a simple Dropdown widget (e.g., host Module streams)
+    and some as a MenuToggle & Dropdown combo (e.g., host Packages, Errata).
+    """
+
+    ROOT = f'{PF5Dropdown.BUTTON_LOCATOR}/..'
+    DEFAULT_LOCATOR = (
+        f'{PF5Dropdown.BUTTON_LOCATOR}'
+        '[@aria-label="Kebab toggle" or contains(@aria-label, "kebab-dropdown")'
+    )
 
 
 class RemediationView(View):
@@ -112,6 +130,20 @@ class HostColectionsList(Widget):
     def read(self):
         """Return a list of assigned host collections"""
         return [self.browser.text(item) for item in self.browser.elements(self.ITEMS)]
+
+
+class HostsView(BaseLoggedInView):
+    """New All Hosts view.
+    Note: This is a minimal implementation of the new Hosts page, and currently it serves only to transition
+    to the now-legacy UI page.
+    """
+
+    title = Text('//h1[normalize-space(.)="Hosts"]')
+    actions = PF5OUIADropdown(component_id='legacy-ui-kebab')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
 class NewHostDetailsView(BaseLoggedInView):
@@ -351,8 +383,11 @@ class NewHostDetailsView(BaseLoggedInView):
             status_filter = Dropdown(locator='.//div[@aria-label="select Status container"]/div')
             upgrade = Pf4ActionsDropdown(locator='.//div[div/button[normalize-space(.)="Upgrade"]]')
             dropdown = PF5Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
+            no_matching_packages = Text(
+                './/h2[contains(@class, "pf-v5-c-empty-state__title-text")]'
+            )
 
-            table = PatternflyTable(
+            table = PF5OUIATable(
                 component_id="host-packages-table",
                 column_widgets={
                     0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -360,7 +395,7 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Status': Text('./span'),
                     'Installed version': Text('./parent::td'),
                     'Upgradable to': Text('./span'),
-                    5: Dropdown(locator='.//div[button(@aria-label="Kebab toggle")]'),
+                    5: MenuToggleButtonMenu(),
                 },
             )
             pagination = PF4Pagination()
@@ -372,12 +407,12 @@ class NewHostDetailsView(BaseLoggedInView):
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
             searchbar = SearchInput(locator='.//input[contains(@class, "pf-v5-c-text-input")]')
-            type_filter = Select(locator='.//div[@aria-label="select Type container"]/div')
-            severity_filter = Select(locator='.//div[@aria-label="select Severity container"]/div')
+            type_filter = PF5OUIASelect(component_id='select Type')
+            severity_filter = PF5OUIASelect(component_id='select Severity')
             apply = Pf4ActionsDropdown(locator='.//div[@aria-label="errata_dropdown"]')
-            dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
+            dropdown = PF5Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
-            table = ExpandableTable(
+            table = PF5OUIAExpandableTable(
                 component_id="host-errata-table",
                 column_widgets={
                     1: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -387,12 +422,10 @@ class NewHostDetailsView(BaseLoggedInView):
                     'Installable': Text('./span'),
                     'Synopsis': Text('./span'),
                     'Published date': Text('./span/span'),
-                    8: Dropdown(locator='.//div[button(@aria-label="Kebab toggle")]'),
+                    8: MenuToggleButtonMenu(),
                 },
             )
-            pagination = PF4Pagination(
-                "//div[@class = 'pf-v5-c-pagination pf-m-bottom tfm-pagination']"
-            )
+            pagination = PF5Pagination()
 
         @View.nested
         class module_streams(PF5Tab):
@@ -403,24 +436,22 @@ class NewHostDetailsView(BaseLoggedInView):
             searchbar = SearchInput(
                 locator='.//input[contains(@class, "pf-v5-c-text-input-group__text-input")]'
             )
-            status_filter = Select(locator='.//div[@aria-label="select Status container"]/div')
-            installation_status_filter = Select(
-                locator='.//div[@aria-label="select Installation status container"]/div'
-            )
+            status_filter = PF5OUIASelect(component_id='select Status')
+            installation_status_filter = PF5OUIASelect(component_id='select Installation status')
             dropdown = PF5Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
-            table = Table(
-                locator='.//table[@aria-label="Content View Table"]',
+            table = PF5OUIATable(
+                component_id='host-module-stream-table',
                 column_widgets={
                     'Name': Text('./a'),
                     'State': Text('.//span'),
                     'Stream': Text('./parent::td'),
                     'Installation status': Text('.//small'),
                     'Installed profile': Text('./parent::td'),
-                    5: Dropdown(locator='.//div[button(@aria-label="Kebab toggle")]'),
+                    5: MenuToggleButtonMenu(),
                 },
             )
-            pagination = PF4Pagination()
+            pagination = PF5Pagination()
 
         @View.nested
         class repository_sets(PF5Tab):

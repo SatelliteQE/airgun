@@ -58,6 +58,7 @@ class BaseLoggedInView(View):
     permission_denied = Text(
         '//*[@id="content" or contains(@class, "pf-v5-c-empty-state pf-m-xl")]'
     )
+    product = Text('//span[@class="navbar-brand-txt"]/span')
 
     def select_logout(self):
         """logout from satellite"""
@@ -335,10 +336,10 @@ class PF5LCECheckSelectorGroup(PF5LCESelectorGroup):
 
 # PF5 kebab menu present in table rows
 class TableRowKebabMenu(PF5Dropdown):
-    """Dropdown that supports both PF5 dropdown and menu-toggle kebab buttons."""
+    """Dropdown for PF5 kebab menus used in table rows."""
 
     ROOT = '.'
-    TOGGLE = './/button[contains(@class, "pf-v5-c-menu-toggle") and contains(@aria-label, "Kebab toggle")]'
+    DEFAULT_LOCATOR = './/button[contains(@class, "-c-menu-toggle") and @aria-label="Kebab toggle"]'
 
 
 class PF5LCEGroup(ParametrizedLocator):
@@ -673,7 +674,7 @@ class BookmarkCreateView(BaseLoggedInView):
     widgets have special locators.
     """
 
-    ROOT = ".//div[contains(@class, 'modal-dialog')]"
+    ROOT = ".//div[@aria-label='bookmark-modal' or contains(@class, 'modal-dialog')]"
 
     title = Text(
         "//*[self::div[@data-block='modal-header'] or self::h4]"
@@ -682,12 +683,16 @@ class BookmarkCreateView(BaseLoggedInView):
     )
     name = TextInput(name='name')
     query = TextInput(name='query')
-    error_message = Text(".//span[@class='error-message']")
-    public = Checkbox(locator="//input[@type='checkbox'][@name='public' or @name='publik']")
-    # text can be either 'Submit' or 'Save'
-    submit = Text(".//button[@type='submit' or @ng-click='ok()']")
-    # may contain <span> inside, using normalize-space
-    cancel = Text(".//button[normalize-space(.)='Cancel']")
+    error_message = Text(
+        ".//span[@class='error-message' or (ancestor::div[contains(@class, 'pf-m-error')] and contains(@class, 'item-text'))]"
+    )
+    public = Checkbox(
+        locator="//input[@data-ouia-component-id='isPublic-checkbox' or (@type='checkbox' and (@name='public' or @name='publik'))]"
+    )
+    submit = Text(
+        ".//button[@data-ouia-component-id='submit-btn' or @type='submit' or @ng-click='ok()']"
+    )
+    cancel = Text(".//button[@data-ouia-component-id='cancel-btn' or normalize-space(.)='Cancel']")
 
     @property
     def is_displayed(self):

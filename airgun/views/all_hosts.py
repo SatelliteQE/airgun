@@ -11,11 +11,13 @@ from widgetastic_patternfly4.ouia import (
     Alert as OUIAAlert,
 )
 from widgetastic_patternfly5 import (
+    Alert as PF5Alert,
     Button as PF5Button,
     Dropdown as PF5Dropdown,
     Menu as PF5Menu,
     Modal as PF5Modal,
     Radio as PF5Radio,
+    Select as PF5Select,
 )
 from widgetastic_patternfly5.ouia import (
     Button as PF5OUIAButton,
@@ -90,6 +92,9 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     )
     bulk_actions_manage_content_menu = PF5Menu(
         locator='//li[contains(@class, "pf-v5-c-menu__list-item")]//button[span/span[text()="Manage content"]]/following-sibling::div[contains(@class, "pf-v5-c-menu")]'
+    )
+    bulk_actions_change_associations_menu = PF5Menu(
+        locator='//li[contains(@class, "pf-v5-c-menu__list-item")]//button[span/span[text()="Change associations"]]/following-sibling::div[contains(@class, "pf-v5-c-menu")]'
     )
 
     table_loading = Text("//h5[normalize-space(.)='Loading']")
@@ -605,3 +610,95 @@ class DisassociateHostsModal(PF5Modal):
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+class MenuToggleSelect(PF5Select):
+    """
+    This class is PF5 implementation of the Select component within the new PF5 structure
+    Which is MenuToggle->Select and not just Select as it was in PF4.
+    """
+
+    BUTTON_LOCATOR = './/button[contains(@class, "pf-v5-c-menu-toggle")]'
+    DEFAULT_LOCATOR = (
+        './/div[contains(@class, "pf-v5-c-menu") and @data-ouia-component-type="PF5/Select"]'
+    )
+    ROOT = f"{BUTTON_LOCATOR}/.."
+    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
+    ITEM_LOCATOR = (
+        "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
+    )
+
+
+class ChangeHostsOwnerModal(PF5Modal):
+    """
+    This class represents the Change Hosts Owner modal,
+    that is used to change the owner of one or more hosts.
+    """
+
+    OUIA_ID = 'bulk-change-owner-modal'
+
+    title = './/h1[@class="pf-v5-c-modal-box__title"]'
+    close_btn = PF5OUIAButton('bulk-change-owner-modal-ModalBoxCloseButton')
+    confirm_btn = PF5OUIAButton('bulk-change-owner-modal-add-button')
+    cancel_btn = PF5OUIAButton('bulk-change-owner-modal-cancel-button')
+
+    owner_select = MenuToggleSelect()
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+class BaseChangeOrgLocModal(PF5Modal):
+    """
+    Base class representing the modal for changing organization or location.
+    """
+
+    title = './/h1[@class="pf-v5-c-modal-box__title"]'
+
+    menu_toggle = PF5Menu(locator='.//button[@class="pf-v5-c-menu-toggle"]')
+
+    success_alert = PF5Alert(
+        locator='.//div[contains(@class,"pf-v5-c-alert pf-m-success")]//following-sibling::h4[contains(@class, "-c-alert__title")]'
+    )
+    error_alert = PF5Alert(
+        locator='.//div[contains(@class,"pf-v5-c-alert pf-m-danger")]//following-sibling::h4[contains(@class, "-c-alert__title")]'
+    )
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+class ChangeOrganizationModal(BaseChangeOrgLocModal):
+    """
+    This class represents 'Change organization' modal that is used to change organization
+    for one or more hosts
+    """
+
+    OUIA_ID = 'bulk-assign-taxonomy-modal'
+
+    organization_menu = MenuToggleSelect()
+
+    organization_fix_on_mismatch = PF5Radio(id='radio-fix-on-mismatch-organization')
+    organization_fail_on_mismatch = PF5Radio(id='radio-fail-on-mismatch-organization')
+
+    save_button = PF5OUIAButton('bulk-assign-organization-modal-add-button')
+    cancel_button = PF5OUIAButton('bulk-assign-organization-modal-cancel-button')
+
+
+class ChangeLocationModal(BaseChangeOrgLocModal):
+    """
+    This class represents 'Change location' modal that is used to change location
+    for one or more hosts
+    """
+
+    OUIA_ID = 'bulk-assign-location-modal'
+
+    location_menu = MenuToggleSelect()
+
+    location_fix_on_mismatch = PF5Radio(id='radio-fix-on-mismatch-location')
+    location_fail_on_mismatch = PF5Radio(id='radio-fail-on-mismatch-location')
+
+    save_button = PF5OUIAButton('bulk-assign-location-modal-add-button')
+    cancel_button = PF5OUIAButton('bulk-assign-location-modal-cancel-button')

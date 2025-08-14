@@ -2,15 +2,15 @@ from wait_for import wait_for
 from widgetastic.widget import Table, Text
 from widgetastic_patternfly import Button
 
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
-from airgun.widgets import PopOverWidget
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
+from airgun.widgets import FieldWithEditButton
 
 
-class SettingsView(BaseLoggedInView, SearchableViewMixinPF4):
+class SettingsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Settings']")
     table = Table(
         './/table',
-        column_widgets={'Value': PopOverWidget()},
+        column_widgets={'Value': FieldWithEditButton()},
     )
 
     @SatTab.nested

@@ -34,12 +34,13 @@ from widgetastic_patternfly4.table import BaseExpandableTable, BasePatternflyTab
 from widgetastic_patternfly5 import (
     Button as PF5Button,
     ExpandableSection as PF5ExpandableSection,
+    FormSelect,
     Progress as PF5Progress,
 )
 from widgetastic_patternfly5.ouia import (
     BaseSelect as PF5BaseSelect,
     Button as PF5OUIAButton,
-    Dropdown as PF5Dropdown,
+    Dropdown as PF5OUIADropdown,
     Menu as PF5Menu,
     OUIAGenericWidget,
 )
@@ -819,9 +820,16 @@ class Search(Widget):
         'or contains(@class, "dataTables_filter") or @id="search-bar"]'
     )
     search_field = TextInput(
-        locator=("//div[@class='title_filter']//input[contains(@aria-label, 'Search input')]")
+        locator=(
+            ".//input[@id='search' or contains(@placeholder, 'Filter') or "
+            "@ng-model='table.searchTerm' or contains(@ng-model, 'Filter') or "
+            "@data-autocomplete-id='searchBar' or contains(@placeholder, 'Search') "
+            "or contains(@class, 'search-input') or contains(@aria-label, 'Search input')]"
+        )
     )
-    search_button = PF5Button(locator=(".//button[@aria-label='Search']"))
+    search_button = PF5Button(
+        locator=".//button[span[normalize-space(.)='Search']] | .//button[@aria-label='Search']"
+    )
     clear_button = Text(
         ".//span[contains(@class,'autocomplete-clear-button') or contains(@class,'fa-close')]"
     )
@@ -1045,14 +1053,15 @@ class ValidationErrors(Widget):
 
     """
 
-    ERROR_ELEMENTS = ".//*[contains(@class,'has-error') and not(contains(@style,'display:none'))]"
+    ERROR_ELEMENTS = ".//*[(contains(@class,'has-error') or (contains(@class, 'pf-m-error') and string-length(normalize-space(string())) > 0)) and not(contains(@style,'display:none'))]"
     ERROR_MESSAGES = (
         ".//*[(contains(@class, 'alert base in fade alert-danger') "
         "or contains(@class, 'alert base in fade alert-warning') "
         "or contains(@class,'error-msg') "
-        "or contains(@class,'error-msg-block')"
+        "or contains(@class,'error-msg-block') "
         "or contains(@class,'error-message') "
-        "or contains(@class,'editable-error-block')) "
+        "or contains(@class,'editable-error-block') "
+        "or contains(@class,'pf-v5-c-helper-text__item-text')) "
         "and not(contains(@style,'display:none'))]"
     )
 
@@ -1061,6 +1070,9 @@ class ValidationErrors(Widget):
         """Returns boolean value whether view has fields with invalid data or
         not.
         """
+        time.sleep(
+            1
+        )  # ensure_page_safe doesn't help here and there's nothing to wait_for because the error won't always be there
         return self.browser.elements(self.ERROR_ELEMENTS) != []
 
     @property
@@ -1069,6 +1081,12 @@ class ValidationErrors(Widget):
         fields. Example: ["can't be blank"]
         """
         error_msgs = self.browser.elements(self.ERROR_MESSAGES)
+        if len(error_msgs) > 0:
+            wait_for(
+                lambda: any(self.browser.text(error_msg) for error_msg in error_msgs),
+                timeout=10,
+                delay=1,
+            )
         return [self.browser.text(error_msg) for error_msg in error_msgs]
 
     def assert_no_errors(self):
@@ -2685,6 +2703,34 @@ class PopOverWidget(View):
         return self.column_value.read()
 
 
+class FieldWithEditButton(Widget):
+    """A pair of a field and a button that makes the field editable.
+    After editing, confirm by checkmark or cancel by X.
+    Is present e.g. in PF5 Settings.
+    """
+
+    ROOT = '//td[2]'
+    text_input = TextInput(locator=".//input[@data-ouia-component-type='PF5/TextInput']")
+    text_area = TextInput(locator=".//textarea")
+    drop_down = FormSelect(locator=".//select[@data-ouia-component-type='PF5/FormSelect']")
+    edit_button = PF5Button(locator=".//button[contains(@data-ouia-component-id, 'edit-row')]")
+    confirm_button = PF5OUIAButton('submit-edit-btn')
+    cancel_button = PF5OUIAButton('cancel-edit-btn')
+    text = Text(locator=".//span")
+
+    def fill(self, item):
+        self.edit_button.click()
+        for widget_name in ['text_input', 'text_area', 'drop_down']:
+            widget = getattr(self, widget_name)
+            if widget.is_displayed:
+                widget.fill(item)
+                break
+        self.confirm_button.click()
+
+    def read(self):
+        return self.text.read()
+
+
 class AuthSourceAggregateCard(AggregateStatusCard):
     """This is a customizable card widget which has the title, count and kebab widget
 
@@ -2742,7 +2788,7 @@ class Accordion(View, ClickableMixin):
         self.browser.click(self.ITEM.format(value))
 
 
-class BaseMultiSelect(PF5BaseSelect, PF5Dropdown):
+class BaseMultiSelect(PF5BaseSelect, PF5OUIADropdown):
     """Represents the Patternfly Multi Select.
 
     https://www.patternfly.org/v4/documentation/react/components/select#multiple
