@@ -293,4 +293,4 @@ class ShowContentHostDetails(NavigateStep):
         host_view = NewHostDetailsView(self.parent.browser)
         host_view.wait_displayed()
         host_view.dropdown.wait_displayed()
-        host_view.dropdown.item_select('Legacy content host UI')
+        host_view.dropdown.item_select('Legacy UI')
