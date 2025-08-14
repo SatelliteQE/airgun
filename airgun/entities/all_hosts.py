@@ -490,7 +490,7 @@ class AllHostsEntity(BaseEntity):
         view.next_btn.click()
         manage_errata_text = view.review_hosts.content_text.read()
         return [manage_package_text, manage_errata_text]
-      
+
     def disassociate_hosts(self, host_names, select_all_hosts=False):
         """
         Navigate to the Disassociate hosts modal for selected hosts and disassociate them.
