@@ -24,11 +24,13 @@ from widgetastic_patternfly5.components.tabs import Tab
 from widgetastic_patternfly5.ouia import (
     Button as PF5Button,
     FormSelect as PF5FormSelect,
+    PatternflyTable as PF5OUIATable,
     Select as PF5OUIASelect,
     TextInput as PF5OUIATextInput,
 )
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.host_new import MenuToggleButtonMenu
 from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 from airgun.views.task import TaskDetailsView
 from airgun.widgets import (
@@ -226,17 +228,15 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     register = PF4Button('OUIA-Generated-Button-secondary-2')
     new_ui_button = Text(".//a[contains(@class, 'btn')][contains(@href, 'new/hosts')]")
     select_all = Checkbox(locator="//input[@id='check_all']")
-    table = SatTable(
-        './/table',
+    table = PF5OUIATable(
+        component_id='table',
         column_widgets={
-            0: Checkbox(locator=".//input[@type='checkbox']"),
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Name': Text(
                 ".//a[contains(@href, '/new/hosts/') and not(contains(@href, 'Red Hat Lightspeed'))]"
             ),
             'Recommendations': Text("./a"),
-            'Actions': ActionsDropdown(
-                ".//button[contains(@class, 'pf-v5-c-menu-toggle pf-m-plain') and @aria-label='Kebab toggle']"
-            ),
+            6: MenuToggleButtonMenu(),
         },
     )
     displayed_table_headers = ".//table/thead/tr/th[not(@hidden)]"
