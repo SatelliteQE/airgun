@@ -15,10 +15,10 @@ class CloudVulnerabilityEntity(BaseEntity):
 
 @navigator.register(CloudVulnerabilityEntity, 'All')
 class ShowVulnerabilityListView(NavigateStep):
-    """Navigate to main Insights -> Vulnerabilities page"""
+    """Navigate to main Red Hat Lightspeed -> Vulnerability page"""
 
     VIEW = CloudVulnerabilityView
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Insights', 'Vulnerabilities')
+        self.view.menu.select('Red Hat Lightspeed', 'Vulnerability')
