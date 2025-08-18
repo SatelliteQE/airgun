@@ -45,8 +45,17 @@ class CloudInventoryEntity(BaseEntity):
         view.wait_displayed()
         result = {
             'cloud_connector': view.cloud_connector.is_displayed,
+            'cloud_connector_text': (
+                view.cloud_connector.read() if view.cloud_connector.is_displayed else None
+            ),
             'reconfigure_cloud_connector': view.reconfigure_cloud_connector.is_displayed,
+            'reconfigure_cloud_connector_text': (
+                view.reconfigure_cloud_connector.read()
+                if view.reconfigure_cloud_connector.is_displayed
+                else None
+            ),
             'sync_status': view.sync_status.is_displayed,
+            'sync_status_text': view.sync_status.read() if view.sync_status.is_displayed else None,
         }
         return result
 
