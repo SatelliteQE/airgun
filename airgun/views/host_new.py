@@ -504,7 +504,7 @@ class NewHostDetailsView(BaseLoggedInView):
         cancel_addition = Button(locator='.//td[5]//button[1]')
         confirm_addition = Button(locator='.//td[5]//button[2]')
 
-        table_header = PatternflyTable(locator='.//table[@data-ouia-component-type="PF4/Table"]')
+        table_header = PF5OUIATable(component_id='parameters-table')
         parameters_table = Table(
             locator='.//table[@aria-label="Parameters table"]',
             column_widgets={

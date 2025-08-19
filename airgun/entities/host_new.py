@@ -44,6 +44,7 @@ def navigate_to_edit_view(func):
 
 
 class NewHostEntity(HostEntity):
+    endpoint_path = '/new/hosts'
     def create(self, values):
         """Create new host entity"""
         view = self.navigate_to(self, 'New')
@@ -62,8 +63,6 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        # Run this read twice to navigate to the page and load it before reading
-        view.read(widget_names=widget_names)
         return view.read(widget_names=widget_names)
 
     def run_bootc_job(self, entity_name, job_name, job_options=None):
