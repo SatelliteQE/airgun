@@ -45,6 +45,7 @@ def navigate_to_edit_view(func):
 
 class NewHostEntity(HostEntity):
     endpoint_path = '/new/hosts'
+
     def create(self, values):
         """Create new host entity"""
         view = self.navigate_to(self, 'New')
