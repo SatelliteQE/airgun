@@ -1,6 +1,6 @@
 from widgetastic.widget import Text, View
 from widgetastic_patternfly4 import Button
-from widgetastic_patternfly4.ouia import FormSelect
+from widgetastic_patternfly5.ouia import FormSelect as PF5FormSelect
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, WizardStepView
 from airgun.widgets import (
@@ -58,26 +58,26 @@ class RemediateModal(View):
 
     ROOT = '//div[contains(@data-ouia-component-id, "OUIA-Generated-Modal-large-")]'
 
-    title = Text('.//h2[contains(@class, "pf-c-title")]')
+    title = Text('.//h2[contains(@class, "pf-v5-c-wizard__title-text")]')
     close_modal = Button(locator='.//button[@aria-label="Close"]')
 
     @View.nested
     class select_remediation_method(WizardStepView):
         expander = Text(
-            './/button[contains(@class,"pf-c-wizard__nav-link") and contains(.,"Select snippet")]'
+            './/button[contains(@class,"pf-v5-c-wizard__nav-link") and contains(.,"Select snippet")]'
         )
-        snippet = FormSelect('snippet-select')
+        snippet = PF5FormSelect('snippet-select')
 
     @View.nested
     class name_source(WizardStepView):
         expander = Text(
-            './/button[contains(@class,"pf-c-wizard__nav-link") and contains(.,"Review hosts")]'
+            './/button[contains(@class,"pf-v5-c-wizard__nav-link") and contains(.,"Review hosts")]'
         )
         host_table = SatTable(".//table")
 
     @View.nested
     class select_capsule(WizardStepView):
         expander = Text(
-            './/button[contains(@class,"pf-c-wizard__nav-link") and contains(.,"Review remediation")]'
+            './/button[contains(@class,"pf-v5-c-wizard__nav-link") and contains(.,"Review remediation")]'
         )
         run = Button(locator='.//button[normalize-space(.)="Run"]')

@@ -23,6 +23,7 @@ from widgetastic_patternfly5 import (
     Tab as PF5Tab,
 )
 from widgetastic_patternfly5.ouia import (
+    Alert as PF5OUIAAlert,
     BreadCrumb,
     Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
@@ -368,6 +369,7 @@ class NewHostDetailsView(BaseLoggedInView):
         # TODO Setting ROOT is just a workaround because of BZ 2119076,
         # once this gets fixed we should use the parametrized locator from Tab class
         ROOT = './/div'
+        transient_install_alert = PF5OUIAAlert("image-mode-alert-info")
 
         @View.nested
         class packages(PF5Tab):
