@@ -756,6 +756,30 @@ class NewHostDetailsView(BaseLoggedInView):
         )
         pagination = PF5Pagination()
 
+    @View.nested
+    class vulnerabilities(PF5Tab):
+        ROOT = './/div'
+
+        search_bar = SearchInput(locator='.//input[contains(@aria-label, "search-field")]')
+        cve_menu_toggle = PF5Button(".//button[contains(@class, 'pf-v5-c-menu-toggle')]")
+        no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
+
+        vulnerabilities_table = PF5OUIATable(
+            locator='.//table[@data-ouia-component-type="PF5/Table"]',
+            column_widgets={
+                0: PF5Button(locator='.//button[@aria-label="Details"]'),
+                'CVE ID': Text('.//td[contains(@data-label, "CVE ID")]'),
+                'Publish date': Text('.//td[contains(@data-label, "Publish date")]'),
+                'Severity': Text('.//td[contains(@data-label, "Severity")]'),
+                'CVSS base score': Text('.//td[contains(@data-label, "CVSS base score")]'),
+            },
+        )
+        pagination = PF5Pagination()
+
+        @property
+        def is_displayed(self):
+            return self.vulnerabilities_table.wait_displayed()
+
 
 class InstallPackagesView(View):
     """Install packages modal"""
