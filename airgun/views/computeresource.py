@@ -456,3 +456,19 @@ class ComputeResourceVMwareImageEditView(
     ComputeResourceVMwareImageCreateView, ComputeResourceGenericImageEditViewMixin
 ):
     """VMWare ComputeResource Image edit View"""
+
+
+class ComputeResourceLibvirtImageCreateView(ComputeResourceGenericImageCreateView):
+    """Libvirt ComputeResource Image create View"""
+
+    image = None
+    image_path = TextInput(id='image_uuid')
+
+
+class ComputeResourceLibvirtImageEditView(
+    ComputeResourceLibvirtImageCreateView, ComputeResourceGenericImageEditViewMixin
+):
+    """Libvirt ComputeResource Image edit View"""
+
+    image = None
+    image_path = TextInput(id='image_uuid')

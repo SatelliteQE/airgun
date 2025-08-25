@@ -4,6 +4,8 @@ from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.computeresource import (
+    ComputeResourceLibvirtImageCreateView,
+    ComputeResourceLibvirtImageEditView,
     ComputeResourcesView,
     ComputeResourceVMwareImageCreateView,
     ComputeResourceVMwareImageEditView,
@@ -299,6 +301,7 @@ class ComputeResourceImageProvider(NavigateStep):
 class ComputeResourceImageCreate(ComputeResourceImageProvider):
     PROVIDER_VIEWS = {
         'VMware': ComputeResourceVMwareImageCreateView,
+        'Libvirt': ComputeResourceLibvirtImageCreateView,
     }
 
     def step(self, *args, **kwargs):
@@ -309,6 +312,7 @@ class ComputeResourceImageCreate(ComputeResourceImageProvider):
 class ComputeResourceImageEdit(ComputeResourceImageProvider):
     PROVIDER_VIEWS = {
         'VMware': ComputeResourceVMwareImageEditView,
+        'Libvirt': ComputeResourceLibvirtImageEditView,
     }
 
     def step(self, *args, **kwargs):
