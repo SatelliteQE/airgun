@@ -102,6 +102,7 @@ class ContentViewCreateView(BaseLoggedInView):
     solve_dependencies = Checkbox(id='dependencies')
     import_only = Checkbox(id='importOnly')
     composite_tile = Text('//div[contains(@id, "composite")]')
+    rolling_tile = Text('//div[contains(@id, "rolling")]')
     auto_publish = Checkbox(id='autoPublish')
 
     @property
