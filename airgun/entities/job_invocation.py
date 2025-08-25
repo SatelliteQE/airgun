@@ -11,7 +11,6 @@ from airgun.views.job_invocation import (
     JobInvocationCreateView,
     JobInvocationStatusView,
     JobInvocationsView,
-    NewJobInvocationStatusView,
 )
 from airgun.views.task import TaskDetailsView
 
@@ -32,10 +31,9 @@ class JobInvocationEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(value)
 
-    def read(self, entity_name, host_name, widget_names=None, new_ui=False):
+    def read(self, entity_name, host_name, widget_names=None):
         """Read values for scheduled or already executed job"""
-        nav_step = 'Job Status' if not new_ui else 'Job Status New UI'
-        view = self.navigate_to(self, nav_step, entity_name=entity_name, host_name=host_name)
+        view = self.navigate_to(self, 'Job Status', entity_name=entity_name, host_name=host_name)
         return view.read(widget_names=widget_names)
 
     def wait_job_invocation_state(self, entity_name, host_name, expected_state='succeeded'):
@@ -157,29 +155,3 @@ class JobStatus(NavigateStep):
     def step(self, *args, **kwargs):
         self.parent.search(f'host = {kwargs.get("host_name")}')
         self.parent.table.row(description=kwargs.get('entity_name'))['Description'].widget.click()
-
-
-@navigator.register(JobInvocationEntity, 'Job Status New UI')
-class NewJobStatus(NavigateStep):
-    """Navigate to the new job invocation details page.
-    Note: `Show Experimental Labs` setting must be enabled.
-
-    Args:
-       entity_name: name of the job
-       host_name: name of the host to which job was applied
-    """
-
-    VIEW = NewJobInvocationStatusView
-
-    def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(
-            self.obj,
-            'Job Status',
-            entity_name=kwargs.get('entity_name'),
-            host_name=kwargs.get('host_name'),
-        )
-
-    def step(self, *args, **kwargs):
-        self.parent.new_ui.click()
-        self.view.browser.plugin.ensure_page_safe()
-        self.view.wait_displayed()

@@ -1,7 +1,6 @@
 from wait_for import wait_for
 from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button
 from widgetastic_patternfly5 import (
     ChipGroup as PF5ChipGroup,
     DescriptionList,
@@ -9,7 +8,9 @@ from widgetastic_patternfly5 import (
 )
 from widgetastic_patternfly5.charts.donut_chart import DonutCircle, DonutLegend
 from widgetastic_patternfly5.ouia import (
+    Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
+    ExpandableTable as PF5OUIAExpandableTable,
     Select as PF5OUIASelect,
     Text as PF5OUIAText,
     TextInput as PF5OUIATextInput,
@@ -17,12 +18,29 @@ from widgetastic_patternfly5.ouia import (
 
 from airgun.views.common import (
     BaseLoggedInView,
-    SatTab,
     SatTable,
     SearchableViewMixin,
     WizardStepView,
 )
-from airgun.widgets import ActionsDropdown, PF5DataList, PF5LabeledExpandableSection
+from airgun.widgets import PF5DataList, PF5LabeledExpandableSection
+
+
+class HostsExpandableTable(PF5OUIAExpandableTable):
+
+    def read(self):
+        """Reads the hosts table.
+        For some reason, the hosts expandable table has always an extra empty <tbody/> tag at the end.
+        This causes problems for the table parser to process it properly.
+        So far, the only way to fix it seems to be manually removing the extra tag from the page.
+        """
+        wait_for(func=lambda: self.is_displayed, timeout=15, delay=1)
+        script = f'''
+        rows = document.getElementsByTagName('{self.ROW_TAG}');
+        last_row = rows[rows.length-1];
+        last_row.remove();
+        '''
+        self.browser.execute_script(script)
+        return super().read()
 
 
 class JobInvocationsView(BaseLoggedInView, SearchableViewMixin):
@@ -152,85 +170,10 @@ class JobInvocationCreateView(BaseLoggedInView):
 
 class JobInvocationStatusView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    BREADCRUMB_LENGTH = 2
-
-    @property
-    def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Jobs'
-            and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
-        )
-
-    rerun = Text("//a[normalize-space(.)='Rerun']")
-    rerun_failed = Text("//a[normalize-space(.)='Rerun failed']")
-    job_task = Text("//a[normalize-space(.)='Job Task']")
-    cancel_job = Button(value='Cancel Job')
-    abort_job = Button(value='Abort Job')
-    new_ui = Text("//a[normalize-space(.)='New UI']")
-
-    @View.nested
-    class overview(SatTab):
-        job_status = Text(
-            "//div[@id='job_invocations_chart_container']"
-            "//*[name()='tspan'][contains(@class,'donut-title-small-pf')]"
-        )
-        job_status_progress = Text(
-            "//div[@id='job_invocations_chart_container']"
-            "//*[name()='tspan'][contains(@class,'donut-title-big-pf')]"
-        )
-        execution_order = Text("//p[contains(., 'Execution order:')]")
-        hosts_table = SatTable(
-            './/table',
-            column_widgets={
-                'Host': Text('./a'),
-                'Actions': ActionsDropdown('.//div[contains(@class, "btn-group")]'),
-            },
-        )
-        total_hosts = Text(
-            "//h2[contains(., 'Total hosts')]/span[@class='card-pf-aggregate-status-count']"
-        )
-
-    @View.nested
-    class leapp_preupgrade_report(SatTab):
-        ROOT = '//div[@id="content"]//ul/li/a[contains(text(), "Leapp preupgrade report")][@href="#leapp_preupgrade_report"]'
-        TAB_NAME = 'Leapp preupgrade report'
-
-        leapp_report_title = Checkbox(
-            locator='//*[@id="preupgrade-report-entries-list-view"]//input[@type="checkbox"]'
-        )
-        fix_selected = Text('//*[@id="leapp_preupgrade_report"]//button[text()="Fix Selected"]')
-        run_upgrade = Text('//*[@id="leapp_preupgrade_report"]//button[text()="Run Upgrade"]')
-
-    def wait_for_result(self, timeout=600, delay=1):
-        """Wait for invocation job to finish"""
-        wait_for(
-            lambda: (
-                self.is_displayed
-                and self.overview.job_status.is_displayed
-                and self.overview.job_status_progress.is_displayed
-            ),
-            timeout=timeout,
-            delay=delay,
-            logger=self.logger,
-        )
-        wait_for(
-            lambda: (
-                self.overview.job_status.read() != 'Pending'
-                and self.overview.job_status_progress.read() == '100%'
-            ),
-            timeout=timeout,
-            delay=1,
-            logger=self.logger,
-        )
-
-
-class NewJobInvocationStatusView(BaseLoggedInView):
-    breadcrumb = BreadCrumb()
     title = PF5OUIAText(component_id='breadcrumb_title')
-    create_report = Button(value='Create report')
+    create_report = PF5OUIAButton(component_id='button-create-report')
     actions = PF5OUIADropdown(component_id='job-invocation-global-actions-dropdown')
+    rerun_all = PF5OUIAButton(component_id='button-rerun-all')
     BREADCRUMB_LENGTH = 2
 
     @property
@@ -251,16 +194,39 @@ class NewJobInvocationStatusView(BaseLoggedInView):
             and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
         )
 
+    def wait_for_result(self, timeout=600, delay=1):
+        """Wait for invocation job(s) to finish"""
+        wait_for(
+            lambda: self.is_displayed,
+            timeout=timeout,
+            delay=delay,
+            logger=self.logger,
+        )
+        wait_for(
+            lambda: self.status.read()['In Progress'] == 0,
+            timeout=timeout,
+            delay=1,
+            logger=self.logger,
+        )
+
     @View.nested
     class overall_status(DonutCircle):
         """The donut circle with the overall job status of '{succeeded hosts}/{total hosts}'"""
 
         def read(self):
             """Return `dict` with the parsed overall status numbers, for example:
-            ```{'succeeded_hosts': 2, 'total_hosts': 5}```
+            ```{'succeeded_hosts': 2, 'total_hosts': 5, 'is_success': False}```
+
+            The 'is_success' key was artificially added for convenience, to check the overall job status.
+            Note: Any running or pending job will return negative result (False).
             """
-            succeeded_hosts, total_hosts = self.labels[0].split('/')
-            return {'succeeded_hosts': int(succeeded_hosts), 'total_hosts': int(total_hosts)}
+            succeeded_hosts, total_hosts = [int(value) for value in self.labels[0].split('/')]
+            is_success = total_hosts > 0 and total_hosts == succeeded_hosts
+            return {
+                'succeeded_hosts': succeeded_hosts,
+                'total_hosts': total_hosts,
+                'is_success': is_success,
+            }
 
     @View.nested
     class status(DonutLegend):
@@ -304,3 +270,29 @@ class NewJobInvocationStatusView(BaseLoggedInView):
 
         def read(self):
             return {'data': self.data.read()}
+
+    @View.nested
+    class leapp_preupgrade_report(View):
+        """LEAPP Preupgrade Report view placeholder.
+        This part has not been implemented yet to the new job details page.
+        Needed for bug SAT-28216
+        """
+
+        pass
+
+    @View.nested
+    class hosts(View):
+        table = HostsExpandableTable(
+            component_id="table",
+            column_widgets={
+                1: Checkbox(locator='.//input[@type="checkbox"]'),
+                'Name': Text('./a'),
+                'Host group': Text('./a'),
+                'OS': Text('./a'),
+                'Capsule': Text('./a'),
+                'Status': Text('./span'),
+            },
+        )
+
+        def read(self):
+            return self.table.read()

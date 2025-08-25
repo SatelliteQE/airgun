@@ -20,7 +20,6 @@ from airgun.views.hostcollection import (
 from airgun.views.job_invocation import (
     JobInvocationCreateView,
     JobInvocationStatusView,
-    NewJobInvocationStatusView,
 )
 
 
@@ -118,7 +117,7 @@ class HostCollectionEntity(BaseEntity):
         # wait for the job deatils to load
         time.sleep(3)
         # After this step the user is redirected to job status view.
-        job_status_view = NewJobInvocationStatusView(view.browser)
+        job_status_view = JobInvocationStatusView(view.browser)
         wait_for(
             lambda: (job_status_view.status.read()['In Progress'] != 1),
             timeout=300,
@@ -177,7 +176,7 @@ class HostCollectionEntity(BaseEntity):
             job_create_view.submit.click()
 
         # After this step the user is redirected to job status view.
-        job_status_view = NewJobInvocationStatusView(view.browser)
+        job_status_view = JobInvocationStatusView(view.browser)
         wait_for(
             lambda: (job_status_view.status.read()['In Progress'] != 1),
             timeout=300,
