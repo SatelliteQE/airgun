@@ -1,7 +1,7 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.cloud_insights import CloudInsightsView, CloudTokenView
+from airgun.views.cloud_insights import CloudInsightsView, CloudTokenView, RecommendationsTabView, RecommendationsTableExpandedRowView
 
 
 class CloudInsightsEntity(BaseEntity):
@@ -48,6 +48,35 @@ class CloudInsightsEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.fill(values)
 
+class RecommendationsTabEntity(BaseEntity):
+    endpoint_path = '/foreman_rh_cloud/insights_cloud'
+
+    def search(self, value):
+        """Search for 'query' and return matched hostnames/recommendations.
+
+        :param value: text to filter (default: no filter)
+        """
+        view = self.navigate_to(self, 'All')
+        view.clear_button.click()
+        view.search_field.fill(value)
+        return self.table.read()
+
+    def affected_systems(self):
+        """"""
+        view = self.navigate_to(self, 'All')
+        view.table.click()
+        #view = self.edit_helper(acs_name_to_edit)
+        # Close side panel view
+        view.capsules.affected_systems_url.click()
+        view = RecommendationsTableExpandedRowView(self.browser)
+        #view.wait_for(lambda: view.available_options_search.is_displayed, timeout=10, delay=1)
+
+    def read(self, widget_names=None):
+        """Read all values."""
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='10s')
+        view.wait_displayed()
+        return view.read(widget_names=widget_names)
 
 @navigator.register(CloudInsightsEntity, 'Token')
 class SaveCloudTokenView(NavigateStep):
@@ -65,6 +94,17 @@ class ShowCloudInsightsView(NavigateStep):
     """Navigate to main Red Hat Lightspeed page"""
 
     VIEW = CloudInsightsView
+
+    @retry_navigation
+    def step(self, *args, **kwargs):
+        self.view.menu.select('Red Hat Lightspeed', 'Recommendations')
+
+
+@navigator.register(RecommendationsTabEntity, 'All')
+class ShowRecommendationsView(NavigateStep):
+    """Navigate to main Red Hat Lightspeed page"""
+
+    VIEW = RecommendationsTabView
 
     @retry_navigation
     def step(self, *args, **kwargs):
