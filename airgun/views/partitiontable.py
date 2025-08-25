@@ -12,10 +12,10 @@ from airgun.views.common import (
     BaseLoggedInView,
     SatTab,
     SearchableViewMixinPF4,
+    TemplateEditor,
     TemplateInputItem,
 )
 from airgun.widgets import (
-    ACEEditor,
     ActionsDropdown,
     FilteredDropdown,
     MultiSelect,
@@ -58,7 +58,7 @@ class PartitionTableEditView(BaseLoggedInView):
         class OSFamilyOption(View):
             os_family = FilteredDropdown(id='ptable_os_family')
 
-        template_editor = ACEEditor()
+        template_editor = TemplateEditor()
         audit_comment = TextInput(id='ptable_audit_comment')
 
     @View.nested

@@ -557,9 +557,21 @@ class TemplateEditor(View):
     ROOT = ".//div[@id='editor-container']"
     rendering_options = ItemsList(".//div[contains(@class,'navbar-editor')]/ul")
     import_template = Button(id='import-btn')
-    fullscreen = Button(id='fullscreen-btn')
+    fullscreen = Text(locator=".//button[@id='fullscreen-btn']")
+    fullscreen_close = Text(
+        locator="//button[@data-ouia-component-id='editor-modal-component-ModalBoxCloseButton']"
+    )
+    fullscreen_textarea = TextInput(locator="//div[@id='editor']/textarea")
     error = Text(".//div[@id='preview_error_toast']")
     editor = ACEEditor()
+
+    def fill(self, values):
+        if values.pop('fullscreen', False):
+            fullscreen_data = values.pop('editor')
+            self.fullscreen.click()
+            self.fullscreen_textarea.fill(fullscreen_data)
+            self.fullscreen_close.click()
+        super().fill(values)
 
 
 class SearchableViewMixin(WTMixin):
