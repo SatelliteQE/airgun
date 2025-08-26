@@ -735,6 +735,8 @@ class NewHostDetailsView(BaseLoggedInView):
     class insights(PF5Tab):
         ROOT = './/div'
 
+        TAB_NAME = 'Red Hat Lightspeed'
+
         search_bar = SearchInput(locator='.//input[contains(@class, "pf-v5-c-text-input")]')
         remediate = PF5Button(locator='.//button[text()="Remediate"]')
         insights_dropdown = Dropdown(locator='.//div[contains(@class, "insights-dropdown")]')
@@ -745,7 +747,7 @@ class NewHostDetailsView(BaseLoggedInView):
         )
 
         recommendations_table = PF5OUIATable(
-            component_id='OUIA-Generated-Table-2',
+            component_id='rh-cloud-recommendations-table',
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
                 'Recommendation': Text('.//td[2]'),
