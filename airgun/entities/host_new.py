@@ -912,6 +912,7 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
+        wait_for(lambda: view.insights.recommendations_table.is_displayed, timeout=10)
         return view.insights.read()
 
     def remediate_with_insights(
