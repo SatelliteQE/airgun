@@ -25,13 +25,15 @@ from airgun.views.contentview_new import (
 class NewContentViewEntity(BaseEntity):
     endpoint_path = '/content_views'
 
-    def create(self, values, composite=False):
+    def create(self, values, composite=False, rolling=False):
         """Create a new content view"""
         view = self.navigate_to(self, 'New')
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
         if composite:
             view.composite_tile.click()
+        if rolling:
+            view.rolling_tile.click()
         view.fill(values)
         view.submit.click()
 
@@ -172,6 +174,38 @@ class NewContentViewEntity(BaseEntity):
         if search_param:
             getattr(view, tab_name).searchbox.search(search_param)
         return getattr(view, tab_name).table.read()
+
+    def rolling_cv_read(self, entity_name):
+        """Verify that rolling CVs display only the fields they should"""
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        rolling_cv_acceptable_fields = True
+        # Versions tab
+        try:
+            view.versions.read()
+        except NoSuchElementException:
+            pass
+        else:
+            rolling_cv_acceptable_fields = False
+        # Filters tab
+        try:
+            view.filters.read()
+        except NoSuchElementException:
+            pass
+        else:
+            rolling_cv_acceptable_fields = False
+        # Publish button
+        try:
+            view.publish.read()
+        except NoSuchElementException:
+            pass
+        else:
+            rolling_cv_acceptable_fields = False
+        # Copy dropdown
+        if view.cv_actions.has_item('Copy'):
+            rolling_cv_acceptable_fields = False
+        return rolling_cv_acceptable_fields
 
     def create_filter(self, entity_name, filter_name, filter_type, filter_inclusion):
         """Create a new filter on a CV - filter_type should be one of the available dropdown options
