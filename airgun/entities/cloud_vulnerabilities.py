@@ -9,8 +9,7 @@ class CloudVulnerabilityEntity(BaseEntity):
 
     def read(self, entity_name=None, widget_names=None):
         view = self.navigate_to(self, 'All')
-        result = view.read(widget_names=widget_names)
-        return result
+        return view.vulnerabilities_table.read()
 
 
 @navigator.register(CloudVulnerabilityEntity, 'All')
