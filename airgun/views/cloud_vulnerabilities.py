@@ -1,6 +1,6 @@
 from widgetastic.widget import Text
 from widgetastic_patternfly5 import Button as PF5Button, Pagination as PF5Pagination
-from widgetastic_patternfly5.ouia import PatternflyTable as PF5OUIATable
+from widgetastic_patternfly5.ouia import ExpandableTable as PF5OUIAExpandableTable
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import SearchInput
@@ -26,8 +26,8 @@ class CloudVulnerabilityView(BaseLoggedInView):
     cve_menu_toggle = PF5Button('.//button[contains(@class, "pf-v5-c-menu-toggle")]')
     no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
 
-    vulnerabilities_table = PF5OUIATable(
-        locator='.//table[@data-ouia-component-type="PF5/Table"]',
+    vulnerabilities_table = PF5OUIAExpandableTable(
+        component_id='OUIA-Generated-Table-1',
         column_widgets={
             0: PF5Button(locator='.//button[@aria-label="Details"]'),
             'CVE ID': Text('.//td[contains(@data-label, "CVE ID")]'),
