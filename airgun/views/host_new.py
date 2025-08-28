@@ -766,8 +766,8 @@ class NewHostDetailsView(BaseLoggedInView):
         cve_menu_toggle = PF5Button(".//button[contains(@class, 'pf-v5-c-menu-toggle')]")
         no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
 
-        vulnerabilities_table = PF5OUIATable(
-            locator='.//table[@data-ouia-component-type="PF5/Table"]',
+        vulnerabilities_table = PF5OUIAExpandableTable(
+            component_id='OUIA-Generated-Table-2',
             column_widgets={
                 0: PF5Button(locator='.//button[@aria-label="Details"]'),
                 'CVE ID': Text('.//td[contains(@data-label, "CVE ID")]'),
@@ -780,7 +780,12 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @property
         def is_displayed(self):
-            return self.vulnerabilities_table.wait_displayed()
+            table_displayed = self.vulnerabilities_table.wait_displayed(exception=False)
+            no_cves_message_displayed = (
+                self.browser.wait_for_element(self.no_cves_found_message, exception=False)
+                is not None
+            )
+            return table_displayed or no_cves_message_displayed
 
 
 class InstallPackagesView(View):

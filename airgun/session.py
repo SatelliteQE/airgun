@@ -23,6 +23,7 @@ from airgun.entities.bootc import BootcEntity
 from airgun.entities.capsule import CapsuleEntity
 from airgun.entities.cloud_insights import CloudInsightsEntity
 from airgun.entities.cloud_inventory import CloudInventoryEntity
+from airgun.entities.cloud_vulnerabilities import CloudVulnerabilityEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.computeresource import ComputeResourceEntity
 from airgun.entities.config_report import ConfigReportEntity
@@ -398,6 +399,11 @@ class Session:
     def cloudinsights(self):
         """Instance of Insights entity."""
         return self._open(CloudInsightsEntity)
+
+    @cached_property
+    def cloudvulnerability(self):
+        """Instance of Insights entity."""
+        return self._open(CloudVulnerabilityEntity)
 
     @cached_property
     def computeprofile(self):
