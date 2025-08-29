@@ -3,6 +3,7 @@ from widgetastic_patternfly5 import (
     Button as PF5Button,
     Pagination as PF5Pagination,
     Title as PF5Title,
+    ExpandableTable as pf5expandabletable,
 )
 from widgetastic_patternfly5.ouia import (
     Dropdown as PF5OUIADropdown,
@@ -10,6 +11,7 @@ from widgetastic_patternfly5.ouia import (
     PatternflyTable as PF5OUIAPatternflyTable,
     Switch as PF5OUIASwitch,
     Text as PF5Text,
+    TextInput as PF5TextInput,
     ExpandableTable as PF5ExpandableTable,
 )
 
@@ -79,7 +81,22 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
 class RecommendationsDetails(View):
     """Models everything in the recommendations details views execpt the affected system link
     """
-
+    title = PF5Title('Affected Systems')
+    remediate = PF5Button('Remediate')
+    download_playbook = PF5Button('Download playbook')
+    search_field = TextInput(locator=(".//input[@aria-label='text input']"))
+    bulk_select= PF5Button(".//button[@data-ouia-component-id='BulkSelect']")
+    table = pf5expandabletable(
+        locator='.//table[contains(@aria-label, "Host inventory")]',
+        #content_view=doweneedthis?
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            "Name": Text(".//a"),
+            "OS": Text(".//span"),
+            "Last seen": Text(".//span"),
+            "First impacted": Text(".//span"),
+        },
+    )
     pass
 
 class RecommendationsTableExpandedRowView(RecommendationsDetails, View):
@@ -101,11 +118,13 @@ class RecommendationsTabView(BaseLoggedInView):
     #disable_recommendation_modal = View.nested(DisableRecommendationModal)
     title = PF5Title('Recommendations')
     search_field = TextInput(locator=(".//input[@aria-label='text input']"))
-    clear_button = PF5Button("Reset Filters")
-    # incidents = PF5Text(component_id='Incidents')
-    # critical_recommendations = PF5Text(component_id='Critical recommendations')
-    # important_recommendations = PF5Text(component_id='Important recommendations')
-    conditional_filter_dropdown = PF5OUIADropdown(component_id = 'ConditionalFilter')
+    clear_button = PF5Button("Reset filters")
+    incidents = Text(locator=".//a[@data-testid='Incidents']")
+    critical_recommendations = Text(locator=".//a[@data-testid='Critical recommendations']")
+    important_recommendations = Text(locator=".//a[@data-testid='Important recommendations']")
+    # critical_recommendations = pf5text(component_id='OUIA-Generated-Text-2')
+    # important_recommendations = pf5text(component_id='OUIA-Generated-Text-3')
+    conditional_filter_dropdown = PF5TextInput(component_id = 'ConditionalFilter')
     #export_dropdown = Dropdown(locator=".//*[contains(@aria-label, 'Export')]/..")
     #reset_filters_button = Button("Reset filters")
     #include_disabled_recommendations_button = PF5Button("Include disabled recommendations")
@@ -114,10 +133,10 @@ class RecommendationsTabView(BaseLoggedInView):
     # )
     #lower_pagination = Pagination(locator=".//*[contains(@class, '-m-bottom')]")
 
-    table = PF5ExpandableTable(
-        #locator='.//table[contains(@aria-label, "rule-table")]',
+    table = pf5expandabletable(
+        locator='.//table[contains(@aria-label, "rule-table")]',
         content_view=RecommendationsTableExpandedRowView,
-        component_id='OUIA-Generated-Table-3',
+        #component_id='OUIA-Generated-Table-3',
         column_widgets={
             "Name": Text(".//a"),
             "Modified": Text(".//span"),

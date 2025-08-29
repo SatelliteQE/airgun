@@ -1,7 +1,7 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.cloud_insights import CloudInsightsView, CloudTokenView, RecommendationsTabView, RecommendationsTableExpandedRowView
+from airgun.views.cloud_insights import CloudInsightsView, CloudTokenView, RecommendationsTabView, RecommendationsDetails
 
 
 class CloudInsightsEntity(BaseEntity):
@@ -61,15 +61,20 @@ class RecommendationsTabEntity(BaseEntity):
         view.search_field.fill(value)
         return self.table.read()
 
-    def affected_systems(self):
-        """"""
+    def affected_systems(self, recommendation_name: str):
+        """Open the Affected systems page for a given recommendation.
+
+        Returns a RecommendationsDetailsView instance for further interactions.
+        """
         view = self.navigate_to(self, 'All')
-        view.table.click()
-        #view = self.edit_helper(acs_name_to_edit)
-        # Close side panel view
-        view.capsules.affected_systems_url.click()
-        view = RecommendationsTableExpandedRowView(self.browser)
-        #view.wait_for(lambda: view.available_options_search.is_displayed, timeout=10, delay=1)
+        view.clear_button.click()
+        view.search_field.fill(recommendation_name)
+        #add some wait time here. Page does not always load in time
+        row = view.table.row(name=recommendation_name)
+        row.expand()
+        row.content.affected_systems_url.click()
+        self.browser.plugin.ensure_page_safe(timeout='30s')
+        return RecommendationsDetails(self.browser)
 
     def read(self, widget_names=None):
         """Read all values."""
