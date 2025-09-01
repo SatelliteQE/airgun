@@ -735,7 +735,7 @@ class NewHostDetailsView(BaseLoggedInView):
     class insights(PF5Tab):
         ROOT = './/div'
 
-        TAB_NAME = 'Red Hat Lightspeed'
+        TAB_NAME = 'Recommendations'
 
         search_bar = SearchInput(locator='.//input[contains(@class, "pf-v5-c-text-input")]')
         remediate = PF5Button(locator='.//button[text()="Remediate"]')
