@@ -221,7 +221,6 @@ class HostCollectionEntity(BaseEntity):
             view.submit.click()
         view = JobInvocationStatusView(view.browser)
         view.wait_for_result()
-        view.browser.refresh()
         return view.read()
 
     def change_assigned_content(self, entity_name, lce, content_view):
