@@ -69,6 +69,7 @@ class ContentHostEntity(BaseEntity):
         view.packages_actions.perform.click()
         view = JobInvocationStatusView(view.browser)
         view.wait_for_result()
+        view.browser.refresh()
         return view.read()
 
     def bulk_set_syspurpose(self, hosts, values):
@@ -117,6 +118,7 @@ class ContentHostEntity(BaseEntity):
             view.submit.click()
         view = JobInvocationStatusView(view.browser)
         view.wait_for_result()
+        view.browser.refresh()
         return view.read()
 
     def search_package(self, entity_name, package_name):
