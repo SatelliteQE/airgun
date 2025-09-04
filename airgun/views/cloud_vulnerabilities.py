@@ -1,6 +1,9 @@
 from widgetastic.widget import Text
 from widgetastic_patternfly5 import Button as PF5Button, Pagination as PF5Pagination
-from widgetastic_patternfly5.ouia import ExpandableTable as PF5OUIAExpandableTable
+from widgetastic_patternfly5.ouia import (
+    ExpandableTable as PF5OUIAExpandableTable,
+    PatternflyTable as PF5OUIAPatternflyTable,
+)
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import SearchInput
@@ -38,6 +41,26 @@ class CloudVulnerabilityView(BaseLoggedInView):
         },
     )
     pagination = PF5Pagination()
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+class CVEDetailsView:
+    """Class that describes the Vulnerabilities Details page"""
+
+    title = Text('.//h1[@data-ouia-component-type="RHI/Header"]')
+    description = Text('.//div[@class="pf-v5-c-content"]')
+
+    affected_hosts_table = PF5OUIAPatternflyTable(
+        component_id='OUIA-Generated-Table-1',
+        column_widgets={
+            'Name': Text('./a'),
+            'OS': Text('.//td[contains(@data-label, "OS")]'),
+            'Last seen': Text('.//td[contains(@data-label, "Last seen")]'),
+        },
+    )
 
     @property
     def is_displayed(self):
