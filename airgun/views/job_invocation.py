@@ -208,6 +208,7 @@ class JobInvocationStatusView(BaseLoggedInView):
             delay=1,
             logger=self.logger,
         )
+        self.browser.refresh()
 
     @View.nested
     class overall_status(DonutCircle):

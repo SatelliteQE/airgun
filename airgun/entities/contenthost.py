@@ -106,6 +106,7 @@ class ContentHostEntity(BaseEntity):
         if customize_values is None:
             customize_values = {}
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.wait_displayed()
         view.module_streams.search(f'name = {module_name} and stream = {stream_version}')
         action_type = {'is_customize': customize, 'action': action_type}
         view.module_streams.table.row(name=module_name, stream=stream_version)['Actions'].fill(
