@@ -1,6 +1,6 @@
 from widgetastic.widget import ConditionalSwitchableView, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button as PF4Button, Pagination as PF4Pagination
+from widgetastic_patternfly4 import Button as PF4Button, Pagination as PF4Pagination, ChipGroup as PF4ChipGroup
 from widgetastic_patternfly4.ouia import Select as OUIASelect
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
@@ -142,6 +142,9 @@ class HostGroupCreateView(BaseLoggedInView):
     class activation_keys(SatTab):
         TAB_NAME = 'Activation Keys'
         activation_keys = OUIASelect('ak-select')
+        ak_chip_group = PF4ChipGroup(
+            locator='//div[@aria-label="Chip group category" and @data-ouia-component-type="PF4/ChipGroup"]'
+        )
 
 
 class HostGroupEditView(HostGroupCreateView):
