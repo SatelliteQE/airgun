@@ -1,6 +1,10 @@
 from widgetastic.widget import ConditionalSwitchableView, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Button as PF4Button, Pagination as PF4Pagination, ChipGroup as PF4ChipGroup
+from widgetastic_patternfly4 import (
+    Button as PF4Button,
+    ChipGroup as PF4ChipGroup,
+    Pagination as PF4Pagination,
+)
 from widgetastic_patternfly4.ouia import Select as OUIASelect
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
