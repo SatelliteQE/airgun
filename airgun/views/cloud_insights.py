@@ -97,7 +97,16 @@ class RecommendationsDetails(View):
             "First impacted": Text(".//span"),
         },
     )
-    pass
+
+    @property
+    def is_empty(self):
+        """Check whether the table is empty."""
+        return self.table.is_displayed
+
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 class RecommendationsTableExpandedRowView(RecommendationsDetails, View):
     """View that models the recommendation expandable row content"""
@@ -150,7 +159,7 @@ class RecommendationsTabView(BaseLoggedInView):
     @property
     def is_empty(self):
         """Check whether the table is empty."""
-        return self.include_disabled_recommendations_button.is_displayed
+        return self.table.is_displayed
 
 
     @property
