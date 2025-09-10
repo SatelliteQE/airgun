@@ -33,11 +33,11 @@ class CloudVulnerabilityView(BaseLoggedInView):
         component_id='OUIA-Generated-Table-1',
         column_widgets={
             0: PF5Button(locator='.//button[@aria-label="Details"]'),
-            'CVE ID': Text('.//td[contains(@data-label, "CVE ID")]'),
-            'Publish date': Text('.//td[contains(@data-label, "Publish date")]'),
-            'Severity': Text('.//td[contains(@data-label, "Severity")]'),
-            'CVSS base score': Text('.//td[contains(@data-label, "CVSS base score")]'),
-            'Affected hosts': Text('.//td[contains(@data-label, "Affected hosts")]'),
+            'CVE ID': Text('.//td[@data-label="CVE ID"]'),
+            'Publish date': Text('.//td[@data-label="Publish date"]'),
+            'Severity': Text('.//td[@data-label="Severity"]'),
+            'CVSS base score': Text('.//td[@data-label="CVSS base score"]'),
+            'Affected hosts': Text('.//td[@data-label="Affected hosts"]'),
         },
     )
     pagination = PF5Pagination()
@@ -47,12 +47,12 @@ class CloudVulnerabilityView(BaseLoggedInView):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
-class CVEDetailsView:
+class CVEDetailsView(BaseLoggedInView):
     """Class that describes the Vulnerabilities Details page"""
 
     title = Text('.//h1[@data-ouia-component-type="RHI/Header"]')
     description = Text('.//div[@class="pf-v5-c-content"]')
-
+    search_bar = SearchInput(locator='.//input[contains(@aria-label, "search-field")]')
     affected_hosts_table = PF5OUIAPatternflyTable(
         component_id='OUIA-Generated-Table-1',
         column_widgets={
