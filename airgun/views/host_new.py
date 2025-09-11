@@ -19,6 +19,7 @@ from widgetastic_patternfly4.ouia import (
 from widgetastic_patternfly5 import (
     Button as PF5Button,
     Dropdown as PF5Dropdown,
+    ExpandableTable as pf5OUIAExpandableTable,
     Menu as PF5Menu,
     Pagination as PF5Pagination,
     Tab as PF5Tab,
@@ -767,8 +768,9 @@ class NewHostDetailsView(BaseLoggedInView):
         cve_menu_toggle = PF5Button(".//button[contains(@class, 'pf-v5-c-menu-toggle')]")
         no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
 
-        vulnerabilities_table = PF5OUIAExpandableTable(
-            component_id='OUIA-Generated-Table-2',
+        vulnerabilities_table = pf5OUIAExpandableTable(
+            # component_id='OUIA-Generated-Table-2',
+            locator='.//table[contains(@class, "pf-v5-c-table")]',
             column_widgets={
                 0: PF5Button(locator='.//button[@aria-label="Details"]'),
                 'CVE ID': Text('.//td[contains(@data-label, "CVE ID")]'),

@@ -1,7 +1,13 @@
 from widgetastic.widget import Text
-from widgetastic_patternfly5 import Button as PF5Button, Pagination as PF5Pagination
-from widgetastic_patternfly5.ouia import (
+
+# from widgetastic_patternfly5.ouia import (
+#     ExpandableTable as PF5OUIAExpandableTable,
+#     PatternflyTable as PF5OUIAPatternflyTable,
+# )
+from widgetastic_patternfly5 import (
+    Button as PF5Button,
     ExpandableTable as PF5OUIAExpandableTable,
+    Pagination as PF5Pagination,
     PatternflyTable as PF5OUIAPatternflyTable,
 )
 
@@ -30,7 +36,8 @@ class CloudVulnerabilityView(BaseLoggedInView):
     no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
 
     vulnerabilities_table = PF5OUIAExpandableTable(
-        component_id='OUIA-Generated-Table-1',
+        # component_id='OUIA-Generated-Table-1',
+        locator='.//table[contains(@class, "pf-v5-c-table")]',
         column_widgets={
             0: PF5Button(locator='.//button[@aria-label="Details"]'),
             'CVE ID': Text('.//td[@data-label="CVE ID"]'),
@@ -54,7 +61,8 @@ class CVEDetailsView(BaseLoggedInView):
     description = Text('.//div[@class="pf-v5-c-content"]')
     search_bar = SearchInput(locator='.//input[contains(@aria-label, "search-field")]')
     affected_hosts_table = PF5OUIAPatternflyTable(
-        component_id='OUIA-Generated-Table-1',
+        # component_id='OUIA-Generated-Table-1',
+        locator='.//table[contains(@class, "pf-v5-c-table")]',
         column_widgets={
             'Name': Text('./a'),
             'OS': Text('.//td[contains(@data-label, "OS")]'),
