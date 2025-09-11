@@ -1,7 +1,12 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.cloud_insights import CloudInsightsView, CloudTokenView, RecommendationsTabView, RecommendationsDetails
+from airgun.views.cloud_insights import (
+    CloudInsightsView,
+    CloudTokenView,
+    RecommendationsDetails,
+    RecommendationsTabView,
+)
 
 
 class CloudInsightsEntity(BaseEntity):
@@ -61,20 +66,43 @@ class RecommendationsTabEntity(BaseEntity):
         view.search_field.fill(value)
         return self.table.read()
 
-    def affected_systems(self, recommendation_name: str):
-        """Open the Affected systems page for a given recommendation.
+    def affected_systems(self, recommendation_name: str, hostname: str):
+        """Open Affected systems, filter by hostname, select it, and click Remediate.
 
-        Returns a RecommendationsDetailsView instance for further interactions.
+        Returns the details view contents after remediation click.
         """
         view = self.navigate_to(self, 'All')
         view.clear_button.click()
         view.search_field.fill(recommendation_name)
-        #add some wait time here. Page does not always load in time
+        # Allow the table to refresh after searching
+        self.browser.plugin.ensure_page_safe(timeout='30s')
+        view.table.wait_displayed()
+        # recommendation_view = RecommendationsTabView(self.browser)
+        # recommendation_view.wait_displayed()
+        # # Wait for the affected systems table to be present and visible
+        # self.browser.wait_for_element(recommendation_view.table, ensure_page_safe=True, exception=False)
         row = view.table.row(name=recommendation_name)
         row.expand()
         row.content.affected_systems_url.click()
+        # Ensure navigation completed and affected systems view is fully loaded
+        #self.browser.plugin.ensure_page_safe(timeout='30s')
+        details_view = RecommendationsDetails(self.browser)
+        details_view.wait_displayed()
+        # Wait for the affected systems table to be present and visible
+        self.browser.wait_for_element(details_view.table, ensure_page_safe=True, exception=False)
+        details_view.table.wait_displayed()
+        # Filter by hostname and wait for results
+        details_view.search_field.fill(hostname)
+        self.browser.plugin.ensure_page_safe(timeout='15s')
+        details_view.table.wait_displayed()
+
+        # Select the target host row and remediate
+        host_row = details_view.table.row(name=hostname)
+        host_row[0].widget.fill(True)
+        details_view.remediate.click()
         self.browser.plugin.ensure_page_safe(timeout='30s')
-        return RecommendationsDetails(self.browser)
+
+        return details_view.read()
 
     def read(self, widget_names=None):
         """Read all values."""

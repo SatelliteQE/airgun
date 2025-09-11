@@ -106,7 +106,7 @@ class RecommendationsDetails(View):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.table, exception=False) is not None
 
 class RecommendationsTableExpandedRowView(RecommendationsDetails, View):
     """View that models the recommendation expandable row content"""
@@ -164,7 +164,7 @@ class RecommendationsTabView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.table, exception=False) is not None
 
 
 class RecommendationsDetailsView(SearchableViewMixinPF4, RecommendationsDetails):
