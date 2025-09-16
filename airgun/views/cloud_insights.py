@@ -77,8 +77,12 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
+class RemediateSummary(PF5OUIAModal):
+    """Models the Remediation summary page and button"""
+    title = PF5Title('Remediation summary')
+    remediate = PF5Button('Remediate')
 
-class RecommendationsDetails(View):
+class RecommendationsDetailsView(BaseLoggedInView):
     """Models everything in the recommendations details views execpt the affected system link
     """
     title = PF5Title('Affected Systems')
@@ -88,7 +92,6 @@ class RecommendationsDetails(View):
     bulk_select= PF5Button(".//button[@data-ouia-component-id='BulkSelect']")
     table = pf5expandabletable(
         locator='.//table[contains(@aria-label, "Host inventory")]',
-        #content_view=doweneedthis?
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
             "Name": Text(".//a"),
@@ -106,9 +109,9 @@ class RecommendationsDetails(View):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.table, exception=False) is not None
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
-class RecommendationsTableExpandedRowView(RecommendationsDetails, View):
+class RecommendationsTableExpandedRowView(RecommendationsDetailsView, View):
     """View that models the recommendation expandable row content"""
 
     affected_systems_url = Text(
@@ -123,29 +126,16 @@ class RecommendationsTableExpandedRowView(RecommendationsDetails, View):
 
 class RecommendationsTabView(BaseLoggedInView):
     """View representing the Recommendations Tab."""
-
-    #disable_recommendation_modal = View.nested(DisableRecommendationModal)
     title = PF5Title('Recommendations')
     search_field = TextInput(locator=(".//input[@aria-label='text input']"))
     clear_button = PF5Button("Reset filters")
     incidents = Text(locator=".//a[@data-testid='Incidents']")
     critical_recommendations = Text(locator=".//a[@data-testid='Critical recommendations']")
     important_recommendations = Text(locator=".//a[@data-testid='Important recommendations']")
-    # critical_recommendations = pf5text(component_id='OUIA-Generated-Text-2')
-    # important_recommendations = pf5text(component_id='OUIA-Generated-Text-3')
     conditional_filter_dropdown = PF5TextInput(component_id = 'ConditionalFilter')
-    #export_dropdown = Dropdown(locator=".//*[contains(@aria-label, 'Export')]/..")
-    #reset_filters_button = Button("Reset filters")
-    #include_disabled_recommendations_button = PF5Button("Include disabled recommendations")
-    # upper_pagination = CompactPagination(
-    #     locator=".//*[contains(@data-ouia-component-id, 'CompactPagination')]"
-    # )
-    #lower_pagination = Pagination(locator=".//*[contains(@class, '-m-bottom')]")
-
     table = pf5expandabletable(
         locator='.//table[contains(@aria-label, "rule-table")]',
         content_view=RecommendationsTableExpandedRowView,
-        #component_id='OUIA-Generated-Table-3',
         column_widgets={
             "Name": Text(".//a"),
             "Modified": Text(".//span"),
@@ -166,7 +156,3 @@ class RecommendationsTabView(BaseLoggedInView):
     def is_displayed(self):
         return self.browser.wait_for_element(self.table, exception=False) is not None
 
-
-class RecommendationsDetailsView(SearchableViewMixinPF4, RecommendationsDetails):
-    """Modify affected system table here to apply remediations"""
-    pass
