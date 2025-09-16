@@ -4,10 +4,13 @@ from airgun.utils import retry_navigation
 from airgun.views.cloud_insights import (
     CloudInsightsView,
     CloudTokenView,
-    RecommendationsDetails,
+    RecommendationsDetailsView,
     RecommendationsTabView,
+    RemediateSummary,
 )
+from wait_for import wait_for
 
+from airgun.views.job_invocation import JobInvocationStatusView
 
 class CloudInsightsEntity(BaseEntity):
     endpoint_path = '/foreman_rh_cloud/insights_cloud'
@@ -66,43 +69,34 @@ class RecommendationsTabEntity(BaseEntity):
         view.search_field.fill(value)
         return self.table.read()
 
-    def affected_systems(self, recommendation_name: str, hostname: str):
+    def remediate_affected_systems(self, recommendation_name, hostname):
         """Open Affected systems, filter by hostname, select it, and click Remediate.
 
         Returns the details view contents after remediation click.
         """
-        view = self.navigate_to(self, 'All')
-        view.clear_button.click()
-        view.search_field.fill(recommendation_name)
-        # Allow the table to refresh after searching
-        self.browser.plugin.ensure_page_safe(timeout='30s')
-        view.table.wait_displayed()
-        # recommendation_view = RecommendationsTabView(self.browser)
-        # recommendation_view.wait_displayed()
-        # # Wait for the affected systems table to be present and visible
-        # self.browser.wait_for_element(recommendation_view.table, ensure_page_safe=True, exception=False)
-        row = view.table.row(name=recommendation_name)
-        row.expand()
-        row.content.affected_systems_url.click()
-        # Ensure navigation completed and affected systems view is fully loaded
-        #self.browser.plugin.ensure_page_safe(timeout='30s')
-        details_view = RecommendationsDetails(self.browser)
-        details_view.wait_displayed()
+        # Use navigator to open the Affected Systems details view
+        view = self.navigate_to(
+            self, 'Affected Systems', recommendation_name=recommendation_name
+        )
+        view.wait_displayed()
         # Wait for the affected systems table to be present and visible
-        self.browser.wait_for_element(details_view.table, ensure_page_safe=True, exception=False)
-        details_view.table.wait_displayed()
+        self.browser.wait_for_element(view.table, ensure_page_safe=True, exception=False)
+        view.table.wait_displayed()
         # Filter by hostname and wait for results
-        details_view.search_field.fill(hostname)
-        self.browser.plugin.ensure_page_safe(timeout='15s')
-        details_view.table.wait_displayed()
-
+        view.search_field.fill(hostname)
+        self.browser.plugin.ensure_page_safe(timeout='10s')
         # Select the target host row and remediate
-        host_row = details_view.table.row(name=hostname)
-        host_row[0].widget.fill(True)
-        details_view.remediate.click()
+        wait_for(lambda: view.table[0][1] is not None, timeout=10, delay=1)
+        view.table[0][0].widget.click()
+        view.remediate.click()
         self.browser.plugin.ensure_page_safe(timeout='30s')
+        modal = RemediateSummary(self.browser)
+        if modal.is_displayed:
+            modal.remediate.click()
+        view = JobInvocationStatusView(view.browser)
+        view.wait_for_result()
+        return view.read()
 
-        return details_view.read()
 
     def read(self, widget_names=None):
         """Read all values."""
@@ -110,6 +104,27 @@ class RecommendationsTabEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe(timeout='10s')
         view.wait_displayed()
         return view.read(widget_names=widget_names)
+
+
+@navigator.register(RecommendationsTabEntity, 'Affected Systems')
+class NavigateToAffectedSystems(NavigateStep):
+    """Navigate from Recommendations tab to the Affected Systems details view."""
+
+    VIEW = RecommendationsDetailsView
+
+    def prerequisite(self, *args, **kwargs):
+        # Ensure we are on the Recommendations tab first
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        recommendation_name = kwargs.get('recommendation_name')
+        # Filter by recommendation name and open its expanded content
+        self.parent.clear_button.click()
+        self.parent.search_field.fill(recommendation_name)
+        self.parent.table.wait_displayed()
+        row = self.parent.table.row(name=recommendation_name)
+        row.expand()
+        row.content.affected_systems_url.click()
 
 @navigator.register(CloudInsightsEntity, 'Token')
 class SaveCloudTokenView(NavigateStep):
