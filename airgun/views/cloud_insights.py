@@ -4,6 +4,7 @@ from widgetastic_patternfly5 import (
     Pagination as PF5Pagination,
     Title as PF5Title,
     ExpandableTable as pf5expandabletable,
+    PatternflyTable as PF5Table,
 )
 from widgetastic_patternfly5.ouia import (
     Dropdown as PF5OUIADropdown,
@@ -11,7 +12,7 @@ from widgetastic_patternfly5.ouia import (
     PatternflyTable as PF5OUIAPatternflyTable,
     Switch as PF5OUIASwitch,
     Text as PF5Text,
-    TextInput as PF5TextInput,
+    TextInput as PF5OUIATextInput,
     ExpandableTable as PF5ExpandableTable,
 )
 
@@ -86,11 +87,12 @@ class RecommendationsDetailsView(BaseLoggedInView):
     """Models everything in the recommendations details views execpt the affected system link
     """
     title = PF5Title('Affected Systems')
+    clear_button = PF5Button("Reset filters")
     remediate = PF5Button('Remediate')
     download_playbook = PF5Button('Download playbook')
     search_field = TextInput(locator=(".//input[@aria-label='text input']"))
     bulk_select= PF5Button(".//button[@data-ouia-component-id='BulkSelect']")
-    table = pf5expandabletable(
+    table = PF5Table(
         locator='.//table[contains(@aria-label, "Host inventory")]',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -132,7 +134,8 @@ class RecommendationsTabView(BaseLoggedInView):
     incidents = Text(locator=".//a[@data-testid='Incidents']")
     critical_recommendations = Text(locator=".//a[@data-testid='Critical recommendations']")
     important_recommendations = Text(locator=".//a[@data-testid='Important recommendations']")
-    conditional_filter_dropdown = PF5TextInput(component_id = 'ConditionalFilter')
+    #conditional_filter_dropdown = PF5OUIATextInput(component_id = 'ConditionalFilter')
+    conditional_filter_dropdown = PF5OUIATextInput('ConditionalFilter')
     table = pf5expandabletable(
         locator='.//table[contains(@aria-label, "rule-table")]',
         content_view=RecommendationsTableExpandedRowView,
