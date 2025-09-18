@@ -1,3 +1,5 @@
+from wait_for import wait_for
+
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
@@ -10,12 +12,14 @@ class CloudVulnerabilityEntity(BaseEntity):
 
     def read(self, entity_name=None, widget_names=None):
         view = self.navigate_to(self, 'All')
+        wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
         return view.vulnerabilities_table.read()
 
     def _navigate_to_cve_details(self, cve_id):
         """Helper method to navigate to CVE details page"""
         view = self.navigate_to(self, 'All')
         view.wait_displayed()
+        wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
         view.search_bar.fill(cve_id)
         view.browser.element(f'.//a[contains(@href, "{cve_id}")]').click()
 
@@ -39,6 +43,7 @@ class CloudVulnerabilityEntity(BaseEntity):
         """
         self._navigate_to_cve_details(cve_id)
         cve_details_view = CVEDetailsView(self.browser)
+        wait_for(lambda: cve_details_view.affected_hosts_table.is_displayed, timeout=30)
         return cve_details_view.affected_hosts_table.read()
 
     def validate_cve_to_host_details_flow(self, cve_id, hostname=None):
@@ -51,10 +56,14 @@ class CloudVulnerabilityEntity(BaseEntity):
         """
         self._navigate_to_cve_details(cve_id)
         cve_details_view = CVEDetailsView(self.browser)
+        wait_for(lambda: cve_details_view.affected_hosts_table.is_displayed, timeout=30)
         cve_details_view.search_bar.fill(hostname)
         cve_details_view.browser.element(f'.//a[contains(text(), "{hostname}")]').click()
         host_details_view = NewHostDetailsView(self.browser)
         host_details_view.breadcrumb.wait_displayed()
+        wait_for(
+            lambda: host_details_view.vulnerabilities.vulnerabilities_table.is_displayed, timeout=30
+        )
         vulnerabilities = getattr(host_details_view.vulnerabilities, 'vulnerabilities_table', None)
         if vulnerabilities is not None:
             return vulnerabilities.read()
