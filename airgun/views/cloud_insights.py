@@ -157,5 +157,5 @@ class RecommendationsTabView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.table, exception=False) is not None
+        return self.browser.wait_for_element(self.table, exception=False) is not None and self.browser.wait_for_element(self.clear_button, exception=False) is not None
 

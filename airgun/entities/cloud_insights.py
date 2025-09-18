@@ -90,6 +90,7 @@ class RecommendationsTabEntity(BaseEntity):
         # Select the target host row and remediate
         # wait_for(lambda: view.table[0][1] is not None, timeout=10, delay=1)
         wait_for(lambda: view.table.row(name=hostname), timeout=15)
+        time.sleep(5)
         view.table[0][0].widget.click()
         time.sleep(5)
         view.remediate.click()
