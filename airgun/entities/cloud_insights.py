@@ -12,6 +12,8 @@ from wait_for import wait_for
 
 from airgun.views.job_invocation import JobInvocationStatusView
 
+import time
+
 class CloudInsightsEntity(BaseEntity):
     endpoint_path = '/foreman_rh_cloud/insights_cloud'
 
@@ -86,8 +88,10 @@ class RecommendationsTabEntity(BaseEntity):
         view.search_field.fill(hostname)
         self.browser.plugin.ensure_page_safe(timeout='10s')
         # Select the target host row and remediate
-        wait_for(lambda: view.table[0][1] is not None, timeout=10, delay=1)
+        # wait_for(lambda: view.table[0][1] is not None, timeout=10, delay=1)
+        wait_for(lambda: view.table.row(name=hostname), timeout=15)
         view.table[0][0].widget.click()
+        time.sleep(5)
         view.remediate.click()
         self.browser.plugin.ensure_page_safe(timeout='30s')
         modal = RemediateSummary(self.browser)
@@ -121,8 +125,9 @@ class NavigateToAffectedSystems(NavigateStep):
         # Filter by recommendation name and open its expanded content
         self.parent.clear_button.click()
         self.parent.search_field.fill(recommendation_name)
-        self.parent.table.wait_displayed()
-        row = self.parent.table.row(name=recommendation_name)
+        # self.parent.table.wait_displayed()
+        # row = self.parent.table.row(name=recommendation_name)
+        row, _ = wait_for(lambda: self.parent.table.row(name=recommendation_name), timeout=5)
         row.expand()
         row.content.affected_systems_url.click()
 
