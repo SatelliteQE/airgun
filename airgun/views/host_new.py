@@ -177,23 +177,23 @@ class NewHostDetailsView(BaseLoggedInView):
         class host_status(Card):
             ROOT = './/div[@data-ouia-component-id="card-aggregate-status"]'
 
-            status = Text('.//h4[contains(@class, "pf-v5-c-empty-state__title")]')
+            status = Text('.//div[contains(@class, "pf-v5-c-card__title")]')
             manage_all_statuses = Text('.//a[normalize-space(.)="Manage all statuses"]')
 
-            status_success = Text('.//a[span[@class="status-success"]]')
-            status_warning = Text('.//a[span[@class="status-warning"]]')
-            status_error = Text('.//a[span[@class="status-error"]]')
-            status_disabled = Text('.//a[span[@class="disabled"]]')
+            status_success = Text('.//a[.//span[@class="status-success"]]')
+            status_warning = Text('.//a[.//span[@class="status-warning"]]')
+            status_error = Text('.//a[.//span[@class="status-error"]]')
+            status_disabled = Text('.//a[.//span[@class="disabled"]]')
 
         class recent_audits(Card):
-            ROOT = './/article[.//div[text()="Recent audits"]]'
+            ROOT = './/div[@data-ouia-component-id="audit-card"]'
 
             all_audits = Text('.//a[normalize-space(.)="All audits"]')
             table = SatTableWithoutHeaders(locator='.//table[@aria-label="audits table"]')
 
         @View.nested
         class recent_communication(Card):
-            ROOT = './/article[.//div[text()="Recent communication"]]'
+            ROOT = './/div[@data-ouia-component-id="card-template-Recent communication"]'
 
             last_checkin_value = Text('.//div[@class="pf-v5-c-description-list__text"]')
 
@@ -205,14 +205,14 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class content_view_details(Card):
-            ROOT = './/article[.//div[text()="Content view details"]]'
+            ROOT = './/div[@data-ouia-component-id="content-view-details-card"]'
             actions = Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]')
 
             org_view = Text('.//a[contains(@href, "content_views")]')
 
         @View.nested
         class installable_errata(Card):
-            ROOT = './/article[.//div[text()="Installable errata"]]'
+            ROOT = './/div[@data-ouia-component-id="errata-card"]'
 
             security_advisory = Text('.//a[contains(@href, "type=security")]')
             bug_fixes = Text('.//a[contains(@href, "type=bugfix")]')
@@ -220,7 +220,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class total_risks(Card):
-            ROOT = './/article[.//div[text()="Total risks"]]'
+            ROOT = './/div[@data-ouia-component-id="card-template-Total risks"]'
             actions = Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]')
 
             low = Text('.//*[@id="legend-labels-0"]/*')
@@ -230,7 +230,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class host_collections(Card):
-            ROOT = './/article[.//div[text()="Host collections"]]'
+            ROOT = './/div[@data-ouia-component-id="host-collections-card"]'
             kebab_menu = Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]')
             no_host_collections = Text('.//h2')
             add_to_host_collection = PF5OUIAButton('add-to-a-host-collection-button')
@@ -239,7 +239,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class recent_jobs(Card):
-            ROOT = './/article[.//div[text()="Recent jobs"]]'
+            ROOT = './/div[@data-ouia-component-id="card-template-Recent jobs"]'
             actions = Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]')
 
             class finished(Tab):
@@ -253,7 +253,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class system_purpose(Card):
-            ROOT = './/article[.//div[text()="System purpose"]]'
+            ROOT = './/div[@data-ouia-component-id="system-purpose-card"]'
             edit_system_purpose = Text(
                 './/button[@data-ouia-component-id="syspurpose-edit-button"]'
             )
