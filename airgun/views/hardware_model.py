@@ -1,12 +1,11 @@
 from widgetastic.widget import Text, TextInput
 from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly5.ouia import PatternflyTable as PF5OUIATable
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
-from airgun.widgets import Pf5ConfirmationDialog
 from airgun.views.host_new import MenuToggleButtonMenu
-from widgetastic_patternfly5.ouia import (
-    PatternflyTable as PF5OUIATable
-)
+from airgun.widgets import Pf5ConfirmationDialog
+
 
 class DeleteHardwareModelDialog(Pf5ConfirmationDialog):
     confirm_dialog = Text(".//button[contains(normalize-space(.),'Delete')]")
