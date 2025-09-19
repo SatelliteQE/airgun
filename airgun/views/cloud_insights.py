@@ -3,7 +3,7 @@ from widgetastic_patternfly5 import (
     Button as PF5Button,
     Pagination as PF5Pagination,
     Title as PF5Title,
-    ExpandableTable as pf5expandabletable,
+    ExpandableTable as PF5ExpandableTable,
     PatternflyTable as PF5Table,
 )
 from widgetastic_patternfly5.ouia import (
@@ -11,9 +11,7 @@ from widgetastic_patternfly5.ouia import (
     Modal as PF5OUIAModal,
     PatternflyTable as PF5OUIAPatternflyTable,
     Switch as PF5OUIASwitch,
-    Text as PF5Text,
     TextInput as PF5OUIATextInput,
-    ExpandableTable as PF5ExpandableTable,
 )
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
@@ -111,7 +109,7 @@ class RecommendationsDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.browser.wait_for_element(self.table, exception=False) is not None
 
 class RecommendationsTableExpandedRowView(RecommendationsDetailsView, View):
     """View that models the recommendation expandable row content"""
@@ -134,9 +132,8 @@ class RecommendationsTabView(BaseLoggedInView):
     incidents = Text(locator=".//a[@data-testid='Incidents']")
     critical_recommendations = Text(locator=".//a[@data-testid='Critical recommendations']")
     important_recommendations = Text(locator=".//a[@data-testid='Important recommendations']")
-    #conditional_filter_dropdown = PF5OUIATextInput(component_id = 'ConditionalFilter')
     conditional_filter_dropdown = PF5OUIATextInput('ConditionalFilter')
-    table = pf5expandabletable(
+    table = PF5ExpandableTable(
         locator='.//table[contains(@aria-label, "rule-table")]',
         content_view=RecommendationsTableExpandedRowView,
         column_widgets={

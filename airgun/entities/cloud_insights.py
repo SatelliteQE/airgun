@@ -67,9 +67,11 @@ class RecommendationsTabEntity(BaseEntity):
         :param value: text to filter (default: no filter)
         """
         view = self.navigate_to(self, 'All')
+        time.sleep(5)
         view.clear_button.click()
         view.search_field.fill(value)
-        return self.table.read()
+        time.sleep(5)
+        return view.table.read()
 
     def remediate_affected_systems(self, recommendation_name, hostname):
         """Open Affected systems, filter by hostname, select it, and click Remediate.
@@ -80,19 +82,12 @@ class RecommendationsTabEntity(BaseEntity):
         view = self.navigate_to(
             self, 'Affected Systems', recommendation_name=recommendation_name
         )
-        view.wait_displayed()
-        # Wait for the affected systems table to be present and visible
-        self.browser.wait_for_element(view.table, ensure_page_safe=True, exception=False)
-        view.table.wait_displayed()
-        # Filter by hostname and wait for results
+        time.sleep(5)
+        # Filter by hostname and apply recommendation
         view.search_field.fill(hostname)
-        self.browser.plugin.ensure_page_safe(timeout='10s')
-        # Select the target host row and remediate
-        # wait_for(lambda: view.table[0][1] is not None, timeout=10, delay=1)
-        wait_for(lambda: view.table.row(name=hostname), timeout=15)
-        time.sleep(5)
+        wait_for(lambda: view.table.row(name=hostname),  handle_exception=True, timeout=20)
         view.table[0][0].widget.click()
-        time.sleep(5)
+        time.sleep(15)
         view.remediate.click()
         self.browser.plugin.ensure_page_safe(timeout='30s')
         modal = RemediateSummary(self.browser)
@@ -124,10 +119,10 @@ class NavigateToAffectedSystems(NavigateStep):
     def step(self, *args, **kwargs):
         recommendation_name = kwargs.get('recommendation_name')
         # Filter by recommendation name and open its expanded content
+        time.sleep(5)
         self.parent.clear_button.click()
         self.parent.search_field.fill(recommendation_name)
-        # self.parent.table.wait_displayed()
-        # row = self.parent.table.row(name=recommendation_name)
+        time.sleep(5)
         row, _ = wait_for(lambda: self.parent.table.row(name=recommendation_name), timeout=5)
         row.expand()
         row.content.affected_systems_url.click()
