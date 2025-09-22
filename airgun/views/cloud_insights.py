@@ -12,6 +12,7 @@ from widgetastic_patternfly5.ouia import (
     PatternflyTable as PF5OUIAPatternflyTable,
     Switch as PF5OUIASwitch,
     TextInput as PF5OUIATextInput,
+    Select as PF5Select,
 )
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
@@ -81,6 +82,12 @@ class RemediateSummary(PF5OUIAModal):
     title = PF5Title('Remediation summary')
     remediate = PF5Button('Remediate')
 
+# class BulkSelectMenu(PF5Menu):
+#     IS_ALWAYS_OPEN = False
+#     #BUTTON_LOCATOR = ".//button[contains(@class, 'pf-v5-c-menu-toggle')]"
+#     BUTTON_LOCATOR = ".//button[@data-ouia-component-id='BulkSelect']"
+#     ROOT = f"{BUTTON_LOCATOR}/.."
+
 class RecommendationsDetailsView(BaseLoggedInView):
     """Models everything in the recommendations details views execpt the affected system link
     """
@@ -89,7 +96,7 @@ class RecommendationsDetailsView(BaseLoggedInView):
     remediate = PF5Button('Remediate')
     download_playbook = PF5Button('Download playbook')
     search_field = TextInput(locator=(".//input[@aria-label='text input']"))
-    bulk_select= PF5Button(".//button[@data-ouia-component-id='BulkSelect']")
+    #bulk_select= PF5Select(".//button[@data-ouia-component-id='BulkSelect']")
     table = PF5Table(
         locator='.//table[contains(@aria-label, "Host inventory")]',
         column_widgets={

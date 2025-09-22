@@ -82,12 +82,12 @@ class RecommendationsTabEntity(BaseEntity):
         view = self.navigate_to(
             self, 'Affected Systems', recommendation_name=recommendation_name
         )
-        time.sleep(5)
+        view.search_field.wait_displayed()
         # Filter by hostname and apply recommendation
         view.search_field.fill(hostname)
         wait_for(lambda: view.table.row(name=hostname),  handle_exception=True, timeout=20)
-        view.table[0][0].widget.click()
         time.sleep(15)
+        view.table[0][0].widget.click()
         view.remediate.click()
         self.browser.plugin.ensure_page_safe(timeout='30s')
         modal = RemediateSummary(self.browser)
@@ -97,6 +97,27 @@ class RecommendationsTabEntity(BaseEntity):
         view.wait_for_result()
         return view.read()
 
+    def bulk_remediate_affected_systems(self, recommendation_name):
+        """Open Affected systems, bulk select affected systems, and click Remediate.
+
+        Returns the details view contents after remediation click.
+        """
+        # Use navigator to open the Affected Systems details view
+        view = self.navigate_to(
+            self, 'Affected Systems', recommendation_name=recommendation_name
+        )
+        #view.search_field.wait_displayed()
+        wait_for(lambda: view.table.row(),  handle_exception=True, timeout=20)
+        time.sleep(15)
+        view.bulk_select.click()
+        view.remediate.click()
+        self.browser.plugin.ensure_page_safe(timeout='30s')
+        modal = RemediateSummary(self.browser)
+        if modal.is_displayed:
+            modal.remediate.click()
+        view = JobInvocationStatusView(view.browser)
+        view.wait_for_result()
+        return view.read()
 
     def read(self, widget_names=None):
         """Read all values."""
