@@ -1,5 +1,6 @@
 import time
 
+from selenium.webdriver.common.by import By
 from widgetastic.widget import Checkbox, Text, TextInput, View, Widget
 from widgetastic.widget.table import Table
 from widgetastic_patternfly4 import (
@@ -917,12 +918,11 @@ class ManageColumnsView(BaseLoggedInView):
         '[normalize-space(.)="{}"]/preceding-sibling::button'
     )
     DEFAULT_COLLAPSED_SECTIONS = [
-        CHECKBOX_SECTION_TOGGLE.format('Content'),
         CHECKBOX_SECTION_TOGGLE.format('Network'),
         CHECKBOX_SECTION_TOGGLE.format('Reported data'),
-        CHECKBOX_SECTION_TOGGLE.format('RH Cloud'),
+        CHECKBOX_SECTION_TOGGLE.format('Red Hat Lightspeed'),
+        CHECKBOX_SECTION_TOGGLE.format('Content'),
     ]
-    is_tree_collapsed = True
     title = Text(
         './/header//span[contains(@class, "pf-v5-c-modal-box__title")]'
         '[normalize-space(.)="Manage columns"]'
@@ -934,17 +934,48 @@ class ManageColumnsView(BaseLoggedInView):
     def collapsed_sections(self):
         return (self.browser.element(locator) for locator in self.DEFAULT_COLLAPSED_SECTIONS)
 
+    def get_tree_sections_state(self):
+        sections = self.browser.selenium.find_elements(
+            By.XPATH, '//div[@class="pf-v5-c-tree-view"]/ul/li'
+        )
+
+        expanded = []
+        collapsed = []
+
+        for section in sections:
+            # Get the label text
+            label = section.find_element(
+                By.XPATH, './/span[contains(@class,"pf-v5-c-tree-view__node-text")]'
+            ).text.strip()
+
+            state = section.get_attribute("aria-expanded")
+
+            if state == "true":
+                expanded.append(label)
+            elif state == "false":
+                collapsed.append(label)
+            else:
+                # No aria-expanded means it`s a leaf node
+                collapsed.append(label)
+
+        return expanded, collapsed
+
+    def sections_state(self):
+        expanded, collapsed = self.get_tree_sections_state()
+        return {"expanded": expanded, "collapsed": collapsed}
+
     @property
     def is_displayed(self):
         title = self.browser.wait_for_element(self.title, exception=False)
         return title is not None and title.is_displayed()
 
     def expand_all(self):
-        """Expand all tree sections that are collapsed by default"""
-        if self.is_tree_collapsed:
-            for checkbox_group in self.collapsed_sections():
-                checkbox_group.click()
-                self.is_tree_collapsed = False
+        """Expand all tree sections that are collapsed"""
+        sections_state = self.sections_state()
+        if sections_state["collapsed"] != []:
+            for section in sections_state["collapsed"]:
+                section_toggle_to_expand_xpath = self.CHECKBOX_SECTION_TOGGLE.format(section)
+                self.browser.element(section_toggle_to_expand_xpath).click()
 
     def read(self):
         """

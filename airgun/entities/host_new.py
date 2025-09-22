@@ -7,6 +7,7 @@ from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.fact import HostFactView
+from airgun.views.host import HostsView as LegacyHostsView
 from airgun.views.host_new import (
     AllAssignedRolesView,
     EditAnsibleRolesView,
@@ -1028,6 +1029,15 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         value = view.ansible.variables.table.row(name=key)['Value'].read()
         return value
+
+    def show_hosts_legacy_ui(self):
+        """Switch to legacy Hosts UI"""
+        view = self.navigate_to(self, 'NewUIAll')
+        view.actions.item_select('Legacy UI')
+        legacy_view = LegacyHostsView(self.browser)
+        legacy_view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return legacy_view
 
 
 @navigator.register(HostEntity, 'NewUIAll')
