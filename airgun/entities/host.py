@@ -602,6 +602,9 @@ class HostsManageColumns(NavigateStep):
 
     def step(self, *args, **kwargs):
         """Open the Manage columns dialog"""
+        self.parent.browser.plugin.ensure_page_safe()
+        self.parent.wait_displayed()
+        self.parent.manage_columns.wait_displayed()
         self.parent.manage_columns.click()
 
 
