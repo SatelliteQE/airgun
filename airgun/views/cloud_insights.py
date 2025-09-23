@@ -5,6 +5,7 @@ from widgetastic_patternfly5 import (
     Title as PF5Title,
     ExpandableTable as PF5ExpandableTable,
     PatternflyTable as PF5Table,
+    Menu as PF5Menu,
 )
 from widgetastic_patternfly5.ouia import (
     Dropdown as PF5OUIADropdown,
@@ -12,7 +13,6 @@ from widgetastic_patternfly5.ouia import (
     PatternflyTable as PF5OUIAPatternflyTable,
     Switch as PF5OUIASwitch,
     TextInput as PF5OUIATextInput,
-    Select as PF5Select,
 )
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
@@ -76,17 +76,43 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
+class BulkSelectMenuToggle(PF5Menu):
+    """
+    A menu toggle component that combines a checkbox with a dropdown menu.
+    Used for bulk selection operations with additional menu options.
+    Usage example (view.bulk_select = BulkSelectMenuToggle()):
+        view.bulk_select.select_all() -> to select all items using the checkbox
+        view.bulk_select.deselect_all() -> to deselect all items using the checkbox
+        view.bulk_select.is_all_selected -> to check if all items are selected
+        view.bulk_select.items -> to access the menu items (['Select none', 'Select page (1 items)', 'Select all (1 items)'])
+        view.bulk_select.item_select('Select none') -> to select a specific item by name
+    """
+    IS_ALWAYS_OPEN = False
+    BUTTON_LOCATOR = './/button[@data-ouia-component-id="BulkSelect"]'
+    ROOT = f"{BUTTON_LOCATOR}/.."
+    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
+    ITEM_LOCATOR = (
+        "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
+    )
+    # Checkbox element within the menu toggle
+    checkbox = Checkbox(locator='.//input[@data-ouia-component-id="BulkSelectCheckbox"]')
+    def select_all(self):
+        """Select all items using the checkbox."""
+        if not self.checkbox.selected:
+            self.checkbox.click()
+    def deselect_all(self):
+        """Deselect all items using the checkbox."""
+        if self.checkbox.selected:
+            self.checkbox.click()
+    @property
+    def is_all_selected(self):
+        """Return True if the select all checkbox is checked."""
+        return self.checkbox.selected
 
 class RemediateSummary(PF5OUIAModal):
     """Models the Remediation summary page and button"""
     title = PF5Title('Remediation summary')
     remediate = PF5Button('Remediate')
-
-# class BulkSelectMenu(PF5Menu):
-#     IS_ALWAYS_OPEN = False
-#     #BUTTON_LOCATOR = ".//button[contains(@class, 'pf-v5-c-menu-toggle')]"
-#     BUTTON_LOCATOR = ".//button[@data-ouia-component-id='BulkSelect']"
-#     ROOT = f"{BUTTON_LOCATOR}/.."
 
 class RecommendationsDetailsView(BaseLoggedInView):
     """Models everything in the recommendations details views execpt the affected system link
@@ -96,7 +122,7 @@ class RecommendationsDetailsView(BaseLoggedInView):
     remediate = PF5Button('Remediate')
     download_playbook = PF5Button('Download playbook')
     search_field = TextInput(locator=(".//input[@aria-label='text input']"))
-    #bulk_select= PF5Select(".//button[@data-ouia-component-id='BulkSelect']")
+    bulk_select = BulkSelectMenuToggle()
     table = PF5Table(
         locator='.//table[contains(@aria-label, "Host inventory")]',
         column_widgets={
