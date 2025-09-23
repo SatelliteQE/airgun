@@ -1,3 +1,7 @@
+import time
+
+from wait_for import wait_for
+
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
@@ -8,11 +12,8 @@ from airgun.views.cloud_insights import (
     RecommendationsTabView,
     RemediateSummary,
 )
-from wait_for import wait_for
-
 from airgun.views.job_invocation import JobInvocationStatusView
 
-import time
 
 class CloudInsightsEntity(BaseEntity):
     endpoint_path = '/foreman_rh_cloud/insights_cloud'
@@ -58,6 +59,7 @@ class CloudInsightsEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.fill(values)
 
+
 class RecommendationsTabEntity(BaseEntity):
     endpoint_path = '/foreman_rh_cloud/insights_cloud'
 
@@ -79,13 +81,11 @@ class RecommendationsTabEntity(BaseEntity):
         Returns the details view contents after remediation click.
         """
         # Use navigator to open the Affected Systems details view
-        view = self.navigate_to(
-            self, 'Affected Systems', recommendation_name=recommendation_name
-        )
+        view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
         view.search_field.wait_displayed()
         # Filter by hostname and apply recommendation
         view.search_field.fill(hostname)
-        wait_for(lambda: view.table.row(name=hostname),  handle_exception=True, timeout=20)
+        wait_for(lambda: view.table.row(name=hostname), handle_exception=True, timeout=20)
         time.sleep(15)
         view.table[0][0].widget.click()
         view.remediate.click()
@@ -103,11 +103,9 @@ class RecommendationsTabEntity(BaseEntity):
         Returns the details view contents after remediation click.
         """
         # Use navigator to open the Affected Systems details view
-        view = self.navigate_to(
-            self, 'Affected Systems', recommendation_name=recommendation_name
-        )
-        #view.search_field.wait_displayed()
-        wait_for(lambda: view.table.row(),  handle_exception=True, timeout=20)
+        view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
+        # view.search_field.wait_displayed()
+        wait_for(lambda: view.table.row(), handle_exception=True, timeout=20)
         time.sleep(5)
         view.bulk_select.select_all()
         view.remediate.click()
@@ -147,6 +145,7 @@ class NavigateToAffectedSystems(NavigateStep):
         row, _ = wait_for(lambda: self.parent.table.row(name=recommendation_name), timeout=5)
         row.expand()
         row.content.affected_systems_url.click()
+
 
 @navigator.register(CloudInsightsEntity, 'Token')
 class SaveCloudTokenView(NavigateStep):

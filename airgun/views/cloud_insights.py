@@ -1,11 +1,11 @@
 from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly5 import (
     Button as PF5Button,
-    Pagination as PF5Pagination,
-    Title as PF5Title,
     ExpandableTable as PF5ExpandableTable,
-    PatternflyTable as PF5Table,
     Menu as PF5Menu,
+    Pagination as PF5Pagination,
+    PatternflyTable as PF5Table,
+    Title as PF5Title,
 )
 from widgetastic_patternfly5.ouia import (
     Dropdown as PF5OUIADropdown,
@@ -16,6 +16,7 @@ from widgetastic_patternfly5.ouia import (
 )
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
+
 
 class CloudTokenView(BaseLoggedInView):
     """Red Hat Lightspeed Landing page for adding RH Cloud Token."""
@@ -76,6 +77,7 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
+
 class BulkSelectMenuToggle(PF5Menu):
     """
     A menu toggle component that combines a checkbox with a dropdown menu.
@@ -84,9 +86,11 @@ class BulkSelectMenuToggle(PF5Menu):
         view.bulk_select.select_all() -> to select all items using the checkbox
         view.bulk_select.deselect_all() -> to deselect all items using the checkbox
         view.bulk_select.is_all_selected -> to check if all items are selected
-        view.bulk_select.items -> to access the menu items (['Select none', 'Select page (1 items)', 'Select all (1 items)'])
+        view.bulk_select.items -> to access the menu items
+            (['Select none', 'Select page (1 items)', 'Select all (1 items)'])
         view.bulk_select.item_select('Select none') -> to select a specific item by name
     """
+
     IS_ALWAYS_OPEN = False
     BUTTON_LOCATOR = './/button[@data-ouia-component-id="BulkSelect"]'
     ROOT = f"{BUTTON_LOCATOR}/.."
@@ -96,27 +100,33 @@ class BulkSelectMenuToggle(PF5Menu):
     )
     # Checkbox element within the menu toggle
     checkbox = Checkbox(locator='.//input[@data-ouia-component-id="BulkSelectCheckbox"]')
+
     def select_all(self):
         """Select all items using the checkbox."""
         if not self.checkbox.selected:
             self.checkbox.click()
+
     def deselect_all(self):
         """Deselect all items using the checkbox."""
         if self.checkbox.selected:
             self.checkbox.click()
+
     @property
     def is_all_selected(self):
         """Return True if the select all checkbox is checked."""
         return self.checkbox.selected
 
+
 class RemediateSummary(PF5OUIAModal):
     """Models the Remediation summary page and button"""
+
     title = PF5Title('Remediation summary')
     remediate = PF5Button('Remediate')
 
+
 class RecommendationsDetailsView(BaseLoggedInView):
-    """Models everything in the recommendations details views execpt the affected system link
-    """
+    """Models everything in the recommendations details views execpt the affected system link"""
+
     title = PF5Title('Affected Systems')
     clear_button = PF5Button("Reset filters")
     remediate = PF5Button('Remediate')
@@ -139,10 +149,10 @@ class RecommendationsDetailsView(BaseLoggedInView):
         """Check whether the table is empty."""
         return self.table.is_displayed
 
-
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.table, exception=False) is not None
+
 
 class RecommendationsTableExpandedRowView(RecommendationsDetailsView, View):
     """View that models the recommendation expandable row content"""
@@ -159,6 +169,7 @@ class RecommendationsTableExpandedRowView(RecommendationsDetailsView, View):
 
 class RecommendationsTabView(BaseLoggedInView):
     """View representing the Recommendations Tab."""
+
     title = PF5Title('Recommendations')
     search_field = TextInput(locator=(".//input[@aria-label='text input']"))
     clear_button = PF5Button("Reset filters")
@@ -184,8 +195,9 @@ class RecommendationsTabView(BaseLoggedInView):
         """Check whether the table is empty."""
         return self.table.is_displayed
 
-
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.table, exception=False) is not None and self.browser.wait_for_element(self.clear_button, exception=False) is not None
-
+        return (
+            self.browser.wait_for_element(self.table, exception=False) is not None
+            and self.browser.wait_for_element(self.clear_button, exception=False) is not None
+        )

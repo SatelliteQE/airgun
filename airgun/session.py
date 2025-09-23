@@ -21,8 +21,7 @@ from airgun.entities.audit import AuditEntity
 from airgun.entities.bookmark import BookmarkEntity
 from airgun.entities.bootc import BootcEntity
 from airgun.entities.capsule import CapsuleEntity
-from airgun.entities.cloud_insights import CloudInsightsEntity
-from airgun.entities.cloud_insights import RecommendationsTabEntity
+from airgun.entities.cloud_insights import CloudInsightsEntity, RecommendationsTabEntity
 from airgun.entities.cloud_inventory import CloudInventoryEntity
 from airgun.entities.cloud_vulnerabilities import CloudVulnerabilityEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
