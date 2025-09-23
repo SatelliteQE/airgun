@@ -3,11 +3,13 @@ from time import sleep
 from navmazing import NavigateToSibling
 from wait_for import wait_for
 
+from airgun.entities.all_hosts import AllHostsEntity
 from airgun.entities.base import BaseEntity
 from airgun.exceptions import DisabledWidgetError
 from airgun.helpers.host import HostHelper
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
+from airgun.views.all_hosts import AllHostsTableView
 from airgun.views.cloud_insights import CloudInsightsView
 from airgun.views.common import BaseLoggedInView
 from airgun.views.host import (
@@ -232,7 +234,12 @@ class HostEntity(BaseEntity):
             update_hosts_manually (bool): whether to update hosts manually in order to change the host's content source
         """
 
-        view = self._select_action('Change Content Source', entities_list)
+        AllHostsEntity.all_hosts_navigate_and_select_hosts_helper(self, host_names=entities_list)
+        view = AllHostsTableView(self.browser)
+        view.bulk_actions_kebab.click()
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
+        view.bulk_actions_manage_content_menu.item_select('Content source')
+        view = HostsChangeContentSourceView(self.browser)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         wait_for(lambda: view.content_source_select.is_displayed, timeout=10, delay=1)
