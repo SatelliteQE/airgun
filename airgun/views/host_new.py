@@ -19,6 +19,7 @@ from widgetastic_patternfly4.ouia import (
 from widgetastic_patternfly5 import (
     Button as PF5Button,
     Dropdown as PF5Dropdown,
+    ExpandableTable as pf5OUIAExpandableTable,
     Menu as PF5Menu,
     Pagination as PF5Pagination,
     Tab as PF5Tab,
@@ -758,6 +759,36 @@ class NewHostDetailsView(BaseLoggedInView):
             },
         )
         pagination = PF5Pagination()
+
+    @View.nested
+    class vulnerabilities(PF5Tab):
+        ROOT = './/div'
+
+        search_bar = SearchInput(locator='.//input[contains(@aria-label, "search-field")]')
+        cve_menu_toggle = PF5Button(".//button[contains(@class, 'pf-v5-c-menu-toggle')]")
+        no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
+
+        vulnerabilities_table = pf5OUIAExpandableTable(
+            # component_id='OUIA-Generated-Table-2',
+            locator='.//table[contains(@class, "pf-v5-c-table")]',
+            column_widgets={
+                0: PF5Button(locator='.//button[@aria-label="Details"]'),
+                'CVE ID': Text('.//td[contains(@data-label, "CVE ID")]'),
+                'Publish date': Text('.//td[contains(@data-label, "Publish date")]'),
+                'Severity': Text('.//td[contains(@data-label, "Severity")]'),
+                'CVSS base score': Text('.//td[contains(@data-label, "CVSS base score")]'),
+            },
+        )
+        pagination = PF5Pagination()
+
+        @property
+        def is_displayed(self):
+            table_displayed = self.vulnerabilities_table.wait_displayed(exception=False)
+            no_cves_message_displayed = (
+                self.browser.wait_for_element(self.no_cves_found_message, exception=False)
+                is not None
+            )
+            return table_displayed or no_cves_message_displayed
 
 
 class InstallPackagesView(View):
