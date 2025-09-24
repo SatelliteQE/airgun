@@ -916,6 +916,17 @@ class NewHostEntity(HostEntity):
         wait_for(lambda: view.insights.recommendations_table.is_displayed, timeout=10)
         return view.insights.read()
 
+    def get_vulnerabilities(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        wait_for(lambda: view.vulnerabilities.vulnerabilities_table.is_displayed, timeout=30)
+        vulnerabilities = getattr(view.vulnerabilities, 'vulnerabilities_table', None)
+        if vulnerabilities is not None:
+            return vulnerabilities.read()
+        else:
+            return []
+
     def remediate_with_insights(
         self, entity_name, recommendation_to_remediate=None, remediate_all=False
     ):
