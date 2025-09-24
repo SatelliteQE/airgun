@@ -23,7 +23,7 @@ setup(
         'wait_for',
         'webdriver-kaifuku',
         'selenium==4.21.0',
-        'widgetastic.core',
+        'widgetastic.core>=1.1,<2.0',
         'widgetastic.patternfly',
         'widgetastic.patternfly4',
         'widgetastic.patternfly5',
