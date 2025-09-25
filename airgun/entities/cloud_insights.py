@@ -75,7 +75,7 @@ class RecommendationsTabEntity(BaseEntity):
         time.sleep(5)
         return view.table.read()
 
-    def remediate_affected_systems(self, recommendation_name, hostname):
+    def remediate_affected_system(self, recommendation_name, hostname):
         """Open Affected systems, filter by hostname, select it, and click Remediate.
 
         Returns the details view contents after remediation click.
@@ -91,8 +91,8 @@ class RecommendationsTabEntity(BaseEntity):
         view.remediate.click()
         self.browser.plugin.ensure_page_safe(timeout='30s')
         modal = RemediateSummary(self.browser)
-        if modal.is_displayed:
-            modal.remediate.click()
+        wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
+        modal.remediate.click()
         view = JobInvocationStatusView(view.browser)
         view.wait_for_result()
         return view.read()
@@ -111,8 +111,8 @@ class RecommendationsTabEntity(BaseEntity):
         view.remediate.click()
         self.browser.plugin.ensure_page_safe(timeout='30s')
         modal = RemediateSummary(self.browser)
-        if modal.is_displayed:
-            modal.remediate.click()
+        wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
+        modal.remediate.click()
         view = JobInvocationStatusView(view.browser)
         view.wait_for_result()
         return view.read()
@@ -133,7 +133,7 @@ class NavigateToAffectedSystems(NavigateStep):
 
     def prerequisite(self, *args, **kwargs):
         # Ensure we are on the Recommendations tab first
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, 'Recommendations')
 
     def step(self, *args, **kwargs):
         recommendation_name = kwargs.get('recommendation_name')
@@ -169,7 +169,7 @@ class ShowCloudInsightsView(NavigateStep):
         self.view.menu.select('Red Hat Lightspeed', 'Recommendations')
 
 
-@navigator.register(RecommendationsTabEntity, 'All')
+@navigator.register(RecommendationsTabEntity, 'Recommendations')
 class ShowRecommendationsView(NavigateStep):
     """Navigate to main Red Hat Lightspeed page"""
 

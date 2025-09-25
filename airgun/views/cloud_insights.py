@@ -93,10 +93,10 @@ class BulkSelectMenuToggle(PF5Menu):
 
     IS_ALWAYS_OPEN = False
     BUTTON_LOCATOR = './/button[@data-ouia-component-id="BulkSelect"]'
-    ROOT = f"{BUTTON_LOCATOR}/.."
-    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
+    ROOT = f'{BUTTON_LOCATOR}/..'
+    ITEMS_LOCATOR = './/ul[contains(@class, "pf-v5-c-menu__list")]/li'
     ITEM_LOCATOR = (
-        "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
+        '//*[contains(@class, "pf-v5-c-menu__item") and .//*[contains(normalize-space(.), {})]]'
     )
     # Checkbox element within the menu toggle
     checkbox = Checkbox(locator='.//input[@data-ouia-component-id="BulkSelectCheckbox"]')
@@ -128,19 +128,19 @@ class RecommendationsDetailsView(BaseLoggedInView):
     """Models everything in the recommendations details views execpt the affected system link"""
 
     title = PF5Title('Affected Systems')
-    clear_button = PF5Button("Reset filters")
+    clear_button = PF5Button('Reset filters')
     remediate = PF5Button('Remediate')
     download_playbook = PF5Button('Download playbook')
-    search_field = TextInput(locator=(".//input[@aria-label='text input']"))
+    search_field = TextInput(locator=('.//input[@aria-label="text input"]'))
     bulk_select = BulkSelectMenuToggle()
     table = PF5Table(
         locator='.//table[contains(@aria-label, "Host inventory")]',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
-            "Name": Text(".//a"),
-            "OS": Text(".//span"),
-            "Last seen": Text(".//span"),
-            "First impacted": Text(".//span"),
+            'Name': Text('.//a'),
+            'OS': Text('.//span'),
+            'Last seen': Text('.//span'),
+            'First impacted': Text('.//span'),
         },
     )
 
@@ -154,11 +154,11 @@ class RecommendationsDetailsView(BaseLoggedInView):
         return self.browser.wait_for_element(self.table, exception=False) is not None
 
 
-class RecommendationsTableExpandedRowView(RecommendationsDetailsView, View):
+class RecommendationsTableExpandedRowView(RecommendationsDetailsView):
     """View that models the recommendation expandable row content"""
 
     affected_systems_url = Text(
-        locator=".//*[contains(@class, 'ins-c-rule-details__view-affected')]//a"
+        locator='.//*[contains(@class, "ins-c-rule-details__view-affected")]//a'
     )
 
     @property
@@ -171,22 +171,22 @@ class RecommendationsTabView(BaseLoggedInView):
     """View representing the Recommendations Tab."""
 
     title = PF5Title('Recommendations')
-    search_field = TextInput(locator=(".//input[@aria-label='text input']"))
-    clear_button = PF5Button("Reset filters")
-    incidents = Text(locator=".//a[@data-testid='Incidents']")
-    critical_recommendations = Text(locator=".//a[@data-testid='Critical recommendations']")
-    important_recommendations = Text(locator=".//a[@data-testid='Important recommendations']")
+    search_field = TextInput(locator=('.//input[@aria-label="text input"]'))
+    clear_button = PF5Button('Reset filters')
+    incidents = Text(locator='.//a[@data-testid="Incidents"]')
+    critical_recommendations = Text(locator='.//a[@data-testid="Critical recommendations"]')
+    important_recommendations = Text(locator='.//a[@data-testid="Important recommendations"]')
     conditional_filter_dropdown = PF5OUIATextInput('ConditionalFilter')
     table = PF5ExpandableTable(
         locator='.//table[contains(@aria-label, "rule-table")]',
         content_view=RecommendationsTableExpandedRowView,
         column_widgets={
-            "Name": Text(".//a"),
-            "Modified": Text(".//span"),
-            "Category": Text(".//span"),
-            "Total risk": Text(".//span"),
-            "Systems": Text(".//div"),
-            "Remediation type": Text(".//span"),
+            'Name': Text('.//a'),
+            'Modified': Text('.//span'),
+            'Category': Text('.//span'),
+            'Total risk': Text('.//span'),
+            'Systems': Text('.//div'),
+            'Remediation type': Text('.//span'),
         },
     )
 
