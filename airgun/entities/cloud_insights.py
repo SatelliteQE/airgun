@@ -133,7 +133,7 @@ class NavigateToAffectedSystems(NavigateStep):
 
     def prerequisite(self, *args, **kwargs):
         # Ensure we are on the Recommendations tab first
-        return self.navigate_to(self.obj, 'Recommendations')
+        return self.navigate_to(self.obj, 'All')
 
     def step(self, *args, **kwargs):
         recommendation_name = kwargs.get('recommendation_name')
@@ -169,7 +169,7 @@ class ShowCloudInsightsView(NavigateStep):
         self.view.menu.select('Red Hat Lightspeed', 'Recommendations')
 
 
-@navigator.register(RecommendationsTabEntity, 'Recommendations')
+@navigator.register(RecommendationsTabEntity, 'All')
 class ShowRecommendationsView(NavigateStep):
     """Navigate to main Red Hat Lightspeed page"""
 
