@@ -21,7 +21,7 @@ from widgetastic_patternfly5 import (
     Dropdown as PF5Dropdown,
     ExpandableTable as pf5OUIAExpandableTable,
     Menu as PF5Menu,
-    Pagination as PF5Pagination,
+    CompactPagination as PF5Pagination,
     Tab as PF5Tab,
 )
 from widgetastic_patternfly5.ouia import (
