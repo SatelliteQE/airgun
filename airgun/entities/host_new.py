@@ -457,7 +457,7 @@ class NewHostEntity(HostEntity):
         view.content.errata.select()
         for type in errata_types:
             view.content.errata.wait_displayed()
-            # view.content.errata.pagination.set_per_page(50)
+            view.content.errata.pagination.set_per_page(50)
             view.content.errata.type_filter.fill(type)
             self.browser.plugin.ensure_page_safe()
             view.content.errata.table.wait_displayed()
@@ -498,7 +498,6 @@ class NewHostEntity(HostEntity):
         view.content.errata.select()
         view.content.errata.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        view.content.errata.pagination.read()
         return view.content.errata.pagination
 
     def get_module_streams(self, entity_name, search):
