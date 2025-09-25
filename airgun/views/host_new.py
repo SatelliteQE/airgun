@@ -179,7 +179,7 @@ class NewHostDetailsView(BaseLoggedInView):
         class host_status(Card):
             ROOT = './/div[@data-ouia-component-id="card-aggregate-status"]'
 
-            status = Text('.//div[contains(@class, "pf-v5-c-card__title")]')
+            status = Text('.//div[contains(@class, "pf-v5-c-empty-state__title")]')
             manage_all_statuses = Text('.//a[normalize-space(.)="Manage all statuses"]')
 
             status_success = Text('.//a[.//span[@class="status-success"]]')
