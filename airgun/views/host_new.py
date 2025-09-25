@@ -18,10 +18,10 @@ from widgetastic_patternfly4.ouia import (
 )
 from widgetastic_patternfly5 import (
     Button as PF5Button,
+    CompactPagination as PF5Pagination,
     Dropdown as PF5Dropdown,
     ExpandableTable as pf5OUIAExpandableTable,
     Menu as PF5Menu,
-    Pagination as PF5Pagination,
     Tab as PF5Tab,
 )
 from widgetastic_patternfly5.ouia import (
