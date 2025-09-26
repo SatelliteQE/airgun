@@ -145,11 +145,6 @@ class RecommendationsDetailsView(BaseLoggedInView):
     )
 
     @property
-    def is_empty(self):
-        """Check whether the table is empty."""
-        return self.table.is_displayed
-
-    @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.table, exception=False) is not None
 
@@ -189,11 +184,6 @@ class RecommendationsTabView(BaseLoggedInView):
             'Remediation type': Text('.//span'),
         },
     )
-
-    @property
-    def is_empty(self):
-        """Check whether the table is empty."""
-        return self.table.is_displayed
 
     @property
     def is_displayed(self):
