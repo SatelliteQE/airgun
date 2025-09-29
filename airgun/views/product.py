@@ -36,7 +36,7 @@ class CreateDiscoveredReposView(View):
 
     searchbox = Search()
     table = SatTable(
-        locator=".//table",
+        locator='.//table',
         column_widgets={0: Checkbox(locator=".//input[@ng-change='itemSelected(urlRow)']")},
     )
     create_action = Text("//button[contains(., 'Create Selected')]")
@@ -131,10 +131,10 @@ class ProductEditView(BaseLoggedInView):
     @View.nested
     class repositories(SatTab):
         table = SatTable(
-            locator=".//table",
+            locator='.//table',
             column_widgets={
                 0: Checkbox(locator="./input[@ng-change='itemSelected(repository)']"),
-                'Name': Text("./a"),
+                'Name': Text('./a'),
             },
         )
 
@@ -249,13 +249,13 @@ class ProductManageHttpProxy(BaseLoggedInView):
     """Represents Http Proxy Management page for Products."""
 
     title = Text("//h4[normalize-space(.)='Http Proxy Management']")
-    http_proxy_policy = Select(id="http_proxy_policy")
+    http_proxy_policy = Select(id='http_proxy_policy')
     proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
     update = Text('//button[@ng-click="update()"]')
 
     @proxy_policy.register('Use specific HTTP Proxy')
     class ExistingProductForm(View):
-        http_proxy = Select(id="http_proxy")
+        http_proxy = Select(id='http_proxy')
 
     @property
     def is_displayed(self):

@@ -36,7 +36,7 @@ class HostGroupsView(BaseLoggedInView, SearchableViewMixinPF4):
     table = Table(
         './/table',
         column_widgets={
-            'Name': Text("./a"),
+            'Name': Text('./a'),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )

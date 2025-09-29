@@ -14,7 +14,7 @@ class FilesView(BaseLoggedInView):
     """Main Files view"""
 
     title = Text("//h1[contains(., 'Files')]")
-    table = SatTable('.//table', column_widgets={'Name': Text("./a"), 'Path': Text("./a")})
+    table = SatTable('.//table', column_widgets={'Name': Text('./a'), 'Path': Text('./a')})
 
     search_box = Search()
 
@@ -47,8 +47,8 @@ class FileDetailsView(BaseLoggedInView):
         cvtable = SatTable(
             './/table',
             column_widgets={
-                'Name': Text("./a"),
-                'Environment': Text("./a"),
-                'Version': Text("./a"),
+                'Name': Text('./a'),
+                'Environment': Text('./a'),
+                'Version': Text('./a'),
             },
         )

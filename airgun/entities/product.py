@@ -94,7 +94,7 @@ class ProductEntity(BaseEntity):
             action_name='Manage HTTP Proxy',
             entities_list=entities_list,
         )
-        if values['http_proxy_policy'] == "Global Default":
+        if values['http_proxy_policy'] == 'Global Default':
             values['http_proxy_policy'] = view.http_proxy_policy.all_options[0][0]
         view.fill(values)
         view.update.click()
@@ -115,9 +115,9 @@ class ProductEntity(BaseEntity):
             action_name='Advanced Sync',
             entities_list=entities_list,
         )
-        if sync_type == "optimized":
+        if sync_type == 'optimized':
             view.optimized.click()
-        elif sync_type == "complete":
+        elif sync_type == 'complete':
             view.complete.click()
         view.sync.click()
         view.task.click()

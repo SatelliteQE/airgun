@@ -19,7 +19,7 @@ from airgun.widgets import (
 
 class ReportTemplatesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Report Templates']")
-    new = Button("Create Template")
+    new = Button('Create Template')
     table = Table(
         './/table',
         column_widgets={

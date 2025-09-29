@@ -56,7 +56,7 @@ class SyncTemplatesView(BaseLoggedInView):
 
 
 class TemplatesReportView(BaseLoggedInView):
-    title = Text("//h1")
+    title = Text('//h1')
     REPORTS = "//div[contains(@class, 'list-group-item')]"
 
     @property

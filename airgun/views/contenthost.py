@@ -345,7 +345,7 @@ class SyspurposeBulkActionView(BaseLoggedInView):
 class ErrataDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     BREADCRUMB_LENGTH = 3
-    advisory = Text("//h3")
+    advisory = Text('//h3')
     type = ReadOnlyEntry(name='Type')
     title = ReadOnlyEntry(name='Title')
     issued = ReadOnlyEntry(name='Issued')

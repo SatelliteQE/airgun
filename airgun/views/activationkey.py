@@ -95,7 +95,7 @@ class ActivationKeyEditView(BaseLoggedInView):
         TAB_NAME = 'Repository Sets'
         repo_type = Select(locator='.//select[@id="repositoryTypes"]')
         actions = ActionsDropdown('//div[contains(@class, "btn-group ng-scope")]/div')
-        table = Table(locator=".//table")
+        table = Table(locator='.//table')
         repository_name = Text(
             locator='//table[@class="table table-bordered table-striped"]/tbody/tr//td[2]'
         )
@@ -112,4 +112,4 @@ class ActivationKeyEditView(BaseLoggedInView):
     class content_hosts(SatTabWithDropdown):
         TAB_NAME = 'Associations'
         SUB_ITEM = 'Content Hosts'
-        table = Table(locator=".//table")
+        table = Table(locator='.//table')

@@ -24,7 +24,7 @@ class FiltersView(BaseLoggedInView):
     searchbox = Search()
     new = Text("//a[contains(@href, '/filters/new')]")
     table = Table(
-        ".//table",
+        './/table',
         column_widgets={
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
