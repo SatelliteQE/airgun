@@ -17,7 +17,7 @@ def skip_data(app, what, name, obj, skip, options):
 
 
 def setup(app):
-    app.connect("autoapi-skip-member", skip_data)
+    app.connect('autoapi-skip-member', skip_data)
 
 
 # Add the AirGun root directory to the system path. This allows references

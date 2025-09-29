@@ -58,7 +58,7 @@ class AllHostsEntity(BaseEntity):
         if delete_modal.is_displayed:
             delete_modal.confirm_delete.click()
         else:
-            raise NoSuchElementException("Delete Modal was not displayed.")
+            raise NoSuchElementException('Delete Modal was not displayed.')
         view = self.navigate_to(self, 'All')
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
@@ -152,18 +152,18 @@ class AllHostsEntity(BaseEntity):
             action_type (str): action type to perform (upgrade, install, remove)
             packages_to_manage (list): list of packages to manage
         """
-        radio_button = getattr(view.select_action, f"{action_type}_packages_radio")
+        radio_button = getattr(view.select_action, f'{action_type}_packages_radio')
         radio_button.fill(True)
         for package in packages_to_manage:
-            clear_search = getattr(view, f"{action_type}_packages").clear_search
+            clear_search = getattr(view, f'{action_type}_packages').clear_search
             if clear_search.is_displayed:
                 clear_search.click()
-            search_input = getattr(view, f"{action_type}_packages").search_input
+            search_input = getattr(view, f'{action_type}_packages').search_input
             search_input.fill(f'name = "{package}"')
             self.browser.wait_for_element(
-                getattr(view, f"{action_type}_packages").table[0][0].widget, exception=False
+                getattr(view, f'{action_type}_packages').table[0][0].widget, exception=False
             )
-            getattr(view, f"{action_type}_packages").table[0][0].widget.fill(True)
+            getattr(view, f'{action_type}_packages').table[0][0].widget.fill(True)
 
     def manage_packages(
         self,
@@ -196,7 +196,7 @@ class AllHostsEntity(BaseEntity):
 
         if sum([upgrade_packages, install_packages, remove_packages]) != 1:
             raise ValueError(
-                "Only one of the options can be selected: upgrade_packages, install_packages, remove_packages!"
+                'Only one of the options can be selected: upgrade_packages, install_packages, remove_packages!'
             )
 
         selected_packages_options = sum(
@@ -208,7 +208,7 @@ class AllHostsEntity(BaseEntity):
         )
         if selected_packages_options != 1 and not upgrade_all_packages:
             raise ValueError(
-                "Exactly one of the options must be selected: packages_to_upgrade, packages_to_install, packages_to_remove!"
+                'Exactly one of the options must be selected: packages_to_upgrade, packages_to_install, packages_to_remove!'
             )
 
         view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
@@ -322,7 +322,7 @@ class AllHostsEntity(BaseEntity):
         # if both erratas_to_apply_by_id and individual_search_queries are specified, raise an error
         if erratas_to_apply_by_id is not None and individual_search_queries is not None:
             raise ValueError(
-                "Cannot specify both erratas_to_apply_by_id and individual_search_queries at the same time!"
+                'Cannot specify both erratas_to_apply_by_id and individual_search_queries at the same time!'
             )
 
         # if erratas_to_apply_by_id is specified, make sure it is a list
@@ -452,7 +452,7 @@ class AllHostsEntity(BaseEntity):
         view.next_btn.click()  # Next button from 'Select repository sets'
         view.next_btn.click()  # Next button from 'Review hosts'
         if view.review.number_of_repository_status_changed.text != str(len(repository_names)):
-            raise Exception("Repository count not matches")
+            raise Exception('Repository count not matches')
         view.review.set_content_overrides.click()
 
     def get_package_and_errata_wizard_review_hosts_text(
@@ -564,7 +564,7 @@ class AllHostsEntity(BaseEntity):
         host_names=None,
         new_organization=None,
         select_all_hosts=False,
-        option="Fix on mismatch",
+        option='Fix on mismatch',
     ):
         """
         Navigate to change organization modal after selecting number of hosts,
@@ -588,16 +588,16 @@ class AllHostsEntity(BaseEntity):
         view = ChangeOrganizationModal(self.browser)
         view.organization_menu.item_select(new_organization)
 
-        if option == "Fix on mismatch":
+        if option == 'Fix on mismatch':
             view.organization_fix_on_mismatch.fill(True)
             view.save_button.click()
 
-        elif option == "Fail on mismatch":
+        elif option == 'Fail on mismatch':
             view.organization_fail_on_mismatch.fill(True)
             view.save_button.click()
 
     def change_associations_location(
-        self, host_names=None, new_location=None, select_all_hosts=False, option="Fix on mismatch"
+        self, host_names=None, new_location=None, select_all_hosts=False, option='Fix on mismatch'
     ):
         """
         Navigate to change location modal after selecting number of hosts,
@@ -621,11 +621,11 @@ class AllHostsEntity(BaseEntity):
         view = ChangeLocationModal(self.browser)
         view.location_menu.item_select(new_location)
 
-        if option == "Fix on mismatch":
+        if option == 'Fix on mismatch':
             view.location_fix_on_mismatch.fill(True)
             view.save_button.click()
 
-        elif option == "Fail on mismatch":
+        elif option == 'Fail on mismatch':
             view.location_fail_on_mismatch.fill(True)
             view.save_button.click()
 

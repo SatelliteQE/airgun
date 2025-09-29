@@ -25,7 +25,7 @@ from airgun.widgets import (
 
 class PartitionTablesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[text()='Partition Tables']")
-    new = Button("Create Partition Table")
+    new = Button('Create Partition Table')
     table = Table(
         './/table',
         column_widgets={

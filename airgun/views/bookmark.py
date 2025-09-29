@@ -8,10 +8,10 @@ from airgun.widgets import SatTable
 class BookmarksView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Bookmarks']")
     table = SatTable(
-        ".//table",
+        './/table',
         column_widgets={
             'Name': Text('./a'),
-            'Actions': Text("./span/a"),
+            'Actions': Text('./span/a'),
         },
     )
 

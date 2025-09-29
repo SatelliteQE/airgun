@@ -97,7 +97,7 @@ class NewHostEntity(HostEntity):
         host_group_view.ansible_roles.select_pages.click()
         role_list = self.browser.elements(host_group_view.ansible_roles.available_role, parent=self)
         for single_role in role_list[1:]:
-            if single_role.text.split(". ")[1] == role_name:
+            if single_role.text.split('. ')[1] == role_name:
                 single_role.click()
 
     @navigate_to_edit_view
@@ -111,7 +111,7 @@ class NewHostEntity(HostEntity):
         host_group_view = HostGroupEditView(self.browser)
         role_list = self.browser.elements(host_group_view.ansible_roles.assigned_role, parent=self)
         for single_role in role_list[1:]:
-            if single_role.text.split(". ")[1] == role_name:
+            if single_role.text.split('. ')[1] == role_name:
                 single_role.click()
 
     @navigate_to_edit_view
@@ -241,7 +241,7 @@ class NewHostEntity(HostEntity):
                 if not host_collection_name:
                     raise ValueError('host_collection_name list is empty!')
                 for host_col in host_collection_name:
-                    view.searchbar.fill("name = " + host_col, enter_timeout=2)
+                    view.searchbar.fill('name = ' + host_col, enter_timeout=2)
                     view.wait_displayed()
                     self.browser.plugin.ensure_page_safe()
                     if view.host_collection_table.row_count == 0:
@@ -250,7 +250,7 @@ class NewHostEntity(HostEntity):
                     # Select the host collection via checkbox in the table
                     view.host_collection_table[0][0].widget.click()
             else:
-                view.searchbar.fill("name = " + host_collection_name, enter_timeout=2)
+                view.searchbar.fill('name = ' + host_collection_name, enter_timeout=2)
                 view.wait_displayed()
                 self.browser.plugin.ensure_page_safe()
                 if view.host_collection_table.row_count == 0:
@@ -306,7 +306,7 @@ class NewHostEntity(HostEntity):
                 if not host_collection_name:
                     raise ValueError('host_collection_name list is empty!')
                 for host_col in host_collection_name:
-                    view.searchbar.fill("name = " + host_col, enter_timeout=2)
+                    view.searchbar.fill('name = ' + host_col, enter_timeout=2)
                     view.wait_displayed()
                     self.browser.plugin.ensure_page_safe()
                     if not view.host_collection_table.is_displayed:
@@ -315,7 +315,7 @@ class NewHostEntity(HostEntity):
                     # Select the host collection via checkbox in the table
                     view.host_collection_table[0][0].widget.click()
             else:
-                view.searchbar.fill("name = " + host_collection_name, enter_timeout=2)
+                view.searchbar.fill('name = ' + host_collection_name, enter_timeout=2)
                 view.wait_displayed()
                 self.browser.plugin.ensure_page_safe()
                 if not view.host_collection_table.is_displayed:
@@ -348,7 +348,7 @@ class NewHostEntity(HostEntity):
         view.run_job.click()
         view.select.click()
 
-    def get_packages(self, entity_name, search=""):
+    def get_packages(self, entity_name, search=''):
         """Filter installed packages on host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.content.packages.wait_displayed()
@@ -438,7 +438,7 @@ class NewHostEntity(HostEntity):
         view.content.errata.type_filter.fill(type)
         self.browser.plugin.ensure_page_safe()
         view.content.errata.table.wait_displayed()
-        return view.read(widget_names="content.errata.table")
+        return view.read(widget_names='content.errata.table')
 
     def get_errata_type_counts(self, entity_name):
         """

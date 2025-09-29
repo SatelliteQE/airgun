@@ -10,7 +10,7 @@ class HostFactView(BaseLoggedInView, SearchableViewMixinPF4):
     table = Table(
         './/table',
         column_widgets={
-            'Name': Text("./a"),
+            'Name': Text('./a'),
         },
     )
     expand_fact_value = Text("//div/a[contains(span/@class, 'glyphicon-plus')]")

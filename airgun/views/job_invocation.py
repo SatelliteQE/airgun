@@ -33,11 +33,11 @@ class HostsExpandableTable(PF5OUIAExpandableTable):
         So far, the only way to fix it seems to be manually removing the extra tag from the page.
         """
         wait_for(func=lambda: self.is_displayed, timeout=15, delay=1)
-        script = f'''
+        script = f"""
         rows = document.getElementsByTagName('{self.ROW_TAG}');
         last_row = rows[rows.length-1];
         last_row.remove();
-        '''
+        """
         self.browser.execute_script(script)
         return super().read()
 
@@ -283,7 +283,7 @@ class JobInvocationStatusView(BaseLoggedInView):
     @View.nested
     class hosts(View):
         table = HostsExpandableTable(
-            component_id="table",
+            component_id='table',
             column_widgets={
                 1: Checkbox(locator='.//input[@type="checkbox"]'),
                 'Name': Text('./a'),
