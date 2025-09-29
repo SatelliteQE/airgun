@@ -11,7 +11,7 @@ from airgun.views.oscapreport import (
 
 
 class OSCAPReportEntity(BaseEntity):
-    endpoint_path = '/compliance/arf_reports'
+    endpoint_path = "/compliance/arf_reports"
 
     def search(self, search_string):
         """Search for SCAP Report
@@ -19,7 +19,7 @@ class OSCAPReportEntity(BaseEntity):
         :param search_string: how to find the SCAP Report
         :return: result of the SCAP Report search
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(search_string)
 
     def details(self, search_string, widget_names=None, limit=None):
@@ -31,7 +31,7 @@ class OSCAPReportEntity(BaseEntity):
         :param limit: how many rules results to fetch at most
         :return: list of dictionaries with values from SCAP Report Details View
         """
-        view = self.navigate_to(self, 'Details', search_string=search_string)
+        view = self.navigate_to(self, "Details", search_string=search_string)
         return view.read(widget_names=widget_names, limit=limit)
 
     def remediate(self, search_string, resource):
@@ -39,17 +39,17 @@ class OSCAPReportEntity(BaseEntity):
 
         :param search_string:
         """
-        view = self.navigate_to(self, 'Details', search_string=search_string)
-        view.table.row(resource=resource).actions.fill('Remediation')
+        view = self.navigate_to(self, "Details", search_string=search_string)
+        view.table.row(resource=resource).actions.fill("Remediation")
         view = RemediateModal(self.browser)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         wait_for(lambda: view.title.is_displayed, timeout=10, delay=1)
-        view.fill({'select_remediation_method.snippet': 'Ansible'})
+        view.fill({"select_remediation_method.snippet": "Ansible"})
         view.select_capsule.run.click()
 
 
-@navigator.register(OSCAPReportEntity, 'All')
+@navigator.register(OSCAPReportEntity, "All")
 class ShowAllSCAPReports(NavigateStep):
     """Navigate to Compliance Reports screen."""
 
@@ -57,10 +57,10 @@ class ShowAllSCAPReports(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Compliance', 'Reports')
+        self.view.menu.select("Hosts", "Compliance", "Reports")
 
 
-@navigator.register(OSCAPReportEntity, 'Details')
+@navigator.register(OSCAPReportEntity, "Details")
 class DetailsSCAPReport(NavigateStep):
     """To get data from ARF report view
 
@@ -71,9 +71,9 @@ class DetailsSCAPReport(NavigateStep):
     VIEW = SCAPReportDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        search_string = kwargs.get('search_string')
+        search_string = kwargs.get("search_string")
         self.parent.search(search_string)
-        self.parent.table.row()['Reported At'].widget.click()
+        self.parent.table.row()["Reported At"].widget.click()

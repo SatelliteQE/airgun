@@ -8,30 +8,30 @@ from airgun.views.smart_class_parameter import (
 
 
 class SmartClassParameterEntity(BaseEntity):
-    endpoint_path = '/foreman_puppet/puppetclass_lookup_keys'
+    endpoint_path = "/foreman_puppet/puppetclass_lookup_keys"
 
     def search(self, value):
         """Search for smart class parameter entity and return table row that
         contains that entity
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(value)
 
     def read(self, entity_name, widget_names=None):
         """Read all values for existing smart class parameter entity"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
         """Update specific smart class parameter values"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
 
-@navigator.register(SmartClassParameterEntity, 'All')
+@navigator.register(SmartClassParameterEntity, "All")
 class ShowAllSmartClassParameters(NavigateStep):
     """Navigate to All Smart Class Parameter screen."""
 
@@ -39,10 +39,10 @@ class ShowAllSmartClassParameters(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Puppet ENC', 'Smart Class Parameters')
+        self.view.menu.select("Configure", "Puppet ENC", "Smart Class Parameters")
 
 
-@navigator.register(SmartClassParameterEntity, 'Edit')
+@navigator.register(SmartClassParameterEntity, "Edit")
 class EditSmartClassParameter(NavigateStep):
     """Navigate to Edit Smart Class Parameter screen.
 
@@ -53,9 +53,9 @@ class EditSmartClassParameter(NavigateStep):
     VIEW = SmartClassParameterEditView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(parameter=entity_name)['Parameter'].widget.click()
+        self.parent.table.row(parameter=entity_name)["Parameter"].widget.click()

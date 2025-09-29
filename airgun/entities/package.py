@@ -5,9 +5,11 @@ from airgun.views.package import PackageDetailsView, PackagesView
 
 
 class PackageEntity(BaseEntity):
-    endpoint_path = '/packages'
+    endpoint_path = "/packages"
 
-    def search(self, query, repository='All Repositories', applicable=False, upgradable=False):
+    def search(
+        self, query, repository="All Repositories", applicable=False, upgradable=False
+    ):
         """Search for package in the indicated repository
 
         :param str query: search query to type into search field. E.g.
@@ -17,33 +19,37 @@ class PackageEntity(BaseEntity):
         :param bool applicable: To show only applicable packages.
         :param bool upgradable: To show only upgradable packages.
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(
             query, repository=repository, applicable=applicable, upgradable=upgradable
         )
 
-    def read(self, entity_name, repository='All Repositories', widget_names=None):
+    def read(self, entity_name, repository="All Repositories", widget_names=None):
         """Read package values from Package Details page
 
         :param str entity_name: the package name to read.
         :param str repository: repository name to select when searching for the
             package.
         """
-        view = self.navigate_to(self, 'Details', entity_name=entity_name, repository=repository)
+        view = self.navigate_to(
+            self, "Details", entity_name=entity_name, repository=repository
+        )
         return view.read(widget_names=widget_names)
 
-    def click_install_on_link(self, entity_name, repository='All Repositories'):
+    def click_install_on_link(self, entity_name, repository="All Repositories"):
         """Click on host link 'Installed On' which is present on Package detail tab
 
         :param str entity_name: the package name to read.
         :param str repository: repository name to select when searching for the
             package.
         """
-        view = self.navigate_to(self, 'Details', entity_name=entity_name, repository=repository)
+        view = self.navigate_to(
+            self, "Details", entity_name=entity_name, repository=repository
+        )
         view.install_on_host_link.click()
 
 
-@navigator.register(PackageEntity, 'All')
+@navigator.register(PackageEntity, "All")
 class ShowAllPackages(NavigateStep):
     """navigate to Packages Page"""
 
@@ -51,10 +57,10 @@ class ShowAllPackages(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Content Types', 'Packages')
+        self.view.menu.select("Content", "Content Types", "Packages")
 
 
-@navigator.register(PackageEntity, 'Details')
+@navigator.register(PackageEntity, "Details")
 class ShowPackageDetails(NavigateStep):
     """Navigate to Package Details page by clicking on necessary package name
     in the table
@@ -67,15 +73,17 @@ class ShowPackageDetails(NavigateStep):
     VIEW = PackageDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
-        repository = kwargs.get('repository', 'All Repositories')
-        self.parent.search(f'name = {entity_name}', repository=repository)
-        self.parent.table.row(('RPM', 'startswith', entity_name))['RPM'].widget.click()
+        entity_name = kwargs.get("entity_name")
+        repository = kwargs.get("repository", "All Repositories")
+        self.parent.search(f"name = {entity_name}", repository=repository)
+        self.parent.table.row(("RPM", "startswith", entity_name))["RPM"].widget.click()
 
     def am_i_here(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.view.package_name = entity_name
-        return self.view.is_displayed and self.view.breadcrumb.locations[1].startswith(entity_name)
+        return self.view.is_displayed and self.view.breadcrumb.locations[1].startswith(
+            entity_name
+        )

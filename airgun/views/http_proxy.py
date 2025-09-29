@@ -9,11 +9,11 @@ class HTTPProxyView(BaseLoggedInView, SearchableViewMixin):
     title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="HTTP proxies"]')
     new = Text('//a[normalize-space(.)="New HTTP proxy"]')
     table = Table(
-        './/table',
+        ".//table",
         column_widgets={
-            'Name': Text('./a'),
-            'URL': Text('./a'),
-            'Actions': Text(".//a[@data-method='delete']"),
+            "Name": Text("./a"),
+            "URL": Text("./a"),
+            "Actions": Text(".//a[@data-method='delete']"),
         },
     )
 
@@ -30,40 +30,44 @@ class HTTPProxyCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'HTTP proxies'
-            and self.breadcrumb.read() == 'New HTTP proxy'
+            and self.breadcrumb.locations[0] == "HTTP proxies"
+            and self.breadcrumb.read() == "New HTTP proxy"
         )
 
     @View.nested
     class http_proxy(SatTab):
-        TAB_NAME = 'HTTP proxy'
-        name = TextInput(id='http_proxy_name')
-        url = TextInput(id='http_proxy_url')
-        username = TextInput(id='http_proxy_username')
+        TAB_NAME = "HTTP proxy"
+        name = TextInput(id="http_proxy_name")
+        url = TextInput(id="http_proxy_url")
+        username = TextInput(id="http_proxy_username")
         disable_pass = Text('//a[@id="disable-pass-btn"]')
-        password = TextInput(id='http_proxy_password')
-        test_url = TextInput(id='http_proxy_test_url')
+        password = TextInput(id="http_proxy_password")
+        test_url = TextInput(id="http_proxy_test_url")
         test_connection = Text('//a[@id="test_connection_button"]')
-        content_default_http_proxy = Checkbox(id='content_default_http_proxy')
+        content_default_http_proxy = Checkbox(id="content_default_http_proxy")
 
     @View.nested
     class locations(SatTab):
-        resources = MultiSelect(id='ms-http_proxy_location_ids')
+        resources = MultiSelect(id="ms-http_proxy_location_ids")
 
     @View.nested
     class organizations(SatTab):
-        resources = MultiSelect(id='ms-http_proxy_organization_ids')
+        resources = MultiSelect(id="ms-http_proxy_organization_ids")
 
 
 class HTTPProxyEditView(HTTPProxyCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Http proxies'
-            and self.breadcrumb.read().startswith('Edit ')
+            and self.breadcrumb.locations[0] == "Http proxies"
+            and self.breadcrumb.read().startswith("Edit ")
         )

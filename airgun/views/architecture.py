@@ -9,10 +9,10 @@ class ArchitecturesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Architectures']")
     new = Text("//a[contains(@href, '/architectures/new')]")
     table = Table(
-        './/table',
+        ".//table",
         column_widgets={
-            'Name': Text('./a'),
-            'Actions': Text('.//a[@data-method="delete"]'),
+            "Name": Text("./a"),
+            "Actions": Text('.//a[@data-method="delete"]'),
         },
     )
 
@@ -25,24 +25,28 @@ class ArchitectureDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     name = TextInput(locator="//input[@id='architecture_name']")
     submit = Text('//input[@name="commit"]')
-    operatingsystems = MultiSelect(id='ms-architecture_operatingsystem_ids')
+    operatingsystems = MultiSelect(id="ms-architecture_operatingsystem_ids")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Architectures'
-            and self.breadcrumb.read().startswith('Edit ')
+            and self.breadcrumb.locations[0] == "Architectures"
+            and self.breadcrumb.read().startswith("Edit ")
         )
 
 
 class ArchitectureCreateView(ArchitectureDetailsView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Architectures'
-            and self.breadcrumb.read() == 'Create Architecture'
+            and self.breadcrumb.locations[0] == "Architectures"
+            and self.breadcrumb.read() == "Create Architecture"
         )

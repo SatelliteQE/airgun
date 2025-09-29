@@ -16,7 +16,11 @@ def merge_dict(values, new_values):
         # {'a': {'c': {'k': 2, 'x': {1: 0, 2: 1}, 'z': 5, 'y': 40}}, 'b': {'a': 1, 'l': 2}}
     """
     for key in new_values:
-        if key in values and isinstance(values[key], dict) and isinstance(new_values[key], dict):
+        if (
+            key in values
+            and isinstance(values[key], dict)
+            and isinstance(new_values[key], dict)
+        ):
             merge_dict(values[key], new_values[key])
         else:
             values[key] = new_values[key]
@@ -32,10 +36,10 @@ def normalize_dict_values(values):
     """
     new_values = {}
     for key, value in values.items():
-        keys = key.split('.')
+        keys = key.split(".")
         new_key = keys.pop(0)
         if keys:
-            new_key_value = normalize_dict_values({'.'.join(keys): value})
+            new_key_value = normalize_dict_values({".".join(keys): value})
         else:
             new_key_value = value
         if (
@@ -64,10 +68,10 @@ def get_widget_by_name(widget_root, widget_name):
          widget_name = 'details.subscriptions.resources'
     """
     widget = widget_root
-    for sub_widget_name in widget_name.split('.'):
+    for sub_widget_name in widget_name.split("."):
         name = sub_widget_name
         if name not in widget.widget_names:
-            name = name.replace(' ', '_')
+            name = name.replace(" ", "_")
             name = name.lower()
             if name not in widget.widget_names:
                 raise AttributeError(

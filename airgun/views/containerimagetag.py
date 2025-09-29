@@ -13,7 +13,7 @@ from airgun.widgets import SatTable
 
 class ContainerImageTagsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Container Image Tags')]")
-    table = SatTable('.//table', column_widgets={'Name': Text('./a')})
+    table = SatTable(".//table", column_widgets={"Name": Text("./a")})
 
     @property
     def is_displayed(self):
@@ -26,41 +26,43 @@ class ContainerImageTagDetailsView(TaskDetailsView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Container Image Tags'
+            and self.breadcrumb.locations[0] == "Container Image Tags"
             and len(self.breadcrumb.locations) >= self.BREADCRUMB_LENGTH
         )
 
     @View.nested
     class details(SatTab):
-        product = ReadOnlyEntry(name='Product')
-        schema = ReadOnlyEntry(name='Schema Version')
-        manifest_type = ReadOnlyEntry(name='Manifest Type')
-        digest = ReadOnlyEntry(name='Digest')
+        product = ReadOnlyEntry(name="Product")
+        schema = ReadOnlyEntry(name="Schema Version")
+        manifest_type = ReadOnlyEntry(name="Manifest Type")
+        digest = ReadOnlyEntry(name="Digest")
 
     @View.nested
     class lce(SatTab):
-        TAB_NAME = 'Lifecycle Environments'
+        TAB_NAME = "Lifecycle Environments"
         table = SatTable(
-            './/table',
+            ".//table",
             column_widgets={
-                'Environment': Text('./a'),
-                'Content View Version': Text('./a'),
-                'Published At': Text('./a'),
+                "Environment": Text("./a"),
+                "Content View Version": Text("./a"),
+                "Published At": Text("./a"),
             },
         )
 
     @View.nested
     class repos(SatTab):
-        TAB_NAME = 'Repositories'
+        TAB_NAME = "Repositories"
         table = SatTable(
-            './/table',
+            ".//table",
             column_widgets={
-                'Name': Text('./a'),
-                'Product': Text('./a'),
-                'Content View': Text('./a'),
-                'Last Sync': Text('./a'),
+                "Name": Text("./a"),
+                "Product": Text("./a"),
+                "Content View": Text("./a"),
+                "Last Sync": Text("./a"),
             },
         )

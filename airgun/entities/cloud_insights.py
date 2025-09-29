@@ -5,19 +5,19 @@ from airgun.views.cloud_insights import CloudInsightsView, CloudTokenView
 
 
 class CloudInsightsEntity(BaseEntity):
-    endpoint_path = '/foreman_rh_cloud/insights_cloud'
+    endpoint_path = "/foreman_rh_cloud/insights_cloud"
 
     def search(self, value):
         """Search for 'query' and return matched hostnames/recommendations.
 
         :param value: text to filter (default: no filter)
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(value)
 
     def remediate(self, entity_name):
         """Remediate hosts based on search input."""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.search(entity_name)
         view.select_all.fill(True)
         view.select_all_hits.click()
@@ -26,30 +26,30 @@ class CloudInsightsEntity(BaseEntity):
 
     def sync_hits(self):
         """Sync Insights recommendations."""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.insights_dropdown.wait_displayed()
-        view.insights_dropdown.item_select('Sync recommendations')
-        self.browser.plugin.ensure_page_safe(timeout='60s')
+        view.insights_dropdown.item_select("Sync recommendations")
+        self.browser.plugin.ensure_page_safe(timeout="60s")
 
     def read(self, widget_names=None):
         """Read all values."""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.read(widget_names=widget_names)
 
     def save_token_sync_hits(self, value):
         """Update Insights cloud view."""
-        view = self.navigate_to(self, 'Token')
+        view = self.navigate_to(self, "Token")
         view.rhcloud_token.fill(value)
         view.save_token.click()
-        self.browser.plugin.ensure_page_safe(timeout='60s')
+        self.browser.plugin.ensure_page_safe(timeout="60s")
 
     def update(self, values):
         """Update Insights view."""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.fill(values)
 
 
-@navigator.register(CloudInsightsEntity, 'Token')
+@navigator.register(CloudInsightsEntity, "Token")
 class SaveCloudTokenView(NavigateStep):
     """Navigate to main Red Hat Lightspeed page"""
 
@@ -57,10 +57,10 @@ class SaveCloudTokenView(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Red Hat Lightspeed')
+        self.view.menu.select("Red Hat Lightspeed")
 
 
-@navigator.register(CloudInsightsEntity, 'All')
+@navigator.register(CloudInsightsEntity, "All")
 class ShowCloudInsightsView(NavigateStep):
     """Navigate to main Red Hat Lightspeed page"""
 
@@ -68,4 +68,4 @@ class ShowCloudInsightsView(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Red Hat Lightspeed', 'Recommendations')
+        self.view.menu.select("Red Hat Lightspeed", "Recommendations")

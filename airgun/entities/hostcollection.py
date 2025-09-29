@@ -24,11 +24,11 @@ from airgun.views.job_invocation import (
 
 
 class HostCollectionEntity(BaseEntity):
-    endpoint_path = '/host_collections'
+    endpoint_path = "/host_collections"
 
     def create(self, values):
         """Create a host collection"""
-        view = self.navigate_to(self, 'New')
+        view = self.navigate_to(self, "New")
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
@@ -36,25 +36,25 @@ class HostCollectionEntity(BaseEntity):
 
     def delete(self, entity_name):
         """Delete the host collection entity."""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.actions.fill('Remove')
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
+        view.actions.fill("Remove")
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
     def search(self, value):
         """Search for 'value' and return host collections that match."""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(value)
 
     def read(self, entity_name, widget_names=None):
         """Return a dict with properties of host collection."""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
         """Update host collection properties with values."""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         return view.fill(values)
 
     def associate_host(self, entity_name, host_name):
@@ -64,7 +64,7 @@ class HostCollectionEntity(BaseEntity):
         :param str host_name: The host name to be associated with to host
             collection name.
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.hosts.resources.add(host_name)
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -72,10 +72,10 @@ class HostCollectionEntity(BaseEntity):
     def manage_packages(
         self,
         entity_name,
-        content_type='Package',
+        content_type="Package",
         packages=None,
-        action='install',
-        action_via='via remote execution',
+        action="install",
+        action_via="via remote execution",
         job_values=None,
     ):
         """Manage host collection packages.
@@ -96,7 +96,7 @@ class HostCollectionEntity(BaseEntity):
         """
         if job_values is None:
             job_values = {}
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.details.manage_packages.click()
         view = HostCollectionManagePackagesView(view.browser)
         if content_type is not None:
@@ -106,11 +106,11 @@ class HostCollectionEntity(BaseEntity):
         view.apply_action(action, action_via=action_via)
         view.flash.assert_no_error()
         view.flash.dismiss()
-        if action_via == 'via remote execution - customize first':
+        if action_via == "via remote execution - customize first":
             # After this step the user is redirected to remote execution job
             # create view.
             job_create_view = HostCollectionActionRemoteExecutionJobCreate(view.browser)
-            self.browser.plugin.ensure_page_safe(timeout='5s')
+            self.browser.plugin.ensure_page_safe(timeout="5s")
             job_create_view.fill(job_values)
             job_create_view.submit.click()
 
@@ -119,7 +119,7 @@ class HostCollectionEntity(BaseEntity):
         # After this step the user is redirected to job status view.
         job_status_view = JobInvocationStatusView(view.browser)
         wait_for(
-            lambda: (job_status_view.status.read()['In Progress'] != 1),
+            lambda: (job_status_view.status.read()["In Progress"] != 1),
             timeout=300,
             delay=10,
             logger=view.logger,
@@ -134,15 +134,19 @@ class HostCollectionEntity(BaseEntity):
 
         :return: Search URL to list the applicable hosts
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.details.install_errata.click()
         view = HostCollectionInstallErrataView(view.browser)
-        uri = view.search_url.__element__().get_attribute('href')
+        uri = view.search_url.__element__().get_attribute("href")
         self.browser.handle_alert()
         return uri
 
     def install_errata(
-        self, entity_name, errata_id, install_via='via remote execution', job_values=None
+        self,
+        entity_name,
+        errata_id,
+        install_via="via remote execution",
+        job_values=None,
     ):
         """Install host collection errata
 
@@ -158,7 +162,7 @@ class HostCollectionEntity(BaseEntity):
         """
         if job_values is None:
             job_values = {}
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.details.install_errata.click()
         view = HostCollectionInstallErrataView(view.browser)
         view.search.fill(errata_id)
@@ -168,7 +172,7 @@ class HostCollectionEntity(BaseEntity):
             self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
-        if install_via == 'via remote execution - customize first':
+        if install_via == "via remote execution - customize first":
             # After this step the user is redirected to remote execution job
             # create view.
             job_create_view = HostCollectionActionRemoteExecutionJobCreate(view.browser)
@@ -179,7 +183,7 @@ class HostCollectionEntity(BaseEntity):
         job_status_view = JobInvocationStatusView(view.browser)
         wait_for(lambda: job_status_view.is_displayed, timeout=30, delay=5)
         wait_for(
-            lambda: (job_status_view.status.read()['In Progress'] != 1),
+            lambda: (job_status_view.status.read()["In Progress"] != 1),
             timeout=300,
             delay=10,
             logger=view.logger,
@@ -210,12 +214,14 @@ class HostCollectionEntity(BaseEntity):
         """
         if customize_values is None:
             customize_values = {}
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.details.manage_module_streams.click()
         view = HostCollectionManageModuleStreamsView(view.browser)
-        view.search(f'name = {module_name} and stream = {stream_version}')
-        action_type = {'is_customize': customize, 'action': action_type}
-        view.table.row(name=module_name, stream=stream_version)['Actions'].fill(action_type)
+        view.search(f"name = {module_name} and stream = {stream_version}")
+        action_type = {"is_customize": customize, "action": action_type}
+        view.table.row(name=module_name, stream=stream_version)["Actions"].fill(
+            action_type
+        )
         if customize:
             view = JobInvocationCreateView(view.browser)
             view.fill(customize_values)
@@ -232,7 +238,7 @@ class HostCollectionEntity(BaseEntity):
         :param str content_view:  Content view name.
         :return: task details view values
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.details.change_assigned_content.click()
         view = HostCollectionChangeAssignedContentView(view.browser)
         view.lce.fill({lce: True})
@@ -244,33 +250,33 @@ class HostCollectionEntity(BaseEntity):
         return task_view.read()
 
 
-@navigator.register(HostCollectionEntity, 'All')
+@navigator.register(HostCollectionEntity, "All")
 class ShowAllHostCollections(NavigateStep):
     VIEW = HostCollectionsView
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Host Collections')
+        self.view.menu.select("Hosts", "Host Collections")
 
 
-@navigator.register(HostCollectionEntity, 'New')
+@navigator.register(HostCollectionEntity, "New")
 class AddNewHostCollections(NavigateStep):
     VIEW = HostCollectionCreateView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
         self.parent.new.click()
 
 
-@navigator.register(HostCollectionEntity, 'Edit')
+@navigator.register(HostCollectionEntity, "Edit")
 class EditHostCollections(NavigateStep):
     VIEW = HostCollectionEditView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+        self.parent.table.row(name=entity_name)["Name"].widget.click()

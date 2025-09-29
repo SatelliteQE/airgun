@@ -70,10 +70,10 @@ class OperatingSystemsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Operating Systems']")
     new = Text("//a[contains(@href, '/operatingsystems/new')]")
     table = Table(
-        './/table',
+        ".//table",
         column_widgets={
-            'Title': Text('./a'),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            "Title": Text("./a"),
+            "Actions": ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
 
@@ -88,33 +88,35 @@ class OperatingSystemEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Operating Systems'
-            and self.breadcrumb.read().startswith('Edit ')
+            and self.breadcrumb.locations[0] == "Operating Systems"
+            and self.breadcrumb.read().startswith("Edit ")
         )
 
     @View.nested
     class operating_system(SatTab):
-        TAB_NAME = 'Operating System'
+        TAB_NAME = "Operating System"
         name = TextInput(locator=".//input[@id='operatingsystem_name']")
         major = TextInput(locator=".//input[@id='operatingsystem_major']")
         minor = TextInput(locator=".//input[@id='operatingsystem_minor']")
         description = TextInput(locator=".//input[@id='operatingsystem_description']")
-        family = FilteredDropdown(id='operatingsystem_family')
-        password_hash = FilteredDropdown(id='operatingsystem_password_hash')
-        architectures = MultiSelect(id='ms-operatingsystem_architecture_ids')
+        family = FilteredDropdown(id="operatingsystem_family")
+        password_hash = FilteredDropdown(id="operatingsystem_password_hash")
+        architectures = MultiSelect(id="ms-operatingsystem_architecture_ids")
 
     @View.nested
     class partition_table(SatTab):
-        TAB_NAME = 'Partition Table'
-        resources = MultiSelect(id='ms-operatingsystem_ptable_ids')
+        TAB_NAME = "Partition Table"
+        resources = MultiSelect(id="ms-operatingsystem_ptable_ids")
 
     @View.nested
     class installation_media(SatTab):
-        TAB_NAME = 'Installation Media'
-        resources = MultiSelect(id='ms-operatingsystem_medium_ids')
+        TAB_NAME = "Installation Media"
+        resources = MultiSelect(id="ms-operatingsystem_medium_ids")
 
     @View.nested
     class templates(SatTab):
@@ -122,16 +124,18 @@ class OperatingSystemEditView(BaseLoggedInView):
 
     @View.nested
     class parameters(SatTab):
-        TAB_NAME = 'Parameters'
-        os_params = CustomParameter(id='global_parameters_table')
+        TAB_NAME = "Parameters"
+        os_params = CustomParameter(id="global_parameters_table")
 
 
 class OperatingSystemCreateView(OperatingSystemEditView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Operating Systems'
-            and self.breadcrumb.read() == 'Create Operating System'
+            and self.breadcrumb.locations[0] == "Operating Systems"
+            and self.breadcrumb.read() == "Create Operating System"
         )

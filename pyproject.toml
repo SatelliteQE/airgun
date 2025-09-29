@@ -43,6 +43,7 @@ select = [
     "F", # pyflakes/autoflake
     "G", # flake8-logging-format
     "I", # isort
+    "Q", # flake8-quotes
     "ISC001", # Implicitly concatenated string literals on one line
     "N804", # First argument of a class method should be named cls
     "N805", # First argument of a method should be named self
@@ -114,6 +115,9 @@ known-first-party = [
     "broker",
 ]
 combine-as-imports = true
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "double"
 
 [tool.ruff.lint.mccabe]
 max-complexity = 25

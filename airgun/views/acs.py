@@ -26,11 +26,11 @@ class EditDetailsModal(EditModal):
 
     ROOT = '//div[@data-ouia-component-id="acs-edit-details-modal"]'
 
-    name = OUIATextInput('acs-edit-name-field')
+    name = OUIATextInput("acs-edit-name-field")
     description = TextInput(locator='.//textarea[@id="acs_description_field"]')
 
-    edit_button = OUIAButton('edit-acs-details-submit')
-    cancel_button = OUIAButton('edit-acs-details-cancel')
+    edit_button = OUIAButton("edit-acs-details-submit")
+    cancel_button = OUIAButton("edit-acs-details-cancel")
 
 
 class EditCapsulesModal(DualListSelector):
@@ -40,8 +40,8 @@ class EditCapsulesModal(DualListSelector):
 
     use_http_proxies = Switch(locator='.//label[@for="use-http-proxies-switch"]')
 
-    edit_button = OUIAButton('edit-acs-smart-proxies-submit')
-    cancel_button = OUIAButton('edit-acs-smart-proxies-cancel')
+    edit_button = OUIAButton("edit-acs-smart-proxies-submit")
+    cancel_button = OUIAButton("edit-acs-smart-proxies-cancel")
 
 
 class EditUrlAndSubpathsModal(EditModal):
@@ -49,13 +49,13 @@ class EditUrlAndSubpathsModal(EditModal):
 
     ROOT = '//div[@data-ouia-component-id="acs-edit-url-paths-modal"]'
 
-    base_url = OUIATextInput('acs-base-url-field')
+    base_url = OUIATextInput("acs-base-url-field")
     url_err = Text('.//div[contains(@id, "acs_base_url-helper")]')
     subpaths = TextInput(locator='.//textarea[@id="acs_subpath_field"]')
     paths_err = Text('.//div[contains(@id, "acs_subpaths-helper")]')
 
-    edit_button = OUIAButton('edit-acs-url-submit')
-    cancel_button = OUIAButton('edit-acs-url-cancel')
+    edit_button = OUIAButton("edit-acs-url-submit")
+    cancel_button = OUIAButton("edit-acs-url-cancel")
 
 
 class EditCredentialsModal(EditModal):
@@ -64,20 +64,20 @@ class EditCredentialsModal(EditModal):
     ROOT = '//div[@data-ouia-component-id="acs-edit-credentials-modal"]'
 
     verify_ssl_toggle = Switch(locator='.//label[@for="verify-ssl-switch"]')
-    select_ca_cert = OUIAFormSelect('sslCAcert-select')
+    select_ca_cert = OUIAFormSelect("sslCAcert-select")
 
-    manual_auth_radio_btn = Radio(id='manual_auth')
-    username = OUIATextInput('acs-username-field')
-    password = OUIATextInput('acs-password-field')
+    manual_auth_radio_btn = Radio(id="manual_auth")
+    username = OUIATextInput("acs-username-field")
+    password = OUIATextInput("acs-password-field")
 
-    content_credentials_radio_btn = Radio(id='content_credentials')
-    ssl_client_cert = OUIAFormSelect('ssl-client-cert-select')
-    ssl_client_key = OUIAFormSelect('ssl_client_key_select')
+    content_credentials_radio_btn = Radio(id="content_credentials")
+    ssl_client_cert = OUIAFormSelect("ssl-client-cert-select")
+    ssl_client_key = OUIAFormSelect("ssl_client_key_select")
 
-    none_auth_radio_btn = Radio(id='none')
+    none_auth_radio_btn = Radio(id="none")
 
-    edit_button = OUIAButton('edit-acs-credentials-submit')
-    cancel_button = OUIAButton('edit-acs-credentials-cancel')
+    edit_button = OUIAButton("edit-acs-credentials-submit")
+    cancel_button = OUIAButton("edit-acs-credentials-cancel")
 
 
 class EditProductsModal(DualListSelector):
@@ -85,8 +85,8 @@ class EditProductsModal(DualListSelector):
 
     ROOT = '//div[@data-ouia-component-id="acs-edit-products-modal"]'
 
-    edit_button = OUIAButton('edit-acs-products-submit')
-    cancel_button = OUIAButton('edit-acs-products-cancel')
+    edit_button = OUIAButton("edit-acs-products-submit")
+    cancel_button = OUIAButton("edit-acs-products-cancel")
 
 
 class AddAlternateContentSourceModal(View):
@@ -112,7 +112,7 @@ class AddAlternateContentSourceModal(View):
 
     ROOT = '//div[contains(@data-ouia-component-id, "OUIA-Generated-Modal-large-")]'
 
-    title = OUIAText('wizard-header-text')
+    title = OUIAText("wizard-header-text")
     close_modal = Button(locator='.//button[@aria-label="Close"]')
 
     @View.nested
@@ -121,12 +121,12 @@ class AddAlternateContentSourceModal(View):
         custom_option = Text('//*[@id="custom"]')
         simplified_option = Text('//*[@id="simplified"]')
         rhui_option = Text('//*[@id="rhui"]')
-        content_type_select = OUIAFormSelect('content-type-select')
+        content_type_select = OUIAFormSelect("content-type-select")
 
     @View.nested
     class name_source(WizardStepView):
         expander = Text('.//button[contains(.,"Name source")]')
-        name = OUIATextInput('acs_name_field')
+        name = OUIATextInput("acs_name_field")
         description = TextInput(locator='.//textarea[@id="acs_description_field"]')
 
     @View.nested
@@ -134,12 +134,12 @@ class AddAlternateContentSourceModal(View):
         expander = Text(
             './/button[contains(.,"Select Smart proxy") or contains(.,"Select Capsule")]'
         )
-        use_http_proxies = OUIASwitch('use-http-proxies-switch')
+        use_http_proxies = OUIASwitch("use-http-proxies-switch")
 
     @View.nested
     class url_and_paths(WizardStepView):
         expander = Text('.//button[contains(.,"URL and paths")]')
-        base_url = OUIATextInput('acs_base_url_field')
+        base_url = OUIATextInput("acs_base_url_field")
         url_err = Text('.//div[contains(@id, "acs_base_url-helper")]')
         subpaths = TextInput(locator='.//textarea[@id="acs_subpath_field"]')
         paths_err = Text('.//div[contains(@id, "acs_subpaths-helper")]')
@@ -147,18 +147,20 @@ class AddAlternateContentSourceModal(View):
     @View.nested
     class credentials(WizardStepView):
         expander = Text('.//button[contains(.,"Credentials")]')
-        verify_ssl_toggle = OUIASwitch('verify-ssl-switch')
-        select_ca_cert = FormSelect(locator='.//select[option[text()="Select a CA certificate"]]')
+        verify_ssl_toggle = OUIASwitch("verify-ssl-switch")
+        select_ca_cert = FormSelect(
+            locator='.//select[option[text()="Select a CA certificate"]]'
+        )
 
-        manual_auth_radio_btn = Radio(id='manual_auth')
-        username = OUIATextInput('acs_username_field')
-        password = OUIATextInput('acs_password_field')
+        manual_auth_radio_btn = Radio(id="manual_auth")
+        username = OUIATextInput("acs_username_field")
+        password = OUIATextInput("acs_password_field")
 
-        content_credentials_radio_btn = Radio(id='content_credentials')
-        ssl_client_cert = OUIAFormSelect('sslCert-select')
-        ssl_client_key = OUIAFormSelect('sslKey-select')
+        content_credentials_radio_btn = Radio(id="content_credentials")
+        ssl_client_cert = OUIAFormSelect("sslCert-select")
+        ssl_client_key = OUIAFormSelect("sslKey-select")
 
-        none_auth_radio_btn = Radio(id='none')
+        none_auth_radio_btn = Radio(id="none")
 
     @View.nested
     class select_products(WizardStepView, DualListSelector):
@@ -180,7 +182,7 @@ class AcsStackItem:
     @property
     def is_expanded(self):
         """Returns True if the Details stack item is expanded."""
-        return 'pf-m-expanded' in self.browser.classes(self.ROOT)
+        return "pf-m-expanded" in self.browser.classes(self.ROOT)
 
     def expand(self):
         """Expands the Details stack item."""
@@ -206,8 +208,8 @@ class RowDrawer(View):
 
     """
 
-    title = OUIAText('acs-name-text')
-    refresh_resource = OUIAButton('refresh-acs')
+    title = OUIAText("acs-name-text")
+    refresh_resource = OUIAButton("refresh-acs")
     kebab_menu = Dropdown(locator='//button[contains(@aria-label, "details_actions")]')
     last_refresh = Text('//dd[contains(@aria-label, "last_refresh_text_value")]')
 
@@ -215,12 +217,12 @@ class RowDrawer(View):
     class details(View, AcsStackItem):
         """Class representing the Details stack item in the ACS drawer."""
 
-        ROOT = (
-            '//div[normalize-space(.)="Details" and contains(@class, "pf-v5-c-expandable-section")]'
-        )
+        ROOT = '//div[normalize-space(.)="Details" and contains(@class, "pf-v5-c-expandable-section")]'
 
-        title = OUIAText('expandable-details-text')
-        edit_details = Button(locator='//button[contains(@aria-label, "edit-details-pencil-edit")]')
+        title = OUIAText("expandable-details-text")
+        edit_details = Button(
+            locator='//button[contains(@aria-label, "edit-details-pencil-edit")]'
+        )
 
         @View.nested
         class details_stack_content(View):
@@ -241,7 +243,7 @@ class RowDrawer(View):
             '//div[(normalize-space(.)="Capsules")'
             ' and contains(@class, "pf-v5-c-expandable-section")]'
         )
-        title = OUIAText('expandable-smart-proxies-text')
+        title = OUIAText("expandable-smart-proxies-text")
         edit_capsules = Button(
             locator='//button[contains(@aria-label, "edit-smart-proxies-pencil-edit")]'
         )
@@ -267,7 +269,7 @@ class RowDrawer(View):
             'and contains(@class, "pf-v5-c-expandable-section")]'
         )
 
-        title = OUIAText('expandable-url-paths-text')
+        title = OUIAText("expandable-url-paths-text")
         edit_url_and_subpaths = Button(
             locator='//button[contains(@aria-label, "edit-urls-pencil-edit")]'
         )
@@ -293,7 +295,7 @@ class RowDrawer(View):
             'and contains(@class, "pf-v5-c-expandable-section")]'
         )
 
-        title = OUIAText('expandable-credentials-text')
+        title = OUIAText("expandable-credentials-text")
         edit_credentials = Button(
             locator='//button[contains(@aria-label, "edit-credentials-pencil-edit")]'
         )
@@ -320,7 +322,7 @@ class RowDrawer(View):
 
         ROOT = '//div[normalize-space(.)="Products" and contains(@class, "pf-v5-c-expandable-section")]'
 
-        title = OUIAText('expandable-products-text')
+        title = OUIAText("expandable-products-text")
         edit_products = Button(
             locator='//button[contains(@aria-label, "edit-products-pencil-edit")]'
         )
@@ -346,32 +348,40 @@ class AlternateContentSourcesView(BaseLoggedInView):
         """Class that describes drawer of the Alternate Content Sources page"""
 
         select_all = Checkbox(locator='//input[contains(@aria-label, "Select all")]')
-        search_bar = SearchInput(locator='.//div[contains(@class, "pf-v5-c-input-group")]//input')
+        search_bar = SearchInput(
+            locator='.//div[contains(@class, "pf-v5-c-input-group")]//input'
+        )
         clear_search_btn = Button(locator='//button[@aria-label="Reset search"]')
-        add_source = OUIAButton('create-acs')
+        add_source = OUIAButton("create-acs")
         kebab_menu = Dropdown(
             locator='.//div[contains(@data-ouia-component-id, "acs-bulk-actions")]'
         )
 
         content_table = PatternflyTable(
-            component_id='alternate-content-sources-table',
+            component_id="alternate-content-sources-table",
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
-                'Name': Text('.//a[contains(@data-ouia-component-id, "acs-link-text-")]'),
-                'Type': Text('.//td[3]'),
-                'LastRefresh': Text('.//td[4]'),
+                "Name": Text(
+                    './/a[contains(@data-ouia-component-id, "acs-link-text-")]'
+                ),
+                "Type": Text(".//td[3]"),
+                "LastRefresh": Text(".//td[4]"),
                 4: Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]'),
             },
         )
 
-        clear_search = OUIAButton('empty-state-secondary-action-router-link')
+        clear_search = OUIAButton("empty-state-secondary-action-router-link")
         pagination = PF5Pagination()
 
     @property
     def is_displayed(self):
-        blank_page = self.browser.wait_for_element(self.blank_page, exception=False) is not None
+        blank_page = (
+            self.browser.wait_for_element(self.blank_page, exception=False) is not None
+        )
         table = (
-            self.browser.wait_for_element(self.acs_drawer.content_table, exception=False)
+            self.browser.wait_for_element(
+                self.acs_drawer.content_table, exception=False
+            )
             is not None
         )
         return blank_page or table

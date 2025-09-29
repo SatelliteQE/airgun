@@ -22,7 +22,7 @@ from airgun.widgets import (
 class SyncPlansView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Sync Plans')]")
     new = Text("//button[contains(@href, '/sync_plans/new')]")
-    table = Table('.//table', column_widgets={'Name': Text('./a')})
+    table = Table(".//table", column_widgets={"Name": Text("./a")})
 
     @property
     def is_displayed(self):
@@ -31,20 +31,22 @@ class SyncPlansView(BaseLoggedInView, SearchableViewMixin):
 
 class SyncPlanCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    name = TextInput(id='name')
-    description = TextInput(id='description')
-    interval = Select(id='interval')
-    cron_expression = TextInput(id='cron_expression')
+    name = TextInput(id="name")
+    description = TextInput(id="description")
+    interval = Select(id="interval")
+    cron_expression = TextInput(id="cron_expression")
     date_time = DateTime()
     submit = Text("//button[contains(@ng-click, 'handleSave')]")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Sync Plans'
-            and self.breadcrumb.read() == 'New Sync Plan'
+            and self.breadcrumb.locations[0] == "Sync Plans"
+            and self.breadcrumb.read() == "New Sync Plan"
         )
 
 
@@ -55,24 +57,26 @@ class SyncPlanEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Sync Plans'
-            and self.breadcrumb.read() != 'New Sync Plan'
+            and self.breadcrumb.locations[0] == "Sync Plans"
+            and self.breadcrumb.read() != "New Sync Plan"
         )
 
     @View.nested
     class details(SatTab):
-        name = EditableEntry(name='Name')
-        description = EditableEntry(name='Description')
-        date_time = EditableDateTime(name='Start Date')
-        next_sync = ReadOnlyEntry(name='Next Sync')
-        recurring_logic = ReadOnlyEntry(name='Recurring Logic')
-        enabled = EditableEntryCheckbox(name='Sync Enabled')
-        interval = EditableEntrySelect(name='Interval')
-        cron_expression = EditableEntry(name='Cron Logic')
-        products_count = ReadOnlyEntry(name='Products')
+        name = EditableEntry(name="Name")
+        description = EditableEntry(name="Description")
+        date_time = EditableDateTime(name="Start Date")
+        next_sync = ReadOnlyEntry(name="Next Sync")
+        recurring_logic = ReadOnlyEntry(name="Recurring Logic")
+        enabled = EditableEntryCheckbox(name="Sync Enabled")
+        interval = EditableEntrySelect(name="Interval")
+        cron_expression = EditableEntry(name="Cron Logic")
+        products_count = ReadOnlyEntry(name="Products")
 
     @View.nested
     class products(SatTab):

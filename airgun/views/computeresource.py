@@ -30,13 +30,15 @@ from airgun.widgets import (
 
 
 class ComputeResourcesView(BaseLoggedInView, SearchableViewMixinPF4):
-    title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="Compute Resources"]')
+    title = Text(
+        '//*[(self::h1 or self::h5) and normalize-space(.)="Compute Resources"]'
+    )
     new = Text('//a[normalize-space(.)="Create Compute Resource"]')
     table = SatTable(
-        './/table',
+        ".//table",
         column_widgets={
-            'Name': Text('./a'),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            "Name": Text("./a"),
+            "Actions": ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
 
@@ -48,114 +50,118 @@ class ComputeResourcesView(BaseLoggedInView, SearchableViewMixinPF4):
 
 class ResourceProviderCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    name = TextInput(id='compute_resource_name')
-    description = TextInput(id='compute_resource_description')
+    name = TextInput(id="compute_resource_name")
+    description = TextInput(id="compute_resource_description")
     submit = Text('//input[@name="commit"]')
 
-    provider = FilteredDropdown(id='compute_resource_provider')
-    provider_content = ConditionalSwitchableView(reference='provider')
+    provider = FilteredDropdown(id="compute_resource_provider")
+    provider_content = ConditionalSwitchableView(reference="provider")
 
-    @provider_content.register('EC2')
+    @provider_content.register("EC2")
     class EC2ProviderForm(View):
-        access_key = TextInput(id='compute_resource_user')
-        secret_key = TextInput(id='compute_resource_password')
+        access_key = TextInput(id="compute_resource_user")
+        secret_key = TextInput(id="compute_resource_password")
 
         @View.nested
         class region(View):
             load_regions = Text("//a[contains(@id,'test_connection_button')]")
-            value = FilteredDropdown(id='compute_resource_region')
+            value = FilteredDropdown(id="compute_resource_region")
 
             def before_fill(self, values=None):
                 self.load_regions.click()
 
         @View.nested
         class http_proxy(View):
-            value = FilteredDropdown(id='compute_resource_http_proxy_id')
+            value = FilteredDropdown(id="compute_resource_http_proxy_id")
 
-    @provider_content.register('Google')
+    @provider_content.register("Google")
     class GCEProviderForm(View):
-        json_key = TextInput(id='gce_json')
+        json_key = TextInput(id="gce_json")
         upload_button = Text("//input[@id='password_json']")
 
         @View.nested
         class zone(View):
             load_zones = Text("//a[contains(@id,'test_connection_button')]")
-            value = FilteredDropdown(id='compute_resource_zone')
+            value = FilteredDropdown(id="compute_resource_zone")
 
             def before_fill(self, values=None):
                 self.load_zones.click()
 
         @View.nested
         class http_proxy(View):
-            value = FilteredDropdown(id='compute_resource_http_proxy_id')
+            value = FilteredDropdown(id="compute_resource_http_proxy_id")
 
-    @provider_content.register('Libvirt')
+    @provider_content.register("Libvirt")
     class LibvirtProviderForm(View):
-        url = TextInput(id='compute_resource_url')
-        display_type = Select(id='compute_resource_display_type')
-        console_passwords = Checkbox(id='compute_resource_set_console_password')
+        url = TextInput(id="compute_resource_url")
+        display_type = Select(id="compute_resource_display_type")
+        console_passwords = Checkbox(id="compute_resource_set_console_password")
 
-    @provider_content.register('RHEL OpenStack Platform')
+    @provider_content.register("RHEL OpenStack Platform")
     class OpenStackProviderForm(View):
-        url = TextInput(id='compute_resource_url')
-        user = TextInput(id='compute_resource_user')
-        password = TextInput(id='compute_resource_password')
-        domain = TextInput(id='compute_resource_domain')
+        url = TextInput(id="compute_resource_url")
+        user = TextInput(id="compute_resource_user")
+        password = TextInput(id="compute_resource_password")
+        domain = TextInput(id="compute_resource_domain")
 
-    @provider_content.register('Rackspace')
+    @provider_content.register("Rackspace")
     class RackspaceProviderForm(View):
-        url = TextInput(id='compute_resource_url')
-        user = TextInput(id='compute_resource_user')
-        api_key = TextInput(id='compute_resource_password')
-        region = Select(id='compute_resource_region')
+        url = TextInput(id="compute_resource_url")
+        user = TextInput(id="compute_resource_user")
+        api_key = TextInput(id="compute_resource_password")
+        region = Select(id="compute_resource_region")
 
-    @provider_content.register('VMware')
+    @provider_content.register("VMware")
     class VMwareProviderForm(View):
-        vcenter = TextInput(id='compute_resource_server')
-        user = TextInput(id='compute_resource_user')
-        password = TextInput(id='compute_resource_password')
-        display_type = Select(id='compute_resource_display_type')
-        vnc_console_passwords = Checkbox(id='compute_resource_set_console_password')
-        enable_caching = Checkbox(id='compute_resource_caching_enabled')
+        vcenter = TextInput(id="compute_resource_server")
+        user = TextInput(id="compute_resource_user")
+        password = TextInput(id="compute_resource_password")
+        display_type = Select(id="compute_resource_display_type")
+        vnc_console_passwords = Checkbox(id="compute_resource_set_console_password")
+        enable_caching = Checkbox(id="compute_resource_caching_enabled")
 
         @View.nested
         class datacenter(View):
             load_datacenters = Text("//a[contains(@id,'test_connection_button')]")
-            value = FilteredDropdown(id='compute_resource_datacenter')
+            value = FilteredDropdown(id="compute_resource_datacenter")
 
             def before_fill(self, values=None):
                 self.load_datacenters.click()
 
     @View.nested
     class compute_resource(SatTab):
-        TAB_NAME = 'Compute Resource'
+        TAB_NAME = "Compute Resource"
 
     @View.nested
     class locations(SatTab):
-        resources = MultiSelect(id='ms-compute_resource_location_ids')
+        resources = MultiSelect(id="ms-compute_resource_location_ids")
 
     @View.nested
     class organizations(SatTab):
-        resources = MultiSelect(id='ms-compute_resource_organization_ids')
+        resources = MultiSelect(id="ms-compute_resource_organization_ids")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Compute Resources'
-            and self.breadcrumb.read() == 'Create Compute Resource'
+            and self.breadcrumb.locations[0] == "Compute Resources"
+            and self.breadcrumb.read() == "Create Compute Resource"
         )
 
 
 class ResourceProviderEditView(ResourceProviderCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Compute Resources'
-            and self.breadcrumb.read().startswith('Edit ')
+            and self.breadcrumb.locations[0] == "Compute Resources"
+            and self.breadcrumb.read().startswith("Edit ")
         )
 
 
@@ -166,58 +172,62 @@ class ResourceProviderDetailView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Compute Resources'
-            and self.breadcrumb.read() != 'Create Compute Resource'
+            and self.breadcrumb.locations[0] == "Compute Resources"
+            and self.breadcrumb.read() != "Create Compute Resource"
         )
 
     @View.nested
     class compute_resource(SatTab):
-        TAB_NAME = 'Compute Resource'
+        TAB_NAME = "Compute Resource"
         ROOT = ".//div[@id='primary']"
 
-        table = SatTable('.//table')
+        table = SatTable(".//table")
 
     @View.nested
     class virtual_machines(SatTab, SearchableViewMixin):
-        TAB_NAME = 'Virtual Machines'
+        TAB_NAME = "Virtual Machines"
         ROOT = ".//div[@id='vms']"
 
         actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
         table = Table(
-            './/table',
+            ".//table",
             column_widgets={
-                'Name': Text('./a'),
-                'Actions': Text('.//a[@data-method="put"]'),
-                'Power': Text('.//span[contains(@class,"label")]'),
+                "Name": Text("./a"),
+                "Actions": Text('.//a[@data-method="put"]'),
+                "Power": Text('.//span[contains(@class,"label")]'),
             },
         )
-        search = TextInput(locator=".//input[contains(@aria-controls, 'DataTables_Table')]")
+        search = TextInput(
+            locator=".//input[contains(@aria-controls, 'DataTables_Table')]"
+        )
 
     @View.nested
     class compute_profiles(SatTab):
-        TAB_NAME = 'Compute profiles'
+        TAB_NAME = "Compute profiles"
         ROOT = ".//div[@id='compute_profiles']"
 
         table = SatTable(
-            './/table',
+            ".//table",
             column_widgets={
-                'Compute profile': Text('.//a'),
+                "Compute profile": Text(".//a"),
             },
         )
 
     @View.nested
     class images(SatTab):
-        TAB_NAME = 'Images'
+        TAB_NAME = "Images"
         ROOT = ".//div[@id='images']"
 
         filterbox = TextInput(locator=(".//input[contains(@placeholder, 'Filter')]"))
         table = Table(
-            './/table',
+            ".//table",
             column_widgets={
-                'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+                "Actions": ActionsDropdown("./div[contains(@class, 'btn-group')]"),
             },
         )
 
@@ -258,7 +268,9 @@ class ComputeResourceVMwareProfileControllerVolumeItem(GenericRemovableWidgetIte
         locator=".//div[label[contains(., 'Disk Mode')]]//select[contains(@class, 'form-control')]"
     )
     size = TextInput(locator=".//div[label[contains(., 'Size')]]//input")
-    thin_provision = Checkbox(locator=".//div[label[contains(., 'Thin provision')]]/div/input")
+    thin_provision = Checkbox(
+        locator=".//div[label[contains(., 'Thin provision')]]/div/input"
+    )
     eager_zero = Checkbox(locator=".//div[label[contains(., 'Eager zero')]]/div/input")
 
     remove_button = Text(".//button[contains(@class, 'close')]")
@@ -279,16 +291,18 @@ class ComputeResourceVMwareProfileStorageItem(GenericRemovableWidgetItem):
     controller = FilteredDropdown(
         locator=".//div[@class='controller-header']//select[contains(@class, 'form-control')]"
     )
-    remove_button = Text(".//button[contains(concat(' ', @class, ' '), ' btn-remove-controller ')]")
+    remove_button = Text(
+        ".//button[contains(concat(' ', @class, ' '), ' btn-remove-controller ')]"
+    )
     disks = ComputeResourceVMwareProfileControllerVolumeList()
 
 
 class ResourceProviderProfileView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    compute_profile = FilteredDropdown(id='compute_attribute_compute_profile_id')
-    compute_resource = FilteredDropdown(id='compute_attribute_compute_resource_id')
+    compute_profile = FilteredDropdown(id="compute_attribute_compute_profile_id")
+    compute_resource = FilteredDropdown(id="compute_attribute_compute_resource_id")
 
-    provider_content = ConditionalSwitchableView(reference='current_provider')
+    provider_content = ConditionalSwitchableView(reference="current_provider")
 
     submit = Text('//input[@name="commit"]')
 
@@ -303,13 +317,13 @@ class ResourceProviderProfileView(BaseLoggedInView):
             "foo (ca-central-1-EC2)" where "ca-central-1" is the region.
         """
         compute_resource_name = self.compute_resource.read()
-        return re.findall(r'.*\((?:.*-)*(.*?)\)\Z|$', compute_resource_name)[0]
+        return re.findall(r".*\((?:.*-)*(.*?)\)\Z|$", compute_resource_name)[0]
 
-    @provider_content.register('Libvirt')
+    @provider_content.register("Libvirt")
     class LibvirtResourceForm(View):
-        cpus = TextInput(id='compute_attribute_vm_attrs_cpus')
-        memory = TextInput(id='compute_attribute_vm_attrs_memory')
-        image = FilteredDropdown(id='compute_attribute_vm_attrs_image_id')
+        cpus = TextInput(id="compute_attribute_vm_attrs_cpus")
+        memory = TextInput(id="compute_attribute_vm_attrs_memory")
+        image = FilteredDropdown(id="compute_attribute_vm_attrs_image_id")
 
         @View.nested
         class network_interfaces(RemovableWidgetsItemsListView):
@@ -322,54 +336,64 @@ class ResourceProviderProfileView(BaseLoggedInView):
             ITEMS = "./div/div[contains(@class, 'removable-item')]"
             ITEM_WIDGET_CLASS = ComputeResourceLibvirtProfileStorageItem
 
-    @provider_content.register('EC2')
+    @provider_content.register("EC2")
     class EC2ResourceForm(View):
-        flavor = FilteredDropdown(id='compute_attribute_vm_attrs_flavor_id')
-        image = FilteredDropdown(id='compute_attribute_vm_attrs_image_id')
-        availability_zone = FilteredDropdown(id='compute_attribute_vm_attrs_availability_zone')
-        subnet = FilteredDropdown(id='compute_attribute_vm_attrs_subnet_id')
-        security_groups = MultiSelect(id='ms-compute_attribute_vm_attrs_security_group_ids')
-        managed_ip = FilteredDropdown(id='compute_attribute_vm_attrs_managed_ip')
+        flavor = FilteredDropdown(id="compute_attribute_vm_attrs_flavor_id")
+        image = FilteredDropdown(id="compute_attribute_vm_attrs_image_id")
+        availability_zone = FilteredDropdown(
+            id="compute_attribute_vm_attrs_availability_zone"
+        )
+        subnet = FilteredDropdown(id="compute_attribute_vm_attrs_subnet_id")
+        security_groups = MultiSelect(
+            id="ms-compute_attribute_vm_attrs_security_group_ids"
+        )
+        managed_ip = FilteredDropdown(id="compute_attribute_vm_attrs_managed_ip")
 
-    @provider_content.register('Google')
+    @provider_content.register("Google")
     class GCEResourceForm(View):
-        machine_type = FilteredDropdown(id='compute_attribute_vm_attrs_machine_type')
-        image = FilteredDropdown(id='compute_attribute_vm_attrs_image_id')
-        network = FilteredDropdown(id='compute_attribute_vm_attrs_network')
-        external_ip = Checkbox(id='compute_attribute_vm_attrs_associate_external_ip')
-        default_disk_size = TextInput(id='compute_attribute_vm_attrs_volumes_attributes_0_size_gb')
+        machine_type = FilteredDropdown(id="compute_attribute_vm_attrs_machine_type")
+        image = FilteredDropdown(id="compute_attribute_vm_attrs_image_id")
+        network = FilteredDropdown(id="compute_attribute_vm_attrs_network")
+        external_ip = Checkbox(id="compute_attribute_vm_attrs_associate_external_ip")
+        default_disk_size = TextInput(
+            id="compute_attribute_vm_attrs_volumes_attributes_0_size_gb"
+        )
 
-    @provider_content.register('VMware')
+    @provider_content.register("VMware")
     class VMwareResourceForm(View):
-        cpus = TextInput(id='compute_attribute_vm_attrs_cpus')
-        cores_per_socket = TextInput(id='compute_attribute_vm_attrs_corespersocket')
-        memory = TextInput(id='compute_attribute_vm_attrs_memory_mb')
+        cpus = TextInput(id="compute_attribute_vm_attrs_cpus")
+        cores_per_socket = TextInput(id="compute_attribute_vm_attrs_corespersocket")
+        memory = TextInput(id="compute_attribute_vm_attrs_memory_mb")
         firmware = RadioGroup(
             "//div[label[input[contains(@id, 'compute_attribute_vm_attrs_firmware')]]]"
         )
-        cluster = FilteredDropdown(id='compute_attribute_vm_attrs_cluster')
-        resource_pool = FilteredDropdown(id='compute_attribute_vm_attrs_resource_pool')
-        folder = FilteredDropdown(id='compute_attribute_vm_attrs_path')
-        guest_os = FilteredDropdown(id='compute_attribute_vm_attrs_guest_id')
-        virtual_hw_version = FilteredDropdown(id='compute_attribute_vm_attrs_hardware_version')
-        memory_hot_add = Checkbox(id='compute_attribute_vm_attrs_memoryHotAddEnabled')
-        cpu_hot_add = Checkbox(id='compute_attribute_vm_attrs_cpuHotAddEnabled')
-        cdrom_drive = Checkbox(id='compute_attribute_vm_attrs_add_cdrom')
-        annotation_notes = TextInput(id='compute_attribute_vm_attrs_annotation')
-        image = FilteredDropdown(id='compute_attribute_vm_attrs_image_id')
+        cluster = FilteredDropdown(id="compute_attribute_vm_attrs_cluster")
+        resource_pool = FilteredDropdown(id="compute_attribute_vm_attrs_resource_pool")
+        folder = FilteredDropdown(id="compute_attribute_vm_attrs_path")
+        guest_os = FilteredDropdown(id="compute_attribute_vm_attrs_guest_id")
+        virtual_hw_version = FilteredDropdown(
+            id="compute_attribute_vm_attrs_hardware_version"
+        )
+        memory_hot_add = Checkbox(id="compute_attribute_vm_attrs_memoryHotAddEnabled")
+        cpu_hot_add = Checkbox(id="compute_attribute_vm_attrs_cpuHotAddEnabled")
+        cdrom_drive = Checkbox(id="compute_attribute_vm_attrs_add_cdrom")
+        annotation_notes = TextInput(id="compute_attribute_vm_attrs_annotation")
+        image = FilteredDropdown(id="compute_attribute_vm_attrs_image_id")
 
         @View.nested
         class network_interfaces(RemovableWidgetsItemsListView):
             ROOT = "//fieldset[@id='network_interfaces']"
             ITEM_WIDGET_CLASS = ComputeResourceVMwareProfileNetworkItem
 
-            nic_type = FilteredDropdown(id='select2-chosen-9')
-            network = FilteredDropdown(id='select2-chosen-10')
+            nic_type = FilteredDropdown(id="select2-chosen-9")
+            network = FilteredDropdown(id="select2-chosen-10")
 
         @View.nested
         class storage(RemovableWidgetsItemsListView):
             ROOT = "//div[contains(concat(' ', @class, ' '), ' vmware-storage-container ')]"
-            ITEMS = "//div[contains(concat(' ', @class, ' '), ' controller-container ')]"
+            ITEMS = (
+                "//div[contains(concat(' ', @class, ' '), ' controller-container ')]"
+            )
             ITEM_WIDGET_CLASS = ComputeResourceVMwareProfileStorageItem
             add_item_button = Text(
                 "//button[contains(concat(' ', @class, ' '), ' btn-add-controller ')]"
@@ -387,9 +411,12 @@ class ResourceProviderProfileView(BaseLoggedInView):
             return False
         breadcrumb_text = self.breadcrumb.read()
         return (
-            self.breadcrumb.locations[0] == 'Compute Resources'
-            and self.breadcrumb.locations[2] == 'Compute Profiles'
-            and (breadcrumb_text.startswith('Edit ') or breadcrumb_text.startswith('New '))
+            self.breadcrumb.locations[0] == "Compute Resources"
+            and self.breadcrumb.locations[2] == "Compute Profiles"
+            and (
+                breadcrumb_text.startswith("Edit ")
+                or breadcrumb_text.startswith("New ")
+            )
         )
 
 
@@ -398,11 +425,13 @@ class ResourceProviderVMImport(HostCreateView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Compute Resources Vms'
-            and self.breadcrumb.read().startswith('Import ')
+            and self.breadcrumb.locations[0] == "Compute Resources Vms"
+            and self.breadcrumb.read().startswith("Import ")
         )
 
 
@@ -410,13 +439,13 @@ class ComputeResourceGenericImageCreateView(BaseLoggedInView):
     """A Generic Compute Resource Image create view."""
 
     breadcrumb = BreadCrumb()
-    name = TextInput(id='image_name')
-    operating_system = FilteredDropdown(id='image_operatingsystem_id')
-    architecture = FilteredDropdown(id='image_architecture_id')
-    username = TextInput(id='image_username')
-    user_data = Checkbox(id='image_user_data')
-    password = TextInput(id='image_password')
-    image = FilteredDropdown(id='image_uuid')
+    name = TextInput(id="image_name")
+    operating_system = FilteredDropdown(id="image_operatingsystem_id")
+    architecture = FilteredDropdown(id="image_architecture_id")
+    username = TextInput(id="image_username")
+    user_data = Checkbox(id="image_user_data")
+    password = TextInput(id="image_password")
+    image = FilteredDropdown(id="image_uuid")
     submit = Text('//input[@name="commit"]')
 
     @property
@@ -426,9 +455,9 @@ class ComputeResourceGenericImageCreateView(BaseLoggedInView):
         )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Compute Resources'
-            and self.breadcrumb.locations[2] == 'Images'
-            and self.breadcrumb.read() == 'Create image'
+            and self.breadcrumb.locations[0] == "Compute Resources"
+            and self.breadcrumb.locations[2] == "Images"
+            and self.breadcrumb.read() == "Create image"
         )
 
 
@@ -442,9 +471,9 @@ class ComputeResourceGenericImageEditViewMixin:
         )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Compute Resources'
-            and self.breadcrumb.locations[2] == 'Images'
-            and self.breadcrumb.read().startswith('Edit ')
+            and self.breadcrumb.locations[0] == "Compute Resources"
+            and self.breadcrumb.locations[2] == "Images"
+            and self.breadcrumb.read().startswith("Edit ")
         )
 
 
@@ -462,7 +491,7 @@ class ComputeResourceLibvirtImageCreateView(ComputeResourceGenericImageCreateVie
     """Libvirt ComputeResource Image create View"""
 
     image = None
-    image_path = TextInput(id='image_uuid')
+    image_path = TextInput(id="image_uuid")
 
 
 class ComputeResourceLibvirtImageEditView(
@@ -471,4 +500,4 @@ class ComputeResourceLibvirtImageEditView(
     """Libvirt ComputeResource Image edit View"""
 
     image = None
-    image_path = TextInput(id='image_uuid')
+    image_path = TextInput(id="image_uuid")

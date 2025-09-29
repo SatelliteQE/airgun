@@ -33,7 +33,7 @@ class ActivationKeysView(BaseLoggedInView, SearchableViewMixin):
 
     title = Text("//h2[contains(., 'Activation Keys')]")
     new = Text("//button[contains(@href, '/activation_keys/new')]")
-    table = Table('.//table', column_widgets={'Name': Text('.//a')})
+    table = Table(".//table", column_widgets={"Name": Text(".//a")})
 
     @property
     def is_displayed(self):
@@ -44,20 +44,22 @@ class ActivationKeyCreateView(BaseLoggedInView):
     """View for the ActivationKeys Create page"""
 
     breadcrumb = BreadCrumb()
-    name = TextInput(id='name')
+    name = TextInput(id="name")
     hosts_limit = LimitInput()
-    description = TextInput(id='description')
+    description = TextInput(id="description")
     lce = ParametrizedView.nested(LCESelectorGroup)
-    content_view = Select(id='content_view_id')
+    content_view = Select(id="content_view_id")
     submit = Text("//button[contains(@ng-click, 'handleSave')]")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Activation Keys'
-            and self.breadcrumb.read() == 'New Activation Key'
+            and self.breadcrumb.locations[0] == "Activation Keys"
+            and self.breadcrumb.read() == "New Activation Key"
         )
 
 
@@ -70,25 +72,29 @@ class ActivationKeyEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Activation Keys'
-            and self.breadcrumb.read() != 'New Activation Key'
+            and self.breadcrumb.locations[0] == "Activation Keys"
+            and self.breadcrumb.read() != "New Activation Key"
         )
 
     @View.nested
     class details(SatTab):
-        name = EditableEntry(name='Name')
-        description = EditableEntry(name='Description')
-        hosts_limit = EditableLimitEntry(name='Host Limit')
+        name = EditableEntry(name="Name")
+        description = EditableEntry(name="Description")
+        hosts_limit = EditableLimitEntry(name="Host Limit")
         host_limit_edit_btn = Text(
             locator='//dd[@bst-edit-custom="activationKey.max_hosts"]//div[@ng-click="edit()"]'
         )
         unlimited_content_host_checkbox = Checkbox(
             locator='//input[@ng-model="activationKey.unlimited_hosts"]'
         )
-        host_limit_input = TextInput(locator='//input[@ng-model="activationKey.max_hosts"]')
+        host_limit_input = TextInput(
+            locator='//input[@ng-model="activationKey.max_hosts"]'
+        )
         host_limit_save_btn = Text(
             locator='//dd[contains(@bst-edit-custom, "activationKey.max_hosts")]//button[@ng-click="save()"]'
         )
@@ -96,9 +102,9 @@ class ActivationKeyEditView(BaseLoggedInView):
             locator='//dd[contains(@bst-edit-custom, "activationKey.max_hosts")]//button[@ng-click="cancel()"]'
         )
 
-        service_level = EditableEntrySelect(name='Service Level')
+        service_level = EditableEntrySelect(name="Service Level")
         lce = ParametrizedView.nested(LCESelectorGroup)
-        content_view = EditableEntrySelect(name='Content View')
+        content_view = EditableEntrySelect(name="Content View")
 
     @View.nested
     class subscriptions(SatTab):
@@ -106,7 +112,7 @@ class ActivationKeyEditView(BaseLoggedInView):
 
     @View.nested
     class repository_sets(SatTab, SearchableViewMixin):
-        TAB_NAME = 'Repository Sets'
+        TAB_NAME = "Repository Sets"
         repo_type = Select(locator='.//select[@id="repositoryTypes"]')
         actions = ActionsDropdown('//div[contains(@class, "btn-group ng-scope")]/div')
         table = Table(locator=".//table")
@@ -119,11 +125,11 @@ class ActivationKeyEditView(BaseLoggedInView):
 
     @View.nested
     class host_collections(SatTab):
-        TAB_NAME = 'Host Collections'
+        TAB_NAME = "Host Collections"
         resources = View.nested(AddRemoveResourcesView)
 
     @View.nested
     class content_hosts(SatTabWithDropdown):
-        TAB_NAME = 'Associations'
-        SUB_ITEM = 'Content Hosts'
+        TAB_NAME = "Associations"
+        SUB_ITEM = "Content Hosts"
         table = Table(locator=".//table")

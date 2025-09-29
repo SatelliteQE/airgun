@@ -16,11 +16,11 @@ from airgun.views.task import TaskDetailsView
 
 
 class JobInvocationEntity(BaseEntity):
-    endpoint_path = '/job_invocations'
+    endpoint_path = "/job_invocations"
 
     def run(self, values):
         """Run specific job"""
-        view = self.navigate_to(self, 'Run')
+        view = self.navigate_to(self, "Run")
         view.fill(values)
         view.submit.expander.click()
         self.browser.wait_for_element(view.submit.submit, exception=False)
@@ -28,20 +28,25 @@ class JobInvocationEntity(BaseEntity):
 
     def search(self, value):
         """Search for specific job invocation"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(value)
 
     def read(self, entity_name, host_name, widget_names=None):
         """Read values for scheduled or already executed job"""
-        view = self.navigate_to(self, 'Job Status', entity_name=entity_name, host_name=host_name)
+        view = self.navigate_to(
+            self, "Job Status", entity_name=entity_name, host_name=host_name
+        )
         return view.read(widget_names=widget_names)
 
-    def wait_job_invocation_state(self, entity_name, host_name, expected_state='succeeded'):
+    def wait_job_invocation_state(
+        self, entity_name, host_name, expected_state="succeeded"
+    ):
         """Check job invocation state from table view"""
-        view = self.navigate_to(self, 'All')
-        view.search(f'host = {host_name}')
+        view = self.navigate_to(self, "All")
+        view.search(f"host = {host_name}")
         wait_for(
-            lambda: view.table.row(description=entity_name)['Status'].read() == expected_state,
+            lambda: view.table.row(description=entity_name)["Status"].read()
+            == expected_state,
             timeout=300,
             delay=10,
             fail_func=view.browser.refresh,
@@ -61,8 +66,8 @@ class JobInvocationEntity(BaseEntity):
         view = JobInvocationCreateView(self.browser)
         time.sleep(3)
         read_values = {
-            'job_category': view.category_and_template.job_category.read(),
-            'job_template': view.category_and_template.job_template_text_input.read(),
+            "job_category": view.category_and_template.job_category.read(),
+            "job_template": view.category_and_template.job_template_text_input.read(),
         }
         return read_values
 
@@ -75,21 +80,25 @@ class JobInvocationEntity(BaseEntity):
 
     def read_hostgroups(self):
         """Read host groups in selection"""
-        view = self.navigate_to(self, 'Run')
+        view = self.navigate_to(self, "Run")
         view.fill(
             {
-                'category_and_template.job_category': 'Commands',
-                'category_and_template.job_template_text_input': 'Run Command - Script Default',
-                'target_hosts_and_inputs.targetting_type': 'Host groups',
+                "category_and_template.job_category": "Commands",
+                "category_and_template.job_template_text_input": "Run Command - Script Default",
+                "target_hosts_and_inputs.targetting_type": "Host groups",
             }
         )
         return view.target_hosts_and_inputs.targets_host_groups.items
 
     def read_dynflow_output(self, entity_name, host_name):
         """Read dynflow console output"""
-        view = self.navigate_to(self, 'Job Status', entity_name=entity_name, host_name=host_name)
+        view = self.navigate_to(
+            self, "Job Status", entity_name=entity_name, host_name=host_name
+        )
         wait_for(lambda: view.overview.hosts_table.is_displayed, timeout=10)
-        view.overview.hosts_table.row(host=host_name)['Actions'].widget.fill('Host task')
+        view.overview.hosts_table.row(host=host_name)["Actions"].widget.fill(
+            "Host task"
+        )
         view = TaskDetailsView(self.browser)
         view.wait_for_result()
         view.task.dynflow_console.click()
@@ -101,21 +110,25 @@ class JobInvocationEntity(BaseEntity):
         self.browser.close_window(self.browser.window_handles[1])
         return result
 
-    def leapp_fix_inhibitor(self, entity_name, host_name, expected_state='Success'):
+    def leapp_fix_inhibitor(self, entity_name, host_name, expected_state="Success"):
         """Fix inhibitors in leapp preupgrade report"""
-        view = self.navigate_to(self, 'Job Status', entity_name=entity_name, host_name=host_name)
+        view = self.navigate_to(
+            self, "Job Status", entity_name=entity_name, host_name=host_name
+        )
         view.leapp_preupgrade_report.leapp_report_title.click()
-        wait_for(lambda: view.leapp_preupgrade_report.fix_selected.is_displayed, timeout=10)
+        wait_for(
+            lambda: view.leapp_preupgrade_report.fix_selected.is_displayed, timeout=10
+        )
         view.leapp_preupgrade_report.fix_selected.click()
         wait_for(
-            lambda: view.overview.read()['job_status'] == expected_state,
+            lambda: view.overview.read()["job_status"] == expected_state,
             timeout=300,
             delay=10,
             logger=view.logger,
         )
 
 
-@navigator.register(JobInvocationEntity, 'All')
+@navigator.register(JobInvocationEntity, "All")
 class ShowAllJobs(NavigateStep):
     """Navigate to All Job Invocations screen."""
 
@@ -123,22 +136,22 @@ class ShowAllJobs(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Monitor', 'Jobs')
+        self.view.menu.select("Monitor", "Jobs")
 
 
-@navigator.register(JobInvocationEntity, 'Run')
+@navigator.register(JobInvocationEntity, "Run")
 class RunNewJob(NavigateStep):
     """Navigate to Create new Job Invocation screen."""
 
     VIEW = JobInvocationCreateView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
         self.parent.new.click()
 
 
-@navigator.register(JobInvocationEntity, 'Job Status')
+@navigator.register(JobInvocationEntity, "Job Status")
 class JobStatus(NavigateStep):
     """Navigate to Job Invocation status screen.
 
@@ -150,8 +163,10 @@ class JobStatus(NavigateStep):
     VIEW = JobInvocationStatusView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        self.parent.search(f'host = {kwargs.get("host_name")}')
-        self.parent.table.row(description=kwargs.get('entity_name'))['Description'].widget.click()
+        self.parent.search(f"host = {kwargs.get('host_name')}")
+        self.parent.table.row(description=kwargs.get("entity_name"))[
+            "Description"
+        ].widget.click()

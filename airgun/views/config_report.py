@@ -8,10 +8,10 @@ class ConfigReportsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Reports']")
     export = Button("Export")
     table = SatTable(
-        './/table',
+        ".//table",
         column_widgets={
-            'Last report': Text('./a'),
-            'Actions': Text('.//a[@data-method="delete"]'),
+            "Last report": Text("./a"),
+            "Actions": Text('.//a[@data-method="delete"]'),
         },
     )
 
@@ -25,8 +25,10 @@ class ConfigReportDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Config Reports'
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
+        return breadcrumb_loaded and self.breadcrumb.locations[0] == "Config Reports"
 
     delete = Button("Delete")
     host_details = Button("Host details")

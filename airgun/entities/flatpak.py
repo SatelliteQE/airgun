@@ -16,7 +16,7 @@ from airgun.views.flatpak import (
 class FlatpakRemotesEntity(BaseEntity):
     """Entity for Flatpak remotes."""
 
-    endpoint_path = '/flatpak_remotes'
+    endpoint_path = "/flatpak_remotes"
 
     def search(self, value):
         """Search for Flatpak remote in the table.
@@ -25,7 +25,7 @@ class FlatpakRemotesEntity(BaseEntity):
         :return: list of table rows that match the search query
         :rtype: list
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.wait_displayed()
         return view.search(value)
 
@@ -36,7 +36,7 @@ class FlatpakRemotesEntity(BaseEntity):
         :return: dict of widget names and their values
         :rtype: dict
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.wait_displayed()
         return view.read(widget_names=widget_names)
 
@@ -46,7 +46,7 @@ class FlatpakRemotesEntity(BaseEntity):
         :return: list of table rows
         :rtype: list
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.wait_displayed()
         return view.table.read()
 
@@ -58,10 +58,10 @@ class FlatpakRemotesEntity(BaseEntity):
             name (str): Name of the flatpak remote to be read
             repo_search (str, optional): Name of scanned remote repository to be searched
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.wait_displayed()
         view.search(name)
-        view.table.row(name=name)['Name'].widget.click()
+        view.table.row(name=name)["Name"].widget.click()
         view = FlatpakRemoteDetailsView(self.browser)
         view.wait_displayed()
         if repo_search:
@@ -73,7 +73,7 @@ class FlatpakRemotesEntity(BaseEntity):
 
         :param dict values: values to create the remote with
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.wait_displayed()
         view.create_new_btn.click()
         create_modal = CreateFlatpakRemoteModal(self.browser)
@@ -89,10 +89,10 @@ class FlatpakRemotesEntity(BaseEntity):
         :param str entity_name: name of the remote to edit
         :param dict values: values to update the remote with
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.wait_displayed()
         view.table.row(name=entity_name)[2].click()
-        view.table.row(name=entity_name)[2].widget.item_select('Edit')
+        view.table.row(name=entity_name)[2].widget.item_select("Edit")
         edit_modal = EditFlatpakRemoteModal(self.browser)
         edit_modal.wait_displayed()
         edit_modal.fill(values)
@@ -105,10 +105,10 @@ class FlatpakRemotesEntity(BaseEntity):
 
         :param str entity_name: name of the remote to delete
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.wait_displayed()
         view.table.row(name=entity_name)[2].click()
-        view.table.row(name=entity_name)[2].widget.item_select('Delete')
+        view.table.row(name=entity_name)[2].widget.item_select("Delete")
         delete_modal = FlatpakRemoteDeleteModal(self.browser)
         delete_modal.wait_displayed()
         delete_modal.delete_btn.click()
@@ -122,10 +122,10 @@ class FlatpakRemotesEntity(BaseEntity):
 
         :param str entity_name: name of the remote to scan
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.wait_displayed()
         view.table.row(name=entity_name)[2].click()
-        view.table.row(name=entity_name)[2].widget.item_select('Scan')
+        view.table.row(name=entity_name)[2].widget.item_select("Scan")
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -136,14 +136,14 @@ class FlatpakRemotesEntity(BaseEntity):
         :param str repo: name of the repository to be mirrored
         :param str product: name of the product where the repository should be mirrored
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.wait_displayed()
         view.search(remote)
-        view.table.row(name=remote)['Name'].widget.click()
+        view.table.row(name=remote)["Name"].widget.click()
         view = FlatpakRemoteDetailsView(self.browser)
         view.wait_displayed()
         view.search(repo)  # in case of many repos
-        view.table.row(name=repo)['Mirror'].widget.click()
+        view.table.row(name=repo)["Mirror"].widget.click()
         mirror_modal = MirrorFlatpakRemoteModal(self.browser)
         mirror_modal.wait_displayed()
         mirror_modal.searchbar.fill(product.name)
@@ -152,7 +152,7 @@ class FlatpakRemotesEntity(BaseEntity):
         view.wait_displayed(delay=3)
 
 
-@navigator.register(FlatpakRemotesEntity, 'All')
+@navigator.register(FlatpakRemotesEntity, "All")
 class ShowAllFlatpakRemotes(NavigateStep):
     """Navigate to All Flatpak Remotes page."""
 
@@ -160,4 +160,4 @@ class ShowAllFlatpakRemotes(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Flatpak Remotes')
+        self.view.menu.select("Content", "Flatpak Remotes")

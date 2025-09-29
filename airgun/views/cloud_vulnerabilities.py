@@ -33,18 +33,20 @@ class CloudVulnerabilityView(BaseLoggedInView):
     )
     search_bar = SearchInput(locator='.//input[contains(@aria-label, "search-field")]')
     cve_menu_toggle = PF5Button('.//button[contains(@class, "pf-v5-c-menu-toggle")]')
-    no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
+    no_cves_found_message = Text(
+        './/h5[contains(@class, "pf-v5-c-empty-state__title-text")]'
+    )
 
     vulnerabilities_table = PF5OUIAExpandableTable(
         # component_id='OUIA-Generated-Table-1',
         locator='.//table[contains(@class, "pf-v5-c-table")]',
         column_widgets={
             0: PF5Button(locator='.//button[@aria-label="Details"]'),
-            'CVE ID': Text('.//td[@data-label="CVE ID"]'),
-            'Publish date': Text('.//td[@data-label="Publish date"]'),
-            'Severity': Text('.//td[@data-label="Severity"]'),
-            'CVSS base score': Text('.//td[@data-label="CVSS base score"]'),
-            'Affected hosts': Text('.//td[@data-label="Affected hosts"]'),
+            "CVE ID": Text('.//td[@data-label="CVE ID"]'),
+            "Publish date": Text('.//td[@data-label="Publish date"]'),
+            "Severity": Text('.//td[@data-label="Severity"]'),
+            "CVSS base score": Text('.//td[@data-label="CVSS base score"]'),
+            "Affected hosts": Text('.//td[@data-label="Affected hosts"]'),
         },
     )
     pagination = PF5Pagination()
@@ -64,9 +66,9 @@ class CVEDetailsView(BaseLoggedInView):
         # component_id='OUIA-Generated-Table-1',
         locator='.//table[contains(@class, "pf-v5-c-table")]',
         column_widgets={
-            'Name': Text('./a'),
-            'OS': Text('.//td[contains(@data-label, "OS")]'),
-            'Last seen': Text('.//td[contains(@data-label, "Last seen")]'),
+            "Name": Text("./a"),
+            "OS": Text('.//td[contains(@data-label, "OS")]'),
+            "Last seen": Text('.//td[contains(@data-label, "Last seen")]'),
         },
     )
 

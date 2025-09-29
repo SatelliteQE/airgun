@@ -11,11 +11,11 @@ from airgun.views.http_proxy import (
 
 
 class HTTPProxyEntity(BaseEntity):
-    endpoint_path = '/http_proxies'
+    endpoint_path = "/http_proxies"
 
     def create(self, values):
         """Create a new http-proxy."""
-        view = self.navigate_to(self, 'New')
+        view = self.navigate_to(self, "New")
         view.http_proxy.disable_pass.click()
         view.fill(values)
         view.submit.click()
@@ -28,17 +28,17 @@ class HTTPProxyEntity(BaseEntity):
 
         :param value: text to filter (default: no filter)
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(value)
 
     def read(self, entity_name, widget_names=None):
         """Return dict with properties of http-proxy."""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
         """Update an existing http-proxy."""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.http_proxy.disable_pass.click()
         view.fill(values)
         view.submit.click()
@@ -48,16 +48,16 @@ class HTTPProxyEntity(BaseEntity):
 
     def delete(self, entity_name):
         """Delete existing http-proxy entity"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         self.search(entity_name)
-        view.table.row(Name=entity_name)['Actions'].widget.click(handle_alert=True)
+        view.table.row(Name=entity_name)["Actions"].widget.click(handle_alert=True)
         view.validations.assert_no_errors()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
     def test_connection(self, entity_name, password=None):
         """Test connection from http-proxy"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         if password:
             view.http_proxy.disable_pass.click()
             view.fill(password)
@@ -67,7 +67,7 @@ class HTTPProxyEntity(BaseEntity):
         view.flash.dismiss()
 
 
-@navigator.register(HTTPProxyEntity, 'All')
+@navigator.register(HTTPProxyEntity, "All")
 class ShowAllHTTPProxy(NavigateStep):
     """Navigate to All http-proxy page"""
 
@@ -75,22 +75,22 @@ class ShowAllHTTPProxy(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Infrastructure', 'HTTP proxies')
+        self.view.menu.select("Infrastructure", "HTTP proxies")
 
 
-@navigator.register(HTTPProxyEntity, 'New')
+@navigator.register(HTTPProxyEntity, "New")
 class AddNewHTTPProxy(NavigateStep):
     """Navigate to Create HTTP Proxy page"""
 
     VIEW = HTTPProxyCreateView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
         self.parent.new.click()
 
 
-@navigator.register(HTTPProxyEntity, 'Edit')
+@navigator.register(HTTPProxyEntity, "Edit")
 class EditHTTPProxy(NavigateStep):
     """Navigate to Edit HTTP Proxy page
 
@@ -101,9 +101,9 @@ class EditHTTPProxy(NavigateStep):
     VIEW = HTTPProxyEditView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(Name=entity_name)['Name'].widget.click()
+        self.parent.table.row(Name=entity_name)["Name"].widget.click()

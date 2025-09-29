@@ -5,10 +5,10 @@ from airgun.views.global_parameter import GlobalParameterView
 
 
 class GlobalParameterEntity(BaseEntity):
-    endpoint_path = '/common_parameters'
+    endpoint_path = "/common_parameters"
 
 
-@navigator.register(GlobalParameterEntity, 'All')
+@navigator.register(GlobalParameterEntity, "All")
 class ShowGlobalParameters(NavigateStep):
     """Navigate to Global Parameters page."""
 
@@ -16,4 +16,4 @@ class ShowGlobalParameters(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Global Parameters')
+        self.view.menu.select("Configure", "Global Parameters")

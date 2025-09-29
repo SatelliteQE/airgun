@@ -47,7 +47,7 @@ class TotalCount(Widget):
         """Return hosts count from widget. Usually it is a string like
         'Total Hosts: 5'
         """
-        _, _, count = self.total_count.read().partition(':')
+        _, _, count = self.total_count.read().partition(":")
         return int(count)
 
 
@@ -59,8 +59,8 @@ class AutoRefresh(Widget):
     def read(self):
         """Return whether functionality is enabled or disabled"""
         if (
-            self.browser.element(self.AUTO_REFRESH).get_attribute('data-original-title')
-            == 'Auto refresh on'
+            self.browser.element(self.AUTO_REFRESH).get_attribute("data-original-title")
+            == "Auto refresh on"
         ):
             return True
         return False
@@ -93,7 +93,7 @@ class DashboardView(BaseLoggedInView, SearchableViewMixinPF4):
     @View.nested
     class DiscoveredHosts(View):
         ROOT = ".//li[@data-name='Discovered Hosts']"
-        hosts = Table('.//table')
+        hosts = Table(".//table")
         hosts_count = Text(".//a[@data-id='aid_discovered_hosts']")
 
     @View.nested
@@ -106,21 +106,21 @@ class DashboardView(BaseLoggedInView, SearchableViewMixinPF4):
     class TaskStatus(View):
         ROOT = ".//li[@data-name='Task Status']"
         states = SatTable(
-            './/table',
-            column_widgets={'No. of Tasks': Text('./a')},
+            ".//table",
+            column_widgets={"No. of Tasks": Text("./a")},
         )
 
         def fill(self, values):
-            if 'state' not in values or 'result' not in values:
-                raise ValueError('both state and result values have to be provided')
-            self.states.row(state=values['state'], result=values['result'])[
-                'No. of Tasks'
+            if "state" not in values or "result" not in values:
+                raise ValueError("both state and result values have to be provided")
+            self.states.row(state=values["state"], result=values["result"])[
+                "No. of Tasks"
             ].widget.click()
 
     @View.nested
     class LatestJobs(View):
         ROOT = ".//li[@data-name='Latest Jobs']"
-        jobs = SatTable('.//table')
+        jobs = SatTable(".//table")
 
     @View.nested
     class HostConfigurationChart(View):
@@ -130,55 +130,59 @@ class DashboardView(BaseLoggedInView, SearchableViewMixinPF4):
     @View.nested
     class ContentViews(View):
         ROOT = ".//li[@data-name='Content Views']"
-        content_views = SatTable('.//table', column_widgets={'Content View': Text('./a')})
+        content_views = SatTable(
+            ".//table", column_widgets={"Content View": Text("./a")}
+        )
 
     @View.nested
     class SyncOverview(View):
         ROOT = ".//li[@data-name='Sync Overview']"
-        syncs = Table('.//table')
+        syncs = Table(".//table")
 
     @View.nested
     class HostSubscription(View):
         ROOT = ".//li[@data-name='Host Subscription Status']"
-        subscriptions = SatTable('.//table', column_widgets={0: Text('./a')})
+        subscriptions = SatTable(".//table", column_widgets={0: Text("./a")})
 
         def fill(self, values):
-            if 'type' not in values:
-                raise ValueError('You need provide subscription task type')
-            self.subscriptions.row((0, 'contains', str(values['type'])))[0].widget.click()
+            if "type" not in values:
+                raise ValueError("You need provide subscription task type")
+            self.subscriptions.row((0, "contains", str(values["type"])))[
+                0
+            ].widget.click()
 
     @View.nested
     class SubscriptionStatus(View):
         ROOT = ".//li[@data-name='Subscription Status']"
-        subscriptions = SatTable('.//table')
+        subscriptions = SatTable(".//table")
 
     @View.nested
     class LatestErrata(View):
         ROOT = ".//li[@data-name='Latest Errata']"
-        erratas = SatTable('.//table')
+        erratas = SatTable(".//table")
 
     @View.nested
     class NewHosts(View):
         ROOT = ".//li[@data-name='New Hosts']"
-        hosts = Table('.//table')
+        hosts = Table(".//table")
 
     @View.nested
     class HostCollections(View):
         ROOT = ".//li[@data-name='Host Collections']"
-        collections = SatTable('.//table')
+        collections = SatTable(".//table")
 
     @View.nested
     class LatestFailedTasks(View):
         ROOT = ".//li[@data-name='Latest Warning/Error Tasks']"
-        tasks = SatTable('.//table', column_widgets={'Name': Text('./a')})
+        tasks = SatTable(".//table", column_widgets={"Name": Text("./a")})
 
         def fill(self, values):
-            if 'name' not in values:
-                raise ValueError('You need provide name of the task')
-            self.tasks.row(name=values['name'])['Name'].widget.click()
+            if "name" not in values:
+                raise ValueError("You need provide name of the task")
+            self.tasks.row(name=values["name"])["Name"].widget.click()
 
     @View.nested
     class VirtWhoConfigStatus(View):
         ROOT = ".//li[@data-name='Virt-who Configs Status']"
-        config_status = Table('.//table')
+        config_status = Table(".//table")
         latest_config = Text(".//div[@class='ca']")

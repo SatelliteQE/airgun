@@ -14,7 +14,7 @@ class ModuleStreamView(BaseLoggedInView, SearchableViewMixinPF4):
     """Main Module_Streams view"""
 
     title = Text("//h2[contains(., 'Module Streams')]")
-    table = SatTable('.//table', column_widgets={'Name': Text("./a")})
+    table = SatTable(".//table", column_widgets={"Name": Text("./a")})
 
     @property
     def is_displayed(self):
@@ -31,18 +31,22 @@ class ModuleStreamsDetailsView(BaseLoggedInView):
     @property
     def is_displayed(self):
         """Assume the view is displayed when its breadcrumb is visible"""
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Module Streams'
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
+        return breadcrumb_loaded and self.breadcrumb.locations[0] == "Module Streams"
 
     @View.nested
     class details(SatTab):
-        details_table = SatTableWithUnevenStructure(locator='.//table', column_locator='./*')
+        details_table = SatTableWithUnevenStructure(
+            locator=".//table", column_locator="./*"
+        )
 
     @View.nested
     class repositories(SatTab):
         table = Table(
             locator=".//table",
             column_widgets={
-                'Name': Text("./a"),
+                "Name": Text("./a"),
             },
         )

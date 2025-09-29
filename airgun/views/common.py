@@ -53,8 +53,8 @@ class BaseLoggedInView(View):
     validations = ValidationErrors()
     dialog = Pf4ConfirmationDialog()
     logout = Text("//a[@href='/users/logout']")
-    current_user = PF5OUIADropdown('user-info-dropdown')
-    account_menu = PF5OUIADropdown('user-info-dropdown')
+    current_user = PF5OUIADropdown("user-info-dropdown")
+    account_menu = PF5OUIADropdown("user-info-dropdown")
     permission_denied = Text(
         '//*[@id="content" or contains(@class, "pf-v5-c-empty-state pf-m-xl")]'
     )
@@ -76,14 +76,16 @@ class BaseLoggedInView(View):
         """
         if widget_names is None:
             if limit is not None:
-                raise NotImplementedError("You must specify widgets to be able to specify limit")
+                raise NotImplementedError(
+                    "You must specify widgets to be able to specify limit"
+                )
             return super().read()
         if not isinstance(widget_names, list | tuple):
             widget_names = [widget_names]
         values = {}
         for widget_name in widget_names:
             widget = get_widget_by_name(self, widget_name)
-            if hasattr(widget, 'read_limited') and callable(widget.read_limited):
+            if hasattr(widget, "read_limited") and callable(widget.read_limited):
                 values[widget_name] = widget.read(limit=limit)
             else:
                 values[widget_name] = widget.read()
@@ -116,7 +118,7 @@ class BaseLoggedInView(View):
             except ElementNotInteractableException:
                 # Adding this because some links are hidden behind dropdown button.
                 # To Do: Handle doc buttons hidden behind drop down buttons.
-                doc_links.extend([item.get_attribute('href')])
+                doc_links.extend([item.get_attribute("href")])
                 continue
         return doc_links
 
@@ -130,7 +132,7 @@ class WrongContextAlert(View):
         "//div[contains(@class, 'alert-warning')]"
         "[span[normalize-space(.)='Please try to update your request']]"
     )
-    back = Button(href='/')
+    back = Button(href="/")
 
     @property
     def is_displayed(self):
@@ -162,7 +164,7 @@ class SatTab(Tab):
 
     @property
     def is_displayed(self):
-        return 'ng-hide' not in self.parent_browser.classes(self.TAB_LOCATOR)
+        return "ng-hide" not in self.parent_browser.classes(self.TAB_LOCATOR)
 
     def read(self):
         """Do not attempt to read hidden tab contents"""
@@ -204,7 +206,7 @@ class SatTabWithDropdown(TabWithDropdown):
 
     @property
     def is_displayed(self):
-        return 'ng-hide' not in self.parent_browser.classes(self.TAB_LOCATOR)
+        return "ng-hide" not in self.parent_browser.classes(self.TAB_LOCATOR)
 
     def read(self):
         """Do not attempt to read hidden tab contents"""
@@ -224,11 +226,13 @@ class SatSecondaryTab(SatTab):
             TAB_NAME = 'List/Remove'
     """
 
-    ROOT = ParametrizedLocator('.//nav[@class="ng-scope" or not(@*)]/following-sibling::div')
+    ROOT = ParametrizedLocator(
+        './/nav[@class="ng-scope" or not(@*)]/following-sibling::div'
+    )
 
     TAB_LOCATOR = ParametrizedLocator(
         './/nav[@class="ng-scope" or not(@*)]/ul[contains(@class, "nav-tabs")]'
-        '/li[./a[normalize-space(.)={@tab_name|quote}]]'
+        "/li[./a[normalize-space(.)={@tab_name|quote}]]"
     )
 
 
@@ -252,7 +256,7 @@ class LCESelectorGroup(ParametrizedView):
         "@path-selector='availableEnvironments']"
     )
 
-    PARAMETERS = ('lce_name',)
+    PARAMETERS = ("lce_name",)
 
     LAST_ENV = ".//div[contains(@class, 'path-selector')]/ul/li[last()]"
     lce = LCESelector(
@@ -288,7 +292,7 @@ class LCESelectorGroup(ParametrizedView):
         route - pass its name as a value instead
         """
         if values in (True, False):
-            values = {self.context['lce_name']: values}
+            values = {self.context["lce_name"]: values}
         else:
             values = {values: True}
         return self.lce.fill(values)
@@ -314,7 +318,7 @@ class LCESelectorGroup(ParametrizedView):
 class PF5LCESelectorGroup(LCESelectorGroup):
     ROOT = './/div[./div[@class="env-path"]]'
 
-    PARAMETERS = ('lce_name',)
+    PARAMETERS = ("lce_name",)
 
     LAST_ENV = './/div[@class="env-path"][last()]'
     lce = PF5LCESelector(
@@ -338,16 +342,18 @@ class PF5LCECheckSelectorGroup(PF5LCESelectorGroup):
 class TableRowKebabMenu(PF5Dropdown):
     """Dropdown for PF5 kebab menus used in table rows."""
 
-    ROOT = '.'
-    DEFAULT_LOCATOR = './/button[contains(@class, "-c-menu-toggle") and @aria-label="Kebab toggle"]'
+    ROOT = "."
+    DEFAULT_LOCATOR = (
+        './/button[contains(@class, "-c-menu-toggle") and @aria-label="Kebab toggle"]'
+    )
 
 
 class PF5LCEGroup(ParametrizedLocator):
     "Group of LCE indicators"
 
-    ROOT = './/td and '
+    ROOT = ".//td and "
 
-    PARAMETERS = ('lce_name',)
+    PARAMETERS = ("lce_name",)
 
     LAST_ENV = './/div[@class="env-path"][last()]'
     lce = PF5LCESelector(
@@ -360,13 +366,14 @@ class PF5LCEGroup(ParametrizedLocator):
 class ListRemoveTab(SatSecondaryTab):
     """'List/Remove' tab, part of :class:`AddRemoveResourcesView`."""
 
-    TAB_NAME = 'List/Remove'
+    TAB_NAME = "List/Remove"
     searchbox = Search()
     remove_button = Text(
         './/div[@data-block="list-actions"]//button[contains(@ng-click, "remove")]'
     )
     table = SatTable(
-        locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+        locator=".//table",
+        column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")},
     )
 
     def search(self, value):
@@ -393,11 +400,14 @@ class ListRemoveTab(SatSecondaryTab):
 
 
 class AddTab(SatSecondaryTab):
-    TAB_NAME = 'Add'
+    TAB_NAME = "Add"
     searchbox = Search()
-    add_button = Text('.//div[@data-block="list-actions"]//button[contains(@ng-click, "add")]')
+    add_button = Text(
+        './/div[@data-block="list-actions"]//button[contains(@ng-click, "add")]'
+    )
     table = SatTable(
-        locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+        locator=".//table",
+        column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")},
     )
 
     def search(self, value):
@@ -457,26 +467,26 @@ class AddRemoveResourcesView(View):
     def read(self):
         """Read all table values from both resource tables"""
         return {
-            'assigned': self.list_remove_tab.read(),
-            'unassigned': self.add_tab.read(),
+            "assigned": self.list_remove_tab.read(),
+            "unassigned": self.add_tab.read(),
         }
 
 
 class NewAddRemoveResourcesView(View):
     searchbox = PF4Search()
-    status = PF5OUIASelect(component_id='select Status')
-    remove_button = PF5OUIADropdown(component_id='repositoies-bulk-actions')
+    status = PF5OUIASelect(component_id="select Status")
+    remove_button = PF5OUIADropdown(component_id="repositoies-bulk-actions")
     add_button = Button(locator='.//button[@data-ouia-component-id="add-repositories"]')
     table = PatternflyTable(
-        component_id='content-view-repositories-table',
+        component_id="content-view-repositories-table",
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
-            'Type': Text('.//a'),
-            'Name': Text('.//a'),
-            'Product': Text('.//a'),
-            'Sync State': Text('.//a'),
-            'Content': Text('.//a'),
-            'Status': Text('.//a'),
+            "Type": Text(".//a"),
+            "Name": Text(".//a"),
+            "Product": Text(".//a"),
+            "Sync State": Text(".//a"),
+            "Content": Text(".//a"),
+            "Status": Text(".//a"),
         },
     )
 
@@ -509,7 +519,7 @@ class NewAddRemoveResourcesView(View):
         self.select_status("Added")
         self.search(value)
         next(self.table.rows())[0].widget.fill(True)
-        self.remove_button.item_select('Remove')
+        self.remove_button.item_select("Remove")
 
     def read(self):
         """Read all table values from both resource tables"""
@@ -517,7 +527,7 @@ class NewAddRemoveResourcesView(View):
         self.browser.wait_for_element(
             self.table, exception=False, ensure_page_safe=True, timeout=10
         )
-        self.browser.plugin.ensure_page_safe(timeout='60s')
+        self.browser.plugin.ensure_page_safe(timeout="60s")
         self.table.wait_displayed()
         self.select_status("All")
         return self.table.read()
@@ -532,13 +542,15 @@ class AddRemoveSubscriptionsView(AddRemoveResourcesView):
     @View.nested
     class list_remove_tab(ListRemoveTab):
         table = SatSubscriptionsTable(
-            locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+            locator=".//table",
+            column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")},
         )
 
     @View.nested
     class add_tab(AddTab):
         table = SatSubscriptionsTable(
-            locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+            locator=".//table",
+            column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")},
         )
 
 
@@ -556,7 +568,7 @@ class TemplateEditor(View):
 
     ROOT = ".//div[@id='editor-container']"
     rendering_options = ItemsList(".//div[contains(@class,'navbar-editor')]/ul")
-    import_template = Button(id='import-btn')
+    import_template = Button(id="import-btn")
     fullscreen = Text(locator=".//button[@id='fullscreen-btn']")
     fullscreen_close = Text(
         locator="//button[@data-ouia-component-id='editor-modal-component-ModalBoxCloseButton']"
@@ -566,8 +578,8 @@ class TemplateEditor(View):
     editor = ACEEditor()
 
     def fill(self, values):
-        if values.pop('fullscreen', False):
-            fullscreen_data = values.pop('editor')
+        if values.pop("fullscreen", False):
+            fullscreen_data = values.pop("editor")
             self.fullscreen.click()
             self.fullscreen_textarea.fill(fullscreen_data)
             self.fullscreen_close.click()
@@ -590,7 +602,9 @@ class SearchableViewMixin(WTMixin):
         That means that we have search field present on the page and that page
         is not a welcome one
         """
-        if self.searchbox.search_field.is_displayed and (not self.welcome_message.is_displayed):
+        if self.searchbox.search_field.is_displayed and (
+            not self.welcome_message.is_displayed
+        ):
             return True
         return False
 
@@ -603,16 +617,16 @@ class SearchableViewMixin(WTMixin):
         :return: list of dicts representing table rows
         :rtype: list
         """
-        if not hasattr(self.__class__, 'table'):
+        if not hasattr(self.__class__, "table"):
             raise AttributeError(
                 f'Class {self.__class__.__name__} does not have attribute "table". '
-                'SearchableViewMixin only works with views, which have table for results. '
-                'Please define table or use custom search implementation instead'
+                "SearchableViewMixin only works with views, which have table for results. "
+                "Please define table or use custom search implementation instead"
             )
         if not self.is_searchable():
             return None
         self.searchbox.search(query)
-        if hasattr(self, 'title'):
+        if hasattr(self, "title"):
             self.title.click()
         return self.table.read()
 
@@ -632,7 +646,9 @@ class SearchableViewMixinPF4(SearchableViewMixin):
         """Verify that search procedure can be executed against specific page
         that is not blank
         """
-        if self.searchbox.search_field.is_displayed and (not self.blank_page.is_displayed):
+        if self.searchbox.search_field.is_displayed and (
+            not self.blank_page.is_displayed
+        ):
             return True
         return False
 
@@ -645,17 +661,17 @@ class SearchableViewMixinPF4(SearchableViewMixin):
         :return: list of dicts representing table rows
         :rtype: list
         """
-        if not hasattr(self.__class__, 'table'):
+        if not hasattr(self.__class__, "table"):
             raise AttributeError(
                 f'Class {self.__class__.__name__} does not have attribute "table". '
-                'SearchableViewMixin only works with views, which have table for results. '
-                'Please define table or use custom search implementation instead'
+                "SearchableViewMixin only works with views, which have table for results. "
+                "Please define table or use custom search implementation instead"
             )
         if not self.is_searchable():
             return None
         self.searchbox.search(query)
-        self.browser.plugin.ensure_page_safe(timeout='60s')
-        if hasattr(self, 'title'):
+        self.browser.plugin.ensure_page_safe(timeout="60s")
+        if hasattr(self, "title"):
             self.title.click()
         self.table.wait_displayed()
         return self.table.read()
@@ -667,15 +683,15 @@ class TaskDetailsView(BaseLoggedInView):
     """
 
     breadcrumb = BreadCrumb()
-    action_type = ReadOnlyEntry(name='Action Type')
-    user = ReadOnlyEntry(name='User')
-    started_at = ReadOnlyEntry(name='Started At')
-    finished_at = ReadOnlyEntry(name='Finished At')
-    parameters = ReadOnlyEntry(name='Parameters')
-    state = ReadOnlyEntry(name='State')
-    result = ReadOnlyEntry(name='Result')
+    action_type = ReadOnlyEntry(name="Action Type")
+    user = ReadOnlyEntry(name="User")
+    started_at = ReadOnlyEntry(name="Started At")
+    finished_at = ReadOnlyEntry(name="Finished At")
+    parameters = ReadOnlyEntry(name="Parameters")
+    state = ReadOnlyEntry(name="State")
+    result = ReadOnlyEntry(name="Result")
     progressbar = ProgressBar()
-    details = ReadOnlyEntry(name='Details')
+    details = ReadOnlyEntry(name="Details")
 
 
 class BookmarkCreateView(BaseLoggedInView):
@@ -693,8 +709,8 @@ class BookmarkCreateView(BaseLoggedInView):
         "[normalize-space(.) = 'Add Bookmark'"
         " or normalize-space(.) = 'Create Bookmark']"
     )
-    name = TextInput(name='name')
-    query = TextInput(name='query')
+    name = TextInput(name="name")
+    query = TextInput(name="query")
     error_message = Text(
         ".//span[@class='error-message' or (ancestor::div[contains(@class, 'pf-m-error')] and contains(@class, 'item-text'))]"
     )
@@ -704,7 +720,9 @@ class BookmarkCreateView(BaseLoggedInView):
     submit = Text(
         ".//button[@data-ouia-component-id='submit-btn' or @type='submit' or @ng-click='ok()']"
     )
-    cancel = Text(".//button[@data-ouia-component-id='cancel-btn' or normalize-space(.)='Cancel']")
+    cancel = Text(
+        ".//button[@data-ouia-component-id='cancel-btn' or normalize-space(.)='Cancel']"
+    )
 
     @property
     def is_displayed(self):
@@ -719,27 +737,31 @@ class TemplateInputItem(GenericRemovableWidgetItem):
     required = Checkbox(locator=".//input[contains(@id, 'required')]")
     input_type = FilteredDropdown(locator=".//span[contains(@id, 'input_type')]")
 
-    input_content = ConditionalSwitchableView(reference='input_type')
+    input_content = ConditionalSwitchableView(reference="input_type")
 
-    @input_content.register('User input')
+    @input_content.register("User input")
     class UserInputForm(View):
         advanced = Checkbox(locator=".//input[contains(@id, 'advanced')]")
         options = TextInput(locator=".//textarea[contains(@name, '[options]')]")
         description = TextInput(locator=".//textarea[contains(@name, '[description]')]")
 
-    @input_content.register('Fact value')
+    @input_content.register("Fact value")
     class FactValueForm(View):
         fact_name = TextInput(locator=".//input[contains(@name, '[fact_name]')]")
         description = TextInput(locator=".//textarea[contains(@name, '[description]')]")
 
-    @input_content.register('Variable')
+    @input_content.register("Variable")
     class VariableValueForm(View):
-        variable_name = TextInput(locator=".//input[contains(@name, '[variable_name]')]")
+        variable_name = TextInput(
+            locator=".//input[contains(@name, '[variable_name]')]"
+        )
         description = TextInput(locator=".//textarea[contains(@name, '[description]')]")
 
-    @input_content.register('Puppet parameter')
+    @input_content.register("Puppet parameter")
     class PuppetParameterForm(View):
-        puppet_class_name = TextInput(locator=".//input[contains(@name, '[puppet_class_name]')]")
+        puppet_class_name = TextInput(
+            locator=".//input[contains(@name, '[puppet_class_name]')]"
+        )
         puppet_parameter_name = TextInput(
             locator=".//input[contains(@name, '[puppet_parameter_name]')]"
         )

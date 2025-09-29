@@ -9,10 +9,10 @@ class ConfigGroupsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Config Groups']")
     new = Text("//a[normalize-space(.)='Create Config Group']")
     table = Table(
-        './/table',
+        ".//table",
         column_widgets={
-            'Name': Text('./a'),
-            'Actions': Text('.//a[@data-method="delete"]'),
+            "Name": Text("./a"),
+            "Actions": Text('.//a[@data-method="delete"]'),
         },
     )
 
@@ -23,26 +23,30 @@ class ConfigGroupsView(BaseLoggedInView, SearchableViewMixin):
 
 class ConfigGroupCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    name = TextInput(id='config_group_name')
+    name = TextInput(id="config_group_name")
     submit = Text('//input[@name="commit"]')
-    classes = PuppetClassesMultiSelect(locator='.//form')
+    classes = PuppetClassesMultiSelect(locator=".//form")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Config Groups'
-            and self.breadcrumb.locations[1] == 'Create Config Group'
+            and self.breadcrumb.locations[0] == "Config Groups"
+            and self.breadcrumb.locations[1] == "Create Config Group"
         )
 
 
 class ConfigGroupEditView(ConfigGroupCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Config Groups'
-            and self.breadcrumb.read().startswith('Edit ')
+            and self.breadcrumb.locations[0] == "Config Groups"
+            and self.breadcrumb.read().startswith("Edit ")
         )

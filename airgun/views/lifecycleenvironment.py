@@ -48,7 +48,7 @@ class LCEView(BaseLoggedInView, ParametrizedView):
         ROOT = ParametrizedLocator(
             ".//div[@ng-repeat='path in paths'][table//th/a[normalize-space(.)='{lce_name}']]"
         )
-        PARAMETERS = ('lce_name',)
+        PARAMETERS = ("lce_name",)
         LAST_ENV = "//div[@ng-repeat='path in paths']//table//th[last()]"
         current_env = Text(ParametrizedLocator(".//a[normalize-space(.)='{lce_name}']"))
         envs_table = Table(locator=".//table")
@@ -86,45 +86,49 @@ class LCEView(BaseLoggedInView, ParametrizedView):
 
 class LCECreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    name = TextInput(id='name')
-    label = TextInput(id='label')
-    description = TextInput(id='description')
+    name = TextInput(id="name")
+    label = TextInput(id="label")
+    description = TextInput(id="description")
     submit = Text("//button[contains(@ng-click, 'handleSave')]")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Environments List'
-            and self.breadcrumb.read() == 'New Environment'
+            and self.breadcrumb.locations[0] == "Environments List"
+            and self.breadcrumb.read() == "New Environment"
         )
 
 
 class LCEEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    remove = Button('Remove Environment')
+    remove = Button("Remove Environment")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Environments'
-            and self.breadcrumb.read() != 'New Environment'
+            and self.breadcrumb.locations[0] == "Environments"
+            and self.breadcrumb.read() != "New Environment"
         )
 
     @View.nested
     class details(SatTab):
-        name = EditableEntry(name='Name')
-        label = ReadOnlyEntry(name='Label')
-        description = EditableEntry(name='Description')
-        unauthenticated_pull = EditableEntryCheckbox(name='Unauthenticated Pull')
-        registry_name_pattern = EditableEntry(name='Registry Name Pattern')
+        name = EditableEntry(name="Name")
+        label = ReadOnlyEntry(name="Label")
+        description = EditableEntry(name="Description")
+        unauthenticated_pull = EditableEntryCheckbox(name="Unauthenticated Pull")
+        registry_name_pattern = EditableEntry(name="Registry Name Pattern")
 
     @View.nested
     class content_views(SatTab, SearchableViewMixin):
-        TAB_NAME = 'Content Views'
+        TAB_NAME = "Content Views"
         resources = Table(locator=".//table")
 
     @View.nested
@@ -152,7 +156,7 @@ class LCEEditView(BaseLoggedInView):
 
     @View.nested
     class module_streams(SatTab):
-        TAB_NAME = 'Module Streams'
+        TAB_NAME = "Module Streams"
 
         cv_filter = SatSelect(".//select[@ng-model='contentView']")
         repo_filter = SatSelect(".//select[@ng-model='repository']")

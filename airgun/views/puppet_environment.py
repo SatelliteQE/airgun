@@ -19,13 +19,13 @@ class PuppetEnvironmentTableView(BaseLoggedInView, SearchableViewMixin):
         ".//span[contains(@class, 'btn')]/a[contains(@href, 'import_environments')]"
     )
     table = SatTable(
-        locator='.//table',
+        locator=".//table",
         column_widgets={
-            'Name': Text(
+            "Name": Text(
                 ".//a[starts-with(@href, '/foreman_puppet/environments/') and \
                 contains(@href,'/edit')]"
             ),
-            'Actions': ActionsDropdown('./div[contains(@class, "btn-group")]'),
+            "Actions": ActionsDropdown('./div[contains(@class, "btn-group")]'),
         },
     )
 
@@ -47,19 +47,21 @@ class PuppetEnvironmentImportView(BaseLoggedInView, SearchableViewMixin):
     update = Text(".//input[@name='commit']")
     cancel = Text(".//a[contains(@class, 'btn') and @href='/environments']")
     table = SatTable(
-        locator='.//table',
+        locator=".//table",
         column_widgets={
-            'Environment': Text('./a'),
+            "Environment": Text("./a"),
         },
     )
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Environments'
-            and self.breadcrumb.read() == 'Changed Environments'
+            and self.breadcrumb.locations[0] == "Environments"
+            and self.breadcrumb.read() == "Changed Environments"
         )
 
 
@@ -74,21 +76,23 @@ class PuppetEnvironmentCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Environments'
-            and self.breadcrumb.read() == 'Create Environment'
+            and self.breadcrumb.locations[0] == "Environments"
+            and self.breadcrumb.read() == "Create Environment"
         )
 
     @View.nested
     class environment(SatTab):
-        name = TextInput(id='environment_name')
+        name = TextInput(id="environment_name")
 
     @View.nested
     class locations(SatTab):
-        resources = MultiSelect(id='ms-environment_location_ids')
+        resources = MultiSelect(id="ms-environment_location_ids")
 
     @View.nested
     class organizations(SatTab):
-        resources = MultiSelect(id='ms-environment_organization_ids')
+        resources = MultiSelect(id="ms-environment_organization_ids")

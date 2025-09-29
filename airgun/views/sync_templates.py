@@ -19,11 +19,13 @@ class SyncTemplatesView(BaseLoggedInView):
     sync_type = RadioGroup("//div[label[contains(., 'Action type')]]")
     submit = Text(".//button[contains(.,'Submit')]")
 
-    template = ConditionalSwitchableView(reference='sync_type')
+    template = ConditionalSwitchableView(reference="sync_type")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
             and self.browser.wait_for_element(self.title, exception=False) is not None
@@ -31,37 +33,39 @@ class SyncTemplatesView(BaseLoggedInView):
 
     def before_fill(self, values):
         """Wait for Sync Type Radio Button to be displayed"""
-        wait_for(lambda: self.sync_type.is_displayed, timeout=10, delay=1, logger=self.logger)
+        wait_for(
+            lambda: self.sync_type.is_displayed, timeout=10, delay=1, logger=self.logger
+        )
 
-    @template.register('Import')
+    @template.register("Import")
     class ImportTemplates(View):
-        associate = Select(name='import.associate')
-        branch = TextInput(name='import.branch')
-        dirname = TextInput(name='import.dirname')
-        filter = TextInput(name='import.filter')
-        force_import = Checkbox(name='import.force')
-        lock = Select(name='import.lock')
-        negate = Checkbox(name='import.negate')
-        prefix = TextInput(name='import.prefix')
-        repo = TextInput(name='import.repo')
-        http_proxy_policy = Select(name='import.http_proxy_policy')
-        http_proxy_id = Select(name='import.http_proxy_id')
+        associate = Select(name="import.associate")
+        branch = TextInput(name="import.branch")
+        dirname = TextInput(name="import.dirname")
+        filter = TextInput(name="import.filter")
+        force_import = Checkbox(name="import.force")
+        lock = Select(name="import.lock")
+        negate = Checkbox(name="import.negate")
+        prefix = TextInput(name="import.prefix")
+        repo = TextInput(name="import.repo")
+        http_proxy_policy = Select(name="import.http_proxy_policy")
+        http_proxy_id = Select(name="import.http_proxy_id")
 
         def fill(self, items):
-            if 'http_proxy_id' in items:
-                self.http_proxy_policy.fill(items['http_proxy_policy'])
+            if "http_proxy_id" in items:
+                self.http_proxy_policy.fill(items["http_proxy_policy"])
             super().fill(items)
 
-    @template.register('Export')
+    @template.register("Export")
     class ExportTemplates(View):
-        branch = TextInput(name='export.branch')
-        dirname = TextInput(name='export.dirname')
-        filter = TextInput(name='export.filter')
-        metadata_export_mode = Select(name='export.metadata_export_mode')
-        negate = Checkbox(name='export.negate')
-        repo = TextInput(name='export.repo')
-        http_proxy_policy = Select(name='export.http_proxy_policy')
-        http_proxy_id = Select(name='export.http_proxy_id')
+        branch = TextInput(name="export.branch")
+        dirname = TextInput(name="export.dirname")
+        filter = TextInput(name="export.filter")
+        metadata_export_mode = Select(name="export.metadata_export_mode")
+        negate = Checkbox(name="export.negate")
+        repo = TextInput(name="export.repo")
+        http_proxy_policy = Select(name="export.http_proxy_policy")
+        http_proxy_id = Select(name="export.http_proxy_id")
 
 
 class TemplatesReportView(BaseLoggedInView):

@@ -22,10 +22,10 @@ class JobTemplatesView(BaseLoggedInView, SearchableViewMixinPF4):
     import_template = Text("//a[normalize-space(.)='Import']")
     new = Text("//a[contains(@href, '/job_templates/new')]")
     table = Table(
-        './/table',
+        ".//table",
         column_widgets={
-            'Name': Text('./a'),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            "Name": Text("./a"),
+            "Actions": ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
 
@@ -38,7 +38,9 @@ class JobTemplateForeignInputSetItem(GenericRemovableWidgetItem):
     """Job Template Foreign Input Set Item widget"""
 
     remove_button = Text(".//a[contains(@class, 'remove_nested_fields')]")
-    target_template = Select(locator=".//select[contains(@name, '[target_template_id]')]")
+    target_template = Select(
+        locator=".//select[contains(@name, '[target_template_id]')]"
+    )
     include_all = Checkbox(locator=".//input[contains(@id, 'include_all')]")
     include = TextInput(locator=".//input[contains(@name, '[include]')]")
     exclude = TextInput(locator=".//input[contains(@name, '[exclude]')]")
@@ -50,20 +52,22 @@ class JobTemplateCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Job Templates'
-            and self.breadcrumb.read() == 'New Job Template'
+            and self.breadcrumb.locations[0] == "Job Templates"
+            and self.breadcrumb.read() == "New Job Template"
         )
 
     @View.nested
     class template(SatTab):
-        name = TextInput(id='job_template_name')
-        default = Checkbox(id='job_template_default')
+        name = TextInput(id="job_template_name")
+        default = Checkbox(id="job_template_default")
         template_editor = View.nested(TemplateEditor)
-        description = TextInput(id='job_template_description')
-        audit = TextInput(id='job_template_audit_comment')
+        description = TextInput(id="job_template_description")
+        audit = TextInput(id="job_template_audit_comment")
 
     @View.nested
     class inputs(RemovableWidgetsItemsListView, SatTab):
@@ -73,41 +77,47 @@ class JobTemplateCreateView(BaseLoggedInView):
 
     @View.nested
     class job(SatTab):
-        job_category = TextInput(name='job_template[job_category]')
-        description_format = TextInput(id='job_template_description_format')
-        provider_type = FilteredDropdown(id='job_template_provider_type')
-        timeout = TextInput(id='job_template_execution_timeout_interval')
+        job_category = TextInput(name="job_template[job_category]")
+        description_format = TextInput(id="job_template_description_format")
+        provider_type = FilteredDropdown(id="job_template_provider_type")
+        timeout = TextInput(id="job_template_execution_timeout_interval")
 
         @View.nested
         class foreign_input_sets(RemovableWidgetsItemsListView):
             ROOT = "//div[div[contains(@class, 'foreign_input_sets')]]"
-            ITEMS = ".//div[contains(@class, 'foreign_input_sets')]/following-sibling::div"
+            ITEMS = (
+                ".//div[contains(@class, 'foreign_input_sets')]/following-sibling::div"
+            )
             ITEM_WIDGET_CLASS = JobTemplateForeignInputSetItem
             add_item_button = Text(".//a[@data-association='foreign_input_sets']")
 
-        value = TextInput(id='job_template_effective_user_attributes_value')
-        current_user = Checkbox(id='job_template_effective_user_attributes_current_user')
-        overridable = Checkbox(id='job_template_effective_user_attributes_overridable')
+        value = TextInput(id="job_template_effective_user_attributes_value")
+        current_user = Checkbox(
+            id="job_template_effective_user_attributes_current_user"
+        )
+        overridable = Checkbox(id="job_template_effective_user_attributes_overridable")
 
     @View.nested
     class type(SatTab):
-        snippet = Checkbox(id='job_template_snippet')
+        snippet = Checkbox(id="job_template_snippet")
 
     @View.nested
     class locations(SatTab):
-        resources = MultiSelect(id='ms-job_template_location_ids')
+        resources = MultiSelect(id="ms-job_template_location_ids")
 
     @View.nested
     class organizations(SatTab):
-        resources = MultiSelect(id='ms-job_template_organization_ids')
+        resources = MultiSelect(id="ms-job_template_organization_ids")
 
 
 class JobTemplateEditView(JobTemplateCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Job Templates'
-            and self.breadcrumb.read().startswith('Edit ')
+            and self.breadcrumb.locations[0] == "Job Templates"
+            and self.breadcrumb.read().startswith("Edit ")
         )

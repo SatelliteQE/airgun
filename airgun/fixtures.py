@@ -25,7 +25,7 @@ def session(request):
                 session.architecture.create({'name': 'bar'})
 
     """
-    test_name = f'{request.module.__name__}.{request.node.name}'
+    test_name = f"{request.module.__name__}.{request.node.name}"
     return Session(test_name)
 
 
@@ -44,6 +44,6 @@ def autosession(request):
             autosession.architecture.create({'name': 'bar'})
 
     """
-    test_name = f'{request.module.__name__}.{request.node.name}'
+    test_name = f"{request.module.__name__}.{request.node.name}"
     with Session(test_name) as started_session:
         yield started_session

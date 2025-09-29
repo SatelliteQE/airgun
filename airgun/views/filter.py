@@ -26,18 +26,20 @@ class FiltersView(BaseLoggedInView):
     table = Table(
         ".//table",
         column_widgets={
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            "Actions": ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
     pagination = PF4Pagination()
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Roles'
-            and self.breadcrumb.read().endswith(' filters')
+            and self.breadcrumb.locations[0] == "Roles"
+            and self.breadcrumb.read().endswith(" filters")
         )
 
     def search(self, query):
@@ -55,31 +57,33 @@ class FilterDetailsView(BaseLoggedInView):
         locator='.//div[@data-ouia-component-id="resource-type-select"]'
     )
     permission = PF4MultiSelect('.//div[@id="permission-duel-select"]')
-    override = Checkbox(id='override-check')
-    unlimited = Checkbox(id='filter_unlimited')
-    filter = TextInput(id='search')
+    override = Checkbox(id="override-check")
+    unlimited = Checkbox(id="filter_unlimited")
+    filter = TextInput(id="search")
     submit = Text('//button[@data-ouia-component-id="filters-submit-button"]')
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Roles'
-            and self.breadcrumb.read().startswith('Edit filter for ')
+            and self.breadcrumb.locations[0] == "Roles"
+            and self.breadcrumb.read().startswith("Edit filter for ")
         )
 
-    taxonomies_tabs = ConditionalSwitchableView(reference='override')
+    taxonomies_tabs = ConditionalSwitchableView(reference="override")
 
     @taxonomies_tabs.register(True)
     class Taxonomies(View):
         @View.nested
         class locations(SatTab):
-            resources = MultiSelect(id='ms-filter_location_ids')
+            resources = MultiSelect(id="ms-filter_location_ids")
 
         @View.nested
         class organizations(SatTab):
-            resources = MultiSelect(id='ms-filter_organization_ids')
+            resources = MultiSelect(id="ms-filter_organization_ids")
 
     @taxonomies_tabs.register(False)
     class NoTaxonomies(View):
@@ -89,9 +93,11 @@ class FilterDetailsView(BaseLoggedInView):
 class FilterCreateView(FilterDetailsView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Roles'
-            and self.breadcrumb.read() == 'Create Filter'
+            and self.breadcrumb.locations[0] == "Roles"
+            and self.breadcrumb.read() == "Create Filter"
         )

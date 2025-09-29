@@ -15,7 +15,7 @@ class RHSSOLoginEntity(BaseEntity):
             view = RhssoExternalLogoutView(self.browser)
             view.login_again.click()
         else:
-            view = self.navigate_to(self, 'NavigateToLogin')
+            view = self.navigate_to(self, "NavigateToLogin")
             view.fill(values)
             view.submit.click()
             if totp:

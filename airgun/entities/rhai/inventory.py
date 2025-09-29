@@ -7,7 +7,7 @@ from airgun.views.rhai import InventoryAllHosts, InventoryHostDetails
 
 
 class InventoryHostEntity(BaseEntity):
-    endpoint_path = '/redhat_access/insights/inventory'
+    endpoint_path = "/redhat_access/insights/inventory"
 
     @property
     def total_systems(self):
@@ -55,7 +55,7 @@ class HostDetails(NavigateStep):
         return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search.fill(entity_name)
         self.parent.table.row_by_cell_or_widget_value("System Name", entity_name)[
             "System Name"

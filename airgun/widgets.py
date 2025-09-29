@@ -79,7 +79,9 @@ class CheckboxWithAlert(Checkbox):
         else:
             self.click(handle_alert=True)
             if self.selected != value:
-                raise WidgetOperationFailed('Failed to set the checkbox to requested value.')
+                raise WidgetOperationFailed(
+                    "Failed to set the checkbox to requested value."
+                )
             return True
 
 
@@ -116,17 +118,21 @@ class RadioGroup(GenericLocatorWidget):
         """Get radio group label for specific button"""
         try:
             return next(
-                btn for btn in self.browser.elements(self.LABELS) if self.browser.text(btn) == name
+                btn
+                for btn in self.browser.elements(self.LABELS)
+                if self.browser.text(btn) == name
             )
         except StopIteration as err:
-            raise NoSuchElementException(f"RadioButton {name} is absent on page") from err
+            raise NoSuchElementException(
+                f"RadioButton {name} is absent on page"
+            ) from err
 
     @property
     def selected(self):
         """Return name of a button that is currently selected in the group"""
         for name in self.button_names:
             btn = self.browser.element(self.BUTTON, parent=self._get_parent_label(name))
-            if btn.get_attribute('checked') is not None:
+            if btn.get_attribute("checked") is not None:
                 return name
         raise ValueError(
             "Whether no radio button is selected or proper attribute "
@@ -136,7 +142,9 @@ class RadioGroup(GenericLocatorWidget):
     def select(self, name):
         """Select specific radio button in the group"""
         if self.selected != name:
-            self.browser.element(self.BUTTON, parent=self._get_parent_label(name)).click()
+            self.browser.element(
+                self.BUTTON, parent=self._get_parent_label(name)
+            ).click()
             return True
         return False
 
@@ -177,7 +185,7 @@ class ToggleRadioGroup(RadioGroup):
         """Return name of a button that is currently selected in the group"""
         for name in self.button_names:
             btn = self.browser.element(self._get_parent_label(name))
-            if 'active' in btn.get_attribute('class'):
+            if "active" in btn.get_attribute("class"):
                 return name
         raise ValueError(
             "Whether no radio button is selected or proper attribute "
@@ -216,7 +224,7 @@ class DateTime(Widget):
         across all applications that use paternfly pattern
     """
 
-    start_date = TextInput(id='startDate')
+    start_date = TextInput(id="startDate")
     hours = TextInput(locator=".//input[@ng-model='hours']")
     minutes = TextInput(locator=".//input[@ng-model='minutes']")
 
@@ -227,7 +235,7 @@ class DateTime(Widget):
             and/or ``minutes`` containing values that should be present in
             the fields
         """
-        for name in ['start_date', 'hours', 'minutes']:
+        for name in ["start_date", "hours", "minutes"]:
             value = values.get(name, None)
             if value:
                 getattr(self, name).fill(value)
@@ -238,7 +246,7 @@ class DateTime(Widget):
         :param values: dict with key/value pairs for all widget fields
         """
         values = {}
-        for name in ['start_date', 'hours', 'minutes']:
+        for name in ["start_date", "hours", "minutes"]:
             values[name] = getattr(self, name).read()
         return values
 
@@ -271,7 +279,9 @@ class DatePickerInput(TextInput):
         ".//input[@ng-model='rule.start_date']"
     """
 
-    CALENDAR_POPUP = "./parent::div/div[@ng-model='date']/ul[contains(@class, 'datepicker-popup')]"
+    CALENDAR_POPUP = (
+        "./parent::div/div[@ng-model='date']/ul[contains(@class, 'datepicker-popup')]"
+    )
     calendar_button = Text("./parent::div//button[i[contains(@class, 'fa-calendar')]]")
     clear_button = Text(f"{CALENDAR_POPUP}//button[@ng-click='select(null, $event)']")
     done_button = Text(f"{CALENDAR_POPUP}//button[@ng-click='close($event)']")
@@ -377,7 +387,9 @@ class AddRemoveItemsList(GenericLocatorWidget):
 
         :param value: string with element name
         """
-        self.browser.click(self.browser.element(self.ITEM_BUTTON.format(value), parent=self))
+        self.browser.click(
+            self.browser.element(self.ITEM_BUTTON.format(value), parent=self)
+        )
 
 
 class ItemsListGroup(GenericLocatorWidget):
@@ -433,7 +445,7 @@ class ItemsListGroup(GenericLocatorWidget):
 
 class ItemsListReadOnly(ItemsList):
     def fill(self, value):
-        raise ReadOnlyWidgetError('Widget is read only, fill is prohibited')
+        raise ReadOnlyWidgetError("Widget is read only, fill is prohibited")
 
 
 class MultiSelect(GenericLocatorWidget):
@@ -467,7 +479,7 @@ class MultiSelect(GenericLocatorWidget):
     def __init__(self, parent, locator=None, id=None, logger=None):
         """Supports initialization via ``locator=`` or ``id=``"""
         if (locator and id) or (not locator and not id):
-            raise TypeError('Please specify either locator or id')
+            raise TypeError("Please specify either locator or id")
         locator = locator or f".//div[@id='{id}']"
         super().__init__(parent, locator, logger)
 
@@ -479,9 +491,13 @@ class MultiSelect(GenericLocatorWidget):
             containing list of strings, representing item names
         """
         current = self.read()
-        to_add = [res for res in values.get('assigned', ()) if res not in current['assigned']]
+        to_add = [
+            res for res in values.get("assigned", ()) if res not in current["assigned"]
+        ]
         to_remove = [
-            res for res in values.get('unassigned', ()) if res not in current['unassigned']
+            res
+            for res in values.get("unassigned", ())
+            if res not in current["unassigned"]
         ]
         if not to_add and not to_remove:
             return False
@@ -498,8 +514,8 @@ class MultiSelect(GenericLocatorWidget):
     def read(self):
         """Returns a dict with current lists values."""
         return {
-            'unassigned': self.unassigned.read(),
-            'assigned': self.assigned.read(),
+            "unassigned": self.unassigned.read(),
+            "assigned": self.assigned.read(),
         }
 
     def add_all(self):
@@ -518,8 +534,12 @@ class MultiSelectNoFilter(MultiSelect):
 
     more_item = Text('//span[@class="pf-v5-c-menu-toggle__toggle-icon"]')
     select_pages = Text('//ul[@class="pf-v5-c-menu__list"]/li[6]/button')
-    available_role_template = '//div[@class="available-roles-container col-sm-6"]/div[2]/div'
-    assigned_role_template = '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
+    available_role_template = (
+        '//div[@class="available-roles-container col-sm-6"]/div[2]/div'
+    )
+    assigned_role_template = (
+        '//div[@class="assigned-roles-container col-sm-6"]/div[2]/div'
+    )
 
     def fill(self, values):
         """This method facilitates assigning value(s) both during creation and after creation.
@@ -546,7 +566,9 @@ class MultiSelectNoFilter(MultiSelect):
         """Returns a list of assigned value(s)."""
         assigned_list = self.browser.elements(self.assigned_role_template)
         value = [
-            data.text.split(". ")[1] for data in assigned_list if data.text.split(". ")[1] in values
+            data.text.split(". ")[1]
+            for data in assigned_list
+            if data.text.split(". ")[1] in values
         ]
         return value
 
@@ -557,15 +579,19 @@ class PF4MultiSelect(GenericLocatorWidget):
     versa. PF4 version.
     """
 
-    unassigned = ItemsList(".//ul[@aria-labelledby='permission-duel-select-available-pane-status']")
-    assigned = ItemsList(".//ul[@aria-labelledby='permission-duel-select-chosen-pane-status']")
+    unassigned = ItemsList(
+        ".//ul[@aria-labelledby='permission-duel-select-available-pane-status']"
+    )
+    assigned = ItemsList(
+        ".//ul[@aria-labelledby='permission-duel-select-chosen-pane-status']"
+    )
     move_to_assigned = Text(".//button[@aria-label='Add selected']")
     move_to_unassigned = Text(".//button[@aria-label='Remove selected']")
 
     def __init__(self, parent, locator=None, id=None, logger=None):
         """Supports initialization via ``locator=`` or ``id=``"""
         if (locator and id) or (not locator and not id):
-            raise TypeError('Please specify either locator or id')
+            raise TypeError("Please specify either locator or id")
         locator = locator or f".//div[@id='{id}']"
         super().__init__(parent, locator, logger)
 
@@ -577,9 +603,13 @@ class PF4MultiSelect(GenericLocatorWidget):
             containing list of strings, representing item names
         """
         current = self.read()
-        to_add = [res for res in values.get('assigned', ()) if res not in current['assigned']]
+        to_add = [
+            res for res in values.get("assigned", ()) if res not in current["assigned"]
+        ]
         to_remove = [
-            res for res in values.get('unassigned', ()) if res not in current['unassigned']
+            res
+            for res in values.get("unassigned", ())
+            if res not in current["unassigned"]
         ]
         if not to_add and not to_remove:
             return False
@@ -598,8 +628,8 @@ class PF4MultiSelect(GenericLocatorWidget):
         unassigned = self.unassigned.read() if self.unassigned.is_displayed else []
         assigned = self.assigned.read() if self.assigned.is_displayed else []
         return {
-            'unassigned': unassigned,
-            'assigned': assigned,
+            "unassigned": unassigned,
+            "assigned": assigned,
         }
 
 
@@ -638,7 +668,9 @@ class PuppetClassesMultiSelect(MultiSelect):
 
     filter = TextInput(locator=".//input[@placeholder='Filter classes']")
     assigned = ItemsList(".//ul[@id='selected_classes']")
-    unassigned = ItemsListGroup(".//div[contains(@class, 'available_classes')]/div[@class='row']")
+    unassigned = ItemsListGroup(
+        ".//div[contains(@class, 'available_classes')]/div[@class='row']"
+    )
 
 
 class ConfigGroupMultiSelect(MultiSelect):
@@ -684,22 +716,26 @@ class ActionsDropdown(GenericLocatorWidget):
         "contains(@ng-click, 'toggleDropdown')][contains(@class, 'btn')]"
         "[*[self::span or self::i][contains(@class, 'caret')]]"
     )
-    pf4_drop_down = Text("//div[contains(@data-ouia-component-id, 'bookmarks-dropdown')]")
+    pf4_drop_down = Text(
+        "//div[contains(@data-ouia-component-id, 'bookmarks-dropdown')]"
+    )
     button = Text(
         ".//*[self::button or self::span][contains(@class, 'btn') or "
         "contains(@aria-label, 'search button')]"
         "[not(*[self::span or self::i][contains(@class, 'caret')])]"
     )
-    ITEMS_LOCATOR = './/ul/li/a'
+    ITEMS_LOCATOR = ".//ul/li/a"
     ITEM_LOCATOR = './/ul/li/a[normalize-space(.)="{}"]'
 
     @property
     def is_open(self):
         """Checks whether dropdown list is open."""
         try:
-            return 'open' in self.browser.classes(
+            return "open" in self.browser.classes(
                 self
-            ) or 'pf-m-expanded' in self.pf4_drop_down.browser.classes(self.pf4_drop_down)
+            ) or "pf-m-expanded" in self.pf4_drop_down.browser.classes(
+                self.pf4_drop_down
+            )
         except NoSuchElementException:
             return False
 
@@ -724,7 +760,8 @@ class ActionsDropdown(GenericLocatorWidget):
         """Returns a list of all dropdown items as strings."""
         self.open()
         items = [
-            self.browser.text(el) for el in self.browser.elements(self.ITEMS_LOCATOR, parent=self)
+            self.browser.text(el)
+            for el in self.browser.elements(self.ITEMS_LOCATOR, parent=self)
         ]
         self.close()
         return items
@@ -737,7 +774,7 @@ class ActionsDropdown(GenericLocatorWidget):
         else:
             raise ValueError(
                 f'Specified action "{item}" not found in actions list. '
-                f'Available actions are {self.items}'
+                f"Available actions are {self.items}"
             )
 
     def fill(self, item):
@@ -787,11 +824,11 @@ class Pf4ActionsDropdown(ActionsDropdown):
 
     @property
     def is_open(self):
-        return 'pf-m-expanded' in self.browser.classes(self)
+        return "pf-m-expanded" in self.browser.classes(self)
 
     @property
     def is_enabled(self):
-        return 'pf-m-disabled' not in self.browser.classes(self)
+        return "pf-m-disabled" not in self.browser.classes(self)
 
     def select(self, item):
         self.open()
@@ -808,8 +845,8 @@ class ActionDropdownWithCheckbox(ActionsDropdown):
         :param item: dictionary with values for 'is_customize' and 'action' keys.
         """
         self.open()
-        self.customize_check_box.fill(item['is_customize'])
-        self.select(item['action'])
+        self.customize_check_box.fill(item["is_customize"])
+        self.select(item["action"])
 
 
 class Search(Widget):
@@ -856,7 +893,7 @@ class Search(Widget):
             self.search_button.click()
 
     def search(self, value):
-        if hasattr(self.parent, 'flash'):
+        if hasattr(self.parent, "flash"):
             # large flash messages may hide the search button
             self.parent.flash.dismiss()
         self.clear()
@@ -873,7 +910,9 @@ class PF4Search(Search):
     search_button = Text(locator=(".//button[@aria-label='Search']"))
     clear_button = Text(locator=(".//button[@aria-label='Reset search']"))
 
-    actions = ActionsDropdown("//div[contains(@data-ouia-component-id, 'bookmarks-dropdown')]")
+    actions = ActionsDropdown(
+        "//div[contains(@data-ouia-component-id, 'bookmarks-dropdown')]"
+    )
 
     def clear(self):
         """Clears search field value and re-trigger search to remove all
@@ -933,9 +972,9 @@ class PF5NavSearch(PF4Search):
 
     def _safe_search_clear(self):
         """Clear the search input and return if it is actually cleared."""
-        if self.browser.text(self.search_field) != '':
+        if self.browser.text(self.search_field) != "":
             self.clear()
-        return self.browser.text(self.search_field) == ''
+        return self.browser.text(self.search_field) == ""
 
     def _ensure_search_is_cleared(self):
         """Wait for `search_clear_timeout` seconds that the search input has been really cleared."""
@@ -991,7 +1030,9 @@ class SatFlashMessage(FlashMessage):
         "pf-m-info": "info",
     }
 
-    ROOT = ParametrizedLocator('.//div[contains(@class, "foreman-toast") and position()={index}]')
+    ROOT = ParametrizedLocator(
+        './/div[contains(@class, "foreman-toast") and position()={index}]'
+    )
     TITLE_LOCATOR = './/h4[contains(@class, "alert__title")]'
     DISMISS_LOCATOR = './/div[contains(@class, "alert__action")]'
     ICON_LOCATOR = './/div[contains(@class, "alert__icon")]'
@@ -1103,13 +1144,15 @@ class ValidationErrors(Widget):
 
 
 class ContextSelector(Widget):
-    CURRENT_ORG = '//div[@data-ouia-component-id="taxonomy-context-selector-organization"]'
+    CURRENT_ORG = (
+        '//div[@data-ouia-component-id="taxonomy-context-selector-organization"]'
+    )
     CURRENT_LOC = '//div[@data-ouia-component-id="taxonomy-context-selector-location"]'
     ORG_LOCATOR = '//div[@id="organization-dropdown"]//li[button[contains(.,{})]]'
     LOC_LOCATOR = '//div[@id="location-dropdown"]//li[button[contains(.,{})]]'
 
     def select_org(self, org_name):
-        self.logger.info('Selecting Organization %r', org_name)
+        self.logger.info("Selecting Organization %r", org_name)
 
         # Click current org to view the list
         e = self.browser.element(self.CURRENT_ORG)
@@ -1127,7 +1170,7 @@ class ContextSelector(Widget):
         return self.browser.text(self.CURRENT_ORG)
 
     def select_loc(self, loc_name):
-        self.logger.info('Selecting Location %r', loc_name)
+        self.logger.info("Selecting Location %r", loc_name)
 
         # Click current location to view the list
         e = self.browser.element(self.CURRENT_LOC)
@@ -1183,13 +1226,13 @@ class FilteredDropdown(GenericLocatorWidget):
     def __init__(self, parent, id=None, locator=None, logger=None):
         """Supports initialization via ``id=`` or ``locator=``"""
         if (locator and id) or (not locator and not id):
-            raise ValueError('Please specify either locator or id')
+            raise ValueError("Please specify either locator or id")
         locator = locator or f".//select[contains(@id, '{id}')]"
         super().__init__(parent, locator, logger)
 
     def read(self):
         """Return drop-down selected item value and remove special character using unicode u00d7"""
-        return self.browser.text(self.selected_value).replace('\u00d7', '').strip()
+        return self.browser.text(self.selected_value).replace("\u00d7", "").strip()
 
     def clear(self):
         """Clear currently selected value for drop-down"""
@@ -1200,7 +1243,7 @@ class FilteredDropdown(GenericLocatorWidget):
 
         :param value: string with item value
         """
-        if value == '':
+        if value == "":
             self.clear()
             return True
         self.open_filter.click()
@@ -1211,7 +1254,9 @@ class FilteredDropdown(GenericLocatorWidget):
 class PF4FilteredDropdown(GenericLocatorWidget):
     """Drop-down element with filtering functionality - PatternFly 4 version"""
 
-    filter_criteria = TextInput(locator=".//input[@aria-label='Select a resource type']")
+    filter_criteria = TextInput(
+        locator=".//input[@aria-label='Select a resource type']"
+    )
     filter_content = ItemsList(".//ul")
 
     def clear(self):
@@ -1256,36 +1301,36 @@ class CustomParameter(Table):
 
     def __init__(self, parent, **kwargs):
         """Supports initialization via ``locator=`` or ``id=``"""
-        if (kwargs.get('locator') and kwargs.get('id')) or (
-            not kwargs.get('locator') and not kwargs.get('id')
+        if (kwargs.get("locator") and kwargs.get("id")) or (
+            not kwargs.get("locator") and not kwargs.get("id")
         ):
-            raise ValueError('Please specify either locator or id')
-        locator = kwargs.get('locator') or f".//table[@id='{kwargs.pop('id')}']"
-        kwargs.update({'locator': f'{locator}'})
+            raise ValueError("Please specify either locator or id")
+        locator = kwargs.get("locator") or f".//table[@id='{kwargs.pop('id')}']"
+        kwargs.update({"locator": f"{locator}"})
 
         # Implementation of parameters is inconsistent as to whether a new row
         # is added to the top or bottom of the table when adding a parameter.
         # Views representing pages that add new parameters to the bottom of the
         # table can pass a `new_row_bottom = True` kwarg to the CustomParameter
         # __init__ method.
-        if kwargs.get('new_row_bottom'):
-            self.new_row_bottom = kwargs.pop('new_row_bottom')
+        if kwargs.get("new_row_bottom"):
+            self.new_row_bottom = kwargs.pop("new_row_bottom")
         else:
             self.new_row_bottom = False
         super().__init__(parent, **kwargs)
 
-        self.column_widgets = kwargs.get('column_widgets') or {
-            'Name': TextInput(locator=".//input[@placeholder='Name']"),
-            'Value': TextInput(locator=".//textarea[@placeholder='Value']"),
-            'Actions': Text(
+        self.column_widgets = kwargs.get("column_widgets") or {
+            "Name": TextInput(locator=".//input[@placeholder='Name']"),
+            "Value": TextInput(locator=".//textarea[@placeholder='Value']"),
+            "Actions": Text(
                 locator=".//a[@data-original-title='Remove Parameter' "
                 "or @title='Remove Parameter']"
             ),
         }
         self.name = next(iter(self.column_widgets.keys()))
-        self.name_key = '_'.join(self.name.lower().split(' '))
+        self.name_key = "_".join(self.name.lower().split(" "))
         self.value = list(self.column_widgets.keys())[1]
-        self.value_key = '_'.join(self.value.lower().split(' '))
+        self.value_key = "_".join(self.value.lower().split(" "))
 
     def read(self):
         """Return a list of dictionaries. Each dictionary consists of name and
@@ -1319,7 +1364,7 @@ class CustomParameter(Table):
         """
         for row in self.rows():
             if row[self.name].widget.read() == name:
-                row['Actions'].widget.click()  # click 'Remove'
+                row["Actions"].widget.click()  # click 'Remove'
 
     def fill(self, values):
         """Fill parameter entries. Existing values will be overwritten.
@@ -1355,7 +1400,7 @@ class CustomParameter(Table):
             this_value = row[self.value].widget.read()
             if this_name not in names_to_fill:
                 # Delete row if its name/value is not in desired values
-                row['Actions'].widget.click()  # click 'Remove' icon
+                row["Actions"].widget.click()  # click 'Remove' icon
             else:
                 # Check if value should be updated for this name
                 # First get the desired value for this param name
@@ -1399,7 +1444,9 @@ class ConfirmationDialog(Widget):
 
     ROOT = ".//div[@class='modal-content']"
     confirm_dialog = Text(".//button[contains(@ng-click, 'ok')]")
-    cancel_dialog = Text(".//button[contains(@ng-click, 'cancel') and contains(@class, 'btn')]")
+    cancel_dialog = Text(
+        ".//button[contains(@ng-click, 'cancel') and contains(@class, 'btn')]"
+    )
     discard_dialog = Text(".//button[contains(@ng-click, 'cancel') and @class='close']")
 
     def _check_is_displayed(self, elem):
@@ -1425,20 +1472,24 @@ class Pf4ConfirmationDialog(ConfirmationDialog):
     """PF4 confirmation dialog with two buttons and close 'x' button in the
     right corner."""
 
-    ROOT = '//div[@id="app-confirm-modal" or @data-ouia-component-type="PF4/ModalContent"]'
-    confirm_dialog = OUIAButton('btn-modal-confirm')
-    cancel_dialog = OUIAButton('btn-modal-cancel')
-    discard_dialog = OUIAButton('app-confirm-modal-ModalBoxCloseButton')
+    ROOT = (
+        '//div[@id="app-confirm-modal" or @data-ouia-component-type="PF4/ModalContent"]'
+    )
+    confirm_dialog = OUIAButton("btn-modal-confirm")
+    cancel_dialog = OUIAButton("btn-modal-cancel")
+    discard_dialog = OUIAButton("app-confirm-modal-ModalBoxCloseButton")
 
 
 class Pf5ConfirmationDialog(ConfirmationDialog):
     """PF5 confirmation dialog with two buttons and close 'x' button in the
     right corner."""
 
-    ROOT = '//div[@id="app-confirm-modal" or @data-ouia-component-type="PF5/ModalContent"]'
-    confirm_dialog = PF5OUIAButton('btn-modal-confirm')
-    cancel_dialog = PF5OUIAButton('btn-modal-cancel')
-    discard_dialog = PF5OUIAButton('app-confirm-modal-ModalBoxCloseButton')
+    ROOT = (
+        '//div[@id="app-confirm-modal" or @data-ouia-component-type="PF5/ModalContent"]'
+    )
+    confirm_dialog = PF5OUIAButton("btn-modal-confirm")
+    cancel_dialog = PF5OUIAButton("btn-modal-cancel")
+    discard_dialog = PF5OUIAButton("app-confirm-modal-ModalBoxCloseButton")
 
 
 class LCESelector(GenericLocatorWidget):
@@ -1471,12 +1522,16 @@ class LCESelector(GenericLocatorWidget):
         typically as a part of :class:`airgun.views.common.LCESelectorGroup`.
         """
         if locator is None:
-            locator = ".//div[contains(@class, 'path-selector')]//ul[@class='path-list']"
+            locator = (
+                ".//div[contains(@class, 'path-selector')]//ul[@class='path-list']"
+            )
         super().__init__(parent, locator, logger=logger)
 
     def checkbox_selected(self, locator):
         """Identify whether specific checkbox is selected or not"""
-        return 'ng-not-empty' in self.browser.get_attribute('class', locator, parent=self)
+        return "ng-not-empty" in self.browser.get_attribute(
+            "class", locator, parent=self
+        )
 
     def select(self, locator, value):
         """Select or deselect checkbox depends on the value passed"""
@@ -1486,7 +1541,9 @@ class LCESelector(GenericLocatorWidget):
             return False
         self.browser.click(locator, parent=self)
         if self.checkbox_selected(locator) != value:
-            raise WidgetOperationFailed('Failed to set the checkbox to requested value.')
+            raise WidgetOperationFailed(
+                "Failed to set the checkbox to requested value."
+            )
         return True
 
     def read(self):
@@ -1538,9 +1595,7 @@ class PF5LCECheckSelector(PF5LCESelector):
     """Checkbox version of PF5 LCE Selector"""
 
     LABELS = './/label[contains(@class, "pf-v5-c-check__label")]'
-    CHECKBOX = (
-        './/input[contains(@class, "pf-v5-c-check") and ../label[.//*[contains(text(), "{}")]]]'
-    )
+    CHECKBOX = './/input[contains(@class, "pf-v5-c-check") and ../label[.//*[contains(text(), "{}")]]]'
 
 
 class LimitInput(Widget):
@@ -1572,7 +1627,9 @@ class LimitInput(Widget):
             "or contains(@ng-model, 'unlimited')]"
         )
     )
-    limit = TextInput(locator=(".//input[@type='number'][contains(@ng-required, 'unlimited')]"))
+    limit = TextInput(
+        locator=(".//input[@type='number'][contains(@ng-required, 'unlimited')]")
+    )
 
     def fill(self, value):
         """Handle 'Unlimited' checkbox before trying to fill text input.
@@ -1582,7 +1639,7 @@ class LimitInput(Widget):
         """
         if self.read().lower() == str(value).lower():
             return False
-        if str(value).lower() == 'unlimited':
+        if str(value).lower() == "unlimited":
             self.unlimited.fill(True)
         else:
             self.unlimited.fill(False)
@@ -1594,7 +1651,7 @@ class LimitInput(Widget):
         or text input value otherwise.
         """
         if self.unlimited.read():
-            return 'Unlimited'
+            return "Unlimited"
         return self.limit.read()
 
 
@@ -1603,8 +1660,8 @@ class TextInputHidden(TextInput):
 
     def read(self):
         value = super().read()
-        hidden = 'masked-input' in self.browser.classes(self)
-        return {'value': value, 'hidden': hidden}
+        hidden = "masked-input" in self.browser.classes(self)
+        return {"value": value, "hidden": hidden}
 
 
 class EditableEntry(GenericLocatorWidget):
@@ -1643,8 +1700,10 @@ class EditableEntry(GenericLocatorWidget):
     def __init__(self, parent, locator=None, name=None, logger=None):
         """Supports initialization via ``locator=`` or ``name=``"""
         if (locator and name) or (not locator and not name):
-            raise TypeError('Please specify either locator or name')
-        locator = locator or f".//dt[normalize-space(.)='{name}']/following-sibling::dd[1]"
+            raise TypeError("Please specify either locator or name")
+        locator = (
+            locator or f".//dt[normalize-space(.)='{name}']/following-sibling::dd[1]"
+        )
         super().__init__(parent, locator, logger)
 
     def fill(self, value):
@@ -1693,14 +1752,17 @@ class CheckboxGroup(GenericLocatorWidget):
     A set of checkboxes of the same property type
     """
 
-    ITEMS_LOCATOR = './/p'
+    ITEMS_LOCATOR = ".//p"
     CHECKBOX_LOCATOR = './/p[normalize-space(.)="{}"]/input'
 
     @cached_property
     def checkboxes(self):
-        labels = [line.text for line in self.browser.elements(self.ITEMS_LOCATOR, parent=self)]
+        labels = [
+            line.text for line in self.browser.elements(self.ITEMS_LOCATOR, parent=self)
+        ]
         return {
-            label: Checkbox(self, locator=self.CHECKBOX_LOCATOR.format(label)) for label in labels
+            label: Checkbox(self, locator=self.CHECKBOX_LOCATOR.format(label))
+            for label in labels
         }
 
     def read(self):
@@ -1722,7 +1784,7 @@ class EditableEntryMultiCheckbox(EditableEntry):
     a field, but by a set of checkboxes.
     """
 
-    edit_field = CheckboxGroup(locator='.//form')
+    edit_field = CheckboxGroup(locator=".//form")
 
 
 class TextInputsGroup(GenericLocatorWidget):
@@ -1738,7 +1800,9 @@ class TextInputsGroup(GenericLocatorWidget):
 
     @cached_property
     def labels(self):
-        return [line.text for line in self.browser.elements(self.FIELD_LABELS, parent=self)]
+        return [
+            line.text for line in self.browser.elements(self.FIELD_LABELS, parent=self)
+        ]
 
     @cached_property
     def textinputs(self):
@@ -1798,14 +1862,12 @@ class ReadOnlyEntry(GenericLocatorWidget):
     """
 
     entry_value = Text(".")
-    BASE_LOCATOR = (
-        ".//dt[contains(., '{}')]/following-sibling::dd[not(contains(@class, 'ng-hide'))][1]"
-    )
+    BASE_LOCATOR = ".//dt[contains(., '{}')]/following-sibling::dd[not(contains(@class, 'ng-hide'))][1]"
 
     def __init__(self, parent, locator=None, name=None, logger=None):
         """Supports initialization via ``locator=`` or ``name=``"""
         if (locator and name) or (not locator and not name):
-            raise TypeError('Please specify either locator or name')
+            raise TypeError("Please specify either locator or name")
         locator = locator or self.BASE_LOCATOR.format(name)
         super().__init__(parent, locator, logger)
 
@@ -1846,11 +1908,15 @@ class ACEEditor(Widget):
         :param value: string with value that should be used for field update
             procedure
         """
-        self.browser.execute_script(f"ace.edit('{self.ace_edit_id}').setValue(arguments[0])", value)
+        self.browser.execute_script(
+            f"ace.edit('{self.ace_edit_id}').setValue(arguments[0])", value
+        )
 
     def read(self):
         """Returns string with current widget value"""
-        return self.browser.execute_script(f"return ace.edit('{self.ace_edit_id}').getValue();")
+        return self.browser.execute_script(
+            f"return ace.edit('{self.ace_edit_id}').getValue();"
+        )
 
 
 class Pagination(Widget):
@@ -1868,7 +1934,9 @@ class Pagination(Widget):
     last_page_button = Button(".//div[button[@data-action='last']]")
     page = TextInput(locator=".//input[contains(@class, 'pf-c-form-control')]")
     pages = Text("//div[contains(@class, 'pf-c-pagination__nav-page-select')]//span")
-    total_items = Text(".//span[contains(@class, 'pf-c-options-menu__toggle-text')]/b[2]")
+    total_items = Text(
+        ".//span[contains(@class, 'pf-c-options-menu__toggle-text')]/b[2]"
+    )
 
     @cached_property
     def per_page(self):
@@ -1897,7 +1965,7 @@ class Pagination(Widget):
         if "disabled" not in self.browser.classes(pager_button):
             pager_button.click()
         else:
-            raise DisabledWidgetError(f'Button {pager_button} is not enabled')
+            raise DisabledWidgetError(f"Button {pager_button} is not enabled")
 
     def first_page(self):
         """Goto first page by clicking on first page button"""
@@ -1929,7 +1997,7 @@ class Pagination(Widget):
         """Read the basic sub widgets of this pagination widget"""
         return {
             attr: getattr(self, attr).read()
-            for attr in ('per_page', 'page', 'pages', 'total_items')
+            for attr in ("per_page", "page", "pages", "total_items")
         }
 
     def fill(self, values):
@@ -1991,7 +2059,7 @@ class SatTable(Table):
         ".//td/span[contains(@data-block, 'no-rows-message') or "
         "contains(@data-block, 'no-search-results-message')]"
     )
-    tbody_row = Text('./tbody/tr')
+    tbody_row = Text("./tbody/tr")
     pagination = PF4Pagination(
         locator="//div[contains(@class, 'pf-c-pagination') and not(contains(@class, 'pf-m-compact'))]"
     )
@@ -2035,7 +2103,9 @@ class SatTable(Table):
                     break
                 row_read = row.read()
                 try:
-                    key = row_read.pop(self.header_index_mapping[self.assoc_column_position])
+                    key = row_read.pop(
+                        self.header_index_mapping[self.assoc_column_position]
+                    )
                 except KeyError:
                     try:
                         key = row_read.pop(self.assoc_column_position)
@@ -2055,7 +2125,7 @@ class SatTable(Table):
     def read(self, limit=None):
         """Return empty list in case table is empty"""
         if not self.has_rows:
-            self.logger.debug(f'Table {self.locator} is empty')
+            self.logger.debug(f"Table {self.locator} is empty")
             return []
         if limit is not None:
             return self.read_limited(limit)
@@ -2086,7 +2156,8 @@ class SatTable(Table):
             # ensure that we are at the right page (to not read the same page twice) and
             # to escape any ui bug that will cause hanging on this loop.
             wait_for(
-                lambda page_number=page_number: self.pagination.current_page == page_number,
+                lambda page_number=page_number: self.pagination.current_page
+                == page_number,
                 timeout=30,
                 delay=1,
                 logger=self.logger,
@@ -2151,7 +2222,7 @@ class SatSubscriptionsTable(SatTable):
         if self.has_rows:
             titles = iter(column[1].read() for column in self.title_rows)
             for row in read_rows:
-                row['Repository Name'] = next(titles)
+                row["Repository Name"] = next(titles)
         return read_rows
 
 
@@ -2183,9 +2254,9 @@ class SatTableWithoutHeaders(Table):
         //table[@id='audit_table']
     """
 
-    ROWS = './tbody/tr'
-    COLUMNS = './tbody/tr[1]/td'
-    ROW_AT_INDEX = './tbody/tr[{0}]'
+    ROWS = "./tbody/tr"
+    COLUMNS = "./tbody/tr[1]/td"
+    ROW_AT_INDEX = "./tbody/tr[{0}]"
     # there is no header row elements in this table.
     HEADER_IN_ROWS = None
     HEADERS = None
@@ -2199,7 +2270,7 @@ class SatTableWithoutHeaders(Table):
     def headers(self):
         result = []
         for index, _ in enumerate(self.browser.elements(self.COLUMNS, parent=self)):
-            result.append(f'column{index}')
+            result.append(f"column{index}")
 
         return tuple(result)
 
@@ -2261,12 +2332,14 @@ class SatTableWithUnevenStructure(SatTable):
 
     """
 
-    def __init__(self, parent, locator, column_locator='.', logger=None):
+    def __init__(self, parent, locator, column_locator=".", logger=None):
         """Defining locator to find a table on a page and widget that is going
         to be used to work with data in a second column
         """
         column_widgets = {1: Text(locator=column_locator)}
-        super().__init__(parent, locator=locator, logger=logger, column_widgets=column_widgets)
+        super().__init__(
+            parent, locator=locator, logger=logger, column_widgets=column_widgets
+        )
 
     def read(self):
         """Returns a dict with {column1: column2} values, and only for rows
@@ -2285,7 +2358,7 @@ class SatTableWithUnevenStructure(SatTable):
         return {
             row[0].read(): row[1].read()
             for row in self.rows()
-            if 'ng-hide' not in self.browser.classes(row)
+            if "ng-hide" not in self.browser.classes(row)
         }
 
 
@@ -2319,19 +2392,21 @@ class ProgressBar(GenericLocatorWidget):
         """Boolean value whether progress bar is active or not (stopped,
         pending or any other state).
         """
-        if 'active' in self.browser.classes(self, check_safe=False):
+        if "active" in self.browser.classes(self, check_safe=False):
             return True
         return False
 
     @property
     def progress(self):
         """String value with current flow rate in percent."""
-        return self.browser.get_attribute('aria-valuetext', self.PROGRESSBAR, check_safe=False)
+        return self.browser.get_attribute(
+            "aria-valuetext", self.PROGRESSBAR, check_safe=False
+        )
 
     @property
     def is_completed(self):
         """Boolean value whether progress bar is finished or not"""
-        if not self.is_active and self.progress == '100%':
+        if not self.is_active and self.progress == "100%":
             return True
         return False
 
@@ -2375,7 +2450,7 @@ class PF5ProgressBar(PF5Progress):
     def is_completed(self):
         """Boolean value whether progress bar is finished or not"""
         try:
-            return self.current_progress == '100'
+            return self.current_progress == "100"
         except NoSuchElementException:
             return False
 
@@ -2423,7 +2498,7 @@ class PublishPromoteProgressBar(ProgressBar):
 
     """
 
-    ROOT = '.'
+    ROOT = "."
     TASK = Text('.//a[contains(@ng-href, "/foreman_tasks/")]')
     MESSAGE = Text('.//span[@ng-show="hideProgress(version)"]')
 
@@ -2434,7 +2509,7 @@ class PublishPromoteProgressBar(ProgressBar):
         # whether progress completed or not even started - to check result
         # message presence
         # Promoting finishes with `100%`
-        if self.MESSAGE.is_displayed and self.progress in ('100%', '%'):
+        if self.MESSAGE.is_displayed and self.progress in ("100%", "%"):
             return True
         return False
 
@@ -2481,12 +2556,12 @@ class RemovableWidgetsItemsListView(View):
 
     ITEMS = "./div[contains(@class, 'removable-item')]"
     ITEM_WIDGET_CLASS = None
-    ITEM_REMOVE_BUTTON_ATTR = 'remove_button'
+    ITEM_REMOVE_BUTTON_ATTR = "remove_button"
     add_item_button = Text(".//a[contains(@class, 'add_nested_fields')]")
 
     def _get_item_locator(self, index):
         """Return the item locator located at index position"""
-        return f'{self.ITEMS}[{index + 1}]'
+        return f"{self.ITEMS}[{index + 1}]"
 
     def get_item_at_index(self, index):
         """Return the item widget instance at index"""
@@ -2595,7 +2670,7 @@ class AutoCompleteTextInput(TextInput):
         self.clear()
         super().fill(value)
         self.browser.plugin.ensure_page_safe()
-        self.browser.send_keys_to_focused_element('\t')
+        self.browser.send_keys_to_focused_element("\t")
         return self.value != old_value
 
 
@@ -2677,7 +2752,7 @@ class PopOverWidget(View):
         //div[contains(@class, 'editable-open')]
     """
 
-    ROOT = '.'
+    ROOT = "."
     column_value = Text(
         './/div[contains(@class, "ellipsis-pf-tooltip editable") '
         'or contains(@class,"ellipsis editable") '
@@ -2689,13 +2764,13 @@ class PopOverWidget(View):
         """Selects value from drop_down if exist otherwise write into input_box or textarea"""
         self.column_value.click()
         if self.pop_over_view.header.is_displayed:
-            for widget_name in ('input_box', 'textarea', 'drop_down'):
+            for widget_name in ("input_box", "textarea", "drop_down"):
                 widget = getattr(self.pop_over_view, widget_name)
                 if widget.is_displayed:
                     widget.fill(item)
                     break
         else:
-            raise ReadOnlyWidgetError('This field setting is read-only')
+            raise ReadOnlyWidgetError("This field setting is read-only")
         self.pop_over_view.submit.click()
 
     def read(self):
@@ -2709,18 +2784,24 @@ class FieldWithEditButton(Widget):
     Is present e.g. in PF5 Settings.
     """
 
-    ROOT = '//td[2]'
-    text_input = TextInput(locator=".//input[@data-ouia-component-type='PF5/TextInput']")
+    ROOT = "//td[2]"
+    text_input = TextInput(
+        locator=".//input[@data-ouia-component-type='PF5/TextInput']"
+    )
     text_area = TextInput(locator=".//textarea")
-    drop_down = FormSelect(locator=".//select[@data-ouia-component-type='PF5/FormSelect']")
-    edit_button = PF5Button(locator=".//button[contains(@data-ouia-component-id, 'edit-row')]")
-    confirm_button = PF5OUIAButton('submit-edit-btn')
-    cancel_button = PF5OUIAButton('cancel-edit-btn')
+    drop_down = FormSelect(
+        locator=".//select[@data-ouia-component-type='PF5/FormSelect']"
+    )
+    edit_button = PF5Button(
+        locator=".//button[contains(@data-ouia-component-id, 'edit-row')]"
+    )
+    confirm_button = PF5OUIAButton("submit-edit-btn")
+    cancel_button = PF5OUIAButton("cancel-edit-btn")
     text = Text(locator=".//span")
 
     def fill(self, item):
         self.edit_button.click()
-        for widget_name in ['text_input', 'text_area', 'drop_down']:
+        for widget_name in ["text_input", "text_area", "drop_down"]:
             widget = getattr(self, widget_name)
             if widget.is_displayed:
                 widget.fill(item)
@@ -2754,7 +2835,9 @@ class AuthSourceAggregateCard(AggregateStatusCard):
         </div>
     """
 
-    ROOT = ParametrizedLocator('.//h2[contains(normalize-space(.), {@name|quote})]/parent::div')
+    ROOT = ParametrizedLocator(
+        ".//h2[contains(normalize-space(.), {@name|quote})]/parent::div"
+    )
     select_kebab = Kebab(locator="./div[contains(@class, 'dropdown-kebab-pf')]")
     COUNT = ".//span[@class='card-pf-item-text']"
 
@@ -2779,7 +2862,7 @@ class Accordion(View, ClickableMixin):
 
     def __init__(self, parent=None, id=None, locator=None, logger=None):
         Widget.__init__(self, parent=parent, logger=logger)
-        self.locator = './/div[@id={id!r}]' if id else locator
+        self.locator = ".//div[@id={id!r}]" if id else locator
 
     def items(self):
         return [self.browser.text(elm) for elm in self.browser.elements(self.ITEMS)]
@@ -2808,11 +2891,13 @@ class BaseMultiSelect(PF5BaseSelect, PF5OUIADropdown):
         if not isinstance(items, list | tuple | set):
             items = [items]
         if isinstance(items, str):
-            items = items.split(',')
+            items = items.split(",")
         try:
             for item in items:
                 element = self.item_element(item, close=False)
-                if not element.find_element("xpath", "./..").get_attribute('aria-selected'):
+                if not element.find_element("xpath", "./..").get_attribute(
+                    "aria-selected"
+                ):
                     element.click()
         finally:
             self.browser.click(self.BUTTON_LOCATOR)
@@ -2830,7 +2915,7 @@ class BaseMultiSelect(PF5BaseSelect, PF5OUIADropdown):
 
     def read(self):
         try:
-            return self.browser.text(self.SELECTED_ITEMS_LIST).split(' ')
+            return self.browser.text(self.SELECTED_ITEMS_LIST).split(" ")
         except NoSuchElementException:
             return None
 
@@ -2848,12 +2933,12 @@ class InventoryBootstrapSwitch(Widget):
     ROOT = ParametrizedLocator("//div[@class={@class_name|quote}]/div")
 
     def __init__(self, parent, class_name, **kwargs):
-        Widget.__init__(self, parent, logger=kwargs.pop('logger', None))
+        Widget.__init__(self, parent, logger=kwargs.pop("logger", None))
         self.class_name = class_name
 
     @property
     def selected(self):
-        return 'bootstrap-switch-on' in self.browser.classes(self)
+        return "bootstrap-switch-on" in self.browser.classes(self)
 
     @property
     def _clickable_el(self):
@@ -2910,8 +2995,8 @@ class SearchInput(TextInput):
 class EditModal(View):
     """Class representing the Edit modal header"""
 
-    title = Text('.//h1')
-    close_button = OUIAButton('acs-edit-details-modal-ModalBoxCloseButton')
+    title = Text(".//h1")
+    close_button = OUIAButton("acs-edit-details-modal-ModalBoxCloseButton")
 
     error_message = Text('//div[contains(@aria-label, "Danger Alert")]')
 
@@ -2919,7 +3004,9 @@ class EditModal(View):
 class DualListSelector(EditModal):
     """Class representing the Dual List Selector in a modal."""
 
-    available_options_search = SearchInput(locator='.//input[@aria-label="Available search input"]')
+    available_options_search = SearchInput(
+        locator='.//input[@aria-label="Available search input"]'
+    )
     available_options_list = ItemsList(
         locator='.//ul[contains(@aria-labelledby, "selector-available-pane-status")]'
     )
@@ -2929,7 +3016,9 @@ class DualListSelector(EditModal):
     remove_all = PF5Button(locator='.//button[@aria-label="Remove all"]')
     remove_selected = PF5Button(locator='.//button[@aria-label="Remove selected"]')
 
-    chosen_options_search = SearchInput(locator='.//input[@aria-label="Chosen search input"]')
+    chosen_options_search = SearchInput(
+        locator='.//input[@aria-label="Chosen search input"]'
+    )
     chosen_options_list = ItemsList(
         locator='.//div[contains(@class, "pf-m-chosen")]'
         '//ul[@class="pf-c-dual-list-selector__list"]'
@@ -2976,8 +3065,8 @@ class PF5LabeledExpandableSection(PF5ExpandableSection):
     ROOT = ParametrizedLocator(
         '//div[contains(@class, "-c-expandable-section")]/button[normalize-space(.)={@label|quote}]/..'
     )
-    BUTTON_LOCATOR = ParametrizedLocator('.//button[normalize-space(.)={@label|quote}]')
-    label = 'You need to set this `label` attribute yourself!'
+    BUTTON_LOCATOR = ParametrizedLocator(".//button[normalize-space(.)={@label|quote}]")
+    label = "You need to set this `label` attribute yourself!"
 
     def read(self):
         self.expand()
@@ -2992,9 +3081,11 @@ class PF5DataList(Widget):
 
     def read(self):
         items = [self.browser.text(item) for item in self.browser.elements(self.ITEMS)]
-        values = [self.browser.text(value) for value in self.browser.elements(self.VALUES)]
+        values = [
+            self.browser.text(value) for value in self.browser.elements(self.VALUES)
+        ]
         if len(items) != len(values):
             raise ValueError(
-                f'The count of data list labels and values does not match. Labels: {items}. Values: {values}'
+                f"The count of data list labels and values does not match. Labels: {items}. Values: {values}"
             )
         return dict(zip(items, values))

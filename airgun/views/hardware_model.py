@@ -17,9 +17,9 @@ class HardwareModelsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hardware models']")
     new = Text("//a[contains(@href, '/models/new')]")
     table = PF5OUIATable(
-        component_id='table',
+        component_id="table",
         column_widgets={
-            'Name': Text('.//a'),
+            "Name": Text(".//a"),
             4: MenuToggleButtonMenu(),
         },
     )
@@ -31,28 +31,32 @@ class HardwareModelsView(BaseLoggedInView, SearchableViewMixinPF4):
 
 class HardwareModelCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    name = TextInput(id='model_name')
-    hardware_model = TextInput(id='model_hardware_model')
-    vendor_class = TextInput(id='model_vendor_class')
-    info = TextInput(id='model_info')
+    name = TextInput(id="model_name")
+    hardware_model = TextInput(id="model_hardware_model")
+    vendor_class = TextInput(id="model_vendor_class")
+    info = TextInput(id="model_info")
     submit = Text('//input[@name="commit"]')
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Hardware Models'
-            and self.breadcrumb.read() == 'Create Model'
+            and self.breadcrumb.locations[0] == "Hardware Models"
+            and self.breadcrumb.read() == "Create Model"
         )
 
 
 class HardwareModelEditView(HardwareModelCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Hardware Models'
-            and self.breadcrumb.read().startswith('Edit ')
+            and self.breadcrumb.locations[0] == "Hardware Models"
+            and self.breadcrumb.read().startswith("Edit ")
         )

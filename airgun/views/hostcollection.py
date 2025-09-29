@@ -25,7 +25,7 @@ from airgun.widgets import (
 class HostCollectionsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h2[contains(., 'Host Collections')]")
     new = Text("//button[contains(@href, '/host_collections/new')]")
-    table = SatTable('.//table', column_widgets={'Name': Text('./a')})
+    table = SatTable(".//table", column_widgets={"Name": Text("./a")})
 
     @property
     def is_displayed(self):
@@ -34,19 +34,21 @@ class HostCollectionsView(BaseLoggedInView, SearchableViewMixin):
 
 class HostCollectionCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    name = TextInput(id='name')
-    unlimited_hosts = Checkbox(name='limit')
-    max_hosts = TextInput(id='max_hosts')
-    description = TextInput(id='description')
+    name = TextInput(id="name")
+    unlimited_hosts = Checkbox(name="limit")
+    max_hosts = TextInput(id="max_hosts")
+    description = TextInput(id="description")
     submit = Text("//button[contains(@ng-click, 'handleSave')]")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Host Collections'
-            and self.breadcrumb.read() == 'New Host Collection'
+            and self.breadcrumb.locations[0] == "Host Collections"
+            and self.breadcrumb.read() == "New Host Collection"
         )
 
 
@@ -57,24 +59,26 @@ class HostCollectionEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Host Collections'
-            and self.breadcrumb.read() != 'New Host Collection'
+            and self.breadcrumb.locations[0] == "Host Collections"
+            and self.breadcrumb.read() != "New Host Collection"
         )
 
     @View.nested
     class details(SatTab):
-        name = EditableEntry(name='Name')
-        description = EditableEntry(name='Description')
+        name = EditableEntry(name="Name")
+        description = EditableEntry(name="Description")
         content_hosts = ReadOnlyEntry(
             locator=(
                 ".//dt[contains(., 'Content Hosts')]/following-sibling"
                 "::dd/a[not(contains(@class, 'ng-hide'))][1]"
             )
         )
-        content_host_limit = EditableLimitEntry(name='Content Host Limit')
+        content_host_limit = EditableLimitEntry(name="Content Host Limit")
         # Package Installation, Removal, and Update
         manage_packages = Text(".//a[@ng-click='openPackagesModal()']")
         # Errata Installation
@@ -86,7 +90,7 @@ class HostCollectionEditView(BaseLoggedInView):
 
     @View.nested
     class hosts(SatTab):
-        TAB_NAME = 'Hosts'
+        TAB_NAME = "Hosts"
 
         resources = View.nested(AddRemoveResourcesView)
 
@@ -111,8 +115,8 @@ class HostCollectionPackageContentRadioGroup(RadioGroup):
     # a mapping between button name and the id, see the implementation in
     # HostsAssignOrganization and HostsAssignLocation hereafter.
     buttons_name_id_map = {
-        'Package': 'package',
-        'Package Group': 'package_group',
+        "Package": "package",
+        "Package Group": "package_group",
     }
 
     def get_input_by_name(self, name):
@@ -128,7 +132,7 @@ class HostCollectionPackageContentRadioGroup(RadioGroup):
         """Return the name of the button that is currently selected."""
         for name in self.buttons_name_id_map:
             btn = self.get_input_by_name(name)
-            if btn and btn.get_attribute('checked') is not None:
+            if btn and btn.get_attribute("checked") is not None:
                 return name
         raise ValueError(
             "Whether no radio button is selected or proper attribute "
@@ -150,7 +154,9 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
     update_all = ActionsDropdown(
         "//span[contains(@class, 'input-group')][button[contains(@ng-click, 'update all')]]"
     )
-    content_type = HostCollectionPackageContentRadioGroup("//div[@name='systemContentForm']/div")
+    content_type = HostCollectionPackageContentRadioGroup(
+        "//div[@name='systemContentForm']/div"
+    )
 
     packages = TextInput(
         locator=("//input[@type='text' and contains(@ng-model, 'content.content')]")
@@ -188,7 +194,7 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
             )
         return action_button
 
-    def apply_action(self, name, action_via='via remote execution'):
+    def apply_action(self, name, action_via="via remote execution"):
         """Apply an action by name using action via if indicated"""
         action_button = self.get_action_button(name)
         action_button.fill(action_via)
@@ -198,7 +204,9 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
 
 class HostCollectionInstallErrataView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h4[contains(., 'Content Host Errata Management')]")
-    search = TextInput(locator=".//input[@type='text' and @ng-model='table.searchTerm']")
+    search = TextInput(
+        locator=".//input[@type='text' and @ng-model='table.searchTerm']"
+    )
     refresh = Text(locator=".//button[@ng-click='fetchErrata()']")
     search_url = Text(locator="//a[contains(@href, 'content_hosts')]")
     install = ActionsDropdown(
@@ -210,7 +218,7 @@ class HostCollectionInstallErrataView(BaseLoggedInView, SearchableViewMixin):
         ".//table",
         column_widgets={
             0: Checkbox(locator=".//input[@ng-model='erratum.selected']"),
-            'Id': Text(locator="./a[@ng-click='transitionToErrata(erratum)']"),
+            "Id": Text(locator="./a[@ng-click='transitionToErrata(erratum)']"),
         },
     )
     dialog = ConfirmationDialog()
@@ -224,10 +232,12 @@ class HostCollectionInstallErrataView(BaseLoggedInView, SearchableViewMixin):
 class HostCollectionManageModuleStreamsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h4[contains(., 'Content Host Module Stream Management')]")
     table = SatTable(
-        locator='//table',
+        locator="//table",
         column_widgets={
-            'Name': Text('.//a'),
-            'Actions': ActionDropdownWithCheckbox(".//div[contains(@class, 'dropdown')]"),
+            "Name": Text(".//a"),
+            "Actions": ActionDropdownWithCheckbox(
+                ".//div[contains(@class, 'dropdown')]"
+            ),
         },
     )
 
@@ -271,9 +281,11 @@ class HostCollectionActionTaskDetailsView(TaskDetailsView):
 class HostCollectionActionRemoteExecutionJobCreate(JobInvocationCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Remote Executions'
-            and self.breadcrumb.read() == 'Job invocation'
+            and self.breadcrumb.locations[0] == "Remote Executions"
+            and self.breadcrumb.read() == "Job invocation"
         )

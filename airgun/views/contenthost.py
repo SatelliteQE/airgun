@@ -65,13 +65,15 @@ class StatusIcon(GenericLocatorWidget):
         'unknown'.
         """
         colors = {
-            'rgba(204, 0, 0, 1)': 'red',
-            'rgba(236, 122, 8, 1)': 'yellow',
-            'rgba(63, 156, 53, 1)': 'green',
+            "rgba(204, 0, 0, 1)": "red",
+            "rgba(236, 122, 8, 1)": "yellow",
+            "rgba(63, 156, 53, 1)": "green",
         }
         return colors.get(
-            self.browser.element(self, parent=self.parent).value_of_css_property('color'),
-            'unknown',
+            self.browser.element(self, parent=self.parent).value_of_css_property(
+                "color"
+            ),
+            "unknown",
         )
 
     def read(self):
@@ -82,7 +84,7 @@ class StatusIcon(GenericLocatorWidget):
 class InstallableUpdatesCellView(View):
     """Installable Updates Table Cell View for content host view Table"""
 
-    ROOT = '.'
+    ROOT = "."
 
     @View.nested
     class errata(View):
@@ -101,12 +103,12 @@ class ContentHostsView(BaseLoggedInView, SearchableViewMixin):
     dialog = ConfirmationDialog()
     select_all = Checkbox(locator="//input[@ng-model='selection.allSelected']")
     table = SatTable(
-        './/table',
+        ".//table",
         column_widgets={
             0: Checkbox(locator="./input[@type='checkbox']"),
-            'Name': Text('.//a'),
-            'Subscription Status': StatusIcon(),
-            'Installable Updates': InstallableUpdatesCellView(),
+            "Name": Text(".//a"),
+            "Subscription Status": StatusIcon(),
+            "Installable Updates": InstallableUpdatesCellView(),
         },
     )
 
@@ -125,123 +127,131 @@ class ContentHostDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Content Hosts'
+            and self.breadcrumb.locations[0] == "Content Hosts"
             and len(self.breadcrumb.locations) > 1
         )
 
     @View.nested
     class details(SatTab):
         # Basic information
-        name = EditableEntry(name='Name')
-        uuid = ReadOnlyEntry(name='Subscription UUID')
-        bios_uuid = ReadOnlyEntry(name='BIOS UUID')
-        description = EditableEntry(name='Description')
-        type = ReadOnlyEntry(name='Type')
-        virtual_guests = ReadOnlyEntry(name='Virtual Guests')
-        virtual_host = ReadOnlyEntry(name='Virtual Host')
-        registered_through = ReadOnlyEntry(name='Registered Through')
-        service_level = EditableEntrySelect(name='Service Level (SLA)')
-        usage_type = EditableEntrySelect(name='Usage Type')
-        role = EditableEntrySelect(name='Role')
+        name = EditableEntry(name="Name")
+        uuid = ReadOnlyEntry(name="Subscription UUID")
+        bios_uuid = ReadOnlyEntry(name="BIOS UUID")
+        description = EditableEntry(name="Description")
+        type = ReadOnlyEntry(name="Type")
+        virtual_guests = ReadOnlyEntry(name="Virtual Guests")
+        virtual_host = ReadOnlyEntry(name="Virtual Host")
+        registered_through = ReadOnlyEntry(name="Registered Through")
+        service_level = EditableEntrySelect(name="Service Level (SLA)")
+        usage_type = EditableEntrySelect(name="Usage Type")
+        role = EditableEntrySelect(name="Role")
         # Content Host Properties
         os = ReadOnlyEntry(
             locator=".//dt[.='OS']/following-sibling::dd[not(contains(@class, 'ng-hide'))]"
         )
-        architecture = ReadOnlyEntry(name='Architecture')
-        number_of_cpus = ReadOnlyEntry(name='Number of CPUs')
-        sockets = ReadOnlyEntry(name='Sockets')
-        cores_per_socket = ReadOnlyEntry(name='Cores per Socket')
-        ram = ReadOnlyEntry(name='RAM (GB)')
-        virtual_guest = ReadOnlyEntry(name='Virtual Guest')
+        architecture = ReadOnlyEntry(name="Architecture")
+        number_of_cpus = ReadOnlyEntry(name="Number of CPUs")
+        sockets = ReadOnlyEntry(name="Sockets")
+        cores_per_socket = ReadOnlyEntry(name="Cores per Socket")
+        ram = ReadOnlyEntry(name="RAM (GB)")
+        virtual_guest = ReadOnlyEntry(name="Virtual Guest")
         # Installable Errata
-        security = ReadOnlyEntry(name='Security')
-        bug_fix = ReadOnlyEntry(name='Bug Fix')
-        enhancement = ReadOnlyEntry(name='Enhancement')
+        security = ReadOnlyEntry(name="Security")
+        bug_fix = ReadOnlyEntry(name="Bug Fix")
+        enhancement = ReadOnlyEntry(name="Enhancement")
         # Content Host Content
-        release_version = EditableEntrySelect(name='Release Version')
-        content_view = EditableEntrySelect(name='Content View')
+        release_version = EditableEntrySelect(name="Release Version")
+        content_view = EditableEntrySelect(name="Content View")
         lce = ParametrizedView.nested(LCESelectorGroup)
         # Content Host Status
-        registered = ReadOnlyEntry(name='Registered')
-        registered_by = ReadOnlyEntry(name='Registered By')
-        last_checkin = ReadOnlyEntry(name='Last Checkin')
+        registered = ReadOnlyEntry(name="Registered")
+        registered_by = ReadOnlyEntry(name="Registered By")
+        last_checkin = ReadOnlyEntry(name="Last Checkin")
 
     @View.nested
     class provisioning_details(SatTab):
-        TAB_NAME = 'Provisioning Details'
-        name = ReadOnlyEntry(name='Name')
-        status = ReadOnlyEntry(name='Status')
-        operating_system = ReadOnlyEntry(name='Operating System')
-        puppet_environment = ReadOnlyEntry(name='Puppet Environment')
-        last_puppet_report = ReadOnlyEntry(name='Last Puppet Report')
-        model = ReadOnlyEntry(name='Model')
-        host_group = ReadOnlyEntry(name='Host Group')
+        TAB_NAME = "Provisioning Details"
+        name = ReadOnlyEntry(name="Name")
+        status = ReadOnlyEntry(name="Status")
+        operating_system = ReadOnlyEntry(name="Operating System")
+        puppet_environment = ReadOnlyEntry(name="Puppet Environment")
+        last_puppet_report = ReadOnlyEntry(name="Last Puppet Report")
+        model = ReadOnlyEntry(name="Model")
+        host_group = ReadOnlyEntry(name="Host Group")
 
     @View.nested
     class subscriptions(SatTab):
-        SUB_ITEM = 'Subscriptions'
+        SUB_ITEM = "Subscriptions"
 
-        status = ReadOnlyEntry(name='Status')
-        auto_attach = EditableEntryCheckbox(name='Auto-Attach')
+        status = ReadOnlyEntry(name="Status")
+        auto_attach = EditableEntryCheckbox(name="Auto-Attach")
         run_auto_attach = Text(".//a[@ng-click='autoAttachSubscriptions()']")
-        service_level = EditableEntrySelect(name='Service Level')
+        service_level = EditableEntrySelect(name="Service Level")
 
         resources = View.nested(AddRemoveSubscriptionsView)
 
     @View.nested
     class host_collections(SatTab):
-        TAB_NAME = 'Host Collections'
+        TAB_NAME = "Host Collections"
 
         resources = View.nested(AddRemoveResourcesView)
 
     @View.nested
     class packages_actions(SatTabWithDropdown):
-        TAB_NAME = 'Packages'
-        SUB_ITEM = 'Actions'
+        TAB_NAME = "Packages"
+        SUB_ITEM = "Actions"
 
-        action_type = Select(name='remote_action')
+        action_type = Select(name="remote_action")
         name = TextInput(locator='.//input[@ng-model="packageAction.term"]')
-        perform = Button('Perform')
-        update_all_packages = Button('Update All Packages')
+        perform = Button("Perform")
+        update_all_packages = Button("Update All Packages")
 
     @View.nested
     class packages_installed(SatTabWithDropdown, SearchableViewMixin):
-        TAB_NAME = 'Packages'
-        SUB_ITEM = 'Installed'
+        TAB_NAME = "Packages"
+        SUB_ITEM = "Installed"
 
-        remove_selected = Button('Remove Selected')
+        remove_selected = Button("Remove Selected")
         table = SatTable(
-            './/table', column_widgets={0: Checkbox(locator="./input[@type='checkbox']")}
+            ".//table",
+            column_widgets={0: Checkbox(locator="./input[@type='checkbox']")},
         )
 
     @View.nested
     class packages_applicable(SatTabWithDropdown, SearchableViewMixin):
-        TAB_NAME = 'Packages'
-        SUB_ITEM = 'Applicable'
+        TAB_NAME = "Packages"
+        SUB_ITEM = "Applicable"
 
         upgrade_selected = ActionsDropdown(".//span[contains(@class, 'btn-group')]")
-        update_all_packages = Button('Update All Packages')
+        update_all_packages = Button("Update All Packages")
         table = SatTable(
-            './/table', column_widgets={0: Checkbox(locator="./input[@type='checkbox']")}
+            ".//table",
+            column_widgets={0: Checkbox(locator="./input[@type='checkbox']")},
         )
 
     @View.nested
     class errata(SatTab):
         lce_filter = Select(locator='.//select[@ng-model="selectedErrataOption"]')
         searchbox = Search()
-        apply_selected = ActionsDropdown(".//span[contains(@class, 'btn-group dropdown')]")
-        recalculate = Button('Recalculate')
+        apply_selected = ActionsDropdown(
+            ".//span[contains(@class, 'btn-group dropdown')]"
+        )
+        recalculate = Button("Recalculate")
         table = SatTable(
-            './/table',
+            ".//table",
             column_widgets={
                 0: Checkbox(locator="./input[@type='checkbox']"),
-                'Id': Text('./a'),
+                "Id": Text("./a"),
             },
         )
-        select_all = Checkbox(locator=".//input[@type='checkbox'][@ng-change='allSelected()']")
+        select_all = Checkbox(
+            locator=".//input[@type='checkbox'][@ng-change='allSelected()']"
+        )
         pagination = Pagination()
 
         def search(self, query, lce=None):
@@ -259,25 +269,27 @@ class ContentHostDetailsView(BaseLoggedInView):
             if lce is not None:
                 self.lce_filter.fill(lce)
 
-            if re.search(r'\w{4}-\d{4}:\d{4}', query):
-                query = f'id = {query}'
+            if re.search(r"\w{4}-\d{4}:\d{4}", query):
+                query = f"id = {query}"
             self.searchbox.search(query)
 
             return self.table.read()
 
     @View.nested
     class module_streams(SatTab, SearchableViewMixin):
-        TAB_NAME = 'Module Streams'
+        TAB_NAME = "Module Streams"
         status_filter = Select(locator='.//select[@ng-model="nutupaneParams.status"]')
         table = SatTable(
-            locator='//table',
+            locator="//table",
             column_widgets={
-                'Name': Text('.//a'),
-                'Actions': ActionDropdownWithCheckbox(".//div[contains(@class, 'dropdown')]"),
+                "Name": Text(".//a"),
+                "Actions": ActionDropdownWithCheckbox(
+                    ".//div[contains(@class, 'dropdown')]"
+                ),
             },
         )
 
-        def search(self, query, status='All'):
+        def search(self, query, status="All"):
             """Searches for Module Streams. Apply available filters before
             proceeding with searching. By default 'All' is passed
 
@@ -293,16 +305,18 @@ class ContentHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class repository_sets(SatTab, SearchableViewMixin):
-        TAB_NAME = 'Repository Sets'
+        TAB_NAME = "Repository Sets"
 
-        limit_to_lce = Checkbox(locator=".//input[contains(@ng-model, 'contentAccessModeEnv')]")
+        limit_to_lce = Checkbox(
+            locator=".//input[contains(@ng-model, 'contentAccessModeEnv')]"
+        )
         actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
 
         table = SatTable(
-            './/table',
+            ".//table",
             column_widgets={
                 0: Checkbox(locator="./input[@type='checkbox']"),
-                'Product Name': Text('./a'),
+                "Product Name": Text("./a"),
             },
         )
 
@@ -320,19 +334,21 @@ class ContentHostTaskDetailsView(TaskDetailsView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Content Hosts'
+            and self.breadcrumb.locations[0] == "Content Hosts"
             and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
         )
 
 
 class SyspurposeBulkActionView(BaseLoggedInView):
     title = Text("//h4[contains(., 'Content Host System Purpose')]")
-    service_level = Select(id='selectedServiceLevels')
-    role = Select(id='selectedRoles')
-    usage_type = Select(id='selectedUsages')
+    service_level = Select(id="selectedServiceLevels")
+    role = Select(id="selectedRoles")
+    usage_type = Select(id="selectedUsages")
     assign = Text(".//span[normalize-space(.)='Assign']")
 
     @property
@@ -344,21 +360,23 @@ class ErrataDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     BREADCRUMB_LENGTH = 3
     advisory = Text("//h3")
-    type = ReadOnlyEntry(name='Type')
-    title = ReadOnlyEntry(name='Title')
-    issued = ReadOnlyEntry(name='Issued')
-    updated = ReadOnlyEntry(name='Updated')
-    description = ReadOnlyEntry(name='Description')
-    last_updated_on = ReadOnlyEntry(name='Last Updated On')
-    reboot_suggested = ReadOnlyEntry(name='Reboot Suggested')
-    packages = ReadOnlyEntry(name='Packages')
-    module_streams = ReadOnlyEntry(name='Module Streams')
+    type = ReadOnlyEntry(name="Type")
+    title = ReadOnlyEntry(name="Title")
+    issued = ReadOnlyEntry(name="Issued")
+    updated = ReadOnlyEntry(name="Updated")
+    description = ReadOnlyEntry(name="Description")
+    last_updated_on = ReadOnlyEntry(name="Last Updated On")
+    reboot_suggested = ReadOnlyEntry(name="Reboot Suggested")
+    packages = ReadOnlyEntry(name="Packages")
+    module_streams = ReadOnlyEntry(name="Module Streams")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[1] == 'Errata'
+            and self.breadcrumb.locations[1] == "Errata"
             and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
         )

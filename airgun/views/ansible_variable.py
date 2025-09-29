@@ -17,9 +17,9 @@ class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixinPF4):
     new_variable = Text("//a[contains(@href, '/ansible/ansible_variables/new')]")
     total_variables = Text("//span[@class='pf-c-options-menu__toggle-text']//b[2]")
     table = SatTable(
-        './/table',
+        ".//table",
         column_widgets={
-            'Actions': Text(".//a[@data-method='delete']"),
+            "Actions": Text(".//a[@data-method='delete']"),
         },
     )
     dialog = Pf5ConfirmationDialog()
@@ -47,28 +47,28 @@ class NewAnsibleVariableView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
 
     # 'Ansible Variable Details' section
-    key = TextInput(id='ansible_variable_key')
-    description = TextInput(id='ansible_variable_description')
-    ansible_role = FilteredDropdown(id='ansible_variable_ansible_role_id')
+    key = TextInput(id="ansible_variable_key")
+    description = TextInput(id="ansible_variable_description")
+    ansible_role = FilteredDropdown(id="ansible_variable_ansible_role_id")
 
     # 'Default Behavior' section
-    override = Checkbox(id='ansible_variable_override')
+    override = Checkbox(id="ansible_variable_override")
     # Accessing all widgets except the ones above requires that the `override` checkbox is filled
-    parameter_type = SatSelect(id='ansible_variable_parameter_type')
-    default_value = TextInput(id='ansible_variable_default_value')
-    hidden_value = Checkbox(id='ansible_variable_hidden_value')
+    parameter_type = SatSelect(id="ansible_variable_parameter_type")
+    default_value = TextInput(id="ansible_variable_default_value")
+    hidden_value = Checkbox(id="ansible_variable_hidden_value")
 
     # 'Optional Input Validator' section
     expand_optional_input_validator = Text("//h2[@class='expander collapsed']")
-    required = Checkbox(id='ansible_variable_required')
-    validator_type = SatSelect(id='ansible_variable_validator_type')
-    validator_rule = TextInput(id='ansible_variable_validator_rule')
+    required = Checkbox(id="ansible_variable_required")
+    validator_type = SatSelect(id="ansible_variable_validator_type")
+    validator_rule = TextInput(id="ansible_variable_validator_rule")
 
     # 'Prioritize Attribute Order' section
-    attribute_order = TextInput(id='order')
-    merge_overrides = Checkbox(id='ansible_variable_merge_overrides')
-    merge_default = Checkbox(id='ansible_variable_merge_default')
-    avoid_duplicates = Checkbox(id='ansible_variable_avoid_duplicates')
+    attribute_order = TextInput(id="order")
+    merge_overrides = Checkbox(id="ansible_variable_merge_overrides")
+    merge_default = Checkbox(id="ansible_variable_merge_default")
+    avoid_duplicates = Checkbox(id="ansible_variable_avoid_duplicates")
     submit = Text('//input[@value="Submit"]')
     cancel = Text("//a[contains(., text()='Cancel']")
 
@@ -83,9 +83,9 @@ class NewAnsibleVariableView(BaseLoggedInView):
             # CustomParameter widget, see comment there for additional details
             new_row_bottom=True,
             column_widgets={
-                'Attribute type': MatcherActions(),
-                'Value': TextInput(locator=".//textarea[@id='new_lookup_value_value']"),
-                'Actions': Text(".//a"),
+                "Attribute type": MatcherActions(),
+                "Value": TextInput(locator=".//textarea[@id='new_lookup_value_value']"),
+                "Actions": Text(".//a"),
             },
         )
 
@@ -101,7 +101,9 @@ class NewAnsibleVariableView(BaseLoggedInView):
     @property
     def expanded(self):
         """Check whether this section is expanded"""
-        return 'active' in self.browser.get_attribute('class', self.expand_optional_input_validator)
+        return "active" in self.browser.get_attribute(
+            "class", self.expand_optional_input_validator
+        )
 
     def expand(self):
         """Expand the Optional Input Validator section"""
@@ -111,6 +113,6 @@ class NewAnsibleVariableView(BaseLoggedInView):
     @property
     def is_displayed(self):
         return (
-            self.breadcrumb.locations[0] == 'Ansible Variables'
-            and self.breadcrumb.read() == 'Create Ansible Variable'
+            self.breadcrumb.locations[0] == "Ansible Variables"
+            and self.breadcrumb.read() == "Create Ansible Variable"
         )

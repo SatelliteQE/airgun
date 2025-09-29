@@ -9,10 +9,10 @@ class SCAPTailoringFilesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Tailoring Files']")
     new = Text("//a[contains(@href, 'tailoring_files/new')]")
     table = Table(
-        './/table',
+        ".//table",
         column_widgets={
-            'Name': Text("./a[contains(@href, '/compliance/tailoring_files')]"),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            "Name": Text("./a[contains(@href, '/compliance/tailoring_files')]"),
+            "Actions": ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
 
@@ -28,26 +28,28 @@ class SCAPTailoringFileCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Tailoring files'
-            and self.breadcrumb.read() == 'Upload new Tailoring File'
+            and self.breadcrumb.locations[0] == "Tailoring files"
+            and self.breadcrumb.read() == "Upload new Tailoring File"
         )
 
     @View.nested
     class file_upload(SatTab):
-        TAB_NAME = 'File Upload'
-        name = TextInput(id='tailoring_file_name')
-        scap_file = FileInput(id='tailoring_file_scap_file')
+        TAB_NAME = "File Upload"
+        name = TextInput(id="tailoring_file_name")
+        scap_file = FileInput(id="tailoring_file_scap_file")
 
     @View.nested
     class locations(SatTab):
-        resources = MultiSelect(id='ms-tailoring_file_location_ids')
+        resources = MultiSelect(id="ms-tailoring_file_location_ids")
 
     @View.nested
     class organizations(SatTab):
-        resources = MultiSelect(id='ms-tailoring_file_organization_ids')
+        resources = MultiSelect(id="ms-tailoring_file_organization_ids")
 
 
 class SCAPTailoringFileEditView(SCAPTailoringFileCreateView):
@@ -55,16 +57,20 @@ class SCAPTailoringFileEditView(SCAPTailoringFileCreateView):
 
     @View.nested
     class file_upload(SatTab):
-        TAB_NAME = 'File Upload'
-        name = TextInput(id='tailoring_file_name')
-        uploaded_scap_file = Text(locator="//label[@for='scap_file']/following-sibling::div/b")
-        scap_file = FileInput(id='tailoring_file_scap_file')
+        TAB_NAME = "File Upload"
+        name = TextInput(id="tailoring_file_name")
+        uploaded_scap_file = Text(
+            locator="//label[@for='scap_file']/following-sibling::div/b"
+        )
+        scap_file = FileInput(id="tailoring_file_scap_file")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Tailoring files'
-            and self.breadcrumb.read() != 'Upload new Tailoring File'
+            and self.breadcrumb.locations[0] == "Tailoring files"
+            and self.breadcrumb.read() != "Upload new Tailoring File"
         )

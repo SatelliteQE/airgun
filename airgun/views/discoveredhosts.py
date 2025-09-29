@@ -34,10 +34,10 @@ class DiscoveredHostsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[contains(., 'Discovered Hosts')]")
     actions = ActionsDropdown("//div[@id='submit_multiple']")
     table = DiscoveredHostsViewTable(
-        './/table',
+        ".//table",
         column_widgets={
             0: Checkbox(locator=".//input[contains(@id, 'host_ids')]"),
-            'Name': Text("./a"),
+            "Name": Text("./a"),
         },
     )
     # This view has no welcome message
@@ -63,7 +63,7 @@ class DiscoveredHostDetailsTableColumn(TableColumn):
 
     def __locator__(self):
         return self.browser.element(
-            f'./*[self::th or self::td][{self.position + 1}]', parent=self.parent
+            f"./*[self::th or self::td][{self.position + 1}]", parent=self.parent
         )
 
 
@@ -100,7 +100,9 @@ class DiscoveredHostDetailsTable(SatTableWithoutHeaders):
     def read(self):
         """Transform rows to a dict {property_name: property_value ...}."""
         properties = super().read()
-        return {prop['column0']: prop['column1'] for prop in properties if prop['column1']}
+        return {
+            prop["column0"]: prop["column1"] for prop in properties if prop["column1"]
+        }
 
 
 class DiscoveredHostDetailsView(BaseLoggedInView):
@@ -108,7 +110,9 @@ class DiscoveredHostDetailsView(BaseLoggedInView):
 
     breadcrumb = BreadCrumb()
     back = Text(".//a[contains(@class, 'btn') and @data-id='aid_discovered_hosts']")
-    actions = ActionsDropdown("//div[contains(@class, 'btn-group')][a[@data-toggle='dropdown']]")
+    actions = ActionsDropdown(
+        "//div[contains(@class, 'btn-group')][a[@data-toggle='dropdown']]"
+    )
     delete = Text(".//a[contains(@data-confirm, 'Delete')]")
     expand_all = Text(".//a[@id='expand_all']")
     interfaces = SatTable("//div[@id='interfaces-panel']/table")
@@ -117,15 +121,19 @@ class DiscoveredHostDetailsView(BaseLoggedInView):
     hardware = DiscoveredHostDetailsTable("//div[@id='category-hardware']//table")
     network = DiscoveredHostDetailsTable("//div[@id='category-network']//table")
     software = DiscoveredHostDetailsTable("//div[@id='category-software']//table")
-    miscellaneous = DiscoveredHostDetailsTable("//div[@id='category-miscellaneous']//table")
+    miscellaneous = DiscoveredHostDetailsTable(
+        "//div[@id='category-miscellaneous']//table"
+    )
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Discovered hosts'
-            and self.breadcrumb.locations[1].startswith('Discovered host:')
+            and self.breadcrumb.locations[0] == "Discovered hosts"
+            and self.breadcrumb.locations[1].startswith("Discovered host:")
         )
 
 
@@ -156,7 +164,7 @@ class DiscoveredHostsAssignOrganizationDialog(DiscoveredHostsActionDialog):
         "//h4[normalize-space(.)='Assign Organization - "
         "The following hosts are about to be changed']"
     )
-    organization = Select(id='organization_id')
+    organization = Select(id="organization_id")
 
 
 class DiscoveredHostsAssignLocationDialog(DiscoveredHostsActionDialog):
@@ -165,19 +173,23 @@ class DiscoveredHostsAssignLocationDialog(DiscoveredHostsActionDialog):
     title = Text(
         "//h4[normalize-space(.)='Assign Location - The following hosts are about to be changed']"
     )
-    location = Select(id='location_id')
+    location = Select(id="location_id")
 
 
 class DiscoveredHostsRebootDialog(DiscoveredHostsActionDialog):
     """Discovered hosts Reboot dialog action view"""
 
-    title = Text("//h4[normalize-space(.)='Reboot - The following hosts are about to be changed']")
+    title = Text(
+        "//h4[normalize-space(.)='Reboot - The following hosts are about to be changed']"
+    )
 
 
 class DiscoveredHostsDeleteDialog(DiscoveredHostsActionDialog):
     """Discovered hosts Delete dialog action view"""
 
-    title = Text("//h4[normalize-space(.)='Delete - The following hosts are about to be changed']")
+    title = Text(
+        "//h4[normalize-space(.)='Delete - The following hosts are about to be changed']"
+    )
 
 
 class DiscoveredHostProvisionDialog(BaseLoggedInView):
@@ -185,9 +197,9 @@ class DiscoveredHostProvisionDialog(BaseLoggedInView):
 
     ROOT = ".//div[@class='modal-content']"
     title = Text(".//h4[normalize-space(.)='Select initial host properties']")
-    host_group = FilteredDropdown(id='host_hostgroup_id')
-    organization = FilteredDropdown(id='host_organization_id')
-    location = FilteredDropdown(id='host_location_id')
+    host_group = FilteredDropdown(id="host_hostgroup_id")
+    organization = FilteredDropdown(id="host_organization_id")
+    location = FilteredDropdown(id="host_location_id")
     cancel = Text(".//button[@data-dismiss='modal']")
     customize_create = Text(".//input[@type='submit'][not(@name='quick_submit')]")
     quick_create = Text(".//input[@type='submit'][@name='quick_submit']")
@@ -226,9 +238,11 @@ class DiscoveredHostEditProvisioningView(HostCreateView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Discovered hosts'
-            and self.breadcrumb.locations[1].startswith('Provision')
+            and self.breadcrumb.locations[0] == "Discovered hosts"
+            and self.breadcrumb.locations[1].startswith("Provision")
         )

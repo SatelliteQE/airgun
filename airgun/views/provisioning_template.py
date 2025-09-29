@@ -29,11 +29,11 @@ class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixinPF4):
     new = Button("Create Template")
     build_pxe_default = Button("Build PXE Default")
     table = Table(
-        './/table',
+        ".//table",
         column_widgets={
-            'Name': Text('.//a'),
-            'Locked': Text('.'),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            "Name": Text(".//a"),
+            "Locked": Text("."),
+            "Actions": ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
 
@@ -48,19 +48,21 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Provisioning Templates'
-            and self.breadcrumb.read().startswith('Edit ')
+            and self.breadcrumb.locations[0] == "Provisioning Templates"
+            and self.breadcrumb.read().startswith("Edit ")
         )
 
     @View.nested
     class template(SatTab):
-        name = TextInput(id='provisioning_template_name')
-        default = Checkbox(id='provisioning_template_default')
+        name = TextInput(id="provisioning_template_name")
+        default = Checkbox(id="provisioning_template_default")
         template_editor = View.nested(TemplateEditor)
-        audit = TextInput(id='provisioning_template_audit_comment')
+        audit = TextInput(id="provisioning_template_audit_comment")
 
     @View.nested
     class inputs(RemovableWidgetsItemsListView, SatTab):
@@ -70,12 +72,12 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
 
     @View.nested
     class type(SatTab):
-        snippet = Checkbox(id='provisioning_template_snippet')
-        template_type = FilteredDropdown(id='provisioning_template_template_kind')
+        snippet = Checkbox(id="provisioning_template_snippet")
+        template_type = FilteredDropdown(id="provisioning_template_template_kind")
 
     @View.nested
     class association(SatTab):
-        applicable_os = MultiSelect(id='ms-provisioning_template_operatingsystem_ids')
+        applicable_os = MultiSelect(id="ms-provisioning_template_operatingsystem_ids")
 
         @View.nested
         class valid_hostgroups(RemovableWidgetsItemsListView):
@@ -86,19 +88,21 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
 
     @View.nested
     class locations(SatTab):
-        resources = MultiSelect(id='ms-provisioning_template_location_ids')
+        resources = MultiSelect(id="ms-provisioning_template_location_ids")
 
     @View.nested
     class organizations(SatTab):
-        resources = MultiSelect(id='ms-provisioning_template_organization_ids')
+        resources = MultiSelect(id="ms-provisioning_template_organization_ids")
 
 
 class ProvisioningTemplateCreateView(ProvisioningTemplateDetailsView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Provisioning Templates'
-            and self.breadcrumb.read() == 'Create Template'
+            and self.breadcrumb.locations[0] == "Provisioning Templates"
+            and self.breadcrumb.read() == "Create Template"
         )

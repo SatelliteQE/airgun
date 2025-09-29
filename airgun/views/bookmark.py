@@ -10,8 +10,8 @@ class BookmarksView(BaseLoggedInView, SearchableViewMixinPF4):
     table = SatTable(
         ".//table",
         column_widgets={
-            'Name': Text('./a'),
-            'Actions': Text("./span/a"),
+            "Name": Text("./a"),
+            "Actions": Text("./span/a"),
         },
     )
 
@@ -22,17 +22,19 @@ class BookmarksView(BaseLoggedInView, SearchableViewMixinPF4):
 
 class BookmarkEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    name = TextInput(id='bookmark_name')
-    query = TextInput(id='bookmark_query')
-    public = Checkbox(id='bookmark_public')
+    name = TextInput(id="bookmark_name")
+    query = TextInput(id="bookmark_query")
+    public = Checkbox(id="bookmark_public")
     submit = Text(".//input[@type='submit']")
     cancel = Text(".//a[normalize-space(.)='Cancel']")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Bookmarks'
-            and self.breadcrumb.read().startswith('Edit')
+            and self.breadcrumb.locations[0] == "Bookmarks"
+            and self.breadcrumb.read().startswith("Edit")
         )

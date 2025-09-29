@@ -18,7 +18,7 @@ from airgun.views.task import TaskDetailsView
 
 
 class ProductEntity(BaseEntity):
-    endpoint_path = '/products'
+    endpoint_path = "/products"
 
     def create(self, values, sync_plan_values=None):
         """Creates new product from UI.
@@ -26,7 +26,7 @@ class ProductEntity(BaseEntity):
         :param sync_plan_values: dict with values for creating sync_plan from
          product create page
         """
-        view = self.navigate_to(self, 'New')
+        view = self.navigate_to(self, "New")
         view.fill(values)
         if sync_plan_values:
             view.create_sync_plan.click()
@@ -39,25 +39,25 @@ class ProductEntity(BaseEntity):
 
     def delete(self, entity_name):
         """Deletes product from UI"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.actions.fill('Remove Product')
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
+        view.actions.fill("Remove Product")
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
     def search(self, value):
         """Search for specific product"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(value)
 
     def read(self, entity_name, widget_names=None):
         """Read all values for already created product"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
         """Updates product from UI"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         filled_values = view.fill(values)
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -65,7 +65,7 @@ class ProductEntity(BaseEntity):
 
     def discover_repo(self, values):
         """Repo discovery procedure"""
-        view = self.navigate_to(self, 'Discovery')
+        view = self.navigate_to(self, "Discovery")
         view.fill(values)
         view.create_repo.run_procedure.click()
         view.create_repo.wait_repo_created()
@@ -74,8 +74,8 @@ class ProductEntity(BaseEntity):
 
     def synchronize(self, entity_name):
         """Synchronize product"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.actions.fill('Sync Now')
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
+        view.actions.fill("Sync Now")
         view = ProductTaskDetailsView(view.browser)
         view.progressbar.wait_for_result()
         return view.read()
@@ -90,12 +90,12 @@ class ProductEntity(BaseEntity):
         """
         view = self.navigate_to(
             self,
-            'Select Action',
-            action_name='Manage HTTP proxy',
+            "Select Action",
+            action_name="Manage HTTP proxy",
             entities_list=entities_list,
         )
-        if values['http_proxy_policy'] == "Global Default":
-            values['http_proxy_policy'] = view.http_proxy_policy.all_options[0][0]
+        if values["http_proxy_policy"] == "Global Default":
+            values["http_proxy_policy"] = view.http_proxy_policy.all_options[0][0]
         view.fill(values)
         view.update.click()
         view.flash.assert_no_error()
@@ -111,8 +111,8 @@ class ProductEntity(BaseEntity):
 
         view = self.navigate_to(
             self,
-            'Select Action',
-            action_name='Advanced Sync',
+            "Select Action",
+            action_name="Advanced Sync",
             entities_list=entities_list,
         )
         if sync_type == "optimized":
@@ -132,8 +132,8 @@ class ProductEntity(BaseEntity):
         """
         view = self.navigate_to(
             self,
-            'Select Action',
-            action_name='Verify Content Checksum',
+            "Select Action",
+            action_name="Verify Content Checksum",
             entities_list=entities_list,
         )
         view.task_alert.click()
@@ -142,7 +142,7 @@ class ProductEntity(BaseEntity):
         return view.read()
 
 
-@navigator.register(ProductEntity, 'All')
+@navigator.register(ProductEntity, "All")
 class ShowAllProducts(NavigateStep):
     """Navigate to the page that contains all Products"""
 
@@ -150,22 +150,22 @@ class ShowAllProducts(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Products')
+        self.view.menu.select("Content", "Products")
 
 
-@navigator.register(ProductEntity, 'New')
+@navigator.register(ProductEntity, "New")
 class AddNewProduct(NavigateStep):
     """Navigate to Create New Product page"""
 
     VIEW = ProductCreateView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
         self.parent.new.click()
 
 
-@navigator.register(ProductEntity, 'Edit')
+@navigator.register(ProductEntity, "Edit")
 class EditProduct(NavigateStep):
     """Navigate to Edit Product page.
 
@@ -176,28 +176,28 @@ class EditProduct(NavigateStep):
     VIEW = ProductEditView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+        self.parent.table.row(name=entity_name)["Name"].widget.click()
 
 
-@navigator.register(ProductEntity, 'Discovery')
+@navigator.register(ProductEntity, "Discovery")
 class ProductRepoDiscovery(NavigateStep):
     """Navigate to Repo Discovery page for Product entity."""
 
     VIEW = ProductRepoDiscoveryView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
         self.parent.repo_discovery.click()
 
 
-@navigator.register(ProductEntity, 'Select Action')
+@navigator.register(ProductEntity, "Select Action")
 class ProductsSelectAction(NavigateStep):
     """Navigate to Action page by selecting checkboxes for necessary Products and
      then clicking on the action name button in 'Select Action' dropdown.
@@ -208,22 +208,22 @@ class ProductsSelectAction(NavigateStep):
     """
 
     ACTIONS_VIEWS = {
-        'Manage HTTP proxy': ProductManageHttpProxy,
-        'Advanced Sync': ProductAdvancedSync,
-        'Verify Content Checksum': ProductVerifyContentChecksum,
+        "Manage HTTP proxy": ProductManageHttpProxy,
+        "Advanced Sync": ProductAdvancedSync,
+        "Verify Content Checksum": ProductVerifyContentChecksum,
     }
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        action_name = kwargs.get('action_name')
+        action_name = kwargs.get("action_name")
         self.VIEW = self.ACTIONS_VIEWS.get(action_name)
         if not self.VIEW:
             raise ValueError(
                 f'Please provide a valid action name. action_name: "{action_name}" not found.'
             )
-        entities_list = kwargs.get('entities_list')
+        entities_list = kwargs.get("entities_list")
         for entity in entities_list:
             self.parent.table.row(name=entity)[0].click()
             if not self.parent.table.row(name=entity)[0].read():

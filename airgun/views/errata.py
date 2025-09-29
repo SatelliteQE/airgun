@@ -9,16 +9,18 @@ from airgun.widgets import ItemsList, ReadOnlyEntry, SatSelect, SatTable, Search
 class ErratumView(BaseLoggedInView):
     title = Text("//h1[contains(., 'Errata')]")
     table = SatTable(
-        locator='.//table',
+        locator=".//table",
         column_widgets={
             0: Checkbox(locator=".//input[@type='checkbox']"),
-            'Errata ID': Text("./a"),
+            "Errata ID": Text("./a"),
         },
     )
     repo_filter = SatSelect(".//select[@ng-model='repository']")
     applicable_filter = Checkbox(locator=".//input[@ng-model='showApplicable']")
     installable_filter = Checkbox(locator=".//input[@ng-model='showInstallable']")
-    apply_errata = Text(".//button[contains(@class, 'btn-primary')][@ng-click='goToNextStep()']")
+    apply_errata = Text(
+        ".//button[contains(@class, 'btn-primary')][@ng-click='goToNextStep()']"
+    )
     searchbox = Search()
 
     def search(self, query, applicable=True, installable=False, repo=None):
@@ -40,7 +42,7 @@ class ErratumView(BaseLoggedInView):
             self.repo_filter.fill(repo)
 
         if ERRATA_REGEXP.search(query):
-            query = f'id = {query}'
+            query = f"id = {query}"
         self.searchbox.search(query)
 
         return self.table.read()
@@ -55,13 +57,13 @@ class ErrataDetailsView(BaseLoggedInView):
 
     @View.nested
     class details(SatTab):
-        advisory = ReadOnlyEntry(name='Advisory')
-        cves = ReadOnlyEntry(name='CVEs')
-        type = ReadOnlyEntry(name='Type')
-        severity = ReadOnlyEntry(name='Severity')
-        issued = ReadOnlyEntry(name='Issued')
-        last_updated_on = ReadOnlyEntry(name='Last Updated On')
-        reboot_suggested = ReadOnlyEntry(name='Reboot Suggested?')
+        advisory = ReadOnlyEntry(name="Advisory")
+        cves = ReadOnlyEntry(name="CVEs")
+        type = ReadOnlyEntry(name="Type")
+        severity = ReadOnlyEntry(name="Severity")
+        issued = ReadOnlyEntry(name="Issued")
+        last_updated_on = ReadOnlyEntry(name="Last Updated On")
+        reboot_suggested = ReadOnlyEntry(name="Reboot Suggested?")
         topic = Text(
             ".//h3[contains(., 'Topic')]"
             "/following-sibling::p[contains(@class, 'info-paragraph')][1]"
@@ -77,16 +79,18 @@ class ErrataDetailsView(BaseLoggedInView):
 
     @View.nested
     class content_hosts(SatTab):
-        TAB_NAME = 'Content Hosts'
+        TAB_NAME = "Content Hosts"
         environment_filter = SatSelect(".//select[@ng-model='environmentFilter']")
         searchbox = Search()
-        select_all = Checkbox(locator=".//input[@type='checkbox'][@ng-change='allSelected()']")
+        select_all = Checkbox(
+            locator=".//input[@type='checkbox'][@ng-change='allSelected()']"
+        )
         apply = Text(".//button[@ng-click='goToNextStep()']")
         table = SatTable(
             locator=".//table",
             column_widgets={
                 0: Checkbox(locator="./input[@type='checkbox']"),
-                'Name': Text("./a"),
+                "Name": Text("./a"),
             },
         )
 
@@ -111,8 +115,8 @@ class ErrataDetailsView(BaseLoggedInView):
         table = SatTable(
             locator=".//table",
             column_widgets={
-                'Name': Text("./a"),
-                'Product': Text("./a"),
+                "Name": Text("./a"),
+                "Product": Text("./a"),
             },
         )
 
@@ -143,10 +147,12 @@ class ErrataDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Errata'
+            and self.breadcrumb.locations[0] == "Errata"
             and len(self.breadcrumb.locations) > 1
         )
 
@@ -160,7 +166,7 @@ class ApplyErrataView(BaseLoggedInView):
         locator=".//table",
         column_widgets={
             0: Checkbox(locator="./input[@type='checkbox']"),
-            'Name': Text("./a"),
+            "Name": Text("./a"),
         },
     )
 
@@ -179,11 +185,13 @@ class ApplyErrataView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Errata'
-            and self.breadcrumb.read() == 'Select Content Host(s)'
+            and self.breadcrumb.locations[0] == "Errata"
+            and self.breadcrumb.read() == "Select Content Host(s)"
         )
 
 
@@ -197,9 +205,11 @@ class ErrataTaskDetailsView(TaskDetailsView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Errata'
+            and self.breadcrumb.locations[0] == "Errata"
             and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
         )

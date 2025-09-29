@@ -13,33 +13,33 @@ from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationSt
 
 
 class ContentHostEntity(BaseEntity):
-    endpoint_path = '/content_hosts'
+    endpoint_path = "/content_hosts"
 
     def delete(self, entity_name):
         """Delete existing content host"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.search(entity_name)
         view.table.row(name=entity_name)[0].widget.fill(True)
-        view.actions.fill('Delete Hosts')
+        view.actions.fill("Delete Hosts")
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
     def search(self, value):
         """Search for specific content host"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(value)
 
     def read_all(self, widget_names=None):
         """Read all values from content host title page.
         Optionally, read only the widgets in widget_names.
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.read(widget_names=widget_names)
 
     def read(self, entity_name, widget_names=None):
         """Read content host details, optionally read only the widgets in widget_names."""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         return view.read(widget_names=widget_names)
@@ -48,7 +48,7 @@ class ContentHostEntity(BaseEntity):
         """Read host values from Host Details page, optionally only the widgets in widget_names
         will be read.
         """
-        view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
+        view = self.navigate_to(self, "LegacyDetails", entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def execute_package_action(self, entity_name, action_type, value):
@@ -64,7 +64,7 @@ class ContentHostEntity(BaseEntity):
 
         :return: Returns a dict containing task status details
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.packages_actions.action_type.fill(action_type)
         view.packages_actions.name.fill(value)
         view.packages_actions.perform.click()
@@ -74,10 +74,10 @@ class ContentHostEntity(BaseEntity):
 
     def bulk_set_syspurpose(self, hosts, values):
         """Set system purpose for multiple hosts"""
-        view = self.navigate_to(self, 'All')
-        view.search(' or '.join(hosts))
+        view = self.navigate_to(self, "All")
+        view.search(" or ".join(hosts))
         view.select_all.fill(True)
-        view.actions.fill('Manage System Purpose')
+        view.actions.fill("Manage System Purpose")
         view = SyspurposeBulkActionView(view.browser)
         view.fill(values)
         self.browser.click(view.assign)
@@ -106,13 +106,15 @@ class ContentHostEntity(BaseEntity):
         """
         if customize_values is None:
             customize_values = {}
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.wait_displayed()
-        view.module_streams.search(f'name = {module_name} and stream = {stream_version}')
-        action_type = {'is_customize': customize, 'action': action_type}
-        view.module_streams.table.row(name=module_name, stream=stream_version)['Actions'].fill(
-            action_type
+        view.module_streams.search(
+            f"name = {module_name} and stream = {stream_version}"
         )
+        action_type = {"is_customize": customize, "action": action_type}
+        view.module_streams.table.row(name=module_name, stream=stream_version)[
+            "Actions"
+        ].fill(action_type)
         if customize:
             view = JobInvocationCreateView(view.browser)
             view.fill(customize_values)
@@ -123,22 +125,24 @@ class ContentHostEntity(BaseEntity):
 
     def search_package(self, entity_name, package_name):
         """Search for specific package installed in content host"""
-        view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
+        view = self.navigate_to(self, "LegacyDetails", entity_name=entity_name)
         view.packages_installed.wait_displayed()
         view.packages_installed.search(package_name)
         return view.packages_installed.table.read()
 
-    def search_module_stream(self, entity_name, module_name, stream_version=None, status='All'):
+    def search_module_stream(
+        self, entity_name, module_name, stream_version=None, status="All"
+    ):
         """Search for specific package installed in content host"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         if stream_version is None:
             query = module_name
         else:
-            query = f'name = {module_name} and stream = {stream_version}'
+            query = f"name = {module_name} and stream = {stream_version}"
         view.module_streams.search(query, status)
         return view.module_streams.table.read()
 
-    def install_errata(self, entity_name, errata_id, install_via='rex'):
+    def install_errata(self, entity_name, errata_id, install_via="rex"):
         """Install errata on a content host
 
         :param name: content host name to apply errata on
@@ -148,7 +152,7 @@ class ContentHostEntity(BaseEntity):
 
         :return: Returns a dict containing task status details
         """
-        view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
+        view = self.navigate_to(self, "LegacyDetails", entity_name=entity_name)
         view.errata.wait_displayed()
         if errata_id == "All":
             view.errata.select_all.fill(True)
@@ -156,8 +160,8 @@ class ContentHostEntity(BaseEntity):
             view.errata.search(errata_id)
             view.errata.table.row(id=errata_id)[0].widget.fill(True)
         install_via_dict = {
-            'rex': 'via remote execution',
-            'rex_customize': 'via remote execution - customize first',
+            "rex": "via remote execution",
+            "rex_customize": "via remote execution - customize first",
         }
         view.errata.apply_selected.fill(install_via_dict[install_via])
         view = JobInvocationStatusView(view.browser)
@@ -172,7 +176,7 @@ class ContentHostEntity(BaseEntity):
         :param str errata_id: errata id or title, e.g. 'RHEA-2012:0055'
         :param str optional environment: lifecycle environment to filter by.
         """
-        view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
+        view = self.navigate_to(self, "LegacyDetails", entity_name=entity_name)
         view.wait_displayed()
         view.errata.search(errata_id, lce=environment)
         view.errata.table.wait_displayed()
@@ -188,7 +192,7 @@ class ContentHostEntity(BaseEntity):
         """
         view = self.navigate_to(
             self,
-            'Errata Details',
+            "Errata Details",
             entity_name=entity_name,
             errata_id=errata_id,
             environment=environment,
@@ -200,7 +204,7 @@ class ContentHostEntity(BaseEntity):
 
         :return str: path to saved file
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.export.click()
         return self.browser.save_downloaded_file()
 
@@ -210,20 +214,20 @@ class ContentHostEntity(BaseEntity):
         :param str entity_name: the content hosts name.
         :param str subscription_name: The subscription name to add to content host.
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.subscriptions.resources.add(subscription_name)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
     def update(self, entity_name, values):
         """Update content host values."""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.fill(values)
         view.flash.assert_no_error()
         view.flash.dismiss()
 
 
-@navigator.register(ContentHostEntity, 'All')
+@navigator.register(ContentHostEntity, "All")
 class ShowAllContentHosts(NavigateStep):
     """Navigate to All Content Hosts screen."""
 
@@ -231,10 +235,10 @@ class ShowAllContentHosts(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Content Hosts')
+        self.view.menu.select("Hosts", "Content Hosts")
 
 
-@navigator.register(ContentHostEntity, 'Edit')
+@navigator.register(ContentHostEntity, "Edit")
 class EditContentHost(NavigateStep):
     """Navigate to Content Host details screen.
 
@@ -245,15 +249,15 @@ class EditContentHost(NavigateStep):
     VIEW = ContentHostDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+        self.parent.table.row(name=entity_name)["Name"].widget.click()
 
 
-@navigator.register(ContentHostEntity, 'Errata Details')
+@navigator.register(ContentHostEntity, "Errata Details")
 class NavigateToErrataDetails(NavigateStep):
     """Navigate to Errata details screen.
 
@@ -265,16 +269,16 @@ class NavigateToErrataDetails(NavigateStep):
     VIEW = ErrataDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
+        return self.navigate_to(self.obj, "Edit", entity_name=kwargs.get("entity_name"))
 
     def step(self, *args, **kwargs):
-        errata_id = kwargs.get('errata_id')
-        environment = kwargs.get('environment')
+        errata_id = kwargs.get("errata_id")
+        environment = kwargs.get("environment")
         self.parent.errata.search(errata_id, lce=environment)
-        self.parent.errata.table.row(id=errata_id)['Id'].widget.click()
+        self.parent.errata.table.row(id=errata_id)["Id"].widget.click()
 
 
-@navigator.register(ContentHostEntity, 'LegacyDetails')
+@navigator.register(ContentHostEntity, "LegacyDetails")
 class ShowContentHostDetails(NavigateStep):
     """Navigate to Host Details page by clicking on necessary host name in the
     table
@@ -286,15 +290,15 @@ class ShowContentHostDetails(NavigateStep):
     VIEW = ContentHostDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+        self.parent.table.row(name=entity_name)["Name"].widget.click()
         host_view = NewHostDetailsView(self.parent.browser)
         host_view.wait_displayed()
         host_view.dropdown.wait_displayed()
-        host_view.dropdown.item_select('Legacy UI')
+        host_view.dropdown.item_select("Legacy UI")
         host_view = HostDetailsView(self.parent.browser)
         host_view.content_details.click()

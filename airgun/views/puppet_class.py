@@ -10,10 +10,10 @@ class PuppetClassesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Puppet Classes']")
     import_environments = Text("//a[contains(@href, '/import_environments')]")
     table = SatTable(
-        './/table',
+        ".//table",
         column_widgets={
-            'Name': Text('./a'),
-            'Actions': Text('.//a[@data-method="delete"]'),
+            "Name": Text("./a"),
+            "Actions": Text('.//a[@data-method="delete"]'),
         },
     )
 
@@ -28,27 +28,29 @@ class PuppetClassDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Puppetclasses'
-            and self.breadcrumb.read().startswith('Edit Puppet Class ')
+            and self.breadcrumb.locations[0] == "Puppetclasses"
+            and self.breadcrumb.read().startswith("Edit Puppet Class ")
         )
 
     @View.nested
     class puppet_class(SatTab):
-        TAB_NAME = 'Puppet Class'
+        TAB_NAME = "Puppet Class"
         # Name field is disabled by default
-        name = TextInput(id='puppetclass_name')
+        name = TextInput(id="puppetclass_name")
         # Puppet environment field is disabled by default
-        puppet_environment = TextInput(id='puppetclass_environments')
-        host_group = MultiSelect(id='ms-puppetclass_hostgroup_ids')
+        puppet_environment = TextInput(id="puppetclass_environments")
+        host_group = MultiSelect(id="ms-puppetclass_hostgroup_ids")
 
     @View.nested
     class smart_class_parameter(SatTab):
-        TAB_NAME = 'Smart Class Parameter'
+        TAB_NAME = "Smart Class Parameter"
         filter = TextInput(locator="//input[@placeholder='Filter by name']")
-        environment_filter = FilteredDropdown(id='environment_filter')
+        environment_filter = FilteredDropdown(id="environment_filter")
         parameter_list = ItemsList(
             "//div[@id='smart_class_param']//ul[contains(@class, 'smart-var-tabs')]"
         )

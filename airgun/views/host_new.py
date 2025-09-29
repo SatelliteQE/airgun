@@ -56,9 +56,9 @@ class MenuToggleButtonMenu(PF5Dropdown):
     and some as a MenuToggle & Dropdown combo (e.g., host Packages, Errata).
     """
 
-    ROOT = f'{PF5Dropdown.BUTTON_LOCATOR}/..'
+    ROOT = f"{PF5Dropdown.BUTTON_LOCATOR}/.."
     DEFAULT_LOCATOR = (
-        f'{PF5Dropdown.BUTTON_LOCATOR}'
+        f"{PF5Dropdown.BUTTON_LOCATOR}"
         '[@aria-label="Kebab toggle" or contains(@aria-label, "kebab-dropdown")'
     )
 
@@ -70,12 +70,12 @@ class RemediationView(View):
     remediate = Button("Remediate")
     cancel = Button("Cancel")
     table = PatternflyTable(
-        component_id='OUIA-Generated-Table-4',
+        component_id="OUIA-Generated-Table-4",
         column_widgets={
-            'Hostname': Text('.//td[1]'),
-            'Recommendation': Text('.//td[2]'),
-            'Resolution': Text('.//td[3]'),
-            'Reboot Required': Text('.//td[4]'),
+            "Hostname": Text(".//td[1]"),
+            "Recommendation": Text(".//td[2]"),
+            "Resolution": Text(".//td[3]"),
+            "Reboot Required": Text(".//td[4]"),
         },
     )
 
@@ -93,7 +93,9 @@ class Card(View):
 class DropdownWithDescription(PF5Dropdown):
     """Dropdown with description below items"""
 
-    ITEM_LOCATOR = ".//*[contains(@class, 'pf-v5-c-dropdown__menu-item') and contains(text(), {})]"
+    ITEM_LOCATOR = (
+        ".//*[contains(@class, 'pf-v5-c-dropdown__menu-item') and contains(text(), {})]"
+    )
 
 
 class HostDetailsCard(Widget):
@@ -107,18 +109,18 @@ class HostDetailsCard(Widget):
         Values are either in span elements or in div elements
         """
         items = {}
-        labels = self.browser.elements(f'{self.parent.ROOT}{self.LABELS}')
-        values = self.browser.elements(f'{self.parent.ROOT}{self.VALUES}')
+        labels = self.browser.elements(f"{self.parent.ROOT}{self.LABELS}")
+        values = self.browser.elements(f"{self.parent.ROOT}{self.VALUES}")
         # the length of elements should be always same
         if len(values) != len(labels):
             raise AttributeError(
-                'Each label should have one value, therefore length should be equal. '
-                f'But length of labels: {len(labels)} is not equal to length of {len(values)}, '
-                'Please double check xpaths.'
+                "Each label should have one value, therefore length should be equal. "
+                f"But length of labels: {len(labels)} is not equal to length of {len(values)}, "
+                "Please double check xpaths."
             )
         for key, value in zip(labels, values):
             _value = self.browser.text(value)
-            _key = self.browser.text(key).replace(' ', '_').lower()
+            _key = self.browser.text(key).replace(" ", "_").lower()
             items[_key] = _value
         return items
 
@@ -141,7 +143,7 @@ class HostsView(BaseLoggedInView):
     """
 
     title = Text('//h1[normalize-space(.)="Hosts"]')
-    actions = PF5OUIADropdown(component_id='legacy-ui-kebab')
+    actions = PF5OUIADropdown(component_id="legacy-ui-kebab")
 
     @property
     def is_displayed(self):
@@ -149,17 +151,23 @@ class HostsView(BaseLoggedInView):
 
 
 class NewHostDetailsView(BaseLoggedInView):
-    breadcrumb = BreadCrumb('breadcrumbs-list')
+    breadcrumb = BreadCrumb("breadcrumbs-list")
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Hosts'
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
+        return breadcrumb_loaded and self.breadcrumb.locations[0] == "Hosts"
 
-    edit = PF5OUIAButton('host-edit-button')
+    edit = PF5OUIAButton("host-edit-button")
     dropdown = PF5Dropdown(locator='//button[@id="hostdetails-kebab"]/..')
-    schedule_job = Pf4ActionsDropdown(locator='.//div[div/button[@aria-label="Select"]]')
-    run_job = ActionsDropdown('//button[@data-ouia-component-id="schedule-a-job-dropdown-toggle"]')
+    schedule_job = Pf4ActionsDropdown(
+        locator='.//div[div/button[@aria-label="Select"]]'
+    )
+    run_job = ActionsDropdown(
+        '//button[@data-ouia-component-id="schedule-a-job-dropdown-toggle"]'
+    )
     select = Text(
         '//ul[@class="pf-v5-c-dropdown__menu pf-m-align-right"]/li/a/div[normalize-space(text())="Run Ansible roles"]'
     )
@@ -173,7 +181,7 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@data-ouia-component-id="details-card"]'
             edit = Text('.//div[@class="pf-v5-c-description-list__group"]/dd//div[2]')
             details = HostDetailsCard()
-            power_operations = PF5OUIAButton('power-status-dropdown-toggle')
+            power_operations = PF5OUIAButton("power-status-dropdown-toggle")
 
         @View.nested
         class host_status(Card):
@@ -191,11 +199,15 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@data-ouia-component-id="audit-card"]'
 
             all_audits = Text('.//a[normalize-space(.)="All audits"]')
-            table = SatTableWithoutHeaders(locator='.//table[@aria-label="audits table"]')
+            table = SatTableWithoutHeaders(
+                locator='.//table[@aria-label="audits table"]'
+            )
 
         @View.nested
         class recent_communication(Card):
-            ROOT = './/div[@data-ouia-component-id="card-template-Recent communication"]'
+            ROOT = (
+                './/div[@data-ouia-component-id="card-template-Recent communication"]'
+            )
 
             last_checkin_value = Text('.//div[@class="pf-v5-c-description-list__text"]')
 
@@ -203,7 +215,9 @@ class NewHostDetailsView(BaseLoggedInView):
         class errata(Card):
             ROOT = './/article[.//div[text()="Errata"]]'
 
-            enable_repository_sets = Text('.//a[normalize-space(.)="Enable repository sets"]')
+            enable_repository_sets = Text(
+                './/a[normalize-space(.)="Enable repository sets"]'
+            )
 
         @View.nested
         class content_view_details(Card):
@@ -233,9 +247,11 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class host_collections(Card):
             ROOT = './/div[@data-ouia-component-id="host-collections-card"]'
-            kebab_menu = Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]')
-            no_host_collections = Text('.//h2')
-            add_to_host_collection = PF5OUIAButton('add-to-a-host-collection-button')
+            kebab_menu = Dropdown(
+                locator='.//div[contains(@class, "pf-v5-c-dropdown")]'
+            )
+            no_host_collections = Text(".//h2")
+            add_to_host_collection = PF5OUIAButton("add-to-a-host-collection-button")
 
             assigned_host_collections = HostColectionsList()
 
@@ -245,13 +261,19 @@ class NewHostDetailsView(BaseLoggedInView):
             actions = Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]')
 
             class finished(Tab):
-                table = SatTableWithoutHeaders(locator='.//table[@aria-label="recent-jobs-table"]')
+                table = SatTableWithoutHeaders(
+                    locator='.//table[@aria-label="recent-jobs-table"]'
+                )
 
             class running(Tab):
-                table = SatTableWithoutHeaders(locator='.//table[@aria-label="recent-jobs-table"]')
+                table = SatTableWithoutHeaders(
+                    locator='.//table[@aria-label="recent-jobs-table"]'
+                )
 
             class scheduled(Tab):
-                table = SatTableWithoutHeaders(locator='.//table[@aria-label="recent-jobs-table"]')
+                table = SatTableWithoutHeaders(
+                    locator='.//table[@aria-label="recent-jobs-table"]'
+                )
 
         @View.nested
         class system_purpose(Card):
@@ -266,7 +288,9 @@ class NewHostDetailsView(BaseLoggedInView):
     class details(PF5Tab):
         ROOT = './/div[contains(@class, "host-details-tab-item")]'
 
-        card_collapse_switch = Text('.//button[contains(@data-ouia-component-id, "expand-button")]')
+        card_collapse_switch = Text(
+            './/button[contains(@data-ouia-component-id, "expand-button")]'
+        )
 
         @View.nested
         class system_properties(Card):
@@ -311,9 +335,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class provisioning_templates(Card):
-            ROOT = (
-                './/div[contains(@data-ouia-component-id, "card-template-Provisioning templates")]'
-            )
+            ROOT = './/div[contains(@data-ouia-component-id, "card-template-Provisioning templates")]'
 
             templates_table = SatTableWithoutHeaders(
                 locator='.//table[@aria-label="templates table"]'
@@ -323,13 +345,13 @@ class NewHostDetailsView(BaseLoggedInView):
         class installed_products(Card):
             ROOT = './/div[contains(@data-ouia-component-id, "card-template-Installed products")]'
 
-            installed_products_list = ItemsList(locator='.//ul[contains(@class, "pf-v5-c-list")]')
+            installed_products_list = ItemsList(
+                locator='.//ul[contains(@class, "pf-v5-c-list")]'
+            )
 
         @View.nested
         class networking_interfaces(Card):
-            ROOT = (
-                './/div[contains(@data-ouia-component-id, "card-template-Networking interfaces")]'
-            )
+            ROOT = './/div[contains(@data-ouia-component-id, "card-template-Networking interfaces")]'
 
             networking_interfaces_accordion = Accordion(
                 locator='.//div[contains(@class, "pf-v5-c-card__expandable-content")]'
@@ -339,12 +361,12 @@ class NewHostDetailsView(BaseLoggedInView):
                 '//div[.//dt[normalize-space(.)="{}"]]//div'
             )
             networking_interfaces_dict = {
-                'fqdn': Text(locator_templ.format('FQDN')),
-                'ipv4': Text(locator_templ.format('IPv4')),
-                'ipv6': Text(locator_templ.format('IPv6')),
-                'mac': Text(locator_templ.format('MAC')),
-                'subnet': Text(locator_templ.format('Subnet')),
-                'mtu': Text(locator_templ.format('MTU')),
+                "fqdn": Text(locator_templ.format("FQDN")),
+                "ipv4": Text(locator_templ.format("IPv4")),
+                "ipv6": Text(locator_templ.format("IPv6")),
+                "mac": Text(locator_templ.format("MAC")),
+                "subnet": Text(locator_templ.format("Subnet")),
+                "mtu": Text(locator_templ.format("MTU")),
             }
             edit_interfaces = Text('.//a[contains(@href, "/hosts/")]')
 
@@ -361,16 +383,20 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class bootc(Card):
             # Will file issue for this to be fixed
-            ROOT = './/div[contains(@data-ouia-component-id, "card-template-image-mode")]'
+            ROOT = (
+                './/div[contains(@data-ouia-component-id, "card-template-image-mode")]'
+            )
 
-            remote_execution_link = Text(".//a[normalize-space(.)='Modify via remote execution']")
+            remote_execution_link = Text(
+                ".//a[normalize-space(.)='Modify via remote execution']"
+            )
             details = HostDetailsCard()
 
     @View.nested
     class content(PF5Tab):
         # TODO Setting ROOT is just a workaround because of BZ 2119076,
         # once this gets fixed we should use the parametrized locator from Tab class
-        ROOT = './/div'
+        ROOT = ".//div"
         transient_install_alert = PF5OUIAAlert("image-mode-alert-info")
 
         @View.nested
@@ -382,8 +408,12 @@ class NewHostDetailsView(BaseLoggedInView):
             searchbar = SearchInput(
                 locator='.//input[contains(@class, "pf-v5-c-text-input-group__text-input")]'
             )
-            status_filter = Dropdown(locator='.//div[@aria-label="select Status container"]/div')
-            upgrade = Pf4ActionsDropdown(locator='.//div[div/button[normalize-space(.)="Upgrade"]]')
+            status_filter = Dropdown(
+                locator='.//div[@aria-label="select Status container"]/div'
+            )
+            upgrade = Pf4ActionsDropdown(
+                locator='.//div[div/button[normalize-space(.)="Upgrade"]]'
+            )
             dropdown = PF5Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
             no_matching_packages = Text(
                 './/h2[contains(@class, "pf-v5-c-empty-state__title-text")]'
@@ -393,10 +423,10 @@ class NewHostDetailsView(BaseLoggedInView):
                 component_id="host-packages-table",
                 column_widgets={
                     0: Checkbox(locator='.//input[@type="checkbox"]'),
-                    'Package': Text('./parent::td'),
-                    'Status': Text('./span'),
-                    'Installed version': Text('./parent::td'),
-                    'Upgradable to': Text('./span'),
+                    "Package": Text("./parent::td"),
+                    "Status": Text("./span"),
+                    "Installed version": Text("./parent::td"),
+                    "Upgradable to": Text("./span"),
                     5: MenuToggleButtonMenu(),
                 },
             )
@@ -408,9 +438,11 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@id="errata-tab"]'
 
             select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-            searchbar = SearchInput(locator='.//input[contains(@class, "pf-v5-c-text-input")]')
-            type_filter = PF5OUIASelect(component_id='select Type')
-            severity_filter = PF5OUIASelect(component_id='select Severity')
+            searchbar = SearchInput(
+                locator='.//input[contains(@class, "pf-v5-c-text-input")]'
+            )
+            type_filter = PF5OUIASelect(component_id="select Type")
+            severity_filter = PF5OUIASelect(component_id="select Severity")
             apply = Pf4ActionsDropdown(locator='.//div[@aria-label="errata_dropdown"]')
             dropdown = PF5Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
@@ -418,12 +450,12 @@ class NewHostDetailsView(BaseLoggedInView):
                 component_id="host-errata-table",
                 column_widgets={
                     1: Checkbox(locator='.//input[@type="checkbox"]'),
-                    'Errata': Text('./a'),
-                    'Type': Text('./span'),
-                    'Severity': Text('./span'),
-                    'Installable': Text('./span'),
-                    'Synopsis': Text('./span'),
-                    'Published date': Text('./span/span'),
+                    "Errata": Text("./a"),
+                    "Type": Text("./span"),
+                    "Severity": Text("./span"),
+                    "Installable": Text("./span"),
+                    "Synopsis": Text("./span"),
+                    "Published date": Text("./span/span"),
                     8: MenuToggleButtonMenu(),
                 },
             )
@@ -431,25 +463,27 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class module_streams(PF5Tab):
-            TAB_NAME = 'Module streams'
+            TAB_NAME = "Module streams"
             # workaround for BZ 2119076
             ROOT = './/div[@id="modulestreams-tab"]'
 
             searchbar = SearchInput(
                 locator='.//input[contains(@class, "pf-v5-c-text-input-group__text-input")]'
             )
-            status_filter = PF5OUIASelect(component_id='select Status')
-            installation_status_filter = PF5OUIASelect(component_id='select Installation status')
+            status_filter = PF5OUIASelect(component_id="select Status")
+            installation_status_filter = PF5OUIASelect(
+                component_id="select Installation status"
+            )
             dropdown = PF5Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = PF5OUIATable(
-                component_id='host-module-stream-table',
+                component_id="host-module-stream-table",
                 column_widgets={
-                    'Name': Text('./a'),
-                    'State': Text('.//span'),
-                    'Stream': Text('./parent::td'),
-                    'Installation status': Text('.//small'),
-                    'Installed profile': Text('./parent::td'),
+                    "Name": Text("./a"),
+                    "State": Text(".//span"),
+                    "Stream": Text("./parent::td"),
+                    "Installation status": Text(".//small"),
+                    "Installed profile": Text("./parent::td"),
                     5: MenuToggleButtonMenu(),
                 },
             )
@@ -457,7 +491,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class repository_sets(PF5Tab):
-            TAB_NAME = 'Repository sets'
+            TAB_NAME = "Repository sets"
             # workaround for BZ 2119076
             ROOT = './/div[@id="repo-sets-tab"]'
 
@@ -469,22 +503,26 @@ class NewHostDetailsView(BaseLoggedInView):
             limit_to_environemnt = Button(
                 locator='.//div[button[@aria-label="Limit to environment"]]'
             )
-            status_filter = Select(locator='.//div[@aria-label="select Status container"]/div')
+            status_filter = Select(
+                locator='.//div[@aria-label="select Status container"]/div'
+            )
             repository_type = Select(
                 locator='.//div[@aria-label="select Repository type container"]/div'
             )
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = PF5OUIATable(
-                component_id='host-repository-sets-table',
+                component_id="host-repository-sets-table",
                 column_widgets={
                     0: Checkbox(locator='.//input[@type="checkbox"]'),
-                    'Repository': Text('./span'),
-                    'Product': Text('./a'),
-                    'Repository path': Text('./span'),
-                    'Status': Text('.//span[contains(@class, "pf-v5-c-label__content")]'),
-                    'Repository Type': Text('./span'),
-                    6: PF5Button(locator='./button'),
+                    "Repository": Text("./span"),
+                    "Product": Text("./a"),
+                    "Repository path": Text("./span"),
+                    "Status": Text(
+                        './/span[contains(@class, "pf-v5-c-label__content")]'
+                    ),
+                    "Repository Type": Text("./span"),
+                    6: PF5Button(locator="./button"),
                 },
             )
             repo_set_action = PF5Menu(
@@ -494,31 +532,33 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class parameters(PF5Tab):
-        ROOT = './/div'
+        ROOT = ".//div"
 
         add_parameter = Button(locator='.//button[text()="Add parameter"]')
         searchbar = SearchInput(
             locator='//input[contains(@class, "pf-v5-c-search-input__text-input")]'
         )
-        parameter_name_input = TextInput(locator='.//td//input[contains(@aria-label, "name")]')
+        parameter_name_input = TextInput(
+            locator='.//td//input[contains(@aria-label, "name")]'
+        )
         parameter_type_input = Select(
             locator='.//td[2]//div[@data-ouia-component-type="PF4/Select"]'
         )
-        parameter_value_input = TextInput(locator='.//td[3]//textarea')
-        cancel_addition = Button(locator='.//td[5]//button[1]')
-        confirm_addition = Button(locator='.//td[5]//button[2]')
+        parameter_value_input = TextInput(locator=".//td[3]//textarea")
+        cancel_addition = Button(locator=".//td[5]//button[1]")
+        confirm_addition = Button(locator=".//td[5]//button[2]")
 
-        table_header = PF5OUIATable(component_id='parameters-table')
+        table_header = PF5OUIATable(component_id="parameters-table")
         parameters_table = Table(
             locator='.//table[@aria-label="Parameters table"]',
             column_widgets={
-                'Name': Text('.//td[contains(@data-label, "Name")]'),
-                'Type': Text('.//td[contains(@data-label, "Type")]'),
-                'Value': Text('.//td[contains(@data-label, "Value")]'),
-                'Source': Text('.//td[contains(@data-label, "Source")]'),
+                "Name": Text('.//td[contains(@data-label, "Name")]'),
+                "Type": Text('.//td[contains(@data-label, "Type")]'),
+                "Value": Text('.//td[contains(@data-label, "Value")]'),
+                "Source": Text('.//td[contains(@data-label, "Source")]'),
                 4: Button(
                     locator=(
-                        './/button'
+                        ".//button"
                         '[contains(@data-ouia-component-id, "OUIA-Generated-Button-plain-")]'
                     )
                 ),
@@ -529,22 +569,22 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class traces(PF5Tab):
-        ROOT = './/div'
+        ROOT = ".//div"
 
-        title = Text('//h2')
-        enable_traces = PF5OUIAButton('enable-traces-button')
+        title = Text("//h2")
+        enable_traces = PF5OUIAButton("enable-traces-button")
         select_all = Checkbox(locator='.//input[contains(@aria-label, "Select all")]')
         searchbar = SearchInput(locator='.//input[contains(@aria-label, "Select all")]')
         Pf4ActionsDropdown = PF5Button(
             locator='.//div[contains(@aria-label, "bulk_actions_dropdown")]'
         )
         traces_table = PatternflyTable(
-            component_id='host-traces-table',
+            component_id="host-traces-table",
             column_widgets={
                 0: Checkbox(locator='.//input[contains(@aria-label, "Select row")]'),
-                'Application': Text('.//td[2]'),
-                'Type': Text('.//td[3]'),
-                'Helper': Text('.//td[4]'),
+                "Application": Text(".//td[2]"),
+                "Type": Text(".//td[3]"),
+                "Helper": Text(".//td[4]"),
                 4: PF5Button(locator='.//button[contains(@aria-label, "Actions")]'),
             },
         )
@@ -554,64 +594,78 @@ class NewHostDetailsView(BaseLoggedInView):
     class ansible(PF5Tab):
         """View comprising the subtabs under the Ansible Tab"""
 
-        ROOT = './/div'
+        ROOT = ".//div"
 
         @View.nested
         class roles(PF5Tab):
-            TAB_NAME = 'Roles'
+            TAB_NAME = "Roles"
             ROOT = './/div[@class="ansible-host-detail"]'
 
             assignedRoles = Text('.//a[contains(@href, "roles/all")]')
             edit = PF5Button(locator='.//button[@aria-label="edit ansible roles"]')
-            noRoleAssign = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
+            noRoleAssign = Text(
+                './/h5[contains(@class, "pf-v5-c-empty-state__title-text")]'
+            )
             table = PF5OUIATable(
-                component_id='table-composable-compact',
-                column_widgets={'Name': Text('.//a')},
+                component_id="table-composable-compact",
+                column_widgets={"Name": Text(".//a")},
             )
             pagination = PF4Pagination()
 
         @View.nested
         class variables(PF5Tab):
-            TAB_NAME = 'Variables'
+            TAB_NAME = "Variables"
             ROOT = './/div[@class="ansible-host-detail"]'
 
-            actions = PF5Button(locator='//button[contains(@aria-label, "Kebab toggle")]')
+            actions = PF5Button(
+                locator='//button[contains(@aria-label, "Kebab toggle")]'
+            )
             delete = PF5Button(locator='//button[@role="menuitem"]')
-            confirm = PF5Button(locator='//button[@data-ouia-component-id="btn-modal-confirm"]')
+            confirm = PF5Button(
+                locator='//button[@data-ouia-component-id="btn-modal-confirm"]'
+            )
             table = PF5OUIATable(
-                component_id='table-composable-compact',
+                component_id="table-composable-compact",
                 column_widgets={
-                    'Name': Text('.//a'),
-                    'Ansible role': Text('./span'),
-                    'Type': Text('./span'),
+                    "Name": Text(".//a"),
+                    "Ansible role": Text("./span"),
+                    "Type": Text("./span"),
                     # the next field can also be a form group
-                    'Value': TextInput(
+                    "Value": TextInput(
                         locator='//textarea[contains(@aria-label, "Edit override field")]'
                     ),
-                    'Source attribute': Text('./span'),
+                    "Source attribute": Text("./span"),
                     # The next 2 buttons are hidden by default, but appear in this order
-                    6: PF5Button(locator='.//button[@aria-label="Cancel editing override button"]'),
-                    7: PF5Button(locator='.//button[@aria-label="Submit override button"]'),
+                    6: PF5Button(
+                        locator='.//button[@aria-label="Cancel editing override button"]'
+                    ),
+                    7: PF5Button(
+                        locator='.//button[@aria-label="Submit override button"]'
+                    ),
                     # Clicking this button hides it, and displays the previous 2
-                    5: PF5Button(locator='.//button[@aria-label="Edit override button"]'),
+                    5: PF5Button(
+                        locator='.//button[@aria-label="Edit override button"]'
+                    ),
                 },
             )
             table1 = PF5OUIATable(
-                component_id='table-composable-compact',
+                component_id="table-composable-compact",
                 column_widgets={
-                    5: PF5Button(locator='.//button[@aria-label="Submit editing override button"]'),
+                    5: PF5Button(
+                        locator='.//button[@aria-label="Submit editing override button"]'
+                    ),
                 },
             )
             pagination = PF4Pagination()
 
         @View.nested
         class inventory(PF5Tab):
-            TAB_NAME = 'Inventory'
+            TAB_NAME = "Inventory"
             ROOT = './/div[@class="ansible-host-detail"]'
 
         @View.nested
         class jobs(PF5Tab):
-            TAB_NAME = 'Jobs'
+            TAB_NAME = "Jobs"
             ROOT = './/div[@class="ansible-host-detail"]'
 
             @property
@@ -640,10 +694,12 @@ class NewHostDetailsView(BaseLoggedInView):
                 scheduledJobsTable = Table(
                     locator='.//div[contains(@class, "pf-v5-c-table)"]',
                     column_widgets={
-                        'Description': Text('.//a'),
-                        'Schedule': Text('./span'),
-                        'Next Run': Text('./span'),
-                        4: Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]'),
+                        "Description": Text(".//a"),
+                        "Schedule": Text("./span"),
+                        "Next Run": Text("./span"),
+                        4: Dropdown(
+                            locator='.//div[contains(@class, "pf-v5-c-dropdown")]'
+                        ),
                     },
                 )
                 pagination = PF4Pagination()
@@ -657,13 +713,13 @@ class NewHostDetailsView(BaseLoggedInView):
                 # Only displayed on Refresh when there are previously executed jobs
                 previousText = './/h3[text()="Previously executed jobs"]'
                 previousJobsTable = Table(
-                    locator='',
+                    locator="",
                     column_widgets={
-                        'Description': Text('.//a'),
-                        'Result': Text('./span'),
-                        'State': Text('./span'),
-                        'Executed at': Text('./span'),
-                        'Schedule': Text('./span'),
+                        "Description": Text(".//a"),
+                        "Result": Text("./span"),
+                        "State": Text("./span"),
+                        "Executed at": Text("./span"),
+                        "Schedule": Text("./span"),
                     },
                 )
                 pagination = PF4Pagination()
@@ -674,19 +730,19 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class puppet(PF5Tab):
-        ROOT = './/div'
+        ROOT = ".//div"
 
         search_bar = SearchInput(locator='.//input[contains(@class, "search-input")]')
         puppet_reports_table = PatternflyTable(
-            component_id='reports-table',
+            component_id="reports-table",
             column_widgets={
-                'reported_at': Text('.//a'),
-                'failed': Text('.//td[2]'),
-                'failed_restarts': Text('.//td[3]'),
-                'restarted': Text('.//td[4]'),
-                'applied': Text('.//td[5]'),
-                'skipped': Text('.//td[6]'),
-                'pending': Text('.//td[7]'),
+                "reported_at": Text(".//a"),
+                "failed": Text(".//td[2]"),
+                "failed_restarts": Text(".//td[3]"),
+                "restarted": Text(".//td[4]"),
+                "applied": Text(".//td[5]"),
+                "skipped": Text(".//td[6]"),
+                "pending": Text(".//td[7]"),
                 7: PF5Button(locator='.//button[contains(@aria-label, "Actions")]'),
             },
         )
@@ -696,7 +752,7 @@ class NewHostDetailsView(BaseLoggedInView):
         class enc_preview(PF5Tab):
             ROOT = './/div[@class="enc-preview-tab"]'
             TAB_NAME = "ENC Preview"
-            preview = Text('.//code')
+            preview = Text(".//code")
 
         @View.nested
         class puppet_details(Card):
@@ -713,20 +769,20 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class reports(PF5Tab):
-        ROOT = './/div'
+        ROOT = ".//div"
 
         search_bar = SearchInput(locator='.//input[contains(@class, "search-input")]')
         reports_table = PatternflyTable(
-            component_id='reports-table',
+            component_id="reports-table",
             column_widgets={
-                'reported_at': Text('.//a'),
-                'failed': Text('.//td[2]'),
-                'failed_restarts': Text('.//td[3]'),
-                'restarted': Text('.//td[4]'),
-                'applied': Text('.//td[5]'),
-                'skipped': Text('.//td[6]'),
-                'origin': Text('.//td[7]'),
-                'pending': Text('.//td[8]'),
+                "reported_at": Text(".//a"),
+                "failed": Text(".//td[2]"),
+                "failed_restarts": Text(".//td[3]"),
+                "restarted": Text(".//td[4]"),
+                "applied": Text(".//td[5]"),
+                "skipped": Text(".//td[6]"),
+                "origin": Text(".//td[7]"),
+                "pending": Text(".//td[8]"),
                 8: PF5Button(locator='.//button[contains(@aria-label, "Actions")]'),
             },
         )
@@ -735,13 +791,17 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class insights(PF5Tab):
-        ROOT = './/div'
+        ROOT = ".//div"
 
-        TAB_NAME = 'Recommendations'
+        TAB_NAME = "Recommendations"
 
-        search_bar = SearchInput(locator='.//input[contains(@class, "pf-v5-c-text-input")]')
+        search_bar = SearchInput(
+            locator='.//input[contains(@class, "pf-v5-c-text-input")]'
+        )
         remediate = PF5Button(locator='.//button[text()="Remediate"]')
-        insights_dropdown = Dropdown(locator='.//div[contains(@class, "insights-dropdown")]')
+        insights_dropdown = Dropdown(
+            locator='.//div[contains(@class, "insights-dropdown")]'
+        )
 
         select_all_one_page = Checkbox(locator='.//input[@name="check-all"]')
         select_all_pages = PF5Button(
@@ -749,12 +809,12 @@ class NewHostDetailsView(BaseLoggedInView):
         )
 
         recommendations_table = PF5OUIATable(
-            component_id='rh-cloud-recommendations-table',
+            component_id="rh-cloud-recommendations-table",
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
-                'Recommendation': Text('.//td[2]'),
-                'Total Risk': Text('.//td[3]'),
-                'Remediate': Text('.//td[4]'),
+                "Recommendation": Text(".//td[2]"),
+                "Total Risk": Text(".//td[3]"),
+                "Remediate": Text(".//td[4]"),
                 4: PF5Button(locator='.//button[contains(@aria-label, "Actions")]'),
             },
         )
@@ -762,21 +822,29 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class vulnerabilities(PF5Tab):
-        ROOT = './/div'
+        ROOT = ".//div"
 
-        search_bar = SearchInput(locator='.//input[contains(@aria-label, "search-field")]')
-        cve_menu_toggle = PF5Button(".//button[contains(@class, 'pf-v5-c-menu-toggle')]")
-        no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
+        search_bar = SearchInput(
+            locator='.//input[contains(@aria-label, "search-field")]'
+        )
+        cve_menu_toggle = PF5Button(
+            ".//button[contains(@class, 'pf-v5-c-menu-toggle')]"
+        )
+        no_cves_found_message = Text(
+            './/h5[contains(@class, "pf-v5-c-empty-state__title-text")]'
+        )
 
         vulnerabilities_table = pf5OUIAExpandableTable(
             # component_id='OUIA-Generated-Table-2',
             locator='.//table[contains(@class, "pf-v5-c-table")]',
             column_widgets={
                 0: PF5Button(locator='.//button[@aria-label="Details"]'),
-                'CVE ID': Text('.//td[contains(@data-label, "CVE ID")]'),
-                'Publish date': Text('.//td[contains(@data-label, "Publish date")]'),
-                'Severity': Text('.//td[contains(@data-label, "Severity")]'),
-                'CVSS base score': Text('.//td[contains(@data-label, "CVSS base score")]'),
+                "CVE ID": Text('.//td[contains(@data-label, "CVE ID")]'),
+                "Publish date": Text('.//td[contains(@data-label, "Publish date")]'),
+                "Severity": Text('.//td[contains(@data-label, "Severity")]'),
+                "CVSS base score": Text(
+                    './/td[contains(@data-label, "CVSS base score")]'
+                ),
             },
         )
         pagination = PF5Pagination()
@@ -785,7 +853,9 @@ class NewHostDetailsView(BaseLoggedInView):
         def is_displayed(self):
             table_displayed = self.vulnerabilities_table.wait_displayed(exception=False)
             no_cves_message_displayed = (
-                self.browser.wait_for_element(self.no_cves_found_message, exception=False)
+                self.browser.wait_for_element(
+                    self.no_cves_found_message, exception=False
+                )
                 is not None
             )
             return table_displayed or no_cves_message_displayed
@@ -805,14 +875,14 @@ class InstallPackagesView(View):
         locator='.//table[@aria-label="Content View Table"]',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
-            'Package': Text('./parent::td'),
-            'Version': Text('./parent::td'),
+            "Package": Text("./parent::td"),
+            "Version": Text("./parent::td"),
         },
     )
     pagination = PF4Pagination()
 
     install = PF5Button(locator='.//button[(normalize-space(.)="Install")]')
-    cancel = PF5Button('Cancel')
+    cancel = PF5Button("Cancel")
 
 
 class AllAssignedRolesView(View):
@@ -822,7 +892,7 @@ class AllAssignedRolesView(View):
 
     table = Table(
         locator='.//table[contains(@class, "pf-v5-c-table")]',
-        column_widgets={'Name': Text('.//a'), 'Source': Text('.//a')},
+        column_widgets={"Name": Text(".//a"), "Source": Text(".//a")},
     )
     pagination = PF4Pagination()
 
@@ -832,7 +902,7 @@ class EnableTracerView(View):
 
     ROOT = './/div[@data-ouia-component-id="enable-tracer-modal"]'
 
-    confirm = PF5OUIAButton('enable-button-via-rex')
+    confirm = PF5OUIAButton("enable-button-via-rex")
 
 
 class ParameterDeleteDialog(View):
@@ -840,8 +910,8 @@ class ParameterDeleteDialog(View):
 
     ROOT = './/div[@data-ouia-component-id="app-confirm-modal"]'
 
-    confirm_delete = OUIAButton('btn-modal-confirm')
-    cancel_delete = OUIAButton('btn-modal-cancel')
+    confirm_delete = OUIAButton("btn-modal-confirm")
+    cancel_delete = OUIAButton("btn-modal-cancel")
 
 
 class ManageHostCollectionModal(View):
@@ -849,7 +919,7 @@ class ManageHostCollectionModal(View):
 
     ROOT = './/div[@data-ouia-component-id="host-collections-modal"]'
 
-    create_host_collection = OUIAButton('empty-state-primary-action-button')
+    create_host_collection = OUIAButton("empty-state-primary-action-button")
     select_all = Checkbox(locator='.//input[contains(@aria-label, "Select all")]')
     searchbar = SearchInput(locator='.//input[contains(@class, "pf-m-search")]')
 
@@ -857,17 +927,17 @@ class ManageHostCollectionModal(View):
         locator='.//table[contains(@class, "pf-v5-c-table")]',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
-            'host_collecntion': Text('.//a'),
-            'capacity': Text('.//td[3]'),
-            'description': Text('.//td[4]'),
+            "host_collecntion": Text(".//a"),
+            "capacity": Text(".//td[3]"),
+            "description": Text(".//td[4]"),
         },
     )
 
     pagination = PF4Pagination()
 
-    add = OUIAButton('add-button')
-    remove = OUIAButton('add-button')
-    cancel = OUIAButton('cancel-button')
+    add = OUIAButton("add-button")
+    remove = OUIAButton("add-button")
+    cancel = OUIAButton("cancel-button")
 
 
 class EditSystemPurposeView(View):
@@ -875,13 +945,13 @@ class EditSystemPurposeView(View):
 
     ROOT = './/div[@data-ouia-component-id="syspurpose-edit-modal"]'
 
-    role = OUIAFormSelect('role-select')
-    sla = OUIAFormSelect('service-level-select')
-    usage = OUIAFormSelect('usage-select')
-    release_version = OUIAFormSelect('release-version-select')
+    role = OUIAFormSelect("role-select")
+    sla = OUIAFormSelect("service-level-select")
+    usage = OUIAFormSelect("usage-select")
+    release_version = OUIAFormSelect("release-version-select")
 
-    save = OUIAButton('save-syspurpose')
-    cancel = OUIAButton('cancel-syspurpose')
+    save = OUIAButton("save-syspurpose")
+    cancel = OUIAButton("cancel-syspurpose")
 
 
 class ManageHostStatusesView(View):
@@ -890,18 +960,18 @@ class ManageHostStatusesView(View):
     ROOT = './/div[@data-ouia-component-id="statuses-modal"]'
     close_modal = PF5Button(locator='.//button[@aria-label="Close"]')
     host_statuses_table = PF5OUIATable(
-        component_id='statuses-table',
+        component_id="statuses-table",
         column_widgets={
-            'Name': Text('.//td[contains(@data-label, "Name")]'),
-            'Status': Text('.//td[contains(@data-label, "Status")]'),
-            'Reported at': Text('.//td[contains(@data-label, "Reported at")]'),
+            "Name": Text('.//td[contains(@data-label, "Name")]'),
+            "Status": Text('.//td[contains(@data-label, "Status")]'),
+            "Reported at": Text('.//td[contains(@data-label, "Reported at")]'),
             3: PF5Button(locator='.//td[contains(@class, "action")]'),
         },
     )
 
     def read(self):
         # Parses into a dictionary of {name: {status, reported_at}}
-        return {value.pop('Name'): value for value in self.host_statuses_table.read()}
+        return {value.pop("Name"): value for value in self.host_statuses_table.read()}
 
 
 class EditAnsibleRolesView(View):
@@ -922,8 +992,12 @@ class ModuleStreamDialog(Pf4ConfirmationDialog):
 
 
 class RecurringJobDialog(Pf4ConfirmationDialog):
-    confirm_dialog = PF5Button(locator='.//button[@data-ouia-component-id="btn-modal-confirm"]')
-    cancel_dialog = PF5Button(locator='.//button[@data-ouia-component-id="btn-modal-cancel"]')
+    confirm_dialog = PF5Button(
+        locator='.//button[@data-ouia-component-id="btn-modal-confirm"]'
+    )
+    cancel_dialog = PF5Button(
+        locator='.//button[@data-ouia-component-id="btn-modal-cancel"]'
+    )
 
 
 class PF5CheckboxTreeView(CheckboxGroup):
@@ -932,7 +1006,9 @@ class PF5CheckboxTreeView(CheckboxGroup):
        https://v5-archive.patternfly.org/components/tree-view#with-checkboxes
     """
 
-    ITEMS_LOCATOR = './/*[self::span|self::label][contains(@class, "pf-v5-c-tree-view__node-text")]'
+    ITEMS_LOCATOR = (
+        './/*[self::span|self::label][contains(@class, "pf-v5-c-tree-view__node-text")]'
+    )
     CHECKBOX_LOCATOR = (
         './/*[self::span|self::label][contains(@class, "pf-v5-c-tree-view__node-text")]'
         '[normalize-space(.)="{}"]/preceding-sibling::span/input[@type="checkbox"]'
@@ -949,10 +1025,10 @@ class ManageColumnsView(BaseLoggedInView):
         '[normalize-space(.)="{}"]/preceding-sibling::button'
     )
     DEFAULT_COLLAPSED_SECTIONS = [
-        CHECKBOX_SECTION_TOGGLE.format('Network'),
-        CHECKBOX_SECTION_TOGGLE.format('Reported data'),
-        CHECKBOX_SECTION_TOGGLE.format('Red Hat Lightspeed'),
-        CHECKBOX_SECTION_TOGGLE.format('Content'),
+        CHECKBOX_SECTION_TOGGLE.format("Network"),
+        CHECKBOX_SECTION_TOGGLE.format("Reported data"),
+        CHECKBOX_SECTION_TOGGLE.format("Red Hat Lightspeed"),
+        CHECKBOX_SECTION_TOGGLE.format("Content"),
     ]
     title = Text(
         './/header//span[contains(@class, "pf-v5-c-modal-box__title")]'
@@ -960,10 +1036,14 @@ class ManageColumnsView(BaseLoggedInView):
     )
     confirm_dialog = PF5Button(locator='.//button[normalize-space(.)="Save"]')
     cancel_dialog = PF5Button(locator='.//button[normalize-space(.)="Cancel"]')
-    checkbox_group = PF5CheckboxTreeView(locator='.//div[contains(@class, "pf-v5-c-tree-view")]')
+    checkbox_group = PF5CheckboxTreeView(
+        locator='.//div[contains(@class, "pf-v5-c-tree-view")]'
+    )
 
     def collapsed_sections(self):
-        return (self.browser.element(locator) for locator in self.DEFAULT_COLLAPSED_SECTIONS)
+        return (
+            self.browser.element(locator) for locator in self.DEFAULT_COLLAPSED_SECTIONS
+        )
 
     def get_tree_sections_state(self):
         sections = self.browser.selenium.find_elements(
@@ -1005,7 +1085,9 @@ class ManageColumnsView(BaseLoggedInView):
         sections_state = self.sections_state()
         if sections_state["collapsed"] != []:
             for section in sections_state["collapsed"]:
-                section_toggle_to_expand_xpath = self.CHECKBOX_SECTION_TOGGLE.format(section)
+                section_toggle_to_expand_xpath = self.CHECKBOX_SECTION_TOGGLE.format(
+                    section
+                )
                 self.browser.element(section_toggle_to_expand_xpath).click()
 
     def read(self):

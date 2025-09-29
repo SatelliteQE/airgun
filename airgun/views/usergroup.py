@@ -8,13 +8,13 @@ from airgun.widgets import FilteredDropdown, MultiSelect
 
 class UserGroupsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='User Groups']")
-    new_on_blank_page = Button('Create User group')
+    new_on_blank_page = Button("Create User group")
     new = Text("//a[contains(@href, '/usergroups/new')]")
     table = Table(
-        './/table',
+        ".//table",
         column_widgets={
-            'Name': Text('./a'),
-            'Actions': Text('.//a[@data-method="delete"]'),
+            "Name": Text("./a"),
+            "Actions": Text('.//a[@data-method="delete"]'),
         },
     )
 
@@ -29,33 +29,35 @@ class UserGroupDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'User Groups'
-            and self.breadcrumb.read().startswith('Edit ')
+            and self.breadcrumb.locations[0] == "User Groups"
+            and self.breadcrumb.read().startswith("Edit ")
         )
 
     @View.nested
     class usergroup(SatTab):
         TAB_NAME = "User Group"
 
-        name = TextInput(id='usergroup_name')
-        usergroups = MultiSelect(id='ms-usergroup_usergroup_ids')
-        users = MultiSelect(id='ms-usergroup_user_ids')
+        name = TextInput(id="usergroup_name")
+        usergroups = MultiSelect(id="ms-usergroup_usergroup_ids")
+        users = MultiSelect(id="ms-usergroup_user_ids")
 
     @View.nested
     class roles(SatTab):
-        admin = Checkbox(id='usergroup_admin')
-        resources = MultiSelect(id='ms-usergroup_role_ids')
+        admin = Checkbox(id="usergroup_admin")
+        resources = MultiSelect(id="ms-usergroup_role_ids")
 
     @View.nested
     class external_groups(SatTab):
-        TAB_NAME = 'External Groups'
+        TAB_NAME = "External Groups"
         table = Table(
-            './/table',
+            ".//table",
             column_widgets={
-                'Actions': Text('.//a[contains(@href, "refresh")]'),
+                "Actions": Text('.//a[contains(@href, "refresh")]'),
             },
         )
 
@@ -78,9 +80,11 @@ class UserGroupDetailsView(BaseLoggedInView):
 class UserGroupCreateView(UserGroupDetailsView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'User Groups'
-            and self.breadcrumb.read() == 'Create User group'
+            and self.breadcrumb.locations[0] == "User Groups"
+            and self.breadcrumb.read() == "Create User group"
         )

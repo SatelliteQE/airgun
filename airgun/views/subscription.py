@@ -20,8 +20,8 @@ from airgun.widgets import (
 
 
 class DeleteSubscriptionConfirmationDialog(ConfirmationDialog):
-    confirm_dialog = Button('Delete')
-    cancel_dialog = Button('Cancel')
+    confirm_dialog = Button("Delete")
+    cancel_dialog = Button("Cancel")
 
 
 class SatSubscriptionsViewTable(SatTable):
@@ -50,7 +50,7 @@ class ProductContentItemsList(GenericLocatorWidget):
 
     @property
     def has_items(self):
-        return self.browser.text(self.ROOT) != 'No products are enabled.'
+        return self.browser.text(self.ROOT) != "No products are enabled."
 
     def read(self):
         result = wait_for(lambda: self.has_items, timeout=5, silent_failure=True)
@@ -59,7 +59,7 @@ class ProductContentItemsList(GenericLocatorWidget):
         return [elem.text for elem in self.browser.elements(self.ITEMS)]
 
     def fill(self, value):
-        raise ReadOnlyWidgetError('Widget is read only, fill is prohibited')
+        raise ReadOnlyWidgetError("Widget is read only, fill is prohibited")
 
 
 class SubscriptionColumnsFilter(GenericLocatorWidget):
@@ -67,11 +67,13 @@ class SubscriptionColumnsFilter(GenericLocatorWidget):
     checkboxes"""
 
     ITEMS_LOCATOR = "//div[@id='subscriptionTableTooltip']//li/span"
-    CHECKBOX_LOCATOR = "//div[@id='subscriptionTableTooltip']//li/span[.='{}']/preceding::input[1]"
+    CHECKBOX_LOCATOR = (
+        "//div[@id='subscriptionTableTooltip']//li/span[.='{}']/preceding::input[1]"
+    )
 
     @property
     def is_open(self):
-        return 'tooltip-open' in self.browser.classes(self)
+        return "tooltip-open" in self.browser.classes(self)
 
     def open(self):
         if not self.is_open:
@@ -84,7 +86,8 @@ class SubscriptionColumnsFilter(GenericLocatorWidget):
     def checkboxes(self):
         labels = [line.text for line in self.browser.elements(self.ITEMS_LOCATOR)]
         return {
-            label: Checkbox(self, locator=self.CHECKBOX_LOCATOR.format(label)) for label in labels
+            label: Checkbox(self, locator=self.CHECKBOX_LOCATOR.format(label))
+            for label in labels
         }
 
     def read(self):
@@ -109,15 +112,15 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
     table = SatSubscriptionsViewTable(
         locator='//div[@id="subscriptions-table"]//table',
         column_widgets={
-            'Select all rows': Checkbox(locator=".//input[@type='checkbox']"),
-            'Name': Text("./a"),
+            "Select all rows": Checkbox(locator=".//input[@type='checkbox']"),
+            "Name": Text("./a"),
         },
     )
 
-    add_button = Button(href='subscriptions/add')
-    manage_manifest_button = Button('Manage Manifest')
-    export_csv_button = Button('Export CSV')
-    delete_button = Button('Delete')
+    add_button = Button(href="subscriptions/add")
+    manage_manifest_button = Button("Manage Manifest")
+    export_csv_button = Button("Export CSV")
+    delete_button = Button("Delete")
     progressbar = ProgressBar('//div[contains(@class,"progress-bar-striped")]')
     confirm_deletion = DeleteSubscriptionConfirmationDialog()
     columns_filter_checkboxes = SubscriptionColumnsFilter(
@@ -127,7 +130,9 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
     @property
     def is_displayed(self):
         return (
-            self.browser.wait_for_element('div#subscriptions-table', timeout=10, exception=False)
+            self.browser.wait_for_element(
+                "div#subscriptions-table", timeout=10, exception=False
+            )
             is not None
         )
 
@@ -142,7 +147,7 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
 
 class ManageManifestView(BaseLoggedInView):
     ROOT = '//div[@role="dialog" and @tabindex][div//h4[normalize-space(.)="Manage Manifest"]]'
-    close_button = Button('Close')
+    close_button = Button("Close")
 
     @View.nested
     class manifest(SatTab):
@@ -154,28 +159,28 @@ class ManageManifestView(BaseLoggedInView):
         expire_date = Text(
             '//div[@id="manifest-history-tabs-pane-1"]/div/hr//following-sibling::div[2]/div[2]'
         )
-        red_hat_cdn_url = TextInput(id='cdnUrl')
-        manifest_file = FileInput(id='usmaFile')
-        refresh_button = Button('Refresh')
-        delete_button = Button('Delete')
+        red_hat_cdn_url = TextInput(id="cdnUrl")
+        manifest_file = FileInput(id="usmaFile")
+        refresh_button = Button("Refresh")
+        delete_button = Button("Delete")
 
     @View.nested
     class manifest_history(SatTab):
         TAB_NAME = "Manifest History"
         table = SatTable(
             locator='//div[@id="manifest-history-tabs"]//table',
-            column_widgets={'Status': Text(), 'Message': Text(), 'Timestamp': Text()},
+            column_widgets={"Status": Text(), "Message": Text(), "Timestamp": Text()},
         )
 
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.close_button, visible=True, exception=False
-        ) is not None and 'in' in self.browser.classes(self)
+        ) is not None and "in" in self.browser.classes(self)
 
     def wait_animation_end(self):
         wait_for(
-            lambda: 'in' in self.browser.classes(self),
+            lambda: "in" in self.browser.classes(self),
             handle_exception=True,
             logger=self.logger,
             timeout=10,
@@ -188,18 +193,18 @@ class DeleteManifestConfirmationView(BaseLoggedInView):
         '[div//h4[normalize-space(.)="Confirm delete manifest"]]'
     )
     message = Text('.//div[@class="modal-body"]')
-    delete_button = Button('Delete')
-    cancel_button = Button('Cancel')
+    delete_button = Button("Delete")
+    cancel_button = Button("Cancel")
 
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.delete_button, visible=True, exception=False
-        ) is not None and 'in' in self.browser.classes(self)
+        ) is not None and "in" in self.browser.classes(self)
 
     def wait_animation_end(self):
         wait_for(
-            lambda: 'in' in self.browser.classes(self),
+            lambda: "in" in self.browser.classes(self),
             handle_exception=True,
             logger=self.logger,
             timeout=10,
@@ -209,18 +214,21 @@ class DeleteManifestConfirmationView(BaseLoggedInView):
 class AddSubscriptionView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     table = SatTable(
-        locator='.//table',
+        locator=".//table",
         column_widgets={
-            'Subscription Name': Text('.//a'),
-            'Quantity to Allocate': TextInput(locator='.//input'),
+            "Subscription Name": Text(".//a"),
+            "Quantity to Allocate": TextInput(locator=".//input"),
         },
     )
-    submit_button = Button('Submit')
-    cancel_button = Button('Cancel')
+    submit_button = Button("Submit")
+    cancel_button = Button("Cancel")
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.table, visible=True, exception=False) is not None
+        return (
+            self.browser.wait_for_element(self.table, visible=True, exception=False)
+            is not None
+        )
 
 
 class SubscriptionDetailsView(BaseLoggedInView):
@@ -231,7 +239,7 @@ class SubscriptionDetailsView(BaseLoggedInView):
         associations = SatTable(
             locator=".//div[h2[normalize-space(.)='Associations']]/table",
             column_widgets={
-                'Quantity': Text('.//a'),
+                "Quantity": Text(".//a"),
             },
         )
 
@@ -248,6 +256,8 @@ class SubscriptionDetailsView(BaseLoggedInView):
     @property
     def is_displayed(self):
         return (
-            self.browser.wait_for_element(self.breadcrumb, visible=True, exception=False)
+            self.browser.wait_for_element(
+                self.breadcrumb, visible=True, exception=False
+            )
             is not None
         )

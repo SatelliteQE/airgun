@@ -14,7 +14,9 @@ class FilesView(BaseLoggedInView):
     """Main Files view"""
 
     title = Text("//h1[contains(., 'Files')]")
-    table = SatTable('.//table', column_widgets={'Name': Text("./a"), 'Path': Text("./a")})
+    table = SatTable(
+        ".//table", column_widgets={"Name": Text("./a"), "Path": Text("./a")}
+    )
 
     search_box = Search()
 
@@ -32,23 +34,25 @@ class FileDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
 
-        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Files'
+        return breadcrumb_loaded and self.breadcrumb.locations[0] == "Files"
 
     @View.nested
     class details(SatTab):
-        path = ReadOnlyEntry(name='Checksum')
-        checksum = ReadOnlyEntry(name='Path')
+        path = ReadOnlyEntry(name="Checksum")
+        checksum = ReadOnlyEntry(name="Path")
 
     @View.nested
     class content_views(SatTab):
-        TAB_NAME = 'Content Views'
+        TAB_NAME = "Content Views"
         cvtable = SatTable(
-            './/table',
+            ".//table",
             column_widgets={
-                'Name': Text("./a"),
-                'Environment': Text("./a"),
-                'Version': Text("./a"),
+                "Name": Text("./a"),
+                "Environment": Text("./a"),
+                "Version": Text("./a"),
             },
         )

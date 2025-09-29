@@ -23,12 +23,12 @@ from airgun.views.contentview_new import (
 
 
 class NewContentViewEntity(BaseEntity):
-    endpoint_path = '/content_views'
+    endpoint_path = "/content_views"
 
     def create(self, values, composite=False, rolling=False):
         """Create a new content view"""
-        view = self.navigate_to(self, 'New')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "New")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         if composite:
             view.composite_tile.click()
@@ -39,8 +39,8 @@ class NewContentViewEntity(BaseEntity):
 
     def search(self, value):
         """Search for content view"""
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "All")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         if not view.table.is_displayed:
             # no table present, no CVs in this Org
@@ -49,8 +49,8 @@ class NewContentViewEntity(BaseEntity):
 
     def publish(self, entity_name, values=None, promote=False, lce=None):
         """Publishes new version of CV, optionally allowing for instant promotion"""
-        view = self.navigate_to(self, 'Publish', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "Publish", entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         if values:
             view.fill(values)
@@ -61,21 +61,21 @@ class NewContentViewEntity(BaseEntity):
         view.next_button.click()
         view.finish_button.click()
         view.progressbar.wait_for_result()
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         return view.versions.table.read()
 
     def check_publish_banner(self, cv_name):
         """Check if the needs_publish banner is displayed on the content view index page"""
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "All")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         if not view.table.is_displayed:
             # no table present, no CVs in this Org
             return None
         view.search(cv_name)
-        view.table[0][6].widget.item_select('Publish')
+        view.table[0][6].widget.item_select("Publish")
         view = ContentViewVersionPublishView(self.browser)
         is_displayed = view.publish_alert.is_displayed
         view.cancel_button.click()
@@ -83,10 +83,10 @@ class NewContentViewEntity(BaseEntity):
 
     def delete(self, entity_name):
         """Deletes the content view by name"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
-        view.cv_actions.item_select('Delete')
+        view.cv_actions.item_select("Delete")
         view.wait_displayed()
         # Remove from environment(s) wizard, if it appears
         if view.next_button.is_displayed:
@@ -102,15 +102,15 @@ class NewContentViewEntity(BaseEntity):
         result = False
         view = self.navigate_to(
             self,
-            'Version',
+            "Version",
             entity_name=entity_name,
             version=version,
             timeout=60,
         )
         time.sleep(5)  # 'Loading' widget on page
-        self.browser.plugin.ensure_page_safe(timeout='10s')
+        self.browser.plugin.ensure_page_safe(timeout="10s")
         wait_for(lambda: view.table.is_displayed, timeout=20)
-        result = view.version_dropdown.item_select('Delete')
+        result = view.version_dropdown.item_select("Delete")
         view.wait_displayed()
         # Remove from environment(s) wizard, if it appears
         if view.next_button.is_displayed:
@@ -120,8 +120,8 @@ class NewContentViewEntity(BaseEntity):
 
     def add_content(self, entity_name, content_name):
         """Add specified content to the given Content View"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         wait_for(lambda: view.repositories.resources.is_displayed, timeout=10)
         view.repositories.resources.add(content_name)
@@ -129,8 +129,8 @@ class NewContentViewEntity(BaseEntity):
 
     def add_cv(self, ccv_name, cv_name, always_update=False, version=None):
         """Adds selected CV to selected CCV, optionally with support for always_update and specified version"""
-        view = self.navigate_to(self, 'Edit', entity_name=ccv_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "Edit", entity_name=ccv_name)
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         view.content_views.resources.add(cv_name)
         view = AddContentViewModal(self.browser)
@@ -139,36 +139,36 @@ class NewContentViewEntity(BaseEntity):
         if version:
             view.version_select.item_select(version)
         view.submit_button.click()
-        view = self.navigate_to(self, 'Edit', entity_name=ccv_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "Edit", entity_name=ccv_name)
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         wait_for(lambda: view.content_views.resources.is_displayed, timeout=10)
         return view.content_views.resources.read()
 
     def read_cv(self, entity_name, version_name):
         """Reads the table for a specified Content View's specified Version"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         view.versions.search(version_name)
         return view.versions.table.row(version=version_name).read()
 
     def read_repositories(self, entity_name):
         """Reads the repositories table for a specified Content View"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         return view.repositories.resources.read()
 
     def read_version_table(self, entity_name, version, tab_name, search_param=None):
         """Reads a specific table for a CV Version"""
         view = self.navigate_to(
             self,
-            'Version',
+            "Version",
             entity_name=entity_name,
             version=version,
             timeout=60,
         )
         time.sleep(5)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         # This allows dynamic access to the proper table
         wait_for(lambda: getattr(view, tab_name).table.wait_displayed(), timeout=10)
         if search_param:
@@ -177,8 +177,8 @@ class NewContentViewEntity(BaseEntity):
 
     def rolling_cv_read(self, entity_name):
         """Verify that rolling CVs display only the fields they should"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         rolling_cv_acceptable_fields = True
         # Versions tab
@@ -203,7 +203,7 @@ class NewContentViewEntity(BaseEntity):
         else:
             rolling_cv_acceptable_fields = False
         # Copy dropdown
-        if view.cv_actions.has_item('Copy'):
+        if view.cv_actions.has_item("Copy"):
             rolling_cv_acceptable_fields = False
         return rolling_cv_acceptable_fields
 
@@ -212,25 +212,25 @@ class NewContentViewEntity(BaseEntity):
         in the Content Type dropdown, and filter_inclusion should be either 'include' or 'exclude'
         :return: dict with new filter table row
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.filters.new_filter.click()
         view = CreateFilterView(self.browser)
         view.name.fill(filter_name)
         view.filterType.fill(filter_type)
-        if filter_inclusion == 'include':
+        if filter_inclusion == "include":
             view.includeFilter.fill(True)
-        elif filter_inclusion == 'exclude':
+        elif filter_inclusion == "exclude":
             view.excludeFilter.fill(True)
         else:
             raise ValueError("Filter_inclusion must be one of include or exclude.")
         view.create.click()
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         return view.filters.table.read()
 
     def delete_filter(self, entity_name, filter_name):
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.filters.search(filter_name)
-        view.filters.table[0][6].widget.item_select('Remove')
+        view.filters.table[0][6].widget.item_select("Remove")
         # Attempt to read the table, and if there isn't one return True, else delete failed so return False
         try:
             view.filters.table.read()
@@ -245,7 +245,7 @@ class NewContentViewEntity(BaseEntity):
     """
 
     def add_rule_rpm_filter(self, entity_name, filter_name, rpm_name, arch):
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.filters.search(filter_name)
         view.filters.table[0][1].widget.click()
         view = EditFilterView(self.browser)
@@ -258,7 +258,7 @@ class NewContentViewEntity(BaseEntity):
         return view.rpmRuleTable.read()
 
     def add_rule_tag_filter(self, entity_name, filter_name, rpm_name, arch):
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.filters.search(filter_name)
         view.filters.table[0][1].widget.click()
         view = EditFilterView(self.browser)
@@ -272,36 +272,45 @@ class NewContentViewEntity(BaseEntity):
 
     def read_french_lang_cv(self):
         """Navigates to main CV page, when system is set to French, and reads table"""
-        view = self.navigate_to(self, 'French')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "French")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         return view.table.read()
 
     def click_version_dropdown(self, entity_name, version, dropdown_option):
         """Clicks a specific dropdown option for a CV Version"""
-        view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(
+            self, "Version", entity_name=entity_name, version=version
+        )
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         return view.version_dropdown.item_select(dropdown_option)
 
     def republish_metadata_error(self, entity_name, version):
         """Clicks a specific dropdown option for a CV Version, that will throw an error"""
-        view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(
+            self, "Version", entity_name=entity_name, version=version
+        )
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         try:
-            view.version_dropdown.item_select('Republish repository metadata')
+            view.version_dropdown.item_select("Republish repository metadata")
         except DropdownItemDisabled as error:
-            if 'Item "Republish repository metadata"' and 'is disabled' in error.args[0]:
+            if (
+                'Item "Republish repository metadata"'
+                and "is disabled" in error.args[0]
+            ):
                 return True
-        return 'No error was found, metadata unexpectedly was able to be published.'
+        return "No error was found, metadata unexpectedly was able to be published."
 
-    def promote(self, entity_name, version, lce_name, err_message=''):
+    def promote(self, entity_name, version, lce_name, err_message=""):
         """Promotes the selected version of content view to given environment.
         :return: dict with new content view version table row; contains keys
         like 'Version', 'Status', 'Environments' etc.
         """
-        view = self.navigate_to(self, 'Promote', entity_name=entity_name, version=version)
+        view = self.navigate_to(
+            self, "Promote", entity_name=entity_name, version=version
+        )
         modal = ContentViewVersionPromoteView(self.browser)
         if modal.is_displayed:
             modal.lce_selector.fill({lce_name: True})
@@ -310,14 +319,14 @@ class NewContentViewEntity(BaseEntity):
                 view.flash.wait_displayed()
                 message = view.flash.read()
                 return message
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.wait_displayed()
         view.versions.search(version)
         return view.versions.table.row().read()
 
     def update(self, entity_name, values):
         """Update existing content view"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         time.sleep(3)
         filled_values = view.fill(values)
         view.flash.assert_no_error()
@@ -325,7 +334,7 @@ class NewContentViewEntity(BaseEntity):
         return filled_values
 
 
-@navigator.register(NewContentViewEntity, 'All')
+@navigator.register(NewContentViewEntity, "All")
 class ShowAllContentViewsScreen(NavigateStep):
     """Navigate to All Content Views screen."""
 
@@ -333,10 +342,10 @@ class ShowAllContentViewsScreen(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Lifecycle', 'Content Views')
+        self.view.menu.select("Content", "Lifecycle", "Content Views")
 
 
-@navigator.register(NewContentViewEntity, 'French')
+@navigator.register(NewContentViewEntity, "French")
 class ShowAllContentViewsScreenFrench(NavigateStep):
     """Navigate to All Content Views screen ( in French )"""
 
@@ -344,55 +353,55 @@ class ShowAllContentViewsScreenFrench(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Contenu', 'Lifecycle', 'Content Views')
+        self.view.menu.select("Contenu", "Lifecycle", "Content Views")
 
 
-@navigator.register(NewContentViewEntity, 'New')
+@navigator.register(NewContentViewEntity, "New")
 class CreateContentView(NavigateStep):
     """Navigate to Create content view."""
 
     VIEW = ContentViewCreateView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
         self.parent.create_content_view.click()
 
 
-@navigator.register(NewContentViewEntity, 'Edit')
+@navigator.register(NewContentViewEntity, "Edit")
 class EditContentView(NavigateStep):
     """Navigate to Edit Content View screen."""
 
     VIEW = ContentViewEditView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search.search(entity_name)
         self.parent.table.wait_displayed()
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+        self.parent.table.row(name=entity_name)["Name"].widget.click()
 
 
-@navigator.register(NewContentViewEntity, 'Version')
+@navigator.register(NewContentViewEntity, "Version")
 class ShowContentViewVersionDetails(NavigateStep):
     """Navigate to Content View Version screen for a specific Version."""
 
     VIEW = ContentViewVersionDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'Edit', **kwargs)
+        return self.navigate_to(self.obj, "Edit", **kwargs)
 
     def step(self, *args, **kwargs):
-        version = kwargs.get('version')
+        version = kwargs.get("version")
         self.parent.versions.wait_displayed()
         self.parent.versions.search(version)
         self.parent.versions.table.wait_displayed()
         self.parent.versions.search(version).click()
-        self.parent.versions.table.row(version=version)['Version'].widget.click()
+        self.parent.versions.table.row(version=version)["Version"].widget.click()
 
 
-@navigator.register(NewContentViewEntity, 'Publish')
+@navigator.register(NewContentViewEntity, "Publish")
 class PublishContentViewVersion(NavigateStep):
     """Navigate to Content View Publish screen.
     Args:
@@ -403,7 +412,9 @@ class PublishContentViewVersion(NavigateStep):
 
     def prerequisite(self, *args, **kwargs):
         """Open Content View first."""
-        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'), timeout=20)
+        return self.navigate_to(
+            self.obj, "Edit", entity_name=kwargs.get("entity_name"), timeout=20
+        )
 
     def step(self, *args, **kwargs):
         """Click 'Publish new version' button"""
@@ -411,7 +422,7 @@ class PublishContentViewVersion(NavigateStep):
         self.parent.publish.click()
 
 
-@navigator.register(NewContentViewEntity, 'Promote')
+@navigator.register(NewContentViewEntity, "Promote")
 class PromoteContentViewVersion(NavigateStep):
     """Navigate to Content View Promote screen.
     Args:
@@ -422,11 +433,11 @@ class PromoteContentViewVersion(NavigateStep):
     VIEW = ContentViewEditView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'Edit', entity_name=kwargs.get('entity_name'))
+        return self.navigate_to(self.obj, "Edit", entity_name=kwargs.get("entity_name"))
 
     def step(self, *args, **kwargs):
-        version = kwargs.get('version')
+        version = kwargs.get("version")
         self.parent.versions.wait_displayed()
         self.parent.versions.search(version)
         self.parent.versions.table.wait_displayed()
-        self.parent.versions.table[0][7].widget.item_select('Promote')
+        self.parent.versions.table[0][7].widget.item_select("Promote")

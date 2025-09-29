@@ -11,7 +11,9 @@ def _wait_for_spinner(widget):
     """Wait for any spinner to disappear from widget"""
     wait_for(
         lambda: widget.is_displayed
-        and not widget.browser.elements(".//div[contains(@class, 'spinner')]", parent=widget),
+        and not widget.browser.elements(
+            ".//div[contains(@class, 'spinner')]", parent=widget
+        ),
         timeout=60,
         delay=1,
         logger=widget.logger,
@@ -21,8 +23,8 @@ def _wait_for_spinner(widget):
 class AvailableRepositoryItem(GenericLocatorWidget):
     """The widget representation of Available repository item of an Available repository set."""
 
-    ENABLE_BUTTON = './/button'
-    TEXT = './/span'
+    ENABLE_BUTTON = ".//button"
+    TEXT = ".//span"
 
     @property
     def text(self):
@@ -58,7 +60,7 @@ class AvailableRepositorySetWidget(GenericLocatorWidget):
     @property
     def expanded(self):
         """Check whether this repository set is expanded or not."""
-        return 'active' in self.browser.get_attribute('class', self.expand_button)
+        return "active" in self.browser.get_attribute("class", self.expand_button)
 
     def expand(self):
         """Expand the repository set item section."""
@@ -82,8 +84,10 @@ class AvailableRepositorySetWidget(GenericLocatorWidget):
         if self.ITEM:
             self.expand()
             return [
-                AvailableRepositoryItem(self, f'{self.ITEMS}[{index + 1}]')
-                for index, _ in enumerate(self.browser.elements(self.ITEMS, parent=self))
+                AvailableRepositoryItem(self, f"{self.ITEMS}[{index + 1}]")
+                for index, _ in enumerate(
+                    self.browser.elements(self.ITEMS, parent=self)
+                )
             ]
         return []
 
@@ -106,7 +110,9 @@ class AvailableRepositorySetWidget(GenericLocatorWidget):
                 arch_version_item.enable()
                 break
         else:
-            raise ValueError(f'Repository "{item}" was not found in repository set "{self.name}"')
+            raise ValueError(
+                f'Repository "{item}" was not found in repository set "{self.name}"'
+            )
 
 
 class EnabledRepositoryWidget(AvailableRepositorySetWidget):
@@ -148,7 +154,7 @@ class RepositorySearchTypes(ActionsDropdown):
         return [
             self.browser.text(el)
             for el in self.browser.elements(self.ITEMS_LOCATOR, parent=self)
-            if el.get_attribute('aria-selected') == 'true'
+            if el.get_attribute("aria-selected") == "true"
         ]
 
     def select(self, items):
@@ -163,7 +169,9 @@ class RepositorySearchTypes(ActionsDropdown):
             if (item in items and item not in selected_items) or (
                 item not in items and item in selected_items
             ):
-                self.browser.element(self.ITEM_LOCATOR.format(item), parent=self).click()
+                self.browser.element(
+                    self.ITEM_LOCATOR.format(item), parent=self
+                ).click()
         self.close()
 
     def fill(self, items):
@@ -193,7 +201,7 @@ class RepositoryCategoryView(View):
     def items(self, name=None, label=None):
         items = []
         for index, _ in enumerate(self.browser.elements(self.ITEMS, parent=self)):
-            item = self.ITEM_WIDGET(self, f'{self.ITEMS}[{index + 1}]')
+            item = self.ITEM_WIDGET(self, f"{self.ITEMS}[{index + 1}]")
             if (name is not None and item.name != name) or (
                 label is not None and item.label != label
             ):
@@ -209,15 +217,21 @@ class RedHatRepositoriesView(BaseLoggedInView):
     """The main Red Hat repositories view."""
 
     title = Text("//h1[contains(., 'Red Hat Repositories')]")
-    search_category = RepositorySearchCategory(".//div[button[@id='search-list-select']]")
+    search_category = RepositorySearchCategory(
+        ".//div[button[@id='search-list-select']]"
+    )
     search_box = TextInput(
         locator='//*[@id="redhatRepositoriesPage"]//following::input[@aria-label="Search input"]'
     )
     search_button = Text(
         '//*[@id="redhatRepositoriesPage"]//following::button[@aria-label="Search"]'
     )
-    search_types = RepositorySearchTypes(".//div[button[@data-id='formControlsSelectMultiple']]")
-    search_by_filter_type = RepositorySearchTypes(".//div[button[@aria-owns='bs-select-2']]")
+    search_types = RepositorySearchTypes(
+        ".//div[button[@data-id='formControlsSelectMultiple']]"
+    )
+    search_by_filter_type = RepositorySearchTypes(
+        ".//div[button[@aria-owns='bs-select-2']]"
+    )
     search_clear = Text(".//span[@class = 'fa fa-times']")
     recommended_repos = Text(".//div[contains(@class, 'bootstrap-switch wrapper')]")
 
@@ -231,7 +245,7 @@ class RedHatRepositoriesView(BaseLoggedInView):
         ROOT = "//div[contains(@class, 'enabled-repositories-container')]"
         ITEM_WIDGET = EnabledRepositoryWidget
 
-    def search(self, value, category='Available', types=None):
+    def search(self, value, category="Available", types=None):
         """Search repositories.
 
         :param str value: The string to search by.
@@ -241,7 +255,7 @@ class RedHatRepositoriesView(BaseLoggedInView):
         """
         if types is None:
             types = []
-        supported_categories = ['Available', 'Enabled', 'Both']
+        supported_categories = ["Available", "Enabled", "Both"]
         if category not in supported_categories:
             raise ValueError(
                 f'category "{category}" not supported, please choose from {supported_categories}'
@@ -252,9 +266,9 @@ class RedHatRepositoriesView(BaseLoggedInView):
         self.search_types.fill(types)
         self.search_box.fill(value)
         self.search_button.click()
-        if category == 'Available':
+        if category == "Available":
             return self.available.read()
-        elif category == 'Enabled':
+        elif category == "Enabled":
             return self.enabled.read()
         else:
             return {"available": self.available.read(), "enabled": self.enabled.read()}

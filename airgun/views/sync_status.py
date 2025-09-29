@@ -22,7 +22,9 @@ class SyncStatusTableNode:
     """Table row interface to implement a sync status table row tree node"""
 
     CHECKBOX = "./td/input[@type='checkbox']"
-    RESULT_LINK = ".//a[not(contains(@class, 'hidden'))][not(contains(@class, 'progress'))]"
+    RESULT_LINK = (
+        ".//a[not(contains(@class, 'hidden'))][not(contains(@class, 'progress'))]"
+    )
     RESULT_PROGRESS = ".//a[contains(@class, 'progress')]"
     SECTION_EXPANDER = "./td/span[contains(@class, 'expander')]"
 
@@ -47,21 +49,21 @@ class SyncStatusTableNode:
     @cached_property
     def id(self):
         """Return the id of this node"""
-        return self.browser.get_attribute('id', self.row)
+        return self.browser.get_attribute("id", self.row)
 
     @cached_property
     def is_root(self):
         """Return whether this node is root node"""
-        return 'child-of' not in self.browser.get_attribute('class', self.row)
+        return "child-of" not in self.browser.get_attribute("class", self.row)
 
     def is_child_of(self, node):
         """Return whether this node is a child of node"""
-        return f'child-of-{node.id}' in self.browser.get_attribute('class', self.row)
+        return f"child-of-{node.id}" in self.browser.get_attribute("class", self.row)
 
     @property
     def is_displayed(self):
         """Returns whether this node is displayed"""
-        return 'display: none' not in self.browser.get_attribute('style', self.row)
+        return "display: none" not in self.browser.get_attribute("style", self.row)
 
     @cached_property
     def name(self):
@@ -72,7 +74,7 @@ class SyncStatusTableNode:
     @property
     def result(self):
         """Return the result column content"""
-        return self.row['RESULT'].read()
+        return self.row["RESULT"].read()
 
     @property
     def checkbox(self):
@@ -109,7 +111,7 @@ class SyncStatusTableNode:
     @property
     def expanded(self):
         """Return True in case this row is expanded"""
-        if 'expanded' in self.browser.get_attribute('class', self.row):
+        if "expanded" in self.browser.get_attribute("class", self.row):
             return True
         return False
 
@@ -129,9 +131,11 @@ class SyncStatusTableNode:
         """Add a child node to this node"""
         if not self.is_section:
             # we cannot add a node to a non section node
-            raise ReservedToSectionOnlyError('Adding node to a non section one is prohibited')
+            raise ReservedToSectionOnlyError(
+                "Adding node to a non section one is prohibited"
+            )
         if node.parent is not None:
-            raise ValueError('Child Node already has parent')
+            raise ValueError("Child Node already has parent")
 
         node.parent = self
         self.children[node.name] = node
@@ -155,7 +159,7 @@ class SyncStatusTableNode:
         """
         checkbox = self.checkbox
         if checkbox:
-            checked = self.browser.get_attribute('checked', checkbox)
+            checked = self.browser.get_attribute("checked", checkbox)
             if (value and not checked) or (not value and checked):
                 self.browser.click(checkbox)
 
@@ -221,7 +225,7 @@ class SyncStatusTable(SatTable):
                         # We have not found a parent for this node,
                         # this has not to happen, but in any case raise exception
                         raise ParentNodeNotFoundError(
-                            f'Parent node for row index = {row_index} not found'
+                            f"Parent node for row index = {row_index} not found"
                         )
         return nodes
 
@@ -266,7 +270,7 @@ class SyncStatusView(BaseLoggedInView):
     expand_all = Text(".//a[@id='expand_all']")
     select_none = Text(".//a[@id='select_none']")
     select_all = Text(".//a[@id='select_all']")
-    active_only = Checkbox(id='sync_toggle')
+    active_only = Checkbox(id="sync_toggle")
     table = SyncStatusTable(".//table[@id='products_table']")
     synchronize_now = Text(".//form/input[@type='submit']")
 

@@ -193,10 +193,10 @@ class Session:
         :param str optional url: URL path to open when starting session (without protocol
         """
         if session_name:
-            for c in '/ ':
-                session_name = session_name.replace(c, '_')
+            for c in "/ ":
+                session_name = session_name.replace(c, "_")
 
-        self.name = session_name or gen_string('alphanumeric')
+        self.name = session_name or gen_string("alphanumeric")
         self._user = user or settings.satellite.username
         self._password = password or settings.satellite.password
         self._session_cookie = session_cookie
@@ -208,7 +208,9 @@ class Session:
         self.browser = None
         self.ui_session_id = None
 
-    def __call__(self, user=None, password=None, session_cookie=None, url=None, login=None):
+    def __call__(
+        self, user=None, password=None, session_cookie=None, url=None, login=None
+    ):
         """Stores provided values. This allows tests to provide additional
         value when Session object is returned from fixture and used as
         context manager. Arguments are the same as when initializing
@@ -243,7 +245,7 @@ class Session:
         if self.browser is None:
             # browser hasn't been started or was already closed, don't do anything
             return
-        LOGGER.info('Stopping UI session %r for user %r', self.name, self._user)
+        LOGGER.info("Stopping UI session %r for user %r", self.name, self._user)
         passed = True if exc_type is None else False
         try:
             if not passed:
@@ -261,7 +263,7 @@ class Session:
             if self._url:
                 endpoint = self._url
             else:
-                endpoint = getattr(entity, 'endpoint_path', '/')
+                endpoint = getattr(entity, "endpoint_path", "/")
             full_url = f"https://{self._hostname}{endpoint}"
             self._prepare_browser(full_url)
 
@@ -274,19 +276,21 @@ class Session:
         """
         if self._session_cookie:
             LOGGER.info(
-                'Starting UI session id: %r from a session cookie',
-                self._session_cookie.cookies.get_dict()['_session_id'],
+                "Starting UI session id: %r from a session cookie",
+                self._session_cookie.cookies.get_dict()["_session_id"],
             )
         else:
-            LOGGER.info('Starting UI session %r for user %r', self.name, self._user)
+            LOGGER.info("Starting UI session %r for user %r", self.name, self._user)
         self._factory = SeleniumBrowserFactory(
-            test_name=self.name, session_cookie=self._session_cookie, hostname=self._hostname
+            test_name=self.name,
+            session_cookie=self._session_cookie,
+            hostname=self._hostname,
         )
         try:
             selenium_browser = self._factory.get_browser()
             self.browser = AirgunBrowser(selenium_browser, self)
-            LOGGER.info(f'Session Id For {self.name}: {selenium_browser.session_id}')
-            LOGGER.info(f'Setting initial URL to {url}')
+            LOGGER.info(f"Session Id For {self.name}: {selenium_browser.session_id}")
+            LOGGER.info(f"Setting initial URL to {url}")
             self.ui_session_id = selenium_browser.session_id
 
             self.browser.url = url
@@ -297,7 +301,7 @@ class Session:
             self.navigator = Navigate(self.browser)
             self.navigator.dest_dict = navigator.dest_dict.copy()
             if self._session_cookie is None and self._login:
-                self.login.login({'username': self._user, 'password': self._password})
+                self.login.login({"username": self._user, "password": self._password})
         except Exception as exception:
             self.__exit__(*sys.exc_info())
             raise exception
@@ -318,17 +322,17 @@ class Session:
         now = datetime.now()
         path = os.path.join(
             settings.selenium.screenshots_path,
-            now.strftime('%Y-%m-%d'),
+            now.strftime("%Y-%m-%d"),
         )
         if not os.path.exists(path):
             os.makedirs(path)
         path = os.path.join(
             path,
-            f'{self.name}-screenshot-{now.strftime("%Y-%m-%d_%H_%M_%S")}.png',
+            f"{self.name}-screenshot-{now.strftime('%Y-%m-%d_%H_%M_%S')}.png",
         )
-        LOGGER.debug('Saving screenshot %s', path)
+        LOGGER.debug("Saving screenshot %s", path)
         if not self.browser.selenium.save_screenshot(path):
-            LOGGER.error('Failed to save screenshot %s', path)
+            LOGGER.error("Failed to save screenshot %s", path)
 
     @cached_property
     def acs(self):

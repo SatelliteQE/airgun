@@ -5,10 +5,10 @@ from airgun.views.about import AboutView
 
 
 class AboutEntity(BaseEntity):
-    endpoint_path = '/about'
+    endpoint_path = "/about"
 
 
-@navigator.register(AboutEntity, 'All')
+@navigator.register(AboutEntity, "All")
 class ShowAboutPage(NavigateStep):
     """Navigate to About page."""
 
@@ -16,4 +16,4 @@ class ShowAboutPage(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Administer', 'About')
+        self.view.menu.select("Administer", "About")

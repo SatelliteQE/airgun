@@ -9,10 +9,10 @@ class RolesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Roles']")
     new = Text("//a[contains(@href, '/roles/new')]")
     table = SatTable(
-        './/table',
+        ".//table",
         column_widgets={
-            'Name': Text('./span/a'),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            "Name": Text("./span/a"),
+            "Actions": ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
 
@@ -23,30 +23,34 @@ class RolesView(BaseLoggedInView, SearchableViewMixinPF4):
 
 class RoleEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    name = TextInput(id='role_name')
-    description = TextInput(id='role_description')
-    locations = MultiSelect(id='ms-role_location_ids')
-    organizations = MultiSelect(id='ms-role_organization_ids')
+    name = TextInput(id="role_name")
+    description = TextInput(id="role_description")
+    locations = MultiSelect(id="ms-role_location_ids")
+    organizations = MultiSelect(id="ms-role_organization_ids")
     submit = Text('//input[@name="commit"]')
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Roles'
-            and self.breadcrumb.read().startswith('Edit ')
+            and self.breadcrumb.locations[0] == "Roles"
+            and self.breadcrumb.read().startswith("Edit ")
         )
 
 
 class RoleCreateView(RoleEditView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Roles'
-            and self.breadcrumb.read() == 'Create Role'
+            and self.breadcrumb.locations[0] == "Roles"
+            and self.breadcrumb.read() == "Create Role"
         )
 
 

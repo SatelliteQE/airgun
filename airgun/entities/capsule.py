@@ -10,7 +10,7 @@ from airgun.views.capsule import (
 
 
 class CapsuleEntity(BaseEntity):
-    endpoint_path = '/smart_proxies'
+    endpoint_path = "/smart_proxies"
 
     def get_operation_status(self, view):
         """
@@ -39,7 +39,7 @@ class CapsuleEntity(BaseEntity):
             capsule_name (str): Name of capsule to be read
         """
 
-        view = self.navigate_to(self, 'Capsules')
+        view = self.navigate_to(self, "Capsules")
         view.wait_displayed()
         view.searchbox.search(f'name="{capsule_name}"')
         return view.read()
@@ -52,24 +52,24 @@ class CapsuleEntity(BaseEntity):
             capsule_name (str): Name of capsule to be read
         """
 
-        view = self.navigate_to(self, 'Capsules')
+        view = self.navigate_to(self, "Capsules")
         view.wait_displayed()
         view.searchbox.search(f'name="{capsule_name}"')
-        view.table.row(name=capsule_name)['Name'].click()
+        view.table.row(name=capsule_name)["Name"].click()
         view = CapsuleDetailsView(self.browser)
         return view.read()
 
     def read_all(self):
         """Read all values from Capsules page"""
 
-        view = self.navigate_to(self, 'Capsules')
+        view = self.navigate_to(self, "Capsules")
         view.wait_displayed()
         return view.read()
 
     def view_documentation(self):
         """Opens Capsule documentation page"""
 
-        view = self.navigate_to(self, 'Capsules')
+        view = self.navigate_to(self, "Capsules")
         view.wait_displayed()
         view.documentation.click()
 
@@ -89,7 +89,7 @@ class CapsuleEntity(BaseEntity):
             }
         """
 
-        view = self.navigate_to(self, 'Capsules')
+        view = self.navigate_to(self, "Capsules")
         view.wait_displayed()
         view.create_capsule.click()
         view = CreateCapsuleView(self.browser)
@@ -124,10 +124,10 @@ class CapsuleEntity(BaseEntity):
             capsule_name (str): Name of capsule to be edited
         """
 
-        view = self.navigate_to(self, 'Capsules')
+        view = self.navigate_to(self, "Capsules")
         view.wait_displayed()
         view.search(f'name="{capsule_name_to_edit}"')
-        view.table.row(name=capsule_name_to_edit)['Actions'].widget.fill('Edit')
+        view.table.row(name=capsule_name_to_edit)["Actions"].widget.fill("Edit")
         view = EditCapsuleView(self.browser)
 
         if new_capsule_name:
@@ -153,10 +153,10 @@ class CapsuleEntity(BaseEntity):
 
         if assigned_lces:
             view.lifecycle_enviroments.resources.remove_all()
-            view.lifecycle_enviroments.resources.fill({'assigned': assigned_lces})
+            view.lifecycle_enviroments.resources.fill({"assigned": assigned_lces})
 
         if add_lces:
-            view.lifecycle_enviroments.resources.fill({'assigned': add_lces})
+            view.lifecycle_enviroments.resources.fill({"assigned": add_lces})
 
         if add_all_locations:
             view.locations.resources.add_all()
@@ -166,10 +166,10 @@ class CapsuleEntity(BaseEntity):
 
         if assigned_locations:
             view.locations.resources.remove_all()
-            view.locations.resources.fill({'assigned': assigned_locations})
+            view.locations.resources.fill({"assigned": assigned_locations})
 
         if add_locations:
-            view.locations.resources.fill({'assigned': add_locations})
+            view.locations.resources.fill({"assigned": add_locations})
 
         if add_all_organizations:
             view.organizations.resources.add_all()
@@ -179,14 +179,14 @@ class CapsuleEntity(BaseEntity):
 
         if assigned_organizations:
             view.organizations.resources.remove_all()
-            view.organizations.resources.fill({'assigned': assigned_organizations})
+            view.organizations.resources.fill({"assigned": assigned_organizations})
 
         if add_organizations:
-            view.organizations.resources.fill({'assigned': add_organizations})
+            view.organizations.resources.fill({"assigned": add_organizations})
 
         view.submit.click()
         view = CapsulesView(self.browser)
-        view.search('')
+        view.search("")
 
     def refresh(self, capsule_name):
         """
@@ -198,9 +198,9 @@ class CapsuleEntity(BaseEntity):
             refresh_status (str): Status of refresh action (success/error) or None
         """
 
-        view = self.navigate_to(self, 'Capsules')
+        view = self.navigate_to(self, "Capsules")
         view.wait_displayed()
-        view.table.row(name=capsule_name)['Actions'].widget.fill('Refresh')
+        view.table.row(name=capsule_name)["Actions"].widget.fill("Refresh")
 
         return self.get_operation_status(view)
 
@@ -212,9 +212,9 @@ class CapsuleEntity(BaseEntity):
             capsule_name (str): Name of capsule we want logs to expire
         """
 
-        view = self.navigate_to(self, 'Capsules')
+        view = self.navigate_to(self, "Capsules")
         view.wait_displayed()
-        view.table.row(name=capsule_name)['Actions'].widget.fill('Expire logs')
+        view.table.row(name=capsule_name)["Actions"].widget.fill("Expire logs")
 
     def delete(self, capsule_name):
         """
@@ -226,9 +226,9 @@ class CapsuleEntity(BaseEntity):
             refresh_status (str): Status of delete action (success/error) or None
         """
 
-        view = self.navigate_to(self, 'Capsules')
+        view = self.navigate_to(self, "Capsules")
         view.wait_displayed()
-        view.table.row(name=capsule_name)['Actions'].widget.fill('Delete')
+        view.table.row(name=capsule_name)["Actions"].widget.fill("Delete")
         if view.confirm_deletion.is_displayed:
             view.confirm_deletion.confirm()
 
@@ -243,23 +243,25 @@ class CapsuleEntity(BaseEntity):
             sync_type (str): Type of sync to be performed
         """
 
-        view = self.navigate_to(self, 'Capsules')
+        view = self.navigate_to(self, "Capsules")
         view.wait_displayed()
         view.searchbox.search(f'name="{capsule_name}"')
-        view.table.row(name=capsule_name)['Name'].click()
+        view.table.row(name=capsule_name)["Name"].click()
         view = CapsuleDetailsView(self.browser)
-        if sync_type == 'Optimized Sync':
+        if sync_type == "Optimized Sync":
             view.overview.synchronize_action_drop.fill(
                 view.overview.synchronize_action_drop.items[0]
             )
-        elif sync_type == 'Complete Sync':
+        elif sync_type == "Complete Sync":
             view.overview.synchronize_action_drop.fill(
                 view.overview.synchronize_action_drop.items[1]
             )
-        elif sync_type == 'Reclaim Space':
+        elif sync_type == "Reclaim Space":
             # Workauround for for selecting from ActionDropdown by value which contains double quotes
             view.overview.synchronize_action_drop.open()
-            self.browser.element('.//ul/li/a[@ng-click="reclaimSpace()"]', parent=self).click()
+            self.browser.element(
+                './/ul/li/a[@ng-click="reclaimSpace()"]', parent=self
+            ).click()
 
     def optimized_sync(self, capsule_name):
         """
@@ -269,7 +271,7 @@ class CapsuleEntity(BaseEntity):
             capsule_name (str): Name of capsule to be synced
         """
 
-        self.sync(capsule_name, 'Optimized Sync')
+        self.sync(capsule_name, "Optimized Sync")
 
     def complete_sync(self, capsule_name):
         """
@@ -279,7 +281,7 @@ class CapsuleEntity(BaseEntity):
             capsule_name (str): Name of capsule to be synced
         """
 
-        self.sync(capsule_name, 'Complete Sync')
+        self.sync(capsule_name, "Complete Sync")
 
     def refresh_lce_counts(self, capsule_name, lce_name, cv_name=None):
         """
@@ -291,25 +293,25 @@ class CapsuleEntity(BaseEntity):
             cv_name (str, optional): Name of CV within LCE to be refreshed only
         """
 
-        view = self.navigate_to(self, 'Capsules')
+        view = self.navigate_to(self, "Capsules")
         view.wait_displayed()
-        view.table.row(name=capsule_name)['Name'].click()
+        view.table.row(name=capsule_name)["Name"].click()
         view = CapsuleDetailsView(self.browser)
         view.wait_displayed()
         if not cv_name:
             view.content.top_content_table.row(Environment=lce_name)[3].click()
-            view.content.top_content_table.row(Environment=lce_name)[3].widget.item_select(
-                'Refresh counts'
-            )
+            view.content.top_content_table.row(Environment=lce_name)[
+                3
+            ].widget.item_select("Refresh counts")
         else:
             view.content.top_content_table.row(Environment=lce_name)[0].click()
             view.content.mid_content_table.row(content_view=cv_name)[5].click()
-            view.content.mid_content_table.row(content_view=cv_name)[5].widget.item_select(
-                'Refresh counts'
-            )
+            view.content.mid_content_table.row(content_view=cv_name)[
+                5
+            ].widget.item_select("Refresh counts")
 
 
-@navigator.register(CapsuleEntity, 'Capsules')
+@navigator.register(CapsuleEntity, "Capsules")
 class OpenCapsulesPage(NavigateStep):
     """Navigate to the Capsules page"""
 
@@ -317,4 +319,4 @@ class OpenCapsulesPage(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Infrastructure', 'Capsules')
+        self.view.menu.select("Infrastructure", "Capsules")

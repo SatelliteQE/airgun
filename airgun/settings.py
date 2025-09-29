@@ -2,7 +2,7 @@ from configparser import ConfigParser
 import logging
 import os
 
-SETTINGS_FILE_NAME = 'settings.ini'
+SETTINGS_FILE_NAME = "settings.ini"
 
 
 def get_project_root():
@@ -57,14 +57,14 @@ class Settings:
     def _configure_logging(self):
         logging.captureWarnings(False)
         logging.basicConfig(
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S',
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
             level=self.airgun.verbosity,
         )
-        logging.getLogger('airgun').setLevel(self.airgun.verbosity)
+        logging.getLogger("airgun").setLevel(self.airgun.verbosity)
 
     def _configure_thirdparty_logging(self):
-        logging.getLogger('widgetastic_null').setLevel(self.airgun.verbosity)
+        logging.getLogger("widgetastic_null").setLevel(self.airgun.verbosity)
 
     def configure(self, settings=None):
         """Parses arg `settings` or settings file if None passed and sets class

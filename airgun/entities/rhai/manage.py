@@ -5,7 +5,7 @@ from airgun.views.rhai import ManageDetailsView
 
 
 class ManageEntity(BaseEntity):
-    endpoint_path = '/redhat_access/insights/manage'
+    endpoint_path = "/redhat_access/insights/manage"
 
     def _toggle_service(self, state):
         view = self.navigate_to(self, "Details")

@@ -27,40 +27,40 @@ from airgun.views.job_invocation import JobInvocationCreateView
 
 
 class AllHostsEntity(BaseEntity):
-    endpoint_path = '/new/hosts'
+    endpoint_path = "/new/hosts"
 
     def search(self, host_name):
         """Search for specific Host"""
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "All")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         return view.search(host_name)
 
     def read_filled_searchbox(self):
         """Read filled searchbox"""
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "All")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         return view.searchbox.read()
 
     def read_table(self):
         """Read All Hosts table"""
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "All")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         return view.table.read()
 
     def delete(self, host_name):
         """Delete host through table dropdown"""
         view = self.all_hosts_navigate_and_select_hosts_helper(host_names=host_name)
-        view.table[0][2].widget.item_select('Delete')
+        view.table[0][2].widget.item_select("Delete")
         delete_modal = HostDeleteDialog(self.browser)
         if delete_modal.is_displayed:
             delete_modal.confirm_delete.click()
         else:
             raise NoSuchElementException("Delete Modal was not displayed.")
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "All")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         view.search(host_name)
         return view.no_results
@@ -69,13 +69,13 @@ class AllHostsEntity(BaseEntity):
         """Delete multiple hosts through bulk action dropdown"""
         view = self.all_hosts_navigate_and_select_hosts_helper(select_all_hosts=True)
         view.bulk_actions_kebab.click()
-        view.bulk_actions_menu.item_select('Delete')
+        view.bulk_actions_menu.item_select("Delete")
         delete_modal = BulkHostDeleteDialog(self.browser)
         if delete_modal.is_displayed:
             delete_modal.confirm_checkbox.fill(True)
             delete_modal.confirm_delete.click()
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "All")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         return view.no_results
 
@@ -83,7 +83,7 @@ class AllHostsEntity(BaseEntity):
         """Build or rebuild hosts through build management popup"""
         view = self.all_hosts_navigate_and_select_hosts_helper(select_all_hosts=True)
         view.bulk_actions_kebab.click()
-        view.bulk_actions_menu.item_select('Build management')
+        view.bulk_actions_menu.item_select("Build management")
         build_management_modal = BuildManagementDialog(self.browser)
         if build_management_modal.is_displayed:
             if reboot:
@@ -97,7 +97,7 @@ class AllHostsEntity(BaseEntity):
     def change_hostgroup(self, name):
         """Change hostgroup of all hosts to chosen hostgroup"""
         view = self.all_hosts_navigate_and_select_hosts_helper(select_all_hosts=True)
-        view.bulk_actions.item_select('Change host group')
+        view.bulk_actions.item_select("Change host group")
         view = HostgroupDialog(self.browser)
         view.hostgroup_dropdown.item_select(name)
         view.save_button.click()
@@ -108,13 +108,15 @@ class AllHostsEntity(BaseEntity):
             lce (str): Lifecycle Environment to swap the hosts to.
             cv (str): CV within that LCE to assign the hosts to.
         """
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "All")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         view.select_all.fill(True)
         view.bulk_actions_kebab.click()
-        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
-        view.bulk_actions_manage_content_menu.item_select('Content view environments')
+        self.browser.move_to_element(
+            view.bulk_actions_menu.item_element("Manage content")
+        )
+        view.bulk_actions_manage_content_menu.item_select("Content view environments")
         view = ManageCVEModal(self.browser)
         view.lce_selector.fill({lce: True})
         view.content_source_select.item_select(cv)
@@ -127,7 +129,7 @@ class AllHostsEntity(BaseEntity):
         :param dict values: items of 'column name: value' pairs
             Example: {'IPv4': True, 'Power': False, 'Model': True}
         """
-        view = self.navigate_to(self, 'ManageColumns')
+        view = self.navigate_to(self, "ManageColumns")
         view.fill(values)
         view.submit()
 
@@ -137,8 +139,8 @@ class AllHostsEntity(BaseEntity):
 
         :return list: header names of the hosts table
         """
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "All")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         return view.table.headers
 
@@ -161,7 +163,8 @@ class AllHostsEntity(BaseEntity):
             search_input = getattr(view, f"{action_type}_packages").search_input
             search_input.fill(f'name = "{package}"')
             self.browser.wait_for_element(
-                getattr(view, f"{action_type}_packages").table[0][0].widget, exception=False
+                getattr(view, f"{action_type}_packages").table[0][0].widget,
+                exception=False,
             )
             getattr(view, f"{action_type}_packages").table[0][0].widget.fill(True)
 
@@ -211,13 +214,17 @@ class AllHostsEntity(BaseEntity):
                 "Exactly one of the options must be selected: packages_to_upgrade, packages_to_install, packages_to_remove!"
             )
 
-        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+        view = self.all_hosts_navigate_and_select_hosts_helper(
+            host_names, select_all_hosts
+        )
 
         # Open Manage Packages modal
         view.bulk_actions_kebab.click()
         # This is here beacuse there is nested flyout menu which needs to be hovered over first so we can use item_select in the next step
-        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
-        view.bulk_actions_manage_content_menu.item_select('Packages')
+        self.browser.move_to_element(
+            view.bulk_actions_menu.item_element("Manage content")
+        )
+        view.bulk_actions_manage_content_menu.item_select("Packages")
 
         view = ManagePackagesModal(self.browser)
 
@@ -232,7 +239,9 @@ class AllHostsEntity(BaseEntity):
             else packages_to_upgrade
         )
         packages_to_remove = (
-            [packages_to_remove] if not isinstance(packages_to_remove, list) else packages_to_remove
+            [packages_to_remove]
+            if not isinstance(packages_to_remove, list)
+            else packages_to_remove
         )
 
         # Select management action and handle the option
@@ -241,36 +250,38 @@ class AllHostsEntity(BaseEntity):
             view.select_action.upgrade_all_packages_radio.fill(True)
 
         elif upgrade_packages and (not upgrade_all_packages):
-            self.manage_packages_helper(view, 'upgrade', packages_to_upgrade)
+            self.manage_packages_helper(view, "upgrade", packages_to_upgrade)
 
         elif install_packages:
-            self.manage_packages_helper(view, 'install', packages_to_install)
+            self.manage_packages_helper(view, "install", packages_to_install)
 
         elif remove_packages:
-            self.manage_packages_helper(view, 'remove', packages_to_remove)
+            self.manage_packages_helper(view, "remove", packages_to_remove)
 
         # In this particular case dropdown has slightly different structure that what is defined in widgetastic
         view.review.manage_via_dropdown.ITEMS_LOCATOR = (
             "//ul[contains(@class, 'pf-v5-c-dropdown__menu')]/li"
         )
-        view.review.manage_via_dropdown.ITEM_LOCATOR = (
-            "//*[contains(@class, 'pf-v5-c-dropdown__menu-item') and normalize-space(.)={}]"
-        )
+        view.review.manage_via_dropdown.ITEM_LOCATOR = "//*[contains(@class, 'pf-v5-c-dropdown__menu-item') and normalize-space(.)={}]"
         # Select how to manage packages
         if not manage_by_customized_rex:
             view.review.expander.click()
-            view.review.manage_via_dropdown.item_select('via remote execution')
+            view.review.manage_via_dropdown.item_select("via remote execution")
             view.review.finish_package_management_btn.click()
         else:
             # In this case "Run job" page is opened on which user can specify job details
             # Here we just select tu run with prefilled values
             view.review.expander.click()
-            view.review.manage_via_dropdown.item_select('via customized remote execution')
+            view.review.manage_via_dropdown.item_select(
+                "via customized remote execution"
+            )
             view.review.finish_package_management_btn.click()
             view = JobInvocationCreateView(self.browser)
             view.submit.click()
 
-    def manage_errata_helper(self, view, erratas_to_apply_by_id, individual_search_queries):
+    def manage_errata_helper(
+        self, view, erratas_to_apply_by_id, individual_search_queries
+    ):
         """
         Helper function to manage errata for selected hosts.
         Based on the user input it finds errata by provied ids or by individual search queries.
@@ -282,11 +293,11 @@ class AllHostsEntity(BaseEntity):
         """
 
         values_to_iterate = None
-        search_query_prefix = ''
+        search_query_prefix = ""
 
         if erratas_to_apply_by_id is not None:
             values_to_iterate = erratas_to_apply_by_id
-            search_query_prefix = 'errata_id = '
+            search_query_prefix = "errata_id = "
 
         elif individual_search_queries is not None:
             values_to_iterate = individual_search_queries
@@ -295,9 +306,11 @@ class AllHostsEntity(BaseEntity):
             clear_search = view.select_errata.clear_search
             if clear_search.is_displayed:
                 clear_search.click()
-            view.select_errata.search_input.fill(f'{search_query_prefix}{search_query}')
+            view.select_errata.search_input.fill(f"{search_query_prefix}{search_query}")
 
-            self.browser.wait_for_element(view.select_errata.table[0][0].widget, exception=False)
+            self.browser.wait_for_element(
+                view.select_errata.table[0][0].widget, exception=False
+            )
             view.select_errata.table[0][0].widget.fill(True)
 
     def manage_errata(
@@ -326,42 +339,50 @@ class AllHostsEntity(BaseEntity):
             )
 
         # if erratas_to_apply_by_id is specified, make sure it is a list
-        if erratas_to_apply_by_id is not None and not isinstance(erratas_to_apply_by_id, list):
+        if erratas_to_apply_by_id is not None and not isinstance(
+            erratas_to_apply_by_id, list
+        ):
             erratas_to_apply_by_id = [erratas_to_apply_by_id]
 
-        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+        view = self.all_hosts_navigate_and_select_hosts_helper(
+            host_names, select_all_hosts
+        )
 
         # Open Manage Erratas modal
         view.bulk_actions_kebab.click()
         # This is here beacuse there is nested flyout menu which needs to be hovered over first so we can use item_select in the next step
-        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
-        view.bulk_actions_manage_content_menu.item_select('Errata')
+        self.browser.move_to_element(
+            view.bulk_actions_menu.item_element("Manage content")
+        )
+        view.bulk_actions_manage_content_menu.item_select("Errata")
 
         view = ManageErrataModal(self.browser)
 
         # Select erratas to apply
-        self.manage_errata_helper(view, erratas_to_apply_by_id, individual_search_queries)
+        self.manage_errata_helper(
+            view, erratas_to_apply_by_id, individual_search_queries
+        )
 
         # In this particular case dropdown has slightly different structure that what is defined in widgetastic
         view.review.manage_via_dropdown.ITEMS_LOCATOR = (
             "//ul[contains(@class, 'pf-v5-c-dropdown__menu')]/li"
         )
-        view.review.manage_via_dropdown.ITEM_LOCATOR = (
-            "//*[contains(@class, 'pf-v5-c-dropdown__menu-item') and normalize-space(.)={}]"
-        )
+        view.review.manage_via_dropdown.ITEM_LOCATOR = "//*[contains(@class, 'pf-v5-c-dropdown__menu-item') and normalize-space(.)={}]"
         # Select how to manage errata
         if not manage_by_customized_rex:
             view.review.expander.click()
-            view.review.manage_via_dropdown.item_select('via remote execution')
+            view.review.manage_via_dropdown.item_select("via remote execution")
             view.review.finish_errata_management_btn.click()
         else:
             # In this case "Run job" page is opened on which user can specify job details
             # Here we just select tu run with prefilled values
             view.review.expander.click()
-            view.review.manage_via_dropdown.item_select('via customized remote execution')
+            view.review.manage_via_dropdown.item_select(
+                "via customized remote execution"
+            )
             view.review.finish_errata_management_btn.click()
             view = JobInvocationCreateView(self.browser)
-            self.browser.plugin.ensure_page_safe(timeout='5s')
+            self.browser.plugin.ensure_page_safe(timeout="5s")
             wait_for(lambda: view.submit.is_displayed, timeout=10)
             view.submit.click()
 
@@ -370,7 +391,7 @@ class AllHostsEntity(BaseEntity):
         host_names=None,
         select_all_hosts=False,
         repository_names=None,
-        status_to_change='No change',
+        status_to_change="No change",
         individual_search_queries=None,
     ):
         """
@@ -388,22 +409,26 @@ class AllHostsEntity(BaseEntity):
         # if both repository_names and individual_search_queries are specified, raise an error
         if repository_names is not None and individual_search_queries is not None:
             raise ValueError(
-                'Cannot specify both repository_names and individual_search_queries at the same time!'
+                "Cannot specify both repository_names and individual_search_queries at the same time!"
             )
 
         # if status_to_change is 'No change', then it will not allow to move ahead so raise an exception
-        if status_to_change == 'No change':
+        if status_to_change == "No change":
             raise ValueError(
                 'Value of status_to_change should not be "No change", it will not allow to move next page'
             )
 
-        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+        view = self.all_hosts_navigate_and_select_hosts_helper(
+            host_names, select_all_hosts
+        )
 
         # Open Manage Repository sets modal
         view.bulk_actions_kebab.click()
 
-        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
-        view.bulk_actions_manage_content_menu.item_select('Repository sets')
+        self.browser.move_to_element(
+            view.bulk_actions_menu.item_element("Manage content")
+        )
+        view.bulk_actions_manage_content_menu.item_select("Repository sets")
 
         view = ManageRepositorySetsModal(self.browser)
 
@@ -440,18 +465,22 @@ class AllHostsEntity(BaseEntity):
                 clear_search_cross_button.click()
             view.select_repository_sets.search_input.fill(search_query.format(repo))
 
-            self.browser.plugin.ensure_page_safe(timeout='5s')
+            self.browser.plugin.ensure_page_safe(timeout="5s")
             view.wait_displayed()
             # For some reason it is needed to read the widget first, it fails, but enables filling in the next step
             try:
-                _ = view.select_repository_sets.table[0]['Status'].widget
+                _ = view.select_repository_sets.table[0]["Status"].widget
             except anytree.resolver.ResolverError:
                 contextlib.suppress(Exception)
-            view.select_repository_sets.table[0]['Status'].widget.item_select(status_to_change)
+            view.select_repository_sets.table[0]["Status"].widget.item_select(
+                status_to_change
+            )
 
         view.next_btn.click()  # Next button from 'Select repository sets'
         view.next_btn.click()  # Next button from 'Review hosts'
-        if view.review.number_of_repository_status_changed.text != str(len(repository_names)):
+        if view.review.number_of_repository_status_changed.text != str(
+            len(repository_names)
+        ):
             raise Exception("Repository count not matches")
         view.review.set_content_overrides.click()
 
@@ -460,15 +489,17 @@ class AllHostsEntity(BaseEntity):
     ):
         """Return the text from both the manage packages and manage errata modals review hosts step"""
         # Navigate to All Hosts
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "All")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         view.select_all.fill(True)
 
         # Get text from Manage Packages -> Review Hosts
         view.bulk_actions_kebab.click()
-        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
-        view.bulk_actions_manage_content_menu.item_select('Packages')
+        self.browser.move_to_element(
+            view.bulk_actions_menu.item_element("Manage content")
+        )
+        view.bulk_actions_manage_content_menu.item_select("Packages")
 
         view = ManagePackagesModal(self.browser)
         view.select_action.upgrade_all_packages_radio.fill(True)
@@ -476,15 +507,17 @@ class AllHostsEntity(BaseEntity):
         view.cancel_btn.click()
 
         # Get text from Manage Errata -> Review Hosts
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "All")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         view.select_all.fill(True)
 
         # Get text from Manage Packages -> Review Hosts
         view.bulk_actions_kebab.click()
-        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
-        view.bulk_actions_manage_content_menu.item_select('Errata')
+        self.browser.move_to_element(
+            view.bulk_actions_menu.item_element("Manage content")
+        )
+        view.bulk_actions_manage_content_menu.item_select("Errata")
 
         view = ManageErrataModal(self.browser)
         view.next_btn.click()
@@ -499,15 +532,19 @@ class AllHostsEntity(BaseEntity):
         :param select_all_hosts: If True, all hosts will be selected for disassociation.
         """
 
-        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+        view = self.all_hosts_navigate_and_select_hosts_helper(
+            host_names, select_all_hosts
+        )
 
         view.bulk_actions_kebab.click()
-        view.bulk_actions_menu.item_select('Disassociate hosts')
+        view.bulk_actions_menu.item_select("Disassociate hosts")
 
         view = DisassociateHostsModal(self.browser)
         view.confirm_btn.click()
 
-    def all_hosts_navigate_and_select_hosts_helper(self, host_names=None, select_all_hosts=False):
+    def all_hosts_navigate_and_select_hosts_helper(
+        self, host_names=None, select_all_hosts=False
+    ):
         """
         Helper function to navigate to All Hosts and select specified hosts or all hosts.
         This function is used to avoid code duplication in methods that require host selection.
@@ -521,12 +558,14 @@ class AllHostsEntity(BaseEntity):
         """
 
         if select_all_hosts and host_names:
-            raise ValueError('Cannot select all and specify host names at the same time!')
+            raise ValueError(
+                "Cannot select all and specify host names at the same time!"
+            )
         if not select_all_hosts and not host_names:
-            raise ValueError('Must specify either host_names or select_all_hosts.')
+            raise ValueError("Must specify either host_names or select_all_hosts.")
 
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "All")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
 
         if select_all_hosts:
@@ -549,11 +588,15 @@ class AllHostsEntity(BaseEntity):
         :param select_all_hosts: bool, if True, all hosts will be selected
         """
 
-        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+        view = self.all_hosts_navigate_and_select_hosts_helper(
+            host_names, select_all_hosts
+        )
 
         view.bulk_actions_kebab.click()
-        self.browser.move_to_element(view.bulk_actions_menu.item_element('Change associations'))
-        view.bulk_actions_change_associations_menu.item_select('Owner')
+        self.browser.move_to_element(
+            view.bulk_actions_menu.item_element("Change associations")
+        )
+        view.bulk_actions_change_associations_menu.item_select("Owner")
 
         view = ChangeHostsOwnerModal(self.browser)
         view.owner_select.item_select(new_owner_name)
@@ -577,13 +620,19 @@ class AllHostsEntity(BaseEntity):
         """
 
         if new_organization is None:
-            raise ValueError('new_organization argument is None, it will not allow to Save changes')
+            raise ValueError(
+                "new_organization argument is None, it will not allow to Save changes"
+            )
 
-        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+        view = self.all_hosts_navigate_and_select_hosts_helper(
+            host_names, select_all_hosts
+        )
 
         view.bulk_actions_kebab.click()
-        self.browser.move_to_element(view.bulk_actions_menu.item_element('Change associations'))
-        view.bulk_actions_change_associations_menu.item_select('Organization')
+        self.browser.move_to_element(
+            view.bulk_actions_menu.item_element("Change associations")
+        )
+        view.bulk_actions_change_associations_menu.item_select("Organization")
 
         view = ChangeOrganizationModal(self.browser)
         view.organization_menu.item_select(new_organization)
@@ -597,7 +646,11 @@ class AllHostsEntity(BaseEntity):
             view.save_button.click()
 
     def change_associations_location(
-        self, host_names=None, new_location=None, select_all_hosts=False, option="Fix on mismatch"
+        self,
+        host_names=None,
+        new_location=None,
+        select_all_hosts=False,
+        option="Fix on mismatch",
     ):
         """
         Navigate to change location modal after selecting number of hosts,
@@ -610,13 +663,19 @@ class AllHostsEntity(BaseEntity):
         """
 
         if new_location is None:
-            raise ValueError('new_location argument is None, it will not allow to Save changes')
+            raise ValueError(
+                "new_location argument is None, it will not allow to Save changes"
+            )
 
-        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+        view = self.all_hosts_navigate_and_select_hosts_helper(
+            host_names, select_all_hosts
+        )
 
         view.bulk_actions_kebab.click()
-        self.browser.move_to_element(view.bulk_actions_menu.item_element('Change associations'))
-        view.bulk_actions_change_associations_menu.item_select('Location')
+        self.browser.move_to_element(
+            view.bulk_actions_menu.item_element("Change associations")
+        )
+        view.bulk_actions_change_associations_menu.item_select("Location")
 
         view = ChangeLocationModal(self.browser)
         view.location_menu.item_select(new_location)
@@ -630,7 +689,7 @@ class AllHostsEntity(BaseEntity):
             view.save_button.click()
 
 
-@navigator.register(AllHostsEntity, 'All')
+@navigator.register(AllHostsEntity, "All")
 class ShowAllHostsScreen(NavigateStep):
     """Navigate to All Hosts screen."""
 
@@ -638,18 +697,18 @@ class ShowAllHostsScreen(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'All Hosts')
+        self.view.menu.select("Hosts", "All Hosts")
         self.view.wait_displayed()
 
 
-@navigator.register(AllHostsEntity, 'ManageColumns')
+@navigator.register(AllHostsEntity, "ManageColumns")
 class HostsManageColumns(NavigateStep):
     """Navigate to the Manage columns dialog"""
 
     VIEW = AllHostsManageColumnsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
         """Open the Manage columns dialog"""

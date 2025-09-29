@@ -9,12 +9,12 @@ from airgun.widgets import AutoCompleteTextInput, SatTable
 
 class WebhooksView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Webhooks']")
-    new = PF4Button('Create new')
+    new = PF4Button("Create new")
     table = SatTable(
-        './/table',
+        ".//table",
         column_widgets={
-            'Name': Text('//span[@type="button"]'),
-            'Actions': Button('Delete'),
+            "Name": Text('//span[@type="button"]'),
+            "Actions": Button("Delete"),
         },
     )
 
@@ -25,8 +25,8 @@ class WebhooksView(BaseLoggedInView, SearchableViewMixinPF4):
 
 class WebhookCreateView(BaseLoggedInView):
     ROOT = '//div[@role="dialog" and @tabindex][div//h4]'
-    cancel_button = Button('Cancel')
-    submit_button = Button('contains', 'Submit')
+    cancel_button = Button("Cancel")
+    submit_button = Button("contains", "Submit")
 
     @View.nested
     class general(Tab):
@@ -69,12 +69,12 @@ class WebhookCreateView(BaseLoggedInView):
     def is_displayed(self):
         return self.browser.wait_for_element(
             locator=self.cancel_button, visible=True, exception=True
-        ) is not None and 'in' in self.browser.classes(self)
+        ) is not None and "in" in self.browser.classes(self)
 
     def wait_for_popup(self):
         is_popup_visible = self.browser.wait_for_element(
             self.cancel_button, visible=True, exception=False
-        ) is not None and 'in' in self.browser.classes(self)
+        ) is not None and "in" in self.browser.classes(self)
         are_fields_visible = self.browser.wait_for_element(
             self.general.subscribe_to, visible=True, exception=False
         )
@@ -86,7 +86,7 @@ class WebhookEditView(WebhookCreateView):
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.cancel_button, visible=True, exception=False
-        ) is not None and 'in' in self.browser.classes(self)
+        ) is not None and "in" in self.browser.classes(self)
 
 
 class DeleteWebhookConfirmationView(BaseLoggedInView):
@@ -94,18 +94,18 @@ class DeleteWebhookConfirmationView(BaseLoggedInView):
         '//div[@role="dialog" and @tabindex]'
         '[div//h4[normalize-space(.)="Confirm Webhook Deletion"]]'
     )
-    delete_button = Button('contains', 'Delete')
-    cancel_button = Button('Cancel')
+    delete_button = Button("contains", "Delete")
+    cancel_button = Button("Cancel")
 
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(
             self.delete_button, visible=True, exception=False
-        ) is not None and 'in' in self.browser.classes(self)
+        ) is not None and "in" in self.browser.classes(self)
 
     def wait_animation_end(self):
         wait_for(
-            lambda: 'in' in self.browser.classes(self),
+            lambda: "in" in self.browser.classes(self),
             handle_exception=True,
             logger=self.logger,
             timeout=10,

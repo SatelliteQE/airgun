@@ -42,22 +42,16 @@ class MenuToggleDropdownInTable(PF5Dropdown):
 
     IS_ALWAYS_OPEN = False
     BUTTON_LOCATOR = ".//button[contains(@class, 'pf-v5-c-menu-toggle')]"
-    DEFAULT_LOCATOR = (
-        './/div[contains(@class, "pf-v5-c-menu") and @data-ouia-component-id="PF5/Dropdown"]'
-    )
+    DEFAULT_LOCATOR = './/div[contains(@class, "pf-v5-c-menu") and @data-ouia-component-id="PF5/Dropdown"]'
     ROOT = f"{BUTTON_LOCATOR}/.."
     ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
-    ITEM_LOCATOR = (
-        "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
-    )
+    ITEM_LOCATOR = "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
 
 
 class AllHostsSelect(Select):
     BUTTON_LOCATOR = ".//button[@aria-label='Options menu']"
     ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-c-select__menu')]/li[contains(@class, 'pf-c-select__menu-wrapper')]"
-    ITEM_LOCATOR = (
-        '//*[contains(@class, "pf-c-select__menu-item") and contains(normalize-space(.), {})]'
-    )
+    ITEM_LOCATOR = '//*[contains(@class, "pf-c-select__menu-item") and contains(normalize-space(.), {})]'
     SELECTED_ITEM_LOCATOR = ".//span[contains(@class, 'ins-c-conditional-filter')]"
     TEXT_LOCATOR = ".//div[contains(@class, 'pf-c-select') and child::button]"
 
@@ -84,7 +78,9 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     select_all = Checkbox(
         locator='.//input[@data-ouia-component-id="select-all-checkbox-dropdown-toggle-checkbox"]'
     )
-    top_bulk_actions = MenuToggleDropdownInTable(locator='.//button[@aria-label="plain kebab"]')
+    top_bulk_actions = MenuToggleDropdownInTable(
+        locator='.//button[@aria-label="plain kebab"]'
+    )
     bulk_actions = AllHostsMenu()
     bulk_actions_kebab = Button(locator='.//button[@aria-label="plain kebab"]')
     bulk_actions_menu = PF5Menu(
@@ -101,10 +97,10 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     no_results = Text("//h5[normalize-space(.)='No Results']")
     manage_columns = PF5Button("Manage columns")
     table = PF5OUIATable(
-        component_id='table',
+        component_id="table",
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
-            'Name': Text('./a'),
+            "Name": Text("./a"),
             2: MenuToggleDropdownInTable(),
         },
     )
@@ -143,7 +139,9 @@ class BuildManagementDialog(View):
     title = Text(".//h1[normalize-space(.)='Build management']")
 
     build = Radio(locator='.//input[@data-ouia-component-id="build-host-radio"]')
-    reboot_now = Checkbox(locator='.//input[@data-ouia-component-id="build-reboot-checkbox"]')
+    reboot_now = Checkbox(
+        locator='.//input[@data-ouia-component-id="build-reboot-checkbox"]'
+    )
     rebuild_provisioning_only = Checkbox(
         locator='.//input[@data-ouia-component-id="rebuild-host-radio"]'
     )
@@ -240,7 +238,7 @@ class ManagePackagesModal(PF5Modal):
     It contains severeal nested views that represent the steps of the wizard.
     """
 
-    OUIA_ID = 'bulk-packages-wizard-modal'
+    OUIA_ID = "bulk-packages-wizard-modal"
 
     title = './/h2[@data-ouia-component-type="PF4/Title"]'
     close_btn = PF5Button(
@@ -255,10 +253,10 @@ class ManagePackagesModal(PF5Modal):
         expander = Text('.//button[text()="Select action"]')
         content_text = Text('.//div[@class="pf-v5-c-content"]')
 
-        upgrade_all_packages_radio = PF5Radio(id='r1-upgrade-all-packages')
-        upgrade_packages_radio = PF5Radio(id='r2-upgrade-packages')
-        install_packages_radio = PF5Radio(id='r3-install-packages')
-        remove_packages_radio = PF5Radio(id='r4-remove-packages')
+        upgrade_all_packages_radio = PF5Radio(id="r1-upgrade-all-packages")
+        upgrade_packages_radio = PF5Radio(id="r2-upgrade-packages")
+        install_packages_radio = PF5Radio(id="r3-install-packages")
+        remove_packages_radio = PF5Radio(id="r4-remove-packages")
 
     @View.nested
     class upgrade_packages(WizardStepView):
@@ -268,15 +266,19 @@ class ManagePackagesModal(PF5Modal):
         content_text = Text('.//div[@class="pf-v5-c-content"]')
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
-        search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
-        clear_search = Button(locator=f'{locator_prefix}button[@aria-label="Reset search"]')
+        search_input = SearchInput(
+            locator=f'{locator_prefix}input[@aria-label="Search input"]'
+        )
+        clear_search = Button(
+            locator=f'{locator_prefix}button[@aria-label="Reset search"]'
+        )
         search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
 
         table = PF5OUIATable(
-            component_id='table',
+            component_id="table",
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
-                'Package': Text('.//td[2]'),
+                "Package": Text(".//td[2]"),
             },
         )
         pagination = Pagination()
@@ -289,15 +291,19 @@ class ManagePackagesModal(PF5Modal):
         content_text = Text('.//div[@class="pf-v5-c-content"]')
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
-        search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
-        clear_search = Button(locator=f'{locator_prefix}button[@aria-label="Reset search"]')
+        search_input = SearchInput(
+            locator=f'{locator_prefix}input[@aria-label="Search input"]'
+        )
+        clear_search = Button(
+            locator=f'{locator_prefix}button[@aria-label="Reset search"]'
+        )
         search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
 
         table = PF5OUIATable(
-            component_id='table',
+            component_id="table",
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
-                'Package': Text('.//td[2]'),
+                "Package": Text(".//td[2]"),
             },
         )
         pagination = Pagination()
@@ -310,15 +316,19 @@ class ManagePackagesModal(PF5Modal):
         content_text = Text('.//div[@class="pf-v5-c-content"]')
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
-        search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
-        clear_search = Button(locator=f'{locator_prefix}button[@aria-label="Reset search"]')
+        search_input = SearchInput(
+            locator=f'{locator_prefix}input[@aria-label="Search input"]'
+        )
+        clear_search = Button(
+            locator=f'{locator_prefix}button[@aria-label="Reset search"]'
+        )
         search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
 
         table = PF5OUIATable(
-            component_id='table',
+            component_id="table",
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
-                'Package': Text('.//td[2]'),
+                "Package": Text(".//td[2]"),
             },
         )
         pagination = Pagination()
@@ -329,18 +339,20 @@ class ManagePackagesModal(PF5Modal):
 
         expander = Text('.//button[contains(.,"Review hosts")]')
         content_text = Text('.//p[@data-ouia-component-id="mpw-step-3-content"]')
-        error_message = OUIAAlert('no-hosts-alert')
+        error_message = OUIAAlert("no-hosts-alert")
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
-        search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
+        search_input = SearchInput(
+            locator=f'{locator_prefix}input[@aria-label="Search input"]'
+        )
         search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
 
         table = PF5OUIATable(
-            component_id='table',
+            component_id="table",
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
-                'Name': Text('.//td[2]'),
-                'OS': Text('.//td[3]'),
+                "Name": Text(".//td[2]"),
+                "OS": Text(".//td[3]"),
             },
         )
         pagination = Pagination()
@@ -360,13 +372,13 @@ class ManagePackagesModal(PF5Modal):
         # it changes based on the selected action but generally it looks the same
         # Returns 'All' or number of packages to manage
         number_of_packages_to_manage = Text(
-            '''.//span[contains(.,"Packages to")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]'''
+            """.//span[contains(.,"Packages to")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]"""
         )
 
         edit_selected_packages = Button('.//button[@aria-label="Edit packages list"]')
         # Returns number of hosts to manage
         number_of_hosts_to_manage = Text(
-            '''.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]'''
+            """.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]"""
         )
         edit_selected_hosts = Button('.//button[@aria-label="Edit host selection"]')
         manage_via_dropdown = PF5Dropdown(
@@ -387,7 +399,7 @@ class ManageErrataModal(PF5Modal):
     It contains several nested views that represent the steps of the wizard.
     """
 
-    OUIA_ID = 'bulk-errata-wizard-modal'
+    OUIA_ID = "bulk-errata-wizard-modal"
 
     title = './/h2[@data-ouia-component-type="PF4/Title"]'
     close_btn = PF5Button(
@@ -405,19 +417,23 @@ class ManageErrataModal(PF5Modal):
         content_text = Text('.//div[@class="pf-v5-c-content"]')
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
-        search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
-        clear_search = Button(locator=f'{locator_prefix}button[@aria-label="Reset search"]')
+        search_input = SearchInput(
+            locator=f'{locator_prefix}input[@aria-label="Search input"]'
+        )
+        clear_search = Button(
+            locator=f'{locator_prefix}button[@aria-label="Reset search"]'
+        )
         search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
 
         table = PF5OUIATable(
-            component_id='table',
+            component_id="table",
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
-                'Erratum': Text('.//td[2]'),
-                'Title': Text('.//td[3]'),
-                'Type': Text('.//td[4]'),
-                'Severity': Text('.//td[5]'),
-                'Affected hosts': Text('.//td[6]'),
+                "Erratum": Text(".//td[2]"),
+                "Title": Text(".//td[3]"),
+                "Type": Text(".//td[4]"),
+                "Severity": Text(".//td[5]"),
+                "Affected hosts": Text(".//td[6]"),
             },
         )
         pagination = Pagination()
@@ -429,18 +445,20 @@ class ManageErrataModal(PF5Modal):
 
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
         content_text = Text('.//div[@class="pf-v5-c-content"]')
-        error_message = OUIAAlert('no-hosts-alert')
+        error_message = OUIAAlert("no-hosts-alert")
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
-        search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
+        search_input = SearchInput(
+            locator=f'{locator_prefix}input[@aria-label="Search input"]'
+        )
         search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
 
         table = PF5OUIATable(
-            component_id='table',
+            component_id="table",
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
-                'Name': Text('.//td[2]'),
-                'OS': Text('.//td[3]'),
+                "Name": Text(".//td[2]"),
+                "OS": Text(".//td[3]"),
             },
         )
         pagination = Pagination()
@@ -458,13 +476,13 @@ class ManageErrataModal(PF5Modal):
         )
 
         number_of_errata_to_manage = Text(
-            '''.//span[contains(.,"Errata to")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]'''
+            """.//span[contains(.,"Errata to")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]"""
         )
 
         edit_selected_errata = Button('.//button[@aria-label="Edit errata list"]')
         # Returns number of hosts to manage
         number_of_hosts_to_manage = Text(
-            '''.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]'''
+            """.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]"""
         )
         edit_selected_hosts = Button('.//button[@aria-label="Edit host selection"]')
         manage_via_dropdown = PF5Dropdown(
@@ -488,9 +506,7 @@ class RepositorySetsMenu(PF5Dropdown):
     )
     ROOT = f"{BUTTON_LOCATOR}/.."
     ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
-    ITEM_LOCATOR = (
-        '//*[contains(@class, "pf-v5-c-menu__item") and .//*[contains(normalize-space(.), {})]]'
-    )
+    ITEM_LOCATOR = '//*[contains(@class, "pf-v5-c-menu__item") and .//*[contains(normalize-space(.), {})]]'
 
 
 class ManageRepositorySetsModal(PF5Modal):
@@ -500,7 +516,7 @@ class ManageRepositorySetsModal(PF5Modal):
     It contains several nested views that represent the steps of the wizard.
     """
 
-    OUIA_ID = 'bulk-repo-sets-wizard-modal'
+    OUIA_ID = "bulk-repo-sets-wizard-modal"
 
     # Hidden alert - Change the status of at least one repository.
     repo_set_alert_icon = './/div[@class="pf-v5-c-alert__icon"]'
@@ -520,14 +536,18 @@ class ManageRepositorySetsModal(PF5Modal):
 
     @View.nested
     class select_repository_sets(WizardStepView):
-        wizard_step_name = 'Select repository sets'
+        wizard_step_name = "Select repository sets"
         locator_prefix = f'.//div[contains(., "{wizard_step_name}")]/descendant::'
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
         content_text = Text('.//div[@class="pf-c-content"]')
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
-        search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
-        clear_search = Button(locator=f'{locator_prefix}button[@aria-label="Reset search"]')
+        search_input = SearchInput(
+            locator=f'{locator_prefix}input[@aria-label="Search input"]'
+        )
+        clear_search = Button(
+            locator=f'{locator_prefix}button[@aria-label="Reset search"]'
+        )
         search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
 
         no_change_status_dropdown = PF5Button(
@@ -543,8 +563,8 @@ class ManageRepositorySetsModal(PF5Modal):
             column_widgets={
                 0: PF5Button(locator='.//button[@aria-label="Details"]'),
                 1: Checkbox(locator='.//input[@type="checkbox"]'),
-                'Name': Text('.//td[2]'),
-                'Status': RepositorySetsMenu(),
+                "Name": Text(".//td[2]"),
+                "Status": RepositorySetsMenu(),
             },
         )
         pagination = Pagination()
@@ -556,18 +576,20 @@ class ManageRepositorySetsModal(PF5Modal):
 
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
         content_text = Text('.//div[@class="pf-c-content"]')
-        error_message = OUIAAlert('no-hosts-alert')
+        error_message = OUIAAlert("no-hosts-alert")
 
         select_all = Checkbox(locator=f'{locator_prefix}div[@id="selection-checkbox"]')
-        search_input = SearchInput(locator=f'{locator_prefix}input[@aria-label="Search input"]')
+        search_input = SearchInput(
+            locator=f'{locator_prefix}input[@aria-label="Search input"]'
+        )
         search = Button(locator=f'{locator_prefix}button[@aria-label="Search"]')
 
         table = PF5OUIATable(
-            component_id='table',
+            component_id="table",
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
-                'Name': Text('.//td[2]'),
-                'OS': Text('.//td[3]'),
+                "Name": Text(".//td[2]"),
+                "OS": Text(".//td[3]"),
             },
         )
         pagination = Pagination()
@@ -600,12 +622,12 @@ class DisassociateHostsModal(PF5Modal):
     and compute_resource_id associations.
     """
 
-    OUIA_ID = 'bulk-disassociate-modal'
+    OUIA_ID = "bulk-disassociate-modal"
 
     title = './/h1[@class="pf-v5-c-modal-box__title"]'
-    close_btn = PF5OUIAButton('bulk-disassociate-modal-ModalBoxCloseButton')
-    confirm_btn = PF5OUIAButton('bulk-disassociate-modal-add-button')
-    cancel_btn = PF5OUIAButton('bulk-disassociate-modal-cancel-button')
+    close_btn = PF5OUIAButton("bulk-disassociate-modal-ModalBoxCloseButton")
+    confirm_btn = PF5OUIAButton("bulk-disassociate-modal-add-button")
+    cancel_btn = PF5OUIAButton("bulk-disassociate-modal-cancel-button")
 
     @property
     def is_displayed(self):
@@ -619,14 +641,10 @@ class MenuToggleSelect(PF5Select):
     """
 
     BUTTON_LOCATOR = './/button[contains(@class, "pf-v5-c-menu-toggle")]'
-    DEFAULT_LOCATOR = (
-        './/div[contains(@class, "pf-v5-c-menu") and @data-ouia-component-type="PF5/Select"]'
-    )
+    DEFAULT_LOCATOR = './/div[contains(@class, "pf-v5-c-menu") and @data-ouia-component-type="PF5/Select"]'
     ROOT = f"{BUTTON_LOCATOR}/.."
     ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
-    ITEM_LOCATOR = (
-        "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
-    )
+    ITEM_LOCATOR = "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
 
 
 class ChangeHostsOwnerModal(PF5Modal):
@@ -635,12 +653,12 @@ class ChangeHostsOwnerModal(PF5Modal):
     that is used to change the owner of one or more hosts.
     """
 
-    OUIA_ID = 'bulk-change-owner-modal'
+    OUIA_ID = "bulk-change-owner-modal"
 
     title = './/h1[@class="pf-v5-c-modal-box__title"]'
-    close_btn = PF5OUIAButton('bulk-change-owner-modal-ModalBoxCloseButton')
-    confirm_btn = PF5OUIAButton('bulk-change-owner-modal-add-button')
-    cancel_btn = PF5OUIAButton('bulk-change-owner-modal-cancel-button')
+    close_btn = PF5OUIAButton("bulk-change-owner-modal-ModalBoxCloseButton")
+    confirm_btn = PF5OUIAButton("bulk-change-owner-modal-add-button")
+    cancel_btn = PF5OUIAButton("bulk-change-owner-modal-cancel-button")
 
     owner_select = MenuToggleSelect()
 
@@ -676,15 +694,15 @@ class ChangeOrganizationModal(BaseChangeOrgLocModal):
     for one or more hosts
     """
 
-    OUIA_ID = 'bulk-assign-taxonomy-modal'
+    OUIA_ID = "bulk-assign-taxonomy-modal"
 
     organization_menu = MenuToggleSelect()
 
-    organization_fix_on_mismatch = PF5Radio(id='radio-fix-on-mismatch-organization')
-    organization_fail_on_mismatch = PF5Radio(id='radio-fail-on-mismatch-organization')
+    organization_fix_on_mismatch = PF5Radio(id="radio-fix-on-mismatch-organization")
+    organization_fail_on_mismatch = PF5Radio(id="radio-fail-on-mismatch-organization")
 
-    save_button = PF5OUIAButton('bulk-assign-organization-modal-add-button')
-    cancel_button = PF5OUIAButton('bulk-assign-organization-modal-cancel-button')
+    save_button = PF5OUIAButton("bulk-assign-organization-modal-add-button")
+    cancel_button = PF5OUIAButton("bulk-assign-organization-modal-cancel-button")
 
 
 class ChangeLocationModal(BaseChangeOrgLocModal):
@@ -693,12 +711,12 @@ class ChangeLocationModal(BaseChangeOrgLocModal):
     for one or more hosts
     """
 
-    OUIA_ID = 'bulk-assign-location-modal'
+    OUIA_ID = "bulk-assign-location-modal"
 
     location_menu = MenuToggleSelect()
 
-    location_fix_on_mismatch = PF5Radio(id='radio-fix-on-mismatch-location')
-    location_fail_on_mismatch = PF5Radio(id='radio-fail-on-mismatch-location')
+    location_fix_on_mismatch = PF5Radio(id="radio-fix-on-mismatch-location")
+    location_fail_on_mismatch = PF5Radio(id="radio-fail-on-mismatch-location")
 
-    save_button = PF5OUIAButton('bulk-assign-location-modal-add-button')
-    cancel_button = PF5OUIAButton('bulk-assign-location-modal-cancel-button')
+    save_button = PF5OUIAButton("bulk-assign-location-modal-add-button")
+    cancel_button = PF5OUIAButton("bulk-assign-location-modal-cancel-button")

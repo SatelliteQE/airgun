@@ -7,23 +7,23 @@ from airgun.views.task import TaskDetailsView, TasksView
 
 
 class TaskEntity(BaseEntity):
-    endpoint_path = '/foreman_tasks/tasks'
+    endpoint_path = "/foreman_tasks/tasks"
 
     def search(self, value):
         """Search for specific task"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(value)
 
     def read_all(self, widget_names=None):
         """Read all tasks widgets values from the title page.
         Or read specific widgets by adding 'widget_names' parameter
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.read(widget_names=widget_names)
 
     def read(self, entity_name, widget_names=None):
         """Read specific task values from details page"""
-        view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        view = self.navigate_to(self, "Details", entity_name=entity_name)
         time.sleep(3)
         return view.read(widget_names=widget_names)
 
@@ -33,21 +33,21 @@ class TaskEntity(BaseEntity):
         :param index: index in 'StoppedChart' table,
             dict with 'row' number and 'focus' as column name
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         chart = getattr(view, chart_name)
         view.searchbox.clear()
-        if chart_name == 'StoppedChart' and index:
-            chart.table[index['row']][index['focus']].click()
+        if chart_name == "StoppedChart" and index:
+            chart.table[index["row"]][index["focus"]].click()
         else:
             chart.name.click()
 
     def total_items(self):
         """Get total items displayed in the table"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.pagination.total_items
 
 
-@navigator.register(TaskEntity, 'All')
+@navigator.register(TaskEntity, "All")
 class ShowAllTasks(NavigateStep):
     """Navigate to All Tasks page"""
 
@@ -56,12 +56,12 @@ class ShowAllTasks(NavigateStep):
     @retry_navigation
     def step(self, *args, **kwargs):
         product = (
-            'Foreman' if self.view.product.is_displayed else 'Satellite'
+            "Foreman" if self.view.product.is_displayed else "Satellite"
         )  # make it work on nightly
-        self.view.menu.select('Monitor', f'{product} Tasks', 'Tasks')
+        self.view.menu.select("Monitor", f"{product} Tasks", "Tasks")
 
 
-@navigator.register(TaskEntity, 'Details')
+@navigator.register(TaskEntity, "Details")
 class TaskDetails(NavigateStep):
     """Navigate to Task Details screen.
 
@@ -72,9 +72,9 @@ class TaskDetails(NavigateStep):
     VIEW = TaskDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(action=entity_name)['Action'].widget.click()
+        self.parent.table.row(action=entity_name)["Action"].widget.click()

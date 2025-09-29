@@ -56,7 +56,12 @@ class SeleniumBrowserFactory:
     """
 
     def __init__(
-        self, provider=None, browser=None, test_name=None, session_cookie=None, hostname=None
+        self,
+        provider=None,
+        browser=None,
+        test_name=None,
+        session_cookie=None,
+        hostname=None,
     ):
         """Initializes factory with either specified or fetched from settings
         values.
@@ -90,14 +95,14 @@ class SeleniumBrowserFactory:
         :return: selenium webdriver instance
         :raises: ValueError: If wrong ``provider`` or ``browser`` specified.
         """
-        if self.provider == 'selenium':
+        if self.provider == "selenium":
             return self._get_selenium_browser()
-        elif self.provider == 'remote':
+        elif self.provider == "remote":
             return self._get_remote_browser()
         else:
             raise ValueError(
                 f'"{self.provider}" browser is not supported. '
-                f'Please use one of {("selenium", "remote")}'
+                f"Please use one of {('selenium', 'remote')}"
             )
 
     def post_init(self):
@@ -116,7 +121,7 @@ class SeleniumBrowserFactory:
             or not. Is only used for ``saucelabs`` provider.
         :return: None
         """
-        if self.provider in ('selenium', 'remote'):
+        if self.provider in ("selenium", "remote"):
             self._webdriver.quit()
             return
 
@@ -125,9 +130,12 @@ class SeleniumBrowserFactory:
         if self._session:
             # webdriver doesn't allow to add cookies unless we land on the target domain
             # let's navigate to its invalid page to get it loaded ASAP
-            self._webdriver.get(f'https://{self._hostname}/404')
+            self._webdriver.get(f"https://{self._hostname}/404")
             self._webdriver.add_cookie(
-                {'name': '_session_id', 'value': self._session.cookies.get_dict()['_session_id']}
+                {
+                    "name": "_session_id",
+                    "value": self._session.cookies.get_dict()["_session_id"],
+                }
             )
 
     def _get_selenium_browser(self):
@@ -142,29 +150,29 @@ class SeleniumBrowserFactory:
         binary = settings.selenium.webdriver_binary
         browseroptions = settings.selenium.browseroptions
 
-        if self.browser == 'chrome':
+        if self.browser == "chrome":
             if binary:
-                kwargs.update({'executable_path': binary})
+                kwargs.update({"executable_path": binary})
             options = webdriver.ChromeOptions()
-            prefs = {'download.prompt_for_download': False}
+            prefs = {"download.prompt_for_download": False}
             options.add_experimental_option("prefs", prefs)
-            options.add_argument('disable-web-security')
-            options.add_argument('ignore-certificate-errors')
+            options.add_argument("disable-web-security")
+            options.add_argument("ignore-certificate-errors")
             if browseroptions:
-                for opt in browseroptions.split(';'):
+                for opt in browseroptions.split(";"):
                     options.add_argument(opt)
-            kwargs.update({'options': options})
-        elif self.browser == 'firefox':
+            kwargs.update({"options": options})
+        elif self.browser == "firefox":
             if binary:
-                kwargs.update({'executable_path': binary})
-        manager_conf.update({'webdriver': self.browser})
-        manager_conf.update({'webdriver_options': kwargs})
+                kwargs.update({"executable_path": binary})
+        manager_conf.update({"webdriver": self.browser})
+        manager_conf.update({"webdriver_options": kwargs})
         manager = BrowserManager.from_conf(manager_conf)
         self._webdriver = manager.start()
         if self._webdriver is None:
             raise ValueError(
                 f'"{self.browser}" webdriver is not supported. '
-                f'Please use one of {("chrome", "firefox")}'
+                f"Please use one of {('chrome', 'firefox')}"
             )
         self._set_session_cookie()
         return self._webdriver
@@ -176,7 +184,7 @@ class SeleniumBrowserFactory:
         """
         if self.test_name:
             self.web_kaifuku.webdriver_options.desired_capabilities.update(
-                {'se:test_name': self.test_name}
+                {"se:test_name": self.test_name}
             )
         manager = BrowserManager.from_conf(self.web_kaifuku)
         self._webdriver = manager.start()
@@ -191,7 +199,7 @@ class AirgunBrowserPlugin(DefaultPlugin):
     progress and ensures ``document.readyState`` is "complete".
     """
 
-    ENSURE_PAGE_SAFE = '''
+    ENSURE_PAGE_SAFE = """
         function jqueryInactive() {
          return (typeof jQuery === "undefined") ? true : jQuery.active < 1
         }
@@ -238,7 +246,7 @@ class AirgunBrowserPlugin(DefaultPlugin):
             react: reactLoadingInvisible(),
             document: document.readyState == "complete",
         }
-        '''
+        """
 
     def __init__(self, *args, **kwargs):
         self._ignore_ensure_page_safe_timeout = False
@@ -252,7 +260,7 @@ class AirgunBrowserPlugin(DefaultPlugin):
     def ignore_ensure_page_safe_timeout(self, value):
         self._ignore_ensure_page_safe_timeout = value
 
-    def ensure_page_safe(self, timeout='30s'):
+    def ensure_page_safe(self, timeout="30s"):
         """Ensures page is fully loaded.
         Default timeout was 10s, this changes it to 30s.
         If self.ignore_ensure_page_safe_timeout is True, the function doesn't raise an exception
@@ -263,7 +271,7 @@ class AirgunBrowserPlugin(DefaultPlugin):
             if self.ignore_ensure_page_safe_timeout:
                 # set lower timeout, otherwise the page will be stuck in a lot of waiting because
                 # once broken, ensure_page_safe will always timeout until loading a new page
-                timeout = '2s'  # experiments show 5s let the page load properly w/o much waiting
+                timeout = "2s"  # experiments show 5s let the page load properly w/o much waiting
             super().ensure_page_safe(timeout)
         except TimedOutError:
             if not self.ignore_ensure_page_safe_timeout:
@@ -307,8 +315,10 @@ class AirgunBrowser(Browser):
         :param extra_objects: any extra objects you want to include.
         """
         extra_objects = extra_objects or {}
-        extra_objects.update({'session': session})
-        super().__init__(selenium, plugin_class=AirgunBrowserPlugin, extra_objects=extra_objects)
+        extra_objects.update({"session": session})
+        super().__init__(
+            selenium, plugin_class=AirgunBrowserPlugin, extra_objects=extra_objects
+        )
         self.window_handle = selenium.current_window_handle
 
     def get_client_datetime(self):
@@ -325,17 +335,17 @@ class AirgunBrowser(Browser):
             on a client
         """
         script = (
-            'var currentdate = new Date(); '
-            'return ('
+            "var currentdate = new Date(); "
+            "return ("
             'currentdate.getFullYear() + "-" '
             '+ (currentdate.getMonth()+1) + "-" '
             '+ currentdate.getDate() + " : " '
             '+ currentdate.getHours() + ":" '
-            '+ currentdate.getMinutes()'
-            ');'
+            "+ currentdate.getMinutes()"
+            ");"
         )
         client_datetime = self.execute_script(script)
-        return datetime.strptime(client_datetime, '%Y-%m-%d : %H:%M')
+        return datetime.strptime(client_datetime, "%Y-%m-%d : %H:%M")
 
     def get_downloads_list(self):
         """Open browser's downloads screen and return a list of downloaded
@@ -343,16 +353,16 @@ class AirgunBrowser(Browser):
 
         :return: list of strings representing file URIs
         """
-        if settings.selenium.webdriver != 'chrome':
-            raise NotImplementedError('Currently only chrome is supported')
-        downloads_uri = 'chrome://downloads'
+        if settings.selenium.webdriver != "chrome":
+            raise NotImplementedError("Currently only chrome is supported")
+        downloads_uri = "chrome://downloads"
         if not self.url.startswith(downloads_uri):
             self.url = downloads_uri
         script = (
             'return document.querySelector("downloads-manager")'
             '.shadowRoot.querySelector("#downloadsList")'
             '.items.filter(e => e.state == "2")'
-            '.map(e => e.filePath || e.file_path || e.fileUrl || e.file_url);'
+            ".map(e => e.filePath || e.file_path || e.fileUrl || e.file_url);"
         )
         return self.execute_script(script)
 
@@ -363,8 +373,8 @@ class AirgunBrowser(Browser):
         :raises Exception: when error code instead of file content received
         """
         # See https://stackoverflow.com/a/47164044/3552063
-        if settings.selenium.webdriver != 'chrome':
-            raise NotImplementedError('Currently only chrome is supported')
+        if settings.selenium.webdriver != "chrome":
+            raise NotImplementedError("Currently only chrome is supported")
         elem = self.selenium.execute_script(
             "var input = window.document.createElement('INPUT'); "
             "input.setAttribute('type', 'file'); "
@@ -374,7 +384,7 @@ class AirgunBrowser(Browser):
 
         # it must be local absolute path, without protocol
         # In some version <= 98, this changed so schema is not included in the path
-        if 'file://' in uri or 'http://' in uri:
+        if "file://" in uri or "http://" in uri:
             elem.send_keys(unquote(uri[7:]))
         else:
             elem.send_keys(unquote(uri))
@@ -389,9 +399,9 @@ class AirgunBrowser(Browser):
             elem,
         )
 
-        if not result.startswith('data:'):
+        if not result.startswith("data:"):
             raise Exception(f"Failed to get file content: {result}")
-        result_index = int(result.find('base64,')) + 7
+        result_index = int(result.find("base64,")) + 7
         return base64.b64decode(result[result_index:])
 
     def save_downloaded_file(self, file_uri=None, save_path=None):
@@ -425,7 +435,7 @@ class AirgunBrowser(Browser):
         )
         if not file_uri:
             file_uri = files[0]
-        if not save_path and settings.selenium.browser == 'selenium':
+        if not save_path and settings.selenium.browser == "selenium":
             # if test is running locally, there's no need to save the file once
             # again except when explicitly asked to
             file_path = urllib.parse.unquote(urllib.parse.urlparse(file_uri).path)
@@ -434,7 +444,7 @@ class AirgunBrowser(Browser):
                 save_path = settings.airgun.tmp_dir
             content = self.get_file_content(file_uri)
             filename = urllib.parse.unquote(os.path.basename(file_uri))
-            with open(os.path.join(save_path, filename), 'wb') as f:
+            with open(os.path.join(save_path, filename), "wb") as f:
                 f.write(content)
             file_path = os.path.join(save_path, filename)
         self.url = current_url
@@ -445,7 +455,7 @@ class AirgunBrowser(Browser):
         try:
             return self.move_to_element(locator).is_displayed()
         except NoSuchElementException:
-            self.logger.info(f'No {locator} type alert detected !')
+            self.logger.info(f"No {locator} type alert detected !")
         return False
 
     def get_alert(self, squash=False):
@@ -487,7 +497,9 @@ class AirgunBrowser(Browser):
     ):
         """Extend the behaviour of widgetstatic.browser.handle_alert to handle PF4 alerts"""
         popup = self.get_alert(squash=squash)
-        if isinstance(popup, Pf4ConfirmationDialog | ConfirmationDialog | Pf5ConfirmationDialog):
+        if isinstance(
+            popup, Pf4ConfirmationDialog | ConfirmationDialog | Pf5ConfirmationDialog
+        ):
             if cancel:
                 self.logger.info("  dismissing")
                 popup.cancel()
@@ -496,7 +508,11 @@ class AirgunBrowser(Browser):
                 popup.confirm()
         else:
             super(AirgunBrowser, self.browser).handle_alert(
-                cancel=cancel, wait=wait, squash=squash, prompt=prompt, check_present=check_present
+                cancel=cancel,
+                wait=wait,
+                squash=squash,
+                prompt=prompt,
+                check_present=check_present,
             )
 
     @contextmanager

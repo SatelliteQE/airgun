@@ -5,7 +5,7 @@ from airgun.views.rhai import OverviewDetailsView
 
 
 class OverviewEntity(BaseEntity):
-    endpoint_path = '/redhat_access/insights'
+    endpoint_path = "/redhat_access/insights"
 
     def read(self, widget_names=None):
         view = self.navigate_to(self, "Details")

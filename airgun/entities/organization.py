@@ -12,11 +12,11 @@ from airgun.views.organization import (
 
 
 class OrganizationEntity(BaseEntity):
-    endpoint_path = '/organizations'
+    endpoint_path = "/organizations"
 
     def create(self, values):
         """Create new organization entity"""
-        view = self.navigate_to(self, 'New')
+        view = self.navigate_to(self, "New")
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
@@ -24,26 +24,26 @@ class OrganizationEntity(BaseEntity):
 
     def delete(self, entity_name):
         """Delete existing organization"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
+        view.table.row(name=entity_name)["Actions"].widget.fill("Delete")
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
     def read(self, entity_name, widget_names=None):
         """Read specific organization details"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def search(self, value):
         """Search for organization entity"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(value)
 
     def update(self, entity_name, values):
         """Update necessary values for organization"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
@@ -51,10 +51,10 @@ class OrganizationEntity(BaseEntity):
 
     def select(self, org_name):
         """Select necessary organization from context menu on the top of the page"""
-        self.navigate_to(self, 'Context', org_name=org_name)
+        self.navigate_to(self, "Context", org_name=org_name)
 
 
-@navigator.register(OrganizationEntity, 'All')
+@navigator.register(OrganizationEntity, "All")
 class ShowAllOrganizations(NavigateStep):
     """Navigate to All Organizations page"""
 
@@ -62,22 +62,22 @@ class ShowAllOrganizations(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Administer', 'Organizations')
+        self.view.menu.select("Administer", "Organizations")
 
 
-@navigator.register(OrganizationEntity, 'New')
+@navigator.register(OrganizationEntity, "New")
 class AddNewOrganization(NavigateStep):
     """Navigate to Create Organization page"""
 
     VIEW = OrganizationCreateView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
         self.parent.browser.click(self.parent.new)
 
 
-@navigator.register(OrganizationEntity, 'Edit')
+@navigator.register(OrganizationEntity, "Edit")
 class EditOrganization(NavigateStep):
     """Navigate to Edit Organization page
 
@@ -88,15 +88,15 @@ class EditOrganization(NavigateStep):
     VIEW = OrganizationEditView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+        self.parent.table.row(name=entity_name)["Name"].widget.click()
 
 
-@navigator.register(OrganizationEntity, 'Context')
+@navigator.register(OrganizationEntity, "Context")
 class SelectOrganizationContext(NavigateStep):
     """Select Organization from menu
 
@@ -108,15 +108,15 @@ class SelectOrganizationContext(NavigateStep):
     ELLIPSIS_LENGTH = 30
 
     def am_i_here(self, *args, **kwargs):
-        org_name = kwargs.get('org_name')
+        org_name = kwargs.get("org_name")
         if len(org_name) > self.ELLIPSIS_LENGTH:
-            org_name = org_name[: self.ELLIPSIS_LENGTH - 3] + '...'
+            org_name = org_name[: self.ELLIPSIS_LENGTH - 3] + "..."
         return org_name == self.view.taxonomies.current_org
 
     def step(self, *args, **kwargs):
-        org_name = kwargs.get('org_name')
+        org_name = kwargs.get("org_name")
         if not org_name:
-            raise ValueError('Specify proper value for org_name parameter')
+            raise ValueError("Specify proper value for org_name parameter")
         self.view.taxonomies.select_org(org_name)
 
     def post_navigate(self, _tries, *args, **kwargs):

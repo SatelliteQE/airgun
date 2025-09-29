@@ -11,7 +11,7 @@ from airgun.views.job_invocation import JobInvocationStatusView
 
 
 class ErrataEntity(BaseEntity):
-    endpoint_path = '/errata'
+    endpoint_path = "/errata"
 
     def search(self, value, applicable=True, installable=False, repo=None):
         """Search for specific errata.
@@ -23,8 +23,10 @@ class ErrataEntity(BaseEntity):
         :return: list of dicts representing table rows
         :rtype: list
         """
-        view = self.navigate_to(self, 'All')
-        return view.search(value, applicable=applicable, installable=installable, repo=repo)
+        view = self.navigate_to(self, "All")
+        return view.search(
+            value, applicable=applicable, installable=installable, repo=repo
+        )
 
     def read(
         self,
@@ -49,7 +51,7 @@ class ErrataEntity(BaseEntity):
         """
         view = self.navigate_to(
             self,
-            'Details',
+            "Details",
             entity_name=entity_name,
             applicable=applicable,
             installable=installable,
@@ -72,7 +74,7 @@ class ErrataEntity(BaseEntity):
         """
         view = self.navigate_to(
             self,
-            'Details',
+            "Details",
             entity_name=entity_name,
             applicable=False,
             installable=False,
@@ -82,7 +84,7 @@ class ErrataEntity(BaseEntity):
             view.content_hosts.environment_filter.fill(environment)
         view.content_hosts.wait_displayed()
 
-        if host_names == 'All':
+        if host_names == "All":
             # select_all on table, check if single or multiple hosts
             view.content_hosts.select_all.fill(True)
         elif isinstance(host_names, list):
@@ -114,7 +116,7 @@ class ErrataEntity(BaseEntity):
         """
         view = self.navigate_to(
             self,
-            'Details',
+            "Details",
             entity_name=entity_name,
             applicable=False,
             installable=False,
@@ -124,7 +126,7 @@ class ErrataEntity(BaseEntity):
         return view.content_hosts.search(value, environment=environment)
 
 
-@navigator.register(ErrataEntity, 'All')
+@navigator.register(ErrataEntity, "All")
 class ShowAllErratum(NavigateStep):
     """Navigate to All Erratum screen."""
 
@@ -132,10 +134,10 @@ class ShowAllErratum(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Content Types', 'Errata')
+        self.view.menu.select("Content", "Content Types", "Errata")
 
 
-@navigator.register(ErrataEntity, 'Details')
+@navigator.register(ErrataEntity, "Details")
 class ErrataDetails(NavigateStep):
     """Navigate to Errata details page.
 
@@ -151,15 +153,17 @@ class ErrataDetails(NavigateStep):
     VIEW = ErrataDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
-        applicable = kwargs.get('applicable')
-        installable = kwargs.get('installable')
-        repo = kwargs.get('repo')
-        self.parent.search(entity_name, applicable=applicable, installable=installable, repo=repo)
-        row_filter = {'title': entity_name}
+        entity_name = kwargs.get("entity_name")
+        applicable = kwargs.get("applicable")
+        installable = kwargs.get("installable")
+        repo = kwargs.get("repo")
+        self.parent.search(
+            entity_name, applicable=applicable, installable=installable, repo=repo
+        )
+        row_filter = {"title": entity_name}
         if ERRATA_REGEXP.search(entity_name):
-            row_filter = {'errata_id': entity_name}
-        self.parent.table.row(**row_filter)['Errata ID'].widget.click()
+            row_filter = {"errata_id": entity_name}
+        self.parent.table.row(**row_filter)["Errata ID"].widget.click()

@@ -7,4 +7,6 @@ class HostHelper(BaseEntityHelper):
         values. Read values from 'read_widget_names' list if provided otherwise read values from
         all view widgets.
         """
-        return self.read_filled_view('New', values=values, read_widget_names=read_widget_names)
+        return self.read_filled_view(
+            "New", values=values, read_widget_names=read_widget_names
+        )

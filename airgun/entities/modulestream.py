@@ -7,7 +7,7 @@ from airgun.views.modulestream import ModuleStreamsDetailsView, ModuleStreamView
 
 
 class ModuleStreamEntity(BaseEntity):
-    endpoint_path = '/module_streams'
+    endpoint_path = "/module_streams"
 
     def search(self, query):
         """Search for module stream
@@ -15,7 +15,7 @@ class ModuleStreamEntity(BaseEntity):
         :param str query: search query to type into search field. E.g.
             ``name = "ant"``.
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(query)
 
     def read(self, entity_name, stream_version, widget_names=None):
@@ -25,12 +25,12 @@ class ModuleStreamEntity(BaseEntity):
         :param str stream_version: stream version of module.
         """
         view = self.navigate_to(
-            self, 'Details', entity_name=entity_name, stream_version=stream_version
+            self, "Details", entity_name=entity_name, stream_version=stream_version
         )
         return view.read(widget_names=widget_names)
 
 
-@navigator.register(ModuleStreamEntity, 'All')
+@navigator.register(ModuleStreamEntity, "All")
 class ShowAllModuleStreams(NavigateStep):
     """navigate to Module Streams Page"""
 
@@ -38,10 +38,10 @@ class ShowAllModuleStreams(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Content Types', 'Module Streams')
+        self.view.menu.select("Content", "Content Types", "Module Streams")
 
 
-@navigator.register(ModuleStreamEntity, 'Details')
+@navigator.register(ModuleStreamEntity, "Details")
 class ShowModuleStreamsDetails(NavigateStep):
     """Navigate to Module Stream Details page by clicking on
     necessary module name in the table
@@ -54,13 +54,15 @@ class ShowModuleStreamsDetails(NavigateStep):
     VIEW = ModuleStreamsDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
-        stream_version = kwargs.get('stream_version')
-        self.parent.search(f'name = {entity_name} and stream = {stream_version}')
-        self.parent.table.row(name=entity_name, stream=stream_version)['Name'].widget.click()
+        entity_name = kwargs.get("entity_name")
+        stream_version = kwargs.get("stream_version")
+        self.parent.search(f"name = {entity_name} and stream = {stream_version}")
+        self.parent.table.row(name=entity_name, stream=stream_version)[
+            "Name"
+        ].widget.click()
 
     def post_navigate(self, _tries, *args, **kwargs):
         wait_for(
@@ -72,5 +74,7 @@ class ShowModuleStreamsDetails(NavigateStep):
         )
 
     def am_i_here(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
-        return self.view.is_displayed and self.view.breadcrumb.locations[1].startswith(entity_name)
+        entity_name = kwargs.get("entity_name")
+        return self.view.is_displayed and self.view.breadcrumb.locations[1].startswith(
+            entity_name
+        )

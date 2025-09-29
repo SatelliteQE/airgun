@@ -26,11 +26,13 @@ class TaskReadOnlyEntryError(ReadOnlyEntry):
 
 class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Tasks']")
-    focus = ActionsDropdown("//div[./button[@id='tasks-dashboard-time-period-dropdown']]")
+    focus = ActionsDropdown(
+        "//div[./button[@id='tasks-dashboard-time-period-dropdown']]"
+    )
     table = SatTable(
         ".//div[@class='tasks-table']//table",
         column_widgets={
-            'Action': Text('./a'),
+            "Action": Text("./a"),
         },
     )
 
@@ -57,9 +59,9 @@ class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
         ROOT = ".//div[@id='stopped-tasks-card']"
         name = Text("./h2")
         table = Table(
-            locator='.//table',
+            locator=".//table",
             column_widgets={
-                'Total': Text('./button'),
+                "Total": Text("./button"),
             },
         )
 
@@ -76,28 +78,30 @@ class TaskDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Tasks'
+            and self.breadcrumb.locations[0] == "Tasks"
             and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
         )
 
     @View.nested
     class task(SatTab):
-        name = TaskReadOnlyEntry(name='Name')
-        result = TaskReadOnlyEntry(name='Result')
-        triggered_by = TaskReadOnlyEntry(name='Triggered by')
-        execution_type = TaskReadOnlyEntry(name='Execution type')
-        start_at = TaskReadOnlyEntry(name='Start at')
-        started_at = TaskReadOnlyEntry(name='Started at')
-        ended_at = TaskReadOnlyEntry(name='Ended at')
-        start_before = TaskReadOnlyEntry(name='Start before')
+        name = TaskReadOnlyEntry(name="Name")
+        result = TaskReadOnlyEntry(name="Result")
+        triggered_by = TaskReadOnlyEntry(name="Triggered by")
+        execution_type = TaskReadOnlyEntry(name="Execution type")
+        start_at = TaskReadOnlyEntry(name="Start at")
+        started_at = TaskReadOnlyEntry(name="Started at")
+        ended_at = TaskReadOnlyEntry(name="Ended at")
+        start_before = TaskReadOnlyEntry(name="Start before")
         state = Text("//div[contains(@class, 'progress-description')]")
         progressbar = ProgressBar(locator='//div[contains(@class,"progress-bar")]')
-        output = TaskReadOnlyEntry(name='Output')
-        errors = TaskReadOnlyEntryError(name='Errors')
-        dynflow_console = Button('Dynflow console')
+        output = TaskReadOnlyEntry(name="Output")
+        errors = TaskReadOnlyEntryError(name="Errors")
+        dynflow_console = Button("Dynflow console")
 
     def wait_for_result(self, timeout=60, delay=1):
         """Wait for invocation job to finish"""
@@ -105,7 +109,7 @@ class TaskDetailsView(BaseLoggedInView):
             lambda: (
                 self.is_displayed
                 and self.task.progressbar.is_displayed
-                and self.task.result.read() == 'success'
+                and self.task.result.read() == "success"
             ),
             timeout=timeout,
             delay=delay,

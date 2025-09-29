@@ -5,10 +5,10 @@ from airgun.views.fact import HostFactView
 
 
 class FactValueEntity(BaseEntity):
-    endpoint_path = '/fact_values'
+    endpoint_path = "/fact_values"
 
 
-@navigator.register(FactValueEntity, 'All')
+@navigator.register(FactValueEntity, "All")
 class ShowFactValuePage(NavigateStep):
     """Navigate to Fact Values page."""
 
@@ -16,4 +16,4 @@ class ShowFactValuePage(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Monitor', 'Facts')
+        self.view.menu.select("Monitor", "Facts")

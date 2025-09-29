@@ -8,11 +8,11 @@ from airgun.views.ansible_role import AnsibleRolesImportView, AnsibleRolesView
 class AnsibleRolesEntity(BaseEntity):
     """Main Ansible roles entity"""
 
-    endpoint_path = '/ansible/ansible_roles'
+    endpoint_path = "/ansible/ansible_roles"
 
     def search(self, value):
         """Search for existing Ansible Role"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.search(value)
         return view.table.read()
 
@@ -24,9 +24,9 @@ class AnsibleRolesEntity(BaseEntity):
         # header cell. The Satellite UX team is planning to address this in a
         # future release, likely by wrapping the sort character in a separate
         # span tag from the column header text.
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.search(entity_name)
-        view.table.row()['Actions'].widget.fill('Delete')
+        view.table.row()["Actions"].widget.fill("Delete")
         view.dialog.confirm_dialog.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -34,7 +34,7 @@ class AnsibleRolesEntity(BaseEntity):
     @property
     def imported_roles_count(self):
         """Return the number of Ansible roles currently imported into Satellite"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         # Before any roles have been imported, no table or pagination widget are
         # present on the page
         # Applying wait_displayed for the page to get rendered
@@ -45,7 +45,7 @@ class AnsibleRolesEntity(BaseEntity):
         """Import all available roles and return the number of roles
         that were available at import time
         """
-        view = self.navigate_to(self, 'Import')
+        view = self.navigate_to(self, "Import")
         available_roles_count = int(view.total_available_roles.read())
         view.select_all.fill(True)
         view.submit.click()
@@ -53,29 +53,29 @@ class AnsibleRolesEntity(BaseEntity):
 
     def read_all(self):
         """Read all roles before importing"""
-        view = self.navigate_to(self, 'Import')
+        view = self.navigate_to(self, "Import")
         view.dropdown.click()
         view.max_per_pg.click()
         return view.roles.read()
 
 
-@navigator.register(AnsibleRolesEntity, 'All')
+@navigator.register(AnsibleRolesEntity, "All")
 class ShowAllRoles(NavigateStep):
     """Navigate to the Ansible Roles page"""
 
     VIEW = AnsibleRolesView
 
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Ansible', 'Roles')
+        self.view.menu.select("Configure", "Ansible", "Roles")
 
 
-@navigator.register(AnsibleRolesEntity, 'Import')
+@navigator.register(AnsibleRolesEntity, "Import")
 class ImportAnsibleRole(NavigateStep):
     """Navigate to the Import Roles page"""
 
     VIEW = AnsibleRolesImportView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
         self.parent.import_button.click()

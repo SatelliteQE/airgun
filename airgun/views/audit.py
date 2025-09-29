@@ -13,14 +13,16 @@ class AuditEntry(View):
     resource_name = Text(".//div[contains(@class, 'item-resource')]")
     created_at = Text(".//div[contains(@class, 'audits-list-actions')]/span")
     expander = Text(".//*[@aria-label='Details']")
-    affected_organization = Text("(.//a[@data-ouia-component-id='taxonomy-inline-btn'])[1]")
+    affected_organization = Text(
+        "(.//a[@data-ouia-component-id='taxonomy-inline-btn'])[1]"
+    )
     affected_location = Text("(.//a[@data-ouia-component-id='taxonomy-inline-btn'])[2]")
-    action_summary = SatTableWithoutHeaders('.//table')
+    action_summary = SatTableWithoutHeaders(".//table")
     comment = Text(".//p[@class='comment-desc']")
 
     @property
     def expanded(self):
-        return self.browser.get_attribute('aria-expanded', self.expander) == 'true'
+        return self.browser.get_attribute("aria-expanded", self.expander) == "true"
 
     def read(self):
         if not self.expanded:
@@ -28,7 +30,7 @@ class AuditEntry(View):
         return super().read()
 
     def fill(self, values):
-        raise ReadOnlyWidgetError('View is read only, fill is prohibited')
+        raise ReadOnlyWidgetError("View is read only, fill is prohibited")
 
 
 class AuditsView(BaseLoggedInView, SearchableViewMixinPF4):

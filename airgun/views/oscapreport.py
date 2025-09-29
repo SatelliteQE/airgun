@@ -12,16 +12,16 @@ from airgun.widgets import (
 class SCAPReportView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Compliance Reports']")
     table = SatTable(
-        './/table',
+        ".//table",
         column_widgets={
-            'Host': Text(".//a[contains(@href,'/new/hosts')]"),
-            'Reported At': Text(".//a[contains(@href,'/compliance/arf_reports')]"),
-            'Policy': Text(".//a[contains(@href,'/compliance/policies')]"),
-            'Openscap Capsule': Text(".//a[contains(@href,'/smart_proxies')]"),
-            'Passed': Text(".//span[contains(@class,'label-info')]"),
-            'Failed': Text(".//span[contains(@class,'label-danger')]"),
-            'Other': Text(".//span[contains(@class,'label-warning')]"),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            "Host": Text(".//a[contains(@href,'/new/hosts')]"),
+            "Reported At": Text(".//a[contains(@href,'/compliance/arf_reports')]"),
+            "Policy": Text(".//a[contains(@href,'/compliance/policies')]"),
+            "Openscap Capsule": Text(".//a[contains(@href,'/smart_proxies')]"),
+            "Passed": Text(".//span[contains(@class,'label-info')]"),
+            "Failed": Text(".//span[contains(@class,'label-danger')]"),
+            "Other": Text(".//span[contains(@class,'label-warning')]"),
+            "Actions": ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
 
@@ -33,20 +33,21 @@ class SCAPReportView(BaseLoggedInView, SearchableViewMixin):
 class SCAPReportDetailsView(BaseLoggedInView):
     show_log_messages_label = Text('//span[normalize-space(.)="Show log messages:"]')
     table = SatTable(
-        './/table',
+        ".//table",
         column_widgets={
-            'Result': Text('./span[1]'),
-            'Message': Text('./span[2]'),
-            'Resource': Text('./span[3]'),
-            'Severity': Text('./img[1]'),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            "Result": Text("./span[1]"),
+            "Message": Text("./span[2]"),
+            "Resource": Text("./span[3]"),
+            "Severity": Text("./img[1]"),
+            "Actions": ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
 
     @property
     def is_displayed(self):
         return (
-            self.browser.wait_for_element(self.show_log_messages_label, exception=False) is not None
+            self.browser.wait_for_element(self.show_log_messages_label, exception=False)
+            is not None
         )
 
 
@@ -66,7 +67,7 @@ class RemediateModal(View):
         expander = Text(
             './/button[contains(@class,"pf-v5-c-wizard__nav-link") and contains(.,"Select snippet")]'
         )
-        snippet = PF5FormSelect('snippet-select')
+        snippet = PF5FormSelect("snippet-select")
 
     @View.nested
     class name_source(WizardStepView):

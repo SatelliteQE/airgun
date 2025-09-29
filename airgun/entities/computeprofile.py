@@ -12,11 +12,11 @@ from airgun.views.computeprofile import (
 
 
 class ComputeProfileEntity(BaseEntity):
-    endpoint_path = '/compute_profiles'
+    endpoint_path = "/compute_profiles"
 
     def create(self, values):
         """Create new compute profile entity"""
-        view = self.navigate_to(self, 'New')
+        view = self.navigate_to(self, "New")
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
@@ -25,12 +25,12 @@ class ComputeProfileEntity(BaseEntity):
     def search(self, value):
         """Search for compute profile entity and return table row
         that contains that entity"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(value)
 
     def rename(self, old_name, new_name):
         """Rename specific compute profile"""
-        view = self.navigate_to(self, 'Rename', entity_name=old_name)
+        view = self.navigate_to(self, "Rename", entity_name=old_name)
         view.fill(new_name)
         view.submit.click()
         view.flash.assert_no_error()
@@ -38,9 +38,9 @@ class ComputeProfileEntity(BaseEntity):
 
     def delete(self, entity_name):
         """Delete specific compute profile"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
+        view.table.row(name=entity_name)["Actions"].widget.fill("Delete")
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -48,11 +48,11 @@ class ComputeProfileEntity(BaseEntity):
     def list_resources(self, entity_name):
         """List of compute resources that applied to specific
         compute profile"""
-        view = self.navigate_to(self, 'List', entity_name=entity_name)
+        view = self.navigate_to(self, "List", entity_name=entity_name)
         return view.table.read()
 
 
-@navigator.register(ComputeProfileEntity, 'All')
+@navigator.register(ComputeProfileEntity, "All")
 class ShowAllComputeProfiles(NavigateStep):
     """Navigate to All Compute Profiles page"""
 
@@ -60,22 +60,22 @@ class ShowAllComputeProfiles(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Infrastructure', 'Compute Profiles')
+        self.view.menu.select("Infrastructure", "Compute Profiles")
 
 
-@navigator.register(ComputeProfileEntity, 'New')
+@navigator.register(ComputeProfileEntity, "New")
 class AddNewComputeProfile(NavigateStep):
     """Navigate to Create Compute Profile page"""
 
     VIEW = ComputeProfileCreateView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
         self.parent.new.click()
 
 
-@navigator.register(ComputeProfileEntity, 'Rename')
+@navigator.register(ComputeProfileEntity, "Rename")
 class RenameComputeProfile(NavigateStep):
     """Navigate to Edit Compute Profile page that basically does rename only
 
@@ -89,15 +89,15 @@ class RenameComputeProfile(NavigateStep):
         return self.view.is_displayed
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Actions'].widget.fill('Rename')
+        self.parent.table.row(name=entity_name)["Actions"].widget.fill("Rename")
 
 
-@navigator.register(ComputeProfileEntity, 'List')
+@navigator.register(ComputeProfileEntity, "List")
 class ListComputeResources(NavigateStep):
     """Navigate to list of Compute Resources for particular Compute Profile
 
@@ -108,9 +108,9 @@ class ListComputeResources(NavigateStep):
     VIEW = ComputeProfileDetailView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+        self.parent.table.row(name=entity_name)["Name"].widget.click()

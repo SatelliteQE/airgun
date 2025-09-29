@@ -5,7 +5,7 @@ from airgun.views.rhai import AllRulesView
 
 
 class RuleEntity(BaseEntity):
-    endpoint_path = '/redhat_access/insights/rules'
+    endpoint_path = "/redhat_access/insights/rules"
 
     def search(self, rule_name):
         """Perform the search of a rule."""

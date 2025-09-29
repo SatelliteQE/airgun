@@ -7,11 +7,11 @@ from airgun.views.sync_status import SyncStatusView
 
 
 class SyncStatusEntity(BaseEntity):
-    endpoint_path = '/katello/sync_management'
+    endpoint_path = "/katello/sync_management"
 
     def read(self, widget_names=None, active_only=False):
         """Read all widgets at Sync status entity"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.active_only.fill(active_only)
         return view.read(widget_names=widget_names)
 
@@ -35,8 +35,10 @@ class SyncStatusEntity(BaseEntity):
 
         :return: the results text in RESULT columns
         """
-        view = self.navigate_to(self, 'All')
-        repo_nodes = [view.table.get_node_from_path(repo_path) for repo_path in repository_paths]
+        view = self.navigate_to(self, "All")
+        repo_nodes = [
+            view.table.get_node_from_path(repo_path) for repo_path in repository_paths
+        ]
         for repo_node in repo_nodes:
             repo_node.fill(True)
         view.synchronize_now.click()
@@ -51,10 +53,10 @@ class SyncStatusEntity(BaseEntity):
         return [node.result for node in repo_nodes]
 
 
-@navigator.register(SyncStatusEntity, 'All')
+@navigator.register(SyncStatusEntity, "All")
 class ShowAllHostCollections(NavigateStep):
     VIEW = SyncStatusView
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Sync Status')
+        self.view.menu.select("Content", "Sync Status")

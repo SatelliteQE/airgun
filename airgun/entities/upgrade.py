@@ -5,14 +5,14 @@ from airgun.views.upgrade import UpgradeView
 
 
 class UpgradeEntity(BaseEntity):
-    endpoint_path = '/upgrade'
+    endpoint_path = "/upgrade"
 
     def documentation_links(self):
-        view = self.navigate_to(self, 'Home')
+        view = self.navigate_to(self, "Home")
         return view.documentation_links()
 
 
-@navigator.register(UpgradeEntity, 'Home')
+@navigator.register(UpgradeEntity, "Home")
 class Upgrade(NavigateStep):
     """Navigate to Satellite Upgrade screen."""
 
@@ -20,4 +20,4 @@ class Upgrade(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Administer', 'Satellite Upgrade')
+        self.view.menu.select("Administer", "Satellite Upgrade")

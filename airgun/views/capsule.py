@@ -38,8 +38,8 @@ from airgun.widgets import (
 
 
 class DeleteCapsuleConfirmationDialog(Pf5ConfirmationDialog):
-    confirm_dialog = OUIAButton('btn-modal-confirm')
-    cancel_dialog = OUIAButton('btn-modal-cancel')
+    confirm_dialog = OUIAButton("btn-modal-confirm")
+    cancel_dialog = OUIAButton("btn-modal-cancel")
 
 
 class CreateCapsuleView(BaseLoggedInView):
@@ -53,16 +53,18 @@ class CreateCapsuleView(BaseLoggedInView):
     class capsule(SatTab):
         name = TextInput(locator='//input[@id="smart_proxy_name"]')
         url = TextInput(locator='//input[@id="smart_proxy_url"]')
-        acs_http_proxy = FilteredDropdown(id='smart_proxy_http_proxy_id')
-        remove_proxy_selection = Text(locator='//*[@id="smart_proxy_http_proxy_id"]/a/abbr')
+        acs_http_proxy = FilteredDropdown(id="smart_proxy_http_proxy_id")
+        remove_proxy_selection = Text(
+            locator='//*[@id="smart_proxy_http_proxy_id"]/a/abbr'
+        )
 
     @View.nested
     class locations(SatTab):
-        resources = MultiSelect(id='ms-smart_proxy_location_ids')
+        resources = MultiSelect(id="ms-smart_proxy_location_ids")
 
     @View.nested
     class organizations(SatTab):
-        resources = MultiSelect(id='ms-smart_proxy_organization_ids')
+        resources = MultiSelect(id="ms-smart_proxy_organization_ids")
 
     @property
     def is_displayed(self):
@@ -74,14 +76,16 @@ class EditCapsuleView(CreateCapsuleView):
     class capsule(SatTab):
         name = TextInput(locator='//input[@id="smart_proxy_name"]')
         url = TextInput(locator='//input[@id="smart_proxy_url"]')
-        download_policy = FilteredDropdown(id='smart_proxy_download_policy')
-        acs_http_proxy = FilteredDropdown(id='smart_proxy_http_proxy_id')
-        remove_proxy_selection = Text(locator='//*[@id="smart_proxy_http_proxy_id"]/a/abbr')
+        download_policy = FilteredDropdown(id="smart_proxy_download_policy")
+        acs_http_proxy = FilteredDropdown(id="smart_proxy_http_proxy_id")
+        remove_proxy_selection = Text(
+            locator='//*[@id="smart_proxy_http_proxy_id"]/a/abbr'
+        )
 
     @View.nested
     class lifecycle_enviroments(SatTab):
-        TAB_NAME = 'Lifecycle Environments'
-        resources = MultiSelect(id='ms-smart_proxy_lifecycle_environment_ids')
+        TAB_NAME = "Lifecycle Environments"
+        resources = MultiSelect(id="ms-smart_proxy_lifecycle_environment_ids")
 
 
 class CapsuleDetailsView(BaseLoggedInView):
@@ -99,16 +103,22 @@ class CapsuleDetailsView(BaseLoggedInView):
 
     @View.nested
     class overview(SatTab):
-        TAB_NAME = 'Overview'
+        TAB_NAME = "Overview"
 
-        reclaim_space_button = Button('Reclaim Space')
-        reclaim_space_warning = Text('.//div[@id="properties"]/div/div/p[contains(., "Warning")]')
+        reclaim_space_button = Button("Reclaim Space")
+        reclaim_space_warning = Text(
+            './/div[@id="properties"]/div/div/p[contains(., "Warning")]'
+        )
 
         url = Text('.//div[preceding-sibling::div[contains(., "URL")]]')
         version = Text('.//span[@class="proxy-version"]')
-        active_features = Text('.//div[contains(., "Active features")]/ancestor::div[@class="row"]')
-        refresh_features = Button('Refresh features')
-        hosts_managed = Text('.//div[preceding-sibling::div[contains(., "Hosts managed")]]')
+        active_features = Text(
+            './/div[contains(., "Active features")]/ancestor::div[@class="row"]'
+        )
+        refresh_features = Button("Refresh features")
+        hosts_managed = Text(
+            './/div[preceding-sibling::div[contains(., "Hosts managed")]]'
+        )
         failed_fetaures_info = Text('//div[@id="failed-modules"]')
         log_messages_info = Text(
             '//a[contains(@href, "#logs") and contains(@data-toggle, "tooltip")][1]'
@@ -126,7 +136,7 @@ class CapsuleDetailsView(BaseLoggedInView):
 
     @View.nested
     class services(SatTab):
-        TAB_NAME = 'Services'
+        TAB_NAME = "Services"
         container_gateway_version = Text(
             '//div[contains(., "Container_Gateway")]/following-sibling::div[contains(., "Version")]/div[@class="col-md-8"][1]'
         )
@@ -156,20 +166,22 @@ class CapsuleDetailsView(BaseLoggedInView):
 
     @View.nested
     class logs(SatTab):
-        TAB_NAME = 'Logs'
+        TAB_NAME = "Logs"
 
-        search_bar = TextInput(locator='//input[@aria-controls="table-proxy-status-logs"]')
+        search_bar = TextInput(
+            locator='//input[@aria-controls="table-proxy-status-logs"]'
+        )
         filter_by_level = Select(locator='//select[@id="logs-filter"]')
         refresh_button = Text(
             locator='//a[normalize-space(.)="Refresh" and contains(@data-url,"expire_logs")]'
         )
 
         table = SatTable(
-            './/table',
+            ".//table",
             column_widgets={
-                'Time': Text('./td[1]'),
-                'Level': Text('./td[2]'),
-                'Message': Text('./td[3]'),
+                "Time": Text("./td[1]"),
+                "Level": Text("./td[2]"),
+                "Message": Text("./td[3]"),
             },
         )
 
@@ -177,26 +189,26 @@ class CapsuleDetailsView(BaseLoggedInView):
 
     @View.nested
     class content(SatTab):
-        TAB_NAME = 'Content'
+        TAB_NAME = "Content"
 
         top_content_table = PF5ExpandableTable(
-            component_id='capsule-content-table',
+            component_id="capsule-content-table",
             column_widgets={
                 0: PF5Button(locator='./button[@aria-label="Details"]'),
-                'Environment': Text('./a'),
-                'Last sync': Text('./span[contains(@class, "pf-c-label ")]'),
+                "Environment": Text("./a"),
+                "Last sync": Text('./span[contains(@class, "pf-c-label ")]'),
                 3: PF5Menu(locator='.//div[contains(@class, "pf-v5-c-menu")]'),
             },
         )
 
         mid_content_table = PF5ExpandableTable(
-            component_id='expandable-content-views',
+            component_id="expandable-content-views",
             column_widgets={
                 0: Button(locator='./button[@aria-label="Details"]'),
-                'Content view': Text('./span/a'),
-                'Version': Text('./a'),
-                'Last published': Text('./span'),
-                'Synced': Text('./svg'),
+                "Content view": Text("./span/a"),
+                "Version": Text("./a"),
+                "Last published": Text("./span"),
+                "Synced": Text("./svg"),
                 5: PF5Menu(locator='.//div[contains(@class, "pf-v5-c-menu")]'),
             },
         )
@@ -210,40 +222,44 @@ class CapsuleDetailsView(BaseLoggedInView):
             read_top_content = self.top_content_table.read()
             lce_names = []
             result = {}
-            lce_names.extend(row['Environment'] for row in read_top_content)
+            lce_names.extend(row["Environment"] for row in read_top_content)
 
             for lce in lce_names:
                 self.top_content_table.row(Environment=lce)[0].click()
                 mid_content_read = self.mid_content_table.read()
                 cv_names = []
-                cv_names.extend(row['Content view'] for row in mid_content_read)
+                cv_names.extend(row["Content view"] for row in mid_content_read)
 
                 result[lce] = {
-                    'top_row_content': self.top_content_table.row(Environment=lce).read(),
+                    "top_row_content": self.top_content_table.row(
+                        Environment=lce
+                    ).read(),
                 }
 
                 for i, cv in enumerate(cv_names):
                     self.mid_content_table.row(content_view=cv)[0].click()
-                    self.expanded_repo_details.locator += f'[{i+1}]'
+                    self.expanded_repo_details.locator += f"[{i + 1}]"
                     result[lce][cv] = {
-                        'mid_row_content': self.mid_content_table.row(content_view=cv).read(),
-                        'expanded_repo_details': [
-                            col.split('\n') for col in self.expanded_repo_details.read()
+                        "mid_row_content": self.mid_content_table.row(
+                            content_view=cv
+                        ).read(),
+                        "expanded_repo_details": [
+                            col.split("\n") for col in self.expanded_repo_details.read()
                         ],
                     }
 
                     # Following code reads html svg tag and gets color of status icon
                     #  and assigns bool according to that
                     svg_status_icon = self.browser.get_attribute(
-                        'outerHTML', self.mid_content_table.row(content_view=cv)[4]
+                        "outerHTML", self.mid_content_table.row(content_view=cv)[4]
                     )
-                    color = re.search('color: (.*?);', svg_status_icon).group(1)
-                    result[lce][cv]['mid_row_content']['Synced'] = (
-                        True if color == 'green' else False if color == 'red' else None
+                    color = re.search("color: (.*?);", svg_status_icon).group(1)
+                    result[lce][cv]["mid_row_content"]["Synced"] = (
+                        True if color == "green" else False if color == "red" else None
                     )
 
-                    self.expanded_repo_details.locator = '['.join(
-                        self.expanded_repo_details.locator.split('[')[:-1]
+                    self.expanded_repo_details.locator = "[".join(
+                        self.expanded_repo_details.locator.split("[")[:-1]
                     )
 
                     self.mid_content_table.row(content_view=cv)[0].click()
@@ -257,21 +273,23 @@ class CapsulesView(BaseLoggedInView, SearchableViewMixinPF4):
     """Class that describes the Capsule Details page"""
 
     title = Text('//h1[normalize-space(.)="Capsules"]')
-    create_capsule = Text('//a[contains(@class, "btn")][contains(@href, "smart_proxies/new")]')
+    create_capsule = Text(
+        '//a[contains(@class, "btn")][contains(@href, "smart_proxies/new")]'
+    )
     documentation = Text('//a[contains(@class, "btn")][contains(@href, "manual")]')
     success_message = Text('//div[contains(@aria-label, "Success Alert")]')
     error_message = Text('//div[contains(@aria-label, "Danger Alert")]')
     confirm_deletion = DeleteCapsuleConfirmationDialog()
 
     table = SatTable(
-        './/table',
+        ".//table",
         column_widgets={
-            'Name': Text('./a[contains(@href, "smart_proxies")]'),
-            'Locations': Text('./td[3]'),
-            'Organizations': Text('./td[4]'),
-            'Features': Text('./td[4]'),
-            'Status': Text('./td[5]'),
-            'Actions': ActionsDropdown('./div[contains(@class, "btn-group")]'),
+            "Name": Text('./a[contains(@href, "smart_proxies")]'),
+            "Locations": Text("./td[3]"),
+            "Organizations": Text("./td[4]"),
+            "Features": Text("./td[4]"),
+            "Status": Text("./td[5]"),
+            "Actions": ActionsDropdown('./div[contains(@class, "btn-group")]'),
         },
     )
     pagination = PF5Pagination()

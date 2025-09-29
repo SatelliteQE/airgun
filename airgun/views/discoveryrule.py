@@ -13,14 +13,16 @@ from airgun.widgets import (
 
 class DiscoveryRulesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Discovery Rules']")
-    page_info = Text("//foreman-react-component[contains(@name, 'DiscoveryRules')]/div/div")
+    page_info = Text(
+        "//foreman-react-component[contains(@name, 'DiscoveryRules')]/div/div"
+    )
     new = Text("//a[contains(@href, '/discovery_rules/new')]")
-    new_on_blank_page = PF5Button('Create Rule')
+    new_on_blank_page = PF5Button("Create Rule")
     table = Table(
-        './/table',
+        ".//table",
         column_widgets={
-            'Name': Text('.//a'),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            "Name": Text(".//a"),
+            "Actions": ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
 
@@ -36,38 +38,42 @@ class DiscoveryRuleCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Discovery rules'
-            and self.breadcrumb.read() == 'New Discovery Rule'
+            and self.breadcrumb.locations[0] == "Discovery rules"
+            and self.breadcrumb.read() == "New Discovery Rule"
         )
 
     @View.nested
     class primary(SatTab):
-        name = TextInput(id='discovery_rule_name')
-        search = AutoCompleteTextInput(name='discovery_rule[search]')
-        host_group = FilteredDropdown(id='discovery_rule_hostgroup_id')
-        hostname = TextInput(id='discovery_rule_hostname')
-        hosts_limit = TextInput(id='discovery_rule_max_count')
-        priority = TextInput(id='discovery_rule_priority')
-        enabled = Checkbox(id='discovery_rule_enabled')
+        name = TextInput(id="discovery_rule_name")
+        search = AutoCompleteTextInput(name="discovery_rule[search]")
+        host_group = FilteredDropdown(id="discovery_rule_hostgroup_id")
+        hostname = TextInput(id="discovery_rule_hostname")
+        hosts_limit = TextInput(id="discovery_rule_max_count")
+        priority = TextInput(id="discovery_rule_priority")
+        enabled = Checkbox(id="discovery_rule_enabled")
 
     @View.nested
     class locations(SatTab):
-        resources = MultiSelect(id='ms-discovery_rule_location_ids')
+        resources = MultiSelect(id="ms-discovery_rule_location_ids")
 
     @View.nested
     class organizations(SatTab):
-        resources = MultiSelect(id='ms-discovery_rule_organization_ids')
+        resources = MultiSelect(id="ms-discovery_rule_organization_ids")
 
 
 class DiscoveryRuleEditView(DiscoveryRuleCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Discovery rules'
-            and self.breadcrumb.read().startswith('Edit ')
+            and self.breadcrumb.locations[0] == "Discovery rules"
+            and self.breadcrumb.read().startswith("Edit ")
         )

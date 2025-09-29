@@ -29,12 +29,14 @@ class InventoryTab(Tab):
 
     TAB_LOCATOR = ParametrizedLocator(
         './/ul[contains(@class, "nav-tabs")]/'
-        'li[./a[contains(normalize-space(.), {@tab_name|quote})]]'
+        "li[./a[contains(normalize-space(.), {@tab_name|quote})]]"
     )
 
     def child_widget_accessed(self, widget):
         super().child_widget_accessed(widget)
-        wait_for(lambda: widget.parent.is_displayed, timeout=5, delay=1, logger=widget.logger)
+        wait_for(
+            lambda: widget.parent.is_displayed, timeout=5, delay=1, logger=widget.logger
+        )
 
 
 class InventoryItemsView(Accordion):
@@ -49,8 +51,8 @@ class InventoryItemsView(Accordion):
     @View.nested
     class generating(InventoryTab):
         process = Text('.//div[contains(@class, "tab-header")]/div[1]')
-        generate = Button('contains', 'Generate')
-        download_report = Button('Download Report')
+        generate = Button("contains", "Generate")
+        download_report = Button("Download Report")
         terminal = Text(
             './/div[contains(@class, "report-generate")]//div[contains(@class, "terminal")]'
         )
@@ -66,7 +68,7 @@ class InventoryItemsView(Accordion):
     @property
     def is_generating(self):
         try:
-            self.parent_browser.element(f'{self.STATUS_ELEMENTS}[1]')
+            self.parent_browser.element(f"{self.STATUS_ELEMENTS}[1]")
             return True
         except NoSuchElementException:
             return False
@@ -74,7 +76,7 @@ class InventoryItemsView(Accordion):
     @property
     def is_uploading(self):
         try:
-            self.parent_browser.element(f'{self.STATUS_ELEMENTS}[2]')
+            self.parent_browser.element(f"{self.STATUS_ELEMENTS}[2]")
             return True
         except NoSuchElementException:
             return False
@@ -82,60 +84,69 @@ class InventoryItemsView(Accordion):
     @property
     def status(self):
         if self.is_generating:
-            return 'generating'
+            return "generating"
         if self.is_uploading:
-            return 'uploading'
-        return 'idle'
+            return "uploading"
+        return "idle"
 
     @property
     def is_active(self):
         classes = self.browser.classes(self)
-        return any('expand-active' in class_ for class_ in classes)
+        return any("expand-active" in class_ for class_ in classes)
 
     def child_widget_accessed(self, widget):
         if not self.is_active:
             self.click()
 
     def read(self, widget_names=None):
-
         final_dict = {
-            'generating': self.generating.read(),
-            'status': self.status,
-            'obfuscate_hostnames': self.parent.obfuscate_hostnames.read(),
-            'obfuscate_ips': self.parent.obfuscate_ips.read(),
-            'exclude_packages': self.parent.exclude_packages.read(),
+            "generating": self.generating.read(),
+            "status": self.status,
+            "obfuscate_hostnames": self.parent.obfuscate_hostnames.read(),
+            "obfuscate_ips": self.parent.obfuscate_ips.read(),
+            "exclude_packages": self.parent.exclude_packages.read(),
         }
         if self.uploading.is_displayed:
-            final_dict['uploading'] = self.uploading.read()
+            final_dict["uploading"] = self.uploading.read()
         if self.parent.auto_update.is_displayed:
-            final_dict['auto_update'] = self.parent.auto_update.read()
+            final_dict["auto_update"] = self.parent.auto_update.read()
         return final_dict
 
     def fill(self, values):
-        raise ReadOnlyWidgetError('View is read only, fill is prohibited')
+        raise ReadOnlyWidgetError("View is read only, fill is prohibited")
 
 
 class CloudInventoryListView(BaseLoggedInView):
     """Main Red Hat Lightspeed Inventory Upload view."""
 
     title = Text('//h1[normalize-space(.)="Red Hat Inventory"]')
-    auto_update = Switch('.//label[@for="rh-cloud-switcher-allow_auto_inventory_upload"]')
+    auto_update = Switch(
+        './/label[@for="rh-cloud-switcher-allow_auto_inventory_upload"]'
+    )
     data_collection = DataCollectionMenu()
-    obfuscate_hostnames = Switch('.//label[@for="rh-cloud-switcher-obfuscate_inventory_hostnames"]')
+    obfuscate_hostnames = Switch(
+        './/label[@for="rh-cloud-switcher-obfuscate_inventory_hostnames"]'
+    )
     obfuscate_ips = Switch('.//label[@for="rh-cloud-switcher-obfuscate_inventory_ips"]')
-    exclude_packages = Switch('.//label[@for="rh-cloud-switcher-exclude_installed_packages"]')
+    exclude_packages = Switch(
+        './/label[@for="rh-cloud-switcher-exclude_installed_packages"]'
+    )
     auto_mismatch_deletion = Switch(
         './/label[@for="rh-cloud-switcher-allow_auto_insights_mismatch_delete"]'
     )
 
-    auto_upload_desc = PF5OUIAText('text-enable-report')
-    manual_upload_desc = PF5OUIAText('text-restart-button')
+    auto_upload_desc = PF5OUIAText("text-enable-report")
+    manual_upload_desc = PF5OUIAText("text-restart-button")
     dialog = Pf5ConfirmationDialog()
-    cloud_connector = PF5Button(locator='//button[normalize-space(.)="Configure cloud connector"]')
+    cloud_connector = PF5Button(
+        locator='//button[normalize-space(.)="Configure cloud connector"]'
+    )
     reconfigure_cloud_connector = PF5Button(
         locator='//button[normalize-space(.)="Reconfigure cloud connector"]'
     )
-    sync_status = PF5Button(locator='//button[normalize-space(.)="Sync all inventory status"]')
+    sync_status = PF5Button(
+        locator='//button[normalize-space(.)="Sync all inventory status"]'
+    )
     inventory_list = View.nested(InventoryItemsView)
 
     @property
@@ -144,13 +155,13 @@ class CloudInventoryListView(BaseLoggedInView):
 
     def read(self, widget_names=None):
         final_dict = {
-            'title': self.title.text,
-            'obfuscate_hostnames': self.obfuscate_hostnames.read(),
-            'obfuscate_ips': self.obfuscate_ips.read(),
-            'exclude_packages': self.exclude_packages.read(),
-            'auto_mismatch_deletion': self.auto_mismatch_deletion.read(),
+            "title": self.title.text,
+            "obfuscate_hostnames": self.obfuscate_hostnames.read(),
+            "obfuscate_ips": self.obfuscate_ips.read(),
+            "exclude_packages": self.exclude_packages.read(),
+            "auto_mismatch_deletion": self.auto_mismatch_deletion.read(),
         }
         if self.auto_update.is_displayed:
-            final_dict['auto_update'] = self.auto_update.read()
+            final_dict["auto_update"] = self.auto_update.read()
 
         return final_dict

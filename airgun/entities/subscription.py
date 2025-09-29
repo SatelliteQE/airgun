@@ -14,7 +14,7 @@ from airgun.views.subscription import (
 
 
 class SubscriptionEntity(BaseEntity):
-    endpoint_path = '/subscriptions'
+    endpoint_path = "/subscriptions"
 
     def _wait_for_process_to_finish(
         self, name, has_manifest=False, timeout=600, ignore_error_messages=None
@@ -53,7 +53,7 @@ class SubscriptionEntity(BaseEntity):
             reliably if manifest is uploaded or not due to missing permissions
         """
         try:
-            view = self.navigate_to(self, 'Manage Manifest')
+            view = self.navigate_to(self, "Manage Manifest")
             result = view.manifest.delete_button.is_enabled
             view.close_button.click()
             return result
@@ -65,35 +65,41 @@ class SubscriptionEntity(BaseEntity):
         :param manifest_file: Path to manifest file
         :param ignore_error_messages: List of error messages to ignore
         """
-        view = self.navigate_to(self, 'Manage Manifest')
+        view = self.navigate_to(self, "Manage Manifest")
         view.wait_animation_end()
         view.manifest.manifest_file.fill(manifest_file)
         self._wait_for_process_to_finish(
-            'Import Manifest', has_manifest=True, ignore_error_messages=ignore_error_messages
+            "Import Manifest",
+            has_manifest=True,
+            ignore_error_messages=ignore_error_messages,
         )
 
     def refresh_manifest(self):
         """Refresh manifest"""
-        view = self.navigate_to(self, 'Manage Manifest')
+        view = self.navigate_to(self, "Manage Manifest")
         view.wait_animation_end()
         view.manifest.refresh_button.click()
         org_name = view.taxonomies.current_org
         self._wait_for_process_to_finish(
-            f'Refresh Manifest organization "{org_name}"', has_manifest=True, timeout=1200
+            f'Refresh Manifest organization "{org_name}"',
+            has_manifest=True,
+            timeout=1200,
         )
 
     def delete_manifest(self, ignore_error_messages=None):
         """Delete manifest from current organization"""
-        view = self.navigate_to(self, 'Delete Manifest Confirmation')
+        view = self.navigate_to(self, "Delete Manifest Confirmation")
         view.wait_animation_end()
         view.delete_button.click()
         self._wait_for_process_to_finish(
-            'Delete Manifest', has_manifest=False, ignore_error_messages=ignore_error_messages
+            "Delete Manifest",
+            has_manifest=False,
+            ignore_error_messages=ignore_error_messages,
         )
 
     def read_delete_manifest_message(self):
         """Read message displayed on 'Confirm delete manifest' dialog"""
-        view = self.navigate_to(self, 'Delete Manifest Confirmation')
+        view = self.navigate_to(self, "Delete Manifest Confirmation")
         view.wait_animation_end()
         delete_message = view.message.read()
         # To not break further navigation, we need to close all the opened modal dialogs views
@@ -105,7 +111,7 @@ class SubscriptionEntity(BaseEntity):
 
     def read_subscription_manifest_header_message_and_date(self):
         """Read message displayed about 'manifest expiration' at Subscription Manifest section"""
-        view = self.navigate_to(self, 'Manage Manifest')
+        view = self.navigate_to(self, "Manage Manifest")
         view.wait_animation_end()
         # Read manifest expiration header & message
         if view.manifest.alert_message.is_displayed:
@@ -113,25 +119,25 @@ class SubscriptionEntity(BaseEntity):
             expire_manifest_message = view.manifest.expire_message.read()
         else:
             # Subscription Manifest header & message is not present
-            raise Exception('Manifest expire alert not found')
+            raise Exception("Manifest expire alert not found")
         # Read manifest expiration date
         if view.manifest.expire_date.is_displayed:
             expire_manifest_date = view.manifest.expire_date.read()
         else:
-            raise Exception('Manifest expire date not found')
+            raise Exception("Manifest expire date not found")
         # close opened modal dialogs views
         manage_view = ManageManifestView(self.browser)
         if manage_view.is_displayed:
             manage_view.close_button.click()
         return {
-            'header': expire_manifest_header,
-            'message': expire_manifest_message,
-            'date': expire_manifest_date,
+            "header": expire_manifest_header,
+            "message": expire_manifest_message,
+            "date": expire_manifest_date,
         }
 
     def read_subscription_manifest_expiration_date_only(self):
         """Returns the expiration date from 'Manage Manifest' modal box"""
-        view = self.navigate_to(self, 'Manage Manifest')
+        view = self.navigate_to(self, "Manage Manifest")
         view.wait_animation_end()
         manifest_expiration_date = view.manifest.expire_date.read()
         manage_view = ManageManifestView(self.browser)
@@ -141,7 +147,7 @@ class SubscriptionEntity(BaseEntity):
 
     def is_subscription_manifest_header_message_display(self):
         """Checks header and massage present in the manage manifest modal"""
-        view = self.navigate_to(self, 'Manage Manifest')
+        view = self.navigate_to(self, "Manage Manifest")
         view.wait_animation_end()
         result = view.manifest.alert_message.is_displayed
         # close opened modal dialogs views
@@ -155,15 +161,17 @@ class SubscriptionEntity(BaseEntity):
         :param entity_name: Name of subscription to attach
         :param quantity: Number of subscriptions to attach
         """
-        view = self.navigate_to(self, 'Add')
+        view = self.navigate_to(self, "Add")
         for row in view.table.rows(subscription_name=entity_name):
-            row['Quantity to Allocate'].fill(quantity)
+            row["Quantity to Allocate"].fill(quantity)
         view.submit_button.click()
-        self._wait_for_process_to_finish('Bind entitlements to an allocation', has_manifest=True)
+        self._wait_for_process_to_finish(
+            "Bind entitlements to an allocation", has_manifest=True
+        )
 
     def search(self, value):
         """search for subscription"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(value)
 
     def filter_columns(self, columns=None):
@@ -171,7 +179,7 @@ class SubscriptionEntity(BaseEntity):
         :param columns: dict mapping column name to boolean value
         :return: tuple of the name of the headers
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         if columns is not None:
             view.columns_filter_checkboxes.fill(columns)
             wait_for(
@@ -189,7 +197,9 @@ class SubscriptionEntity(BaseEntity):
         :param virt_who: Whether this is a virt who client subscription.
         :return: List of strings with product names
         """
-        view = self.navigate_to(self, 'Details', entity_name=entity_name, virt_who=virt_who)
+        view = self.navigate_to(
+            self, "Details", entity_name=entity_name, virt_who=virt_who
+        )
         return view.details.provided_products.read()
 
     def content_products(self, entity_name, virt_who=False):
@@ -198,7 +208,9 @@ class SubscriptionEntity(BaseEntity):
         :param virt_who: Whether this is a virt who client subscription.
         :return: List of strings with product names (may be empty)
         """
-        view = self.navigate_to(self, 'Details', entity_name=entity_name, virt_who=virt_who)
+        view = self.navigate_to(
+            self, "Details", entity_name=entity_name, virt_who=virt_who
+        )
         view.product_content.select()
         return view.product_content.product_content_list.read()
 
@@ -213,16 +225,18 @@ class SubscriptionEntity(BaseEntity):
         """Remove subscription
         :param entity_name: Name of subscription
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         for row in view.table.rows(name=entity_name):
-            row['Select all rows'].fill(True)
+            row["Select all rows"].fill(True)
         view.delete_button.click()
         view.confirm_deletion.confirm()
-        self._wait_for_process_to_finish('Delete Upstream Subscription', has_manifest=True)
+        self._wait_for_process_to_finish(
+            "Delete Upstream Subscription", has_manifest=True
+        )
 
     def read_subscriptions(self):
         """Return subscriptions table"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.table.read()
 
 
@@ -239,7 +253,7 @@ class SubscriptionNavigationStep(NavigateStep):
         )
 
 
-@navigator.register(SubscriptionEntity, 'All')
+@navigator.register(SubscriptionEntity, "All")
 class SubscriptionList(SubscriptionNavigationStep):
     """Navigate to Subscriptions main page"""
 
@@ -247,22 +261,22 @@ class SubscriptionList(SubscriptionNavigationStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Subscriptions')
+        self.view.menu.select("Content", "Subscriptions")
 
 
-@navigator.register(SubscriptionEntity, 'Manage Manifest')
+@navigator.register(SubscriptionEntity, "Manage Manifest")
 class ManageManifest(NavigateStep):
     """Navigate to 'Manage Manifest' dialog box on Subscriptions main page"""
 
     VIEW = ManageManifestView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
         self.parent.manage_manifest_button.click()
 
 
-@navigator.register(SubscriptionEntity, 'Delete Manifest Confirmation')
+@navigator.register(SubscriptionEntity, "Delete Manifest Confirmation")
 class DeleteManifestConfirmation(NavigateStep):
     """Navigate to 'Delete Manifest Confirmation' dialog box on
     Subscriptions main page
@@ -272,7 +286,7 @@ class DeleteManifestConfirmation(NavigateStep):
 
     VIEW = DeleteManifestConfirmationView
 
-    prerequisite = NavigateToSibling('Manage Manifest')
+    prerequisite = NavigateToSibling("Manage Manifest")
 
     def step(self, *args, **kwargs):
         wait_for(
@@ -284,22 +298,25 @@ class DeleteManifestConfirmation(NavigateStep):
         self.parent.manifest.delete_button.click()
 
 
-@navigator.register(SubscriptionEntity, 'Add')
+@navigator.register(SubscriptionEntity, "Add")
 class AddSubscription(NavigateStep):
     """Navigate to Add Subscriptions page"""
 
     VIEW = AddSubscriptionView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     def am_i_here(self, *args, **kwargs):
-        return self.view.is_displayed and self.view.breadcrumb.locations[1] == 'Add Subscriptions'
+        return (
+            self.view.is_displayed
+            and self.view.breadcrumb.locations[1] == "Add Subscriptions"
+        )
 
     def step(self, *args, **kwargs):
         self.parent.add_button.click()
 
 
-@navigator.register(SubscriptionEntity, 'Details')
+@navigator.register(SubscriptionEntity, "Details")
 class SubscriptionDetails(SubscriptionNavigationStep):
     """Navigate to Subscriptions' Details page
 
@@ -311,13 +328,13 @@ class SubscriptionDetails(SubscriptionNavigationStep):
     VIEW = SubscriptionDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        subscription_name = kwargs.get('entity_name')
-        virt_who = kwargs.get('virt_who')
+        subscription_name = kwargs.get("entity_name")
+        virt_who = kwargs.get("virt_who")
         search_string = f'name = "{subscription_name}"'
         if virt_who:
-            search_string = f'virt_who = true and {search_string}'
+            search_string = f"virt_who = true and {search_string}"
         self.parent.search(search_string)
-        self.parent.table.row(name=subscription_name)['Name'].widget.click()
+        self.parent.table.row(name=subscription_name)["Name"].widget.click()

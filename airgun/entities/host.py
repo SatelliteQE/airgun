@@ -38,16 +38,16 @@ from airgun.views.host_new import ManageColumnsView, NewHostDetailsView
 
 
 class HostEntity(BaseEntity):
-    endpoint_path = '/hosts'
+    endpoint_path = "/hosts"
 
     HELPER_CLASS = HostHelper
 
     def create(self, values):
         """Create new host entity"""
-        view = self.navigate_to(self, 'New')
+        view = self.navigate_to(self, "New")
         wait_for(lambda: view.fill(values), timeout=60)
         self.browser.click(view.submit, ignore_ajax=True)
-        self.browser.plugin.ensure_page_safe(timeout='800s')
+        self.browser.plugin.ensure_page_safe(timeout="800s")
         host_view = NewHostDetailsView(self.browser)
         host_view.wait_displayed()
         host_view.flash.assert_no_error()
@@ -55,19 +55,23 @@ class HostEntity(BaseEntity):
 
     def get_register_command(self, values=None, full_read=None):
         """Get curl command generated on Register Host page"""
-        view = self.navigate_to(self, 'Register')
+        view = self.navigate_to(self, "Register")
         self.browser.plugin.ensure_page_safe()
         if values is not None:
-            if ('advanced.repository_gpg_key_url' in values) or ('advanced.repository' in values):
+            if ("advanced.repository_gpg_key_url" in values) or (
+                "advanced.repository" in values
+            ):
                 view.wait_displayed()
                 view.advanced.repository_add.click()
                 view = RepositoryListView(self.browser)
-                if 'advanced.repository' in values:
-                    view.repository.fill(values['advanced.repository'])
-                if 'advanced.repository_gpg_key_url' in values:
-                    view.repository_gpg_key_url.fill(values['advanced.repository_gpg_key_url'])
+                if "advanced.repository" in values:
+                    view.repository.fill(values["advanced.repository"])
+                if "advanced.repository_gpg_key_url" in values:
+                    view.repository_gpg_key_url.fill(
+                        values["advanced.repository_gpg_key_url"]
+                    )
                 view.repository_list_confirm.click()
-            view = self.navigate_to(self, 'Register')
+            view = self.navigate_to(self, "Register")
             self.browser.plugin.ensure_page_safe()
             view.fill(values)
         if view.general.activation_keys.read():
@@ -77,26 +81,28 @@ class HostEntity(BaseEntity):
         else:
             view.general.new_activation_key_link.wait_displayed()
             if view.generate_command.disabled:
-                raise DisabledWidgetError('Generate registration command button is disabled')
+                raise DisabledWidgetError(
+                    "Generate registration command button is disabled"
+                )
         if full_read:
             return view.read()
         return view.registration_command.read()
 
     def search(self, value):
         """Search for existing host entity"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(value)
 
     def read_filled_searchbox(self):
         """Read filled searchbox"""
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view = self.navigate_to(self, "All")
+        self.browser.plugin.ensure_page_safe(timeout="5s")
         view.wait_displayed()
         return view.searchbox.read()
 
     def new_ui_button(self):
         """Click New UI button and return the browser URL"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.new_ui_button.click()
         view.wait_displayed()
         return self.browser.url
@@ -108,30 +114,32 @@ class HostEntity(BaseEntity):
 
     def host_status(self, value):
         """Get Host status"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.search(value)
-        return view.browser.element(view.host_status).get_attribute('data-original-title')
+        return view.browser.element(view.host_status).get_attribute(
+            "data-original-title"
+        )
 
     def get_details(self, entity_name, widget_names=None):
         """Read host values from Host Details page, optionally only the widgets in widget_names
         will be read.
         """
-        view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        view = self.navigate_to(self, "Details", entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def read(self, entity_name, widget_names=None):
         """Read host values from Host Edit page"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def read_all(self):
         """Read all values from hosts title page"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.read()
 
     def update(self, entity_name, values):
         """Update an existing host with values"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
@@ -139,13 +147,13 @@ class HostEntity(BaseEntity):
 
     def delete(self, entity_name, cancel=False):
         """Delete host from the system"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.search(entity_name)
-        view.table.row(name=entity_name)[6].widget.item_select('Delete')
+        view.table.row(name=entity_name)[6].widget.item_select("Delete")
         self.browser.handle_alert()
         wait_for(
             lambda: view.flash.assert_message(
-                [f'Success alert: Successfully deleted {entity_name}.']
+                [f"Success alert: Successfully deleted {entity_name}."]
             ),
             timeout=120,
         )
@@ -154,7 +162,7 @@ class HostEntity(BaseEntity):
 
     def read_hosts_after_search(self, entity_name):
         """read_hosts_after_search"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.search(entity_name)
         return view.table.read()
 
@@ -164,12 +172,12 @@ class HostEntity(BaseEntity):
         :param entity_name: The host name to delete the network interface from
         :param interface_id: The network interface identifier.
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         delete_button = view.interfaces.interfaces_list.row(identifier=interface_id)[
-            'Actions'
+            "Actions"
         ].widget.delete
         if delete_button.disabled:
-            raise DisabledWidgetError('Interface Delete button is disabled')
+            raise DisabledWidgetError("Interface Delete button is disabled")
         delete_button.click()
         view.submit.click()
         view.flash.assert_no_error()
@@ -177,7 +185,7 @@ class HostEntity(BaseEntity):
 
     def read_yaml_output(self, entity_name):
         """Get puppet external nodes YAML dump for specific host"""
-        view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        view = self.navigate_to(self, "Details", entity_name=entity_name)
         view.yaml_dump.click()
         output = view.browser.element(view.yaml_output).text
         view.browser.selenium.back()
@@ -185,14 +193,14 @@ class HostEntity(BaseEntity):
 
     def read_insights_recommendations(self, entity_name):
         """Get Insights recommendations for host"""
-        view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        view = self.navigate_to(self, "Details", entity_name=entity_name)
         view.recommendations.click()
-        view = self.navigate_to(self, 'Recommendations')
+        view = self.navigate_to(self, "Recommendations")
         return view.table.read()
 
     def insights_tab(self, entity_name):
         """Get details from Insights tab"""
-        view = self.navigate_to(self, 'InsightsTab', entity_name=entity_name)
+        view = self.navigate_to(self, "InsightsTab", entity_name=entity_name)
         return view.read()
 
     def _select_action(self, action_name, entities_list):
@@ -200,7 +208,7 @@ class HostEntity(BaseEntity):
         of the selected action name from main entity select action dropdown.
         """
         return self.navigate_to(
-            self, 'Select Action', action_name=action_name, entities_list=entities_list
+            self, "Select Action", action_name=action_name, entities_list=entities_list
         )
 
     def apply_action(self, action_name, entities_list, values=None):
@@ -234,11 +242,15 @@ class HostEntity(BaseEntity):
             update_hosts_manually (bool): whether to update hosts manually in order to change the host's content source
         """
 
-        AllHostsEntity.all_hosts_navigate_and_select_hosts_helper(self, host_names=entities_list)
+        AllHostsEntity.all_hosts_navigate_and_select_hosts_helper(
+            self, host_names=entities_list
+        )
         view = AllHostsTableView(self.browser)
         view.bulk_actions_kebab.click()
-        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
-        view.bulk_actions_manage_content_menu.item_select('Content source')
+        self.browser.move_to_element(
+            view.bulk_actions_menu.item_element("Manage content")
+        )
+        view.bulk_actions_manage_content_menu.item_select("Content source")
         view = HostsChangeContentSourceView(self.browser)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
@@ -261,13 +273,15 @@ class HostEntity(BaseEntity):
         if run_job_invocation:
             view.run_job_invocation.click()
             view.wait_displayed()
-            self.browser.plugin.ensure_page_safe(timeout='5s')
+            self.browser.plugin.ensure_page_safe(timeout="5s")
         elif update_hosts_manually:
             view.update_hosts_manualy.click()
             view.wait_displayed()
-            self.browser.plugin.ensure_page_safe(timeout='5s')
+            self.browser.plugin.ensure_page_safe(timeout="5s")
 
-    def change_content_source_get_script(self, entities_list, content_source, lce, content_view):
+    def change_content_source_get_script(
+        self, entities_list, content_source, lce, content_view
+    ):
         """
         Function that reads generated script which is generated while choosing to update hosts manually.
         """
@@ -276,7 +290,11 @@ class HostEntity(BaseEntity):
             entities_list, content_source, lce, content_view, update_hosts_manually=True
         )
         view = HostsChangeContentSourceView(self.browser)
-        wait_for(lambda: view.show_more_change_content_source.is_displayed, timeout=10, delay=1)
+        wait_for(
+            lambda: view.show_more_change_content_source.is_displayed,
+            timeout=10,
+            delay=1,
+        )
         view.show_more_change_content_source.click()
         script = view.generated_script.read()
         return script
@@ -286,24 +304,34 @@ class HostEntity(BaseEntity):
 
         :return str: path to saved file
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.export.click()
         return self.browser.save_downloaded_file()
 
     def host_statuses(self):
-        view = self.navigate_to(self, 'Host Statuses')
+        view = self.navigate_to(self, "Host Statuses")
         view.wait_displayed()
         statuses = []
         view.status_green_total.wait_displayed()
-        statuses.append({'name': 'green_total', 'count': view.status_green_total.read()})
-        statuses.append({'name': 'green_owned', 'count': view.status_green_owned.read()})
-        statuses.append({'name': 'yellow_total', 'count': view.status_yellow_total.read()})
-        statuses.append({'name': 'yellow_owned', 'count': view.status_yellow_owned.read()})
-        statuses.append({'name': 'red_total', 'count': view.status_red_total.read()})
-        statuses.append({'name': 'red_owned', 'count': view.status_red_owned.read()})
+        statuses.append(
+            {"name": "green_total", "count": view.status_green_total.read()}
+        )
+        statuses.append(
+            {"name": "green_owned", "count": view.status_green_owned.read()}
+        )
+        statuses.append(
+            {"name": "yellow_total", "count": view.status_yellow_total.read()}
+        )
+        statuses.append(
+            {"name": "yellow_owned", "count": view.status_yellow_owned.read()}
+        )
+        statuses.append({"name": "red_total", "count": view.status_red_total.read()})
+        statuses.append({"name": "red_owned", "count": view.status_red_owned.read()})
         return statuses
 
-    def schedule_remote_job(self, entities_list, values, timeout=60, wait_for_results=True):
+    def schedule_remote_job(
+        self, entities_list, values, timeout=60, wait_for_results=True
+    ):
         """Apply Schedule Remote Job action to the hosts names in entities_list
 
         :param entities_list: The host names to apply the remote job.
@@ -313,7 +341,7 @@ class HostEntity(BaseEntity):
 
         :returns: The job invocation status view values
         """
-        view = self._select_action('Schedule Remote Job', entities_list)
+        view = self._select_action("Schedule Remote Job", entities_list)
         view.fill(values)
         sleep(2)
         view.submit.click()
@@ -338,7 +366,7 @@ class HostEntity(BaseEntity):
 
         :returns: The job invocation status view values
         """
-        status_view = self._select_action('Run all Ansible roles', entities_list)
+        status_view = self._select_action("Run all Ansible roles", entities_list)
         if wait_for_results:
             status_view.wait_for_result(timeout=timeout)
         return status_view.read()
@@ -348,7 +376,7 @@ class HostEntity(BaseEntity):
         If keyword 'All' is supplied instead of list, all hosts are selected
         using the checkbox from table header
         """
-        view = self._select_action('Delete Hosts', entities_list)
+        view = self._select_action("Delete Hosts", entities_list)
         sleep(1)
         view.submit.click()
         view.flash.assert_no_error()
@@ -364,8 +392,10 @@ class HostEntity(BaseEntity):
         :param entity_name: The host name for which to read the parameter.
         :param name: the parameter name.
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)  # type: HostEditView
-        return view.puppet_enc.puppet_class_parameters.row(name=name)['Value'].widget.read()
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)  # type: HostEditView
+        return view.puppet_enc.puppet_class_parameters.row(name=name)[
+            "Value"
+        ].widget.read()
 
     def set_puppet_class_parameter_value(self, entity_name, name, value):
         """Set Puppet class parameter value
@@ -374,8 +404,8 @@ class HostEntity(BaseEntity):
         :param str name: the parameter name.
         :param dict value: The parameter value
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)  # type: HostEditView
-        view.puppet_enc.puppet_class_parameters.row(name=name).fill({'Value': value})
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)  # type: HostEditView
+        view.puppet_enc.puppet_class_parameters.row(name=name).fill({"Value": value})
         view.submit.click()
         view.validations.assert_no_errors()
         view.flash.assert_no_error()
@@ -387,27 +417,31 @@ class HostEntity(BaseEntity):
         :param str entity_name: The host name for which to set the parameter value.
         :param int rhel_version: Choose UI elements based on rhel version.
         """
-        view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        view = self.navigate_to(self, "Details", entity_name=entity_name)
         view.webconsole.click()
         view.validations.assert_no_errors()
 
         # set locators based on selected UI
         if rhel_version > 7:  # noqa: PLR2004 - Context makes magic number clear
-            hostname_element = 'span'
-            hostname_id = 'system_information_hostname_text'
+            hostname_element = "span"
+            hostname_id = "system_information_hostname_text"
         else:
-            hostname_element = 'a'
-            hostname_id = 'system_information_hostname_button'
+            hostname_element = "a"
+            hostname_id = "system_information_hostname_button"
 
         # switch to the last opened tab,
         self.browser.switch_to_window(self.browser.window_handles[-1])
         self.browser.plugin.ensure_page_safe()
-        self.browser.wait_for_element(locator='//div[@id="content"]/iframe', exception=True)
+        self.browser.wait_for_element(
+            locator='//div[@id="content"]/iframe', exception=True
+        )
         # the remote host content is loaded in an iframe, let's switch to it
         self.browser.switch_to_frame(locator='//div[@id="content"]/iframe')
 
         self.browser.wait_for_element(
-            locator=f'//{hostname_element}[@id="{hostname_id}"]', exception=True, visible=True
+            locator=f'//{hostname_element}[@id="{hostname_id}"]',
+            exception=True,
+            visible=True,
         )
         hostname_button = self.browser.selenium.find_elements("id", hostname_id)
         hostname = hostname_button[0].text
@@ -423,7 +457,7 @@ class HostEntity(BaseEntity):
         :param dict values: items of 'column name: value' pairs
             Example: {'IPv4': True, 'Power': False, 'Model': True}
         """
-        view = self.navigate_to(self, 'ManageColumns')
+        view = self.navigate_to(self, "ManageColumns")
         view.fill(values)
         view.submit()
         self.browser.plugin.ensure_page_safe()
@@ -436,7 +470,7 @@ class HostEntity(BaseEntity):
 
         :return list: header names of the hosts table
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.wait_displayed()
         return view.displayed_table_header_names
 
@@ -446,7 +480,7 @@ class HostEntity(BaseEntity):
         return view.permission_denied.text
 
 
-@navigator.register(HostEntity, 'All')
+@navigator.register(HostEntity, "All")
 class ShowAllHosts(NavigateStep):
     """Navigate to legacy All Hosts page.
     Note: Due to incomplete implementation of the new Hosts page in `airgun.views.host_new.HostsView`,
@@ -456,39 +490,39 @@ class ShowAllHosts(NavigateStep):
 
     VIEW = HostsView
 
-    prerequisite = NavigateToSibling('NewUIAll')
+    prerequisite = NavigateToSibling("NewUIAll")
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.actions.item_select('Legacy UI')
+        self.view.actions.item_select("Legacy UI")
 
 
-@navigator.register(HostEntity, 'New')
+@navigator.register(HostEntity, "New")
 class AddNewHost(NavigateStep):
     """Navigate to Create Host page"""
 
     VIEW = HostCreateView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
         self.parent.new.click()
 
 
-@navigator.register(HostEntity, 'Register')
+@navigator.register(HostEntity, "Register")
 class RegisterHost(NavigateStep):
     """Navigate to Register Host page"""
 
     VIEW = HostRegisterView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Register Host')
+        self.view.menu.select("Hosts", "Register Host")
 
 
-@navigator.register(HostEntity, 'Details')
+@navigator.register(HostEntity, "Details")
 class ShowHostDetails(NavigateStep):
     """Navigate to Host Details page by clicking on necessary host name in the
     table
@@ -500,19 +534,19 @@ class ShowHostDetails(NavigateStep):
     VIEW = HostDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+        self.parent.table.row(name=entity_name)["Name"].widget.click()
         host_view = NewHostDetailsView(self.parent.browser)
         host_view.wait_displayed()
         host_view.dropdown.wait_displayed()
-        host_view.dropdown.item_select('Legacy UI')
+        host_view.dropdown.item_select("Legacy UI")
 
 
-@navigator.register(HostEntity, 'Edit')
+@navigator.register(HostEntity, "Edit")
 class EditHost(NavigateStep):
     """Navigate to Edit Host page by clicking on 'Edit' button for specific
     host in the table
@@ -524,16 +558,16 @@ class EditHost(NavigateStep):
     VIEW = HostEditView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)[6].widget.item_select('Edit')
+        self.parent.table.row(name=entity_name)[6].widget.item_select("Edit")
         self.view.wait_displayed()
 
 
-@navigator.register(HostEntity, 'Select Action')
+@navigator.register(HostEntity, "Select Action")
 class HostsSelectAction(NavigateStep):
     """Navigate to Action page by selecting checkboxes for necessary hosts and
      then clicking on the action name button in 'Select Action' dropdown.
@@ -544,30 +578,30 @@ class HostsSelectAction(NavigateStep):
     """
 
     ACTIONS_VIEWS = {
-        'Change Content Source': HostsChangeContentSourceView,
-        'Change Environment': HostsChangeEnvironment,
-        'Change Group': HostsChangeGroup,
-        'Assign Compliance Policy': HostsAssignCompliancePolicy,
-        'Unassign Compliance Policy': HostsUnassignCompliancePolicy,
-        'Change OpenSCAP Capsule': HostsChangeOpenscapCapsule,
-        'Assign Location': HostsAssignLocation,
-        'Assign Organization': HostsAssignOrganization,
-        'Delete Hosts': HostsDeleteActionDialog,
-        'Schedule Remote Job': HostsJobInvocationCreateView,
-        'Run all Ansible roles': HostsJobInvocationStatusView,
+        "Change Content Source": HostsChangeContentSourceView,
+        "Change Environment": HostsChangeEnvironment,
+        "Change Group": HostsChangeGroup,
+        "Assign Compliance Policy": HostsAssignCompliancePolicy,
+        "Unassign Compliance Policy": HostsUnassignCompliancePolicy,
+        "Change OpenSCAP Capsule": HostsChangeOpenscapCapsule,
+        "Assign Location": HostsAssignLocation,
+        "Assign Organization": HostsAssignOrganization,
+        "Delete Hosts": HostsDeleteActionDialog,
+        "Schedule Remote Job": HostsJobInvocationCreateView,
+        "Run all Ansible roles": HostsJobInvocationStatusView,
     }
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        action_name = kwargs.get('action_name')
+        action_name = kwargs.get("action_name")
         self.VIEW = self.ACTIONS_VIEWS.get(action_name)
         if not self.VIEW:
             raise ValueError(
                 f'Please provide a valid action name. action_name: "{action_name}" not found.'
             )
-        entities_list = kwargs.get('entities_list')
+        entities_list = kwargs.get("entities_list")
         if entities_list == "All":
             self.parent.select_all.fill(True)
         else:
@@ -576,36 +610,36 @@ class HostsSelectAction(NavigateStep):
         self.parent.actions.fill(action_name)
 
 
-@navigator.register(HostEntity, 'Recommendations')
+@navigator.register(HostEntity, "Recommendations")
 class ShowRecommendations(NavigateStep):
     """Navigate to Insights recommendations page"""
 
     VIEW = CloudInsightsView
 
 
-@navigator.register(HostEntity, 'InsightsTab')
+@navigator.register(HostEntity, "InsightsTab")
 class InsightsTab(NavigateStep):
     """Navigate to Insights tab on host details page"""
 
     VIEW = RecommendationListView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Recommendations'].click()
+        self.parent.table.row(name=entity_name)["Recommendations"].click()
 
 
-@navigator.register(HostEntity, 'ManageColumns')
+@navigator.register(HostEntity, "ManageColumns")
 class HostsManageColumns(NavigateStep):
     """Navigate to the Manage columns dialog"""
 
     VIEW = ManageColumnsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
         """Open the Manage columns dialog"""
@@ -615,11 +649,10 @@ class HostsManageColumns(NavigateStep):
         self.parent.manage_columns.click()
 
 
-@navigator.register(HostEntity, 'Host Statuses')
+@navigator.register(HostEntity, "Host Statuses")
 class HostStatuses(NavigateStep):
-
     VIEW = HostStatusesView
 
     def step(self, *args, **kwargs):
         """Navigate to Monitor -> Host Statuses"""
-        self.view.menu.select('Monitor', 'Host Statuses')
+        self.view.menu.select("Monitor", "Host Statuses")

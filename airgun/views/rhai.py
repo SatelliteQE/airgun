@@ -27,7 +27,7 @@ class InsightsOrganizationErrorView(BaseLoggedInView):
         )
 
     def read(self, widget_names=None):
-        return f'{self.title.read()}: {self.message.read()}'
+        return f"{self.title.read()}: {self.message.read()}"
 
 
 class AllRulesView(BaseLoggedInView):
@@ -71,7 +71,11 @@ class InventoryHostDetails(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.hostname.is_displayed and self.close.is_displayed and self.rules.is_displayed
+        return (
+            self.hostname.is_displayed
+            and self.close.is_displayed
+            and self.rules.is_displayed
+        )
 
 
 class OverviewDetailsView(BaseLoggedInView):

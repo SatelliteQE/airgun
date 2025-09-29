@@ -16,10 +16,10 @@ class SCAPPoliciesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Compliance Policies']")
     new = Text("//a[contains(@href, '/compliance/policies/new')]")
     table = SatTable(
-        './/table',
+        ".//table",
         column_widgets={
-            'Name': Text('./a'),
-            'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
+            "Name": Text("./a"),
+            "Actions": ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
 
@@ -44,11 +44,13 @@ class ScapPolicyRadioGroup(RadioGroup):
 
     @property
     def button_names(self):
-        return ['ansible', 'puppet', 'manual']
+        return ["ansible", "puppet", "manual"]
 
     def _get_parent_label(self, name):
         """Get radio group label for specific button"""
-        return self.browser.wait_for_element(f".//input[@id='policy_deploy_by_{name}']/..")
+        return self.browser.wait_for_element(
+            f".//input[@id='policy_deploy_by_{name}']/.."
+        )
 
 
 class SCAPPolicyCreateView(BaseLoggedInView):
@@ -58,25 +60,27 @@ class SCAPPolicyCreateView(BaseLoggedInView):
         """overrides fill method, to be able to click next button during
         the creation process even, if no location or organization was selected,
         by adding the SCAP policy to Default Location or Organization."""
-        if not values.get('organizations.resources.assigned'):
-            values['organizations.resources.assigned'] = ['Default Organization']
+        if not values.get("organizations.resources.assigned"):
+            values["organizations.resources.assigned"] = ["Default Organization"]
 
-        if not values.get('locations.resources.assigned'):
-            values['locations.resources.assigned'] = ['Default Location']
+        if not values.get("locations.resources.assigned"):
+            values["locations.resources.assigned"] = ["Default Location"]
         super().fill(values)
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Policies'
-            and self.breadcrumb.read() == 'New Compliance Policy'
+            and self.breadcrumb.locations[0] == "Policies"
+            and self.breadcrumb.read() == "New Compliance Policy"
         )
 
     @View.nested
     class deployment_options(BaseLoggedInView):
-        TAB_NAME = 'Deployment Options'
+        TAB_NAME = "Deployment Options"
         next_step = Text("//input[contains(@value, 'Next')]")
         deploy_by = ScapPolicyRadioGroup("//div[contains(@id, 'deploy_by')]")
 
@@ -85,22 +89,24 @@ class SCAPPolicyCreateView(BaseLoggedInView):
 
     @View.nested
     class policy_attributes(BaseLoggedInView):
-        TAB_NAME = 'Policy Attributes'
+        TAB_NAME = "Policy Attributes"
         next_step = Text("//input[contains(@value, 'Next')]")
-        name = TextInput(id='policy_name')
-        description = TextInput(id='policy_description')
+        name = TextInput(id="policy_name")
+        description = TextInput(id="policy_description")
 
         def after_fill(self, was_change):
             self.next_step.click()
 
     @View.nested
     class scap_content(BaseLoggedInView):
-        TAB_NAME = 'SCAP Content'
+        TAB_NAME = "SCAP Content"
         next_step = Text("//input[contains(@value, 'Next')]")
-        scap_content_resource = FilteredDropdown(id='policy_scap_content_id')
-        xccdf_profile = FilteredDropdown(id='policy_scap_content_profile_id')
-        tailoring_file = FilteredDropdown(id='policy_tailoring_file_id')
-        xccdf_profile_tailoring_file = FilteredDropdown(id='policy_tailoring_file_profile_id')
+        scap_content_resource = FilteredDropdown(id="policy_scap_content_id")
+        xccdf_profile = FilteredDropdown(id="policy_scap_content_profile_id")
+        tailoring_file = FilteredDropdown(id="policy_tailoring_file_id")
+        xccdf_profile_tailoring_file = FilteredDropdown(
+            id="policy_tailoring_file_profile_id"
+        )
 
         def after_fill(self, was_change):
             self.next_step.click()
@@ -108,20 +114,20 @@ class SCAPPolicyCreateView(BaseLoggedInView):
     @View.nested
     class schedule(BaseLoggedInView):
         next_step = Text("//input[contains(@value, 'Next')]")
-        period = FilteredDropdown(id='policy_period')
-        period_selection = ConditionalSwitchableView(reference='period')
+        period = FilteredDropdown(id="policy_period")
+        period_selection = ConditionalSwitchableView(reference="period")
 
-        @period_selection.register('Weekly')
+        @period_selection.register("Weekly")
         class WeeklyPeriodForm(View):
-            weekday = FilteredDropdown(id='policy_weekday')
+            weekday = FilteredDropdown(id="policy_weekday")
 
-        @period_selection.register('Monthly')
+        @period_selection.register("Monthly")
         class MonthlyPeriodForm(View):
-            day_of_month = FilteredDropdown(id='policy_day_of_month')
+            day_of_month = FilteredDropdown(id="policy_day_of_month")
 
-        @period_selection.register('Custom')
+        @period_selection.register("Custom")
         class CustomPeriodForm(View):
-            cron_line = TextInput(id='policy_cron_line')
+            cron_line = TextInput(id="policy_cron_line")
 
         def after_fill(self, was_change):
             self.next_step.click()
@@ -129,7 +135,7 @@ class SCAPPolicyCreateView(BaseLoggedInView):
     @View.nested
     class locations(BaseLoggedInView):
         next_step = Text("//input[contains(@value, 'Next')]")
-        resources = MultiSelect(id='ms-policy_location_ids')
+        resources = MultiSelect(id="ms-policy_location_ids")
 
         def after_fill(self, was_change):
             self.next_step.click()
@@ -137,16 +143,16 @@ class SCAPPolicyCreateView(BaseLoggedInView):
     @View.nested
     class organizations(BaseLoggedInView):
         next_step = Text("//input[contains(@value, 'Next')]")
-        resources = MultiSelect(id='ms-policy_organization_ids')
+        resources = MultiSelect(id="ms-policy_organization_ids")
 
         def after_fill(self, was_change):
             self.next_step.click()
 
     @View.nested
     class host_group(BaseLoggedInView):
-        TAB_NAME = 'Host Groups'
+        TAB_NAME = "Host Groups"
         submit = Text('//input[@name="commit"]')
-        resources = MultiSelect(id='ms-policy_hostgroup_ids')
+        resources = MultiSelect(id="ms-policy_hostgroup_ids")
 
 
 class SCAPPolicyEditView(BaseLoggedInView):
@@ -156,11 +162,13 @@ class SCAPPolicyEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.browser.wait_for_element(
+            self.breadcrumb, exception=False
+        )
         return (
             breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Policies'
-            and self.breadcrumb.read() != 'New Compliance Policy'
+            and self.breadcrumb.locations[0] == "Policies"
+            and self.breadcrumb.read() != "New Compliance Policy"
         )
 
     @View.nested
@@ -170,46 +178,48 @@ class SCAPPolicyEditView(BaseLoggedInView):
 
     @View.nested
     class general(SatTab):
-        name = TextInput(id='policy_name')
+        name = TextInput(id="policy_name")
         description = Text('//textarea[@id="policy_description"]')
 
     @View.nested
     class scap_content(SatTab):
-        TAB_NAME = 'SCAP Content'
-        scap_content = FilteredDropdown(id='policy_scap_content_id')
-        xccdf_profile = FilteredDropdown(id='policy_scap_content_profile_id')
-        tailoring_file = FilteredDropdown(id='policy_tailoring_file_id')
-        xccdf_profile_tailoring_file = FilteredDropdown(id='policy_tailoring_file_profile_id')
+        TAB_NAME = "SCAP Content"
+        scap_content = FilteredDropdown(id="policy_scap_content_id")
+        xccdf_profile = FilteredDropdown(id="policy_scap_content_profile_id")
+        tailoring_file = FilteredDropdown(id="policy_tailoring_file_id")
+        xccdf_profile_tailoring_file = FilteredDropdown(
+            id="policy_tailoring_file_profile_id"
+        )
 
     @View.nested
     class schedule(SatTab):
-        period = FilteredDropdown(id='policy_period')
-        period_selection = ConditionalSwitchableView(reference='period')
+        period = FilteredDropdown(id="policy_period")
+        period_selection = ConditionalSwitchableView(reference="period")
 
-        @period_selection.register('Weekly')
+        @period_selection.register("Weekly")
         class WeeklyPeriodForm(View):
-            weekday = FilteredDropdown(id='policy_weekday')
+            weekday = FilteredDropdown(id="policy_weekday")
 
-        @period_selection.register('Monthly')
+        @period_selection.register("Monthly")
         class MonthlyPeriodForm(View):
-            day_of_month = FilteredDropdown(id='policy_day_of_month')
+            day_of_month = FilteredDropdown(id="policy_day_of_month")
 
-        @period_selection.register('Custom')
+        @period_selection.register("Custom")
         class CustomPeriodForm(View):
-            cron_line = TextInput(id='policy_cron_line')
+            cron_line = TextInput(id="policy_cron_line")
 
     @View.nested
     class locations(SatTab):
-        resources = MultiSelect(id='ms-policy_location_ids')
+        resources = MultiSelect(id="ms-policy_location_ids")
 
     @View.nested
     class organizations(SatTab):
-        resources = MultiSelect(id='ms-policy_organization_ids')
+        resources = MultiSelect(id="ms-policy_organization_ids")
 
     @View.nested
     class host_group(SatTab):
-        TAB_NAME = 'Host Groups'
-        resources = MultiSelect(id='ms-policy_hostgroup_ids')
+        TAB_NAME = "Host Groups"
+        resources = MultiSelect(id="ms-policy_hostgroup_ids")
 
 
 class SCAPPolicyDetailsView(BaseLoggedInView):

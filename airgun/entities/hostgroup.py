@@ -13,11 +13,11 @@ from airgun.views.hostgroup import (
 
 
 class HostGroupEntity(BaseEntity):
-    endpoint_path = '/hostgroups'
+    endpoint_path = "/hostgroups"
 
     def create(self, values):
         """Create new host group entity"""
-        view = self.navigate_to(self, 'New')
+        view = self.navigate_to(self, "New")
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
@@ -25,9 +25,9 @@ class HostGroupEntity(BaseEntity):
 
     def clone(self, entity_name, values):
         """Clone an existing host group entity"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.fill('Clone')
+        view.table.row(name=entity_name)["Actions"].widget.fill("Clone")
         view = HostGroupCreateView(self.browser)
         view.fill(values)
         view.submit.click()
@@ -36,32 +36,32 @@ class HostGroupEntity(BaseEntity):
 
     def search(self, value):
         """Search for existing host group entity"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(value)
 
     def read(self, entity_name, widget_names=None):
         """Read values from host group edit page"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         value = view.read(widget_names=widget_names)
         return value
 
     def read_all(self):
         """Read values from host groups title page"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.read()
 
     def delete(self, entity_name):
         """Delete host group from the system"""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
+        view.table.row(name=entity_name)["Actions"].widget.fill("Delete")
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
     def update(self, entity_name, values):
         """Edit an existing host group"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
@@ -70,9 +70,11 @@ class HostGroupEntity(BaseEntity):
 
     def total_no_of_assigned_role(self, entity_name):
         """Count of assigned role to the host group"""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.ansible_roles.click()
-        role_list = self.browser.elements(view.ansible_roles.assigned_ansible_role, parent=self)
+        role_list = self.browser.elements(
+            view.ansible_roles.assigned_ansible_role, parent=self
+        )
         wait_for(lambda: int(role_list[-1].text.split(". ")[0]), timeout=30)
         return int(role_list[-1].text.split(". ")[0])
 
@@ -82,7 +84,7 @@ class HostGroupEntity(BaseEntity):
             entity_name: Name of the host
             values: Name of the ansible role
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
@@ -94,17 +96,17 @@ class HostGroupEntity(BaseEntity):
             entity_name: Name of the host
             values: Name of the ansible role
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.ansible_roles.resources.unassigned_values(values)
         view.submit.click()
 
     def read_role(self, entity_name, values):
         """Return name of the assigned Ansible role(s) of the host group."""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         return view.ansible_roles.resources.read_assigned_values(values)
 
 
-@navigator.register(HostGroupEntity, 'All')
+@navigator.register(HostGroupEntity, "All")
 class ShowAllHostGroups(NavigateStep):
     """Navigate to All Host Groups page"""
 
@@ -112,17 +114,17 @@ class ShowAllHostGroups(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Configure', 'Host Groups')
+        self.view.menu.select("Configure", "Host Groups")
         self.view.wait_displayed()
 
 
-@navigator.register(HostGroupEntity, 'New')
+@navigator.register(HostGroupEntity, "New")
 class AddNewHostGroup(NavigateStep):
     """Navigate to Create Host Group page"""
 
     VIEW = HostGroupCreateView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
         try:
@@ -132,7 +134,7 @@ class AddNewHostGroup(NavigateStep):
         self.view.wait_displayed()
 
 
-@navigator.register(HostGroupEntity, 'Edit')
+@navigator.register(HostGroupEntity, "Edit")
 class EditHostGroup(NavigateStep):
     """Navigate to Edit Host Group page by clicking entity name in the table
 
@@ -143,10 +145,10 @@ class EditHostGroup(NavigateStep):
     VIEW = HostGroupEditView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+        self.parent.table.row(name=entity_name)["Name"].widget.click()
         self.view.wait_displayed()

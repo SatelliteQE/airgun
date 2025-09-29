@@ -11,7 +11,7 @@ from airgun.views.oscaptailoringfile import (
 
 
 class OSCAPTailoringFileEntity(BaseEntity):
-    endpoint_path = '/compliance/tailoring_files'
+    endpoint_path = "/compliance/tailoring_files"
 
     def create(self, values):
         """Creates new SCAP Tailoring File
@@ -19,7 +19,7 @@ class OSCAPTailoringFileEntity(BaseEntity):
         :param values: Parameters to be assigned to new SCAP Tailoring File,
             mandatory values are Name and Scap file.
         """
-        view = self.navigate_to(self, 'New')
+        view = self.navigate_to(self, "New")
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
@@ -30,9 +30,9 @@ class OSCAPTailoringFileEntity(BaseEntity):
 
         :param entity_name: name of the corresponding SCAP Tailoring File
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         view.search(entity_name)
-        view.table.row(name=entity_name)['Actions'].widget.fill('Delete')
+        view.table.row(name=entity_name)["Actions"].widget.fill("Delete")
         self.browser.handle_alert()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -43,7 +43,7 @@ class OSCAPTailoringFileEntity(BaseEntity):
         :param entity_name: name of the corresponding SCAP Tailoring File
         :return: result of the SCAP Tailoring File search
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, "All")
         return view.search(entity_name)
 
     def read(self, entity_name, widget_names=None):
@@ -52,7 +52,7 @@ class OSCAPTailoringFileEntity(BaseEntity):
         :param entity_name: specify corresponding SCAP Tailoring File
         :return: dict representing tabs, with nested dicts representing fields
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         return view.read(widget_names=widget_names)
 
     def update(self, entity_name, values):
@@ -62,14 +62,14 @@ class OSCAPTailoringFileEntity(BaseEntity):
         :param values: updates individual parameters of corresponding
             SCAP Tailoring File
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view = self.navigate_to(self, "Edit", entity_name=entity_name)
         view.fill(values)
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
 
 
-@navigator.register(OSCAPTailoringFileEntity, 'All')
+@navigator.register(OSCAPTailoringFileEntity, "All")
 class ShowAllSCAPTailoringFiles(NavigateStep):
     """Navigate to All SCAP Tailoring File screen."""
 
@@ -77,31 +77,31 @@ class ShowAllSCAPTailoringFiles(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Compliance', 'Tailoring Files')
+        self.view.menu.select("Hosts", "Compliance", "Tailoring Files")
 
 
-@navigator.register(OSCAPTailoringFileEntity, 'New')
+@navigator.register(OSCAPTailoringFileEntity, "New")
 class UploadNewSCAPTailoringFile(NavigateStep):
     """Navigate to upload new SCAP Tailoring File page."""
 
     VIEW = SCAPTailoringFileCreateView
 
-    prerequisite = NavigateToSibling('All')
+    prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
         self.parent.new.click()
 
 
-@navigator.register(OSCAPTailoringFileEntity, 'Edit')
+@navigator.register(OSCAPTailoringFileEntity, "Edit")
 class EditSCAPTailoringFile(NavigateStep):
     """Navigate to edit existing SCAP Tailoring File page."""
 
     VIEW = SCAPTailoringFileEditView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, "All")
 
     def step(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
+        entity_name = kwargs.get("entity_name")
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+        self.parent.table.row(name=entity_name)["Name"].widget.click()
