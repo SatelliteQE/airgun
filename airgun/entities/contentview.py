@@ -31,9 +31,9 @@ class ContentViewEntity(BaseEntity):
     def delete(self, entity_name):
         """Delete existing content view"""
         view = self.navigate_to(self, 'Delete', entity_name=entity_name)
-        assert (
-            not view.conflicts_present
-        ), f'Unable to delete content view. Following conflicts are present: {view.table.read()}'
+        assert not view.conflicts_present, (
+            f'Unable to delete content view. Following conflicts are present: {view.table.read()}'
+        )
         view.remove.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -81,9 +81,9 @@ class ContentViewEntity(BaseEntity):
     def add_cv(self, entity_name, cv_name):
         """Add content view to selected composite content view."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        assert (
-            view.content_views.is_displayed
-        ), f'Could not find "Content Views" tab. Make sure {entity_name} is composite content view'
+        assert view.content_views.is_displayed, (
+            f'Could not find "Content Views" tab. Make sure {entity_name} is composite content view'
+        )
         view.content_views.resources.add(cv_name)
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -214,9 +214,9 @@ class ContentViewEntity(BaseEntity):
         view.completely.fill(completely)
         view.next.click()
         view = ContentViewVersionRemoveConfirmationView(self.browser)
-        assert (
-            'Activation Keys using Version' not in view.message_title.text
-        ), 'Activation Key is assigned to content view version'
+        assert 'Activation Keys using Version' not in view.message_title.text, (
+            'Activation Key is assigned to content view version'
+        )
         view.confirm_remove.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
