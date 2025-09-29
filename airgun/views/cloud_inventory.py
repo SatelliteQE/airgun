@@ -97,7 +97,6 @@ class InventoryItemsView(Accordion):
             self.click()
 
     def read(self, widget_names=None):
-
         final_dict = {
             'generating': self.generating.read(),
             'status': self.status,
