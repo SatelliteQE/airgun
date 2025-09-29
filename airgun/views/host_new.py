@@ -35,8 +35,8 @@ class RemediationView(View):
     """Remediation window view"""
 
     ROOT = './/div[@id="remediation-modal"]'
-    remediate = Button("Remediate")
-    cancel = Button("Cancel")
+    remediate = Button('Remediate')
+    cancel = Button('Cancel')
     table = PatternflyTable(
         component_id='OUIA-Generated-Table-4',
         column_widgets={
@@ -337,7 +337,7 @@ class NewHostDetailsView(BaseLoggedInView):
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = PatternflyTable(
-                component_id="host-packages-table",
+                component_id='host-packages-table',
                 column_widgets={
                     0: Checkbox(locator='.//input[@type="checkbox"]'),
                     'Package': Text('./parent::td'),
@@ -362,7 +362,7 @@ class NewHostDetailsView(BaseLoggedInView):
             dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = ExpandableTable(
-                component_id="host-errata-table",
+                component_id='host-errata-table',
                 column_widgets={
                     1: Checkbox(locator='.//input[@type="checkbox"]'),
                     'Errata': Text('./a'),
@@ -639,7 +639,7 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class enc_preview(Tab):
             ROOT = './/div[@class="enc-preview-tab"]'
-            TAB_NAME = "ENC Preview"
+            TAB_NAME = 'ENC Preview'
             preview = Text('.//code')
 
         @View.nested

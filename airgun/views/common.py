@@ -41,7 +41,7 @@ from airgun.widgets import (
 class BaseLoggedInView(View):
     """Base view for Satellite pages"""
 
-    menu = Navigation("Global")
+    menu = Navigation('Global')
     menu_search = PF4NavSearch()
     taxonomies = ContextSelector()
     flash = SatFlashMessages()
@@ -68,7 +68,7 @@ class BaseLoggedInView(View):
         """
         if widget_names is None:
             if limit is not None:
-                raise NotImplementedError("You must specify widgets to be able to specify limit")
+                raise NotImplementedError('You must specify widgets to be able to specify limit')
             return super().read()
         if not isinstance(widget_names, list | tuple):
             widget_names = [widget_names]
@@ -348,7 +348,7 @@ class ListRemoveTab(SatSecondaryTab):
         './/div[@data-block="list-actions"]//button[contains(@ng-click, "remove")]'
     )
     table = SatTable(
-        locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+        locator='.//table', column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
     )
 
     def search(self, value):
@@ -379,7 +379,7 @@ class AddTab(SatSecondaryTab):
     searchbox = Search()
     add_button = Text('.//div[@data-block="list-actions"]//button[contains(@ng-click, "add")]')
     table = SatTable(
-        locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+        locator='.//table', column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
     )
 
     def search(self, value):
@@ -473,7 +473,7 @@ class NewAddRemoveResourcesView(View):
 
     def add(self, value):
         """Associate specific resource"""
-        self.select_status("Not added")
+        self.select_status('Not added')
         self.search(value)
         value = self.table.rows()
         next(self.table.rows())[0].widget.fill(True)
@@ -488,7 +488,7 @@ class NewAddRemoveResourcesView(View):
         """Unassign some resource(s).
         :param str or list values: string containing resource name or a list of such strings.
         """
-        self.select_status("Added")
+        self.select_status('Added')
         self.search(value)
         next(self.table.rows())[0].widget.fill(True)
         self.remove_button.item_select('Remove')
@@ -501,7 +501,7 @@ class NewAddRemoveResourcesView(View):
         )
         self.browser.plugin.ensure_page_safe(timeout='60s')
         self.table.wait_displayed()
-        self.select_status("All")
+        self.select_status('All')
         return self.table.read()
 
 
@@ -514,13 +514,13 @@ class AddRemoveSubscriptionsView(AddRemoveResourcesView):
     @View.nested
     class list_remove_tab(ListRemoveTab):
         table = SatSubscriptionsTable(
-            locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+            locator='.//table', column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
         )
 
     @View.nested
     class add_tab(AddTab):
         table = SatSubscriptionsTable(
-            locator=".//table", column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
+            locator='.//table', column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
         )
 
 

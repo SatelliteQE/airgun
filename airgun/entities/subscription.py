@@ -207,7 +207,7 @@ class SubscriptionEntity(BaseEntity):
         This operation was never implemented in Robottelo (no test requires
         it).
         """
-        raise NotImplementedError("Subscriptions update is not implemented")
+        raise NotImplementedError('Subscriptions update is not implemented')
 
     def delete(self, entity_name):
         """Remove subscription

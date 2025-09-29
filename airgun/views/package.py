@@ -14,7 +14,7 @@ class PackagesView(BaseLoggedInView):
     """Main Packages view"""
 
     title = Text("//h2[contains(., 'Packages')]")
-    table = SatTable('.//table', column_widgets={'RPM': Text("./a")})
+    table = SatTable('.//table', column_widgets={'RPM': Text('./a')})
 
     repository = Select(locator=".//select[@ng-model='repository']")
     applicable = Checkbox(locator=".//input[@ng-model='showApplicable']")

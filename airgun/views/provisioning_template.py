@@ -26,8 +26,8 @@ class TemplateHostEnvironmentAssociation(GenericRemovableWidgetItem):
 
 class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Provisioning Templates']")
-    new = Button("Create Template")
-    build_pxe_default = Button("Build PXE Default")
+    new = Button('Create Template')
+    build_pxe_default = Button('Build PXE Default')
     table = Table(
         './/table',
         column_widgets={

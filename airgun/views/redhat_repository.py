@@ -93,7 +93,7 @@ class AvailableRepositorySetWidget(GenericLocatorWidget):
 
     def read(self):
         """Return the name and label of this repository."""
-        return {"name": self.name, "label": self.label}
+        return {'name': self.name, 'label': self.label}
 
     def enable(self, item):
         """Enable a repository of this repository set.
@@ -113,7 +113,7 @@ class EnabledRepositoryWidget(AvailableRepositorySetWidget):
     """The widget representation of Enabled repository item."""
 
     ITEM = None
-    DISABLE_BUTTON = ".//button"
+    DISABLE_BUTTON = './/button'
 
     def disable(self):
         """Disable this repository."""
@@ -124,7 +124,7 @@ class EnabledRepositoryWidget(AvailableRepositorySetWidget):
 class RepositorySearchCategory(ActionsDropdown):
     """The category search selector, eg: Available, Enabled or Both."""
 
-    button = Text("./button")
+    button = Text('./button')
 
     def fill(self, item):
         """Selects Search Repository Category."""
@@ -135,7 +135,7 @@ class RepositorySearchCategory(ActionsDropdown):
 class RepositorySearchTypes(ActionsDropdown):
     """Repository content types dropdown for repository search."""
 
-    button = Text("./button")
+    button = Text('./button')
 
     def close(self):
         """Closes the dropdown list."""
@@ -256,7 +256,7 @@ class RedHatRepositoriesView(BaseLoggedInView):
         elif category == 'Enabled':
             return self.enabled.read()
         else:
-            return {"available": self.available.read(), "enabled": self.enabled.read()}
+            return {'available': self.available.read(), 'enabled': self.enabled.read()}
 
     @property
     def is_displayed(self):
