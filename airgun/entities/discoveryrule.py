@@ -120,6 +120,9 @@ class DiscoveryRuleEntity(BaseEntity):
         )
         view.flash.assert_no_error()
         view.flash.dismiss()
+        if view.new_ui_button.is_displayed:
+            view.new_ui_button.click()
+            view.searchbox.search(f'discovery_rule = "{entity_name}"')
         return view.read(widget_names=widget_names)
 
 
