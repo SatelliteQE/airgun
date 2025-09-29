@@ -117,7 +117,7 @@ class AllPlansView(BaseLoggedInView):
 
         PARAMETERS = ('plan_name',)
         ROOT = ParametrizedLocator(
-            ".//h2[contains(normalize-space(.), {plan_name|quote})]/"
+            './/h2[contains(normalize-space(.), {plan_name|quote})]/'
             "ancestor::div[contains(@id, 'maintenance-plan')]"
         )
 

@@ -184,8 +184,7 @@ class ManageManifestView(BaseLoggedInView):
 
 class DeleteManifestConfirmationView(BaseLoggedInView):
     ROOT = (
-        '//div[@role="dialog" and @tabindex]'
-        '[div//h4[normalize-space(.)="Confirm delete manifest"]]'
+        '//div[@role="dialog" and @tabindex][div//h4[normalize-space(.)="Confirm delete manifest"]]'
     )
     message = Text('.//div[@class="modal-body"]')
     delete_button = Button('Delete')

@@ -16,7 +16,7 @@ from airgun.widgets import (
 class TaskReadOnlyEntry(ReadOnlyEntry):
     BASE_LOCATOR = (
         "//span[contains(., '{}') and contains(@class, 'list-group-item-heading')]//parent::div"
-        "/following-sibling::div/span"
+        '/following-sibling::div/span'
     )
 
 

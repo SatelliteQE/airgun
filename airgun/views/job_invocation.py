@@ -26,7 +26,6 @@ from airgun.widgets import PF5DataList, PF5LabeledExpandableSection
 
 
 class HostsExpandableTable(PF5OUIAExpandableTable):
-
     def read(self):
         """Reads the hosts table.
         For some reason, the hosts expandable table has always an extra empty <tbody/> tag at the end.

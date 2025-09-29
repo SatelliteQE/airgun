@@ -368,8 +368,8 @@ class AirgunBrowser(Browser):
         elem = self.selenium.execute_script(
             "var input = window.document.createElement('INPUT'); "
             "input.setAttribute('type', 'file'); "
-            "input.onchange = function (e) { e.stopPropagation() }; "
-            "return window.document.documentElement.appendChild(input); "
+            'input.onchange = function (e) { e.stopPropagation() }; '
+            'return window.document.documentElement.appendChild(input); '
         )
 
         # it must be local absolute path, without protocol

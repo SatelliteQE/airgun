@@ -48,7 +48,7 @@ class VirtwhoConfigureEntity(BaseEntity):
         values = self._reset_values(values)
         view.fill(values)
         view.submit.click()
-        view.flash.assert_message(f"Success alert: Successfully created {values['name']}.")
+        view.flash.assert_message(f'Success alert: Successfully created {values["name"]}.')
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -64,7 +64,7 @@ class VirtwhoConfigureEntity(BaseEntity):
         view.fill(values)
         view.submit.click()
         if 'name' in values:
-            view.flash.assert_message(f"Success alert: Successfully updated {values['name']}.")
+            view.flash.assert_message(f'Success alert: Successfully updated {values["name"]}.')
         else:
             view.flash.assert_message(f'Success alert: Successfully updated {name}.')
         view.flash.assert_no_error()
