@@ -74,8 +74,7 @@ class ContentViewFilterEntity(BaseEntity):
         )
         if not repositories:
             view.affected_repositories.filter_toggle.fill(
-                'This filter applies to all repositories in the content view '
-                '(current and future).'
+                'This filter applies to all repositories in the content view (current and future).'
             )
             return
         view.affected_repositories.filter_toggle.fill(
