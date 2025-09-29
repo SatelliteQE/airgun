@@ -44,7 +44,7 @@ class InventoryAllHosts(BaseLoggedInView):
     search = TextInput(locator=".//input[@placeholder='Find a system']")
     actions = ActionsDropdown(".//div[contains(@class, 'dropdown')]")
     systems_count = Text(".//h3[@class='system-count']")
-    table = SatTable(".//table", column_widgets={"System Name": Text(".//a")})
+    table = SatTable('.//table', column_widgets={'System Name': Text('.//a')})
 
     @property
     def is_displayed(self):
@@ -93,14 +93,14 @@ class OverviewDetailsView(BaseLoggedInView):
 
 class ActionsDetailsView(BaseLoggedInView):
     title = Text(".//h1[normalize-space(.)='Actions']")
-    export_csv = Button("Export CSV")
+    export_csv = Button('Export CSV')
     stability_issues = Text(".//a[@class='stability']/span[@class='count']")
     security_issues = Text(".//a[@class='security']/span[@class='count']")
 
 
 class ManageDetailsView(BaseLoggedInView):
     title = Text(".//h1[@class='page-title']")
-    enable_service = Checkbox(id="rha-insights-enabled")
+    enable_service = Checkbox(id='rha-insights-enabled')
     status = Text(".//label[@for='connectionStatus']/parent::div//p")
     account_number = Text(".//label[@for='account']/parent::div//p")
     check_connection = Text(".//input[@value='Check Connection']")
@@ -115,20 +115,20 @@ class AllPlansView(BaseLoggedInView):
     class plan(ParametrizedView):
         """Parametrized view for a nested plan view. Takes plan name on instantiation"""
 
-        PARAMETERS = ("plan_name",)
+        PARAMETERS = ('plan_name',)
         ROOT = ParametrizedLocator(
             ".//h2[contains(normalize-space(.), {plan_name|quote})]/"
             "ancestor::div[contains(@id, 'maintenance-plan')]"
         )
 
-        title = Text(".")
+        title = Text('.')
         delete = Text(".//i[@tooltip='Delete this plan']")
         edit = Text(".//i[@tooltip='Click to edit this plan']")
         ansible_actions = ActionsDropdown(
             "//div[contains(@class, 'btn-group')][@ng-if='ansibleRunner']"
         )
-        export_csv = Button("Export CSV")
-        add_actions = Button("Add actions")
+        export_csv = Button('Export CSV')
+        add_actions = Button('Add actions')
 
     @property
     def is_displayed(self):
@@ -136,24 +136,24 @@ class AllPlansView(BaseLoggedInView):
 
 
 class PlanEditView(View):
-    plan_name = TextInput(name="name")
-    date = TextInput(name="date")
-    start_time = TextInput(name="time")
-    duration = TextInput(name="duration")
-    cancel = Button("Cancel")
-    save = Button("Save")
+    plan_name = TextInput(name='name')
+    date = TextInput(name='date')
+    start_time = TextInput(name='time')
+    duration = TextInput(name='duration')
+    cancel = Button('Cancel')
+    save = Button('Save')
 
 
 class AddPlanView(BaseLoggedInView):
     title = Text(".//h2[normalize-space(.)='Plan / Playbook Builder']")
-    name = TextInput(name="name")
+    name = TextInput(name='name')
     actions = SatTable(
         ".//div[contains(@class, 'maintenance-plan')]//table",
-        column_widgets={0: Checkbox(locator=".//input")},
+        column_widgets={0: Checkbox(locator='.//input')},
     )
     rules_filter = TextInput(locator=".//input[@placeholder='Filter by rule name']")
-    cancel = Button("Cancel")
-    save = Button("Save")
+    cancel = Button('Cancel')
+    save = Button('Save')
 
     @property
     def is_displayed(self):

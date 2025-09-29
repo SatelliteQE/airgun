@@ -43,19 +43,19 @@ class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
     @View.nested
     class RunningChart(View):
         ROOT = ".//div[@id='running-tasks-card']"
-        name = Text("./h2")
+        name = Text('./h2')
         total = PieChart("./div[@class='card-pf-body']")
 
     @View.nested
     class PausedChart(View):
         ROOT = ".//div[@id='paused-tasks-card']"
-        name = Text("./h2")
+        name = Text('./h2')
         total = PieChart("./div[@class='card-pf-body']")
 
     @View.nested
     class StoppedChart(View):
         ROOT = ".//div[@id='stopped-tasks-card']"
-        name = Text("./h2")
+        name = Text('./h2')
         table = Table(
             locator='.//table',
             column_widgets={
@@ -66,7 +66,7 @@ class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
     @View.nested
     class ScheduledChart(View):
         ROOT = ".//div[@id='scheduled-tasks-card']"
-        name = Text("./h2")
+        name = Text('./h2')
         total = Text(".//div[@class='scheduled-data']")
 
 

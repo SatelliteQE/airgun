@@ -62,7 +62,7 @@ class ProvisioningTemplateEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.search(f'name="{entity_name}"')
         try:
-            return "This template is locked for editing." in view.table.row(name=entity_name)[
+            return 'This template is locked for editing.' in view.table.row(name=entity_name)[
                 'Locked'
             ].widget.browser.element('.').get_property('innerHTML')
         except NoSuchElementException:
@@ -73,7 +73,7 @@ class ProvisioningTemplateEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.search(f'name="{entity_name}"')
         try:
-            return "Supported by Red Hat" in view.table.row(name=entity_name)[
+            return 'Supported by Red Hat' in view.table.row(name=entity_name)[
                 'Name'
             ].widget.browser.element('./parent::td/img').get_attribute('title')
         except NoSuchElementException:

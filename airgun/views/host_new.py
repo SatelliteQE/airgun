@@ -67,8 +67,8 @@ class RemediationView(View):
     """Remediation window view"""
 
     ROOT = './/div[@id="remediation-modal"]'
-    remediate = Button("Remediate")
-    cancel = Button("Cancel")
+    remediate = Button('Remediate')
+    cancel = Button('Cancel')
     table = PatternflyTable(
         component_id='OUIA-Generated-Table-4',
         column_widgets={
@@ -371,7 +371,7 @@ class NewHostDetailsView(BaseLoggedInView):
         # TODO Setting ROOT is just a workaround because of BZ 2119076,
         # once this gets fixed we should use the parametrized locator from Tab class
         ROOT = './/div'
-        transient_install_alert = PF5OUIAAlert("image-mode-alert-info")
+        transient_install_alert = PF5OUIAAlert('image-mode-alert-info')
 
         @View.nested
         class packages(PF5Tab):
@@ -390,7 +390,7 @@ class NewHostDetailsView(BaseLoggedInView):
             )
 
             table = PF5OUIATable(
-                component_id="host-packages-table",
+                component_id='host-packages-table',
                 column_widgets={
                     0: Checkbox(locator='.//input[@type="checkbox"]'),
                     'Package': Text('./parent::td'),
@@ -415,7 +415,7 @@ class NewHostDetailsView(BaseLoggedInView):
             dropdown = PF5Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
 
             table = PF5OUIAExpandableTable(
-                component_id="host-errata-table",
+                component_id='host-errata-table',
                 column_widgets={
                     1: Checkbox(locator='.//input[@type="checkbox"]'),
                     'Errata': Text('./a'),
@@ -695,7 +695,7 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class enc_preview(PF5Tab):
             ROOT = './/div[@class="enc-preview-tab"]'
-            TAB_NAME = "ENC Preview"
+            TAB_NAME = 'ENC Preview'
             preview = Text('.//code')
 
         @View.nested
@@ -979,11 +979,11 @@ class ManageColumnsView(BaseLoggedInView):
                 By.XPATH, './/span[contains(@class,"pf-v5-c-tree-view__node-text")]'
             ).text.strip()
 
-            state = section.get_attribute("aria-expanded")
+            state = section.get_attribute('aria-expanded')
 
-            if state == "true":
+            if state == 'true':
                 expanded.append(label)
-            elif state == "false":
+            elif state == 'false':
                 collapsed.append(label)
             else:
                 # No aria-expanded means it`s a leaf node
@@ -993,7 +993,7 @@ class ManageColumnsView(BaseLoggedInView):
 
     def sections_state(self):
         expanded, collapsed = self.get_tree_sections_state()
-        return {"expanded": expanded, "collapsed": collapsed}
+        return {'expanded': expanded, 'collapsed': collapsed}
 
     @property
     def is_displayed(self):
@@ -1003,8 +1003,8 @@ class ManageColumnsView(BaseLoggedInView):
     def expand_all(self):
         """Expand all tree sections that are collapsed"""
         sections_state = self.sections_state()
-        if sections_state["collapsed"] != []:
-            for section in sections_state["collapsed"]:
+        if sections_state['collapsed'] != []:
+            for section in sections_state['collapsed']:
                 section_toggle_to_expand_xpath = self.CHECKBOX_SECTION_TOGGLE.format(section)
                 self.browser.element(section_toggle_to_expand_xpath).click()
 

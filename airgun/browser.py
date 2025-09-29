@@ -147,7 +147,7 @@ class SeleniumBrowserFactory:
                 kwargs.update({'executable_path': binary})
             options = webdriver.ChromeOptions()
             prefs = {'download.prompt_for_download': False}
-            options.add_experimental_option("prefs", prefs)
+            options.add_experimental_option('prefs', prefs)
             options.add_argument('disable-web-security')
             options.add_argument('ignore-certificate-errors')
             if browseroptions:
@@ -191,7 +191,7 @@ class AirgunBrowserPlugin(DefaultPlugin):
     progress and ensures ``document.readyState`` is "complete".
     """
 
-    ENSURE_PAGE_SAFE = '''
+    ENSURE_PAGE_SAFE = """
         function jqueryInactive() {
          return (typeof jQuery === "undefined") ? true : jQuery.active < 1
         }
@@ -238,7 +238,7 @@ class AirgunBrowserPlugin(DefaultPlugin):
             react: reactLoadingInvisible(),
             document: document.readyState == "complete",
         }
-        '''
+        """
 
     def __init__(self, *args, **kwargs):
         self._ignore_ensure_page_safe_timeout = False
@@ -380,17 +380,17 @@ class AirgunBrowser(Browser):
             elem.send_keys(unquote(uri))
 
         result = self.selenium.execute_async_script(
-            "var input = arguments[0], callback = arguments[1]; "
-            "var reader = new FileReader(); "
-            "reader.onload = function (ev) { callback(reader.result) }; "
-            "reader.onerror = function (ex) { callback(ex.message) }; "
-            "reader.readAsDataURL(input.files[0]); "
-            "input.remove(); ",
+            'var input = arguments[0], callback = arguments[1]; '
+            'var reader = new FileReader(); '
+            'reader.onload = function (ev) { callback(reader.result) }; '
+            'reader.onerror = function (ex) { callback(ex.message) }; '
+            'reader.readAsDataURL(input.files[0]); '
+            'input.remove(); ',
             elem,
         )
 
         if not result.startswith('data:'):
-            raise Exception(f"Failed to get file content: {result}")
+            raise Exception(f'Failed to get file content: {result}')
         result_index = int(result.find('base64,')) + 7
         return base64.b64decode(result[result_index:])
 
@@ -489,10 +489,10 @@ class AirgunBrowser(Browser):
         popup = self.get_alert(squash=squash)
         if isinstance(popup, Pf4ConfirmationDialog | ConfirmationDialog | Pf5ConfirmationDialog):
             if cancel:
-                self.logger.info("  dismissing")
+                self.logger.info('  dismissing')
                 popup.cancel()
             else:
-                self.logger.info("  accepting")
+                self.logger.info('  accepting')
                 popup.confirm()
         else:
             super(AirgunBrowser, self.browser).handle_alert(

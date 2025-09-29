@@ -15,7 +15,7 @@ class SettingsView(BaseLoggedInView, SearchableViewMixin):
 
     @SatTab.nested
     class Email(SatTab):
-        test_email_button = Button(id="test_mail_button")
+        test_email_button = Button(id='test_mail_button')
 
     @property
     def is_displayed(self):
