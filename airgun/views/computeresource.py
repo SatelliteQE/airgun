@@ -225,24 +225,24 @@ class ResourceProviderDetailView(BaseLoggedInView):
 class ComputeResourceLibvirtProfileNetworkItem(GenericRemovableWidgetItem):
     """Libvirt Compute Resource Profile "Network interface" item widget"""
 
-    network_type = FilteredDropdown(id="type")
-    network = FilteredDropdown(id="bridge")
-    nic_type = FilteredDropdown(id="model")
+    network_type = FilteredDropdown(id='type')
+    network = FilteredDropdown(id='bridge')
+    nic_type = FilteredDropdown(id='model')
 
 
 class ComputeResourceLibvirtProfileStorageItem(GenericRemovableWidgetItem):
     """Libvirt Compute Resource profile "Storage" item widget"""
 
-    storage_pool = FilteredDropdown(id="pool_name")
+    storage_pool = FilteredDropdown(id='pool_name')
     size = TextInput(locator=".//input[contains(@id, 'capacity')]")
-    storage_type = FilteredDropdown(id="format_type")
+    storage_type = FilteredDropdown(id='format_type')
 
 
 class ComputeResourceVMwareProfileNetworkItem(GenericRemovableWidgetItem):
     """VMware Compute Resource Profile "Network interface" item widget"""
 
-    nic_type = FilteredDropdown(id="type")
-    network = FilteredDropdown(id="network")
+    nic_type = FilteredDropdown(id='type')
+    network = FilteredDropdown(id='network')
 
 
 class ComputeResourceVMwareProfileControllerVolumeItem(GenericRemovableWidgetItem):
@@ -267,7 +267,7 @@ class ComputeResourceVMwareProfileControllerVolumeItem(GenericRemovableWidgetIte
 class ComputeResourceVMwareProfileControllerVolumeList(RemovableWidgetsItemsListView):
     """VMware Compute Resource Profile SCSI Controller Volumes List"""
 
-    ROOT = "."
+    ROOT = '.'
     ITEMS = ".//div[@class='disk-container']"
     ITEM_WIDGET_CLASS = ComputeResourceVMwareProfileControllerVolumeItem
     add_item_button = Text(".//button[contains(@class, 'add-disk')]")

@@ -150,7 +150,7 @@ class ContentHostEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
         view.errata.wait_displayed()
-        if errata_id == "All":
+        if errata_id == 'All':
             view.errata.select_all.fill(True)
         else:
             view.errata.search(errata_id)

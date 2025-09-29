@@ -73,8 +73,8 @@ class HostGroupEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.ansible_roles.click()
         role_list = self.browser.elements(view.ansible_roles.assigned_ansible_role, parent=self)
-        wait_for(lambda: int(role_list[-1].text.split(". ")[0]), timeout=30)
-        return int(role_list[-1].text.split(". ")[0])
+        wait_for(lambda: int(role_list[-1].text.split('. ')[0]), timeout=30)
+        return int(role_list[-1].text.split('. ')[0])
 
     def assign_role_to_hostgroup(self, entity_name, values):
         """Assign Ansible role(s) to the host group based on user input

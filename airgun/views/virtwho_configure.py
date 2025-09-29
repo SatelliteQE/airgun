@@ -256,29 +256,29 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
         prism_flavor = Text('.//span[contains(@class,"config-prism_flavor")]')
 
         _label_locator = "//span[contains(@class, '{class_name}')]/../preceding-sibling::div/strong"
-        status_label = Text(_label_locator.format(class_name="config-status"))
-        debug_label = Text(_label_locator.format(class_name="config-debug"))
-        hypervisor_type_label = Text(_label_locator.format(class_name="config-hypervisor_type"))
-        hypervisor_server_label = Text(_label_locator.format(class_name="config-hypervisor_server"))
+        status_label = Text(_label_locator.format(class_name='config-status'))
+        debug_label = Text(_label_locator.format(class_name='config-debug'))
+        hypervisor_type_label = Text(_label_locator.format(class_name='config-hypervisor_type'))
+        hypervisor_server_label = Text(_label_locator.format(class_name='config-hypervisor_server'))
         hypervisor_username_label = Text(
-            _label_locator.format(class_name="config-hypervisor_username")
+            _label_locator.format(class_name='config-hypervisor_username')
         )
-        interval_label = Text(_label_locator.format(class_name="config-interval"))
-        satellite_url_label = Text(_label_locator.format(class_name="config-satellite_url"))
-        hypervisor_id_label = Text(_label_locator.format(class_name="config-hypervisor_id"))
-        filtering_label = Text(_label_locator.format(class_name="config-listing_mode"))
-        filter_hosts_label = Text(_label_locator.format(class_name="config-whitelist"))
+        interval_label = Text(_label_locator.format(class_name='config-interval'))
+        satellite_url_label = Text(_label_locator.format(class_name='config-satellite_url'))
+        hypervisor_id_label = Text(_label_locator.format(class_name='config-hypervisor_id'))
+        filtering_label = Text(_label_locator.format(class_name='config-listing_mode'))
+        filter_hosts_label = Text(_label_locator.format(class_name='config-whitelist'))
         filter_host_parents_label = Text(
-            _label_locator.format(class_name="config-filter_host_parents")
+            _label_locator.format(class_name='config-filter_host_parents')
         )
-        exclude_hosts_label = Text(_label_locator.format(class_name="config-blacklist"))
+        exclude_hosts_label = Text(_label_locator.format(class_name='config-blacklist'))
         exclude_host_parents_label = Text(
-            _label_locator.format(class_name="config-exclude_host_parents")
+            _label_locator.format(class_name='config-exclude_host_parents')
         )
-        proxy_label = Text(_label_locator.format(class_name="config-http_proxy_id"))
-        no_proxy_label = Text(_label_locator.format(class_name="config-no_proxy"))
-        kubeconfig_path_label = Text(_label_locator.format(class_name="config-kubeconfig_path"))
-        prism_flavor_label = Text(_label_locator.format(class_name="config-prism_flavor"))
+        proxy_label = Text(_label_locator.format(class_name='config-http_proxy_id'))
+        no_proxy_label = Text(_label_locator.format(class_name='config-no_proxy'))
+        kubeconfig_path_label = Text(_label_locator.format(class_name='config-kubeconfig_path'))
+        prism_flavor_label = Text(_label_locator.format(class_name='config-prism_flavor'))
 
     @View.nested
     class deploy(SatTab):

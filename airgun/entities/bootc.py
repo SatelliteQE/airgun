@@ -14,7 +14,7 @@ class BootcEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'All')
         self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.search(f"bootc_booted_image = {booted_image_name}")
+        view.search(f'bootc_booted_image = {booted_image_name}')
         view.table.row(image_name=booted_image_name).expand()
         row = view.table.row(image_name=booted_image_name).read()
         row_content = view.table.row(image_name=booted_image_name).content.read()

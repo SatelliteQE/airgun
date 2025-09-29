@@ -12,7 +12,7 @@ class ErratumView(BaseLoggedInView):
         locator='.//table',
         column_widgets={
             0: Checkbox(locator=".//input[@type='checkbox']"),
-            'Errata ID': Text("./a"),
+            'Errata ID': Text('./a'),
         },
     )
     repo_filter = SatSelect(".//select[@ng-model='repository']")
@@ -83,10 +83,10 @@ class ErrataDetailsView(BaseLoggedInView):
         select_all = Checkbox(locator=".//input[@type='checkbox'][@ng-change='allSelected()']")
         apply = Text(".//button[@ng-click='goToNextStep()']")
         table = SatTable(
-            locator=".//table",
+            locator='.//table',
             column_widgets={
                 0: Checkbox(locator="./input[@type='checkbox']"),
-                'Name': Text("./a"),
+                'Name': Text('./a'),
             },
         )
 
@@ -109,10 +109,10 @@ class ErrataDetailsView(BaseLoggedInView):
         cv_filter = SatSelect(".//select[@ng-model='contentViewFilter']")
         searchbox = Search()
         table = SatTable(
-            locator=".//table",
+            locator='.//table',
             column_widgets={
-                'Name': Text("./a"),
-                'Product': Text("./a"),
+                'Name': Text('./a'),
+                'Product': Text('./a'),
             },
         )
 
@@ -157,10 +157,10 @@ class ApplyErrataView(BaseLoggedInView):
     searchbox = Search()
     next_button = Text(".//button[@ng-click='goToNextStep()']")
     table = SatTable(
-        locator=".//table",
+        locator='.//table',
         column_widgets={
             0: Checkbox(locator="./input[@type='checkbox']"),
-            'Name': Text("./a"),
+            'Name': Text('./a'),
         },
     )
 

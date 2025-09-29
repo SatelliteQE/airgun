@@ -45,7 +45,7 @@ class MenuToggleDropdownInTable(PF5Dropdown):
     DEFAULT_LOCATOR = (
         './/div[contains(@class, "pf-v5-c-menu") and @data-ouia-component-id="PF5/Dropdown"]'
     )
-    ROOT = f"{BUTTON_LOCATOR}/.."
+    ROOT = f'{BUTTON_LOCATOR}/..'
     ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
     ITEM_LOCATOR = (
         "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
@@ -65,7 +65,7 @@ class AllHostsSelect(Select):
 class AllHostsMenu(PF5Menu):
     IS_ALWAYS_OPEN = False
     BUTTON_LOCATOR = ".//button[contains(@class, 'pf-v5-c-menu-toggle')]"
-    ROOT = f"{BUTTON_LOCATOR}/.."
+    ROOT = f'{BUTTON_LOCATOR}/..'
 
 
 class CVESelect(Select):
@@ -99,7 +99,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
 
     table_loading = Text("//h5[normalize-space(.)='Loading']")
     no_results = Text("//h5[normalize-space(.)='No Results']")
-    manage_columns = PF5Button("Manage columns")
+    manage_columns = PF5Button('Manage columns')
     table = PF5OUIATable(
         component_id='table',
         column_widgets={
@@ -360,13 +360,13 @@ class ManagePackagesModal(PF5Modal):
         # it changes based on the selected action but generally it looks the same
         # Returns 'All' or number of packages to manage
         number_of_packages_to_manage = Text(
-            '''.//span[contains(.,"Packages to")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]'''
+            """.//span[contains(.,"Packages to")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]"""
         )
 
         edit_selected_packages = Button('.//button[@aria-label="Edit packages list"]')
         # Returns number of hosts to manage
         number_of_hosts_to_manage = Text(
-            '''.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]'''
+            """.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]"""
         )
         edit_selected_hosts = Button('.//button[@aria-label="Edit host selection"]')
         manage_via_dropdown = PF5Dropdown(
@@ -399,7 +399,7 @@ class ManageErrataModal(PF5Modal):
 
     @View.nested
     class select_errata(WizardStepView):
-        wizard_step_name = "Select errata"
+        wizard_step_name = 'Select errata'
         locator_prefix = f'.//div[contains(., "{wizard_step_name}")]/descendant::'
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
         content_text = Text('.//div[@class="pf-v5-c-content"]')
@@ -424,7 +424,7 @@ class ManageErrataModal(PF5Modal):
 
     @View.nested
     class review_hosts(WizardStepView):
-        wizard_step_name = "Review hosts"
+        wizard_step_name = 'Review hosts'
         locator_prefix = f'.//div[contains(., "{wizard_step_name}")]/descendant::'
 
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
@@ -447,7 +447,7 @@ class ManageErrataModal(PF5Modal):
 
     @View.nested
     class review(WizardStepView):
-        wizard_step_name = "Review"
+        wizard_step_name = 'Review'
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
 
         tree_expander_errata = Button(
@@ -458,13 +458,13 @@ class ManageErrataModal(PF5Modal):
         )
 
         number_of_errata_to_manage = Text(
-            '''.//span[contains(.,"Errata to")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]'''
+            """.//span[contains(.,"Errata to")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]"""
         )
 
         edit_selected_errata = Button('.//button[@aria-label="Edit errata list"]')
         # Returns number of hosts to manage
         number_of_hosts_to_manage = Text(
-            '''.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]'''
+            """.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-v5-c-badge pf-m-read"]"""
         )
         edit_selected_hosts = Button('.//button[@aria-label="Edit host selection"]')
         manage_via_dropdown = PF5Dropdown(
@@ -486,7 +486,7 @@ class RepositorySetsMenu(PF5Dropdown):
     DEFAULT_LOCATOR = PF5Button(
         locator='//td[@data-label="Status"]/button[contains(@class,"pf-v5-c-menu-toggle")]'
     )
-    ROOT = f"{BUTTON_LOCATOR}/.."
+    ROOT = f'{BUTTON_LOCATOR}/..'
     ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
     ITEM_LOCATOR = (
         '//*[contains(@class, "pf-v5-c-menu__item") and .//*[contains(normalize-space(.), {})]]'
@@ -551,7 +551,7 @@ class ManageRepositorySetsModal(PF5Modal):
 
     @View.nested
     class review_hosts(WizardStepView):
-        wizard_step_name = "Review hosts"
+        wizard_step_name = 'Review hosts'
         locator_prefix = f'.//div[contains(., "{wizard_step_name}")]/descendant::'
 
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
@@ -574,7 +574,7 @@ class ManageRepositorySetsModal(PF5Modal):
 
     @View.nested
     class review(WizardStepView):
-        wizard_step_name = "Review"
+        wizard_step_name = 'Review'
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
 
         number_of_repository_status_changed = Text(
@@ -622,7 +622,7 @@ class MenuToggleSelect(PF5Select):
     DEFAULT_LOCATOR = (
         './/div[contains(@class, "pf-v5-c-menu") and @data-ouia-component-type="PF5/Select"]'
     )
-    ROOT = f"{BUTTON_LOCATOR}/.."
+    ROOT = f'{BUTTON_LOCATOR}/..'
     ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
     ITEM_LOCATOR = (
         "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"

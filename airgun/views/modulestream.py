@@ -14,7 +14,7 @@ class ModuleStreamView(BaseLoggedInView, SearchableViewMixinPF4):
     """Main Module_Streams view"""
 
     title = Text("//h2[contains(., 'Module Streams')]")
-    table = SatTable('.//table', column_widgets={'Name': Text("./a")})
+    table = SatTable('.//table', column_widgets={'Name': Text('./a')})
 
     @property
     def is_displayed(self):
@@ -41,8 +41,8 @@ class ModuleStreamsDetailsView(BaseLoggedInView):
     @View.nested
     class repositories(SatTab):
         table = Table(
-            locator=".//table",
+            locator='.//table',
             column_widgets={
-                'Name': Text("./a"),
+                'Name': Text('./a'),
             },
         )

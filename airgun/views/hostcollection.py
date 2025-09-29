@@ -131,7 +131,7 @@ class HostCollectionPackageContentRadioGroup(RadioGroup):
             if btn and btn.get_attribute('checked') is not None:
                 return name
         raise ValueError(
-            "Whether no radio button is selected or proper attribute should be added to framework"
+            'Whether no radio button is selected or proper attribute should be added to framework'
         )
 
     def select(self, name):
@@ -206,7 +206,7 @@ class HostCollectionInstallErrataView(BaseLoggedInView, SearchableViewMixin):
         "and contains(@ng-click, 'showConfirm')]]"
     )
     table = SatTable(
-        ".//table",
+        './/table',
         column_widgets={
             0: Checkbox(locator=".//input[@ng-model='erratum.selected']"),
             'Id': Text(locator="./a[@ng-click='transitionToErrata(erratum)']"),

@@ -51,7 +51,7 @@ class LCEView(BaseLoggedInView, ParametrizedView):
         PARAMETERS = ('lce_name',)
         LAST_ENV = "//div[@ng-repeat='path in paths']//table//th[last()]"
         current_env = Text(ParametrizedLocator(".//a[normalize-space(.)='{lce_name}']"))
-        envs_table = Table(locator=".//table")
+        envs_table = Table(locator='.//table')
         new_child = Text(".//a[contains(@href, '/lifecycle_environments/')]")
 
         @classmethod
@@ -125,14 +125,14 @@ class LCEEditView(BaseLoggedInView):
     @View.nested
     class content_views(SatTab, SearchableViewMixin):
         TAB_NAME = 'Content Views'
-        resources = Table(locator=".//table")
+        resources = Table(locator='.//table')
 
     @View.nested
     class packages(SatTab):
         cv_filter = SatSelect(".//select[@ng-model='contentView']")
         repo_filter = SatSelect(".//select[@ng-model='repository']")
         searchbox = Search()
-        table = Table(locator=".//table")
+        table = Table(locator='.//table')
 
         def search(self, query, cv=None, repo=None):
             """Apply available filters before proceeding with searching.
@@ -157,7 +157,7 @@ class LCEEditView(BaseLoggedInView):
         cv_filter = SatSelect(".//select[@ng-model='contentView']")
         repo_filter = SatSelect(".//select[@ng-model='repository']")
         searchbox = Search()
-        table = Table(".//table")
+        table = Table('.//table')
 
         def search(self, query, cv=None, repo=None):
             """Apply available filters before proceeding with searching.

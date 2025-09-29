@@ -409,7 +409,7 @@ class HostEntity(BaseEntity):
         self.browser.wait_for_element(
             locator=f'//{hostname_element}[@id="{hostname_id}"]', exception=True, visible=True
         )
-        hostname_button = self.browser.selenium.find_elements("id", hostname_id)
+        hostname_button = self.browser.selenium.find_elements('id', hostname_id)
         hostname = hostname_button[0].text
         self.browser.switch_to_main_frame()
         self.browser.switch_to_window(self.browser.window_handles[0])
@@ -568,7 +568,7 @@ class HostsSelectAction(NavigateStep):
                 f'Please provide a valid action name. action_name: "{action_name}" not found.'
             )
         entities_list = kwargs.get('entities_list')
-        if entities_list == "All":
+        if entities_list == 'All':
             self.parent.select_all.fill(True)
         else:
             for entity in entities_list:
