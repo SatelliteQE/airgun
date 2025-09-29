@@ -21,15 +21,20 @@ class RedHatRepositoryEntity(BaseEntity):
         wait_for(lambda: view.search_box.is_displayed, timeout=10, delay=1)
         return view.search(value, category=category, types=types)
 
-    def read(self, entity_name=None, category='Available', recommended_repo=None):
+    def read(self, entity_name=None, category='Available', recommended_repo=None, filter_type=None):
         """Read RH Repositories values.
 
         :param entity_name: The repository name
         :param category: The repository category to search, options: Available, Enabled
         :param recommended_repo: on/off RH recommended repositories
+        :param filter_type: repository type such as RPM, Kickstart
         """
         view = self.navigate_to(self, 'All')
         view.wait_displayed()
+
+        view.search_by_filter_type.select('')
+        if filter_type:
+            view.search_by_filter_type.select(filter_type)
 
         if recommended_repo:
             current_value = self.browser.get_attribute(
