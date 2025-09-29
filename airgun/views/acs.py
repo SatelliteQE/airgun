@@ -236,8 +236,7 @@ class RowDrawer(View):
         """Class representing the Capsules stack item in the ACS drawer"""
 
         ROOT = (
-            '//div[(normalize-space(.)="Capsules")'
-            ' and contains(@class, "pf-c-expandable-section")]'
+            '//div[(normalize-space(.)="Capsules") and contains(@class, "pf-c-expandable-section")]'
         )
         title = OUIAText('expandable-smart-proxies-text')
         edit_capsules = Button(
