@@ -123,8 +123,7 @@ class RadioGroup(GenericLocatorWidget):
             if btn.get_attribute('checked') is not None:
                 return name
         raise ValueError(
-            "Whether no radio button is selected or proper attribute "
-            "should be added to framework"
+            "Whether no radio button is selected or proper attribute should be added to framework"
         )
 
     def select(self, name):
@@ -174,8 +173,7 @@ class ToggleRadioGroup(RadioGroup):
             if 'active' in btn.get_attribute('class'):
                 return name
         raise ValueError(
-            "Whether no radio button is selected or proper attribute "
-            "should be added to framework"
+            "Whether no radio button is selected or proper attribute should be added to framework"
         )
 
     def select(self, name):
@@ -407,8 +405,7 @@ class ItemsListGroup(GenericLocatorWidget):
     """
 
     ITEM = (
-        "./div/ul/li/ul/li[not(contains(@style, 'display: none'))]"
-        "[normalize-space(.)='{}']/span/a"
+        "./div/ul/li/ul/li[not(contains(@style, 'display: none'))][normalize-space(.)='{}']/span/a"
     )
     ITEMS = "./div/ul/li/ul/li[not(contains(@style, 'display: none'))]"
     EXPAND = (
@@ -1261,8 +1258,7 @@ class CustomParameter(Table):
             'Name': TextInput(locator=".//input[@placeholder='Name']"),
             'Value': TextInput(locator=".//textarea[@placeholder='Value']"),
             'Actions': Text(
-                locator=".//a[@data-original-title='Remove Parameter' "
-                "or @title='Remove Parameter']"
+                locator=".//a[@data-original-title='Remove Parameter' or @title='Remove Parameter']"
             ),
         }
         self.name = next(iter(self.column_widgets.keys()))
