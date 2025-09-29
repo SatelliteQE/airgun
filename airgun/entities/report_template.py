@@ -62,7 +62,7 @@ class ReportTemplateEntity(BaseEntity):
         """Check if report template is locked for editing"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        return "This template is locked for editing." in view.table.row(name=entity_name)[
+        return 'This template is locked for editing.' in view.table.row(name=entity_name)[
             'Locked'
         ].widget.browser.element('.').get_property('innerHTML')
 

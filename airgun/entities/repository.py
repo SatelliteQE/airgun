@@ -38,7 +38,7 @@ class RepositoryEntity(BaseEntity):
 
     def create(self, product_name, values):
         """Create new repository for product"""
-        if values.get("repo_content.http_proxy_policy") == "Global Default":
+        if values.get('repo_content.http_proxy_policy') == 'Global Default':
             values['repo_content.http_proxy_policy'] = self.global_default_http_proxy
         view = self.navigate_to(self, 'New', product_name=product_name)
         view.fill(values)
@@ -58,7 +58,7 @@ class RepositoryEntity(BaseEntity):
 
     def update(self, product_name, entity_name, values):
         """Update product repository values"""
-        if values.get("repo_content.http_proxy_policy") == "Global Default":
+        if values.get('repo_content.http_proxy_policy') == 'Global Default':
             values['repo_content.http_proxy_policy'] = self.global_default_http_proxy
         view = self.navigate_to(self, 'Edit', product_name=product_name, entity_name=entity_name)
         view.fill(values)

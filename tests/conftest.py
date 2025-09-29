@@ -1,6 +1,6 @@
 from airgun import settings
 
-pytest_plugins = ["airgun.fixtures"]
+pytest_plugins = ['airgun.fixtures']
 
 
 def pytest_collection_modifyitems():
