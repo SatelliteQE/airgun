@@ -2,23 +2,20 @@
 testpaths = ["tests"]
 addopts = ["-v", "-l", "--color=yes", "--code-highlight=yes"]
 
-[tool.black]
-line-length = 100
-skip-string-normalization = true
-target-version = ["py310", "py311"]
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.venv
-  | build
-  | dist
-  | tests/data
-)/
-'''
-
 [tool.ruff]
-target-version = "py311"
+target-version = "py312"
+line-length = 100
+include = ["*.py", "*.pyi"]
+exclude = [
+    ".git",
+    ".venv", 
+    "build",
+    "dist",
+    "tests/data",
+]
+
+[tool.ruff.format]
+quote-style = "single"
 
 [tool.ruff.lint]
 fixable = ["ALL"]
@@ -43,6 +40,7 @@ select = [
     "F", # pyflakes/autoflake
     "G", # flake8-logging-format
     "I", # isort
+    "Q", # flake8-quotes
     "ISC001", # Implicitly concatenated string literals on one line
     "N804", # First argument of a class method should be named cls
     "N805", # First argument of a method should be named self
@@ -107,6 +105,9 @@ ignore = [
 
 [tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
 
 [tool.ruff.lint.isort]
 force-sort-within-sections = true
