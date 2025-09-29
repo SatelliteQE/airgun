@@ -595,7 +595,6 @@ class HostsManageColumns(NavigateStep):
 
 @navigator.register(HostEntity, 'Host Statuses')
 class HostStatuses(NavigateStep):
-
     VIEW = HostStatusesView
 
     def step(self, *args, **kwargs):

@@ -131,8 +131,7 @@ class HostCollectionPackageContentRadioGroup(RadioGroup):
             if btn and btn.get_attribute('checked') is not None:
                 return name
         raise ValueError(
-            "Whether no radio button is selected or proper attribute "
-            "should be added to framework"
+            "Whether no radio button is selected or proper attribute should be added to framework"
         )
 
     def select(self, name):
