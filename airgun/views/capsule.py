@@ -224,7 +224,7 @@ class CapsuleDetailsView(BaseLoggedInView):
 
                 for i, cv in enumerate(cv_names):
                     self.mid_content_table.row(content_view=cv)[0].click()
-                    self.expanded_repo_details.locator += f'[{i+1}]'
+                    self.expanded_repo_details.locator += f'[{i + 1}]'
                     result[lce][cv] = {
                         'mid_row_content': self.mid_content_table.row(content_view=cv).read(),
                         'expanded_repo_details': [
