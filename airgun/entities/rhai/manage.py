@@ -8,7 +8,7 @@ class ManageEntity(BaseEntity):
     endpoint_path = '/redhat_access/insights/manage'
 
     def _toggle_service(self, state):
-        view = self.navigate_to(self, "Details")
+        view = self.navigate_to(self, 'Details')
         if view.enable_service.fill(state):
             view.save.click()
 
@@ -22,16 +22,16 @@ class ManageEntity(BaseEntity):
 
     def read(self, widget_names=None):
         """Read the content of the view."""
-        view = self.navigate_to(self, "Details")
+        view = self.navigate_to(self, 'Details')
         view.check_connection.click()
         return view.read(widget_names=widget_names)
 
 
-@navigator.register(ManageEntity, "Details")
+@navigator.register(ManageEntity, 'Details')
 class ManageDetails(InsightsNavigateStep):
     """Navigate to Red Hat Access Insights Manage screen."""
 
     VIEW = ManageDetailsView
 
     def step(self, *args, **kwargs):
-        self.view.menu.select("Insights", "Manage")
+        self.view.menu.select('Insights', 'Manage')

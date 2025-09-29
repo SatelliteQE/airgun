@@ -272,7 +272,7 @@ class ComputeResourceVMImport(NavigateStep):
     def step(self, *args, **kwargs):
         vm_name = kwargs.get('vm_name')
         self.parent.virtual_machines.search(vm_name)
-        self.parent.virtual_machines.actions.fill("Import as managed Host")
+        self.parent.virtual_machines.actions.fill('Import as managed Host')
 
 
 class ComputeResourceImageProvider(NavigateStep):

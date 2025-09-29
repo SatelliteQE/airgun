@@ -36,7 +36,7 @@ class AllHostsSelect(Select):
 class AllHostsMenu(Menu):
     IS_ALWAYS_OPEN = False
     BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-menu-toggle')]"
-    ROOT = f"{BUTTON_LOCATOR}/.."
+    ROOT = f'{BUTTON_LOCATOR}/..'
 
 
 class CVESelect(Select):
@@ -63,7 +63,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
 
     table_loading = Text("//h5[normalize-space(.)='Loading']")
     no_results = Text("//h5[normalize-space(.)='No Results']")
-    manage_columns = Button("Manage columns")
+    manage_columns = Button('Manage columns')
     table = PatternflyTable(
         component_id='table',
         column_widgets={
@@ -322,13 +322,13 @@ class ManagePackagesModal(Modal):
         # it changes based on the selected action but generally it looks the same
         # Returns 'All' or number of packages to manage
         number_of_packages_to_manage = Text(
-            '''.//span[contains(.,"Packages to")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]'''
+            """.//span[contains(.,"Packages to")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]"""
         )
 
         edit_selected_packages = Button('.//button[@aria-label="Edit packages list"]')
         # Returns number of hosts to manage
         number_of_hosts_to_manage = Text(
-            '''.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]'''
+            """.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]"""
         )
         edit_selected_hosts = Button('.//button[@aria-label="Edit host selection"]')
         manage_via_dropdown = Dropdown(
@@ -359,7 +359,7 @@ class ManageErrataModal(Modal):
 
     @View.nested
     class select_errata(WizardStepView):
-        wizard_step_name = "Select errata"
+        wizard_step_name = 'Select errata'
         locator_prefix = f'.//div[contains(., "{wizard_step_name}")]/descendant::'
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
         content_text = Text('.//div[@class="pf-c-content"]')
@@ -384,7 +384,7 @@ class ManageErrataModal(Modal):
 
     @View.nested
     class review_hosts(WizardStepView):
-        wizard_step_name = "Review hosts"
+        wizard_step_name = 'Review hosts'
         locator_prefix = f'.//div[contains(., "{wizard_step_name}")]/descendant::'
 
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
@@ -407,7 +407,7 @@ class ManageErrataModal(Modal):
 
     @View.nested
     class review(WizardStepView):
-        wizard_step_name = "Review"
+        wizard_step_name = 'Review'
         expander = Text(f'.//button[text()="{wizard_step_name}"]')
 
         tree_expander_errata = Button(
@@ -418,13 +418,13 @@ class ManageErrataModal(Modal):
         )
 
         number_of_errata_to_manage = Text(
-            '''.//span[contains(.,"Errata to")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]'''
+            """.//span[contains(.,"Errata to")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]"""
         )
 
         edit_selected_errata = Button('.//button[@aria-label="Edit errata list"]')
         # Returns number of hosts to manage
         number_of_hosts_to_manage = Text(
-            '''.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]'''
+            """.//span[contains(.,"Hosts")]/following-sibling::span/span[@class="pf-c-badge pf-m-read"]"""
         )
         edit_selected_hosts = Button('.//button[@aria-label="Edit host selection"]')
         manage_via_dropdown = Dropdown(

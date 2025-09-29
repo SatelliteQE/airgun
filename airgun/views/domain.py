@@ -13,8 +13,8 @@ class DomainListView(BaseLoggedInView, SearchableViewMixinPF4):
     table = Table(
         './/table',
         column_widgets={
-            'Description': Text("./a"),
-            'Hosts': Text("./a"),
+            'Description': Text('./a'),
+            'Hosts': Text('./a'),
             'Actions': Text(".//a[@data-method='delete']"),
         },
     )

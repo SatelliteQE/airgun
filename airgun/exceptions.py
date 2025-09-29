@@ -16,4 +16,4 @@ class DestinationNotReachedError(Exception):
     """Raised when navigation destination view was not reached (not dispayed)."""
 
 
-__all__ = ["InvalidElementStateException"]
+__all__ = ['InvalidElementStateException']

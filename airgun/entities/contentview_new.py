@@ -191,7 +191,7 @@ class NewContentViewEntity(BaseEntity):
         elif filter_inclusion == 'exclude':
             view.excludeFilter.fill(True)
         else:
-            raise ValueError("Filter_inclusion must be one of include or exclude.")
+            raise ValueError('Filter_inclusion must be one of include or exclude.')
         view.create.click()
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.filters.table.read()

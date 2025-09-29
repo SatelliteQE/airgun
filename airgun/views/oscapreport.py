@@ -73,7 +73,7 @@ class RemediateModal(View):
         expander = Text(
             './/button[contains(@class,"pf-c-wizard__nav-link") and contains(.,"Review hosts")]'
         )
-        host_table = SatTable(".//table")
+        host_table = SatTable('.//table')
 
     @View.nested
     class select_capsule(WizardStepView):

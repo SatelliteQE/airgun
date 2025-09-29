@@ -97,7 +97,7 @@ class ContentViewRemoveView(BaseLoggedInView):
 class ContentViewEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     BREADCRUMB_LENGTH = 3
-    publish = Button("Publish New Version")
+    publish = Button('Publish New Version')
     actions = ActionsDropdown("//div[contains(@class, 'btn-group')]")
     dialog = ConfirmationDialog()
 
@@ -210,7 +210,7 @@ class ContentViewVersionPublishView(BaseLoggedInView):
 class EntitySearchView(SatSecondaryTab):
     repo_filter = SatSelect(".//select[@ng-model='repository']")
     searchbox = Search()
-    table = Table(".//table")
+    table = Table('.//table')
 
     def search(self, query, repo=None):
         """Apply available filters before proceeding with searching.
@@ -317,7 +317,7 @@ class ContentViewVersionRemoveConfirmationView(BaseLoggedInView):
     cancel = Text(".//button[normalize-space(.)='Cancel']")
     back = Text(".//button[@ng-click='transitionBack()']")
     confirm_remove = Text(".//button[@ng-click='performDeletion()']")
-    message_title = Text(".//h3")
+    message_title = Text('.//h3')
 
     @property
     def is_displayed(self):
