@@ -31,7 +31,7 @@ class MatcherActions(View):
     """Interface table has Attribute type column that contains select field and
     text input field."""
 
-    matcher_key = Select(".//select")
+    matcher_key = Select('.//select')
     matcher_value = TextInput(locator=".//div[@class='matcher-group']/input")
 
 
@@ -79,7 +79,7 @@ class NewAnsibleVariableView(BaseLoggedInView):
             column_widgets={
                 'Attribute type': MatcherActions(),
                 'Value': TextInput(locator=".//textarea[@id='new_lookup_value_value']"),
-                'Actions': Text(".//a"),
+                'Actions': Text('.//a'),
             },
         )
 

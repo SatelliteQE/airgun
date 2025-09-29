@@ -126,9 +126,9 @@ class PuppetClassParameterValue(Widget):
 class ComputeResourceLibvirtProfileStorageItem(GenericRemovableWidgetItem):
     """Libvirt Compute Resource profile "Storage" item widget"""
 
-    storage_pool = FilteredDropdown(id="pool_name")
+    storage_pool = FilteredDropdown(id='pool_name')
     size = TextInput(locator=".//input[contains(@id, 'capacity')]")
-    storage_type = FilteredDropdown(id="format_type")
+    storage_type = FilteredDropdown(id='format_type')
 
 
 class ComputeResourceGoogleProfileStorageItem(GenericRemovableWidgetItem):
@@ -230,11 +230,11 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
             'Name': Text(
                 ".//a[contains(@href, '/new/hosts/') and not(contains(@href, 'Insights'))]"
             ),
-            'Recommendations': Text("./a"),
+            'Recommendations': Text('./a'),
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
-    displayed_table_headers = ".//table/thead/tr/th[not(@hidden)]"
+    displayed_table_headers = './/table/thead/tr/th[not(@hidden)]'
     host_status = "//span[contains(@class, 'host-status')]"
     actions = ActionsDropdown("//div[@id='submit_multiple']")
     dialog = Pf4ConfirmationDialog()
@@ -367,9 +367,9 @@ class HostCreateView(BaseLoggedInView):
             password = TextInput(id='host_compute_attributes_password')
             ssh_key = TextInput(id='host_compute_attributes_ssh_key_data')
             premium_os_disk = Checkbox(id='host_compute_attributes_premium_os_disk')
-            os_disk_caching = FilteredDropdown(id="s2id_host_compute_attributes_os_disk_caching")
-            custom_script_command = TextInput(id="host_compute_attributes_script_command")
-            file_uris = TextInput(id="host_compute_attributes_script_uris")
+            os_disk_caching = FilteredDropdown(id='s2id_host_compute_attributes_os_disk_caching')
+            custom_script_command = TextInput(id='host_compute_attributes_script_command')
+            file_uris = TextInput(id='host_compute_attributes_script_uris')
 
         @View.nested
         class operating_system(SatTab):
@@ -528,7 +528,7 @@ class HostRegisterView(BaseLoggedInView):
         TAB_NAME = 'General'
         TAB_LOCATOR = ParametrizedLocator(
             './/div[contains(@class, "pf-c-tabs")]//ul'
-            "/li[button[normalize-space(.)={@tab_name|quote}]]"
+            '/li[button[normalize-space(.)={@tab_name|quote}]]'
         )
         ROOT = '//section[@id="generalSection"]'
 
@@ -548,7 +548,7 @@ class HostRegisterView(BaseLoggedInView):
         TAB_NAME = 'Advanced'
         TAB_LOCATOR = ParametrizedLocator(
             './/div[contains(@class, "pf-c-tabs")]//ul'
-            "/li[button[normalize-space(.)={@tab_name|quote}]]"
+            '/li[button[normalize-space(.)={@tab_name|quote}]]'
         )
         ROOT = '//section[@id="advancedSection"]'
         setup_rex = FormSelect('registration_setup_remote_execution')
@@ -694,7 +694,7 @@ class HostDetailsView(BaseLoggedInView):
     audits_details = Text("//a[normalize-space(.)='Audits']")
     facts_details = Text("//a[normalize-space(.)='Facts']")
     yaml_dump = Text("//a[normalize-space(.)='Puppet YAML']")
-    yaml_output = Text("//pre")
+    yaml_output = Text('//pre')
     content_details = Text("//a[normalize-space(.)='Content']")
     recommendations = Text("//a[normalize-space(.)='Recommendations']")
 

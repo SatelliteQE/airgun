@@ -239,35 +239,35 @@ class ResourceProviderDetailView(BaseLoggedInView):
 class ComputeResourceLibvirtProfileNetworkItem(GenericRemovableWidgetItem):
     """Libvirt Compute Resource Profile "Network interface" item widget"""
 
-    network_type = FilteredDropdown(id="type")
-    network = FilteredDropdown(id="bridge")
-    nic_type = FilteredDropdown(id="model")
+    network_type = FilteredDropdown(id='type')
+    network = FilteredDropdown(id='bridge')
+    nic_type = FilteredDropdown(id='model')
 
 
 class ComputeResourceLibvirtProfileStorageItem(GenericRemovableWidgetItem):
     """Libvirt Compute Resource profile "Storage" item widget"""
 
-    storage_pool = FilteredDropdown(id="pool_name")
+    storage_pool = FilteredDropdown(id='pool_name')
     size = TextInput(locator=".//input[contains(@id, 'capacity')]")
-    storage_type = FilteredDropdown(id="format_type")
+    storage_type = FilteredDropdown(id='format_type')
 
 
 class ComputeResourceRHVProfileNetworkItem(GenericRemovableWidgetItem):
     """RHV Compute Resource profile "Network interface" item widget"""
 
     name = TextInput(locator=".//input[contains(@id, 'name')]")
-    network = FilteredDropdown(id="network")
-    interface_type = FilteredDropdown(id="interface")
+    network = FilteredDropdown(id='network')
+    interface_type = FilteredDropdown(id='interface')
 
 
 class ComputeResourceRHVProfileStorageItem(GenericRemovableWidgetItem):
     """RHV Compute Resource profile "Storage" item widget"""
 
     size = TextInput(locator=".//input[contains(@id, 'size_gb')]")
-    storage_domain = FilteredDropdown(id="storage_domain")
+    storage_domain = FilteredDropdown(id='storage_domain')
     preallocate_disk = Checkbox(locator=".//input[contains(@id, 'preallocate')]")
     wipe_disk_after_delete = Checkbox(locator=".//input[contains(@id, 'wipe_after_delete')]")
-    disk_interface = FilteredDropdown(id="interface")
+    disk_interface = FilteredDropdown(id='interface')
 
     @View.nested
     class bootable(View):
@@ -287,8 +287,8 @@ class ComputeResourceRHVProfileStorageItem(GenericRemovableWidgetItem):
 class ComputeResourceVMwareProfileNetworkItem(GenericRemovableWidgetItem):
     """VMware Compute Resource Profile "Network interface" item widget"""
 
-    nic_type = FilteredDropdown(id="type")
-    network = FilteredDropdown(id="network")
+    nic_type = FilteredDropdown(id='type')
+    network = FilteredDropdown(id='network')
 
 
 class ComputeResourceVMwareProfileControllerVolumeItem(GenericRemovableWidgetItem):
@@ -313,7 +313,7 @@ class ComputeResourceVMwareProfileControllerVolumeItem(GenericRemovableWidgetIte
 class ComputeResourceVMwareProfileControllerVolumeList(RemovableWidgetsItemsListView):
     """VMware Compute Resource Profile SCSI Controller Volumes List"""
 
-    ROOT = "."
+    ROOT = '.'
     ITEMS = ".//div[@class='disk-container']"
     ITEM_WIDGET_CLASS = ComputeResourceVMwareProfileControllerVolumeItem
     add_item_button = Text(".//button[contains(@class, 'add-disk')]")

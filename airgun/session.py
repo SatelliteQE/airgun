@@ -258,7 +258,7 @@ class Session:
                 endpoint = self._url
             else:
                 endpoint = getattr(entity, 'endpoint_path', '/')
-            full_url = f"https://{self._hostname}{endpoint}"
+            full_url = f'https://{self._hostname}{endpoint}'
             self._prepare_browser(full_url)
 
         return entity(self.browser)

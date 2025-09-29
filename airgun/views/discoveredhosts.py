@@ -37,7 +37,7 @@ class DiscoveredHostsView(BaseLoggedInView, SearchableViewMixin):
         './/table',
         column_widgets={
             0: Checkbox(locator=".//input[contains(@id, 'host_ids')]"),
-            'Name': Text("./a"),
+            'Name': Text('./a'),
         },
     )
     # This view has no welcome message
@@ -134,7 +134,7 @@ class DiscoveredHostsActionDialog(BaseLoggedInView):
 
     title = None
     table = SatTable("//div[@class='modal-body']//table")
-    submit = Button("Submit")
+    submit = Button('Submit')
 
     @property
     def is_displayed(self):

@@ -35,13 +35,13 @@ class VirtwhoConfigureEntity(BaseEntity):
         try:
             view = self.navigate_to(self, 'All')
         except Exception:  # noqa: BLE001 - TODO: determine proper exception
-            return {"can_view": False, "can_create": False}
-        return {"can_view": True, "can_create": view.new.is_displayed}
+            return {'can_view': False, 'can_create': False}
+        return {'can_view': True, 'can_create': view.new.is_displayed}
 
     def check_update_permission(self, entity_name=None):
         """Check if the config can be deleted/edited"""
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
-        return {"can_delete": view.delete.is_displayed, "can_edit": view.edit.is_displayed}
+        return {'can_delete': view.delete.is_displayed, 'can_edit': view.edit.is_displayed}
 
     def create(self, values):
         """Create new virtwho configure entity"""
@@ -49,7 +49,7 @@ class VirtwhoConfigureEntity(BaseEntity):
         values = self._reset_values(values)
         view.fill(values)
         view.submit.click()
-        view.flash.assert_message(f"Success alert: Successfully created {values['name']}.")
+        view.flash.assert_message(f'Success alert: Successfully created {values["name"]}.')
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -65,9 +65,9 @@ class VirtwhoConfigureEntity(BaseEntity):
         view.fill(values)
         view.submit.click()
         if 'name' in values:
-            view.flash.assert_message(f"Success alert: Successfully updated {values['name']}.")
+            view.flash.assert_message(f'Success alert: Successfully updated {values["name"]}.')
         else:
-            view.flash.assert_message(f"Success alert: Successfully updated {name}.")
+            view.flash.assert_message(f'Success alert: Successfully updated {name}.')
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -87,7 +87,7 @@ class VirtwhoConfigureEntity(BaseEntity):
         view.search(value)
         view.table.row(name=value)['Actions'].widget.fill('Delete')
         self.browser.handle_alert()
-        view.flash.assert_message(f"Success alert: Successfully deleted {value}.")
+        view.flash.assert_message(f'Success alert: Successfully deleted {value}.')
         view.flash.assert_no_error()
         view.flash.dismiss()
 

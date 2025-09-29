@@ -32,7 +32,7 @@ class RepositoriesView(BaseLoggedInView, SearchableViewMixin):
     delete = Text("//button[contains(@ng-show, 'canRemoveRepositories')]")
     dialog = ConfirmationDialog()
     table = SatTable(
-        locator=".//table",
+        locator='.//table',
         column_widgets={
             0: Checkbox(locator=".//input[@ng-change='itemSelected(repository)']"),
             'Name': Text("./a[contains(@ui-sref, 'product.repository.info')]"),
@@ -68,7 +68,7 @@ class RepositoryCreateView(BaseLoggedInView):
         mirroring_policy = Select(id='mirroring_policy')
         include_tags = TextInput(id='include_tags')
         exclude_tags = TextInput(id='exclude_tags')
-        http_proxy_policy = Select(id="http_proxy_policy")
+        http_proxy_policy = Select(id='http_proxy_policy')
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
         ssl_ca_cert = Select(id='ssl_ca_cert_id')
         ssl_client_cert = Select(id='ssl_client_cert_id')
@@ -76,7 +76,7 @@ class RepositoryCreateView(BaseLoggedInView):
 
         @proxy_policy.register('Use specific HTTP Proxy')
         class SpecificHttpProxy(View):
-            http_proxy = Select(id="http_proxy")
+            http_proxy = Select(id='http_proxy')
 
     @repo_content.register('file')
     class FileRepository(View):
@@ -87,7 +87,7 @@ class RepositoryCreateView(BaseLoggedInView):
         auth_token = TextInput(id='ansible_collection_auth_token')
         mirroring_policy = Select(id='mirroring_policy')
         publish_via_http = Checkbox(id='unprotected')
-        http_proxy_policy = Select(id="http_proxy_policy")
+        http_proxy_policy = Select(id='http_proxy_policy')
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
         ssl_ca_cert = Select(id='ssl_ca_cert_id')
         ssl_client_cert = Select(id='ssl_client_cert_id')
@@ -95,7 +95,7 @@ class RepositoryCreateView(BaseLoggedInView):
 
         @proxy_policy.register('Use specific HTTP Proxy')
         class SpecificHttpProxy(View):
-            http_proxy = Select(id="http_proxy")
+            http_proxy = Select(id='http_proxy')
 
     @repo_content.register('ostree')
     class OstreeRepository(View):
@@ -105,12 +105,12 @@ class RepositoryCreateView(BaseLoggedInView):
         verify_ssl = Checkbox(id='verify_ssl_on_sync')
         upstream_username = TextInput(id='upstream_username')
         upstream_password = TextInput(id='upstream_password')
-        http_proxy_policy = Select(id="http_proxy_policy")
+        http_proxy_policy = Select(id='http_proxy_policy')
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
 
         @proxy_policy.register('Use specific HTTP Proxy')
         class SpecificHttpProxy(View):
-            http_proxy = Select(id="http_proxy")
+            http_proxy = Select(id='http_proxy')
 
     @repo_content.register('yum')
     class YumRepository(View):
@@ -132,12 +132,12 @@ class RepositoryCreateView(BaseLoggedInView):
         ssl_ca_cert = Select(id='ssl_ca_cert_id')
         ssl_client_cert = Select(id='ssl_client_cert_id')
         ssl_client_key = Select(id='ssl_client_key_id')
-        http_proxy_policy = Select(id="http_proxy_policy")
+        http_proxy_policy = Select(id='http_proxy_policy')
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
 
         @proxy_policy.register('Use specific HTTP Proxy')
         class SpecificHttpProxy(View):
-            http_proxy = Select(id="http_proxy")
+            http_proxy = Select(id='http_proxy')
 
     @repo_content.register('deb')
     class DebianRepository(View):
@@ -157,12 +157,12 @@ class RepositoryCreateView(BaseLoggedInView):
         ssl_ca_cert = Select(id='ssl_ca_cert_id')
         ssl_client_cert = Select(id='ssl_client_cert_id')
         ssl_client_key = Select(id='ssl_client_key_id')
-        http_proxy_policy = Select(id="http_proxy_policy")
+        http_proxy_policy = Select(id='http_proxy_policy')
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
 
         @proxy_policy.register('Use specific HTTP Proxy')
         class SpecificHttpProxy(View):
-            http_proxy = Select(id="http_proxy")
+            http_proxy = Select(id='http_proxy')
 
     @repo_content.register('ansible collection')
     class AnsibleCollectionRepository(View):
@@ -176,7 +176,7 @@ class RepositoryCreateView(BaseLoggedInView):
         upstream_username = TextInput(id='upstream_username')
         upstream_password = TextInput(id='upstream_password')
         mirroring_policy = Select(id='mirroring_policy')
-        http_proxy_policy = Select(id="http_proxy_policy")
+        http_proxy_policy = Select(id='http_proxy_policy')
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
         ssl_ca_cert = Select(id='ssl_ca_cert_id')
         ssl_client_cert = Select(id='ssl_client_cert_id')
@@ -184,7 +184,7 @@ class RepositoryCreateView(BaseLoggedInView):
 
         @proxy_policy.register('Use specific HTTP Proxy')
         class SpecificHttpProxy(View):
-            http_proxy = Select(id="http_proxy")
+            http_proxy = Select(id='http_proxy')
 
     @property
     def is_displayed(self):
@@ -322,7 +322,7 @@ class RepositoryPackagesView(BaseLoggedInView, SearchableViewMixin):
     breadcrumb = BreadCrumb()
     dialog = ConfirmationDialog()
     table = SatTable(
-        locator=".//table",
+        locator='.//table',
         column_widgets={
             0: Checkbox(locator=".//input[@ng-change='itemSelected(package)']"),
         },

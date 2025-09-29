@@ -149,7 +149,7 @@ class ContentViewEditView(BaseLoggedInView):
         )
         searchbox = PF4Search()
         table = PatternflyTable(
-            component_id="content-view-versions-table",
+            component_id='content-view-versions-table',
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
                 'Version': Text('.//a'),
@@ -192,7 +192,7 @@ class ContentViewEditView(BaseLoggedInView):
         new_filter = PF4Button('create-filter-button')
         searchbox = PF4Search()
         table = PatternflyTable(
-            component_id="content-view-filters-table",
+            component_id='content-view-filters-table',
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
                 'Name': Text('.//a'),
@@ -288,7 +288,7 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
         )
         searchbox = PF4Search()
         table = PatternflyTable(
-            component_id="content-view-version-details-repositories-table",
+            component_id='content-view-version-details-repositories-table',
             column_widgets={
                 'Name': Text('.//a'),
                 'Version': Text('.//a'),
@@ -384,7 +384,7 @@ class EditFilterView(View):
     search = PF4Search()
     addRpmRule = PF4Button('add-rpm-rule-button')
     rpmRuleTable = PatternflyTable(
-        component_id="content-view-rpm-filter-table",
+        component_id='content-view-rpm-filter-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
             'RPM Name': Text('.//a'),
@@ -397,7 +397,7 @@ class EditFilterView(View):
     # Container Image Tag Rule
     addTagRule = PF4Button('add-content-view-container-image-filter-button')
     tagRuleTable = PatternflyTable(
-        component_id="content-view-container-image-filter",
+        component_id='content-view-container-image-filter',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Tag Name': Text('.//a'),
@@ -409,7 +409,7 @@ class EditFilterView(View):
     addPackageGroupRule = PF4Button('add-package-group-filter-rule-button')
     removePackageGroupRule = Dropdown('cv-package-group-filter-bulk-actions-dropdown')
     packageGroupRuleTable = PatternflyTable(
-        component_id="content-view-package-group-filter-table",
+        component_id='content-view-package-group-filter-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Name': Text('.//a'),
@@ -425,7 +425,7 @@ class EditFilterView(View):
     addModuleStreamRule = PF4Button('add-module-stream-rule-button')
     removeModuleStreamRule = Dropdown('bulk-actions-dropdown')
     moduleStreamRuleTable = PatternflyTable(
-        component_id="content-view-module-stream-filter-table",
+        component_id='content-view-module-stream-filter-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Name': Text('.//a'),
@@ -441,7 +441,7 @@ class EditFilterView(View):
     addErrataRule = PF4Button('add-errata-id-button')
     removeErratRule = Dropdown('cv-errata-id-bulk-action-dropdown')
     moduleErrataTable = PatternflyTable(
-        component_id="content-view-errata-by-id-filter-table",
+        component_id='content-view-errata-by-id-filter-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Errata ID': Text('.//a'),

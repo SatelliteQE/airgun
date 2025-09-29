@@ -38,7 +38,7 @@ class UserGroupDetailsView(BaseLoggedInView):
 
     @View.nested
     class usergroup(SatTab):
-        TAB_NAME = "User Group"
+        TAB_NAME = 'User Group'
 
         name = TextInput(id='usergroup_name')
         usergroups = MultiSelect(id='ms-usergroup_usergroup_ids')
