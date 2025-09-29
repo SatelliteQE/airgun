@@ -135,6 +135,7 @@ class ContentHostEntity(BaseEntity):
             query = module_name
         else:
             query = f'name = {module_name} and stream = {stream_version}'
+        view.wait_displayed()
         view.module_streams.search(query, status)
         return view.module_streams.table.read()
 
