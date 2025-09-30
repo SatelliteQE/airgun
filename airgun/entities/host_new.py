@@ -352,6 +352,7 @@ class NewHostEntity(HostEntity):
         """Filter installed packages on host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
+        wait_for(lambda: view.content.packages.is_displayed, timeout=5)
         view.content.packages.select()
         wait_for(lambda: view.content.packages.table.is_displayed, timeout=5)
         view.content.packages.searchbar.fill(search)
@@ -361,6 +362,7 @@ class NewHostEntity(HostEntity):
             return None
         else:
             view.content.packages.table.wait_displayed()
+            wait_for(lambda: view.content.packages.table.is_displayed, timeout=5)
             return view.content.packages.table.read()
 
     def install_package(self, entity_name, package):
