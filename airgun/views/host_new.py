@@ -169,7 +169,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class installable_errata(Card):
-            ROOT = './/div[@data-ouia-component-id="errata-card"]'
+            ROOT = './/article[@data-ouia-component-id="errata-card"]'
 
             security_advisory = Text('.//a[contains(@href, "type=security")]')
             bug_fixes = Text('.//a[contains(@href, "type=bugfix")]')
