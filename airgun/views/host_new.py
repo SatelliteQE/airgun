@@ -41,7 +41,7 @@ from airgun.widgets import (
     CheckboxGroup,
     ItemsList,
     Pf4ActionsDropdown,
-    Pf4ConfirmationDialog,
+    Pf5ConfirmationDialog,
     SatTableWithoutHeaders,
     SearchInput,
 )
@@ -916,12 +916,12 @@ class EditAnsibleRolesView(View):
     unselectRoles = PF5Button(locator='.//button[@aria-label="Remove selected"]')
 
 
-class ModuleStreamDialog(Pf4ConfirmationDialog):
+class ModuleStreamDialog(Pf5ConfirmationDialog):
     confirm_dialog = PF5Button(locator='.//button[@aria-label="confirm-module-action"]')
     cancel_dialog = PF5Button(locator='.//button[@aria-label="cancel-module-action"]')
 
 
-class RecurringJobDialog(Pf4ConfirmationDialog):
+class RecurringJobDialog(Pf5ConfirmationDialog):
     confirm_dialog = PF5Button(locator='.//button[@data-ouia-component-id="btn-modal-confirm"]')
     cancel_dialog = PF5Button(locator='.//button[@data-ouia-component-id="btn-modal-cancel"]')
 
