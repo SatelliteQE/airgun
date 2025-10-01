@@ -711,7 +711,7 @@ class InstallPackagesView(View):
     ROOT = './/div[@id="package-install-modal"]'
 
     select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
-    earchbar = SearchInput(
+    searchbar = SearchInput(
         locator='.//input[contains(@class, "pf-c-text-input-group__text-input")]'
     )
 
