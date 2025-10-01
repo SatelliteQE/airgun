@@ -350,11 +350,9 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.content.packages.wait_displayed()
         view.content.packages.select()
-        view.content.packages.table.wait_displayed()
         view.content.packages.searchbar.fill(search)
         # wait for filter to apply
         self.browser.plugin.ensure_page_safe()
-        view.content.packages.table.wait_displayed()
         return view.content.packages.read()
 
     def install_package(self, entity_name, package):
