@@ -6,6 +6,7 @@ from wait_for import wait_for
 from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
+from airgun.views.cloud_insights import RemediateSummary
 from airgun.views.fact import HostFactView
 from airgun.views.host import HostsView as LegacyHostsView
 from airgun.views.host_new import (
@@ -23,7 +24,7 @@ from airgun.views.host_new import (
     RemediationView,
 )
 from airgun.views.hostgroup import HostGroupEditView
-from airgun.views.job_invocation import JobInvocationCreateView
+from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 
 available_param_types = ['string', 'boolean', 'integer', 'real', 'array', 'hash', 'yaml', 'json']
 
@@ -928,6 +929,56 @@ class NewHostEntity(HostEntity):
             return vulnerabilities.read()
         else:
             return []
+
+    def get_recommendations(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        wait_for(lambda: view.IopRecommendations.recommendations_table.is_displayed, timeout=30)
+        return view.IopRecommendations.recommendations_table.read()
+
+    def remediate_host_recommendation(self, entity_name, recommendation):
+        """Function that can remediate an iop recommendation from the host page"""
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        wait_for(lambda: view.IopRecommendations.is_displayed, timeout=30)
+        view.IopRecommendations.search_field.fill(recommendation)
+        wait_for(lambda: view.IopRecommendations.recommendations_table.is_displayed, timeout=30)
+        wait_for(
+            lambda: view.IopRecommendations.recommendations_table.row(description=recommendation),
+            handle_exception=True,
+            timeout=30,
+        )
+        row = view.IopRecommendations.recommendations_table.row(description=recommendation)
+        row[1].widget.fill(True)
+        view.IopRecommendations.remediate.wait_displayed()
+        view.IopRecommendations.remediate.click()
+        self.browser.plugin.ensure_page_safe(timeout='30s')
+        modal = RemediateSummary(self.browser)
+        wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
+        modal.remediate.click()
+        view = JobInvocationStatusView(view.browser)
+        view.wait_for_result()
+        return view.read()
+
+    def bulk_remediate_host_recommendation(self, entity_name):
+        """Function that can bulk remediate an iop recommendation from the host page"""
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        wait_for(lambda: view.IopRecommendations.is_displayed, timeout=30)
+        view.IopRecommendations.bulk_select.wait_displayed()
+        view.IopRecommendations.bulk_select.select_all()
+        view.IopRecommendations.remediate.wait_displayed()
+        view.IopRecommendations.remediate.click()
+        self.browser.plugin.ensure_page_safe(timeout='30s')
+        modal = RemediateSummary(self.browser)
+        wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
+        modal.remediate.click()
+        view = JobInvocationStatusView(view.browser)
+        view.wait_for_result()
+        return view.read()
 
     def remediate_with_insights(
         self, entity_name, recommendation_to_remediate=None, remediate_all=False

@@ -34,6 +34,7 @@ from widgetastic_patternfly5.ouia import (
     Select as PF5OUIASelect,
 )
 
+from airgun.views.cloud_insights import BulkSelectMenuToggle
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import (
     Accordion,
@@ -41,7 +42,7 @@ from airgun.widgets import (
     CheckboxGroup,
     ItemsList,
     Pf4ActionsDropdown,
-    Pf5ConfirmationDialog,
+    Pf4ConfirmationDialog,
     SatTableWithoutHeaders,
     SearchInput,
 )
@@ -761,6 +762,41 @@ class NewHostDetailsView(BaseLoggedInView):
         pagination = PF5Pagination()
 
     @View.nested
+    class IopRecommendations(PF5Tab):
+        ROOT = './/div'
+
+        TAB_NAME = 'Recommendations'
+
+        search_field = TextInput(locator=('.//input[@aria-label="text input"]'))
+        conditional_filter_dropdown = PF5Button(
+            './/button[@data-ouia-component-id="ConditionalFilterToggle"]'
+        )
+        remediate = PF5Button('Remediate')
+        download_playbook = PF5Button('Download playbook')
+        bulk_select = BulkSelectMenuToggle()
+
+        recommendations_table = pf5OUIAExpandableTable(
+            locator='.//table[contains(@aria-label, "report-table")]',
+            column_widgets={
+                0: PF5Button('.//button[@aria-label="Details"]'),
+                1: Checkbox(locator='.//input[@type="checkbox"]'),
+                'Description': Text('.//span'),
+                'Modified': Text('.//span'),
+                'First impacted': Text('.//span'),
+                'Total risk': Text('.//span'),
+                'Remediation type': Text('.//span'),
+            },
+        )
+        pagination = PF5Pagination()
+
+        @property
+        def is_displayed(self):
+            return (
+                self.browser.wait_for_element(self.recommendations_table, exception=False)
+                is not None
+            )
+
+    @View.nested
     class vulnerabilities(PF5Tab):
         ROOT = './/div'
 
@@ -916,12 +952,12 @@ class EditAnsibleRolesView(View):
     unselectRoles = PF5Button(locator='.//button[@aria-label="Remove selected"]')
 
 
-class ModuleStreamDialog(Pf5ConfirmationDialog):
+class ModuleStreamDialog(Pf4ConfirmationDialog):
     confirm_dialog = PF5Button(locator='.//button[@aria-label="confirm-module-action"]')
     cancel_dialog = PF5Button(locator='.//button[@aria-label="cancel-module-action"]')
 
 
-class RecurringJobDialog(Pf5ConfirmationDialog):
+class RecurringJobDialog(Pf4ConfirmationDialog):
     confirm_dialog = PF5Button(locator='.//button[@data-ouia-component-id="btn-modal-confirm"]')
     cancel_dialog = PF5Button(locator='.//button[@data-ouia-component-id="btn-modal-cancel"]')
 
