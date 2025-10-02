@@ -968,7 +968,6 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         wait_for(lambda: view.IopRecommendations.is_displayed, timeout=30)
-        view.IopRecommendations.bulk_select.wait_displayed()
         view.IopRecommendations.bulk_select.select_all()
         view.IopRecommendations.remediate.wait_displayed()
         view.IopRecommendations.remediate.click()
