@@ -34,6 +34,7 @@ from widgetastic_patternfly5.ouia import (
     Select as PF5OUIASelect,
 )
 
+from airgun.views.cloud_insights import BulkSelectMenuToggle
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import (
     Accordion,
@@ -759,6 +760,41 @@ class NewHostDetailsView(BaseLoggedInView):
             },
         )
         pagination = PF5Pagination()
+
+    @View.nested
+    class IopRecommendations(PF5Tab):
+        ROOT = './/div'
+
+        TAB_NAME = 'Recommendations'
+
+        search_field = TextInput(locator=('.//input[@aria-label="text input"]'))
+        conditional_filter_dropdown = PF5Button(
+            './/button[@data-ouia-component-id="ConditionalFilterToggle"]'
+        )
+        remediate = PF5Button('Remediate')
+        download_playbook = PF5Button('Download playbook')
+        bulk_select = BulkSelectMenuToggle()
+
+        recommendations_table = pf5OUIAExpandableTable(
+            locator='.//table[contains(@aria-label, "report-table")]',
+            column_widgets={
+                0: PF5Button('.//button[@aria-label="Details"]'),
+                1: Checkbox(locator='.//input[@type="checkbox"]'),
+                'Description': Text('.//span'),
+                'Modified': Text('.//span'),
+                'First impacted': Text('.//span'),
+                'Total risk': Text('.//span'),
+                'Remediation type': Text('.//span'),
+            },
+        )
+        pagination = PF5Pagination()
+
+        @property
+        def is_displayed(self):
+            return (
+                self.browser.wait_for_element(self.recommendations_table, exception=False)
+                is not None
+            )
 
     @View.nested
     class vulnerabilities(PF5Tab):
