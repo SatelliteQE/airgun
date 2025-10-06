@@ -20,7 +20,7 @@ from widgetastic_patternfly5 import (
     Button as PF5Button,
     CompactPagination as PF5Pagination,
     Dropdown as PF5Dropdown,
-    ExpandableTable as pf5OUIAExpandableTable,
+    ExpandableTable as PF5ExpandableTable,
     Menu as PF5Menu,
     Tab as PF5Tab,
 )
@@ -762,7 +762,7 @@ class NewHostDetailsView(BaseLoggedInView):
         pagination = PF5Pagination()
 
     @View.nested
-    class IopRecommendations(PF5Tab):
+    class iop_recommendations(PF5Tab):
         ROOT = './/div'
 
         TAB_NAME = 'Recommendations'
@@ -775,7 +775,7 @@ class NewHostDetailsView(BaseLoggedInView):
         download_playbook = PF5Button('Download playbook')
         bulk_select = BulkSelectMenuToggle()
 
-        recommendations_table = pf5OUIAExpandableTable(
+        recommendations_table = PF5ExpandableTable(
             locator='.//table[contains(@aria-label, "report-table")]',
             column_widgets={
                 0: PF5Button('.//button[@aria-label="Details"]'),
@@ -804,7 +804,7 @@ class NewHostDetailsView(BaseLoggedInView):
         cve_menu_toggle = PF5Button(".//button[contains(@class, 'pf-v5-c-menu-toggle')]")
         no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
 
-        vulnerabilities_table = pf5OUIAExpandableTable(
+        vulnerabilities_table = PF5ExpandableTable(
             # component_id='OUIA-Generated-Table-2',
             locator='.//table[contains(@class, "pf-v5-c-table")]',
             column_widgets={

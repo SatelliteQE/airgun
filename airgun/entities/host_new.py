@@ -934,26 +934,26 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        wait_for(lambda: view.IopRecommendations.recommendations_table.is_displayed, timeout=30)
-        return view.IopRecommendations.recommendations_table.read()
+        wait_for(lambda: view.iop_recommendations.recommendations_table.is_displayed, timeout=30)
+        return view.iop_recommendations.recommendations_table.read()
 
     def remediate_host_recommendation(self, entity_name, recommendation):
         """Function that can remediate an iop recommendation from the host page"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        wait_for(lambda: view.IopRecommendations.is_displayed, timeout=30)
-        view.IopRecommendations.search_field.fill(recommendation)
-        wait_for(lambda: view.IopRecommendations.recommendations_table.is_displayed, timeout=30)
+        wait_for(lambda: view.iop_recommendations.is_displayed, timeout=30)
+        view.iop_recommendations.search_field.fill(recommendation)
+        wait_for(lambda: view.iop_recommendations.recommendations_table.is_displayed, timeout=30)
         wait_for(
-            lambda: view.IopRecommendations.recommendations_table.row(description=recommendation),
+            lambda: view.iop_recommendations.recommendations_table.row(description=recommendation),
             handle_exception=True,
             timeout=30,
         )
-        row = view.IopRecommendations.recommendations_table.row(description=recommendation)
+        row = view.iop_recommendations.recommendations_table.row(description=recommendation)
         row[1].widget.fill(True)
-        view.IopRecommendations.remediate.wait_displayed()
-        view.IopRecommendations.remediate.click()
+        view.iop_recommendations.remediate.wait_displayed()
+        view.iop_recommendations.remediate.click()
         self.browser.plugin.ensure_page_safe(timeout='30s')
         modal = RemediateSummary(self.browser)
         wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
@@ -967,10 +967,10 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        wait_for(lambda: view.IopRecommendations.is_displayed, timeout=30)
-        view.IopRecommendations.bulk_select.select_all()
-        view.IopRecommendations.remediate.wait_displayed()
-        view.IopRecommendations.remediate.click()
+        wait_for(lambda: view.iop_recommendations.is_displayed, timeout=30)
+        view.iop_recommendations.bulk_select.select_all()
+        view.iop_recommendations.remediate.wait_displayed()
+        view.iop_recommendations.remediate.click()
         self.browser.plugin.ensure_page_safe(timeout='30s')
         modal = RemediateSummary(self.browser)
         wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)

@@ -68,7 +68,7 @@ class RecommendationsTabEntity(BaseEntity):
 
         :param value: text to filter (default: no filter)
         """
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, 'All Recommendations')
         time.sleep(5)
         view.clear_button.click()
         view.search_field.fill(value)
@@ -104,7 +104,6 @@ class RecommendationsTabEntity(BaseEntity):
         """
         # Use navigator to open the Affected Systems details view
         view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
-        # view.search_field.wait_displayed()
         wait_for(lambda: view.table.row(), handle_exception=True, timeout=20)
         time.sleep(5)
         view.bulk_select.select_all()
