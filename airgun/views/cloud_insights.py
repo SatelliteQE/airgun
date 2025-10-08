@@ -87,7 +87,7 @@ class BulkSelectMenuToggle(PF5Menu):
     view.bulk_select.deselect_all() -> to deselect all items using the checkbox
     view.bulk_select.is_all_selected -> to check if all items are selected
     view.bulk_select.items -> to access the menu items
-        (['Select none', 'Select page (1 items)', 'Select all (1 items)'])
+    (['Select none', 'Select page (1 items)', 'Select all (1 items)'])
     view.bulk_select.item_select('Select none') -> to select a specific item by name
     """
 
