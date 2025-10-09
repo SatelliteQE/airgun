@@ -222,9 +222,8 @@ class JobInvocationStatusView(BaseLoggedInView):
             delay=1,
             logger=self.logger,
         )
-        # self.browser.refresh()
-        self.browser.plugin.ensure_page_safe()
-        wait_for(lambda: self.status.is_displayed, timeout=30, delay=1, logger=self.logger)
+        time.sleep(5)
+        self.browser.refresh()
 
     @View.nested
     class overall_status(DonutCircle):
