@@ -1,3 +1,5 @@
+import time
+
 from wait_for import wait_for
 from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
