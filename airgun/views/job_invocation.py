@@ -224,7 +224,6 @@ class JobInvocationStatusView(BaseLoggedInView):
             delay=1,
             logger=self.logger,
         )
-        time.sleep(5)
         self.browser.refresh()
 
     @View.nested
