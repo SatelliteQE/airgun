@@ -1,18 +1,14 @@
 from widgetastic.widget import (
-    Checkbox,
-    ConditionalSwitchableView,
     Table,
     Text,
     TextInput,
-    View,
 )
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly4 import Pagination as PF4Pagination
 
-from airgun.views.common import BaseLoggedInView, SatTab
+from airgun.views.common import BaseLoggedInView
 from airgun.widgets import (
     ActionsDropdown,
-    MultiSelect,
     PF4FilteredDropdown,
     PF4MultiSelect,
     Search,
@@ -55,8 +51,6 @@ class FilterDetailsView(BaseLoggedInView):
         locator='.//div[@data-ouia-component-id="resource-type-select"]'
     )
     permission = PF4MultiSelect('.//div[@id="permission-duel-select"]')
-    override = Checkbox(id='override-check')
-    unlimited = Checkbox(id='filter_unlimited')
     filter = TextInput(id='search')
     submit = Text('//button[@data-ouia-component-id="filters-submit-button"]')
 
@@ -68,22 +62,6 @@ class FilterDetailsView(BaseLoggedInView):
             and self.breadcrumb.locations[0] == 'Roles'
             and self.breadcrumb.read().startswith('Edit filter for ')
         )
-
-    taxonomies_tabs = ConditionalSwitchableView(reference='override')
-
-    @taxonomies_tabs.register(True)
-    class Taxonomies(View):
-        @View.nested
-        class locations(SatTab):
-            resources = MultiSelect(id='ms-filter_location_ids')
-
-        @View.nested
-        class organizations(SatTab):
-            resources = MultiSelect(id='ms-filter_organization_ids')
-
-    @taxonomies_tabs.register(False)
-    class NoTaxonomies(View):
-        pass
 
 
 class FilterCreateView(FilterDetailsView):
