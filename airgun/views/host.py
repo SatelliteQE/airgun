@@ -344,6 +344,11 @@ class HostCreateView(BaseLoggedInView):
                 ITEMS = "./div/div[contains(@class, 'removable-item')]"
                 ITEM_WIDGET_CLASS = ComputeResourceLibvirtProfileStorageItem
 
+        @View.nested
+        class operating_system(SatTab):
+            TAB_NAME = 'Operating System'
+            provision_method = Checkbox(id='host_provision_method_image')
+
     @provider_content.register('Google')
     class GoogleResourceForm(View):
         @View.nested
