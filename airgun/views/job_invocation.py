@@ -298,7 +298,7 @@ class JobInvocationStatusView(BaseLoggedInView):
     @View.nested
     class hosts(View):
         table = HostsExpandableTable(
-            component_id='table',
+            component_id='job-invocation-hosts-table',
             column_widgets={
                 1: Checkbox(locator='.//input[@type="checkbox"]'),
                 'Name': Text('./a'),
