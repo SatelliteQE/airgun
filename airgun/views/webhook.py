@@ -1,7 +1,7 @@
 from wait_for import wait_for
 from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import Button
-from widgetastic_patternfly4 import Button as PF4Button, Tab
+from widgetastic_patternfly5 import Button as PF5Button, Tab
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 from airgun.widgets import AutoCompleteTextInput, SatTable
@@ -9,7 +9,7 @@ from airgun.widgets import AutoCompleteTextInput, SatTable
 
 class WebhooksView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Webhooks']")
-    new = PF4Button('Create new')
+    new = PF5Button('Create new')
     table = SatTable(
         './/table',
         column_widgets={
