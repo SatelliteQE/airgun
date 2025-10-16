@@ -101,7 +101,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     no_results = Text("//h5[normalize-space(.)='No Results']")
     manage_columns = PF5Button('Manage columns')
     table = PF5OUIATable(
-        component_id='table',
+        component_id='hosts-index-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Name': Text('./a'),
