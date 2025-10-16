@@ -16,11 +16,13 @@ from widgetastic_patternfly5 import (
     Dropdown as PF5Dropdown,
     Menu as PF5Menu,
     Modal as PF5Modal,
+    Pagination as PF5Pagination,
     Radio as PF5Radio,
     Select as PF5Select,
 )
 from widgetastic_patternfly5.ouia import (
     Button as PF5OUIAButton,
+    Dropdown as PF5OUIADropdown,
     PatternflyTable as PF5OUIATable,
 )
 
@@ -84,6 +86,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     select_all = Checkbox(
         locator='.//input[@data-ouia-component-id="select-all-checkbox-dropdown-toggle-checkbox"]'
     )
+    searchbar_dropdown = PF5OUIADropdown('selection-checkbox')
     top_bulk_actions = MenuToggleDropdownInTable(locator='.//button[@aria-label="plain kebab"]')
     bulk_actions = AllHostsMenu()
     bulk_actions_kebab = Button(locator='.//button[@aria-label="plain kebab"]')
@@ -109,6 +112,11 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
         },
     )
     alert_message = Text('.//div[contains(@class, "pf-v5-c-alert")]')
+
+    # Host status icon and popover widgets
+    status_icon = Text('.//svg[contains(@style, "fill:")]')
+    popover_body = Text('.//div[contains(@class, "pf-v5-c-popover__body")]')
+    popover_close_button = Button(locator='.//div[@class="pf-v5-c-popover__close"]//button')
 
     pagination = Pagination()
 
@@ -702,3 +710,41 @@ class ChangeLocationModal(BaseChangeOrgLocModal):
 
     save_button = PF5OUIAButton('bulk-assign-location-modal-add-button')
     cancel_button = PF5OUIAButton('bulk-assign-location-modal-cancel-button')
+
+
+class ChangeHostCollectionsModal(PF5Modal):
+    """
+    This class represents 'Change host collections' modal that is used to change host collections
+    for one or more hosts
+    """
+
+    OUIA_ID = 'bulk-update-host-collections-modal'
+
+    title = './/h1[@class="pf-v5-c-modal-box__title"]'
+    close_btn = PF5OUIAButton('bulk-update-host-collections-modal-ModalBoxCloseButton')
+    save_btn = PF5OUIAButton('bulk-change-host-collections-modal-save-button')
+    cancel_btn = PF5OUIAButton('bulk-change-host-collections-modal-cancel-button')
+
+    add_to_host_collections_radio = PF5Radio(id='radio-add-action')
+    remove_from_host_collections_radio = PF5Radio(id='radio-remove-action')
+
+    search_input = SearchInput(
+        locator='//div[@id="bulk-update-host-collections-modal"]//input[@aria-label="Search input"]'
+    )
+    table = PF5OUIATable(
+        component_id='table',
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Host collection': Text('.//td[2]'),
+            'Limit': Text('.//td[3]'),
+            'Description': Text('.//td[4]'),
+        },
+    )
+
+    pagination = PF5Pagination()
+
+    alert_message = PF5Alert(locator='.//div[@data-ouia-component-type="PF5/Alert"][1]')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
