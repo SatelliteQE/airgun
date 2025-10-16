@@ -20,7 +20,7 @@ from widgetastic_patternfly5 import (
     Button as PF5Button,
     CompactPagination as PF5Pagination,
     Dropdown as PF5Dropdown,
-    ExpandableTable as pf5OUIAExpandableTable,
+    ExpandableTable as PF5ExpandableTable,
     Menu as PF5Menu,
     Tab as PF5Tab,
 )
@@ -34,6 +34,7 @@ from widgetastic_patternfly5.ouia import (
     Select as PF5OUIASelect,
 )
 
+from airgun.views.cloud_insights import BulkSelectMenuToggle
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import (
     Accordion,
@@ -761,6 +762,41 @@ class NewHostDetailsView(BaseLoggedInView):
         pagination = PF5Pagination()
 
     @View.nested
+    class iop_recommendations(PF5Tab):
+        ROOT = './/div'
+
+        TAB_NAME = 'Recommendations'
+
+        search_field = TextInput(locator=('.//input[@aria-label="text input"]'))
+        conditional_filter_dropdown = PF5Button(
+            './/button[@data-ouia-component-id="ConditionalFilterToggle"]'
+        )
+        remediate = PF5Button('Remediate')
+        download_playbook = PF5Button('Download playbook')
+        bulk_select = BulkSelectMenuToggle()
+
+        recommendations_table = PF5ExpandableTable(
+            locator='.//table[contains(@aria-label, "report-table")]',
+            column_widgets={
+                0: PF5Button('.//button[@aria-label="Details"]'),
+                1: Checkbox(locator='.//input[@type="checkbox"]'),
+                'Description': Text('.//span'),
+                'Modified': Text('.//span'),
+                'First impacted': Text('.//span'),
+                'Total risk': Text('.//span'),
+                'Remediation type': Text('.//span'),
+            },
+        )
+        pagination = PF5Pagination()
+
+        @property
+        def is_displayed(self):
+            return (
+                self.browser.wait_for_element(self.recommendations_table, exception=False)
+                is not None
+            )
+
+    @View.nested
     class vulnerabilities(PF5Tab):
         ROOT = './/div'
 
@@ -768,7 +804,7 @@ class NewHostDetailsView(BaseLoggedInView):
         cve_menu_toggle = PF5Button(".//button[contains(@class, 'pf-v5-c-menu-toggle')]")
         no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
 
-        vulnerabilities_table = pf5OUIAExpandableTable(
+        vulnerabilities_table = PF5ExpandableTable(
             # component_id='OUIA-Generated-Table-2',
             locator='.//table[contains(@class, "pf-v5-c-table")]',
             column_widgets={
