@@ -3,6 +3,7 @@ import contextlib
 
 import anytree
 from widgetastic.exceptions import NoSuchElementException
+from widgetastic_patternfly5 import DropdownItemDisabled
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -12,6 +13,7 @@ from airgun.views.all_hosts import (
     AllHostsTableView,
     BuildManagementDialog,
     BulkHostDeleteDialog,
+    ChangeHostCollectionsModal,
     ChangeHostsOwnerModal,
     ChangeLocationModal,
     ChangeOrganizationModal,
@@ -529,13 +531,18 @@ class AllHostsEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe(timeout='5s')
         view.wait_displayed()
 
+        # This step ensures deterministic state of the table
+        # If 'Select none (0)' is disabled, it means nothing is selected, so we can continue
+        with contextlib.suppress(DropdownItemDisabled):
+            view.searchbar_dropdown.item_select('Select none (0)')
+
         if select_all_hosts:
             view.select_all.fill(True)
         else:
             if not isinstance(host_names, list):
                 host_names = [host_names]
             for host_name in host_names:
-                view.search(host_name)
+                view.search(f'name={host_name}')
                 view.table[0][0].widget.fill(True)
 
         return view
@@ -628,6 +635,118 @@ class AllHostsEntity(BaseEntity):
         elif option == 'Fail on mismatch':
             view.location_fail_on_mismatch.fill(True)
             view.save_button.click()
+        else:
+            raise ValueError(
+                'Option argument is not valid! (fill in "Fix on mismatch" or "Fail on mismatch")'
+            )
+
+    def change_associations_host_collections(
+        self, host_names=None, select_all_hosts=False, host_collections_to_select=None, option='Add'
+    ):
+        """
+        Navigate to change host collections modal after selecting number of hosts,
+        select if user wants to add or remove host collections,
+        select desired host collections and apply changes.
+
+        :param host_names: str with one host or list of hosts to select
+        :param select_all_hosts: select all hosts flag
+        :param host_collections_to_select: str with one host collection or list of host collections to select
+        :param option: str options either 'Add' or 'Remove'
+
+        :return: str alert message text or None if no alert message is displayed
+        """
+
+        if host_collections_to_select is None:
+            raise ValueError(
+                'host_collections_to_select argument is None! Please provide host collection(s) to select!'
+            )
+
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+
+        view.bulk_actions_kebab.click()
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Change associations'))
+        view.bulk_actions_change_associations_menu.item_select('Host collections')
+
+        view = ChangeHostCollectionsModal(self.browser)
+
+        if option == 'Add':
+            view.add_to_host_collections_radio.fill(True)
+        elif option == 'Remove':
+            view.remove_from_host_collections_radio.fill(True)
+        else:
+            raise ValueError('Option argument is not valid! (fill in "Add" or "Remove")')
+
+        if not isinstance(host_collections_to_select, list):
+            host_collections_to_select = [host_collections_to_select]
+        for host_collection in host_collections_to_select:
+            view.search_input.fill(host_collection)
+            wait_for(lambda: view.table.is_displayed, timeout=10)
+            view.table[0][0].widget.fill(True)
+
+        view.save_btn.click()
+
+        # Instantiate All Hosts view to access the alert message (without navigation)
+        all_hosts_view = AllHostsTableView(self.browser)
+
+        # Wait for and read the alert message
+        self.browser.wait_for_element(all_hosts_view.alert_message, exception=False, timeout=5)
+        if all_hosts_view.alert_message.is_displayed:
+            alert_message_content = all_hosts_view.alert_message.read()
+            all_hosts_view.flash.dismiss()
+            if 'failed' in alert_message_content.lower():
+                view.close_btn.click()
+            return alert_message_content
+        return None
+
+    def read_host_status_icon(self, host_name):
+        """
+        Read the status icon details of a specific host.
+
+        :param host_name: str with the name of the host to read the status icon for
+
+        :return: dict with keys 'status' and 'status_details'
+        """
+
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        view.search(f'name={host_name}')
+
+        # Find the status icon directly from the Name column cell
+        # The SVG is a sibling to the link, so we need to search within the table cell
+        name_cell_element = view.table[0]['Name'].__element__()
+        status_icon_element = self.browser.element('.//*[name()="svg"]', parent=name_cell_element)
+
+        # Get the status of the icon from the style attribute
+        icon_style = status_icon_element.get_attribute('style')
+        # Extract status from style (e.g., "fill: var(--pf-v5-global--warning-color--100);")
+        # Parse the CSS variable to extract just the status type (success, warning, danger, etc.)
+        icon_status = None
+        if icon_style and 'fill' in icon_style:
+            parts = icon_style.split('fill')
+            if len(parts) > 1:
+                # Remove the colon and any leading/trailing whitespace, then remove the semicolon
+                css_var = parts[1].lstrip(':').strip().rstrip(';')
+                # Extract status from CSS variable like "var(--pf-v5-global--success-color--100)"
+                # Look for pattern: --{status}-color--
+                if '--' in css_var:
+                    # Split by '--' and find the part before '-color'
+                    var_parts = css_var.split('--')
+                    for part in var_parts:
+                        if '-color' in part:
+                            # Extract just the status word before '-color'
+                            icon_status = part.split('-color')[0]
+                            break
+
+        # Click on the status icon to open the popover
+        status_icon_element.click()
+        self.browser.wait_for_element(view.popover_body, exception=False, timeout=5)
+
+        status_details = view.popover_body.read()
+
+        view.popover_close_button.click()
+
+        return {'status': icon_status, 'status_details': status_details}
 
 
 @navigator.register(AllHostsEntity, 'All')
