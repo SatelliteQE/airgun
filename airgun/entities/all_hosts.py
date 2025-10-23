@@ -681,7 +681,13 @@ class AllHostsEntity(BaseEntity):
         for host_collection in host_collections_to_select:
             view.search_input.fill(host_collection)
             wait_for(lambda: view.table.is_displayed, timeout=10)
-            view.table[0][0].widget.fill(True)
+            if view.table[0][0].widget.is_enabled:
+                view.table[0][0].widget.fill(True)
+            else:
+                view.close_btn.click()
+                return (
+                    'Failed to add host to host collection. Host collection has reached its limit.'
+                )
 
         view.save_btn.click()
 
