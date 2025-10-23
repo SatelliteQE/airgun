@@ -5,6 +5,7 @@ class RhssoLoginView(View, ClickableMixin):
     username = TextInput(id='username')
     password = TextInput(id='password')
     submit = Text('//input[@name="login"]')
+    error_message = Text('//span[@id="input-error"]')
 
     @property
     def is_displayed(self):
