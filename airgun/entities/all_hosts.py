@@ -653,7 +653,7 @@ class AllHostsEntity(BaseEntity):
         :param host_collections_to_select: str with one host collection or list of host collections to select
         :param option: str options either 'Add' or 'Remove'
 
-        :return: str alert message text or None if no alert message is displayed
+        :return: str alert message text, Host collection has reached its limit message or None if no alert message is displayed
         """
 
         if host_collections_to_select is None:
