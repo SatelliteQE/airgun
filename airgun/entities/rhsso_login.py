@@ -22,6 +22,10 @@ class RHSSOLoginEntity(BaseEntity):
                 view = RhssoTotpView(self.browser)
                 view.fill(totp)
                 view.submit.click()
+            # Check if we're still on login page (login failed)
+            login_view = RhssoLoginView(self.browser)
+            if login_view.is_displayed:
+                return login_view.read()
 
     def logout(self):
         view = BaseLoggedInView(self.browser)
