@@ -83,6 +83,52 @@ class FlatpakRemotesEntity(BaseEntity):
         view = FlatpakRemoteDetailsView(self.browser)
         view.wait_displayed(delay=3)
 
+    def create_redhat_remote(self, values):
+        """Create a Red Hat Flatpak remote using the info alert action.
+
+        This method clicks the 'Add Red Hat flatpak remote' button from the
+        info alert instead of manually filling the URL.
+
+        :param dict values: values to create the remote with
+        """
+        view = self.navigate_to(self, 'All')
+        view.wait_displayed()
+        view.create_new_btn.click()
+        create_modal = CreateFlatpakRemoteModal(self.browser)
+        create_modal.wait_displayed()
+        create_modal.fill(values)
+
+        if create_modal.info_alert.is_displayed:
+            create_modal.add_rh_fr.click()
+        else:
+            raise ValueError('Red Hat Flatpak remote info alert is not displayed')
+
+        create_modal.create_btn.click()
+        view = FlatpakRemoteDetailsView(self.browser)
+        view.wait_displayed(delay=3)
+
+    def read_create_modal_alert(self):
+        """Read the info alert from the Create Flatpak Remote modal.
+
+        :return: dict with alert information or None if alert not displayed
+        """
+        view = self.navigate_to(self, 'All')
+        view.wait_displayed()
+        view.create_new_btn.click()
+        create_modal = CreateFlatpakRemoteModal(self.browser)
+        create_modal.wait_displayed()
+
+        if create_modal.info_alert.is_displayed:
+            alert_info = {
+                'title': create_modal.info_alert.title,
+                'body': create_modal.info_alert.body,
+            }
+            create_modal.cancel_btn.click()
+            return alert_info
+
+        create_modal.cancel_btn.click()
+        return None
+
     def edit(self, entity_name, values):
         """Edit a Flatpak remote.
 
