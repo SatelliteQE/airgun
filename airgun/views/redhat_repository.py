@@ -218,7 +218,9 @@ class RedHatRepositoriesView(BaseLoggedInView):
     )
     search_types = RepositorySearchTypes(".//div[button[@data-id='formControlsSelectMultiple']]")
     search_by_filter_type = RepositorySearchTypes(".//div[button[@aria-owns='bs-select-2']]")
-    search_clear = Text(".//span[@class = 'fa fa-times']")
+    search_clear = Text(
+        ".//span[contains(@class, 'pf-v5-c-button__icon') or contains(@class, 'pf-v5-c-icon')]"
+    )
     recommended_repos = Text(".//div[contains(@class, 'bootstrap-switch wrapper')]")
 
     @View.nested

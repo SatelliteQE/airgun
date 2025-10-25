@@ -32,18 +32,22 @@ class VirtwhoConfigureStatus(GenericLocatorWidget):
 
     @property
     def status(self):
-        """The attributes for the element is such as:
-        virt-who-config-report-status pficon-ok status-ok
-        virt-who-config-report-status pficon-info status-info
+        """Detect status from PF5 element attributes.
+
+        PF5 classes: pf-v5-c-icon with status modifier classes
         """
         element = self.browser.element(self.STATUS_ICON)
         attrs = self.browser.get_attribute('class', element)
-        if 'status-ok' in attrs:
+
+        # Check for PF5 status patterns
+        if 'pf-m-success' in attrs or 'status-ok' in attrs:
             return 'ok'
-        elif 'status-info' in attrs:
+        elif 'pf-m-info' in attrs or 'status-info' in attrs:
             return 'info'
-        elif 'status-warn' in attrs:
+        elif 'pf-m-warning' in attrs or 'status-warn' in attrs:
             return 'warning'
+        elif 'pf-m-danger' in attrs or 'status-error' in attrs:
+            return 'error'
         else:
             return 'unknown'
 
@@ -79,7 +83,8 @@ class VirtwhoConfiguresDebug(Widget):
     """Return the virtwho configure debug status."""
 
     DEBUG = ".//span[contains(@class,'config-debug')]"
-    STATUS = ".//span[contains(@class,'fa-check')]"
+    # PF5 check icons
+    STATUS = ".//span[contains(@class,'pf-v5-c-icon') and contains(@class,'pf-m-success')]"
 
     @property
     def status(self):
@@ -103,7 +108,8 @@ class VirtwhoConfiguresAHVDebug(Widget):
     """Return the virtwho configure ahv_internal_debug status."""
 
     DEBUG = ".//span[contains(@class,'config-ahv_internal_debug')]"
-    STATUS = ".//span[contains(@class,'fa-check')]"
+    # PF5 check icons
+    STATUS = ".//span[contains(@class,'pf-v5-c-icon') and contains(@class,'pf-m-success')]"
 
     @property
     def status(self):
