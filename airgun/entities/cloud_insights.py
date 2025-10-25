@@ -116,9 +116,30 @@ class RecommendationsTabEntity(BaseEntity):
         view.wait_for_result()
         return view.read()
 
+    def apply_filter(self, filter_type, filter_value):
+        """
+        Apply a filter to the recommendations table.
+
+        Returns:
+            Table data after filtering is applied.
+
+        Example:
+            session.recommendationstab.apply_filter("Status", "Disabled")
+        """
+        view = self.navigate_to(self, 'All Recommendations')
+
+        self.browser.plugin.ensure_page_safe(timeout='10s')
+        wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
+        view.menu_toggle.fill(filter_type)
+        time.sleep(1)
+        view.menu_filter.fill(filter_value)
+        self.browser.plugin.ensure_page_safe(timeout='10s')
+        wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
+        return view.table.read()
+
     def read(self, widget_names=None):
         """Read all values."""
-        view = self.navigate_to(self, 'All')
+        view = self.navigate_to(self, 'All Recommendations')
         self.browser.plugin.ensure_page_safe(timeout='10s')
         view.wait_displayed()
         return view.read(widget_names=widget_names)
