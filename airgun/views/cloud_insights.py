@@ -6,7 +6,6 @@ from widgetastic_patternfly5 import (
     Menu as PF5Menu,
     Pagination as PF5Pagination,
     PatternflyTable as PF5Table,
-    Select as PF5Select,
     Title as PF5Title,
 )
 from widgetastic_patternfly5.ouia import (
@@ -17,6 +16,7 @@ from widgetastic_patternfly5.ouia import (
     TextInput as PF5OUIATextInput,
 )
 
+from airgun.views.all_hosts import MenuToggleSelect
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 
 
@@ -119,21 +119,12 @@ class BulkSelectMenuToggle(PF5Menu):
         return self.checkbox.selected
 
 
-class MenuToggleSelect(PF5Select):
+class MenuToggleSelectParamLocator(MenuToggleSelect):
     """
-    This class is PF5 implementation of the Select component within the new PF5 structure
-    Which is MenuToggle->Select and not just Select as it was in PF4.
+    Inherit MenuToggleSelect and set ROOT to the default locator.
     """
 
-    BUTTON_LOCATOR = './/button[contains(@class, "pf-v5-c-menu-toggle")]'
-    DEFAULT_LOCATOR = (
-        './/div[contains(@class, "pf-v5-c-menu") and @data-ouia-component-type="PF5/Select"]'
-    )
     ROOT = ParametrizedLocator('{@locator}/..')
-    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
-    ITEM_LOCATOR = (
-        "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
-    )
 
 
 class RemediateSummary(PF5OUIAModal):
@@ -191,10 +182,10 @@ class RecommendationsTabView(BaseLoggedInView):
     critical_recommendations = Text(locator='.//a[@data-testid="Critical recommendations"]')
     important_recommendations = Text(locator='.//a[@data-testid="Important recommendations"]')
     conditional_filter_dropdown = PF5OUIATextInput('ConditionalFilter')
-    menu_toggle = MenuToggleSelect(
+    menu_toggle = MenuToggleSelectParamLocator(
         locator='.//button[@data-ouia-component-id="ConditionalFilterToggle"]'
     )
-    menu_filter = MenuToggleSelect(locator='.//button[@aria-label="Options menu"]')
+    menu_filter = MenuToggleSelectParamLocator(locator='.//button[@aria-label="Options menu"]')
     table = PF5ExpandableTable(
         locator='.//table[contains(@data-ouia-component-id, "rules-table")]',
         content_view=RecommendationsTableExpandedRowView,
