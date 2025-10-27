@@ -131,7 +131,6 @@ class RecommendationsTabEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe(timeout='10s')
         wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
         view.menu_toggle.fill(filter_type)
-        time.sleep(1)
         view.menu_filter.fill(filter_value)
         self.browser.plugin.ensure_page_safe(timeout='10s')
         wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
