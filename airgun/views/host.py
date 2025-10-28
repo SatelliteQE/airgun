@@ -23,11 +23,11 @@ from widgetastic_patternfly4.ouia import (
 from widgetastic_patternfly5.components.tabs import Tab
 from widgetastic_patternfly5.ouia import (
     Button as PF5Button,
+    Dropdown as PF5OUIADropdown,
     FormSelect as PF5FormSelect,
     PatternflyTable as PF5OUIATable,
     Select as PF5OUIASelect,
     TextInput as PF5OUIATextInput,
-    Dropdown as PF5OUIADropdown,
 )
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
