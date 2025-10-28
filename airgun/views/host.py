@@ -27,6 +27,7 @@ from widgetastic_patternfly5.ouia import (
     PatternflyTable as PF5OUIATable,
     Select as PF5OUIASelect,
     TextInput as PF5OUIATextInput,
+    Dropdown as PF5OUIADropdown,
 )
 
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
@@ -223,6 +224,7 @@ class HostStatusesView(BaseLoggedInView):
 class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
     manage_columns = PF5Button('manage-columns-button')
+    searchbar_dropdown = PF5OUIADropdown('selection-checkbox')
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text(".//div[@id='foreman-page']//a[@data-ouia-component-id='create-host-button']")
     register = PF4Button('OUIA-Generated-Button-secondary-2')
