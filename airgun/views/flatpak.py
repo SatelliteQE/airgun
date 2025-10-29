@@ -1,5 +1,6 @@
 from widgetastic.widget import Text
 from widgetastic_patternfly5 import (
+    Alert as PF5Alert,
     Button as PF5Button,
     Menu as PF5Menu,
     Modal as PF5Modal,
@@ -72,6 +73,9 @@ class CreateFlatpakRemoteModal(PF5Modal):
     ROOT = './/div[@data-ouia-component-id="create-flatpak-modal"]'
 
     title = Text("//span[normalize-space(.)='Create Flatpak Remote']")
+
+    info_alert = PF5Alert(locator='.//div[@data-ouia-component-id="flatpak-remote-info-alert"]')
+    add_rh_fr = PF5Button('Add Red Hat flatpak remote')
 
     name = PF5OUIATextInput('input_name')
     url = PF5OUIATextInput('input_url')
