@@ -23,6 +23,7 @@ from widgetastic_patternfly4.ouia import (
 from widgetastic_patternfly5.components.tabs import Tab
 from widgetastic_patternfly5.ouia import (
     Button as PF5Button,
+    Dropdown as PF5OUIADropdown,
     FormSelect as PF5FormSelect,
     PatternflyTable as PF5OUIATable,
     Select as PF5OUIASelect,
@@ -223,6 +224,7 @@ class HostStatusesView(BaseLoggedInView):
 class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
     manage_columns = PF5Button('manage-columns-button')
+    searchbar_dropdown = PF5OUIADropdown('selection-checkbox')
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text(".//div[@id='foreman-page']//a[@data-ouia-component-id='create-host-button']")
     register = PF4Button('OUIA-Generated-Button-secondary-2')
