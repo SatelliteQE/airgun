@@ -1,3 +1,4 @@
+from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly5 import (
     Button as PF5Button,
@@ -15,6 +16,7 @@ from widgetastic_patternfly5.ouia import (
     TextInput as PF5OUIATextInput,
 )
 
+from airgun.views.all_hosts import MenuToggleSelect
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 
 
@@ -117,6 +119,14 @@ class BulkSelectMenuToggle(PF5Menu):
         return self.checkbox.selected
 
 
+class MenuToggleSelectParamLocator(MenuToggleSelect):
+    """
+    Inherit MenuToggleSelect and set ROOT to the default locator.
+    """
+
+    ROOT = ParametrizedLocator('{@locator}/..')
+
+
 class RemediateSummary(PF5OUIAModal):
     """Models the Remediation summary page and button"""
 
@@ -172,8 +182,12 @@ class RecommendationsTabView(BaseLoggedInView):
     critical_recommendations = Text(locator='.//a[@data-testid="Critical recommendations"]')
     important_recommendations = Text(locator='.//a[@data-testid="Important recommendations"]')
     conditional_filter_dropdown = PF5OUIATextInput('ConditionalFilter')
+    menu_toggle = MenuToggleSelectParamLocator(
+        locator='.//button[@data-ouia-component-id="ConditionalFilterToggle"]'
+    )
+    menu_filter = MenuToggleSelectParamLocator(locator='.//button[@aria-label="Options menu"]')
     table = PF5ExpandableTable(
-        locator='.//table[contains(@aria-label, "rule-table")]',
+        locator='.//table[contains(@data-ouia-component-id, "rules-table")]',
         content_view=RecommendationsTableExpandedRowView,
         column_widgets={
             'Name': Text('.//a'),
