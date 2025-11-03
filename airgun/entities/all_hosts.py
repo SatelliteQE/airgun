@@ -719,33 +719,29 @@ class AllHostsEntity(BaseEntity):
         view.search(f'name={host_name}')
 
         # Find the status icon directly from the Name column cell
-        # The SVG is a sibling to the link, so we need to search within the table cell
         name_cell_element = view.table[0]['Name'].__element__()
-        status_icon_element = self.browser.element('.//*[name()="svg"]', parent=name_cell_element)
+        status_button_element = self.browser.element(
+            './/button[contains(@class, "pf-v5-c-button")]', parent=name_cell_element
+        )
+
+        # Get the span.pf-v5-c-icon element which contains the color style
+        icon_span_element = self.browser.element(
+            './/span[@class="pf-v5-c-icon"]', parent=status_button_element
+        )
 
         # Get the status of the icon from the style attribute
-        icon_style = status_icon_element.get_attribute('style')
-        # Extract status from style (e.g., "fill: var(--pf-v5-global--warning-color--100);")
-        # Parse the CSS variable to extract just the status type (success, warning, danger, etc.)
+        icon_style = icon_span_element.get_attribute('style')
+        # Extract status from style (e.g., "color: var(--pf-v5-global--success-color--100);")
+        possible_statuses = ['success', 'danger', 'warning']
         icon_status = None
-        if icon_style and 'fill' in icon_style:
-            parts = icon_style.split('fill')
-            if len(parts) > 1:
-                # Remove the colon and any leading/trailing whitespace, then remove the semicolon
-                css_var = parts[1].lstrip(':').strip().rstrip(';')
-                # Extract status from CSS variable like "var(--pf-v5-global--success-color--100)"
-                # Look for pattern: --{status}-color--
-                if '--' in css_var:
-                    # Split by '--' and find the part before '-color'
-                    var_parts = css_var.split('--')
-                    for part in var_parts:
-                        if '-color' in part:
-                            # Extract just the status word before '-color'
-                            icon_status = part.split('-color')[0]
-                            break
 
-        # Click on the status icon to open the popover
-        status_icon_element.click()
+        for possible_status in possible_statuses:
+            if possible_status in icon_style:
+                icon_status = possible_status
+                break
+
+        # Click on the status button to open the popover
+        status_button_element.click()
         self.browser.wait_for_element(view.popover_body, exception=False, timeout=5)
 
         status_details = view.popover_body.read()
