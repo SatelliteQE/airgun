@@ -6,6 +6,7 @@ from widgetastic_patternfly5 import (
     Menu as PF5Menu,
     Pagination as PF5Pagination,
     PatternflyTable as PF5Table,
+    Select as PF5Select,
     Title as PF5Title,
 )
 from widgetastic_patternfly5.ouia import (
@@ -16,7 +17,6 @@ from widgetastic_patternfly5.ouia import (
     TextInput as PF5OUIATextInput,
 )
 
-from airgun.views.all_hosts import MenuToggleSelect
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 
 
@@ -119,12 +119,20 @@ class BulkSelectMenuToggle(PF5Menu):
         return self.checkbox.selected
 
 
-class MenuToggleSelectParamLocator(MenuToggleSelect):
+class MenuToggleSelectParamLocator(PF5Select):
     """
     Inherit MenuToggleSelect and set ROOT to the default locator.
     """
 
+    BUTTON_LOCATOR = './/button[contains(@class, "pf-v5-c-menu-toggle")]'
+    DEFAULT_LOCATOR = (
+        './/div[contains(@class, "pf-v5-c-menu") and @data-ouia-component-type="PF5/Select"]'
+    )
     ROOT = ParametrizedLocator('{@locator}/..')
+    ITEMS_LOCATOR = ".//ul[contains(@class, 'pf-v5-c-menu__list')]/li"
+    ITEM_LOCATOR = (
+        "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
+    )
 
 
 class RemediateSummary(PF5OUIAModal):
