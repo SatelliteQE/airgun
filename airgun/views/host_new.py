@@ -776,7 +776,7 @@ class NewHostDetailsView(BaseLoggedInView):
         bulk_select = BulkSelectMenuToggle()
 
         recommendations_table = PF5ExpandableTable(
-            locator='.//table[contains(@aria-label, "report-table")]',
+            locator='.//table[contains(@data-ouia-component-id, "system-advisor-table")]',
             column_widgets={
                 0: PF5Button('.//button[@aria-label="Details"]'),
                 1: Checkbox(locator='.//input[@type="checkbox"]'),
