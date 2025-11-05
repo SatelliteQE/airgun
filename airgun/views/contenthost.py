@@ -28,7 +28,6 @@ from airgun.widgets import (
     ActionsDropdown,
     ConfirmationDialog,
     EditableEntry,
-    EditableEntryCheckbox,
     EditableEntrySelect,
     Pagination,
     ReadOnlyEntry,
