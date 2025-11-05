@@ -28,7 +28,6 @@ from airgun.widgets import (
     ActionsDropdown,
     ConfirmationDialog,
     EditableEntry,
-    EditableEntryCheckbox,
     EditableEntrySelect,
     Pagination,
     ReadOnlyEntry,
@@ -185,8 +184,6 @@ class ContentHostDetailsView(BaseLoggedInView):
         SUB_ITEM = 'Subscriptions'
 
         status = ReadOnlyEntry(name='Status')
-        auto_attach = EditableEntryCheckbox(name='Auto-Attach')
-        run_auto_attach = Text(".//a[@ng-click='autoAttachSubscriptions()']")
         service_level = EditableEntrySelect(name='Service Level')
 
         resources = View.nested(AddRemoveSubscriptionsView)
