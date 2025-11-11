@@ -392,6 +392,7 @@ view.element.click()
 - **Prioritize readability over complexity**
 - **Write flat code structures over nested code structures**
 - **Use Patternfly5 when generating views/entities**
+- **Add newly created entities to the import list in airgun/session.py and as a cached property in the Session class**
 
 ### DON'T ❌
 
