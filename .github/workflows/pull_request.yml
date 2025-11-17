@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.11', '3.12', '3.13']
+        python-version: ['3.12', '3.13', '3.14']
     steps:
       - name: Checkout Airgun
         uses: actions/checkout@v5
@@ -26,7 +26,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install the latest version of uv and set the Python version
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
@@ -53,7 +53,7 @@ jobs:
     needs: codechecks
     strategy:
       matrix:
-        python-version: ['3.13']
+        python-version: ['3.14']
     steps:
       - name: Checkout Airgun
         uses: actions/checkout@v5
@@ -64,7 +64,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install the latest version of uv and set the Python version
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
           enable-cache: true

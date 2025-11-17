@@ -6,11 +6,11 @@ from airgun.views.login import LoginView
 
 class LoginEntity(BaseEntity):
     def read_sat_version(self):
-        view = self.navigate_to(self, "NavigateToLogin")
+        view = self.navigate_to(self, 'NavigateToLogin')
         return view.read()
 
     def login(self, values):
-        view = self.navigate_to(self, "NavigateToLogin")
+        view = self.navigate_to(self, 'NavigateToLogin')
         view.fill(values)
         view.submit.click()
 

@@ -21,8 +21,9 @@ from airgun.entities.audit import AuditEntity
 from airgun.entities.bookmark import BookmarkEntity
 from airgun.entities.bootc import BootcEntity
 from airgun.entities.capsule import CapsuleEntity
-from airgun.entities.cloud_insights import CloudInsightsEntity
+from airgun.entities.cloud_insights import CloudInsightsEntity, RecommendationsTabEntity
 from airgun.entities.cloud_inventory import CloudInventoryEntity
+from airgun.entities.cloud_vulnerabilities import CloudVulnerabilityEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.computeresource import ComputeResourceEntity
 from airgun.entities.config_report import ConfigReportEntity
@@ -261,7 +262,7 @@ class Session:
                 endpoint = self._url
             else:
                 endpoint = getattr(entity, 'endpoint_path', '/')
-            full_url = f"https://{self._hostname}{endpoint}"
+            full_url = f'https://{self._hostname}{endpoint}'
             self._prepare_browser(full_url)
 
         return entity(self.browser)
@@ -395,9 +396,19 @@ class Session:
         return self._open(CloudInventoryEntity)
 
     @cached_property
+    def recommendationstab(self):
+        """Instance of Recommendations entity."""
+        return self._open(RecommendationsTabEntity)
+
+    @cached_property
     def cloudinsights(self):
         """Instance of Insights entity."""
         return self._open(CloudInsightsEntity)
+
+    @cached_property
+    def cloudvulnerability(self):
+        """Instance of Insights entity."""
+        return self._open(CloudVulnerabilityEntity)
 
     @cached_property
     def computeprofile(self):

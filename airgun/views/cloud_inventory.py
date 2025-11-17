@@ -17,7 +17,7 @@ class DataCollectionMenu(Menu):
 
     IS_ALWAYS_OPEN = False
     BUTTON_LOCATOR = ".//button[contains(@class, '-c-menu-toggle')]"
-    ROOT = f"{BUTTON_LOCATOR}/.."
+    ROOT = f'{BUTTON_LOCATOR}/..'
 
 
 class InventoryTab(Tab):
@@ -97,7 +97,6 @@ class InventoryItemsView(Accordion):
             self.click()
 
     def read(self, widget_names=None):
-
         final_dict = {
             'generating': self.generating.read(),
             'status': self.status,

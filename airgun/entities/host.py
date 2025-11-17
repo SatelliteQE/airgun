@@ -3,11 +3,13 @@ from time import sleep
 from navmazing import NavigateToSibling
 from wait_for import wait_for
 
+from airgun.entities.all_hosts import AllHostsEntity
 from airgun.entities.base import BaseEntity
 from airgun.exceptions import DisabledWidgetError
 from airgun.helpers.host import HostHelper
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
+from airgun.views.all_hosts import AllHostsTableView
 from airgun.views.cloud_insights import CloudInsightsView
 from airgun.views.common import BaseLoggedInView
 from airgun.views.host import (
@@ -141,14 +143,16 @@ class HostEntity(BaseEntity):
         view.search(entity_name)
         view.table.row(name=entity_name)[6].widget.item_select('Delete')
         self.browser.handle_alert()
-        wait_for(
-            lambda: view.flash.assert_message(
-                [f'Success alert: Successfully deleted {entity_name}.']
-            ),
-            timeout=120,
-        )
-        view.flash.assert_no_error()
-        view.flash.dismiss()
+        self.browser.refresh()
+        # Workaround for SAT-38950: Flash message may not appear properly
+        # wait_for(
+        #     lambda: view.flash.assert_message(
+        #         [f'Success alert: Successfully deleted {entity_name}.']
+        #     ),
+        #     timeout=120,
+        # )
+        # view.flash.assert_no_error()
+        # view.flash.dismiss()
 
     def read_hosts_after_search(self, entity_name):
         """read_hosts_after_search"""
@@ -232,7 +236,12 @@ class HostEntity(BaseEntity):
             update_hosts_manually (bool): whether to update hosts manually in order to change the host's content source
         """
 
-        view = self._select_action('Change Content Source', entities_list)
+        AllHostsEntity.all_hosts_navigate_and_select_hosts_helper(self, host_names=entities_list)
+        view = AllHostsTableView(self.browser)
+        view.bulk_actions_kebab.click()
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
+        view.bulk_actions_manage_content_menu.item_select('Content source')
+        view = HostsChangeContentSourceView(self.browser)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         wait_for(lambda: view.content_source_select.is_displayed, timeout=10, delay=1)
@@ -402,7 +411,7 @@ class HostEntity(BaseEntity):
         self.browser.wait_for_element(
             locator=f'//{hostname_element}[@id="{hostname_id}"]', exception=True, visible=True
         )
-        hostname_button = self.browser.selenium.find_elements("id", hostname_id)
+        hostname_button = self.browser.selenium.find_elements('id', hostname_id)
         hostname = hostname_button[0].text
         self.browser.switch_to_main_frame()
         self.browser.switch_to_window(self.browser.window_handles[0])
@@ -561,7 +570,7 @@ class HostsSelectAction(NavigateStep):
                 f'Please provide a valid action name. action_name: "{action_name}" not found.'
             )
         entities_list = kwargs.get('entities_list')
-        if entities_list == "All":
+        if entities_list == 'All':
             self.parent.select_all.fill(True)
         else:
             for entity in entities_list:
@@ -602,12 +611,14 @@ class HostsManageColumns(NavigateStep):
 
     def step(self, *args, **kwargs):
         """Open the Manage columns dialog"""
+        self.parent.browser.plugin.ensure_page_safe()
+        self.parent.wait_displayed()
+        self.parent.manage_columns.wait_displayed()
         self.parent.manage_columns.click()
 
 
 @navigator.register(HostEntity, 'Host Statuses')
 class HostStatuses(NavigateStep):
-
     VIEW = HostStatusesView
 
     def step(self, *args, **kwargs):

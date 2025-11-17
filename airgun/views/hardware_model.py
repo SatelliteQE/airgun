@@ -1,12 +1,13 @@
 from widgetastic.widget import Text, TextInput
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Dropdown
+from widgetastic_patternfly5.ouia import PatternflyTable as PF5OUIATable
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
-from airgun.widgets import Pf4ConfirmationDialog, SatTable
+from airgun.views.host_new import MenuToggleButtonMenu
+from airgun.widgets import Pf5ConfirmationDialog
 
 
-class DeleteHardwareModelDialog(Pf4ConfirmationDialog):
+class DeleteHardwareModelDialog(Pf5ConfirmationDialog):
     confirm_dialog = Text(".//button[contains(normalize-space(.),'Delete')]")
     cancel_dialog = Text(".//button[normalize-space(.)='Cancel']")
 
@@ -15,11 +16,11 @@ class HardwareModelsView(BaseLoggedInView, SearchableViewMixinPF4):
     delete_dialog = DeleteHardwareModelDialog()
     title = Text("//h1[normalize-space(.)='Hardware models']")
     new = Text("//a[contains(@href, '/models/new')]")
-    table = SatTable(
-        './/table',
+    table = PF5OUIATable(
+        component_id='table',
         column_widgets={
             'Name': Text('.//a'),
-            4: Dropdown(),
+            4: MenuToggleButtonMenu(),
         },
     )
 

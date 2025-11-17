@@ -119,7 +119,7 @@ class RadioGroup(GenericLocatorWidget):
                 btn for btn in self.browser.elements(self.LABELS) if self.browser.text(btn) == name
             )
         except StopIteration as err:
-            raise NoSuchElementException(f"RadioButton {name} is absent on page") from err
+            raise NoSuchElementException(f'RadioButton {name} is absent on page') from err
 
     @property
     def selected(self):
@@ -129,8 +129,7 @@ class RadioGroup(GenericLocatorWidget):
             if btn.get_attribute('checked') is not None:
                 return name
         raise ValueError(
-            "Whether no radio button is selected or proper attribute "
-            "should be added to framework"
+            'Whether no radio button is selected or proper attribute should be added to framework'
         )
 
     def select(self, name):
@@ -180,8 +179,7 @@ class ToggleRadioGroup(RadioGroup):
             if 'active' in btn.get_attribute('class'):
                 return name
         raise ValueError(
-            "Whether no radio button is selected or proper attribute "
-            "should be added to framework"
+            'Whether no radio button is selected or proper attribute should be added to framework'
         )
 
     def select(self, name):
@@ -413,8 +411,7 @@ class ItemsListGroup(GenericLocatorWidget):
     """
 
     ITEM = (
-        "./div/ul/li/ul/li[not(contains(@style, 'display: none'))]"
-        "[normalize-space(.)='{}']/span/a"
+        "./div/ul/li/ul/li[not(contains(@style, 'display: none'))][normalize-space(.)='{}']/span/a"
     )
     ITEMS = "./div/ul/li/ul/li[not(contains(@style, 'display: none'))]"
     EXPAND = (
@@ -530,7 +527,7 @@ class MultiSelectNoFilter(MultiSelect):
         self.select_pages.click()
         available_list = self.browser.elements(self.available_role_template)
         for data in available_list[1:]:
-            if data.text.split(". ")[1] in values:
+            if data.text.split('. ')[1] in values:
                 data.click()
         return True
 
@@ -538,7 +535,7 @@ class MultiSelectNoFilter(MultiSelect):
         """This method facilitates the removal of items from the assigned list, effectively unassigned them."""
         assigned_list = self.browser.elements(self.assigned_role_template)
         for data in assigned_list:
-            if data.text.split(". ")[1] in values.values():
+            if data.text.split('. ')[1] in values.values():
                 data.click()
         return True
 
@@ -546,7 +543,7 @@ class MultiSelectNoFilter(MultiSelect):
         """Returns a list of assigned value(s)."""
         assigned_list = self.browser.elements(self.assigned_role_template)
         value = [
-            data.text.split(". ")[1] for data in assigned_list if data.text.split(". ")[1] in values
+            data.text.split('. ')[1] for data in assigned_list if data.text.split('. ')[1] in values
         ]
         return value
 
@@ -801,7 +798,7 @@ class Pf4ActionsDropdown(ActionsDropdown):
 class ActionDropdownWithCheckbox(ActionsDropdown):
     """Custom drop down which contains the checkbox inside in drop down."""
 
-    customize_check_box = Checkbox(id="customize")
+    customize_check_box = Checkbox(id='customize')
 
     def fill(self, item):
         """select action from drop down list, after checking customize checkbox
@@ -911,7 +908,7 @@ class PF5NavSearch(PF4Search):
     search_field = TextInput(locator=".//input[@aria-label='Search input']")
     search_button = PF5Button(locator=".//button[@aria-label='Search']")
     clear_button = PF5Button(locator=".//button[@aria-label='Reset']")
-    items = PF5NavSearchMenu(component_id="navigation-search-menu")
+    items = PF5NavSearchMenu(component_id='navigation-search-menu')
     results_timeout = search_clear_timeout = 2
 
     def _wait_for_results(self, results_widget):
@@ -985,10 +982,10 @@ class SatFlashMessage(FlashMessage):
     """
 
     TYPE_MAPPING = {
-        "pf-m-warning": "warning",
-        "pf-m-success": "success",
-        "pf-m-danger": "error",
-        "pf-m-info": "info",
+        'pf-m-warning': 'warning',
+        'pf-m-success': 'success',
+        'pf-m-danger': 'error',
+        'pf-m-info': 'info',
     }
 
     ROOT = ParametrizedLocator('.//div[contains(@class, "foreman-toast") and position()={index}]')
@@ -1095,7 +1092,7 @@ class ValidationErrors(Widget):
         """
         if self.has_errors:
             raise AssertionError(
-                f"Validation errors present on page, displayed messages: {self.messages}"
+                f'Validation errors present on page, displayed messages: {self.messages}'
             )
 
     def read(self, *args, **kwargs):
@@ -1172,7 +1169,7 @@ class FilteredDropdown(GenericLocatorWidget):
 
     selected_value = Text("./ancestor::div[1]//span/span[contains(@class, 'rendered')]")
     open_filter = Text("./ancestor::div[1]//span/span[contains(@class, 'arrow')]")
-    clear_filter = Text("./a/abbr")
+    clear_filter = Text('./a/abbr')
     filter_criteria = TextInput(
         locator="//span[@class='select2-search select2-search--dropdown']//input"
     )
@@ -1212,7 +1209,7 @@ class PF4FilteredDropdown(GenericLocatorWidget):
     """Drop-down element with filtering functionality - PatternFly 4 version"""
 
     filter_criteria = TextInput(locator=".//input[@aria-label='Select a resource type']")
-    filter_content = ItemsList(".//ul")
+    filter_content = ItemsList('.//ul')
 
     def clear(self):
         """Clear currently selected value for drop-down"""
@@ -1278,8 +1275,7 @@ class CustomParameter(Table):
             'Name': TextInput(locator=".//input[@placeholder='Name']"),
             'Value': TextInput(locator=".//textarea[@placeholder='Value']"),
             'Actions': Text(
-                locator=".//a[@data-original-title='Remove Parameter' "
-                "or @title='Remove Parameter']"
+                locator=".//a[@data-original-title='Remove Parameter' or @title='Remove Parameter']"
             ),
         }
         self.name = next(iter(self.column_widgets.keys()))
@@ -1344,9 +1340,9 @@ class CustomParameter(Table):
         if names_to_fill and not isinstance(names_to_fill[0], dict):
             if len(set(names_to_fill)) < len(names_to_fill):
                 raise ValueError(
-                    "Cannot use fill() with duplicate parameter names. "
-                    "If you wish to explicitly add a duplicate name, "
-                    "use CustomParameter.add()"
+                    'Cannot use fill() with duplicate parameter names. '
+                    'If you wish to explicitly add a duplicate name, '
+                    'use CustomParameter.add()'
                 )
 
         # Check if we need to update or remove any rows
@@ -1461,8 +1457,8 @@ class LCESelector(GenericLocatorWidget):
 
     """
 
-    ROOT = ParametrizedLocator("{@locator}")
-    LABELS = "./li/label[contains(@class, path-list-item-label)]"
+    ROOT = ParametrizedLocator('{@locator}')
+    LABELS = './li/label[contains(@class, path-list-item-label)]'
     CHECKBOX = './/input[@ng-model="item.selected"][parent::label[contains(., "{}")]]'
 
     def __init__(self, parent, locator=None, logger=None):
@@ -1631,7 +1627,7 @@ class EditableEntry(GenericLocatorWidget):
     """
 
     edit_button = Text(".//span[contains(@ng-hide, 'editMode')]")
-    edit_field = TextInput(locator=".//*[self::input or self::textarea]")
+    edit_field = TextInput(locator='.//*[self::input or self::textarea]')
     save_button = Text(".//button[normalize-space(.)='Save']")
     cancel_button = Text(".//button[span[normalize-space(.)='Cancel']]")
     entry_value = Text(".//span[contains(@class, 'editable-value')]")
@@ -1677,7 +1673,7 @@ class EditableEntrySelect(EditableEntry):
     a field, but by select list.
     """
 
-    edit_field = Select(locator=".//select")
+    edit_field = Select(locator='.//select')
 
 
 class EditableEntryCheckbox(EditableEntry):
@@ -1797,7 +1793,7 @@ class ReadOnlyEntry(GenericLocatorWidget):
 
     """
 
-    entry_value = Text(".")
+    entry_value = Text('.')
     BASE_LOCATOR = (
         ".//dt[contains(., '{}')]/following-sibling::dd[not(contains(@class, 'ng-hide'))][1]"
     )
@@ -1838,7 +1834,7 @@ class ACEEditor(Widget):
     def __init__(self, parent, logger=None):
         """Getting id for specific ace editor element"""
         Widget.__init__(self, parent, logger=logger)
-        self.ace_edit_id = self.browser.element(self.ROOT).get_attribute("id")
+        self.ace_edit_id = self.browser.element(self.ROOT).get_attribute('id')
 
     def fill(self, value):
         """Fill widget with necessary value
@@ -1894,7 +1890,7 @@ class Pagination(Widget):
 
     def _click_button(self, pager_button):
         """Click on the pager button if enabled."""
-        if "disabled" not in self.browser.classes(pager_button):
+        if 'disabled' not in self.browser.classes(pager_button):
             pager_button.click()
         else:
             raise DisabledWidgetError(f'Button {pager_button} is not enabled')
@@ -1979,13 +1975,13 @@ class SatTable(Table):
 
     """
 
-    HEADER_IN_ROWS = "./tbody/tr[1]/th[not(@hidden)]"
+    HEADER_IN_ROWS = './tbody/tr[1]/th[not(@hidden)]'
     HEADERS = (
-        "./thead/tr/th[not(@hidden)]|./tr/th[not(@hidden)]|./thead/tr/td[not(@hidden)]"
-        + "|"
+        './thead/tr/th[not(@hidden)]|./tr/th[not(@hidden)]|./thead/tr/td[not(@hidden)]'
+        + '|'
         + HEADER_IN_ROWS
     )
-    COLUMN_AT_POSITION = "./td[not(@hidden)][{0}]"
+    COLUMN_AT_POSITION = './td[not(@hidden)][{0}]'
 
     no_rows_message = (
         ".//td/span[contains(@data-block, 'no-rows-message') or "
@@ -2044,10 +2040,10 @@ class SatTable(Table):
                             key = row_read.pop(self.assoc_column)
                         except KeyError as e:
                             raise ValueError(
-                                f"The assoc_column={self.assoc_column!r} could not be retrieved"
+                                f'The assoc_column={self.assoc_column!r} could not be retrieved'
                             ) from e
                 if key in result:
-                    raise ValueError(f"Duplicate value for {key}={result[key]!r}")
+                    raise ValueError(f'Duplicate value for {key}={result[key]!r}')
                 result[key] = row_read
                 rows_read = rows_read + 1
             return result
@@ -2711,12 +2707,12 @@ class FieldWithEditButton(Widget):
 
     ROOT = '//td[2]'
     text_input = TextInput(locator=".//input[@data-ouia-component-type='PF5/TextInput']")
-    text_area = TextInput(locator=".//textarea")
+    text_area = TextInput(locator='.//textarea')
     drop_down = FormSelect(locator=".//select[@data-ouia-component-type='PF5/FormSelect']")
     edit_button = PF5Button(locator=".//button[contains(@data-ouia-component-id, 'edit-row')]")
     confirm_button = PF5OUIAButton('submit-edit-btn')
     cancel_button = PF5OUIAButton('cancel-edit-btn')
-    text = Text(locator=".//span")
+    text = Text(locator='.//span')
 
     def fill(self, item):
         self.edit_button.click()
@@ -2773,7 +2769,7 @@ class AuthSourceAggregateCard(AggregateStatusCard):
 class Accordion(View, ClickableMixin):
     """PF4 Accordion widget"""
 
-    ROOT = ParametrizedLocator("{@locator}")
+    ROOT = ParametrizedLocator('{@locator}')
     ITEMS = ".//button[contains(@class, 'pf-c-accordion__toggle')]"
     ITEM = ".//span[contains(normalize-space(.), '{}')]"
 
@@ -2795,7 +2791,7 @@ class BaseMultiSelect(PF5BaseSelect, PF5OUIADropdown):
     """
 
     BUTTON_LOCATOR = './/button[@aria-label="Options menu"]'
-    OUIA_COMPONENT_TYPE = "PF5/Select"
+    OUIA_COMPONENT_TYPE = 'PF5/Select'
     SELECTED_ITEMS_LIST = './/div[@class="pf-v5-c-chip-group"]'
 
     def item_select(self, items, close=True):
@@ -2812,7 +2808,7 @@ class BaseMultiSelect(PF5BaseSelect, PF5OUIADropdown):
         try:
             for item in items:
                 element = self.item_element(item, close=False)
-                if not element.find_element("xpath", "./..").get_attribute('aria-selected'):
+                if not element.find_element('xpath', './..').get_attribute('aria-selected'):
                     element.click()
         finally:
             self.browser.click(self.BUTTON_LOCATOR)
@@ -2845,7 +2841,7 @@ class InventoryBootstrapSwitch(Widget):
 
     ON_TOGGLE = ".//span[contains(@class, 'bootstrap-switch-handle-on')]"
     OFF_TOGGLE = ".//span[contains(@class, 'bootstrap-switch-handle-off')]"
-    ROOT = ParametrizedLocator("//div[@class={@class_name|quote}]/div")
+    ROOT = ParametrizedLocator('//div[@class={@class_name|quote}]/div')
 
     def __init__(self, parent, class_name, **kwargs):
         Widget.__init__(self, parent, logger=kwargs.pop('logger', None))
@@ -2948,10 +2944,10 @@ class SatPatternflyTable(BasePatternflyTable, Table):
         bottom_ignore_fill=False,
         logger=None,
     ):
-        self.component_type = "PF4/Table"
+        self.component_type = 'PF4/Table'
         super().__init__(
             parent,
-            locator=(f".//*[@data-ouia-component-type={quote(self.component_type)}]"),
+            locator=(f'.//*[@data-ouia-component-type={quote(self.component_type)}]'),
             column_widgets=column_widgets,
             assoc_column=assoc_column,
             rows_ignore_top=rows_ignore_top,

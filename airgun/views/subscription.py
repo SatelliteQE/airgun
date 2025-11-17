@@ -34,7 +34,7 @@ class SatSubscriptionsViewTable(SatTable):
 
     @property
     def has_rows(self):
-        return self.tbody_row.read() != "No subscriptions match your search criteria."
+        return self.tbody_row.read() != 'No subscriptions match your search criteria.'
 
 
 class ProductContentItemsList(GenericLocatorWidget):
@@ -110,7 +110,7 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
         locator='//div[@id="subscriptions-table"]//table',
         column_widgets={
             'Select all rows': Checkbox(locator=".//input[@type='checkbox']"),
-            'Name': Text("./a"),
+            'Name': Text('./a'),
         },
     )
 
@@ -161,7 +161,7 @@ class ManageManifestView(BaseLoggedInView):
 
     @View.nested
     class manifest_history(SatTab):
-        TAB_NAME = "Manifest History"
+        TAB_NAME = 'Manifest History'
         table = SatTable(
             locator='//div[@id="manifest-history-tabs"]//table',
             column_widgets={'Status': Text(), 'Message': Text(), 'Timestamp': Text()},
@@ -184,8 +184,7 @@ class ManageManifestView(BaseLoggedInView):
 
 class DeleteManifestConfirmationView(BaseLoggedInView):
     ROOT = (
-        '//div[@role="dialog" and @tabindex]'
-        '[div//h4[normalize-space(.)="Confirm delete manifest"]]'
+        '//div[@role="dialog" and @tabindex][div//h4[normalize-space(.)="Confirm delete manifest"]]'
     )
     message = Text('.//div[@class="modal-body"]')
     delete_button = Button('Delete')
@@ -241,9 +240,9 @@ class SubscriptionDetailsView(BaseLoggedInView):
 
     @View.nested
     class product_content(SatTab):
-        TAB_NAME = "Product Content"
+        TAB_NAME = 'Product Content'
 
-        product_content_list = ProductContentItemsList(".")
+        product_content_list = ProductContentItemsList('.')
 
     @property
     def is_displayed(self):

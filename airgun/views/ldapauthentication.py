@@ -15,9 +15,9 @@ class LDAPAuthenticationsView(BaseLoggedInView):
         "//h1[normalize-space(.)='Authentication Sources' or "
         "normalize-space(.)='LDAP authentication sources']"
     )
-    internal = AuthSourceAggregateCard(name="Internal")
-    external = AuthSourceAggregateCard(name="External")
-    ldap = AuthSourceAggregateCard(name="LDAP")
+    internal = AuthSourceAggregateCard(name='Internal')
+    external = AuthSourceAggregateCard(name='External')
+    ldap = AuthSourceAggregateCard(name='LDAP')
     new = Text("//a[contains(@href, '/auth_source_ldaps/new')]")
     table = SatTable(
         './/table',
