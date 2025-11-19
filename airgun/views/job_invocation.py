@@ -31,14 +31,29 @@ class HostsExpandableTable(PF5OUIAExpandableTable):
         For some reason, the hosts expandable table has always an extra empty <tbody/> tag at the end.
         This causes problems for the table parser to process it properly.
         So far, the only way to fix it seems to be manually removing the extra tag from the page.
+
+        Note: `silent_failure=True` in the second `wait_for` function ensures the JavaScript
+        execution does not time out in case the hosts table is empty.
+        Then `super().read()` should return empty list.
         """
         wait_for(func=lambda: self.is_displayed, timeout=15, delay=1)
+        self.browser.plugin.ensure_page_safe(timeout='15s')
         script = f"""
         rows = document.getElementsByTagName('{self.ROW_TAG}');
         last_row = rows[rows.length-1];
-        last_row.remove();
+        if (last_row.innerText.trim() === '') {{
+            last_row.remove();
+            return true;
+        }} else {{
+            return false;
+        }}
         """
-        self.browser.execute_script(script)
+        wait_for(
+            func=lambda: self.browser.execute_script(script),
+            timeout=15,
+            delay=1,
+            silent_failure=True,
+        )
         return super().read()
 
 
@@ -178,7 +193,7 @@ class JobInvocationStatusView(BaseLoggedInView):
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.breadcrumb.wait_displayed()
-        title_loaded = self.title.wait_displayed()
+        title_loaded = self.title.wait_displayed() and self.title.read() != ''
         data_loaded, _ = wait_for(
             func=lambda: self.status.is_displayed,
             timeout=60,
