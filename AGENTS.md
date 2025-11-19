@@ -11,7 +11,7 @@
 - **Follow conventional commit format when naming commits**
 
 - **For local testing, run a local install within your robottelo folder**
-    - Within the robottelo directory: `pip install <path to airgun directory` 
+    - Within the robottelo directory: `pip install <path to airgun directory>` 
 
 ---
 ### Purpose
