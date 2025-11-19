@@ -7,6 +7,7 @@ from airgun.views.contenthost import (
     ErrataDetailsView,
     SyspurposeBulkActionView,
 )
+from airgun.views.host import HostDetailsView
 from airgun.views.host_new import NewHostDetailsView
 from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 
@@ -295,3 +296,5 @@ class ShowContentHostDetails(NavigateStep):
         host_view.wait_displayed()
         host_view.dropdown.wait_displayed()
         host_view.dropdown.item_select('Legacy UI')
+        host_view = HostDetailsView(self.parent.browser)
+        host_view.content_details.click()
