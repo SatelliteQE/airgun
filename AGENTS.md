@@ -3,13 +3,17 @@
 **Project**: SatelliteQE Airgun  
 **Repository**: https://github.com/SatelliteQE/airgun
 
+---
+### Quick Developer Reference
+- **Before committing, run the Pre-commit Hooks**
+    - Run manually: `pre-commit run --all-files`
+
+- **Follow conventional commit format when naming commits**
+
+- **For local testing, run a local install within your robottelo folder**
+    - Within the robottelo directory: `pip install <path to airgun directory` 
 
 ---
-
-## Project Overview
-
-**Airgun** is a Python library built on top of [Widgetastic](https://github.com/RedHatQE/widgetastic.core) and [navmazing](https://github.com/RedhatQE/navmazing/) to simplify UI testing for **Red Hat Satellite**.
-
 ### Purpose
 - Separates UI element definitions (**Views**) from webpage interactions (**Entities**)
 - Uses Selenium for navigation
@@ -65,7 +69,7 @@ The bottom layer defining UI element structures using Widgetastic widgets. Views
 
 ### 1. **Entities**
 
-Entities provide **business logic** methods (CRUD operations):
+Entities provide **business logic** methods (Sometimes CRUD operations, sometimes entity specific operations, usually both):
 
 ```python
 class ActivationKeyEntity(BaseEntity):
@@ -186,18 +190,6 @@ from airgun.widgets import Search, SatTable
 | **View Classes** | End with "View" | `ActivationKeyCreateView` |
 | **Entity Classes** | End with "Entity" | `ActivationKeyEntity` |
 
-### Docstring Style
-
-Use **reStructuredText** format:
-
-```python
-def create(self, values):
-    """Create a new activation key."""
-    pass
-```
-
----
-
 ## Common Patterns
 
 ### Pattern 1: Basic Entity Actions
@@ -237,12 +229,12 @@ class MyListView(BaseLoggedInView):
 class MyTabsListView(View):
 
     @View.nested
-    class DetailsTab(PF5Tab):
+    class details_tab(PF5Tab):
         TAB_NAME = 'details'
         name = TextInput(id='name')
 
     @View.nested
-    class ContentTab(PF5Tab):
+    class content_tab(PF5Tab):
         TAB_NAME = 'content'
         table = SatTable(locator='//table')
 ```
@@ -330,56 +322,6 @@ if self.navigate_to(self, 'All', _is_displayed_check=True):
 
 ---
 
-## Troubleshooting
-
-### Common Issues
-
-#### 1. **Circular Import Errors**
-
-**Problem**: `ImportError: cannot import name 'X' from partially initialized module`
-
-**Solution**: Move shared widgets/classes to `widgets.py` or create a separate common module.
-
-```python
-# ❌ BAD: view_a.py imports from view_b.py, view_b.py imports from view_a.py
-
-# ✅ GOOD: Both import from widgets.py
-# widgets.py
-class SharedWidget(Widget):
-    pass
-
-# view_a.py
-from airgun.widgets import SharedWidget
-
-# view_b.py
-from airgun.widgets import SharedWidget
-```
-
-#### 2. **No Such Element Found**
-
-**Problem**: `NoSuchElementException` when clicking elements
-
-**Solution**: Use `wait_for` and `ensure_page_safe`:
-
-```python
-from wait_for import wait_for
-
-wait_for(lambda: view.element.is_displayed, timeout=30)
-self.browser.plugin.ensure_page_safe(timeout='10s')
-view.element.click()
-```
-
-#### 3. **Navigation Failures**
-
-**Problem**: `NavigationDestinationNotFound`
-
-**Solution**:
-- Verify navigator is registered correctly
-- Check `prerequisite` chain
-- Ensure `VIEW.is_displayed` works properly
-
----
-
 ## Best Practices
 
 ### DO ✅
@@ -393,6 +335,14 @@ view.element.click()
 - **Write flat code structures over nested code structures**
 - **Use Patternfly5 when generating views/entities**
 - **Add newly created entities to the import list in airgun/session.py and as a cached property in the Session class**
+- **When importing from OUIA, follow this pattern**:
+    widgetastic.patternfly5.ouia import (
+        Button as PF5OUIAButton
+    )
+- **When importing from the PF5 library, follow this pattern**:
+    widgetastic.patternfly5 import (
+        Button as PF5Button
+    )
 
 ### DON'T ❌
 
@@ -406,29 +356,6 @@ view.element.click()
 
 ---
 
-## Development Conventions
-
-### Linting and Code Quality
-
-*   **Linting:** The project uses `ruff` for linting and formatting. The configuration is in `pyproject.toml`.
-    - Target Python version: 3.12
-    - Line length: 100 characters
-    - Quote style: Single quotes (`'`)
-    - Run manually: `ruff check .` or `ruff format .`
-
-*   **Pre-commit Hooks:** The project uses `pre-commit` to run checks before committing. The configuration is in `.pre-commit-config.yaml`.
-    - Hooks include: `ruff-check`, `ruff-format`, `check-yaml`, and `debug-statements`
-    - Install hooks: `pre-commit install`
-    - Run manually: `pre-commit run --all-files`
-
-### Version Control
-
-*   **Branch Protection:** The project uses CI checks via `pre-commit.ci` with autofix disabled on PRs.
-
-*   **Commit Messages:** Follow conventional commit format when possible.
-
----
-
 ## Additional Resources
 
 - **Documentation**: https://airgun.readthedocs.io/
@@ -436,7 +363,9 @@ view.element.click()
 - **navmazing Docs**: https://navmazing.readthedocs.io/
 - **Repository**: https://github.com/SatelliteQE/airgun
 - **Issues**: https://github.com/SatelliteQE/airgun/issues
-
+- **Selenium Docs**: https://www.selenium.dev/documentation/
+- **Widgetastic Docs**: https://widgetastic.readthedocs.io/en/latest/
+- 
 ---
 
 **Last Updated**: 2025-11-11  
