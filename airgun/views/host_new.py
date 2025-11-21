@@ -367,6 +367,12 @@ class NewHostDetailsView(BaseLoggedInView):
             remote_execution_link = Text(".//a[normalize-space(.)='Modify via remote execution']")
             details = HostDetailsCard()
 
+        @View.nested
+        class cloud_billing_details(Card):
+            ROOT = './/div[contains(@data-ouia-component-id, "card-template-Cloud billing details")]'
+
+            details = HostDetailsCard()
+
     @View.nested
     class content(PF5Tab):
         # TODO Setting ROOT is just a workaround because of BZ 2119076,
