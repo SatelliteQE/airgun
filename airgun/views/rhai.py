@@ -61,7 +61,9 @@ class InventoryHostRule(GenericRemovableWidgetItem):
 
 class InventoryHostDetails(BaseLoggedInView):
     hostname = Text(".//div[@class='modal-title']/h2/div/span")
-    close = Text(".//div[contains(@class, 'fa-close')]")
+    close = Text(
+        ".//div[contains(@class, 'pf-v5-c-button__icon') or contains(@class, 'pf-v5-c-icon')]"
+    )
 
     @View.nested
     class rules(RemovableWidgetsItemsListView):
