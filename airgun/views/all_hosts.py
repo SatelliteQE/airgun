@@ -23,7 +23,9 @@ from widgetastic_patternfly5 import (
 from widgetastic_patternfly5.ouia import (
     Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
+    FormSelect as PF5OUIAFormSelect,
     PatternflyTable as PF5OUIATable,
+    Text as PF5OUIAText,
 )
 
 from airgun.views.common import (
@@ -43,7 +45,7 @@ class MenuToggleDropdownInTable(PF5Dropdown):
     """
 
     IS_ALWAYS_OPEN = False
-    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-v5-c-menu-toggle')]"
+    BUTTON_LOCATOR = './/button[contains(@class, "pf-v5-c-menu-toggle")]'
     DEFAULT_LOCATOR = (
         './/div[contains(@class, "pf-v5-c-menu") and @data-ouia-component-id="PF5/Dropdown"]'
     )
@@ -66,7 +68,7 @@ class AllHostsSelect(Select):
 
 class AllHostsMenu(PF5Menu):
     IS_ALWAYS_OPEN = False
-    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-v5-c-menu-toggle')]"
+    BUTTON_LOCATOR = './/button[contains(@class, "pf-v5-c-menu-toggle")]'
     ROOT = f'{BUTTON_LOCATOR}/..'
 
 
@@ -80,7 +82,7 @@ class CVESelect(Select):
 
 
 class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
-    title = Text("//h1[normalize-space(.)='Hosts']")
+    title = Text('//h1[normalize-space(.)="Hosts"]')
 
     legacy_kebab = PF5Dropdown(locator='.//div[@id="legacy-ui-kebab"]')
     select_all = Checkbox(
@@ -100,8 +102,8 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
         locator='//li[contains(@class, "pf-v5-c-menu__list-item")]//button[span/span[text()="Change associations"]]/following-sibling::div[contains(@class, "pf-v5-c-menu")]'
     )
 
-    table_loading = Text("//h5[normalize-space(.)='Loading']")
-    no_results = Text("//h5[normalize-space(.)='No Results']")
+    table_loading = Text('//h5[normalize-space(.)="Loading"]')
+    no_results = Text('//h5[normalize-space(.)="No Results"]')
     manage_columns = PF5Button('Manage columns')
     table = PF5OUIATable(
         component_id='hosts-index-table',
@@ -744,6 +746,73 @@ class ChangeHostCollectionsModal(PF5Modal):
     pagination = PF5Pagination()
 
     alert_message = PF5Alert(locator='.//div[@data-ouia-component-type="PF5/Alert"][1]')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+class ManageTracesModal(PF5Modal):
+    """
+    This class represents the Manage Traces modal
+    """
+
+    OUIA_ID = 'bulk-manage-traces-modal'
+
+    title = './/h1[@class="pf-v5-c-modal-box__title"]'
+    modal_header_text = PF5OUIAText('bulk-manage-traces-description')
+
+    searchbar_dropdown = PF5OUIADropdown('selection-checkbox')
+    search_input = SearchInput(
+        locator='//div[@id="bulk-manage-traces-modal"]//input[@aria-label="Search input"]'
+    )
+    no_results = Text('//h5[normalize-space(.)="No Results"]')
+
+    modal_alert = PF5Alert(locator='//div[contains(@class, "pf-v5-c-alert pf-m-inline")]')
+
+    table = PF5OUIATable(
+        component_id='table',
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Type': Text('.//td[2]'),
+            'Application': Text('.//td[3]'),
+            'Helper': Text('.//td[4]'),
+        },
+    )
+
+    items_per_page = Select(locator=".//select[@ng-model='table.params.per_page']")
+    pagination = PF5Pagination()
+
+    close_btn = PF5OUIAButton('bulk-manage-traces-modal-ModalBoxCloseButton')
+    restart_btn = PF5Button(
+        locator='//button[normalize-space(.)="Restart" or normalize-space(.)="Reboot hosts"]'
+    )
+    cancel_btn = PF5OUIAButton('bulk-manage-traces-modal-cancel-button')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+class ManageSystemPurposeModal(PF5Modal):
+    """
+    This class represents the Manage System Purpose modal that is used to change
+    system purpose attributes (role, usage, SLA, release version) for multiple hosts.
+    """
+
+    OUIA_ID = 'bulk-system-purpose-modal'
+
+    title = Text('.//h1[@class="pf-v5-c-modal-box__title"]')
+    description = PF5OUIAText('bulk-system-purpose-description')
+
+    role_select = PF5OUIAFormSelect('bulk-system-purpose-role-select')
+    usage_select = PF5OUIAFormSelect('bulk-system-purpose-usage-select')
+    sla_select = PF5OUIAFormSelect('bulk-system-purpose-sla-select')
+    release_select = PF5OUIAFormSelect('bulk-system-purpose-release-select')
+
+    save_btn = PF5OUIAButton('bulk-system-purpose-modal-save-button')
+    cancel_btn = PF5OUIAButton('bulk-system-purpose-modal-cancel-button')
+    close_btn = PF5OUIAButton('bulk-system-purpose-modal-ModalBoxCloseButton')
 
     @property
     def is_displayed(self):

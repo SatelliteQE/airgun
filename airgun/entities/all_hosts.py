@@ -24,6 +24,8 @@ from airgun.views.all_hosts import (
     ManageErrataModal,
     ManagePackagesModal,
     ManageRepositorySetsModal,
+    ManageSystemPurposeModal,
+    ManageTracesModal,
 )
 from airgun.views.job_invocation import JobInvocationCreateView
 
@@ -358,7 +360,7 @@ class AllHostsEntity(BaseEntity):
             view.review.finish_errata_management_btn.click()
         else:
             # In this case "Run job" page is opened on which user can specify job details
-            # Here we just select tu run with prefilled values
+            # Here we just select to run with prefilled values
             view.review.expander.click()
             view.review.manage_via_dropdown.item_select('via customized remote execution')
             view.review.finish_errata_management_btn.click()
@@ -749,6 +751,118 @@ class AllHostsEntity(BaseEntity):
         view.popover_close_button.click()
 
         return {'status': icon_status, 'status_details': status_details}
+
+    def manage_traces(
+        self,
+        host_names=None,
+        select_all_hosts=False,
+        traces_to_select=None,
+    ):
+        """
+        This function allows to manage traces for selected hosts through the All Hosts page.
+
+        :param host_names: str with one host or list of hosts to select
+        :param select_all_hosts: bool, if True, all hosts will be selected
+        :param traces_to_select: str with one trace or list of traces to select
+        """
+        if traces_to_select is None:
+            raise ValueError('traces_to_select argument is None! Please provide traces to select!')
+
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+
+        view.bulk_actions_kebab.click()
+        view.bulk_actions_menu.item_select('Manage traces')
+
+        view = ManageTracesModal(self.browser)
+
+        if not isinstance(traces_to_select, list):
+            traces_to_select = [traces_to_select]
+        for trace in traces_to_select:
+            view.search_input.fill(f'application="{trace}"')
+            wait_for(lambda: view.table.is_displayed, timeout=10)
+            row_count = view.table.row_count
+            if row_count == 1:
+                view.table[0][0].widget.fill(True)
+            else:
+                # Select page
+                view.searchbar_dropdown.item_select(view.searchbar_dropdown.items[-2])
+
+        view.restart_btn.click()
+
+        # Instantiate All Hosts view to access the toast alert (without navigation)
+        all_hosts_view = AllHostsTableView(self.browser)
+
+        # Wait for and read the toast alert message
+        self.browser.wait_for_element(all_hosts_view.alert_message, exception=False, timeout=5)
+        if all_hosts_view.alert_message.is_displayed:
+            alert_message_content = all_hosts_view.alert_message.read()
+            all_hosts_view.flash.dismiss()
+            return alert_message_content
+        return None
+
+    def manage_system_purpose(
+        self,
+        host_names=None,
+        select_all_hosts=False,
+        role=None,
+        usage=None,
+        service_level=None,
+        release_version=None,
+    ):
+        """
+        This function allows changing system purpose attributes for selected hosts
+        through the All Hosts page.
+
+        :param host_names: str with one host or list of hosts to select
+        :param select_all_hosts: bool, if True, all hosts will be selected
+        :param role: str, system purpose role (e.g., 'Red Hat Enterprise Linux Server')
+                     Use 'No change' to keep current values (this is the default in the UI)
+                     Use '(unset)' to explicitly unset the value
+        :param usage: str, system purpose usage (e.g., 'Production', 'Development/Test')
+                      Use 'No change' to keep current values (this is the default in the UI)
+                      Use '(unset)' to explicitly unset the value
+        :param service_level: str, service level agreement (e.g., 'Premium', 'Standard')
+                             Use 'No change' to keep current values (this is the default in the UI)
+                             Use '(unset)' to explicitly unset the value
+        :param release_version: str, release version
+                               Use 'No change' to keep current values (this is the default in the UI)
+                               Use '(unset)' to explicitly unset the value
+        :return: str, alert message content or None
+        """
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+
+        view.bulk_actions_kebab.click()
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
+        view.bulk_actions_manage_content_menu.item_select('System purpose')
+
+        view = ManageSystemPurposeModal(self.browser)
+
+        # Fill system purpose fields
+        fields_to_fill = {}
+        if role is not None:
+            fields_to_fill['role_select'] = role
+        if usage is not None:
+            fields_to_fill['usage_select'] = usage
+        if service_level is not None:
+            fields_to_fill['sla_select'] = service_level
+        if release_version is not None:
+            fields_to_fill['release_select'] = release_version
+
+        if fields_to_fill:
+            view.fill(fields_to_fill)
+
+        view.save_btn.click()
+
+        # Instantiate All Hosts view to access the toast alert (without navigation)
+        all_hosts_view = AllHostsTableView(self.browser)
+
+        # Wait for and read the toast alert message
+        self.browser.wait_for_element(all_hosts_view.alert_message, exception=False, timeout=5)
+        if all_hosts_view.alert_message.is_displayed:
+            alert_message_content = all_hosts_view.alert_message.read()
+            all_hosts_view.flash.dismiss()
+            return alert_message_content
+        return None
 
 
 @navigator.register(AllHostsEntity, 'All')
