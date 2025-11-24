@@ -893,6 +893,32 @@ class PF4Search(Search):
             self.search_button.click()
 
 
+class PF5Search(Search):
+    """PF5 Searchbar for table filtering"""
+
+    ROOT = '//div[@class="foreman-search-bar"]'
+    search_field = TextInput(locator=(".//input[@aria-label='Search input']"))
+    search_button = PF5Button(locator=(".//button[@aria-label='Search']"))
+    clear_button = PF5Button(locator=(".//button[@aria-label='Reset search']"))
+
+    actions = ActionsDropdown("//div[contains(@data-ouia-component-id, 'bookmarks-dropdown')]")
+
+    def clear(self):
+        """Clears search field value and re-trigger search to remove all
+        filters.
+        """
+        if self.clear_button.is_displayed:
+            self.clear_button.click()
+        else:
+            self.browser.clear(self.search_field)
+
+    def search(self, value):
+        self.clear()
+        self.fill(value)
+        if self.search_button.is_displayed:
+            self.search_button.click()
+
+
 class PF5NavSearchMenu(PF5Menu, OUIAGenericWidget):
     """PF5 vertical navigation dropdown menu with search results."""
 
