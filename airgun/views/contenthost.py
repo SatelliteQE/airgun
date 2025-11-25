@@ -38,23 +38,23 @@ from airgun.widgets import (
 class StatusIcon(GenericLocatorWidget):
     """Small icon indicating subscription status. Can be colored in either green, yellow or red.
 
-    Example html representation::
+    Example html representation (PF5)::
 
         <span
          ng-class="table.getHostStatusIcon(host.subscription_global_status)"
-         class="red host-status pficon pficon-error-circle-o status-error">
+         class="red host-status pf-v5-c-icon status-error">
         </span>
 
     Locator example::
 
-        //span[contains(@ng-class, 'host.subscription_global_status')]
-        //i[contains(@ng-class, 'host.subscription_global_status')]
+        //span[contains(@class, 'pf-v5-c-icon')]
+        //span[contains(@class, 'host-status')]
     """
 
     def __init__(self, parent, locator=None, logger=None):
         """Provide default locator value if it wasn't passed"""
         if not locator:
-            locator = ".//span[contains(@ng-class, 'host.subscription_global_status')]"
+            locator = ".//span[contains(@class, 'host-status') or contains(@class, 'pf-v5-c-icon')]"
         Widget.__init__(self, parent, logger=logger)
         self.locator = locator
 
@@ -63,15 +63,25 @@ class StatusIcon(GenericLocatorWidget):
         """Returns string representing icon color: 'red', 'yellow', 'green' or
         'unknown'.
         """
+        element = self.browser.element(self, parent=self.parent)
+        class_attr = self.browser.get_attribute('class', element)
+
+        # Check PF5 status modifier classes
+        if 'pf-m-danger' in class_attr or 'status-error' in class_attr:
+            return 'red'
+        elif 'pf-m-warning' in class_attr or 'status-warning' in class_attr:
+            return 'yellow'
+        elif 'pf-m-success' in class_attr or 'status-ok' in class_attr:
+            return 'green'
+
+        # Fallback to color detection
         colors = {
             'rgba(204, 0, 0, 1)': 'red',
             'rgba(236, 122, 8, 1)': 'yellow',
             'rgba(63, 156, 53, 1)': 'green',
         }
-        return colors.get(
-            self.browser.element(self, parent=self.parent).value_of_css_property('color'),
-            'unknown',
-        )
+        color_value = element.value_of_css_property('color')
+        return colors.get(color_value, 'unknown')
 
     def read(self):
         """Returns current icon color"""
