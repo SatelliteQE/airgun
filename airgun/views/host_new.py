@@ -369,7 +369,9 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @View.nested
         class cloud_billing_details(Card):
-            ROOT = './/div[contains(@data-ouia-component-id, "card-template-Cloud billing details")]'
+            ROOT = ('//div[contains(@data-ouia-component-id, "card-template-GCP") '
+                    'or contains(@data-ouia-component-id, "card-template-AWS") '
+                    'or contains(@data-ouia-component-id, "card-template-Azure")]')
 
             details = HostDetailsCard()
 
