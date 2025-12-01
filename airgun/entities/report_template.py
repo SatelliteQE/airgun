@@ -7,9 +7,9 @@ from airgun.utils import retry_navigation
 from airgun.views.report_template import (
     ReportTemplateCreateView,
     ReportTemplateDetailsView,
+    ReportTemplateGeneratedView,
     ReportTemplateGenerateView,
     ReportTemplatesView,
-    ReportTemplateGeneratedView,
 )
 
 

@@ -107,6 +107,8 @@ class ReportTemplateGenerateView(BaseLoggedInView):
             and self.breadcrumb.locations[0] == 'Report Templates'
             and self.breadcrumb.read() == 'Generate a Report'
         )
+
+
 class ReportTemplateGeneratedView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     download_button = Text(".//a[contains(@data-ouia-component-id, 'download-btn')]")
