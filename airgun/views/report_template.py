@@ -95,6 +95,9 @@ class ReportTemplateGenerateView(BaseLoggedInView):
     submit = Text('//input[@name="commit"]')
     generated = Text('//div[contains(@class, "alert-success")]')
     installability = FilteredDropdown(id='Installability')
+    include_aws = FilteredDropdown(id='Include AWS')
+    include_gcp = FilteredDropdown(id='Include GCP')
+    include_azure = FilteredDropdown(id='Include Azure')
 
     @property
     def is_displayed(self):
@@ -103,4 +106,16 @@ class ReportTemplateGenerateView(BaseLoggedInView):
             breadcrumb_loaded
             and self.breadcrumb.locations[0] == 'Report Templates'
             and self.breadcrumb.read() == 'Generate a Report'
+        )
+class ReportTemplateGeneratedView(BaseLoggedInView):
+    breadcrumb = BreadCrumb()
+    download_button = Text(".//a[contains(@data-ouia-component-id, 'download-btn')]")
+
+    @property
+    def is_displayed(self):
+        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        return (
+            breadcrumb_loaded
+            and self.breadcrumb.locations[0] == 'Report Templates'
+            and self.breadcrumb.read() == 'Download generated report'
         )
