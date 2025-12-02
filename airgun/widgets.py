@@ -36,6 +36,11 @@ from widgetastic_patternfly5 import (
     ExpandableSection as PF5ExpandableSection,
     FormSelect,
     Progress as PF5Progress,
+    RowNotExpandable,
+)
+from widgetastic_patternfly5.components.table import (
+    PatternflyTable,
+    PatternflyTableRow,
 )
 from widgetastic_patternfly5.ouia import (
     BaseSelect as PF5BaseSelect,
@@ -2994,3 +2999,137 @@ class PF5DataList(Widget):
                 f'The count of data list labels and values does not match. Labels: {items}. Values: {values}'
             )
         return dict(zip(items, values))
+
+
+class CompoundExpandableTableRow(PatternflyTableRow):
+    """Extends PatternflyTableRow with some functionality from ExpandableTableRow,
+    customized for CompoundExpandableTable
+    """
+
+    EXPANDABLE_CONTENT = './tr[contains(@class, "child-manifest-row")'
+
+    @property
+    def is_expandable(self):
+        """Returns a boolean detailing if the table row is expandable."""
+        return self[0].widget.is_displayed
+
+    def _check_expandable(self):
+        if not self.is_expandable:
+            raise RowNotExpandable(self)
+
+    @property
+    def is_expanded(self):
+        """Returns a boolean detailing if the table row has been expanded."""
+        self._check_expandable()
+        return self.browser.element(self[0]).get_attribute('aria-expanded')
+
+    def expand(self):
+        """Expands the table row."""
+        self._check_expandable()
+        if not self.is_expanded:
+            self[0].widget.click()
+
+    def collapse(self):
+        """Collapses the table row."""
+        self._check_expandable()
+        if self.is_expanded:
+            self[0].widget.click()
+
+    def read(self):
+        """Returns a text representation of the table row."""
+        result = super().read()
+        # Remove the column with the "expand" button in it
+        for expand_col in [0, 'Row expansion']:
+            if expand_col in result and not result[expand_col]:
+                del result[expand_col]
+        return result
+
+
+class CompoundExpandableTable(PatternflyTable):
+    """PatternFly table with inline expandable child rows.
+
+    This handles tables where each row group is in its own <tbody>,
+    and child rows are <tr> siblings with class 'child-manifest-row'
+    instead of being wrapped in a separate expandable content div.
+
+    Structure expected:
+    <tbody>
+      <tr data-ouia-component-id="table-row-0"><!-- Parent row --></tr>
+      <tr class="child-manifest-row"><!-- Child 1 --></tr>
+      <tr class="child-manifest-row"><!-- Child 2 --></tr>
+    </tbody>
+    <tbody>
+      <tr data-ouia-component-id="table-row-1"><!-- Parent row --></tr>
+      ...
+    </tbody>
+    """
+
+    # Override to only select parent rows (first tr in each tbody)
+    ROWS = './tbody/tr[1]'
+    ROW_AT_INDEX = './tbody[{0}]/tr[1]'
+
+    Row = CompoundExpandableTableRow
+    # Locator for child rows within a specific tbody
+    CHILD_ROWS = './tbody[{0}]/tr[contains(@class, "child-manifest-row")]'
+
+    def __init__(self, *args, **kwargs):
+        """Automatically add the 'expand' button widget as column 0."""
+
+        column_widgets = kwargs.get('column_widgets')
+
+        col_widget = Text('./button[contains(@class, "-c-button")]')
+        if column_widgets and 0 not in column_widgets:
+            # Do not override column 0 if the user defined it during init
+            kwargs['column_widgets'][0] = col_widget
+        elif not column_widgets:
+            kwargs['column_widgets'] = {0: col_widget}
+
+        super().__init__(*args, **kwargs)
+
+    def get_children(self, row_index):
+        """Get child rows for a specific parent row.
+
+        Args:
+            row_index: 1-based index of the parent row (tbody index)
+
+        Returns:
+            List of dicts containing child row data
+        """
+        children = []
+        child_locator = self.CHILD_ROWS.format(row_index)
+        child_elements = self.browser.elements(child_locator, parent=self)
+
+        for child_el in child_elements:
+            child_data = {}
+            for col_name in self.headers:
+                if isinstance(col_name, int):
+                    cell = self.browser.element(f'./td[{col_name + 1}]', parent=child_el)
+                else:
+                    cell = self.browser.element(f'./td[@data-label="{col_name}"]', parent=child_el)
+                child_data[col_name] = cell.text.strip()
+            children.append(child_data)
+        return children
+
+    def read(self, expand=True):
+        """Read the table including children for each parent row.
+
+        Args:
+            expand: Whether to expand the rows or not
+
+        Returns:
+            List of dicts where each parent row has a 'children' key
+            containing a list of child row dicts.
+        """
+        result = []
+        # Expand all rows
+        if expand:
+            rows = super().rows()
+            for row in rows:
+                row.expand()
+        row_data = super().read()
+        # If rows are expanded, read the child rows
+        if expand:
+            for i, row_data in enumerate(row_data, start=1):
+                row_data['children'] = self.get_children(i)
+                result.append(row_data)
+        return result
