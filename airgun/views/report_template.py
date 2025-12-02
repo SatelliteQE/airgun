@@ -98,6 +98,7 @@ class ReportTemplateGenerateView(BaseLoggedInView):
     include_aws = FilteredDropdown(id='Include AWS')
     include_gcp = FilteredDropdown(id='Include GCP')
     include_azure = FilteredDropdown(id='Include Azure')
+    include_hardware_model = FilteredDropdown(id='Include Hardware Model')
 
     @property
     def is_displayed(self):
