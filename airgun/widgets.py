@@ -3002,9 +3002,7 @@ class PF5DataList(Widget):
 
 
 class CompoundExpandableTableRow(PatternflyTableRow):
-    """Extends PatternflyTableRow with some functionality from ExpandableTableRow,
-    customized for CompoundExpandableTable
-    """
+    """Extends PatternflyTableRow with some functionality from ExpandableTableRow"""
 
     EXPANDABLE_CONTENT = './tr[contains(@class, "child-manifest-row")'
 
@@ -3051,17 +3049,6 @@ class CompoundExpandableTable(PatternflyTable):
     This handles tables where each row group is in its own <tbody>,
     and child rows are <tr> siblings with class 'child-manifest-row'
     instead of being wrapped in a separate expandable content div.
-
-    Structure expected:
-    <tbody>
-      <tr data-ouia-component-id="table-row-0"><!-- Parent row --></tr>
-      <tr class="child-manifest-row"><!-- Child 1 --></tr>
-      <tr class="child-manifest-row"><!-- Child 2 --></tr>
-    </tbody>
-    <tbody>
-      <tr data-ouia-component-id="table-row-1"><!-- Parent row --></tr>
-      ...
-    </tbody>
     """
 
     # Override to only select parent rows (first tr in each tbody)
@@ -3074,7 +3061,6 @@ class CompoundExpandableTable(PatternflyTable):
 
     def __init__(self, *args, **kwargs):
         """Automatically add the 'expand' button widget as column 0."""
-
         column_widgets = kwargs.get('column_widgets')
 
         col_widget = Text('./button[contains(@class, "-c-button")]')
@@ -3087,14 +3073,7 @@ class CompoundExpandableTable(PatternflyTable):
         super().__init__(*args, **kwargs)
 
     def get_children(self, row_index):
-        """Get child rows for a specific parent row.
-
-        Args:
-            row_index: 1-based index of the parent row (tbody index)
-
-        Returns:
-            List of dicts containing child row data
-        """
+        """Get child rows for a specific parent row."""
         children = []
         child_locator = self.CHILD_ROWS.format(row_index)
         child_elements = self.browser.elements(child_locator, parent=self)
@@ -3111,15 +3090,7 @@ class CompoundExpandableTable(PatternflyTable):
         return children
 
     def read(self, expand=True):
-        """Read the table including children for each parent row.
-
-        Args:
-            expand: Whether to expand the rows or not
-
-        Returns:
-            List of dicts where each parent row has a 'children' key
-            containing a list of child row dicts.
-        """
+        """Read the table including children for each parent row."""
         result = []
         # Expand all rows
         if expand:

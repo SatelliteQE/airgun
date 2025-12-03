@@ -1,12 +1,16 @@
 from widgetastic.widget import Text, View
-from widgetastic_patternfly5.ouia import Button as PF5OUIAButton
+from widgetastic_patternfly5.ouia import (
+    Button as PF5OUIAButton,
+    Text as PF5OUIAText,
+    Title as PF5OUIATitle,
+)
 
 from airgun.views.common import BaseLoggedInView, PF4Search
 from airgun.widgets import CompoundExpandableTable  # Import the new widget
 
 
 class ContainerImagesView(BaseLoggedInView):
-    title = Text('.//h1[@data-ouia-component-id="container-images-title"]')
+    title = PF5OUIATitle('container-images-title')
     searchbox = PF4Search()
 
     # Passing in the nested table as content_view, refer to ExpandableTable docs for info
@@ -29,10 +33,10 @@ class ContainerImagesView(BaseLoggedInView):
 class ManifestDetailsView(View):
     """Details page for a specific manifest"""
 
-    title = Text('.//h1[@data-ouia-component-id="manifest-details-title"]')
+    title = PF5OUIATitle('manifest-details-title')
 
-    manifest_name = Text('.//p[@data-ouia-component-id="manifest-name-value"]')
-    manifest_repository = Text('.//p[@data-ouia-component-id="manifest-repository-value"]')
+    manifest_name = PF5OUIAText('manifest-name-value')
+    manifest_repository = PF5OUIAText('manifest-repository-value')
     manifest_digest = Text(
         './/h6[@data-ouia-component-id="manifest-digest-label"]/following-sibling::div/span[1]'
     )
@@ -57,7 +61,7 @@ class ManifestLabelAnnotationModal(View):
 
     ROOT = './/div[@data-ouia-component-id="labels-annotations-modal"]'
 
-    title = Text('.//h1')
+    title = PF5OUIATitle('.//h1')
 
     confirm = PF5OUIAButton('labels-annotations-close-button')
-    sha_hash = Text('.//p/strong')
+    sha_hash = PF5OUIAText('.//p/strong')
