@@ -10,6 +10,13 @@ class ContainerImagesEntity(BaseEntity):
     endpoint_path = '/labs/container_images'
 
     def read_manifest_details(self, manifest_tag, manifest_digest, is_child=False):
+        """Read synced container manifest details, r
+
+        Args:
+            manifest_tag: Tag of the manifest list
+            manifest_digest: Digest of the specific manifest
+            is_child: Is the manifest a child manifest, or a manifest list
+        """
         view = self.navigate_to(
             self,
             'ManifestDetails',
@@ -20,7 +27,12 @@ class ContainerImagesEntity(BaseEntity):
         return view.read()
 
     def read_synced_table(self, manifest_tag=None, expand=True):
-        """Read synced container images table, optionally reading expandable rows and searching on manifest digest or tag"""
+        """Read synced container images table, optionally reading expandable rows and searching on manifest digest or tag
+
+        Args:
+            manifest_tag: Tag of the manifest list
+            expand: Whether to expand table rows or not
+        """
         view = self.navigate_to(self, 'Synced')
         if manifest_tag:
             view.searchbox.search(f'tag = {manifest_tag}')
@@ -31,8 +43,8 @@ class ContainerImagesEntity(BaseEntity):
 
 
 @navigator.register(ContainerImagesEntity, 'Synced')
-class SyncedContainersScreen(NavigateStep):
-    """Navigate to Container Images screen."""
+class SyncedContainersTab(NavigateStep):
+    """Navigate to Container Images tab."""
 
     VIEW = ContainerImagesView
 

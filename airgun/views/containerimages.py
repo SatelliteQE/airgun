@@ -57,7 +57,7 @@ class ManifestDetailsView(View):
 
 
 class ManifestLabelAnnotationModal(View):
-    """Manifest and Labels Modal for synced container images"""
+    """Labels and Annotations Modal for synced container images"""
 
     ROOT = './/div[@data-ouia-component-id="labels-annotations-modal"]'
 
