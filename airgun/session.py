@@ -28,6 +28,7 @@ from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.computeresource import ComputeResourceEntity
 from airgun.entities.config_report import ConfigReportEntity
 from airgun.entities.configgroup import ConfigGroupEntity
+from airgun.entities.containerimages import ContainerImagesEntity
 from airgun.entities.containerimagetag import ContainerImageTagEntity
 from airgun.entities.contentcredential import ContentCredentialEntity
 from airgun.entities.contenthost import ContentHostEntity
@@ -424,6 +425,11 @@ class Session:
     def configreport(self):
         """Instance of Config Report entity."""
         return self._open(ConfigReportEntity)
+
+    @cached_property
+    def containerimages(self):
+        """Instance of Container Images entity."""
+        return self._open(ContainerImagesEntity)
 
     @cached_property
     def containerimagetag(self):
