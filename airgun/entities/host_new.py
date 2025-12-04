@@ -8,7 +8,7 @@ from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.cloud_insights import RemediateSummary
 from airgun.views.fact import HostFactView
-from airgun.views.host import HostsView as LegacyHostsView
+from airgun.views.host import HostDetailsView, HostsView as LegacyHostsView
 from airgun.views.host_new import (
     AllAssignedRolesView,
     EditAnsibleRolesView,
@@ -60,13 +60,18 @@ class NewHostEntity(HostEntity):
         host_view.flash.dismiss()
 
     def get_details(self, entity_name, widget_names=None):
-        """Read host values from Host Details page, optionally only the widgets in widget_names
+        """Read host values from Host Details page or read values from Legacy UI page, optionally only the widgets in widget_names
         will be read.
         """
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
-        return view.read(widget_names=widget_names)
+        if widget_names is None:
+            view.dropdown.item_select('Legacy UI')
+            host_view = HostDetailsView(self.browser)
+            return host_view.read(widget_names=widget_names)
+        else:
+            return view.read(widget_names=widget_names)
 
     def run_bootc_job(self, entity_name, job_name, job_options=None):
         """Navigate to the Host Details UI, and run a specified job from the link on the bootc card."""
