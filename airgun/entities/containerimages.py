@@ -10,7 +10,7 @@ class ContainerImagesEntity(BaseEntity):
     endpoint_path = '/labs/container_images'
 
     def read_manifest_details(self, manifest_tag, manifest_digest, is_child=False):
-        """Read synced container manifest details, r
+        """Read synced container manifest details
 
         Args:
             manifest_tag: Tag of the manifest list
