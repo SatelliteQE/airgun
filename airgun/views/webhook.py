@@ -24,46 +24,35 @@ class WebhooksView(BaseLoggedInView, SearchableViewMixinPF4):
 
 
 class WebhookCreateView(BaseLoggedInView):
-    ROOT = '//div[@role="dialog" and @tabindex][div//h4]'
+    ROOT = '//div[@id="webhookCreateModal"]'
     cancel_button = Button('Cancel')
     submit_button = Button('contains', 'Submit')
 
     @View.nested
     class general(Tab):
-        subscribe_to = AutoCompleteTextInput(
-            locator=(
-                "//div[@class='webhook-form-tab-content']"
-                "/div[label[normalize-space(.)='Subscribe to*']]/div/div/div/input"
-            )
-        )
-        name = TextInput(name='name')
-        target_url = TextInput(name='target_url')
+        subscribe_to = AutoCompleteTextInput(locator=("//div[@id='typeahead-select-input-event']"))
+        name = TextInput(id='name')
+        target_url = TextInput(id='id-target_url')
         template = AutoCompleteTextInput(
-            locator=(
-                "//div[@class='webhook-form-tab-content']"
-                "/div[label[normalize-space(.)='Template*']]/div/div/div/input"
-            )
+            locator=("//div[@id='typeahead-select-input-webhook_template_id']")
         )
         http_method = AutoCompleteTextInput(
-            locator=(
-                "//div[@class='webhook-form-tab-content']"
-                "/div[label[normalize-space(.)='HTTP Method*']]/div/div/div/input"
-            )
+            locator=("//div[@id='typeahead-select-input-http_method']")
         )
-        enabled = Checkbox(name='enabled')
+        enabled = Checkbox(id='id-enabled')
 
     @View.nested
     class credentials(Tab):
-        user = TextInput(name='user')
-        password = TextInput(name='password')
-        verify_ssl = Checkbox(name='verify_ssl')
-        capsule_auth = Checkbox(name='proxy_authorization')
-        certs = TextInput(name='ssl_ca_certs')
+        user = TextInput(id='id-user')
+        password = TextInput(id='id-password')
+        verify_ssl = Checkbox(id='id-verify_ssl')
+        capsule_auth = Checkbox(id='id-proxy_authorization')
+        certs = TextInput(id='id-ssl_ca_certs')
 
     @View.nested
     class additional(Tab):
-        content_type = TextInput(name='http_content_type')
-        headers = TextInput(name='http_headers')
+        content_type = TextInput(id='id-http_content_type')
+        headers = TextInput(id='id-http_headers')
 
     @property
     def is_displayed(self):
