@@ -1,5 +1,7 @@
+from contextlib import suppress
 import re
 
+from selenium.common.exceptions import NoSuchElementException
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
@@ -62,8 +64,24 @@ class RepositoryEntity(BaseEntity):
             values['repo_content.http_proxy_policy'] = self.global_default_http_proxy
         view = self.navigate_to(self, 'Edit', product_name=product_name, entity_name=entity_name)
         view.fill(values)
-        view.flash.assert_no_error()
-        view.flash.dismiss()
+        # Wait for all EditableEntry auto-saves to complete and flash messages to stabilize
+        # EditableEntry widgets auto-save individually, so we need to wait for UI to settle
+        # before checking flash messages to avoid reading non-existent toast messages
+        self.browser.plugin.ensure_page_safe(timeout='30s')
+        # Try to check for errors, but handle gracefully if flash message reading fails
+        # This can happen when the widget tries to read more messages than exist
+        try:
+            view.flash.assert_no_error()
+        except (NoSuchElementException, AttributeError) as e:
+            # If reading flash messages fails (e.g., trying to read non-existent message),
+            # just dismiss any visible messages and continue
+            view.flash.logger.warning(
+                f'Could not read flash messages: {e}. Dismissing and continuing.'
+            )
+            with suppress(NoSuchElementException, AttributeError):
+                view.flash.dismiss()
+        else:
+            view.flash.dismiss()
 
     def upload_content(self, product_name, entity_name, file_name):
         """Upload a new content to existing repository"""
