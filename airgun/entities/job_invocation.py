@@ -1,5 +1,3 @@
-import time
-
 from navmazing import NavigateToSibling
 from wait_for import wait_for
 
@@ -50,16 +48,16 @@ class JobInvocationEntity(BaseEntity):
 
     def submit_prefilled_view(self):
         """This entity loads pre filled job invocation view and submits it."""
-        time.sleep(3)
+
         view = JobInvocationCreateView(self.browser)
-        time.sleep(3)
+
         view.submit.click()
 
     def get_job_category_and_template(self):
         """Reads selected job category and template for job invocation."""
-        time.sleep(3)
+
         view = JobInvocationCreateView(self.browser)
-        time.sleep(3)
+
         read_values = {
             'job_category': view.category_and_template.job_category.read(),
             'job_template': view.category_and_template.job_template_text_input.read(),
@@ -68,9 +66,9 @@ class JobInvocationEntity(BaseEntity):
 
     def get_targeted_hosts(self):
         """Read targeted hosts for job invocation."""
-        time.sleep(3)
+
         view = JobInvocationCreateView(self.browser)
-        time.sleep(3)
+
         return view.target_hosts_and_inputs.read()
 
     def read_hostgroups(self):

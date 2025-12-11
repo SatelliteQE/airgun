@@ -14,7 +14,7 @@ class SyncTemplatesEntity(BaseEntity):
         view = self.navigate_to(self, 'Sync')
         view.fill(values)
         view.submit.click()
-        self.browser.plugin.ensure_page_safe()
+
         if view.validations.messages:
             raise AssertionError(
                 f'Validation Errors are present on Page. Messages are {view.validations.messages}'

@@ -40,8 +40,6 @@ class ContentHostEntity(BaseEntity):
     def read(self, entity_name, widget_names=None):
         """Read content host details, optionally read only the widgets in widget_names."""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         return view.read(widget_names=widget_names)
 
     def read_legacy_ui(self, entity_name, widget_names=None):
@@ -107,7 +105,6 @@ class ContentHostEntity(BaseEntity):
         if customize_values is None:
             customize_values = {}
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.wait_displayed()
         view.module_streams.search(f'name = {module_name} and stream = {stream_version}')
         action_type = {'is_customize': customize, 'action': action_type}
         view.module_streams.table.row(name=module_name, stream=stream_version)['Actions'].fill(
@@ -124,7 +121,6 @@ class ContentHostEntity(BaseEntity):
     def search_package(self, entity_name, package_name):
         """Search for specific package installed in content host"""
         view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
-        view.packages_installed.wait_displayed()
         view.packages_installed.search(package_name)
         return view.packages_installed.table.read()
 
@@ -149,7 +145,6 @@ class ContentHostEntity(BaseEntity):
         :return: Returns a dict containing task status details
         """
         view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
-        view.errata.wait_displayed()
         if errata_id == 'All':
             view.errata.select_all.fill(True)
         else:
@@ -173,10 +168,8 @@ class ContentHostEntity(BaseEntity):
         :param str optional environment: lifecycle environment to filter by.
         """
         view = self.navigate_to(self, 'LegacyDetails', entity_name=entity_name)
-        view.wait_displayed()
         view.errata.search(errata_id, lce=environment)
-        view.errata.table.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+        # Table updates via AJAX after search - widget should handle waiting
         return view.errata.table.read()
 
     def read_errata_details(self, entity_name, errata_id, environment=None):
@@ -293,7 +286,7 @@ class ShowContentHostDetails(NavigateStep):
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
         host_view = NewHostDetailsView(self.parent.browser)
-        host_view.wait_displayed()
+
         host_view.dropdown.wait_displayed()
         host_view.dropdown.item_select('Legacy UI')
         host_view = HostDetailsView(self.parent.browser)

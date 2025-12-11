@@ -19,5 +19,5 @@ class HostFactView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.breadcrumb.is_displayed
         return breadcrumb_loaded and self.breadcrumb.read().startswith('Facts Values')

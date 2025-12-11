@@ -98,7 +98,7 @@ class ErrataEntity(BaseEntity):
         view.content_hosts.apply.click()
         # brought to confirmation page
         view = ErrataInstallationConfirmationView(view.browser)
-        view.wait_displayed()
+
         view.confirm.click()
         # wait for redirect to task details page
         view = JobInvocationStatusView(view.browser)

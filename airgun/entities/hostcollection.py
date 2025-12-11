@@ -1,5 +1,3 @@
-import time
-
 from navmazing import NavigateToSibling
 from wait_for import wait_for
 
@@ -110,12 +108,12 @@ class HostCollectionEntity(BaseEntity):
             # After this step the user is redirected to remote execution job
             # create view.
             job_create_view = HostCollectionActionRemoteExecutionJobCreate(view.browser)
-            self.browser.plugin.ensure_page_safe(timeout='5s')
+
             job_create_view.fill(job_values)
             job_create_view.submit.click()
 
         # wait for the job deatils to load
-        time.sleep(3)
+
         # After this step the user is redirected to job status view.
         job_status_view = JobInvocationStatusView(view.browser)
         wait_for(

@@ -22,7 +22,7 @@ class OSCAPContentEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         self.browser.click(view.submit, ignore_ajax=True)
-        self.browser.plugin.ensure_page_safe(timeout='60s')
+
         view.validations.assert_no_errors()
         view.flash.assert_no_error()
         view.flash.dismiss()

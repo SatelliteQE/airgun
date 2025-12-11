@@ -28,7 +28,7 @@ class CloudTokenView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.rhcloud_token.wait_displayed()
+        return self.rhcloud_token.is_displayed
 
 
 class RemediationView(PF5OUIAModal):
@@ -49,7 +49,7 @@ class RemediationView(PF5OUIAModal):
 
     @property
     def is_displayed(self):
-        return self.title.wait_displayed()
+        return self.title.is_displayed
 
 
 class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -77,7 +77,7 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class BulkSelectMenuToggle(PF5Menu):
@@ -164,7 +164,7 @@ class RecommendationsDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.table, exception=False) is not None
+        return self.table.is_displayed
 
 
 class RecommendationsTableExpandedRowView(RecommendationsDetailsView):
@@ -209,7 +209,4 @@ class RecommendationsTabView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return (
-            self.browser.wait_for_element(self.table, exception=False) is not None
-            and self.browser.wait_for_element(self.clear_button, exception=False) is not None
-        )
+        return self.table.is_displayed and self.clear_button.is_displayed

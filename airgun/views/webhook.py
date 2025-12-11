@@ -20,7 +20,7 @@ class WebhooksView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class WebhookCreateView(BaseLoggedInView):
