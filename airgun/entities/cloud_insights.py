@@ -69,7 +69,8 @@ class RecommendationsTabEntity(BaseEntity):
         :param value: text to filter (default: no filter)
         """
         view = self.navigate_to(self, 'All Recommendations')
-        time.sleep(5)
+        view.wait_displayed(timeout=30)
+        wait_for(lambda: view.clear_button.is_displayed, handle_exception=True, timeout=20)
         view.clear_button.click()
         view.search_field.fill(value)
         time.sleep(5)
