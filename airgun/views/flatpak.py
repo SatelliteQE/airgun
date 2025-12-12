@@ -39,7 +39,7 @@ class FlatpakRemotesView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.create_new_btn, exception=False) is not None
+        return self.create_new_btn.is_displayed
 
 
 class FlatpakRemoteDetailsView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -64,7 +64,7 @@ class FlatpakRemoteDetailsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class CreateFlatpakRemoteModal(PF5Modal):
@@ -87,7 +87,7 @@ class CreateFlatpakRemoteModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class EditFlatpakRemoteModal(PF5Modal):
@@ -107,7 +107,7 @@ class EditFlatpakRemoteModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class MirrorFlatpakRemoteModal(PF5Modal, SearchableViewMixinPF4):
@@ -126,7 +126,7 @@ class MirrorFlatpakRemoteModal(PF5Modal, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class FlatpakRemoteDeleteModal(PF5Modal):
@@ -141,4 +141,4 @@ class FlatpakRemoteDeleteModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed

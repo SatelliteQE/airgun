@@ -39,7 +39,7 @@ class ProvisioningTemplatesView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ProvisioningTemplateDetailsView(BaseLoggedInView):
@@ -48,9 +48,8 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Provisioning Templates'
             and self.breadcrumb.read().startswith('Edit ')
         )
@@ -96,9 +95,8 @@ class ProvisioningTemplateDetailsView(BaseLoggedInView):
 class ProvisioningTemplateCreateView(ProvisioningTemplateDetailsView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Provisioning Templates'
             and self.breadcrumb.read() == 'Create Template'
         )

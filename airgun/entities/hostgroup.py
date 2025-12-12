@@ -66,7 +66,6 @@ class HostGroupEntity(BaseEntity):
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
-        self.browser.plugin.ensure_page_safe()
 
     def total_no_of_assigned_role(self, entity_name):
         """Count of assigned role to the host group"""

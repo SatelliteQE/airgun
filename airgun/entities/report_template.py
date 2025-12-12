@@ -87,7 +87,7 @@ class ReportTemplateEntity(BaseEntity):
         view.submit.click()
         view.flash.assert_no_error()
         view = ReportTemplateGeneratedView(self.browser)
-        view.wait_displayed()
+
         wait_for(
             lambda: view.download_button.is_displayed,
             timeout=300,

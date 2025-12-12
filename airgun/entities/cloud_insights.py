@@ -1,5 +1,3 @@
-import time
-
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
@@ -38,9 +36,7 @@ class CloudInsightsEntity(BaseEntity):
     def sync_hits(self):
         """Sync Insights recommendations."""
         view = self.navigate_to(self, 'All')
-        view.insights_dropdown.wait_displayed()
         view.insights_dropdown.item_select('Sync recommendations')
-        self.browser.plugin.ensure_page_safe(timeout='60s')
 
     def read(self, widget_names=None):
         """Read all values."""
@@ -52,7 +48,6 @@ class CloudInsightsEntity(BaseEntity):
         view = self.navigate_to(self, 'Token')
         view.rhcloud_token.fill(value)
         view.save_token.click()
-        self.browser.plugin.ensure_page_safe(timeout='60s')
 
     def update(self, values):
         """Update Insights view."""
@@ -69,10 +64,8 @@ class RecommendationsTabEntity(BaseEntity):
         :param value: text to filter (default: no filter)
         """
         view = self.navigate_to(self, 'All Recommendations')
-        time.sleep(5)
         view.clear_button.click()
         view.search_field.fill(value)
-        time.sleep(5)
         return view.table.read()
 
     def remediate_affected_system(self, recommendation_name, hostname):
@@ -82,14 +75,12 @@ class RecommendationsTabEntity(BaseEntity):
         """
         # Use navigator to open the Affected Systems details view
         view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
-        view.search_field.wait_displayed()
         # Filter by hostname and apply recommendation
         view.search_field.fill(hostname)
         wait_for(lambda: view.table.row(name=hostname), handle_exception=True, timeout=20)
-        time.sleep(15)
         view.table[0][0].widget.click()
         view.remediate.click()
-        self.browser.plugin.ensure_page_safe(timeout='30s')
+        # Modal appears async after button click - wait is appropriate here
         modal = RemediateSummary(self.browser)
         wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
         modal.remediate.click()
@@ -105,10 +96,9 @@ class RecommendationsTabEntity(BaseEntity):
         # Use navigator to open the Affected Systems details view
         view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
         wait_for(lambda: view.table.row(), handle_exception=True, timeout=20)
-        time.sleep(5)
         view.bulk_select.select_all()
         view.remediate.click()
-        self.browser.plugin.ensure_page_safe(timeout='30s')
+        # Modal appears async after button click - wait is appropriate here
         modal = RemediateSummary(self.browser)
         wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
         modal.remediate.click()
@@ -127,20 +117,13 @@ class RecommendationsTabEntity(BaseEntity):
             session.recommendationstab.apply_filter("Status", "Disabled")
         """
         view = self.navigate_to(self, 'All Recommendations')
-
-        self.browser.plugin.ensure_page_safe(timeout='10s')
-        wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
         view.menu_toggle.fill(filter_type)
         view.menu_filter.fill(filter_value)
-        self.browser.plugin.ensure_page_safe(timeout='10s')
-        wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
         return view.table.read()
 
     def read(self, widget_names=None):
         """Read all values."""
         view = self.navigate_to(self, 'All Recommendations')
-        self.browser.plugin.ensure_page_safe(timeout='10s')
-        view.wait_displayed()
         return view.read(widget_names=widget_names)
 
 
@@ -157,10 +140,10 @@ class NavigateToAffectedSystems(NavigateStep):
     def step(self, *args, **kwargs):
         recommendation_name = kwargs.get('recommendation_name')
         # Filter by recommendation name and open its expanded content
-        time.sleep(5)
+
         self.parent.clear_button.click()
         self.parent.search_field.fill(recommendation_name)
-        time.sleep(5)
+
         row, _ = wait_for(lambda: self.parent.table.row(name=recommendation_name), timeout=5)
         row.expand()
         row.content.affected_systems_url.click()

@@ -124,7 +124,7 @@ class ContentHostsView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ContentHostDetailsView(BaseLoggedInView):
@@ -134,9 +134,8 @@ class ContentHostDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Hosts'
             and len(self.breadcrumb.locations) > 1
         )
@@ -327,9 +326,8 @@ class ContentHostTaskDetailsView(TaskDetailsView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Hosts'
             and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
         )
@@ -344,7 +342,7 @@ class SyspurposeBulkActionView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ErrataDetailsView(BaseLoggedInView):
@@ -363,9 +361,8 @@ class ErrataDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[1] == 'Errata'
             and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
         )

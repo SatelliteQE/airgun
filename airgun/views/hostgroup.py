@@ -47,9 +47,10 @@ class HostGroupsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        page_loaded = self.browser.wait_for_element(
-            self.title, exception=False
-        ) or self.browser.wait_for_element(self.new_on_blank_page, exception=False)
+        page_loaded = (
+            self.browser.wait_for_element(self.title, exception=False)
+            or self.new_on_blank_page.is_displayed
+        )
         return page_loaded and self.browser.url.endswith('hostgroups')
 
 
@@ -59,9 +60,8 @@ class HostGroupCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Host Groups'
             and self.breadcrumb.read() == 'Create Host Group'
         )
@@ -148,9 +148,8 @@ class HostGroupEditView(HostGroupCreateView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Host Groups'
             and self.breadcrumb.read().startswith('Edit ')
         )

@@ -134,7 +134,7 @@ class WrongContextAlert(View):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.message, exception=False) is not None
+        return self.message.is_displayed
 
 
 class SatTab(Tab):
@@ -513,12 +513,6 @@ class NewAddRemoveResourcesView(View):
 
     def read(self):
         """Read all table values from both resource tables"""
-        self.browser.wait_for_element(locator='//h4[text()="Loading"]', exception=False)
-        self.browser.wait_for_element(
-            self.table, exception=False, ensure_page_safe=True, timeout=10
-        )
-        self.browser.plugin.ensure_page_safe(timeout='60s')
-        self.table.wait_displayed()
         self.select_status('All')
         return self.table.read()
 
@@ -654,10 +648,6 @@ class SearchableViewMixinPF4(SearchableViewMixin):
         if not self.is_searchable():
             return None
         self.searchbox.search(query)
-        self.browser.plugin.ensure_page_safe(timeout='60s')
-        if hasattr(self, 'title'):
-            self.title.click()
-        self.table.wait_displayed()
         return self.table.read()
 
 
@@ -708,7 +698,7 @@ class BookmarkCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class TemplateInputItem(GenericRemovableWidgetItem):

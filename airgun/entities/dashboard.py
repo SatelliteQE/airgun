@@ -1,5 +1,3 @@
-import time
-
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
@@ -19,7 +17,7 @@ class DashboardEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         if widget_name not in view.widget_names:
             raise ValueError('Provide correct widget name to be read')
-        time.sleep(3)
+
         return getattr(view, widget_name).read()
 
     def read_all(self):

@@ -108,9 +108,8 @@ class ComputeResourceEntity(BaseEntity):
         view = self.navigate_to(
             self, 'Profile', entity_name=entity_name, compute_profile=compute_profile
         )
-        with self.browser.ignore_ensure_page_safe_timeout():
-            view.fill(values)
-            view.submit.click()
+        view.fill(values)
+        view.submit.click()
 
     def read_computeprofile(self, entity_name, compute_profile, widget_names=None):
         """Read specific compute profile attributes through CR detail view"""
@@ -176,7 +175,7 @@ class ComputeResourceEntity(BaseEntity):
         view.images.filterbox.fill(image_name)
         view.images.table.row(name=image_name)['Actions'].widget.fill('Destroy')
         self.browser.handle_alert()
-        self.browser.plugin.ensure_page_safe()
+
         view.flash.assert_no_error()
         view.flash.dismiss()
 

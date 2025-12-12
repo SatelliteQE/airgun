@@ -1,5 +1,3 @@
-import time
-
 from selenium.webdriver.common.by import By
 from widgetastic.widget import Checkbox, Text, TextInput, View, Widget
 from widgetastic.widget.table import Table
@@ -146,7 +144,7 @@ class HostsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class NewHostDetailsView(BaseLoggedInView):
@@ -154,7 +152,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.breadcrumb.is_displayed
         return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Hosts'
 
     edit = PF5OUIAButton('host-edit-button')
@@ -801,10 +799,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @property
         def is_displayed(self):
-            return (
-                self.browser.wait_for_element(self.recommendations_table, exception=False)
-                is not None
-            )
+            return self.recommendations_table.is_displayed is not None
 
     @View.nested
     class vulnerabilities(PF5Tab):
@@ -830,10 +825,7 @@ class NewHostDetailsView(BaseLoggedInView):
         @property
         def is_displayed(self):
             table_displayed = self.vulnerabilities_table.wait_displayed(exception=False)
-            no_cves_message_displayed = (
-                self.browser.wait_for_element(self.no_cves_found_message, exception=False)
-                is not None
-            )
+            no_cves_message_displayed = self.no_cves_found_message.is_displayed is not None
             return table_displayed or no_cves_message_displayed
 
 
@@ -945,6 +937,10 @@ class ManageHostStatusesView(View):
         },
     )
 
+    @property
+    def is_displayed(self):
+        return self.host_statuses_table.is_displayed
+
     def read(self):
         # Parses into a dictionary of {name: {status, reported_at}}
         return {value.pop('Name'): value for value in self.host_statuses_table.read()}
@@ -1043,7 +1039,7 @@ class ManageColumnsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        title = self.browser.wait_for_element(self.title, exception=False)
+        title = self.title.is_displayed
         return title is not None and title.is_displayed()
 
     def expand_all(self):
@@ -1076,7 +1072,3 @@ class ManageColumnsView(BaseLoggedInView):
     def submit(self):
         """Submit the dialog and wait for the page to reload."""
         self.confirm_dialog.click()
-        # the submit and page reload does not kick in immediately
-        # so ensure_page_safe() does not catches it
-        time.sleep(2)
-        self.browser.plugin.ensure_page_safe()
