@@ -31,7 +31,6 @@ from airgun.entities.configgroup import ConfigGroupEntity
 from airgun.entities.containerimages import ContainerImagesEntity
 from airgun.entities.containerimagetag import ContainerImageTagEntity
 from airgun.entities.contentcredential import ContentCredentialEntity
-from airgun.entities.contenthost import ContentHostEntity
 from airgun.entities.contentview import ContentViewEntity
 from airgun.entities.contentview_new import NewContentViewEntity
 from airgun.entities.contentviewfilter import ContentViewFilterEntity
@@ -440,11 +439,6 @@ class Session:
     def contentcredential(self):
         """Instance of Content Credential entity."""
         return self._open(ContentCredentialEntity)
-
-    @cached_property
-    def contenthost(self):
-        """Instance of Content Host entity."""
-        return self._open(ContentHostEntity)
 
     @cached_property
     def computeresource(self):
