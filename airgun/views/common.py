@@ -575,7 +575,7 @@ class TemplateEditor(View):
     """
 
     ROOT = ".//div[@id='editor-container']"
-    rendering_options = ItemsList(".//div[contains(@class,'navbar-editor')]/ul")
+    rendering_options = ItemsList(".//div[contains(@class,'navbar-editor')]/ul")  # For PRT only
     import_template = Button(id='import-btn')
     fullscreen = Text(locator=".//button[@id='fullscreen-btn']")
     fullscreen_close = Text(
