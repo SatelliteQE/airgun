@@ -60,13 +60,19 @@ class NewHostEntity(HostEntity):
         host_view.flash.dismiss()
 
     def get_details(self, entity_name, widget_names=None):
-        """Read host values from Host Details page, optionally only the widgets in widget_names
-        will be read.
-        """
+        """Read host values from Host Details page, optionally only the widgets in widget_names will be read."""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         return view.read(widget_names=widget_names)
+
+    def delete(self, entity_name, cancel=False):
+        """Delete host from the system"""
+        view = self.navigate_to(self, 'NewUIAll')
+        view.search(entity_name)
+        view.table.row(name=entity_name)[6].widget.item_select('Delete')
+        self.browser.handle_alert()
+        self.browser.refresh()
 
     def run_bootc_job(self, entity_name, job_name, job_options=None):
         """Navigate to the Host Details UI, and run a specified job from the link on the bootc card."""
