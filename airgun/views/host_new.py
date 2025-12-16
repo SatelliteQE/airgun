@@ -35,7 +35,7 @@ from widgetastic_patternfly5.ouia import (
 )
 
 from airgun.views.cloud_insights import BulkSelectMenuToggle
-from airgun.views.common import BaseLoggedInView
+from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 from airgun.widgets import (
     Accordion,
     ActionsDropdown,
@@ -135,7 +135,7 @@ class HostColectionsList(Widget):
         return [self.browser.text(item) for item in self.browser.elements(self.ITEMS)]
 
 
-class HostsView(BaseLoggedInView):
+class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     """New All Hosts view.
     Note: This is a minimal implementation of the new Hosts page, and currently it serves only to transition
     to the now-legacy UI page.
@@ -143,6 +143,17 @@ class HostsView(BaseLoggedInView):
 
     title = Text('//h1[normalize-space(.)="Hosts"]')
     actions = PF5OUIADropdown(component_id='legacy-ui-kebab')
+    table = PF5OUIATable(
+        component_id='hosts-index-table',
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Name': Text(
+                './/a[contains(@href, "/new/hosts/") and not(contains(@href, "Red Hat Lightspeed"))]'
+            ),
+            'Recommendations': Text('./a'),
+            6: MenuToggleButtonMenu(),
+        },
+    )
 
     @property
     def is_displayed(self):
