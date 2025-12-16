@@ -18,7 +18,6 @@ from airgun.widgets import (
     PublishPromoteProgressBar,
     ReadOnlyEntry,
     SatSelect,
-    Search,
 )
 
 
@@ -29,7 +28,7 @@ class ContentViewTableView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ContentViewCreateView(BaseLoggedInView):
@@ -44,9 +43,8 @@ class ContentViewCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.read() == 'New Content View'
         )
@@ -61,9 +59,8 @@ class ContentViewCopyView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
             and self.breadcrumb.read() == 'Copy'
@@ -84,9 +81,8 @@ class ContentViewRemoveView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
             and self.breadcrumb.read() == 'Deletion'
@@ -103,9 +99,8 @@ class ContentViewEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and len(self.breadcrumb.locations) <= self.BREADCRUMB_LENGTH
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.read() != 'New Content View'
@@ -120,8 +115,8 @@ class ContentViewEditView(BaseLoggedInView):
         solve_dependencies = EditableEntryCheckbox(name='Solve Dependencies')
 
     @View.nested
-    class versions(SatTab):
-        searchbox = Search()
+    class versions(SatTab, SearchableViewMixin):
+        # searchbox = Search()
         table = Table(
             locator='//table',
             column_widgets={
@@ -131,20 +126,20 @@ class ContentViewEditView(BaseLoggedInView):
             },
         )
 
-        def search(self, version_name):
-            """Searches for content view version.
+        # def search(self, version_name):
+        #     """Searches for content view version.
 
-            Searchbox can't search by version name, only by id, that's why in
-            case version name was passed, it's transformed into recognizable
-            value before filling, for example::
+        #     Searchbox can't search by version name, only by id, that's why in
+        #     case version name was passed, it's transformed into recognizable
+        #     value before filling, for example::
 
-                'Version 1.0' -> 'version = 1'
-            """
-            search_phrase = version_name
-            if version_name.startswith('V') and '.' in version_name:
-                search_phrase = f'version = {version_name.split()[1].split(".")[0]}'
-            self.searchbox.search(search_phrase)
-            return self.table.read()
+        #         'Version 1.0' -> 'version = 1'
+        #     """
+        #     search_phrase = version_name
+        #     if version_name.startswith('V') and '.' in version_name:
+        #         search_phrase = f'version = {version_name.split()[1].split(".")[0]}'
+        #     self.searchbox.search(search_phrase)
+        #     return self.table.read()
 
     @View.nested
     class content_views(SatTab):
@@ -199,31 +194,29 @@ class ContentViewVersionPublishView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.read() == 'Publish'
         )
 
 
-class EntitySearchView(SatSecondaryTab):
+class EntitySearchView(SatSecondaryTab, SearchableViewMixin):
     repo_filter = SatSelect(".//select[@ng-model='repository']")
-    searchbox = Search()
     table = Table('.//table')
 
-    def search(self, query, repo=None):
-        """Apply available filters before proceeding with searching.
+    # def search(self, query, repo=None):
+    #     """Apply available filters before proceeding with searching.
 
-        :param str query: search query to type into search field.
-        :param str optional repo: filter by repository name
-        :return: list of dicts representing table rows
-        :rtype: list
-        """
-        if repo:
-            self.repo_filter.fill(repo)
-        self.searchbox.search(query)
-        return self.table.read()
+    #     :param str query: search query to type into search field.
+    #     :param str optional repo: filter by repository name
+    #     :return: list of dicts representing table rows
+    #     :rtype: list
+    #     """
+    #     if repo:
+    #         self.repo_filter.fill(repo)
+    #     self.searchbox.search(query)
+    #     return self.table.read()
 
 
 class ContentViewVersionDetailsView(BaseLoggedInView):
@@ -232,9 +225,8 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.locations[2] == 'Versions'
@@ -278,9 +270,8 @@ class ContentViewVersionPromoteView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.read() == 'Promotion'
         )
@@ -301,9 +292,8 @@ class ContentViewVersionRemoveView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
             and self.breadcrumb.read() == 'Deletion'
@@ -321,9 +311,8 @@ class ContentViewVersionRemoveConfirmationView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
             and self.breadcrumb.read() == 'Deletion'

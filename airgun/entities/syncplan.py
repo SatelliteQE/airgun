@@ -2,7 +2,6 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.syncplan import SyncPlanCreateView, SyncPlanEditView, SyncPlansView
 
 
@@ -74,7 +73,6 @@ class ShowAllSyncPlans(NavigateStep):
 
     VIEW = SyncPlansView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Sync Plans')
 

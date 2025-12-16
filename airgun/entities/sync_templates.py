@@ -2,7 +2,6 @@ from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.sync_templates import SyncTemplatesView, TemplatesReportView
 
 
@@ -14,7 +13,7 @@ class SyncTemplatesEntity(BaseEntity):
         view = self.navigate_to(self, 'Sync')
         view.fill(values)
         view.submit.click()
-        self.browser.plugin.ensure_page_safe()
+
         if view.validations.messages:
             raise AssertionError(
                 f'Validation Errors are present on Page. Messages are {view.validations.messages}'
@@ -35,7 +34,6 @@ class SyncMainPageNavigation(NavigateStep):
 
     VIEW = SyncTemplatesView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Templates', 'Sync Templates')
 

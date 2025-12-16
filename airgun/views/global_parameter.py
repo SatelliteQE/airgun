@@ -1,11 +1,11 @@
 from widgetastic.widget import Text
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 
 
-class GlobalParameterView(BaseLoggedInView, SearchableViewMixinPF4):
+class GlobalParameterView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Global Parameters']")
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed

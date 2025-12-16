@@ -2,11 +2,11 @@ from widgetastic.widget import Checkbox, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly5 import Button
 
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import FilteredDropdown, MultiSelect
 
 
-class UserGroupsView(BaseLoggedInView, SearchableViewMixinPF4):
+class UserGroupsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='User Groups']")
     new_on_blank_page = Button('Create User group')
     new = Text("//a[contains(@href, '/usergroups/new')]")
@@ -20,7 +20,7 @@ class UserGroupsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class UserGroupDetailsView(BaseLoggedInView):
@@ -29,9 +29,8 @@ class UserGroupDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'User Groups'
             and self.breadcrumb.read().startswith('Edit ')
         )
@@ -78,9 +77,8 @@ class UserGroupDetailsView(BaseLoggedInView):
 class UserGroupCreateView(UserGroupDetailsView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'User Groups'
             and self.breadcrumb.read() == 'Create User group'
         )

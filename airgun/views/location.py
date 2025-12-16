@@ -2,7 +2,7 @@ from widgetastic.widget import Checkbox, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly4 import Pagination as PF4Pagination
 
-from airgun.views.common import BaseLoggedInView, SatVerticalTab, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SatVerticalTab, SearchableViewMixin
 from airgun.widgets import (
     ActionsDropdown,
     CustomParameter,
@@ -11,7 +11,7 @@ from airgun.widgets import (
 )
 
 
-class LocationsView(BaseLoggedInView, SearchableViewMixinPF4):
+class LocationsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Locations']")
     new = Text("//a[contains(@href, '/locations/new')]")
     table = Table(
@@ -25,7 +25,7 @@ class LocationsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class LocationCreateView(BaseLoggedInView):
@@ -37,9 +37,8 @@ class LocationCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Locations'
             and self.breadcrumb.read() == 'New Location'
         )
@@ -52,9 +51,8 @@ class LocationsEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Locations'
             and self.breadcrumb.read().startswith('Edit ')
         )

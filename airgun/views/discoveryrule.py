@@ -2,7 +2,7 @@ from widgetastic.widget import Checkbox, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly5 import Button as PF5Button
 
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import (
     ActionsDropdown,
     AutoCompleteTextInput,
@@ -11,7 +11,7 @@ from airgun.widgets import (
 )
 
 
-class DiscoveryRulesView(BaseLoggedInView, SearchableViewMixinPF4):
+class DiscoveryRulesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Discovery Rules']")
     page_info = Text("//foreman-react-component[contains(@name, 'DiscoveryRules')]/div/div")
     new = Text("//a[contains(@href, '/discovery_rules/new')]")
@@ -26,7 +26,7 @@ class DiscoveryRulesView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class DiscoveryRuleCreateView(BaseLoggedInView):
@@ -36,9 +36,8 @@ class DiscoveryRuleCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Discovery rules'
             and self.breadcrumb.read() == 'New Discovery Rule'
         )
@@ -65,9 +64,8 @@ class DiscoveryRuleCreateView(BaseLoggedInView):
 class DiscoveryRuleEditView(DiscoveryRuleCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Discovery rules'
             and self.breadcrumb.read().startswith('Edit ')
         )

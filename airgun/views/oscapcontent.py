@@ -1,11 +1,11 @@
 from widgetastic.widget import FileInput, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import ActionsDropdown, MultiSelect, SatTable
 
 
-class SCAPContentsView(BaseLoggedInView, SearchableViewMixinPF4):
+class SCAPContentsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='SCAP Contents']")
     new = Text("//a[contains(@href, 'scap_contents/new')]")
     table = SatTable(
@@ -18,7 +18,7 @@ class SCAPContentsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class SCAPContentCreateView(BaseLoggedInView):
@@ -42,7 +42,7 @@ class SCAPContentCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.create_form, exception=False) is not None
+        return self.create_form.is_displayed
 
 
 class SCAPContentEditView(SCAPContentCreateView):
@@ -58,5 +58,5 @@ class SCAPContentEditView(SCAPContentCreateView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.breadcrumb.is_displayed
         return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Scap Contents'

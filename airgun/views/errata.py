@@ -2,11 +2,11 @@ from widgetastic.widget import Checkbox, Text, View
 from widgetastic_patternfly import BreadCrumb
 
 from airgun import ERRATA_REGEXP
-from airgun.views.common import BaseLoggedInView, SatTab, TaskDetailsView
-from airgun.widgets import ItemsList, ReadOnlyEntry, SatSelect, SatTable, Search
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin, TaskDetailsView
+from airgun.widgets import ItemsList, ReadOnlyEntry, SatSelect, SatTable
 
 
-class ErratumView(BaseLoggedInView):
+class ErratumView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[contains(., 'Errata')]")
     table = SatTable(
         locator='.//table',
@@ -19,7 +19,6 @@ class ErratumView(BaseLoggedInView):
     applicable_filter = Checkbox(locator=".//input[@ng-model='showApplicable']")
     installable_filter = Checkbox(locator=".//input[@ng-model='showInstallable']")
     apply_errata = Text(".//button[contains(@class, 'btn-primary')][@ng-click='goToNextStep()']")
-    searchbox = Search()
 
     def search(self, query, applicable=True, installable=False, repo=None):
         """Apply available filters before proceeding with searching and
@@ -41,13 +40,13 @@ class ErratumView(BaseLoggedInView):
 
         if ERRATA_REGEXP.search(query):
             query = f'id = {query}'
-        self.searchbox.search(query)
+        super().search(query)
 
         return self.table.read()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ErrataDetailsView(BaseLoggedInView):
@@ -76,10 +75,9 @@ class ErrataDetailsView(BaseLoggedInView):
         )
 
     @View.nested
-    class content_hosts(SatTab):
+    class content_hosts(SatTab, SearchableViewMixin):
         TAB_NAME = 'Content Hosts'
         environment_filter = SatSelect(".//select[@ng-model='environmentFilter']")
-        searchbox = Search()
         select_all = Checkbox(locator=".//input[@type='checkbox'][@ng-change='allSelected()']")
         apply = Text(".//button[@ng-click='goToNextStep()']")
         table = SatTable(
@@ -100,14 +98,13 @@ class ErrataDetailsView(BaseLoggedInView):
             """
             if environment:
                 self.environment_filter.fill(environment)
-            self.searchbox.search(query)
+            super().search(query)
             return self.table.read()
 
     @View.nested
-    class repositories(SatTab):
+    class repositories(SatTab, SearchableViewMixin):
         lce_filter = SatSelect(".//select[@ng-model='environmentFilter']")
         cv_filter = SatSelect(".//select[@ng-model='contentViewFilter']")
-        searchbox = Search()
         table = SatTable(
             locator='.//table',
             column_widgets={
@@ -129,7 +126,7 @@ class ErrataDetailsView(BaseLoggedInView):
                 self.lce_filter.fill(lce)
             if cv:
                 self.cv_filter.fill(cv)
-            self.searchbox.search(query)
+            super().search(query)
             return self.table.read()
 
     @View.nested
@@ -143,18 +140,16 @@ class ErrataDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Errata'
             and len(self.breadcrumb.locations) > 1
         )
 
 
-class ApplyErrataView(BaseLoggedInView):
+class ApplyErrataView(BaseLoggedInView, SearchableViewMixin):
     breadcrumb = BreadCrumb()
     environment_filter = SatSelect(".//select[@ng-model='environmentFilter']")
-    searchbox = Search()
     next_button = Text(".//button[@ng-click='goToNextStep()']")
     table = SatTable(
         locator='.//table',
@@ -174,14 +169,13 @@ class ApplyErrataView(BaseLoggedInView):
         """
         if environment:
             self.environment_filter.fill(environment)
-        self.searchbox.search(query)
+        super().search(query)
         return self.table.read()
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Errata'
             and self.breadcrumb.read() == 'Select Content Host(s)'
         )
@@ -197,9 +191,8 @@ class ErrataTaskDetailsView(TaskDetailsView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Errata'
             and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
         )

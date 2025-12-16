@@ -2,7 +2,6 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.http_proxy import (
     HTTPProxyCreateView,
     HTTPProxyEditView,
@@ -73,7 +72,6 @@ class ShowAllHTTPProxy(NavigateStep):
 
     VIEW = HTTPProxyView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Infrastructure', 'HTTP proxies')
 

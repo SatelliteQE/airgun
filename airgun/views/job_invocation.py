@@ -36,8 +36,6 @@ class HostsExpandableTable(PF5OUIAExpandableTable):
         execution does not time out in case the hosts table is empty.
         Then `super().read()` should return empty list.
         """
-        wait_for(func=lambda: self.is_displayed, timeout=15, delay=1)
-        self.browser.plugin.ensure_page_safe(timeout='15s')
         script = f"""
         rows = document.getElementsByTagName('{self.ROW_TAG}');
         last_row = rows[rows.length-1];
@@ -60,11 +58,15 @@ class HostsExpandableTable(PF5OUIAExpandableTable):
 class JobInvocationsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[contains(., 'Job') and contains(., 'nvocations')]")
     new = Text("//a[contains(@href, '/job_invocations/new')]")
+
+    # searchbox = SearchInput(
+    #     locator='.//div[@class="foreman-search-bar"]//input[@aria-label="Search input"]'
+    # )
     table = SatTable('.//table', column_widgets={'Description': Text('./a')})
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed and self.table.is_displayed
 
 
 class JobInvocationCreateView(BaseLoggedInView):
@@ -174,9 +176,8 @@ class JobInvocationCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Jobs'
             and self.breadcrumb.read() == 'Job invocation'
         )

@@ -2,7 +2,6 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.subnet import SubnetCreateView, SubnetEditView, SubnetsView
 
 
@@ -48,7 +47,6 @@ class ShowAllSubnets(NavigateStep):
 
     VIEW = SubnetsView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Infrastructure', 'Subnets')
 

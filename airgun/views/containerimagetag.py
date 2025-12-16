@@ -17,7 +17,7 @@ class ContainerImageTagsView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ContainerImageTagDetailsView(TaskDetailsView):
@@ -26,9 +26,8 @@ class ContainerImageTagDetailsView(TaskDetailsView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Container Image Tags'
             and len(self.breadcrumb.locations) >= self.BREADCRUMB_LENGTH
         )

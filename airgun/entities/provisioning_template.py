@@ -3,7 +3,6 @@ from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.provisioning_template import (
     ProvisioningTemplateCreateView,
     ProvisioningTemplateDetailsView,
@@ -103,7 +102,6 @@ class ShowAllProvisioningTemplates(NavigateStep):
 
     VIEW = ProvisioningTemplatesView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Templates', 'Provisioning Templates')
 

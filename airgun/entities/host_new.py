@@ -1,11 +1,8 @@
-import time
-
 from navmazing import NavigateToSibling
 from wait_for import wait_for
 
 from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.cloud_insights import RemediateSummary
 from airgun.views.fact import HostFactView
 from airgun.views.host import HostsView as LegacyHostsView
@@ -33,8 +30,6 @@ available_param_types = ['string', 'boolean', 'integer', 'real', 'array', 'hash'
 def navigate_to_edit_view(func):
     def _decorator(self, entity_name=None, role_name=None):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name, role=role_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.overview.details.edit.click()
         self.browser.switch_to_window(self.browser.window_handles[1])
         host_group_view = HostGroupEditView(self.browser)
@@ -54,17 +49,15 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         self.browser.click(view.submit, ignore_ajax=True)
-        self.browser.plugin.ensure_page_safe(timeout='600s')
+
         host_view = NewHostDetailsView(self.browser)
-        host_view.wait_displayed()
+
         host_view.flash.assert_no_error()
         host_view.flash.dismiss()
 
     def get_details(self, entity_name, widget_names=None):
         """Read host values from Host Details page, optionally only the widgets in widget_names will be read."""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         return view.read(widget_names=widget_names)
 
     def delete(self, entity_name, cancel=False):
@@ -75,11 +68,14 @@ class NewHostEntity(HostEntity):
         self.browser.handle_alert()
         self.browser.refresh()
 
+    def search(self, value):
+        """Search for existing host"""
+        view = self.navigate_to(self, 'NewUIAll')
+        return view.search(value)
+
     def run_bootc_job(self, entity_name, job_name, job_options=None):
         """Navigate to the Host Details UI, and run a specified job from the link on the bootc card."""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.details.bootc.remote_execution_link.click()
         if job_options:
             job_input = {
@@ -148,12 +144,14 @@ class NewHostEntity(HostEntity):
             entity_name: Name of the host
         """
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+
         view.overview.host_status.manage_all_statuses.click()
         view = ManageHostStatusesView(self.browser)
+        view.wait_displayed()
+
         values = view.read()
         view.close_modal.click()
+
         return values
 
     def edit_system_purpose(
@@ -179,11 +177,9 @@ class NewHostEntity(HostEntity):
                 'At least one of the role, sla, usage, release_ver, add_ons must be provided!'
             )
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
         view.overview.system_purpose.edit_system_purpose.click()
         view = EditSystemPurposeView(self.browser)
-        self.browser.plugin.ensure_page_safe()
-        view.wait_displayed()
+
         if role:
             view.role.fill(role)
         if sla:
@@ -224,8 +220,6 @@ class NewHostEntity(HostEntity):
             )
 
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         # Handle the case where there are no host collections assigned
         if view.overview.host_collections.no_host_collections.is_displayed:
             view.overview.host_collections.add_to_host_collection.click()
@@ -238,8 +232,6 @@ class NewHostEntity(HostEntity):
             view.overview.host_collections.kebab_menu.item_select('Add host to collections')
 
         view = ManageHostCollectionModal(self.browser)
-        self.browser.plugin.ensure_page_safe()
-        view.wait_displayed()
 
         if view.create_host_collection.is_displayed:
             raise ValueError('No host collections found or left for addition!')
@@ -250,20 +242,18 @@ class NewHostEntity(HostEntity):
                     raise ValueError('host_collection_name list is empty!')
                 for host_col in host_collection_name:
                     view.searchbar.fill('name = ' + host_col, enter_timeout=2)
-                    view.wait_displayed()
-                    self.browser.plugin.ensure_page_safe()
+
                     if view.host_collection_table.row_count == 0:
                         raise ValueError(f'{host_col} not found in host collections!')
-                    time.sleep(3)
+
                     # Select the host collection via checkbox in the table
                     view.host_collection_table[0][0].widget.click()
             else:
                 view.searchbar.fill('name = ' + host_collection_name, enter_timeout=2)
-                view.wait_displayed()
-                self.browser.plugin.ensure_page_safe()
+
                 if view.host_collection_table.row_count == 0:
                     raise ValueError(f'{host_collection_name} not found in host collections!')
-                time.sleep(3)
+
                 # Select the host collection via checkbox in the table
                 view.host_collection_table[0][0].widget.click()
         else:
@@ -297,8 +287,6 @@ class NewHostEntity(HostEntity):
             )
 
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         # Handle the case where there are no host collections assigned
         view.overview.click()
         if view.overview.host_collections.no_host_collections.is_displayed:
@@ -306,8 +294,6 @@ class NewHostEntity(HostEntity):
 
         view.overview.host_collections.kebab_menu.item_select('Remove host from collections')
         view = ManageHostCollectionModal(self.browser)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
 
         if not remove_from_all_collections:
             if isinstance(host_collection_name, list):
@@ -315,22 +301,20 @@ class NewHostEntity(HostEntity):
                     raise ValueError('host_collection_name list is empty!')
                 for host_col in host_collection_name:
                     view.searchbar.fill('name = ' + host_col, enter_timeout=2)
-                    view.wait_displayed()
-                    self.browser.plugin.ensure_page_safe()
+
                     if not view.host_collection_table.is_displayed:
                         raise ValueError(f"{host_col} not assigned to host, thus can't remove it!")
-                    time.sleep(3)
+
                     # Select the host collection via checkbox in the table
                     view.host_collection_table[0][0].widget.click()
             else:
                 view.searchbar.fill('name = ' + host_collection_name, enter_timeout=2)
-                view.wait_displayed()
-                self.browser.plugin.ensure_page_safe()
+
                 if not view.host_collection_table.is_displayed:
                     raise ValueError(
                         f"{host_collection_name} not assigned to host, thus can't remove it!"
                     )
-                time.sleep(3)
+
                 # Select the host collection via checkbox in the table
                 view.host_collection_table[0][0].widget.click()
         else:
@@ -340,51 +324,44 @@ class NewHostEntity(HostEntity):
     def schedule_job(self, entity_name, values):
         """Schedule a remote execution on selected host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe()
-        view.wait_displayed()
         self.browser.wait_for_element(view.schedule_job, exception=False)
         view.schedule_job.fill('Schedule a job')
         view = JobInvocationCreateView(self.browser)
-        self.browser.plugin.ensure_page_safe()
+
         view.fill(values)
         view.submit.click()
 
     def run_job(self, entity_name):
         """Run a job on selected host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.run_job.wait_displayed()
         view.run_job.click()
         view.select.click()
 
     def get_packages(self, entity_name, search=''):
         """Filter installed packages on host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        wait_for(lambda: view.content.packages.is_displayed, timeout=5)
+
         view.content.packages.select()
         wait_for(lambda: view.content.packages.table.is_displayed, timeout=5)
         view.content.packages.searchbar.fill(search)
-        self.browser.plugin.ensure_page_safe()
+
         # Check if there is a match
         if view.content.packages.no_matching_packages.is_displayed:
             return None
         else:
-            view.content.packages.table.wait_displayed()
-            wait_for(lambda: view.content.packages.table.is_displayed, timeout=5)
             return view.content.packages.table.read()
 
     def install_package(self, entity_name, package):
         """Installs package on host using the installation modal"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
         view.content.packages.select()
         view.content.packages.dropdown.wait_displayed()
         view.content.packages.dropdown.item_select('Install packages')
         view = InstallPackagesView(self.browser)
-        view.wait_displayed()
+
         view.searchbar.fill(package)
         # wait for filter to apply
-        self.browser.plugin.ensure_page_safe()
+
         view.table[0][0].widget.fill(True)
         view.install.click()
 
@@ -429,10 +406,9 @@ class NewHostEntity(HostEntity):
     def apply_package_action(self, entity_name, package_name, action):
         """Apply `action` to selected package based on the `package_name`"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
         view.content.packages.searchbar.fill(package_name)
         # wait for filter to apply
-        self.browser.plugin.ensure_page_safe()
+
         view.content.packages.table.wait_displayed()
         view.content.packages.table[0][5].widget.item_select(action)
         view.flash.assert_no_error()
@@ -458,7 +434,6 @@ class NewHostEntity(HostEntity):
         note: all of the optional params being None, will result in no filtering.
         """
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
         view.content.errata.select()
         # optional: filter by params that are not None
         if installable is not None:
@@ -475,16 +450,15 @@ class NewHostEntity(HostEntity):
             view.content.errata.searchbar.fill(search)
         # displayed the table with or without filters
         view.content.errata.table.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+
         return view.content.errata.table.read()
 
     def get_errata_by_type(self, entity_name, type):
         """List errata based on type and return table"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
         view.content.errata.select()
         view.content.errata.type_filter.fill(type)
-        self.browser.plugin.ensure_page_safe()
+
         view.content.errata.table.wait_displayed()
         return view.read(widget_names='content.errata.table')
 
@@ -501,13 +475,12 @@ class NewHostEntity(HostEntity):
         errata_types = ['Security', 'Bugfix', 'Enhancement']
         errata_counts = dict.fromkeys(errata_types, 0)
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
         view.content.errata.select()
         for type in errata_types:
             view.content.errata.wait_displayed()
             view.content.errata.pagination.set_per_page(50)
             view.content.errata.type_filter.fill(type)
-            self.browser.plugin.ensure_page_safe()
+
             view.content.errata.table.wait_displayed()
             errata_counts[type] = view.content.errata.table.row_count
         return errata_counts
@@ -520,7 +493,6 @@ class NewHostEntity(HostEntity):
         default: None; all available errata are returned and installed.
         """
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
         if search is None:
             # Return all errata, clear the searchbar
             view.content.errata.searchbar.clear()
@@ -529,7 +501,7 @@ class NewHostEntity(HostEntity):
             view.content.errata.searchbar.fill(search)
         # wait for filter to apply
         view.content.errata.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+
         view.content.errata.select_all.click()
         view.content.errata.apply.fill('Apply')
         view.flash.assert_no_error()
@@ -537,21 +509,18 @@ class NewHostEntity(HostEntity):
         # clear the searchbar so any input will not persist
         view.content.errata.searchbar.clear()
         view.content.errata.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
 
     def get_errata_pagination(self, entity_name):
         """Get pagination info from Errata tab on selected host."""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
         view.content.errata.select()
         view.content.errata.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+
         return view.content.errata.pagination
 
     def get_module_streams(self, entity_name, search):
         """Filter module streams"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
         view.content.module_streams.select()
         view.content.module_streams.searchbar.fill(search)
         # wait for filter to apply
@@ -562,10 +531,9 @@ class NewHostEntity(HostEntity):
     def apply_module_streams_action(self, entity_name, module_stream, action):
         """Apply `action` to selected Module stream based on the `module_stream`"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
         view.content.module_streams.searchbar.fill(module_stream)
         # wait for filter to apply
-        self.browser.plugin.ensure_page_safe()
+
         view.content.module_streams.table[0][5].widget.item_select(action)
         modal = ModuleStreamDialog(self.browser)
         if modal.is_displayed:
@@ -576,18 +544,15 @@ class NewHostEntity(HostEntity):
     def get_repo_sets(self, entity_name, search):
         """Get all repository sets available for host"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
         view.content.repository_sets.searchbar.fill(search)
-        self.browser.plugin.ensure_page_safe()
-        time.sleep(3)
+
         return view.content.repository_sets.table.read()
 
     def override_repo_sets(self, entity_name, repo_set, action):
         """Change override for repository set"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
         view.content.repository_sets.searchbar.fill(repo_set)
-        self.browser.plugin.ensure_page_safe()
+
         view.content.repository_sets.table[0][6].widget.click()
         view.content.repository_sets.repo_set_action.item_select(action)
         view.flash.assert_no_error()
@@ -596,8 +561,6 @@ class NewHostEntity(HostEntity):
     def override_multiple_repo_sets(self, entity_name, repo_set, repo_type, action):
         """Change override for multiple repository sets without using the Select All method"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.content.repository_sets.searchbar.fill(repo_set)
         view.content.repository_sets.table[0][0].widget.click()
         view.content.repository_sets.dropdown.item_select(action)
@@ -607,8 +570,6 @@ class NewHostEntity(HostEntity):
     def bulk_override_repo_sets(self, entity_name, repo_type, action):
         """Change override for repository set"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.content.repository_sets.repository_type.item_select(repo_type)
         view.content.repository_sets.select_all.click()
         view.content.repository_sets.dropdown.item_select(action)
@@ -617,8 +578,6 @@ class NewHostEntity(HostEntity):
 
     def add_single_ansible_role(self, entity_name, role=None):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         wait_for(lambda: view.ansible.roles.edit.is_displayed, timeout=5)
         view.ansible.roles.edit.click()
         wait_for(lambda: EditAnsibleRolesView(self.browser).addAnsibleRole.is_displayed, timeout=10)
@@ -628,29 +587,22 @@ class NewHostEntity(HostEntity):
 
     def get_ansible_roles(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         wait_for(lambda: view.ansible.roles.table.is_displayed, timeout=5)
         return view.ansible.roles.table.read()
 
     def get_ansible_roles_modal(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.ansible.roles.assignedRoles.click()
         view = AllAssignedRolesView(self.browser)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+
         return view.table.read()
 
     def remove_single_ansible_role(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.ansible.roles.edit.click()
         wait_for(lambda: view.ansible.roles.edit.click(), timeout=5)
         edit_view = EditAnsibleRolesView(self.browser)
-        edit_view.wait_displayed()
+
         actions = [edit_view.hostAssignedAnsibleRoles, edit_view.unselectRoles, edit_view.confirm]
         for action in actions:
             action.click()
@@ -658,8 +610,6 @@ class NewHostEntity(HostEntity):
 
     def enable_tracer(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.traces.enable_traces.click()
         modal = EnableTracerView(self.browser)
         if modal.is_displayed:
@@ -669,66 +619,45 @@ class NewHostEntity(HostEntity):
 
     def get_tracer(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         return view.traces.read()
 
     def get_tracer_tab_title(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.traces.click()
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+
         return view.traces.title.text
 
     def get_os_info(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         return view.details.operating_system.read()
 
     def get_provisioning_info(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         return view.details.provisioning.read()
 
     def get_bios_info(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         return view.details.bios.read()
 
     def get_registration_details(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         return view.details.registration_details.read()
 
     def get_hw_properties(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         return view.details.hw_properties.read()
 
     def get_provisioning_templates(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         d = view.details.read()
         return d['provisioning_templates']['templates_table']
 
     def get_networking_interfaces(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         return view.details.networking_interfaces.networking_interfaces_accordion.items()
 
     def get_networking_interfaces_details(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         net_devices = [
             i.split()[0]
             for i in view.details.networking_interfaces.networking_interfaces_accordion.items()
@@ -764,21 +693,17 @@ class NewHostEntity(HostEntity):
 
     def get_installed_products(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         installed_products_list = view.details.installed_products.read()
         return installed_products_list['installed_products_list']
 
     def get_parameters(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         return view.parameters.read()
 
     def get_virtualization(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.details.virtualization.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+
         return view.details.virtualization.read()
 
     def add_new_parameter(self, entity_name, parameter_name, parameter_type, parameter_value):
@@ -806,12 +731,10 @@ class NewHostEntity(HostEntity):
             )
 
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.parameters.click()
         view.parameters.table_header.sort_by('name', 'ascending')
         view.parameters.searchbar.fill(parameter_name)
-        view.wait_displayed()
+
         # Check if parameter with given name does not exist. If it does, raise ValueError.
         if view.parameters.parameters_table.row_count != 0:
             if view.parameters.parameters_table[0][0].text == parameter_name:
@@ -863,12 +786,10 @@ class NewHostEntity(HostEntity):
             )
 
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.parameters.click()
         view.parameters.table_header.sort_by('name', 'ascending')
         view.parameters.searchbar.fill(parameter_to_change)
-        view.wait_displayed()
+
         if (view.parameters.parameters_table.row_count == 0) or (
             view.parameters.parameters_table[0][0].text != parameter_to_change
         ):
@@ -878,7 +799,7 @@ class NewHostEntity(HostEntity):
             )
 
         view.parameters.searchbar.fill(new_parameter_name)
-        view.wait_displayed()
+
         if view.parameters.parameters_table.row_count != 0:
             if view.parameters.parameters_table[0][0].text == new_parameter_name:
                 raise ValueError(
@@ -887,10 +808,10 @@ class NewHostEntity(HostEntity):
                 )
 
         view.parameters.searchbar.fill(parameter_to_change)
-        view.wait_displayed()
+
         # Click edit button in the row
         view.parameters.parameters_table[0][4].widget.click()
-        view.wait_displayed()
+
         if new_parameter_name:
             view.parameters.parameter_name_input.fill(new_parameter_name)
         if new_parameter_type:
@@ -912,11 +833,9 @@ class NewHostEntity(HostEntity):
         """
 
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.parameters.click()
         view.parameters.searchbar.fill(parameter_name)
-        view.wait_displayed()
+
         # Fail if there are no parameters or if first parameter is not the one we are looking for
         if (view.parameters.parameters_table.row_count == 0) or (
             view.parameters.parameters_table[0][0].text != parameter_name
@@ -932,14 +851,10 @@ class NewHostEntity(HostEntity):
 
     def get_traces(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         return view.traces.read()
 
     def get_puppet_details(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         reports_table = view.puppet.puppet_reports_table.read()
         x = view.puppet.puppet_details.read()
         x['reports_table'] = reports_table
@@ -947,27 +862,19 @@ class NewHostEntity(HostEntity):
 
     def get_puppet_enc_preview(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         return view.puppet.enc_preview.read()
 
     def get_reports(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         return view.reports.read()
 
     def get_insights(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         wait_for(lambda: view.insights.recommendations_table.is_displayed, timeout=10)
         return view.insights.read()
 
     def get_vulnerabilities(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         wait_for(lambda: view.vulnerabilities.vulnerabilities_table.is_displayed, timeout=30)
         vulnerabilities = getattr(view.vulnerabilities, 'vulnerabilities_table', None)
         if vulnerabilities is not None:
@@ -977,17 +884,12 @@ class NewHostEntity(HostEntity):
 
     def get_recommendations(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         wait_for(lambda: view.iop_recommendations.recommendations_table.is_displayed, timeout=30)
         return view.iop_recommendations.recommendations_table.read()
 
     def remediate_host_recommendation(self, entity_name, recommendation):
         """Function that can remediate an iop recommendation from the host page"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
-        wait_for(lambda: view.iop_recommendations.is_displayed, timeout=30)
         view.iop_recommendations.search_field.fill(recommendation)
         wait_for(lambda: view.iop_recommendations.recommendations_table.is_displayed, timeout=30)
         wait_for(
@@ -999,7 +901,7 @@ class NewHostEntity(HostEntity):
         row[1].widget.fill(True)
         view.iop_recommendations.remediate.wait_displayed()
         view.iop_recommendations.remediate.click()
-        self.browser.plugin.ensure_page_safe(timeout='30s')
+
         modal = RemediateSummary(self.browser)
         wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
         modal.remediate.click()
@@ -1010,13 +912,10 @@ class NewHostEntity(HostEntity):
     def bulk_remediate_host_recommendation(self, entity_name):
         """Function that can bulk remediate an iop recommendation from the host page"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
-        wait_for(lambda: view.iop_recommendations.is_displayed, timeout=30)
         view.iop_recommendations.bulk_select.select_all()
         view.iop_recommendations.remediate.wait_displayed()
         view.iop_recommendations.remediate.click()
-        self.browser.plugin.ensure_page_safe(timeout='30s')
+
         modal = RemediateSummary(self.browser)
         wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
         modal.remediate.click()
@@ -1050,8 +949,6 @@ class NewHostEntity(HostEntity):
             )
 
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         if remediate_all:
             view.insights.select_all_one_page.click()
             view.insights.select_all_pages.click()
@@ -1067,9 +964,7 @@ class NewHostEntity(HostEntity):
                     _rec = recommendation.replace('"', '\\"')
                     _rec = f'title = "{_rec}"'
                     view.insights.search_bar.fill(_rec, enter_timeout=3)
-                    view.wait_displayed()
-                    self.browser.plugin.ensure_page_safe()
-                    time.sleep(3)
+
                     try:
                         # Click the checkbox of the first recommendation
                         view.insights.recommendations_table[0][0].widget.click()
@@ -1083,9 +978,7 @@ class NewHostEntity(HostEntity):
                 recommendation_to_remediate = recommendation_to_remediate.replace('"', '\\"')
                 recommendation_to_remediate = f'title = "{recommendation_to_remediate}"'
                 view.insights.search_bar.fill(recommendation_to_remediate, enter_timeout=3)
-                view.wait_displayed()
-                self.browser.plugin.ensure_page_safe()
-                time.sleep(3)
+
                 try:
                     # Click the checkbox of the first recommendation
                     view.insights.recommendations_table[0][0].widget.click()
@@ -1100,8 +993,6 @@ class NewHostEntity(HostEntity):
 
     def get_host_facts(self, entity_name, fact=None):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe()
-        view.wait_displayed()
         self.browser.wait_for_element(view.dropdown, exception=False)
         view.dropdown.item_select('Facts')
         host_facts_view = HostFactView(self.browser)
@@ -1113,8 +1004,6 @@ class NewHostEntity(HostEntity):
 
     def refresh_applicability(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.dropdown.item_select('Refresh applicability')
 
     def update_variable_value(self, entity_name, key, value):
@@ -1142,8 +1031,7 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'NewUIAll')
         view.actions.item_select('Legacy UI')
         legacy_view = LegacyHostsView(self.browser)
-        legacy_view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+
         return legacy_view
 
 
@@ -1153,7 +1041,6 @@ class ShowAllHosts(NavigateStep):
 
     VIEW = HostsView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'All Hosts')
 
@@ -1169,7 +1056,7 @@ class ShowNewHostDetails(NavigateStep):
     VIEW = NewHostDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, 'NewUIAll')
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')

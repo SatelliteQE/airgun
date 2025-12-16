@@ -3,7 +3,6 @@ from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.discoveredhosts import DiscoveredHostsView
 from airgun.views.discoveryrule import (
     DiscoveryRuleCreateView,
@@ -132,7 +131,6 @@ class ShowAllDiscoveryRules(NavigateStep):
 
     VIEW = DiscoveryRulesView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Configure', 'Discovery Rules')
 

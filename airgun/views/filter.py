@@ -6,18 +6,16 @@ from widgetastic.widget import (
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly4 import Pagination as PF4Pagination
 
-from airgun.views.common import BaseLoggedInView
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 from airgun.widgets import (
     ActionsDropdown,
     PF4FilteredDropdown,
     PF4MultiSelect,
-    Search,
 )
 
 
-class FiltersView(BaseLoggedInView):
+class FiltersView(BaseLoggedInView, SearchableViewMixin):
     breadcrumb = BreadCrumb()
-    searchbox = Search()
     new = Text("//a[contains(@href, '/filters/new')]")
     table = Table(
         './/table',
@@ -29,19 +27,20 @@ class FiltersView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Roles'
             and self.breadcrumb.read().endswith(' filters')
         )
 
     def search(self, query):
         value = self.searchbox.read()
+
         role_id = [int(s) for s in value.split() if s.isdigit()]
         if len(role_id) > 0:
             query = f'role_id = {role_id[0]} and resource = "{query}"'
-        self.searchbox.search(query)
+
+        super().search(query)
         return self.table.read()
 
 
@@ -56,9 +55,8 @@ class FilterDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Roles'
             and self.breadcrumb.read().startswith('Edit filter for ')
         )
@@ -67,9 +65,8 @@ class FilterDetailsView(BaseLoggedInView):
 class FilterCreateView(FilterDetailsView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Roles'
             and self.breadcrumb.read() == 'Create Filter'
         )

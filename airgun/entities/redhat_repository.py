@@ -1,8 +1,5 @@
-from wait_for import wait_for
-
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.redhat_repository import RedHatRepositoriesView
 
 
@@ -18,7 +15,6 @@ class RedHatRepositoryEntity(BaseEntity):
             eg: RPM, OSTree ...
         """
         view = self.navigate_to(self, 'All')
-        wait_for(lambda: view.search_box.is_displayed, timeout=10, delay=1)
         return view.search(value, category=category, types=types)
 
     def read(self, entity_name=None, category='Available', recommended_repo=None, filter_type=None):
@@ -30,7 +26,6 @@ class RedHatRepositoryEntity(BaseEntity):
         :param filter_type: repository type such as RPM, Kickstart
         """
         view = self.navigate_to(self, 'All')
-        view.wait_displayed()
 
         view.search_by_filter_type.select('')
         if filter_type:
@@ -59,7 +54,6 @@ class RedHatRepositoryEntity(BaseEntity):
                     If custom_query is used, set entity_name to None when calling this function!!!
         """
         view = self.navigate_to(self, 'All')
-        wait_for(lambda: view.search_box.is_displayed, timeout=10, delay=1)
         custom_query = f'name = "{entity_name}"' if custom_query is None else custom_query
         view.search(custom_query, category='Available')
         arch_version = f'{arch} {version}' if version else arch
@@ -74,7 +68,6 @@ class RedHatRepositoryEntity(BaseEntity):
         :param bool orphaned: Whether the repository is Orphaned
         """
         view = self.navigate_to(self, 'All')
-        view.wait_displayed()
         view.search(f'name = "{entity_name}"', category='Enabled')
         entity_text = f'{entity_name} (Orphaned)' if orphaned else entity_name
         view.enabled.items(name=entity_text)[0].disable()
@@ -88,6 +81,5 @@ class ShowAllRepositories(NavigateStep):
 
     VIEW = RedHatRepositoriesView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Red Hat Repositories')

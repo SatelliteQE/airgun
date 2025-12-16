@@ -3,7 +3,6 @@ from wait_for import TimedOutError, wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.subscription import (
     AddSubscriptionView,
     DeleteManifestConfirmationView,
@@ -248,7 +247,6 @@ class SubscriptionList(SubscriptionNavigationStep):
 
     VIEW = SubscriptionListView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Subscriptions')
 

@@ -2,7 +2,6 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.media import MediaCreateView, MediaEditView, MediumView
 
 
@@ -48,7 +47,6 @@ class ShowAllMedium(NavigateStep):
 
     VIEW = MediumView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Provisioning Setup', 'Installation Media')
 

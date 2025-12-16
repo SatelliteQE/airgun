@@ -1,11 +1,8 @@
-import time
-
 from navmazing import NavigateToSibling
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.dynflowconsole import DynflowConsoleView
 from airgun.views.job_invocation import (
     JobInvocationCreateView,
@@ -50,16 +47,16 @@ class JobInvocationEntity(BaseEntity):
 
     def submit_prefilled_view(self):
         """This entity loads pre filled job invocation view and submits it."""
-        time.sleep(3)
+
         view = JobInvocationCreateView(self.browser)
-        time.sleep(3)
+
         view.submit.click()
 
     def get_job_category_and_template(self):
         """Reads selected job category and template for job invocation."""
-        time.sleep(3)
+
         view = JobInvocationCreateView(self.browser)
-        time.sleep(3)
+
         read_values = {
             'job_category': view.category_and_template.job_category.read(),
             'job_template': view.category_and_template.job_template_text_input.read(),
@@ -68,9 +65,9 @@ class JobInvocationEntity(BaseEntity):
 
     def get_targeted_hosts(self):
         """Read targeted hosts for job invocation."""
-        time.sleep(3)
+
         view = JobInvocationCreateView(self.browser)
-        time.sleep(3)
+
         return view.target_hosts_and_inputs.read()
 
     def read_hostgroups(self):
@@ -121,7 +118,6 @@ class ShowAllJobs(NavigateStep):
 
     VIEW = JobInvocationsView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Monitor', 'Jobs')
 

@@ -1,9 +1,3 @@
-import functools
-import time
-
-from wait_for import TimedOutError
-
-
 def merge_dict(values, new_values):
     """Update dict values with new values from new_values dict
 
@@ -75,22 +69,3 @@ def get_widget_by_name(widget_root, widget_name):
                 )
         widget = getattr(widget, name)
     return widget
-
-
-def retry_navigation(method):
-    """Decorator to invoke method one or more times, if TimedOutError is raised."""
-
-    @functools.wraps(method)
-    def retry_wrapper(*args, **kwargs):
-        attempts = 3
-        for i in range(attempts):
-            try:
-                return method(*args, **kwargs)
-            except TimedOutError:
-                if i < attempts - 1:
-                    args[0].view.parent.browser.refresh()
-                    time.sleep(0.5)
-                else:
-                    raise
-
-    return retry_wrapper
