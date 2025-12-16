@@ -1,7 +1,7 @@
 from widgetastic.widget import Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import (
     ActionsDropdown,
     CustomParameter,
@@ -66,7 +66,7 @@ class TemplatesList(View):
             result[title].fill(select_value)
 
 
-class OperatingSystemsView(BaseLoggedInView, SearchableViewMixinPF4):
+class OperatingSystemsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Operating Systems']")
     new = Text("//a[contains(@href, '/operatingsystems/new')]")
     table = Table(
@@ -79,7 +79,7 @@ class OperatingSystemsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class OperatingSystemEditView(BaseLoggedInView):
@@ -88,9 +88,8 @@ class OperatingSystemEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Operating Systems'
             and self.breadcrumb.read().startswith('Edit ')
         )
@@ -129,9 +128,8 @@ class OperatingSystemEditView(BaseLoggedInView):
 class OperatingSystemCreateView(OperatingSystemEditView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Operating Systems'
             and self.breadcrumb.read() == 'Create Operating System'
         )

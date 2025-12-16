@@ -13,11 +13,11 @@ from widgetastic_patternfly5.ouia import (
     Title as PF5OUIATitle,
 )
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 from airgun.widgets import SearchInput
 
 
-class FlatpakRemotesView(BaseLoggedInView, SearchableViewMixinPF4):
+class FlatpakRemotesView(BaseLoggedInView, SearchableViewMixin):
     """View for the Flatpak Remotes page"""
 
     title = Text("//h1[normalize-space(.)='Flatpak Remotes']")
@@ -39,10 +39,10 @@ class FlatpakRemotesView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.create_new_btn, exception=False) is not None
+        return self.create_new_btn.is_displayed
 
 
-class FlatpakRemoteDetailsView(BaseLoggedInView, SearchableViewMixinPF4):
+class FlatpakRemoteDetailsView(BaseLoggedInView, SearchableViewMixin):
     """View for the Flatpak Remote details page"""
 
     title = PF5OUIATitle('flatpak-remote-title')
@@ -64,7 +64,7 @@ class FlatpakRemoteDetailsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class CreateFlatpakRemoteModal(PF5Modal):
@@ -87,7 +87,7 @@ class CreateFlatpakRemoteModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class EditFlatpakRemoteModal(PF5Modal):
@@ -107,10 +107,10 @@ class EditFlatpakRemoteModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
-class MirrorFlatpakRemoteModal(PF5Modal, SearchableViewMixinPF4):
+class MirrorFlatpakRemoteModal(PF5Modal, SearchableViewMixin):
     """View for the Mirror Flatpak Remote modal"""
 
     ROOT = './/div[@data-ouia-component-id="mirror-repo-modal"]'
@@ -126,7 +126,7 @@ class MirrorFlatpakRemoteModal(PF5Modal, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class FlatpakRemoteDeleteModal(PF5Modal):
@@ -141,4 +141,4 @@ class FlatpakRemoteDeleteModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed

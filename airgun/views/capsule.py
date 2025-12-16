@@ -25,7 +25,7 @@ from widgetastic_patternfly5.ouia import (
 from airgun.views.common import (
     BaseLoggedInView,
     SatTab,
-    SearchableViewMixinPF4,
+    SearchableViewMixin,
 )
 from airgun.widgets import (
     ActionsDropdown,
@@ -253,7 +253,7 @@ class CapsuleDetailsView(BaseLoggedInView):
             return result
 
 
-class CapsulesView(BaseLoggedInView, SearchableViewMixinPF4):
+class CapsulesView(BaseLoggedInView, SearchableViewMixin):
     """Class that describes the Capsule Details page"""
 
     title = Text('//h1[normalize-space(.)="Capsules"]')
@@ -278,4 +278,4 @@ class CapsulesView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed

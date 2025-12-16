@@ -2,7 +2,6 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.common import BaseLoggedInView, WrongContextAlert
 from airgun.views.organization import (
     OrganizationCreateView,
@@ -22,6 +21,10 @@ class OrganizationEntity(BaseEntity):
         view.flash.assert_no_error()
         view.flash.dismiss()
 
+        view = OrganizationEditView(view.browser)
+        view.wait_displayed()
+        view.submit.click()
+
     def delete(self, entity_name):
         """Delete existing organization"""
         view = self.navigate_to(self, 'All')
@@ -34,7 +37,9 @@ class OrganizationEntity(BaseEntity):
     def read(self, entity_name, widget_names=None):
         """Read specific organization details"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        return view.read(widget_names=widget_names)
+        result = view.read(widget_names=widget_names)
+        view.cancel.click()
+        return result
 
     def search(self, value):
         """Search for organization entity"""
@@ -60,7 +65,6 @@ class ShowAllOrganizations(NavigateStep):
 
     VIEW = OrganizationsView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Administer', 'Organizations')
 
@@ -124,7 +128,5 @@ class SelectOrganizationContext(NavigateStep):
         wrong_context_view = WrongContextAlert(self.view.browser)
         if wrong_context_view.is_displayed:
             wrong_context_view.back.click()
-            self.view.browser.wait_for_element(
-                self.view.menu, exception=False, ensure_page_safe=True
-            )
+            self.view.wait_displayed()
         super().post_navigate(_tries, *args, **kwargs)

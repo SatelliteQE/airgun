@@ -2,7 +2,7 @@ from widgetastic.widget import Text, TextInput
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly5.ouia import PatternflyTable as PF5OUIATable
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 from airgun.views.host_new import MenuToggleButtonMenu
 from airgun.widgets import Pf5ConfirmationDialog
 
@@ -12,7 +12,7 @@ class DeleteHardwareModelDialog(Pf5ConfirmationDialog):
     cancel_dialog = Text(".//button[normalize-space(.)='Cancel']")
 
 
-class HardwareModelsView(BaseLoggedInView, SearchableViewMixinPF4):
+class HardwareModelsView(BaseLoggedInView, SearchableViewMixin):
     delete_dialog = DeleteHardwareModelDialog()
     title = Text("//h1[normalize-space(.)='Hardware models']")
     new = Text("//a[contains(@href, '/models/new')]")
@@ -26,7 +26,7 @@ class HardwareModelsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class HardwareModelCreateView(BaseLoggedInView):
@@ -39,9 +39,8 @@ class HardwareModelCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Hardware Models'
             and self.breadcrumb.read() == 'Create Model'
         )
@@ -50,9 +49,8 @@ class HardwareModelCreateView(BaseLoggedInView):
 class HardwareModelEditView(HardwareModelCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Hardware Models'
             and self.breadcrumb.read().startswith('Edit ')
         )
