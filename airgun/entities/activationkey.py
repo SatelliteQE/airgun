@@ -2,7 +2,6 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.activationkey import (
     ActivationKeyCreateView,
     ActivationKeyEditView,
@@ -16,7 +15,6 @@ class ActivationKeyEntity(BaseEntity):
     def create(self, values):
         """Create new activation key entity"""
         view = self.navigate_to(self, 'New')
-        view.wait_displayed()
         view.fill(values)
         view.submit.click()
 
@@ -70,8 +68,6 @@ class ActivationKeyEntity(BaseEntity):
             raise ValueError("Host limit must be either string 'unlimited' or an integer")
 
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.details.host_limit_edit_btn.click()
         view.details.unlimited_content_host_checkbox.fill(host_limit == 'unlimited')
         if host_limit != 'unlimited':
@@ -127,7 +123,6 @@ class ShowAllActivationKeys(NavigateStep):
 
     VIEW = ActivationKeysView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Lifecycle', 'Activation Keys')
 

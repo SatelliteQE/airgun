@@ -1,7 +1,7 @@
 from widgetastic.widget import Text, View
 
 from airgun.exceptions import ReadOnlyWidgetError
-from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 from airgun.widgets import SatTableWithoutHeaders
 
 
@@ -31,10 +31,10 @@ class AuditEntry(View):
         raise ReadOnlyWidgetError('View is read only, fill is prohibited')
 
 
-class AuditsView(BaseLoggedInView, SearchableViewMixinPF4):
+class AuditsView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Audits']")
     table = AuditEntry()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed

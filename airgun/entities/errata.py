@@ -1,7 +1,6 @@
 from airgun import ERRATA_REGEXP
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.errata import (
     ErrataDetailsView,
     ErrataInstallationConfirmationView,
@@ -98,7 +97,7 @@ class ErrataEntity(BaseEntity):
         view.content_hosts.apply.click()
         # brought to confirmation page
         view = ErrataInstallationConfirmationView(view.browser)
-        view.wait_displayed()
+
         view.confirm.click()
         # wait for redirect to task details page
         view = JobInvocationStatusView(view.browser)
@@ -130,7 +129,6 @@ class ShowAllErratum(NavigateStep):
 
     VIEW = ErratumView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Content Types', 'Errata')
 

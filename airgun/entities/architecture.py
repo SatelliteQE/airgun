@@ -2,7 +2,6 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.architecture import (
     ArchitectureCreateView,
     ArchitectureDetailsView,
@@ -18,13 +17,15 @@ class ArchitectureEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         view.submit.click()
+
         view.flash.assert_no_error()
         view.flash.dismiss()
 
-    def search(self, value):
+    def search(self, entity_name):
         """Search for architecture entity"""
         view = self.navigate_to(self, 'All')
-        return view.search(value)
+        view.search(entity_name)
+        return view.table.read()
 
     def read(self, entity_name, widget_names=None):
         """Read all values for created architecture entity"""
@@ -34,16 +35,19 @@ class ArchitectureEntity(BaseEntity):
     def update(self, entity_name, values):
         """Update necessary values for architecture"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+
         view.fill(values)
         view.submit.click()
+
         view.flash.assert_no_error()
         view.flash.dismiss()
 
     def delete(self, entity_name):
         """Remove existing architecture entity"""
         view = self.navigate_to(self, 'All')
-        view.searchbox.search(entity_name)
+        view.search(entity_name)
         view.table.row(name=entity_name)['Actions'].widget.click(handle_alert=True)
+
         view.flash.assert_no_error()
         view.flash.dismiss()
 
@@ -54,7 +58,6 @@ class ShowAllArchitectures(NavigateStep):
 
     VIEW = ArchitecturesView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Provisioning Setup', 'Architectures')
 

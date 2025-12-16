@@ -31,7 +31,7 @@ class PuppetEnvironmentTableView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class PuppetEnvironmentImportView(BaseLoggedInView, SearchableViewMixin):
@@ -55,9 +55,8 @@ class PuppetEnvironmentImportView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Environments'
             and self.breadcrumb.read() == 'Changed Environments'
         )
@@ -74,9 +73,8 @@ class PuppetEnvironmentCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Environments'
             and self.breadcrumb.read() == 'Create Environment'
         )

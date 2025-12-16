@@ -1,7 +1,7 @@
 from widgetastic.widget import Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import (
     CustomParameter,
     FilteredDropdown,
@@ -10,7 +10,7 @@ from airgun.widgets import (
 )
 
 
-class SubnetsView(BaseLoggedInView, SearchableViewMixinPF4):
+class SubnetsView(BaseLoggedInView, SearchableViewMixin):
     title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="Subnets"]')
     new = Text('//a[normalize-space(.)="Create Subnet"]')
     table = Table(
@@ -24,7 +24,7 @@ class SubnetsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class SubnetCreateView(BaseLoggedInView):
@@ -33,9 +33,8 @@ class SubnetCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Subnets'
             and self.breadcrumb.read() == 'Create Subnet'
         )
@@ -88,9 +87,8 @@ class SubnetCreateView(BaseLoggedInView):
 class SubnetEditView(SubnetCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Subnets'
             and self.breadcrumb.read().startswith('Edit ')
         )

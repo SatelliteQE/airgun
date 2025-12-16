@@ -2,7 +2,9 @@
 
 from cached_property import cached_property
 import navmazing
+from navmazing import NavigationTriesExceeded
 from selenium.common.exceptions import NoSuchElementException
+from wait_for import TimedOutError, wait_for
 
 
 class NavigateStep(navmazing.NavigateStep):
@@ -76,16 +78,51 @@ class NavigateStep(navmazing.NavigateStep):
         except (AttributeError, NoSuchElementException):
             return False
 
-    def go(self, _tries=0, *args, **kwargs):
-        """Wrapper around :meth:`navmazing.NavigateStep.go` which returns
-        instance of view after successful navigation flow.
+    def go(self, _tries=None, wait_for_am_i_here=True, wait_timeout=10, *args, **kwargs):
+        """Navigate with built-in retry and post-navigation validation.
 
+        :param _tries: number of navigation attempts (default: 3)
+        :param wait_for_am_i_here: whether to validate navigation succeeded by
+            waiting for am_i_here to return True (default: True)
+        :param wait_timeout: seconds to wait for validation (default: 10)
         :return: view instance if class attribute ``VIEW`` is set or ``None``
             otherwise
         """
-        super().go(*args, _tries=_tries, **kwargs)
-        view = self.view if self.VIEW is not None else None
-        return view
+        __tracebackhide__ = True
+        max_tries = _tries if _tries is not None else getattr(self, '_default_tries', 3)
+
+        for attempt in range(0, max_tries + 1):
+            try:
+                # Call parent class navigation logic
+                super().go(*args, _tries=0, **kwargs)
+
+                # Validate navigation succeeded
+                if wait_for_am_i_here and self.VIEW is not None:
+                    wait_for(
+                        self.am_i_here,
+                        func_args=args,
+                        func_kwargs=kwargs,
+                        num_sec=wait_timeout,
+                        message=f'Waiting for am_i_here of {type(self).__name__}',
+                        handle_exception=True,
+                        raise_original=True,
+                    )
+
+                return self.view if self.VIEW is not None else None
+
+            except (TimedOutError, NoSuchElementException) as e:
+                if attempt < max_tries:
+                    if self.logger:
+                        self.logger.info(
+                            f'Navigation attempt {attempt + 1} failed: {e}, retrying...'
+                        )
+                    continue
+                else:
+                    raise
+
+        raise NavigationTriesExceeded(
+            f'{type(self.obj).__name__}, "{self._name}" - failed after {max_tries} attempts'
+        )
 
 
 class Navigate(navmazing.Navigate):

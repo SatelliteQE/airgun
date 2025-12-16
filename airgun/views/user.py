@@ -1,11 +1,11 @@
 from widgetastic.widget import Checkbox, Table, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import FilteredDropdown, MultiSelect
 
 
-class UsersView(BaseLoggedInView, SearchableViewMixinPF4):
+class UsersView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Users']")
     new = Text("//a[contains(@href, '/users/new')]")
     dropdown = Text("//a[@href='#' and contains(@class, 'dropdown-toggle')]")
@@ -22,7 +22,7 @@ class UsersView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class UserDetailsView(BaseLoggedInView):
@@ -31,9 +31,8 @@ class UserDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Users'
             and self.breadcrumb.read().startswith('Edit ')
         )
@@ -68,9 +67,8 @@ class UserDetailsView(BaseLoggedInView):
 class UserCreateView(UserDetailsView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Users'
             and self.breadcrumb.read() == 'Create User'
         )

@@ -139,7 +139,7 @@ class CloudInventoryListView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
     def read(self, widget_names=None):
         final_dict = {

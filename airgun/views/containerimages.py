@@ -26,9 +26,8 @@ class SyncedContainerPullablePath(View):
     )
 
 
-class ContainerImagesView(BaseLoggedInView):
+class ContainerImagesView(BaseLoggedInView, SearchableViewMixin):
     title = PF5OUIATitle('container-images-title')
-    searchbox = PF4Search()
 
     # Passing in the nested table as content_view, refer to ExpandableTable docs for info
     table = CompoundExpandableTable(

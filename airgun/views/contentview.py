@@ -29,7 +29,7 @@ class ContentViewTableView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ContentViewCreateView(BaseLoggedInView):
@@ -44,9 +44,8 @@ class ContentViewCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.read() == 'New Content View'
         )
@@ -61,9 +60,8 @@ class ContentViewCopyView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
             and self.breadcrumb.read() == 'Copy'
@@ -84,9 +82,8 @@ class ContentViewRemoveView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
             and self.breadcrumb.read() == 'Deletion'
@@ -103,9 +100,8 @@ class ContentViewEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and len(self.breadcrumb.locations) <= self.BREADCRUMB_LENGTH
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.read() != 'New Content View'
@@ -199,9 +195,8 @@ class ContentViewVersionPublishView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.read() == 'Publish'
         )
@@ -232,9 +227,8 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.locations[2] == 'Versions'
@@ -278,9 +272,8 @@ class ContentViewVersionPromoteView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.read() == 'Promotion'
         )
@@ -301,9 +294,8 @@ class ContentViewVersionRemoveView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
             and self.breadcrumb.read() == 'Deletion'
@@ -321,9 +313,8 @@ class ContentViewVersionRemoveConfirmationView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
             and self.breadcrumb.read() == 'Deletion'

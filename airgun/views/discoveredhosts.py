@@ -45,7 +45,7 @@ class DiscoveredHostsView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
     def is_searchable(self):
         """Verify that search procedure can be executed against discovered
@@ -121,9 +121,8 @@ class DiscoveredHostDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Discovered hosts'
             and self.breadcrumb.locations[1].startswith('Discovered host:')
         )
@@ -138,7 +137,7 @@ class DiscoveredHostsActionDialog(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class DiscoveredHostsAutoProvisionDialog(DiscoveredHostsActionDialog):
@@ -226,9 +225,8 @@ class DiscoveredHostEditProvisioningView(HostCreateView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Discovered hosts'
             and self.breadcrumb.locations[1].startswith('Provision')
         )
