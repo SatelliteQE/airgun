@@ -8,6 +8,7 @@ from airgun.utils import retry_navigation
 from airgun.views.cloud_insights import (
     CloudInsightsView,
     CloudTokenView,
+    DisableRecommendationModal,
     RecommendationsDetailsView,
     RecommendationsTabView,
     RemediateSummary,
@@ -130,6 +131,7 @@ class RecommendationsTabEntity(BaseEntity):
 
         self.browser.plugin.ensure_page_safe(timeout='10s')
         wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
+        view.clear_button.click()
         view.menu_toggle.fill(filter_type)
         view.menu_filter.fill(filter_value)
         self.browser.plugin.ensure_page_safe(timeout='10s')
@@ -142,6 +144,57 @@ class RecommendationsTabEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe(timeout='10s')
         view.wait_displayed()
         return view.read(widget_names=widget_names)
+
+    def disable_recommendation_for_system(self, recommendation_name, hostname=None):
+        """
+        Navigate to affected systems page, open kebab menu for first item,
+        disable recommendation for that system with a justification note.
+        :param recommendation_name: Name of the recommendation
+        :param hostname: Optional hostname to filter by (defaults to first row)
+        :return: None
+        """
+        # Navigate to the Affected Systems details view to disable recommendation
+        view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
+        view.search_field.wait_displayed()
+        if hostname:
+            view.search_field.fill(hostname)
+            wait_for(lambda: view.table.row(name=hostname), handle_exception=True, timeout=20)
+            time.sleep(15)
+        kebab = view.table[0][5].widget
+        kebab.item_select('Disable recommendation for system')
+        modal = DisableRecommendationModal(self.browser)
+        wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=10)
+        if modal.checkbox.selected:
+            modal.checkbox.click()
+        modal.justification_note.fill('test')
+        modal.save.click()
+        wait_for(lambda: not modal.is_displayed, handle_exception=True, timeout=10)
+        return view.read()
+
+    def enable_recommendation_for_system(self, recommendation_name, hostname=None):
+        """
+        Re-enable a previously disabled recommendation for a system.
+        :param recommendation_name: Name of the recommendation
+        :param hostname: Optional hostname to filter by (defaults to first row)
+        :return: None
+        """
+        # Navigate to All Recommendations page
+        view = self.navigate_to(self, 'All Recommendations')
+
+        self.browser.plugin.ensure_page_safe(timeout='10s')
+        wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
+        view.clear_button.click()
+        view.menu_toggle.fill('Status')
+        view.menu_filter.fill('Disabled')
+        self.browser.plugin.ensure_page_safe(timeout='10s')
+        wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
+        if recommendation_name:
+            row = view.table.row(name=recommendation_name)
+            kebab = row[6].widget
+        else:
+            kebab = view.table[0][6].widget
+        kebab.item_select('Enable recommendation')
+        self.browser.plugin.ensure_page_safe(timeout='10s')
 
 
 @navigator.register(RecommendationsTabEntity, 'Affected Systems')
