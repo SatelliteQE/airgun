@@ -13,7 +13,7 @@ from airgun.views.containerimages import (
 
 
 class ContainerImagesEntity(BaseEntity):
-    endpoint_path = '/labs/container_images'
+    endpoint_path = '/container_images'
 
     def read_pullable_paths(self, manifest_tag, manifest_digest):
         """Read synced container list pullable paths info from the modal and the main details page,
@@ -107,7 +107,7 @@ class SyncedContainersTab(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Lab Features', 'Container Images')
+        self.view.menu.select('Content', 'Container Images')
 
 
 @navigator.register(ContainerImagesEntity, 'ManifestDetails')
