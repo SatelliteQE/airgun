@@ -7,12 +7,14 @@ from widgetastic_patternfly5.ouia import (
     Title as PF5OUIATitle,
 )
 
+from airgun.views.all_hosts import MenuToggleDropdownInTable
 from airgun.views.common import BaseLoggedInView, PF4Search
 from airgun.widgets import CompoundExpandableTable  # Import the new widget
-from airgun.views.all_hosts import MenuToggleDropdownInTable
+
 
 class SyncedContainerPullablePath(View):
     """Represents the Synced Container pullable paths table"""
+
     table = PF5OUIATable(
         component_id='manifest-repositories-table',
         column_widgets={
@@ -22,6 +24,7 @@ class SyncedContainerPullablePath(View):
             'Pullable path': Text('.//td[4]'),
         },
     )
+
 
 class ContainerImagesView(BaseLoggedInView):
     title = PF5OUIATitle('container-images-title')
@@ -36,7 +39,7 @@ class ContainerImagesView(BaseLoggedInView):
             'Type': Text('./a'),
             'Product': Text('./a'),
             'Labels | Annotations': Text('./a'),
-            6: MenuToggleDropdownInTable()
+            6: MenuToggleDropdownInTable(),
         },
     )
 
@@ -50,7 +53,9 @@ class ManifestDetailsView(View):
 
     title = PF5OUIATitle('manifest-details-title')
 
-    pullable_paths_expand = PF5Button(locator=".//button[@class='pf-v5-c-expandable-section__toggle']")
+    pullable_paths_expand = PF5Button(
+        locator=".//button[@class='pf-v5-c-expandable-section__toggle']"
+    )
     pullable_paths = SyncedContainerPullablePath()
 
     manifest_name = PF5OUIAText('manifest-name-value')
@@ -73,6 +78,7 @@ class ManifestDetailsView(View):
     def is_displayed(self):
         return self.title.is_displayed
 
+
 class ManifestPullablePathsModal(View):
     """Labels and Annotations Modal for synced container images"""
 
@@ -83,14 +89,15 @@ class ManifestPullablePathsModal(View):
     close_button = PF5OUIAButton('pullable-paths-close-button')
 
 
-
-
 class ManifestLabelAnnotationModal(View):
     """Labels and Annotations Modal for synced container images"""
 
     ROOT = './/div[@data-ouia-component-id="labels-annotations-modal"]'
 
     title = PF5OUIATitle('.//h1')
+    sha_hash = Text('.//p/strong')
+    label_annotation_count = Text('.//p[contains(@style, "bold")]')
+
+    labels_and_annotations = Text('.//div[contains(@class,"pf-m-space-items-sm")]')
 
     confirm = PF5OUIAButton('labels-annotations-close-button')
-    sha_hash = PF5OUIAText('.//p/strong')

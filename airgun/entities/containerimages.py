@@ -7,6 +7,7 @@ from airgun.utils import retry_navigation
 from airgun.views.containerimages import (
     ContainerImagesView,
     ManifestDetailsView,
+    ManifestLabelAnnotationModal,
     ManifestPullablePathsModal,
 )
 
@@ -46,7 +47,7 @@ class ContainerImagesEntity(BaseEntity):
         if manifest_table_pullable_paths == manifest_details_pullable_paths:
             return manifest_details_pullable_paths
         else:
-            raise Exception('Pullable paths information between table and details did not match.')
+            raise ValueError('Pullable paths information between table and details did not match.')
 
     def read_manifest_details(self, manifest_tag, manifest_digest, is_child=False):
         """Read synced container manifest details
@@ -75,10 +76,27 @@ class ContainerImagesEntity(BaseEntity):
         view = self.navigate_to(self, 'Synced')
         if manifest_tag:
             view.searchbox.search(f'tag = {manifest_tag}')
-            view.parent.title.click()
+            view.title.click()
         if expand:
             return view.table.read(expand)
         return view.table.read()
+
+    def read_labels_and_annotations(self, manifest_tag, manifest_digest):
+        """Read synced container labels and annotations modal
+
+        Args:
+            manifest_tag: Tag of the manifest list
+            manifest_digest: Digest of the specific manifest
+        """
+        view = self.navigate_to(self, 'Synced')
+        view.searchbox.search(f'tag = {manifest_tag}')
+        view.title.click()
+        view.table.row(tag=manifest_tag).expand()
+        self.browser.element(
+            f'.//td[./a[text()="{manifest_digest}"]]/following-sibling::td[@data-label="Labels | Annotations"]/button'
+        ).click()
+        view = ManifestLabelAnnotationModal(view.browser)
+        return view.read()
 
 
 @navigator.register(ContainerImagesEntity, 'Synced')
