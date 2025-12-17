@@ -42,6 +42,7 @@ class ContainerImagesEntity(BaseEntity):
             manifest_digest=manifest_digest,
             is_child=False,
         )
+        view.wait_displayed()
         view.pullable_paths_expand.click()
         manifest_details_pullable_paths = view.read()['pullable_paths']['table'][0]
         if manifest_table_pullable_paths == manifest_details_pullable_paths:
