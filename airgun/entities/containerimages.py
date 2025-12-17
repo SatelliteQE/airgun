@@ -3,7 +3,11 @@ from navmazing import NavigateToSibling
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.containerimages import ContainerImagesView, ManifestDetailsView
+from airgun.views.containerimages import (
+    ContainerImagesView,
+    ManifestDetailsView,
+    ManifestLabelAnnotationModal,
+)
 
 
 class ContainerImagesEntity(BaseEntity):
@@ -36,10 +40,27 @@ class ContainerImagesEntity(BaseEntity):
         view = self.navigate_to(self, 'Synced')
         if manifest_tag:
             view.searchbox.search(f'tag = {manifest_tag}')
-            view.parent.title.click()
+            view.title.click()
         if expand:
             return view.table.read(expand)
         return view.table.read()
+
+    def read_labels_and_annotations(self, manifest_tag, manifest_digest):
+        """Read synced container labels and annotations modal
+
+        Args:
+            manifest_tag: Tag of the manifest list
+            manifest_digest: Digest of the specific manifest
+        """
+        view = self.navigate_to(self, 'Synced')
+        view.searchbox.search(f'tag = {manifest_tag}')
+        view.title.click()
+        view.table.row(tag=manifest_tag).expand()
+        self.browser.element(
+            f'.//td[./a[text()="{manifest_digest}"]]/following-sibling::td[@data-label="Labels | Annotations"]/button'
+        ).click()
+        view = ManifestLabelAnnotationModal(view.browser)
+        return view.read()
 
 
 @navigator.register(ContainerImagesEntity, 'Synced')

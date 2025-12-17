@@ -62,6 +62,9 @@ class ManifestLabelAnnotationModal(View):
     ROOT = './/div[@data-ouia-component-id="labels-annotations-modal"]'
 
     title = PF5OUIATitle('.//h1')
+    sha_hash = Text('.//p/strong')
+    label_annotation_count = Text('.//p[contains(@style, "bold")]')
+
+    labels_and_annotations = Text('.//div[contains(@class,"pf-m-space-items-sm")]')
 
     confirm = PF5OUIAButton('labels-annotations-close-button')
-    sha_hash = PF5OUIAText('.//p/strong')
