@@ -8,7 +8,7 @@ from airgun.views.containerimages import (
     ContainerImagesView,
     ManifestDetailsView,
     ManifestLabelAnnotationModal,
-    ManifestPullablePathsModal,
+    PullablePathsModal,
 )
 
 
@@ -23,12 +23,12 @@ class ContainerImagesEntity(BaseEntity):
             manifest_tag: Tag of the manifest list
             manifest_digest: Digest of the specific manifest
         """
-        # Read pullable paths information from the Synced Containers table
+        # Read pullable paths information from the Synced Containers table modal, through the kebab menu
         view = self.navigate_to(self, 'Synced')
         view.searchbox.search(f'tag = {manifest_tag}')
         view.title.click()
         view.table[0][6].widget.item_select('View pullable paths')
-        pullable_modal = ManifestPullablePathsModal(self.browser)
+        pullable_modal = PullablePathsModal(self.browser)
         if pullable_modal.is_displayed:
             manifest_table_pullable_paths = pullable_modal.read()['pullable_paths']['table'][0]
             pullable_modal.close_button.click()

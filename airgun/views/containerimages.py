@@ -79,7 +79,7 @@ class ManifestDetailsView(View):
         return self.title.is_displayed
 
 
-class ManifestPullablePathsModal(View):
+class PullablePathsModal(View):
     """Labels and Annotations Modal for synced container images"""
 
     ROOT = './/div[@data-ouia-component-id="pullable-paths-modal"]'
