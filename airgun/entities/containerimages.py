@@ -1,4 +1,5 @@
 from navmazing import NavigateToSibling
+from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -7,11 +8,47 @@ from airgun.views.containerimages import (
     ContainerImagesView,
     ManifestDetailsView,
     ManifestLabelAnnotationModal,
+    PullablePathsModal,
 )
 
 
 class ContainerImagesEntity(BaseEntity):
-    endpoint_path = '/labs/container_images'
+    endpoint_path = '/container_images'
+
+    def read_pullable_paths(self, manifest_tag, manifest_digest):
+        """Read synced container list pullable paths info from the modal and the main details page,
+            only returning the info if both are the same
+
+        Args:
+            manifest_tag: Tag of the manifest list
+            manifest_digest: Digest of the specific manifest
+        """
+        # Read pullable paths information from the Synced Containers table modal, through the kebab menu
+        view = self.navigate_to(self, 'Synced')
+        view.searchbox.search(f'tag = {manifest_tag}')
+        view.title.click()
+        view.table[0][6].widget.item_select('View pullable paths')
+        pullable_modal = PullablePathsModal(self.browser)
+        if pullable_modal.is_displayed:
+            manifest_table_pullable_paths = pullable_modal.read()['pullable_paths']['table'][0]
+            pullable_modal.close_button.click()
+        else:
+            raise NoSuchElementException('Pullable Paths Modal was not displayed.')
+        # Read pullable paths information from the Manifest Details page
+        view = self.navigate_to(
+            self,
+            'ManifestDetails',
+            manifest_tag=manifest_tag,
+            manifest_digest=manifest_digest,
+            is_child=False,
+        )
+        view.wait_displayed()
+        view.pullable_paths_expand.click()
+        manifest_details_pullable_paths = view.read()['pullable_paths']['table'][0]
+        if manifest_table_pullable_paths == manifest_details_pullable_paths:
+            return manifest_details_pullable_paths
+        else:
+            raise ValueError('Pullable paths information between table and details did not match.')
 
     def read_manifest_details(self, manifest_tag, manifest_digest, is_child=False):
         """Read synced container manifest details
@@ -71,7 +108,7 @@ class SyncedContainersTab(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Lab Features', 'Container Images')
+        self.view.menu.select('Content', 'Container Images')
 
 
 @navigator.register(ContainerImagesEntity, 'ManifestDetails')

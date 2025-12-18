@@ -1,12 +1,29 @@
 from widgetastic.widget import Text, View
+from widgetastic_patternfly5 import Button as PF5Button
 from widgetastic_patternfly5.ouia import (
     Button as PF5OUIAButton,
+    PatternflyTable as PF5OUIATable,
     Text as PF5OUIAText,
     Title as PF5OUIATitle,
 )
 
+from airgun.views.all_hosts import MenuToggleDropdownInTable
 from airgun.views.common import BaseLoggedInView, PF4Search
 from airgun.widgets import CompoundExpandableTable  # Import the new widget
+
+
+class SyncedContainerPullablePath(View):
+    """Represents the Synced Container pullable paths table"""
+
+    table = PF5OUIATable(
+        component_id='manifest-repositories-table',
+        column_widgets={
+            'Environment': Text('.//td[1]'),
+            'Content view': Text('.//td[2]'),
+            'Repository': Text('.//td[3]'),
+            'Pullable path': Text('.//td[4]'),
+        },
+    )
 
 
 class ContainerImagesView(BaseLoggedInView):
@@ -22,6 +39,7 @@ class ContainerImagesView(BaseLoggedInView):
             'Type': Text('./a'),
             'Product': Text('./a'),
             'Labels | Annotations': Text('./a'),
+            6: MenuToggleDropdownInTable(),
         },
     )
 
@@ -34,6 +52,11 @@ class ManifestDetailsView(View):
     """Details page for a specific manifest"""
 
     title = PF5OUIATitle('manifest-details-title')
+
+    pullable_paths_expand = PF5Button(
+        locator=".//button[@class='pf-v5-c-expandable-section__toggle']"
+    )
+    pullable_paths = SyncedContainerPullablePath()
 
     manifest_name = PF5OUIAText('manifest-name-value')
     manifest_repository = PF5OUIAText('manifest-repository-value')
@@ -54,6 +77,16 @@ class ManifestDetailsView(View):
     @property
     def is_displayed(self):
         return self.title.is_displayed
+
+
+class PullablePathsModal(View):
+    """Labels and Annotations Modal for synced container images"""
+
+    ROOT = './/div[@data-ouia-component-id="pullable-paths-modal"]'
+
+    pullable_paths = SyncedContainerPullablePath()
+
+    close_button = PF5OUIAButton('pullable-paths-close-button')
 
 
 class ManifestLabelAnnotationModal(View):
