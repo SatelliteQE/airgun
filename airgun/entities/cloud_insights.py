@@ -181,7 +181,7 @@ class RecommendationsTabEntity(BaseEntity):
 
         :param recommendation_name: Name of the recommendation
 
-        :return: Table data after recommendation is enabled
+        :return: View after recommendation is enabled
         """
         # Navigate to All Recommendations page
         view = self.navigate_to(self, 'All Recommendations')
