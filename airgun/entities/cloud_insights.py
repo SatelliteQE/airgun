@@ -79,7 +79,7 @@ class RecommendationsTabEntity(BaseEntity):
     def remediate_affected_system(self, recommendation_name, hostname):
         """Open Affected systems, filter by hostname, select it, and click Remediate.
 
-        Returns the details view contents after remediation click.
+        :return: the details view contents after remediation click.
         """
         # Use navigator to open the Affected Systems details view
         view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
@@ -101,7 +101,7 @@ class RecommendationsTabEntity(BaseEntity):
     def bulk_remediate_affected_systems(self, recommendation_name):
         """Open Affected systems, bulk select affected systems, and click Remediate.
 
-        Returns the details view contents after remediation click.
+        :return: the details view contents after remediation click.
         """
         # Use navigator to open the Affected Systems details view
         view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
@@ -121,11 +121,9 @@ class RecommendationsTabEntity(BaseEntity):
         """
         Apply a filter to the recommendations table.
 
-        Returns:
-            Table data after filtering is applied.
+        :return: Table data after filtering is applied
 
-        Example:
-            session.recommendationstab.apply_filter("Status", "Disabled")
+        :example: session.recommendationstab.apply_filter("Status", "Disabled")
         """
         view = self.navigate_to(self, 'All Recommendations')
 
@@ -145,38 +143,45 @@ class RecommendationsTabEntity(BaseEntity):
         view.wait_displayed()
         return view.read(widget_names=widget_names)
 
-    def disable_recommendation_for_system(self, recommendation_name, hostname=None):
+    def disable_recommendation(self, recommendation_name, system=False, hostname=None):
         """
-        Navigate to affected systems page, open kebab menu for first item,
-        disable recommendation for that system with a justification note.
+        Disable a recommendation either for a specific system or entirely.
+
         :param recommendation_name: Name of the recommendation
-        :param hostname: Optional hostname to filter by (defaults to first row)
-        :return: None
+        :param system: If True, disable for a specific system (requires hostname)
+                    If False, disable the entire recommendation
+        :param hostname: Required if system=True, hostname to disable for
+
+        :return: View after recommendation is disabled
         """
-        # Navigate to the Affected Systems details view to disable recommendation
+        # Navigate to the Affected Systems details view
         view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
         view.search_field.wait_displayed()
-        if hostname:
+        if system:
+            # Disable for a specific system
+            if not hostname:
+                raise ValueError('Hostname is required when system=True')
             view.search_field.fill(hostname)
             wait_for(lambda: view.table.row(name=hostname), handle_exception=True, timeout=20)
             time.sleep(15)
-        kebab = view.table[0][5].widget
-        kebab.item_select('Disable recommendation for system')
+            kebab = view.table[0][5].widget
+            kebab.item_select('Disable recommendation for system')
+        else:
+            view.actions.item_select('Disable recommendation')
         modal = DisableRecommendationModal(self.browser)
         wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=10)
-        if modal.checkbox.selected:
-            modal.checkbox.click()
         modal.justification_note.fill('test')
         modal.save.click()
         wait_for(lambda: not modal.is_displayed, handle_exception=True, timeout=10)
         return view.read()
 
-    def enable_recommendation_for_system(self, recommendation_name, hostname=None):
+    def enable_recommendation(self, recommendation_name):
         """
-        Re-enable a previously disabled recommendation for a system.
+        Re-enable a previously disabled recommendation.
+
         :param recommendation_name: Name of the recommendation
-        :param hostname: Optional hostname to filter by (defaults to first row)
-        :return: None
+
+        :return: Table data after recommendation is enabled
         """
         # Navigate to All Recommendations page
         view = self.navigate_to(self, 'All Recommendations')
@@ -188,13 +193,9 @@ class RecommendationsTabEntity(BaseEntity):
         view.menu_filter.fill('Disabled')
         self.browser.plugin.ensure_page_safe(timeout='10s')
         wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
-        if recommendation_name:
-            row = view.table.row(name=recommendation_name)
-            kebab = row[6].widget
-        else:
-            kebab = view.table[0][6].widget
-        kebab.item_select('Enable recommendation')
+        view.table[0][7].widget.item_select('Enable recommendation')
         self.browser.plugin.ensure_page_safe(timeout='10s')
+        return view.table.read()
 
 
 @navigator.register(RecommendationsTabEntity, 'Affected Systems')
