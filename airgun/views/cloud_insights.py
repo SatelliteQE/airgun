@@ -155,6 +155,7 @@ class RecommendationsDetailsView(BaseLoggedInView):
     """Models everything in the recommendations details views execpt the affected system link"""
 
     title = PF5Title('Affected Systems')
+    actions = PF5OUIADropdown('actions')
     clear_button = PF5Button('Reset filters')
     remediate = PF5Button('Remediate')
     download_playbook = PF5Button('Download playbook')
@@ -216,7 +217,7 @@ class RecommendationsTabView(BaseLoggedInView):
             'Total risk': Text('.//span'),
             'Systems': Text('.//div'),
             'Remediation type': Text('.//span'),
-            6: TableRowKebabMenu(),
+            7: TableRowKebabMenu(),
         },
     )
 
