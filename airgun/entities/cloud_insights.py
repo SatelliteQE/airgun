@@ -195,7 +195,7 @@ class RecommendationsTabEntity(BaseEntity):
         wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
         view.table[0][7].widget.item_select('Enable recommendation')
         self.browser.plugin.ensure_page_safe(timeout='10s')
-        return view.table.read()
+        return view.read()
 
 
 @navigator.register(RecommendationsTabEntity, 'Affected Systems')
