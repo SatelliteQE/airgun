@@ -4,7 +4,6 @@ from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.hostgroup import (
     HostGroupCreateView,
     HostGroupEditView,
@@ -66,7 +65,6 @@ class HostGroupEntity(BaseEntity):
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
-        self.browser.plugin.ensure_page_safe()
 
     def total_no_of_assigned_role(self, entity_name):
         """Count of assigned role to the host group"""
@@ -110,7 +108,6 @@ class ShowAllHostGroups(NavigateStep):
 
     VIEW = HostGroupsView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Configure', 'Host Groups')
         self.view.wait_displayed()

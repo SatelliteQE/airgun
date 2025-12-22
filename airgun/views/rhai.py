@@ -21,10 +21,7 @@ class InsightsOrganizationErrorView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return (
-            self.browser.wait_for_element(self.title, exception=False) is not None
-            and self.browser.wait_for_element(self.message, exception=False) is not None
-        )
+        return self.title.is_displayed and self.message.is_displayed
 
     def read(self, widget_names=None):
         return f'{self.title.read()}: {self.message.read()}'

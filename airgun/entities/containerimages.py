@@ -3,7 +3,6 @@ from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.containerimages import (
     ContainerImagesView,
     ManifestDetailsView,
@@ -25,7 +24,7 @@ class ContainerImagesEntity(BaseEntity):
         """
         # Read pullable paths information from the Synced Containers table modal, through the kebab menu
         view = self.navigate_to(self, 'Synced')
-        view.searchbox.search(f'tag = {manifest_tag}')
+        view.search(f'tag = {manifest_tag}')
         view.title.click()
         view.table[0][6].widget.item_select('View pullable paths')
         pullable_modal = PullablePathsModal(self.browser)
@@ -106,7 +105,6 @@ class SyncedContainersTab(NavigateStep):
 
     VIEW = ContainerImagesView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Container Images')
 

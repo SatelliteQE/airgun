@@ -3,11 +3,11 @@ from widgetastic_patternfly4.ouia import ExpandableTable
 
 from airgun.views.common import (
     BaseLoggedInView,
-    SearchableViewMixinPF4,
+    SearchableViewMixin,
 )
 
 
-class BootedContainerImagesView(BaseLoggedInView, SearchableViewMixinPF4):
+class BootedContainerImagesView(BaseLoggedInView, SearchableViewMixin):
     title = Text('.//h1[@data-ouia-component-id="header-text"]')
 
     # This represents the contents of the expanded table rows

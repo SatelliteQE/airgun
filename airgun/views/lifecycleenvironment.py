@@ -39,7 +39,7 @@ class LCEView(BaseLoggedInView, ParametrizedView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
     @View.nested
     class lce(ParametrizedView):
@@ -93,9 +93,8 @@ class LCECreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Environments List'
             and self.breadcrumb.read() == 'New Environment'
         )
@@ -107,9 +106,8 @@ class LCEEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Environments'
             and self.breadcrumb.read() != 'New Environment'
         )
@@ -128,10 +126,9 @@ class LCEEditView(BaseLoggedInView):
         resources = Table(locator='.//table')
 
     @View.nested
-    class packages(SatTab):
+    class packages(SatTab, SearchableViewMixin):
         cv_filter = SatSelect(".//select[@ng-model='contentView']")
         repo_filter = SatSelect(".//select[@ng-model='repository']")
-        searchbox = Search()
         table = Table(locator='.//table')
 
         def search(self, query, cv=None, repo=None):
@@ -147,16 +144,15 @@ class LCEEditView(BaseLoggedInView):
                 self.cv_filter.fill(cv)
             if repo:
                 self.repo_filter.fill(repo)
-            self.searchbox.search(query)
+            super().search(query)
             return self.table.read()
 
     @View.nested
-    class module_streams(SatTab):
+    class module_streams(SatTab, SearchableViewMixin):
         TAB_NAME = 'Module Streams'
 
         cv_filter = SatSelect(".//select[@ng-model='contentView']")
         repo_filter = SatSelect(".//select[@ng-model='repository']")
-        searchbox = Search()
         table = Table('.//table')
 
         def search(self, query, cv=None, repo=None):
@@ -172,5 +168,5 @@ class LCEEditView(BaseLoggedInView):
                 self.cv_filter.fill(cv)
             if repo:
                 self.repo_filter.fill(repo)
-            self.searchbox.search(query)
+            super().search(query)
             return self.table.read()

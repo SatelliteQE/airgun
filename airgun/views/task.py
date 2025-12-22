@@ -3,7 +3,7 @@ from widgetastic.widget import Table, Text, View
 from widgetastic_patternfly import BreadCrumb, Button
 from widgetastic_patternfly5 import Pagination as PF5Pagination
 
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import (
     ActionsDropdown,
     PieChart,
@@ -24,7 +24,7 @@ class TaskReadOnlyEntryError(ReadOnlyEntry):
     BASE_LOCATOR = "//span[contains(., '{}')]//parent::div/following-sibling::pre"
 
 
-class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
+class TasksView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Tasks']")
     focus = ActionsDropdown("//div[./button[@id='tasks-dashboard-time-period-dropdown']]")
     table = SatTable(
@@ -38,7 +38,7 @@ class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
     @View.nested
     class RunningChart(View):
@@ -76,9 +76,8 @@ class TaskDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Tasks'
             and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
         )

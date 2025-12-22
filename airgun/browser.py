@@ -420,6 +420,7 @@ class AirgunBrowser(Browser):
         current_url = self.url
         files, _ = wait_for(
             self.browser.get_downloads_list,
+            fail_condition=[],
             timeout=60,
             delay=1,
         )

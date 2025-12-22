@@ -1,6 +1,5 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.audit import AuditsView
 
 
@@ -19,6 +18,5 @@ class ShowAllAuditEntries(NavigateStep):
 
     VIEW = AuditsView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Monitor', 'Audits')

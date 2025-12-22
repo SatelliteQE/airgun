@@ -7,7 +7,6 @@ from widgetastic_patternfly5 import DropdownItemDisabled
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.all_hosts import (
     AllHostsManageColumnsView,
     AllHostsTableView,
@@ -36,22 +35,16 @@ class AllHostsEntity(BaseEntity):
     def search(self, host_name):
         """Search for specific Host"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
         return view.search(host_name)
 
     def read_filled_searchbox(self):
         """Read filled searchbox"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
         return view.searchbox.read()
 
     def read_table(self):
         """Read All Hosts table"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
         return view.table.read()
 
     def delete(self, host_name):
@@ -64,8 +57,6 @@ class AllHostsEntity(BaseEntity):
         else:
             raise NoSuchElementException('Delete Modal was not displayed.')
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
         view.search(host_name)
         return view.no_results
 
@@ -79,8 +70,6 @@ class AllHostsEntity(BaseEntity):
             delete_modal.confirm_checkbox.fill(True)
             delete_modal.confirm_delete.click()
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
         return view.no_results
 
     def build_management(self, reboot=False, rebuild=False):
@@ -113,8 +102,6 @@ class AllHostsEntity(BaseEntity):
             cv (str): CV within that LCE to assign the hosts to.
         """
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
         view.select_all.fill(True)
         view.bulk_actions_kebab.click()
         self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
@@ -142,8 +129,6 @@ class AllHostsEntity(BaseEntity):
         :return list: header names of the hosts table
         """
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
         return view.table.headers
 
     def manage_packages_helper(self, view, action_type, packages_to_manage):
@@ -365,7 +350,7 @@ class AllHostsEntity(BaseEntity):
             view.review.manage_via_dropdown.item_select('via customized remote execution')
             view.review.finish_errata_management_btn.click()
             view = JobInvocationCreateView(self.browser)
-            self.browser.plugin.ensure_page_safe(timeout='5s')
+
             wait_for(lambda: view.submit.is_displayed, timeout=10)
             view.submit.click()
 
@@ -444,8 +429,6 @@ class AllHostsEntity(BaseEntity):
                 clear_search_cross_button.click()
             view.select_repository_sets.search_input.fill(search_query.format(repo))
 
-            self.browser.plugin.ensure_page_safe(timeout='5s')
-            view.wait_displayed()
             # For some reason it is needed to read the widget first, it fails, but enables filling in the next step
             try:
                 _ = view.select_repository_sets.table[0]['Status'].widget
@@ -465,8 +448,6 @@ class AllHostsEntity(BaseEntity):
         """Return the text from both the manage packages and manage errata modals review hosts step"""
         # Navigate to All Hosts
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
         view.select_all.fill(True)
 
         # Get text from Manage Packages -> Review Hosts
@@ -481,8 +462,6 @@ class AllHostsEntity(BaseEntity):
 
         # Get text from Manage Errata -> Review Hosts
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
         view.select_all.fill(True)
 
         # Get text from Manage Packages -> Review Hosts
@@ -530,8 +509,6 @@ class AllHostsEntity(BaseEntity):
             raise ValueError('Must specify either host_names or select_all_hosts.')
 
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
 
         # This step ensures deterministic state of the table
         # If 'Select none (0)' is disabled, it means nothing is selected, so we can continue
@@ -716,8 +693,6 @@ class AllHostsEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
         view.search(f'name={host_name}')
 
         # Find the status icon directly from the Name column cell
@@ -871,10 +846,8 @@ class ShowAllHostsScreen(NavigateStep):
 
     VIEW = AllHostsTableView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'All Hosts')
-        self.view.wait_displayed()
 
 
 @navigator.register(AllHostsEntity, 'ManageColumns')
