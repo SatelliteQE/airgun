@@ -144,7 +144,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text('//h1[normalize-space(.)="Hosts"]')
     actions = PF5OUIADropdown(component_id='legacy-ui-kebab')
     table = PF5OUIATable(
-        component_id='hosts-index-table',
+        component_id='table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Name': Text(
