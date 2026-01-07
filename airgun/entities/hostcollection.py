@@ -250,7 +250,7 @@ class ShowAllHostCollections(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Hosts', 'Host Collections')
+        self.view.menu.select('Hosts', 'Compliance', 'Host Collections')
 
 
 @navigator.register(HostCollectionEntity, 'New')
