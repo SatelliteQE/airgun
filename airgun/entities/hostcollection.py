@@ -8,7 +8,6 @@ from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
 from airgun.views.hostcollection import (
     HostCollectionActionRemoteExecutionJobCreate,
-    HostCollectionActionTaskDetailsView,
     HostCollectionChangeAssignedContentView,
     HostCollectionCreateView,
     HostCollectionEditView,
@@ -21,6 +20,7 @@ from airgun.views.job_invocation import (
     JobInvocationCreateView,
     JobInvocationStatusView,
 )
+from airgun.views.task import TaskDetailsView
 
 
 class HostCollectionEntity(BaseEntity):
@@ -239,8 +239,8 @@ class HostCollectionEntity(BaseEntity):
         view.content_view.fill(content_view)
         view.assign.click()
         view.dialog.confirm_dialog.click()
-        task_view = HostCollectionActionTaskDetailsView(view.browser)
-        task_view.progressbar.wait_for_result()
+        task_view = TaskDetailsView(self.browser)
+        task_view.wait_for_result()
         return task_view.read()
 
 
