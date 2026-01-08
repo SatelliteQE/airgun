@@ -864,6 +864,15 @@ class AllHostsEntity(BaseEntity):
             return alert_message_content
         return None
 
+    def export(self):
+        """Export hosts list.
+
+        :return str: path to saved file
+        """
+        view = self.navigate_to(self, 'All')
+        view.export.click()
+        return self.browser.save_downloaded_file()
+
 
 @navigator.register(AllHostsEntity, 'All')
 class ShowAllHostsScreen(NavigateStep):
