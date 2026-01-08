@@ -15,7 +15,6 @@ from airgun.views.common import (
     BaseLoggedInView,
     SatTab,
     SearchableViewMixin,
-    SearchableViewMixinPF4,
 )
 from airgun.views.host import HostCreateView
 from airgun.widgets import (
@@ -29,7 +28,7 @@ from airgun.widgets import (
 )
 
 
-class ComputeResourcesView(BaseLoggedInView, SearchableViewMixinPF4):
+class ComputeResourcesView(BaseLoggedInView, SearchableViewMixin):
     title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="Compute Resources"]')
     new = Text('//a[normalize-space(.)="Create Compute Resource"]')
     table = SatTable(
@@ -43,7 +42,7 @@ class ComputeResourcesView(BaseLoggedInView, SearchableViewMixinPF4):
     @property
     def is_displayed(self):
         """Check if the right page is displayed"""
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ResourceProviderCreateView(BaseLoggedInView):
@@ -140,9 +139,8 @@ class ResourceProviderCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Compute Resources'
             and self.breadcrumb.read() == 'Create Compute Resource'
         )
@@ -151,9 +149,8 @@ class ResourceProviderCreateView(BaseLoggedInView):
 class ResourceProviderEditView(ResourceProviderCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Compute Resources'
             and self.breadcrumb.read().startswith('Edit ')
         )
@@ -166,9 +163,8 @@ class ResourceProviderDetailView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Compute Resources'
             and self.breadcrumb.read() != 'Create Compute Resource'
         )
@@ -380,16 +376,11 @@ class ResourceProviderProfileView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False, ensure_page_safe=True, timeout=10
-        )
-        if not breadcrumb_loaded:
-            return False
-        breadcrumb_text = self.breadcrumb.read()
         return (
-            self.breadcrumb.locations[0] == 'Compute Resources'
+            self.breadcrumb.is_displayed
+            and self.breadcrumb.locations[0] == 'Compute Resources'
             and self.breadcrumb.locations[2] == 'Compute Profiles'
-            and (breadcrumb_text.startswith('Edit ') or breadcrumb_text.startswith('New '))
+            and self.breadcrumb.read().startswith(('Edit ', 'New '))
         )
 
 
@@ -398,9 +389,8 @@ class ResourceProviderVMImport(HostCreateView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Compute Resources Vms'
             and self.breadcrumb.read().startswith('Import ')
         )
@@ -421,11 +411,8 @@ class ComputeResourceGenericImageCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False, ensure_page_safe=True, timeout=10
-        )
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Compute Resources'
             and self.breadcrumb.locations[2] == 'Images'
             and self.breadcrumb.read() == 'Create image'
@@ -437,11 +424,8 @@ class ComputeResourceGenericImageEditViewMixin:
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(
-            self.breadcrumb, exception=False, ensure_page_safe=True, timeout=10
-        )
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Compute Resources'
             and self.breadcrumb.locations[2] == 'Images'
             and self.breadcrumb.read().startswith('Edit ')

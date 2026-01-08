@@ -3,7 +3,6 @@ from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.report_template import (
     ReportTemplateCreateView,
     ReportTemplateDetailsView,
@@ -87,7 +86,7 @@ class ReportTemplateEntity(BaseEntity):
         view.submit.click()
         view.flash.assert_no_error()
         view = ReportTemplateGeneratedView(self.browser)
-        view.wait_displayed()
+
         wait_for(
             lambda: view.download_button.is_displayed,
             timeout=300,
@@ -126,7 +125,6 @@ class ShowAllReportTemplates(NavigateStep):
 
     VIEW = ReportTemplatesView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Monitor', 'Reports', 'Report Templates')
 

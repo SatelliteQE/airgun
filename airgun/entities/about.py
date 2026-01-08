@@ -1,6 +1,5 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.about import AboutView
 
 
@@ -14,6 +13,5 @@ class ShowAboutPage(NavigateStep):
 
     VIEW = AboutView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Administer', 'About')

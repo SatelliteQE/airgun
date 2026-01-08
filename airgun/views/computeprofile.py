@@ -1,11 +1,11 @@
 from widgetastic.widget import Table, Text, TextInput
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 from airgun.widgets import ActionsDropdown
 
 
-class ComputeProfilesView(BaseLoggedInView, SearchableViewMixinPF4):
+class ComputeProfilesView(BaseLoggedInView, SearchableViewMixin):
     title = Text('//*[(self::h1 or self::h5) and normalize-space(.)="Compute Profiles"]')
     new = Text('//a[normalize-space(.)="Create Compute Profile"]')
     table = Table(
@@ -18,7 +18,7 @@ class ComputeProfilesView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ComputeProfileCreateView(BaseLoggedInView):
@@ -28,9 +28,8 @@ class ComputeProfileCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Compute Profiles'
             and self.breadcrumb.read() == 'Create Compute Profile'
         )
@@ -47,9 +46,8 @@ class ComputeProfileDetailView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Compute Profiles'
             and self.breadcrumb.read() != 'Create Compute Profile'
             and self.breadcrumb.read() != 'Edit Compute Profile'
@@ -59,9 +57,8 @@ class ComputeProfileDetailView(BaseLoggedInView):
 class ComputeProfileRenameView(ComputeProfileCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Compute profiles'
             and self.breadcrumb.read() == 'Edit Compute profile'
         )

@@ -8,7 +8,7 @@ from widgetastic_patternfly5.ouia import (
 )
 
 from airgun.views.all_hosts import MenuToggleDropdownInTable
-from airgun.views.common import BaseLoggedInView, PF4Search
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 from airgun.widgets import CompoundExpandableTable  # Import the new widget
 
 
@@ -26,9 +26,8 @@ class SyncedContainerPullablePath(View):
     )
 
 
-class ContainerImagesView(BaseLoggedInView):
+class ContainerImagesView(BaseLoggedInView, SearchableViewMixin):
     title = PF5OUIATitle('container-images-title')
-    searchbox = PF4Search()
 
     # Passing in the nested table as content_view, refer to ExpandableTable docs for info
     table = CompoundExpandableTable(

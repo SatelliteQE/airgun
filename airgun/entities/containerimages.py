@@ -3,7 +3,6 @@ from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.containerimages import (
     ContainerImagesView,
     ManifestDetailsView,
@@ -106,7 +105,6 @@ class SyncedContainersTab(NavigateStep):
 
     VIEW = ContainerImagesView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Container Images')
 

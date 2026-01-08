@@ -1,6 +1,5 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.capsule import (
     CapsuleDetailsView,
     CapsulesView,
@@ -40,7 +39,6 @@ class CapsuleEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'Capsules')
-        view.wait_displayed()
         view.searchbox.search(f'name="{capsule_name}"')
         return view.read()
 
@@ -53,7 +51,6 @@ class CapsuleEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'Capsules')
-        view.wait_displayed()
         view.searchbox.search(f'name="{capsule_name}"')
         view.table.row(name=capsule_name)['Name'].click()
         view = CapsuleDetailsView(self.browser)
@@ -63,14 +60,12 @@ class CapsuleEntity(BaseEntity):
         """Read all values from Capsules page"""
 
         view = self.navigate_to(self, 'Capsules')
-        view.wait_displayed()
         return view.read()
 
     def view_documentation(self):
         """Opens Capsule documentation page"""
 
         view = self.navigate_to(self, 'Capsules')
-        view.wait_displayed()
         view.documentation.click()
 
     def create(self, values):
@@ -90,7 +85,6 @@ class CapsuleEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'Capsules')
-        view.wait_displayed()
         view.create_capsule.click()
         view = CreateCapsuleView(self.browser)
         view.fill(values)
@@ -125,7 +119,6 @@ class CapsuleEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'Capsules')
-        view.wait_displayed()
         view.search(f'name="{capsule_name_to_edit}"')
         view.table.row(name=capsule_name_to_edit)['Actions'].widget.fill('Edit')
         view = EditCapsuleView(self.browser)
@@ -199,7 +192,6 @@ class CapsuleEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'Capsules')
-        view.wait_displayed()
         view.table.row(name=capsule_name)['Actions'].widget.fill('Refresh')
 
         return self.get_operation_status(view)
@@ -213,7 +205,6 @@ class CapsuleEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'Capsules')
-        view.wait_displayed()
         view.table.row(name=capsule_name)['Actions'].widget.fill('Expire logs')
 
     def delete(self, capsule_name):
@@ -227,7 +218,6 @@ class CapsuleEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'Capsules')
-        view.wait_displayed()
         view.table.row(name=capsule_name)['Actions'].widget.fill('Delete')
         if view.confirm_deletion.is_displayed:
             view.confirm_deletion.confirm()
@@ -244,7 +234,6 @@ class CapsuleEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'Capsules')
-        view.wait_displayed()
         view.searchbox.search(f'name="{capsule_name}"')
         view.table.row(name=capsule_name)['Name'].click()
         view = CapsuleDetailsView(self.browser)
@@ -292,10 +281,9 @@ class CapsuleEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'Capsules')
-        view.wait_displayed()
         view.table.row(name=capsule_name)['Name'].click()
         view = CapsuleDetailsView(self.browser)
-        view.wait_displayed()
+
         if not cv_name:
             view.content.top_content_table.row(Environment=lce_name)[3].click()
             view.content.top_content_table.row(Environment=lce_name)[3].widget.item_select(
@@ -315,6 +303,5 @@ class OpenCapsulesPage(NavigateStep):
 
     VIEW = CapsulesView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Infrastructure', 'Capsules')

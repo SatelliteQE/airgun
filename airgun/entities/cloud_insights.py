@@ -1,13 +1,9 @@
-import time
-
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.cloud_insights import (
     CloudInsightsView,
-    CloudTokenView,
     RecommendationsDetailsView,
     RecommendationsTabView,
     RemediateSummary,
@@ -38,21 +34,12 @@ class CloudInsightsEntity(BaseEntity):
     def sync_hits(self):
         """Sync Insights recommendations."""
         view = self.navigate_to(self, 'All')
-        view.insights_dropdown.wait_displayed()
         view.insights_dropdown.item_select('Sync recommendations')
-        self.browser.plugin.ensure_page_safe(timeout='60s')
 
     def read(self, widget_names=None):
         """Read all values."""
         view = self.navigate_to(self, 'All')
         return view.read(widget_names=widget_names)
-
-    def save_token_sync_hits(self, value):
-        """Update Insights cloud view."""
-        view = self.navigate_to(self, 'Token')
-        view.rhcloud_token.fill(value)
-        view.save_token.click()
-        self.browser.plugin.ensure_page_safe(timeout='60s')
 
     def update(self, values):
         """Update Insights view."""
@@ -69,10 +56,8 @@ class RecommendationsTabEntity(BaseEntity):
         :param value: text to filter (default: no filter)
         """
         view = self.navigate_to(self, 'All Recommendations')
-        time.sleep(5)
-        view.clear_button.click()
-        view.search_field.fill(value)
-        time.sleep(5)
+        view.reset_filters()
+        view.search(value)
         return view.table.read()
 
     def remediate_affected_system(self, recommendation_name, hostname):
@@ -80,21 +65,27 @@ class RecommendationsTabEntity(BaseEntity):
 
         Returns the details view contents after remediation click.
         """
-        # Use navigator to open the Affected Systems details view
+        # Navigate to the Recommendation's Affected Systems
         view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
-        view.search_field.wait_displayed()
-        # Filter by hostname and apply recommendation
-        view.search_field.fill(hostname)
+
+        # Filter by hostname
+        view.search(hostname)
+        # FIXME: remove wait_for
         wait_for(lambda: view.table.row(name=hostname), handle_exception=True, timeout=20)
-        time.sleep(15)
+
+        # Select host and click 'Remediate'
         view.table[0][0].widget.click()
         view.remediate.click()
-        self.browser.plugin.ensure_page_safe(timeout='30s')
+
+        # Wait for Remediation modal to display, then submit it
         modal = RemediateSummary(self.browser)
-        wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
+        modal.wait_displayed()
         modal.remediate.click()
+
+        # Wait for the remote execution job to complete
         view = JobInvocationStatusView(view.browser)
         view.wait_for_result()
+
         return view.read()
 
     def bulk_remediate_affected_systems(self, recommendation_name):
@@ -102,18 +93,25 @@ class RecommendationsTabEntity(BaseEntity):
 
         Returns the details view contents after remediation click.
         """
-        # Use navigator to open the Affected Systems details view
+        # Navigate to the Recommendation's Affected Systems
         view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
+
+        # TODO: remove wait_for
         wait_for(lambda: view.table.row(), handle_exception=True, timeout=20)
-        time.sleep(5)
+
+        # Select all hosts and click 'Remediate'
         view.bulk_select.select_all()
         view.remediate.click()
-        self.browser.plugin.ensure_page_safe(timeout='30s')
+
+        # Wait for Remediation modal to display, then submit it
         modal = RemediateSummary(self.browser)
-        wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
+        modal.wait_displayed()
         modal.remediate.click()
+
+        # Wait for the remote execution job to complete
         view = JobInvocationStatusView(view.browser)
         view.wait_for_result()
+
         return view.read()
 
     def apply_filter(self, filter_type, filter_value):
@@ -127,20 +125,14 @@ class RecommendationsTabEntity(BaseEntity):
             session.recommendationstab.apply_filter("Status", "Disabled")
         """
         view = self.navigate_to(self, 'All Recommendations')
-
-        self.browser.plugin.ensure_page_safe(timeout='10s')
-        wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
+        # TODO: verify this
         view.menu_toggle.fill(filter_type)
         view.menu_filter.fill(filter_value)
-        self.browser.plugin.ensure_page_safe(timeout='10s')
-        wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
         return view.table.read()
 
     def read(self, widget_names=None):
         """Read all values."""
         view = self.navigate_to(self, 'All Recommendations')
-        self.browser.plugin.ensure_page_safe(timeout='10s')
-        view.wait_displayed()
         return view.read(widget_names=widget_names)
 
 
@@ -151,30 +143,20 @@ class NavigateToAffectedSystems(NavigateStep):
     VIEW = RecommendationsDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        # Ensure we are on the Recommendations tab first
         return self.navigate_to(self.obj, 'All Recommendations')
 
     def step(self, *args, **kwargs):
         recommendation_name = kwargs.get('recommendation_name')
         # Filter by recommendation name and open its expanded content
-        time.sleep(5)
-        self.parent.clear_button.click()
-        self.parent.search_field.fill(recommendation_name)
-        time.sleep(5)
+
+        self.parent.reset_filters()
+        self.parent.search(recommendation_name)
+
+        # TODO: remove wait_for
         row, _ = wait_for(lambda: self.parent.table.row(name=recommendation_name), timeout=5)
+
         row.expand()
         row.content.affected_systems_url.click()
-
-
-@navigator.register(CloudInsightsEntity, 'Token')
-class SaveCloudTokenView(NavigateStep):
-    """Navigate to main Red Hat Lightspeed page"""
-
-    VIEW = CloudTokenView
-
-    @retry_navigation
-    def step(self, *args, **kwargs):
-        self.view.menu.select('Red Hat Lightspeed')
 
 
 @navigator.register(CloudInsightsEntity, 'All')
@@ -183,7 +165,6 @@ class ShowCloudInsightsView(NavigateStep):
 
     VIEW = CloudInsightsView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Red Hat Lightspeed', 'Recommendations')
 
@@ -194,6 +175,5 @@ class ShowRecommendationsView(NavigateStep):
 
     VIEW = RecommendationsTabView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Red Hat Lightspeed', 'Recommendations')
