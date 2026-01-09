@@ -3080,12 +3080,33 @@ class CompoundExpandableTable(PatternflyTable):
 
         for child_el in child_elements:
             child_data = {}
+            # Child rows have a different structure - they skip Tag column (empty cells)
+            # So we need to map columns differently
+            # Child row structure: empty (Tag), empty (Tag), Manifest digest, Type, Product, Labels | Annotations
             for col_name in self.headers:
                 if isinstance(col_name, int):
-                    cell = self.browser.element(f'./td[{col_name + 1}]', parent=child_el)
+                    try:
+                        cell = self.browser.element(f'./td[{col_name + 1}]', parent=child_el)
+                        child_data[col_name] = cell.text.strip()
+                    except NoSuchElementException:
+                        # Skip missing columns in child rows
+                        child_data[col_name] = ''
+                elif col_name is None:
+                    continue
+                elif col_name == 'Tag':
+                    # Tag column doesn't exist in child rows - it's empty
+                    child_data[col_name] = ''
                 else:
-                    cell = self.browser.element(f'./td[@data-label="{col_name}"]', parent=child_el)
-                child_data[col_name] = cell.text.strip()
+                    try:
+                        # Try to find cell by data-label attribute
+                        cell = self.browser.element(
+                            f'./td[@data-label="{col_name}"]', parent=child_el
+                        )
+                        child_data[col_name] = cell.text.strip()
+                    except NoSuchElementException:
+                        # If data-label doesn't work, try to find by position based on column order
+                        # This is a fallback for columns that might not have data-label
+                        child_data[col_name] = ''
             children.append(child_data)
         return children
 
