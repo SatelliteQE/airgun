@@ -128,4 +128,5 @@ class DeleteWebhook(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Actions'].widget.click()
+        row = self.parent.table.row(name=entity_name)
+        self.parent.browser.element('.//button[contains(text(), "Delete")]', parent=row).click()
