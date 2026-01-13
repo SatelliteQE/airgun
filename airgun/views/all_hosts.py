@@ -31,7 +31,7 @@ from widgetastic_patternfly5.ouia import (
 from airgun.views.common import (
     BaseLoggedInView,
     PF5LCESelectorGroup,
-    SearchableViewMixinPF4,
+    SearchableViewMixin,
     WizardStepView,
 )
 from airgun.views.host_new import ManageColumnsView, PF5CheckboxTreeView
@@ -81,7 +81,7 @@ class CVESelect(Select):
     DEFAULT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and @data-ouia-component-id="select-content-view"]'
 
 
-class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
+class AllHostsTableView(BaseLoggedInView, SearchableViewMixin):
     title = Text('//h1[normalize-space(.)="Hosts"]')
 
     legacy_kebab = PF5Dropdown(locator='.//div[@id="legacy-ui-kebab"]')
@@ -89,6 +89,8 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
         locator='.//input[@data-ouia-component-id="select-all-checkbox-dropdown-toggle-checkbox"]'
     )
     searchbar_dropdown = PF5OUIADropdown('selection-checkbox')
+    # searchbox = SearchInput(locator='.//input[@aria-label="Search input"]')
+
     top_bulk_actions = MenuToggleDropdownInTable(locator='.//button[@aria-label="plain kebab"]')
     bulk_actions = AllHostsMenu()
     bulk_actions_kebab = Button(locator='.//button[@aria-label="plain kebab"]')
@@ -102,7 +104,6 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
         locator='//li[contains(@class, "pf-v5-c-menu__list-item")]//button[span/span[text()="Change associations"]]/following-sibling::div[contains(@class, "pf-v5-c-menu")]'
     )
 
-    table_loading = Text('//h5[normalize-space(.)="Loading"]')
     no_results = Text('//h5[normalize-space(.)="No Results"]')
     manage_columns = PF5Button('Manage columns')
     table = PF5OUIATable(
@@ -124,10 +125,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return (
-            self.browser.wait_for_element(self.table_loading, exception=False) is None
-            and self.browser.wait_for_element(self.table, exception=False) is not None
-        )
+        return self.table.is_displayed
 
 
 class HostDeleteDialog(View):
@@ -142,7 +140,7 @@ class HostDeleteDialog(View):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class BuildManagementDialog(View):
@@ -163,7 +161,7 @@ class BuildManagementDialog(View):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class BulkHostDeleteDialog(View):
@@ -179,7 +177,7 @@ class BulkHostDeleteDialog(View):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class HostgroupDialog(View):
@@ -197,7 +195,7 @@ class HostgroupDialog(View):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class AllHostsCheckboxTreeView(PF5CheckboxTreeView):
@@ -241,7 +239,7 @@ class ManageCVEModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ManagePackagesModal(PF5Modal):
@@ -388,7 +386,7 @@ class ManagePackagesModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ManageErrataModal(PF5Modal):
@@ -487,7 +485,7 @@ class ManageErrataModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class RepositorySetsMenu(PF5Dropdown):
@@ -600,7 +598,7 @@ class ManageRepositorySetsModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class DisassociateHostsModal(PF5Modal):
@@ -619,7 +617,7 @@ class DisassociateHostsModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class MenuToggleSelect(PF5Select):
@@ -656,7 +654,7 @@ class ChangeHostsOwnerModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class BaseChangeOrgLocModal(PF5Modal):
@@ -677,7 +675,7 @@ class BaseChangeOrgLocModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ChangeOrganizationModal(BaseChangeOrgLocModal):
@@ -749,7 +747,7 @@ class ChangeHostCollectionsModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ManageTracesModal(PF5Modal):
@@ -791,7 +789,7 @@ class ManageTracesModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ManageSystemPurposeModal(PF5Modal):
@@ -816,4 +814,4 @@ class ManageSystemPurposeModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed

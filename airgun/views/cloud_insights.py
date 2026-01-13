@@ -1,7 +1,8 @@
 from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic.widget import Checkbox, ConditionalSwitchableView, Text, TextInput, View
 from widgetastic_patternfly5 import (
     Button as PF5Button,
+    CheckboxSelect as PF5CheckboxSelect,
     ExpandableTable as PF5ExpandableTable,
     Menu as PF5Menu,
     Pagination as PF5Pagination,
@@ -14,10 +15,9 @@ from widgetastic_patternfly5.ouia import (
     Modal as PF5OUIAModal,
     PatternflyTable as PF5OUIAPatternflyTable,
     Switch as PF5OUIASwitch,
-    TextInput as PF5OUIATextInput,
 )
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 
 
 class CloudTokenView(BaseLoggedInView):
@@ -28,7 +28,7 @@ class CloudTokenView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.rhcloud_token.wait_displayed()
+        return self.rhcloud_token.is_displayed
 
 
 class RemediationView(PF5OUIAModal):
@@ -49,10 +49,10 @@ class RemediationView(PF5OUIAModal):
 
     @property
     def is_displayed(self):
-        return self.title.wait_displayed()
+        return self.title.is_displayed
 
 
-class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
+class CloudInsightsView(BaseLoggedInView, SearchableViewMixin):
     """Main Red Hat Lightspeed view."""
 
     title = Text('//h1[normalize-space(.)="Red Hat Lightspeed"]')
@@ -60,6 +60,10 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
     remediate = PF5Button('Remediate')
     insights_dropdown = PF5OUIADropdown('title-dropdown')
     select_all = Checkbox(locator='.//input[@aria-label="Select all rows"]')
+
+    #  searchbox = SearchInput(
+    #      locator='.//div[@class="rh-cloud-insights"]//input[@aria-label="Search input"]'
+    # )
     table = PF5OUIAPatternflyTable(
         component_id='rh-cloud-recommendations-table',
         column_widgets={
@@ -70,6 +74,7 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
             'Playbook': Text('.//a'),
         },
     )
+
     select_all_hits = PF5Button('Select recommendations from all pages')
     clear_hits_selection = PF5Button('Clear Selection')
     pagination = PF5Pagination()
@@ -77,7 +82,7 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed and self.table.is_displayed
 
 
 class BulkSelectMenuToggle(PF5Menu):
@@ -142,14 +147,14 @@ class RemediateSummary(PF5OUIAModal):
     remediate = PF5Button('Remediate')
 
 
-class RecommendationsDetailsView(BaseLoggedInView):
+class RecommendationsDetailsView(BaseLoggedInView, SearchableViewMixin):
     """Models everything in the recommendations details views execpt the affected system link"""
 
     title = PF5Title('Affected Systems')
     clear_button = PF5Button('Reset filters')
     remediate = PF5Button('Remediate')
     download_playbook = PF5Button('Download playbook')
-    search_field = TextInput(locator=('.//input[@aria-label="text input"]'))
+    # searchbox = TextInput(locator='.//input[@aria-label="text input"]')
     bulk_select = BulkSelectMenuToggle()
     table = PF5Table(
         locator='.//table[contains(@aria-label, "Host inventory")]',
@@ -164,7 +169,7 @@ class RecommendationsDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.table, exception=False) is not None
+        return self.table.is_displayed
 
 
 class RecommendationsTableExpandedRowView(RecommendationsDetailsView):
@@ -180,19 +185,31 @@ class RecommendationsTableExpandedRowView(RecommendationsDetailsView):
         return self.affected_systems_url.is_displayed
 
 
-class RecommendationsTabView(BaseLoggedInView):
+class RecommendationsTabView(BaseLoggedInView, SearchableViewMixin):
     """View representing the Recommendations Tab."""
 
     title = PF5Title('Recommendations')
-    search_field = TextInput(locator=('.//input[@aria-label="text input"]'))
-    clear_button = PF5Button('Reset filters')
+    clear_button = PF5Button('Reset filters')  # Optional, used by reset_filters()
     incidents = Text(locator='.//a[@data-testid="Incidents"]')
     critical_recommendations = Text(locator='.//a[@data-testid="Critical recommendations"]')
     important_recommendations = Text(locator='.//a[@data-testid="Important recommendations"]')
-    conditional_filter_dropdown = PF5OUIATextInput('ConditionalFilter')
-    menu_toggle = MenuToggleSelectParamLocator(
+
+    # Define individual filter widgets for different filter types
+    _text_filter = TextInput(locator='.//input[@aria-label="text input"]')
+    _status_filter = PF5CheckboxSelect(locator=".//*[contains(@aria-label, 'Options menu')]/..")
+
+    # Column selector dropdown that determines which filter type is active
+    column_selector = MenuToggleSelectParamLocator(
         locator='.//button[@data-ouia-component-id="ConditionalFilterToggle"]'
     )
+
+    # ConditionalSwitchableView switches between filter widgets based on the selected filter type
+    searchbox = ConditionalSwitchableView(reference='column_selector')
+    searchbox.register('Name', default=True, widget=_text_filter)
+    searchbox.register('Status', widget=_status_filter)
+    # Additional filter types can be registered here as needed
+
+    menu_toggle = column_selector
     menu_filter = MenuToggleSelectParamLocator(locator='.//button[@aria-label="Options menu"]')
     table = PF5ExpandableTable(
         locator='.//table[contains(@data-ouia-component-id, "rules-table")]',
@@ -210,6 +227,7 @@ class RecommendationsTabView(BaseLoggedInView):
     @property
     def is_displayed(self):
         return (
-            self.browser.wait_for_element(self.table, exception=False) is not None
-            and self.browser.wait_for_element(self.clear_button, exception=False) is not None
+            self.table.is_displayed
+            and self.clear_button.is_displayed
+            and self.searchbox.is_displayed
         )

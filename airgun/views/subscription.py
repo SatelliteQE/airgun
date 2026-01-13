@@ -10,7 +10,7 @@ from widgetastic.widget import (
 from widgetastic_patternfly import BreadCrumb, Button
 
 from airgun.exceptions import ReadOnlyWidgetError
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixin
 from airgun.widgets import (
     ConfirmationDialog,
     ItemsListReadOnly,
@@ -103,7 +103,7 @@ class SubscriptionColumnsFilter(GenericLocatorWidget):
         self.close()
 
 
-class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
+class SubscriptionListView(BaseLoggedInView, SearchableViewMixin):
     """List of all subscriptions."""
 
     table = SatSubscriptionsViewTable(

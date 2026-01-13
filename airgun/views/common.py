@@ -1,4 +1,8 @@
+from contextlib import contextmanager
+import time
+
 from selenium.common.exceptions import ElementNotInteractableException
+from wait_for import wait_for
 from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
@@ -13,7 +17,10 @@ from widgetastic.widget import (
 from widgetastic_patternfly import BreadCrumb, Tab, TabWithDropdown
 from widgetastic_patternfly4 import Button
 from widgetastic_patternfly4.navigation import Navigation
-from widgetastic_patternfly5 import Dropdown as PF5Dropdown
+from widgetastic_patternfly5 import (
+    Button as PF5Button,
+    Dropdown,
+)
 from widgetastic_patternfly5.ouia import (
     Dropdown as PF5OUIADropdown,
     PatternflyTable,
@@ -29,7 +36,6 @@ from airgun.widgets import (
     ItemsList,
     LCESelector,
     Pf4ConfirmationDialog,
-    PF4Search,
     PF5LCECheckSelector,
     PF5LCESelector,
     PF5NavSearch,
@@ -134,7 +140,7 @@ class WrongContextAlert(View):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.message, exception=False) is not None
+        return self.message.is_displayed
 
 
 class SatTab(Tab):
@@ -335,7 +341,7 @@ class PF5LCECheckSelectorGroup(PF5LCESelectorGroup):
 
 
 # PF5 kebab menu present in table rows
-class TableRowKebabMenu(PF5Dropdown):
+class TableRowKebabMenu(Dropdown):
     """Dropdown for PF5 kebab menus used in table rows."""
 
     ROOT = '.'
@@ -357,11 +363,112 @@ class PF5LCEGroup(ParametrizedLocator):
     )
 
 
-class ListRemoveTab(SatSecondaryTab):
+class SearchableViewMixin(WTMixin):
+    """Enhanced searchable table mixin with debounce delay for PatternFly UIs.
+
+    Adds explicit SEARCH_DELAY to handle delay between search input and query before updating table.
+
+    This mixin requires views to have:
+    - table attribute (any table widget)
+    - searchbox attribute (Search or custom search widget)
+
+    Optional attributes:
+    - clear_button: Button widget for "Reset filters" or "Clear filters"
+
+    Configuration flags:
+    - SEARCH_DELAY: Debounce delay in seconds (default: 0)
+
+    Usage:
+        class MyView(BaseLoggedInView, SearchableViewMixin):
+            SEARCH_DELAY = 1
+
+            searchbox = Search()  # or any search widget
+            table = Table(...)
+            clear_button = Button('Reset filters')  # optional
+    """
+
+    SEARCH_DELAY = 0  # Default debounce delay after last user input, if search is immediate
+
+    # PatternFly loading indicators
+    LOADING = (
+        './/table[@aria-label="Loading"] | '  # legacy pattern
+        './/div[contains(@class, "pf-v5-c-skeleton")] | '  # PF5 skeleton component
+        './/td[contains(@class, "pf-v5-c-skeleton")]'  # PF5 skeleton table cells
+    )
+    TABLE_EMPTY_STATE = './/div[contains(@class, "-c-empty-state")]'
+
+    # root locator for the search toolbar
+    TOOLBAR = (
+        '(.//div[contains(@class, "foreman-search-bar")] | '
+        './/div[@data-ouia-component-id="table-toolbar"] | '
+        './/div[contains(@class, "toolbar-pf")] | '
+        './/div[@id="ins-primary-data-toolbar"])'
+    )
+
+    column_selector = Dropdown(
+        locator=f'{TOOLBAR}//div[contains(@class, "ins-c-conditional-filter")]'
+    )
+
+    searchbox = Search()
+
+    _reset_filters = PF5Button('Reset filters')
+    _clear_filters = PF5Button('Clear filters')
+
+    @property
+    def table(self):
+        """
+        You must define the table widget in any View that inherits this
+        """
+        raise NotImplementedError
+
+    def search(self, query):
+        """Fill search component with the given query."""
+
+        fill_widget = self.searchbox
+        fill_value = query
+
+        fill_widget.wait_displayed()
+        current_value = fill_widget.read()
+
+        if current_value == fill_value:
+            self.logger.debug(
+                'Search input field already matches the given query. Leaving it unchanged.'
+            )
+            return
+
+        with self.ensure_table_reloads():
+            fill_widget.search(fill_value)
+
+        # TODO find better fix to dismiss the query dropdown, like click 'Esc'
+        # if hasattr(self, 'title'):
+        #     self.title.click()
+
+        return self.table.read()
+
+    def _wait_for_table_load(self, timeout):
+        def _loaded():
+            if self.browser.elements(self.LOADING):
+                return False
+            elif self.table.is_displayed:
+                return True
+            return False
+
+        # Wait for "debounce" delay after search field input.
+        if self.SEARCH_DELAY:
+            time.sleep(self.SEARCH_DELAY)
+
+        wait_for(_loaded, delay=0.2, num_sec=timeout)
+
+    @contextmanager
+    def ensure_table_reloads(self, timeout=10):
+        yield
+        self._wait_for_table_load(timeout)
+
+
+class ListRemoveTab(SatSecondaryTab, SearchableViewMixin):
     """'List/Remove' tab, part of :class:`AddRemoveResourcesView`."""
 
     TAB_NAME = 'List/Remove'
-    searchbox = Search()
     remove_button = Text(
         './/div[@data-block="list-actions"]//button[contains(@ng-click, "remove")]'
     )
@@ -371,12 +478,12 @@ class ListRemoveTab(SatSecondaryTab):
 
     def search(self, value):
         """Search for specific associated resource and return the results"""
-        self.searchbox.search(value)
+        super().search(value)
         return self.table.read()
 
     def remove(self, value):
         """Remove specific associated resource"""
-        self.search(value)
+        super().search(value)
         next(self.table.rows())[0].widget.fill(True)
         self.remove_button.click()
 
@@ -392,9 +499,8 @@ class ListRemoveTab(SatSecondaryTab):
         return self.table.read()
 
 
-class AddTab(SatSecondaryTab):
+class AddTab(SatSecondaryTab, SearchableViewMixin):
     TAB_NAME = 'Add'
-    searchbox = Search()
     add_button = Text('.//div[@data-block="list-actions"]//button[contains(@ng-click, "add")]')
     table = SatTable(
         locator='.//table', column_widgets={0: Checkbox(locator=".//input[@type='checkbox']")}
@@ -402,12 +508,12 @@ class AddTab(SatSecondaryTab):
 
     def search(self, value):
         """Search for specific available resource and return the results"""
-        self.searchbox.search(value)
+        super().search(value)
         return self.table.read()
 
     def add(self, value):
         """Associate specific resource"""
-        self.search(value)
+        super().search(value)
         next(self.table.rows())[0].widget.fill(True)
         self.add_button.click()
 
@@ -462,8 +568,7 @@ class AddRemoveResourcesView(View):
         }
 
 
-class NewAddRemoveResourcesView(View):
-    searchbox = PF4Search()
+class NewAddRemoveResourcesView(View, SearchableViewMixin):
     status = PF5OUIASelect(component_id='select Status')
     remove_button = PF5OUIADropdown(component_id='repositoies-bulk-actions')
     add_button = Button(locator='.//button[@data-ouia-component-id="add-repositories"]')
@@ -486,8 +591,8 @@ class NewAddRemoveResourcesView(View):
 
     def search(self, value):
         """Search for specific available resource and return the results"""
-        self.searchbox.search(value)
-        return self.read()
+        super().search(value)
+        return self.table.read()
 
     def add(self, value):
         """Associate specific resource"""
@@ -513,12 +618,6 @@ class NewAddRemoveResourcesView(View):
 
     def read(self):
         """Read all table values from both resource tables"""
-        self.browser.wait_for_element(locator='//h4[text()="Loading"]', exception=False)
-        self.browser.wait_for_element(
-            self.table, exception=False, ensure_page_safe=True, timeout=10
-        )
-        self.browser.plugin.ensure_page_safe(timeout='60s')
-        self.table.wait_displayed()
         self.select_status('All')
         return self.table.read()
 
@@ -574,93 +673,6 @@ class TemplateEditor(View):
         super().fill(values)
 
 
-class SearchableViewMixin(WTMixin):
-    """Mixin which adds :class:`airgun.widgets.Search` widget and
-    :meth:`airgun.widgets.Search.search` to your view. It's useful for _most_ entities list views
-    where searchbox and results table are present.
-
-    Note that class which uses this mixin should have :attr: `table` attribute.
-    """
-
-    searchbox = Search()
-    welcome_message = Text("//div[@class='blank-slate-pf' or @id='welcome']")
-
-    def is_searchable(self):
-        """Verify that search procedure can be executed against specific page.
-        That means that we have search field present on the page and that page
-        is not a welcome one
-        """
-        if self.searchbox.search_field.is_displayed and (not self.welcome_message.is_displayed):
-            return True
-        return False
-
-    def search(self, query):
-        """Perform search using searchbox on the page and return table
-        contents.
-
-        :param str query: search query to type into search field. E.g. ``foo``
-            or ``name = "bar"``.
-        :return: list of dicts representing table rows
-        :rtype: list
-        """
-        if not hasattr(self.__class__, 'table'):
-            raise AttributeError(
-                f'Class {self.__class__.__name__} does not have attribute "table". '
-                'SearchableViewMixin only works with views, which have table for results. '
-                'Please define table or use custom search implementation instead'
-            )
-        if not self.is_searchable():
-            return None
-        self.searchbox.search(query)
-        if hasattr(self, 'title'):
-            self.title.click()
-        return self.table.read()
-
-
-class SearchableViewMixinPF4(SearchableViewMixin):
-    """Mixin which adds :class:`airgun.widgets.Search` widget and
-    :meth:`airgun.widgets.Search.search` to your view. It's useful for _most_ entities list views
-
-    where searchbox and results table are present.
-    Note that class which uses this mixin should have :attr: `table` attribute.
-    """
-
-    searchbox = PF4Search()
-    blank_page = Text("//div[contains(@class, 'pf-c-empty-state')]")
-
-    def is_searchable(self):
-        """Verify that search procedure can be executed against specific page
-        that is not blank
-        """
-        if self.searchbox.search_field.is_displayed and (not self.blank_page.is_displayed):
-            return True
-        return False
-
-    def search(self, query):
-        """Perform search using searchbox on the page and return table
-        contents.
-
-        :param str query: search query to type into search field. E.g. ``foo``
-            or ``name = "bar"``.
-        :return: list of dicts representing table rows
-        :rtype: list
-        """
-        if not hasattr(self.__class__, 'table'):
-            raise AttributeError(
-                f'Class {self.__class__.__name__} does not have attribute "table". '
-                'SearchableViewMixin only works with views, which have table for results. '
-                'Please define table or use custom search implementation instead'
-            )
-        if not self.is_searchable():
-            return None
-        self.searchbox.search(query)
-        self.browser.plugin.ensure_page_safe(timeout='60s')
-        if hasattr(self, 'title'):
-            self.title.click()
-        self.table.wait_displayed()
-        return self.table.read()
-
-
 class TaskDetailsView(BaseLoggedInView):
     """Common view for task details screen. Can be found for most of tasks for
     various entities like Products, Repositories, Errata etc.
@@ -708,7 +720,7 @@ class BookmarkCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class TemplateInputItem(GenericRemovableWidgetItem):

@@ -29,7 +29,7 @@ class LDAPAuthenticationsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class LDAPAuthenticationCreateView(BaseLoggedInView):
@@ -38,9 +38,8 @@ class LDAPAuthenticationCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Auth source ldaps'
             and self.breadcrumb.read() == 'Create LDAP Auth Source'
         )
@@ -89,9 +88,8 @@ class LDAPAuthenticationCreateView(BaseLoggedInView):
 class LDAPAuthenticationEditView(LDAPAuthenticationCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Auth source ldaps'
             and self.breadcrumb.read().startswith('Edit LDAP-')
         )
