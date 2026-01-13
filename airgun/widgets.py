@@ -3073,7 +3073,11 @@ class CompoundExpandableTable(PatternflyTable):
         super().__init__(*args, **kwargs)
 
     def get_children(self, row_index):
-        """Get child rows for a specific parent row."""
+        """Get child rows for a specific parent row.
+
+        Child rows may have a different column structure than parent rows.
+        Missing columns will be set to empty strings to maintain consistent data structure.
+        """
         children = []
         child_locator = self.CHILD_ROWS.format(row_index)
         child_elements = self.browser.elements(child_locator, parent=self)
@@ -3082,10 +3086,25 @@ class CompoundExpandableTable(PatternflyTable):
             child_data = {}
             for col_name in self.headers:
                 if isinstance(col_name, int):
-                    cell = self.browser.element(f'./td[{col_name + 1}]', parent=child_el)
+                    try:
+                        cell = self.browser.element(f'./td[{col_name + 1}]', parent=child_el)
+                        child_data[col_name] = cell.text.strip()
+                    except NoSuchElementException:
+                        # Column doesn't exist in child row - set to empty string
+                        child_data[col_name] = ''
+                elif col_name is None:
+                    continue
                 else:
-                    cell = self.browser.element(f'./td[@data-label="{col_name}"]', parent=child_el)
-                child_data[col_name] = cell.text.strip()
+                    try:
+                        # Try to find cell by data-label attribute
+                        cell = self.browser.element(
+                            f'./td[@data-label="{col_name}"]', parent=child_el
+                        )
+                        child_data[col_name] = cell.text.strip()
+                    except NoSuchElementException:
+                        # Column doesn't exist in child row - set to empty string
+                        # This handles cases where child rows have different column structures
+                        child_data[col_name] = ''
             children.append(child_data)
         return children
 
