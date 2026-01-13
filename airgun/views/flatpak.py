@@ -72,7 +72,7 @@ class CreateFlatpakRemoteModal(PF5Modal):
 
     ROOT = './/div[@data-ouia-component-id="create-flatpak-modal"]'
 
-    title = Text("//span[normalize-space(.)='Create Flatpak Remote']")
+    title = Text("//span[normalize-space(.)='Create Flatpak remote']")
 
     info_alert = PF5Alert(locator='.//div[@data-ouia-component-id="flatpak-remote-info-alert"]')
     add_rh_fr = PF5Button('Add Red Hat flatpak remote')
@@ -95,7 +95,7 @@ class EditFlatpakRemoteModal(PF5Modal):
 
     ROOT = './/div[@data-ouia-component-id="edit-flatpak-modal"]'
 
-    title = Text("//span[normalize-space(.)='Edit Flatpak Remote']")
+    title = Text("//span[normalize-space(.)='Edit Flatpak remote']")
 
     name = PF5OUIATextInput('input_name')
     url = PF5OUIATextInput('input_url')
