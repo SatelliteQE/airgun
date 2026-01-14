@@ -3123,3 +3123,52 @@ class CompoundExpandableTable(PatternflyTable):
                 row_data['children'] = self.get_children(i)
                 result.append(row_data)
         return result
+
+
+class PF5TypeaheadSelect(Widget):
+    """Widget for PF5 typeahead select components (type to filter + select).
+
+    These components have an input field where you type to filter options,
+    then select from a dropdown menu that appears.
+
+    Args:
+        locator: XPath locator for the input element
+    """
+
+    def __init__(self, parent, locator, logger=None):
+        super().__init__(parent, logger=logger)
+        self.locator = locator
+
+    def __locator__(self):
+        return self.locator
+
+    def fill(self, value):
+        """Type value and click matching option.
+
+        Args:
+            value: The text value to select
+        """
+        input_el = self.browser.element(self.locator)
+        self.browser.clear(input_el)
+        input_el.send_keys(value)
+        option_locator = (
+            f'//li[contains(@class, "pf-v5-c-menu__list-item")]'
+            f'//span[contains(@class, "pf-v5-c-menu__item-text") and normalize-space(.)="{value}"]'
+        )
+        wait_for(
+            lambda: self.browser.is_displayed(option_locator),
+            timeout=10,
+            delay=0.5,
+            handle_exception=True,
+        )
+        self.browser.element(option_locator).click()
+        wait_for(
+            lambda: not self.browser.is_displayed(option_locator),
+            timeout=5,
+            delay=0.3,
+            handle_exception=True,
+        )
+
+    def read(self):
+        """Read current value from the input field."""
+        return self.browser.get_attribute('value', self.browser.element(self.locator)) or ''
