@@ -85,6 +85,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text('//h1[normalize-space(.)="Hosts"]')
 
     legacy_kebab = PF5Dropdown(locator='.//div[@id="legacy-ui-kebab"]')
+    export = PF5OUIAButton('export-hosts-button')
     select_all = Checkbox(
         locator='.//input[@data-ouia-component-id="select-all-checkbox-dropdown-toggle-checkbox"]'
     )
