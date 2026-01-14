@@ -69,14 +69,18 @@ class HostEntity(BaseEntity):
                 view.repository_list_confirm.click()
             view = self.navigate_to(self, 'Register')
             self.browser.plugin.ensure_page_safe()
+            view.wait_displayed()
             view.fill(values)
         if view.general.activation_keys.read():
             self.browser.click(view.generate_command)
             self.browser.plugin.ensure_page_safe()
             view.registration_command.wait_displayed()
         else:
-            view.general.new_activation_key_link.wait_displayed()
-            if view.generate_command.disabled:
+            if view.general.activation_keys.items is None:
+                view.general.new_activation_key_link.wait_displayed()
+            # When full read is set, it can happen, that the AK is not selected,
+            # because there are more AK on the SAT, thus generate button is disabled.
+            if view.generate_command.disabled and not full_read:
                 raise DisabledWidgetError('Generate registration command button is disabled')
         if full_read:
             return view.read()
