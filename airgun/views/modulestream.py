@@ -13,7 +13,7 @@ from airgun.widgets import SatTableWithUnevenStructure
 class ModuleStreamView(BaseLoggedInView, SearchableViewMixinPF4):
     """Main Module_Streams view"""
 
-    title = Text("//h2[contains(., 'Module Streams')]")
+    title = Text("//h1[contains(., 'Module Streams')]")
     table = SatTable('.//table', column_widgets={'Name': Text('./a')})
 
     @property
@@ -25,7 +25,7 @@ class ModuleStreamView(BaseLoggedInView, SearchableViewMixinPF4):
 class ModuleStreamsDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
 
-    title = Text("//a(., 'Module Streams')]")
+    # title = Text("//a(., 'Module Streams')]")
     details_tab = Text("//a[@id='module-stream-tabs-container-tab-1']")
 
     @property

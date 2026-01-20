@@ -492,10 +492,8 @@ class NewHostDetailsView(BaseLoggedInView):
                 locator='.//div[button[@aria-label="Limit to environment"]]'
             )
             status_filter = Select(locator='.//div[@aria-label="select Status container"]/div')
-            repository_type = Select(
-                locator='.//div[@aria-label="select Repository type container"]/div'
-            )
-            dropdown = Dropdown(locator='.//div[button[@aria-label="bulk_actions"]]')
+            repository_type = PF5OUIASelect(component_id='select Repository type')
+            dropdown = PF5OUIADropdown(component_id='repository-sets-bulk-actions')
 
             table = PF5OUIATable(
                 component_id='host-repository-sets-table',
