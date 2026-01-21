@@ -1,4 +1,5 @@
 from widgetastic.widget import Text
+from widgetastic.xpath import quote
 from widgetastic_patternfly5 import (
     Alert as PF5Alert,
     Button as PF5Button,
@@ -121,12 +122,35 @@ class MirrorFlatpakRemoteModal(PF5Modal, SearchableViewMixinPF4):
         locator='.//input[contains(@class, "pf-v5-c-text-input-group__text-input")]'
     )
 
+    dependency_alert = PF5Alert(locator='.//div[@data-ouia-component-id="dependency-alert"]')
+    dependency_info = PF5OUIAText('dependency-info-text')
+
     mirror_btn = PF5Button('Mirror')
     cancel_btn = PF5Button('Cancel')
 
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
+
+    def dependency_repo_names(self):
+        """Return a list of dependency repository names from the alert."""
+        if not self.dependency_alert.is_displayed:
+            return []
+        repo_nodes = self.browser.elements(
+            './/div[@data-ouia-component-id="dependency-alert"]//label//strong'
+        )
+        return [self.browser.text(node) for node in repo_nodes]
+
+    def select_dependency(self, repo_name):
+        """Select a dependency checkbox by repository name."""
+        label = self.browser.element(
+            './/div[@data-ouia-component-id="dependency-alert"]//label['
+            f'.//strong[normalize-space(.)={quote(repo_name)}]'
+            ']'
+        )
+        checkbox_id = label.get_attribute('for')
+        checkbox = self.browser.element(f'.//input[@id={quote(checkbox_id)}]')
+        checkbox.click()
 
 
 class FlatpakRemoteDeleteModal(PF5Modal):
