@@ -135,6 +135,25 @@ class AllHostsEntity(BaseEntity):
         view.fill(values)
         view.submit()
 
+    def disable_vulnerability_analysis(self, host_name):
+        """Disable vulnerability analysis for a host via kebab menu
+
+        Args:
+            host_name: Name of the host to disable vulnerability analysis for
+        """
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names=host_name)
+        # Get the first row after search/filter
+        row = view.table[0]
+        # Access via the row's browser element directly
+        row_element = row.__locator__()
+        kebab_button = view.browser.element(
+            './/td[contains(@class, "pf-v5-c-table__action")]//button', parent=row_element
+        )
+        kebab_button.click()
+        # Now find and click the menu item
+        view.browser.click('.//button[contains(., "Disable vulnerability analysis")]')
+        self.browser.plugin.ensure_page_safe(timeout='10s')
+
     def get_displayed_table_headers(self):
         """
         Return displayed columns in the hosts table.
