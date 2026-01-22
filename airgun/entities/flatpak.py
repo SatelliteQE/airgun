@@ -1,5 +1,7 @@
 from time import sleep
 
+from widgetastic.exceptions import NoSuchElementException
+
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
@@ -182,6 +184,11 @@ class FlatpakRemotesEntity(BaseEntity):
         :param str repo: name of the repository to be mirrored
         :param str product: name of the product where the repository should be mirrored
         """
+        mirror_modal = self.open_mirror_modal(remote=remote, repo=repo)
+        self.submit_mirror_modal(mirror_modal=mirror_modal, product=product)
+
+    def open_mirror_modal(self, remote, repo):
+        """Open the Mirror Repository modal for a given remote repository."""
         view = self.navigate_to(self, 'All')
         view.wait_displayed()
         view.search(remote)
@@ -192,10 +199,31 @@ class FlatpakRemotesEntity(BaseEntity):
         view.table.row(name=repo)['Mirror'].widget.click()
         mirror_modal = MirrorFlatpakRemoteModal(self.browser)
         mirror_modal.wait_displayed()
+        return mirror_modal
+
+    def read_mirror_dependency_alert(self, mirror_modal):
+        """Read dependency alert details from the mirror modal."""
+        try:
+            if not mirror_modal.dependency_alert.is_displayed:
+                return None
+            return {
+                'title': mirror_modal.dependency_alert.title,
+                'body': mirror_modal.dependency_info.read(),
+                'dependencies': mirror_modal.dependency_repo_names(),
+            }
+        except NoSuchElementException:
+            return None
+
+    def submit_mirror_modal(self, mirror_modal, product, dependencies=None):
+        """Submit mirror modal, optionally selecting dependency repositories."""
+        for dependency in dependencies or []:
+            mirror_modal.select_dependency(dependency)
         mirror_modal.searchbar.fill(product.name)
         self.browser.plugin.ensure_page_safe()
         mirror_modal.mirror_btn.click()
+        view = FlatpakRemoteDetailsView(self.browser)
         view.wait_displayed(delay=3)
+        return view
 
 
 @navigator.register(FlatpakRemotesEntity, 'All')
