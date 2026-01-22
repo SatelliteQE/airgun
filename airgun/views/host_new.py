@@ -518,7 +518,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
         add_parameter = Button(locator='.//button[text()="Add parameter"]')
         searchbar = SearchInput(
-            locator='//input[contains(@class, "pf-v5-c-search-input__text-input")]'
+            locator='//div[@data-ouia-component-id="parameters-table-toolbar"]//input[contains(@class,"pf-v5-c-text-input-group__text-input")]'
         )
         parameter_name_input = TextInput(locator='.//td//input[contains(@aria-label, "name")]')
         parameter_type_input = Select(
@@ -542,10 +542,10 @@ class NewHostDetailsView(BaseLoggedInView):
                         '[contains(@data-ouia-component-id, "OUIA-Generated-Button-plain-")]'
                     )
                 ),
-                5: Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]'),
+                5: MenuToggleButtonMenu(),
             },
         )
-        pagination = PF4Pagination()
+        pagination = PF5Pagination()
 
     @View.nested
     class traces(PF5Tab):
@@ -895,8 +895,8 @@ class ParameterDeleteDialog(View):
 
     ROOT = './/div[@data-ouia-component-id="app-confirm-modal"]'
 
-    confirm_delete = OUIAButton('btn-modal-confirm')
-    cancel_delete = OUIAButton('btn-modal-cancel')
+    confirm_delete = PF5OUIAButton('btn-modal-confirm')
+    cancel_delete = PF5OUIAButton('btn-modal-cancel')
 
 
 class ManageHostCollectionModal(View):
