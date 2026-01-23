@@ -11,6 +11,7 @@ from airgun.views.fact import HostFactView
 from airgun.views.host import HostsView as LegacyHostsView
 from airgun.views.host_new import (
     AllAssignedRolesView,
+    ContainerfileInstallCommandView,
     EditAnsibleRolesView,
     EditSystemPurposeView,
     EnableTracerView,
@@ -386,6 +387,37 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
         view.table[0][0].widget.fill(True)
         view.install.click()
+
+    def generate_containerfile_install_command(
+        self, entity_name, package_count, search, unknown_persistence=False
+    ):
+        """Generates containerfile install command for a given set of packages"""
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        wait_for(lambda: view.content.packages.is_displayed, timeout=5)
+        view.content.packages.select()
+        wait_for(lambda: view.content.packages.table.is_displayed, timeout=5)
+        view.content.packages.searchbar.fill(search)
+        self.browser.plugin.ensure_page_safe()
+        view.content.packages.table.wait_displayed()
+        if not view.content.packages.select_all.selected:
+            view.content.packages.select_all.click()
+        view.content.packages.dropdown.wait_displayed()
+        if package_count > 1:
+            view.content.packages.dropdown.item_select(
+                f'Generate containerfile install command ({package_count} packages selected)'
+            )
+        else:
+            view.content.packages.dropdown.item_select(
+                f'Generate containerfile install command ({package_count} package selected)'
+            )
+        view = ContainerfileInstallCommandView(self.browser)
+        view.wait_displayed()
+        if unknown_persistence:
+            view.unknown_persistence.click()
+        widget_values = view.read()
+        view.cancel_button.click()
+        return widget_values
 
     def apply_package_action(self, entity_name, package_name, action):
         """Apply `action` to selected package based on the `package_name`"""

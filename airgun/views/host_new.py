@@ -32,6 +32,8 @@ from widgetastic_patternfly5.ouia import (
     ExpandableTable as PF5OUIAExpandableTable,
     PatternflyTable as PF5OUIATable,
     Select as PF5OUIASelect,
+    Switch as PF5OUIASwitch,
+    Text as PF5OUIAText,
 )
 
 from airgun.views.cloud_insights import BulkSelectMenuToggle
@@ -400,7 +402,9 @@ class NewHostDetailsView(BaseLoggedInView):
             # workaround for BZ 2119076
             ROOT = './/div[@id="packages-tab"]'
 
-            select_all = Checkbox(locator='.//div[@id="selection-checkbox"]/div/label')
+            select_all = Checkbox(
+                locator='.//input[@data-ouia-component-id="select-all-checkbox-dropdown-toggle-checkbox"]'
+            )
             searchbar = SearchInput(
                 locator='.//input[contains(@class, "pf-v5-c-text-input-group__text-input")]'
             )
@@ -868,6 +872,19 @@ class InstallPackagesView(View):
 
     install = PF5Button(locator='.//button[(normalize-space(.)="Install")]')
     cancel = PF5Button('Cancel')
+
+
+class ContainerfileInstallCommandView(View):
+    """Generate Containerfile Install Command modal"""
+
+    ROOT = './/div[@data-ouia-component-id="containerfile-install-modal"]'
+
+    unknown_persistence = PF5OUIASwitch('include-unknown-persistence-switch')
+    command_description = PF5OUIAText('command-description-text')
+    no_packages = PF5OUIAText('no-packages-text')
+
+    command = TextInput(locator='.//input[@aria-label="Copyable input"]')
+    cancel_button = PF5OUIAButton('cancel-button')
 
 
 class AllAssignedRolesView(View):
