@@ -16,6 +16,7 @@ class ModuleStreamEntity(BaseEntity):
             ``name = "ant"``.
         """
         view = self.navigate_to(self, 'All')
+        view.wait_displayed()
         return view.search(query)
 
     def read(self, entity_name, stream_version, widget_names=None):
