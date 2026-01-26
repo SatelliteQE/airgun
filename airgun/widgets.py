@@ -2453,12 +2453,8 @@ class PieChart(GenericLocatorWidget):
     only return values that displayed inside of the chart
     """
 
-    chart_title_text = Text(
-        ".//*[name()='svg']//*[name()='tspan'][contains(@class,'donut-title-small-pf')]"
-    )
-    chart_title_value = Text(
-        ".//*[name()='svg']//*[name()='tspan'][contains(@class,'donut-title-big-pf')]"
-    )
+    chart_title_text = Text(".//*[name()='svg']//*[name()='tspan'][2]")
+    chart_title_value = Text(".//*[name()='svg']//*[name()='tspan'][1]")
 
     def read(self):
         """Return dictionary that contains chart title name as key and chart
