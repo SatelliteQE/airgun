@@ -391,7 +391,14 @@ class NewHostEntity(HostEntity):
     def generate_containerfile_install_command(
         self, entity_name, package_count, search, unknown_persistence=False
     ):
-        """Generates containerfile install command for a given set of packages"""
+        """
+        Generates containerfile install command for a given set of packages
+        Args:
+            entity_name: Name of the host.
+            package_count: Number of packages you are selecting.
+            search: Search query to filter the package(s) you want to select.
+            unknown_persistence: Whether or not to include packages of unknown persistence value.
+        """
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
         wait_for(lambda: view.content.packages.is_displayed, timeout=5)
