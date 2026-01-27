@@ -2,7 +2,7 @@ from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Checkbox, ParametrizedView, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb, Tab
-from widgetastic_patternfly5 import Button, Modal, Radio as PF5Radio
+from widgetastic_patternfly5 import Alert as PF5Alert, Button, Modal, Radio as PF5Radio
 from widgetastic_patternfly5.ouia import (
     Button as PF5Button,
     Dropdown as PF5Dropdown,
@@ -217,6 +217,9 @@ class ContentViewVersionPublishView(BaseLoggedInView):
     ROOT = './/div[@id="content-view-publish-wizard"]'
     title = Text(".//h2[contains(., 'Publish') and @id='pf-wizard-title-0']")
     publish_alert = Text(".//h4[contains(., 'No available repository or filter updates')]")
+    flatpak_dependencies_alert = PF5Alert(
+        locator='.//div[@data-ouia-component-id="flatpak-dependencies-alert"]'
+    )
     # publishing screen
     description = TextInput(id='description')
     promote = Switch('promote-switch')
