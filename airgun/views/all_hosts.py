@@ -639,6 +639,7 @@ class MenuToggleSelect(PF5Select):
         "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
     )
 
+
 class ChangePowerStateModal(PF5Modal):
     """
     This class represents the Change Power State modal
@@ -656,6 +657,7 @@ class ChangePowerStateModal(PF5Modal):
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
+
 
 class ChangeHostsOwnerModal(PF5Modal):
     """

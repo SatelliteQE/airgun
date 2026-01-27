@@ -17,6 +17,7 @@ from airgun.views.all_hosts import (
     ChangeHostsOwnerModal,
     ChangeLocationModal,
     ChangeOrganizationModal,
+    ChangePowerStateModal,
     DisassociateHostsModal,
     HostDeleteDialog,
     HostgroupDialog,
@@ -26,7 +27,6 @@ from airgun.views.all_hosts import (
     ManageRepositorySetsModal,
     ManageSystemPurposeModal,
     ManageTracesModal,
-    ChangePowerStateModal,
 )
 from airgun.views.job_invocation import JobInvocationCreateView
 
