@@ -29,12 +29,22 @@ class SatSubscriptionsViewTable(SatTable):
     normal table, but when search returns no results, it does display single
     row with message.
     Not to be confused with SatSubscriptionsTable, which is not used on
-    that page
+    that page.
+    Note: When there are no subscriptions at all, Katello renders an EmptyState
+    component instead of a table, so we need to check if the table exists first.
     """
 
     @property
+    def is_displayed(self):
+        """Check if the table element exists on the page."""
+        return self.browser.wait_for_element(self.locator, timeout=5, exception=False) is not None
+
+    @property
     def has_rows(self):
-        return self.tbody_row.read() != 'No subscriptions match your search criteria.'
+        return (
+            self.is_displayed
+            and self.tbody_row.read() != 'No subscriptions match your search criteria.'
+        )
 
 
 class ProductContentItemsList(GenericLocatorWidget):
@@ -116,6 +126,8 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
 
     add_button = Button(href='subscriptions/add')
     manage_manifest_button = Button('Manage Manifest')
+    import_manifest_button = Button('Import a Manifest')
+    add_subscriptions_button = Button('Add subscriptions')
     export_csv_button = Button('Export CSV')
     delete_button = Button('Delete')
     progressbar = ProgressBar('//div[contains(@class,"progress-bar-striped")]')
@@ -141,7 +153,7 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
 
 
 class ManageManifestView(BaseLoggedInView):
-    ROOT = '//div[@role="dialog" and @tabindex][div//h4[normalize-space(.)="Manage Manifest"]]'
+    ROOT = '//div[@id="manageManifestModal"]'
     close_button = Button('Close')
 
     @View.nested
@@ -169,40 +181,30 @@ class ManageManifestView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.close_button, visible=True, exception=False
-        ) is not None and 'in' in self.browser.classes(self)
+        return (
+            self.browser.wait_for_element(self.ROOT, visible=True, timeout=10, exception=False)
+            is not None
+        )
 
     def wait_animation_end(self):
-        wait_for(
-            lambda: 'in' in self.browser.classes(self),
-            handle_exception=True,
-            logger=self.logger,
-            timeout=10,
-        )
+        self.browser.wait_for_element(self.ROOT, visible=True, timeout=20)
 
 
 class DeleteManifestConfirmationView(BaseLoggedInView):
-    ROOT = (
-        '//div[@role="dialog" and @tabindex][div//h4[normalize-space(.)="Confirm delete manifest"]]'
-    )
-    message = Text('.//div[@class="modal-body"]')
+    ROOT = '//div[@id="deleteManifestModal"]'
+    message = Text('.//div[contains(@class, "pf-v5-c-modal-box__body")]')
     delete_button = Button('Delete')
     cancel_button = Button('Cancel')
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.delete_button, visible=True, exception=False
-        ) is not None and 'in' in self.browser.classes(self)
+        return (
+            self.browser.wait_for_element(self.ROOT, visible=True, timeout=10, exception=False)
+            is not None
+        )
 
     def wait_animation_end(self):
-        wait_for(
-            lambda: 'in' in self.browser.classes(self),
-            handle_exception=True,
-            logger=self.logger,
-            timeout=10,
-        )
+        self.browser.wait_for_element(self.ROOT, visible=True, timeout=20)
 
 
 class AddSubscriptionView(BaseLoggedInView):
