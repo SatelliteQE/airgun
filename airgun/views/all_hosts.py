@@ -639,6 +639,23 @@ class MenuToggleSelect(PF5Select):
         "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
     )
 
+class ChangePowerStateModal(PF5Modal):
+    """
+    This class represents the Change Power State modal
+    which is used to change power state of host/hosts.
+    """
+
+    OUIA_ID = 'bulk-power-state-modal'
+
+    title = './/h1[@class="pf-v5-c-modal-box__title"]'
+    close_btn = PF5OUIAButton('bulk-power-state-modal-ModalBoxCloseButton')
+    apply_btn = PF5OUIAButton('bulk-power-state-apply')
+    cancel_btn = PF5OUIAButton('bulk-power-state-cancel')
+    select_state = MenuToggleSelect()
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
 
 class ChangeHostsOwnerModal(PF5Modal):
     """
