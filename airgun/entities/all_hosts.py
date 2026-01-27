@@ -514,11 +514,14 @@ class AllHostsEntity(BaseEntity):
 
     def change_power_state(self, state, host_names=None, select_all_hosts=False):
         """
-        Navigate to the Disassociate hosts modal for selected hosts and disassociate them.
+        Change power state for selected hosts.
 
-        :param state: Change power state to (Start,Stop,Power Off,Reboot etc.)
-        :param host_names: List of host names to disassociate.
-        :param select_all_hosts: If True, all hosts will be selected for disassociation.
+        Opens the Change power state modal and applies the requested power
+        state to the selected hosts.
+
+        :param state: Desired power state (for example, "Start", "Stop", "Power Off", "Reboot").
+        :param host_names: List of host names whose power state should be changed. If None, uses the current selection.
+        :param select_all_hosts: If True, select all hosts before changing their power state.
         """
 
         view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
