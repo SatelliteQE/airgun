@@ -41,7 +41,7 @@ class SubscriptionEntity(BaseEntity):
         wait_for(
             lambda: self.has_manifest == has_manifest,
             handle_exception=True,
-            timeout=10,
+            timeout=60,
             logger=view.logger,
         )
 
@@ -54,7 +54,10 @@ class SubscriptionEntity(BaseEntity):
         """
         try:
             view = self.navigate_to(self, 'Manage Manifest')
-            result = view.manifest.delete_button.is_enabled
+            view.wait_animation_end()
+            result = (
+                view.manifest.delete_button.is_displayed and view.manifest.delete_button.is_enabled
+            )
             view.close_button.click()
             return result
         except TimedOutError:
@@ -259,6 +262,13 @@ class ManageManifest(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
+        wait_for(
+            lambda: self.parent.manage_manifest_button.is_displayed
+            and not self.parent.manage_manifest_button.disabled,
+            handle_exception=True,
+            timeout=30,
+            delay=1,
+        )
         self.parent.manage_manifest_button.click()
 
 

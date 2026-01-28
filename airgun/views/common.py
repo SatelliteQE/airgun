@@ -121,6 +121,20 @@ class BaseLoggedInView(View):
         return doc_links
 
 
+class PF5ModalViewMixin(WTMixin):
+    """Mixin for PatternFly 5 Modals"""
+
+    @property
+    def is_displayed(self):
+        return (
+            self.browser.wait_for_element(self.ROOT, visible=True, timeout=10, exception=False)
+            is not None
+        )
+
+    def wait_animation_end(self):
+        self.browser.wait_for_element(self.ROOT, visible=True, timeout=20)
+
+
 class WrongContextAlert(View):
     """Alert screen which appears when switching organization while organization-specific entity is
     opened.
