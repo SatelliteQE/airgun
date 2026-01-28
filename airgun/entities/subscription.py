@@ -59,7 +59,6 @@ class SubscriptionEntity(BaseEntity):
                 view.manifest.delete_button.is_displayed and view.manifest.delete_button.is_enabled
             )
             view.close_button.click()
-            self.browser.plugin.ensure_page_safe()
             return result
         except TimedOutError:
             return None
@@ -263,7 +262,6 @@ class ManageManifest(NavigateStep):
     prerequisite = NavigateToSibling('All')
 
     def step(self, *args, **kwargs):
-        self.parent.browser.plugin.ensure_page_safe()
         wait_for(
             lambda: self.parent.manage_manifest_button.is_displayed
             and not self.parent.manage_manifest_button.disabled,

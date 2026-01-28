@@ -10,7 +10,12 @@ from widgetastic.widget import (
 from widgetastic_patternfly import BreadCrumb, Button
 
 from airgun.exceptions import ReadOnlyWidgetError
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.common import (
+    BaseLoggedInView,
+    PF5ModalViewMixin,
+    SatTab,
+    SearchableViewMixinPF4,
+)
 from airgun.widgets import (
     ConfirmationDialog,
     ItemsListReadOnly,
@@ -37,7 +42,11 @@ class SatSubscriptionsViewTable(SatTable):
     @property
     def is_displayed(self):
         """Check if the table element exists on the page."""
-        return self.browser.wait_for_element(self.locator, timeout=5, exception=False) is not None
+        return self.browser.is_element_present(self.locator)
+
+    def wait_displayed(self, timeout=10):
+        """Explicitly wait for the table to be displayed."""
+        return self.browser.wait_for_element(self.locator, timeout=timeout, exception=False)
 
     @property
     def has_rows(self):
@@ -152,7 +161,7 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
         return super().is_searchable()
 
 
-class ManageManifestView(BaseLoggedInView):
+class ManageManifestView(BaseLoggedInView, PF5ModalViewMixin):
     ROOT = '//div[@id="manageManifestModal"]'
     close_button = Button('Close')
 
@@ -179,32 +188,12 @@ class ManageManifestView(BaseLoggedInView):
             column_widgets={'Status': Text(), 'Message': Text(), 'Timestamp': Text()},
         )
 
-    @property
-    def is_displayed(self):
-        return (
-            self.browser.wait_for_element(self.ROOT, visible=True, timeout=10, exception=False)
-            is not None
-        )
 
-    def wait_animation_end(self):
-        self.browser.wait_for_element(self.ROOT, visible=True, timeout=20)
-
-
-class DeleteManifestConfirmationView(BaseLoggedInView):
+class DeleteManifestConfirmationView(BaseLoggedInView, PF5ModalViewMixin):
     ROOT = '//div[@id="deleteManifestModal"]'
     message = Text('.//div[contains(@class, "pf-v5-c-modal-box__body")]')
     delete_button = Button('Delete')
     cancel_button = Button('Cancel')
-
-    @property
-    def is_displayed(self):
-        return (
-            self.browser.wait_for_element(self.ROOT, visible=True, timeout=10, exception=False)
-            is not None
-        )
-
-    def wait_animation_end(self):
-        self.browser.wait_for_element(self.ROOT, visible=True, timeout=20)
 
 
 class AddSubscriptionView(BaseLoggedInView):
