@@ -66,6 +66,22 @@ class NewContentViewEntity(BaseEntity):
         view.wait_displayed()
         return view.versions.table.read()
 
+    def read_flatpak_dependencies_alert(self, entity_name, values=None):
+        """Read Flatpak dependencies alert text from publish review step."""
+        view = self.navigate_to(self, 'Publish', entity_name=entity_name)
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        if values:
+            view.fill(values)
+        view.next_button.click()
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        try:
+            alert_text = view.flatpak_dependencies_alert.title
+        except NoSuchElementException:
+            alert_text = None
+        view.cancel_button.click()
+        return alert_text
+
     def check_publish_banner(self, cv_name):
         """Check if the needs_publish banner is displayed on the content view index page"""
         view = self.navigate_to(self, 'All')
