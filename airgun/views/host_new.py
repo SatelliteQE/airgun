@@ -1,7 +1,15 @@
 import time
 
 from selenium.webdriver.common.by import By
-from widgetastic.widget import Checkbox, Text, TextInput, View, Widget
+from widgetastic.widget import (
+    Checkbox,
+    ParametrizedLocator,
+    ParametrizedView,
+    Text,
+    TextInput,
+    View,
+    Widget,
+)
 from widgetastic.widget.table import Table
 from widgetastic_patternfly4 import (
     Button,
@@ -22,6 +30,7 @@ from widgetastic_patternfly5 import (
     Dropdown as PF5Dropdown,
     ExpandableTable as PF5ExpandableTable,
     Menu as PF5Menu,
+    Modal as PF5Modal,
     Tab as PF5Tab,
 )
 from widgetastic_patternfly5.ouia import (
@@ -36,8 +45,9 @@ from widgetastic_patternfly5.ouia import (
     Text as PF5OUIAText,
 )
 
+# from airgun.views.all_hosts import ManageCVEModal as ManageCVEnvModal
 from airgun.views.cloud_insights import BulkSelectMenuToggle
-from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, PF5LCESelectorGroup, SearchableViewMixinPF4
 from airgun.widgets import (
     Accordion,
     ActionsDropdown,
@@ -45,6 +55,7 @@ from airgun.widgets import (
     ItemsList,
     Pf4ActionsDropdown,
     Pf5ConfirmationDialog,
+    PF5LCESelector,
     SatTableWithoutHeaders,
     SearchInput,
 )
@@ -97,6 +108,15 @@ class DropdownWithDescription(PF5Dropdown):
     """Dropdown with description below items"""
 
     ITEM_LOCATOR = ".//*[contains(@class, 'pf-v5-c-dropdown__menu-item') and contains(text(), {})]"
+
+
+class CVESelect(Select):
+    BUTTON_LOCATOR = './/button[@aria-label="Options menu"]'
+    ITEMS_LOCATOR = './/ul[contains(@class, "pf-v5-c-select__menu")]/li'
+    ITEM_LOCATOR = '//*[contains(@class, "pf-v5-c-select__menu-item") and .//*[contains(normalize-space(.), {})]]'
+    SELECTED_ITEM_LOCATOR = './/span[contains(@class, "ins-c-conditional-filter")]'
+    TEXT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and child::button]'
+    DEFAULT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and @data-ouia-component-id="select-content-view"]'
 
 
 class HostDetailsCard(Widget):
@@ -222,7 +242,10 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class content_view_details(Card):
             ROOT = './/div[@data-ouia-component-id="content-view-details-card"]'
-            actions = Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]')
+            # dropdown = PF5Dropdown(locator='.//div[@data-ouia-component-id="change-content-view-environments-kebab"]/button')
+            dropdown = PF5Dropdown(
+                locator='.//div[button[@aria-label="change_content_view_kebab"]]'
+            )
 
             org_view = Text('.//a[contains(@href, "content_views")]')
 
@@ -1106,3 +1129,35 @@ class ManageColumnsView(BaseLoggedInView):
         # so ensure_page_safe() does not catches it
         time.sleep(2)
         self.browser.plugin.ensure_page_safe()
+
+
+class NewCVEnvAssignmentSection(PF5LCESelectorGroup):
+    ROOT = './/span[@class="assignment-name"][normalize-space(.)="Select a content view"]/ancestor::div[@class="assignment-section"][1]'
+
+    PARAMETERS = ('lce_name',)
+
+    lce_selector = PF5LCESelector(
+        locator=ParametrizedLocator(
+            './/input[@type="radio" and @class="pf-v5-c-radio__input" and following-sibling::label//span[@class="pf-v5-c-label__text" and normalize-space(.)="{lce_name}"]]'
+        )
+    )
+    content_source_select = CVESelect()
+
+
+class ManageMultiCVEnvModal(PF5Modal):
+    """
+    This class represents the 'Assign content view environments' modal on the host overview page
+    when the 'Allow multiple content views' setting is enabled.
+    """
+
+    ROOT = './/div[@data-ouia-component-id="assign-cv-modal"]'
+
+    title = Text('//span[normalize-space(.)="Assign content view environments]')
+    assign_cv_btn = PF5OUIAButton('assign-another-cv-button')
+    save_btn = Button(locator='//button[normalize-space(.)="Save"]')
+    cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
+    new_assignment_section = ParametrizedView.nested(NewCVEnvAssignmentSection)
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
