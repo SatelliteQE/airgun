@@ -15,7 +15,7 @@ from widgetastic_patternfly5.ouia import (
 )
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
-from airgun.widgets import SearchInput
+from airgun.widgets import PF4Search, SearchInput
 
 
 class FlatpakRemotesView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -52,6 +52,7 @@ class FlatpakRemoteDetailsView(BaseLoggedInView, SearchableViewMixinPF4):
     description = PF5OUIAText('flatpak-remote-description')
     last_scan_text = PF5OUIAText('fr-last-scan-text')
     last_scan_words_text = PF5OUIAText('fr-last-scan-words-text')
+    searchbox = PF4Search(locator='.//div[@data-ouia-component-id="table-toolbar"]')
 
     scan_btn = PF5Button('Scan')
 
