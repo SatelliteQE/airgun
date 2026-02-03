@@ -1,6 +1,6 @@
 from widgetastic.widget import Table, Text, View, Widget
 
-from airgun.views.common import BaseLoggedInView, SatTable, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SatTable, SearchableViewMixin
 from airgun.widgets import ActionsDropdown, PieChart
 
 
@@ -71,14 +71,14 @@ class AutoRefresh(Widget):
             self.browser.element(self.AUTO_REFRESH).click()
 
 
-class DashboardView(BaseLoggedInView, SearchableViewMixinPF4):
+class DashboardView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Overview']")
     manage = ActionsDropdown("//div[@class='btn-group']")
     refresh = AutoRefresh()
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
     def search(self, query):
         """Return whole dashboard view as a result of a search

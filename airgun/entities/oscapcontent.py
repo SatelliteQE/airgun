@@ -2,7 +2,6 @@ from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.oscapcontent import (
     SCAPContentCreateView,
     SCAPContentEditView,
@@ -22,7 +21,7 @@ class OSCAPContentEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         self.browser.click(view.submit, ignore_ajax=True)
-        self.browser.plugin.ensure_page_safe(timeout='60s')
+
         view.validations.assert_no_errors()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -76,7 +75,6 @@ class ShowAllSCAPContents(NavigateStep):
 
     VIEW = SCAPContentsView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Compliance', 'SCAP contents')
 

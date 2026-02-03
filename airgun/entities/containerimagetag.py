@@ -1,6 +1,5 @@
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.containerimagetag import (
     ContainerImageTagDetailsView,
     ContainerImageTagsView,
@@ -35,7 +34,6 @@ class ShowAllContainerImageTags(NavigateStep):
 
     VIEW = ContainerImageTagsView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Content Types', 'Container Image Tags')
 

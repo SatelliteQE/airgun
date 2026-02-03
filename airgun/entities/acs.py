@@ -1,10 +1,7 @@
-import time
-
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.acs import (
     AddAlternateContentSourceModal,
     AlternateContentSourcesView,
@@ -39,8 +36,6 @@ class AcsEntity(BaseEntity):
             raise ValueError('Either row_id or acs_name must be specified!')
 
         view = self.navigate_to(self, 'ACS')
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         if not view.acs_drawer.content_table.is_displayed:
             raise ValueError('No ACS found!')
 
@@ -48,13 +43,12 @@ class AcsEntity(BaseEntity):
             view.acs_drawer.content_table[row_id][1].widget.click()
         elif acs_name is not None:
             view.acs_drawer.search_bar.fill(f'name = {acs_name}')
-            time.sleep(3)
+
             if not view.acs_drawer.content_table.is_displayed:
                 raise ValueError(f'ACS {acs_name} not found!')
             # Open ACS details side panel
             view.acs_drawer.content_table[0][1].widget.click()
-        self.browser.plugin.ensure_page_safe()
-        view.wait_displayed()
+
         result = RowDrawer(self.browser).read()
         result['details']['last_refresh'] = RowDrawer(self.browser).last_refresh.text
         self.close_details_side_panel()
@@ -67,8 +61,6 @@ class AcsEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'ACS')
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         if view.acs_drawer.clear_search_btn.is_displayed:
             view.acs_drawer.clear_search_btn.click()
         wait_for(lambda: view.acs_drawer.content_table.is_displayed, timeout=10, delay=1)
@@ -98,8 +90,6 @@ class AcsEntity(BaseEntity):
             raise ValueError('acs_name must not be empty list!')
 
         view = self.navigate_to(self, 'ACS')
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         # Convert string to list for further use
         acs_name = [acs_name] if isinstance(acs_name, str) else acs_name
 
@@ -143,8 +133,6 @@ class AcsEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'ACS')
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         wait_for(lambda: view.acs_drawer.content_table.is_displayed, timeout=10, delay=1)
         if not view.acs_drawer.content_table.is_displayed:
             raise ValueError('No ACS found!')
@@ -181,12 +169,10 @@ class AcsEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'ACS')
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
 
         # Check if acs we want to edit exists
         view.acs_drawer.search_bar.fill(f'name = {acs_name_to_edit}')
-        view.wait_displayed()
+
         if not view.acs_drawer.content_table.is_displayed:
             raise ValueError(f'ACS {acs_name_to_edit} not found!')
         # Click on ACS name in ACS table
@@ -200,7 +186,7 @@ class AcsEntity(BaseEntity):
         """Function that closes side panel view"""
 
         view = AlternateContentSourcesView(self.browser)
-        time.sleep(2)
+
         view.acs_drawer.content_table[0][1].widget.click()
 
     def edit_acs_details(
@@ -241,7 +227,7 @@ class AcsEntity(BaseEntity):
             view.description.fill(new_description)
         view.edit_button.click()
         # Wait for the possible error to pop up
-        time.sleep(1)
+
         if view.error_message.is_displayed:
             raise ValueError(f'Error while editing: {view.error_message.read()}')
         self.close_details_side_panel()
@@ -694,9 +680,6 @@ class AcsEntity(BaseEntity):
                 raise ValueError('manual_auth cannot be True when rhui_type is True!')
 
         view = self.navigate_to(self, 'ACS')
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
-        wait_for(lambda: view.title.is_displayed, timeout=10, delay=1)
         # If there are some ACS already created
         if view.acs_drawer.content_table.is_displayed:
             # Check if we are not creating ACS with the name that already exists
@@ -705,14 +688,12 @@ class AcsEntity(BaseEntity):
                 raise ValueError(f'ACS with {name} already exists!')
             else:
                 view.acs_drawer.clear_search.click()
-                time.sleep(2)
 
         wait_for(lambda: view.acs_drawer.add_source.is_displayed, timeout=10, delay=1)
         view.acs_drawer.add_source.click()
         # Load wizard modal for adding new ACS
         view = AddAlternateContentSourceModal(self.browser)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+
         wait_for(lambda: view.title.is_displayed, timeout=10, delay=1)
 
         # Select ACS type
@@ -815,7 +796,7 @@ class AcsEntity(BaseEntity):
         if view.error_message.is_displayed:
             raise ValueError(f'Error while adding ACS: {view.error_message.read()}')
         # Wait for ACS to be added to the table
-        time.sleep(4)
+
         wait_for(lambda: view.acs_drawer.content_table.is_displayed, timeout=10, delay=1)
         # Close the side panel
         view = AlternateContentSourcesView(self.browser)
@@ -828,6 +809,5 @@ class OpenAcsPage(NavigateStep):
 
     VIEW = AlternateContentSourcesView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Alternate Content Sources')

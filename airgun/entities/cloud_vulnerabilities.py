@@ -2,7 +2,6 @@ from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.cloud_vulnerabilities import CloudVulnerabilityView, CVEDetailsView
 from airgun.views.host_new import NewHostDetailsView
 
@@ -12,14 +11,11 @@ class CloudVulnerabilityEntity(BaseEntity):
 
     def read(self, entity_name=None, widget_names=None):
         view = self.navigate_to(self, 'All')
-        wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
         return view.vulnerabilities_table.read()
 
     def _navigate_to_cve_details(self, cve_id):
         """Helper method to navigate to CVE details page"""
         view = self.navigate_to(self, 'All')
-        view.wait_displayed()
-        wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
         view.search_bar.fill(cve_id)
         view.browser.element(f'.//a[contains(@href, "{cve_id}")]').click()
 
@@ -77,6 +73,5 @@ class ShowVulnerabilityListView(NavigateStep):
 
     VIEW = CloudVulnerabilityView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Red Hat Lightspeed', 'Vulnerability')

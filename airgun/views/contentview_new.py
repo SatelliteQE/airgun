@@ -19,7 +19,7 @@ from airgun.views.common import (
     BaseLoggedInView,
     NewAddRemoveResourcesView,
     PF5LCECheckSelectorGroup,
-    SearchableViewMixinPF4,
+    SearchableViewMixin,
     TableRowKebabMenu,
 )
 from airgun.widgets import (
@@ -69,10 +69,9 @@ class AddContentViewModal(BaseLoggedInView):
         return self.title.is_displayed
 
 
-class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
+class ContentViewTableView(BaseLoggedInView, SearchableViewMixin):
     title = PF5Text(component_id='cvPageHeaderText')
     create_content_view = PF5Button(component_id='create-content-view')
-    search = PF4Search()
     table = ExpandableTable(
         component_id='content-views-table',
         column_widgets={
@@ -130,7 +129,7 @@ class ContentViewEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
+        breadcrumb_loaded = self.breadcrumb.is_displayed
         return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Content views'
 
     @View.nested
@@ -145,11 +144,10 @@ class ContentViewEditView(BaseLoggedInView):
         import_only = Switch(name='import_only_switch')
 
     @View.nested
-    class versions(Tab):
+    class versions(Tab, SearchableViewMixin):
         TAB_LOCATOR = ParametrizedLocator(
             '//a[contains(@href, "#/versions") and @data-ouia-component-id="routed-tabs-tab-versions"]'
         )
-        searchbox = PF4Search()
         table = PatternflyTable(
             component_id='content-view-versions-table',
             column_widgets={
@@ -174,7 +172,7 @@ class ContentViewEditView(BaseLoggedInView):
             search_phrase = version_name
             if version_name.startswith('V') and '.' in version_name:
                 search_phrase = f'version = {version_name.split()[1].split(".")[0]}'
-            self.searchbox.search(search_phrase)
+            super().search(search_phrase)
             return self.table.read()
 
     @View.nested
@@ -189,10 +187,9 @@ class ContentViewEditView(BaseLoggedInView):
         resources = View.nested(NewAddRemoveResourcesView)
 
     @View.nested
-    class filters(Tab):
+    class filters(Tab, SearchableViewMixin):
         TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/filters")]')
         new_filter = PF5Button(component_id='create-filter-button')
-        searchbox = PF4Search()
         table = PatternflyTable(
             component_id='content-view-filters-table',
             column_widgets={
@@ -208,7 +205,7 @@ class ContentViewEditView(BaseLoggedInView):
 
         def search(self, name):
             """Searches for specific filter'"""
-            self.searchbox.search(name)
+            super().search(name)
             return self.table.read()
 
 
@@ -282,11 +279,10 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
     progressbar = PF5ProgressBar()
 
     @View.nested
-    class repositories(Tab):
+    class repositories(Tab, SearchableViewMixin):
         TAB_LOCATOR = ParametrizedLocator(
             './/button[@data-ouia-component-id="cv-version-details-tabs-tab-repositories"]'
         )
-        searchbox = PF4Search()
         table = PatternflyTable(
             component_id='content-view-version-details-repositories-table',
             column_widgets={
@@ -299,11 +295,10 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
         )
 
     @View.nested
-    class rpmPackages(Tab):
+    class rpmPackages(Tab, SearchableViewMixin):
         TAB_LOCATOR = ParametrizedLocator(
             './/button[@data-ouia-component-id="cv-version-details-tabs-tab-rpmPackages"]'
         )
-        searchbox = PF4Search()
         table = PatternflyTable(
             component_id='content-view-version-details-rpm-packages-table',
             column_widgets={
@@ -315,11 +310,10 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
         )
 
     @View.nested
-    class rpmPackageGroups(Tab):
+    class rpmPackageGroups(Tab, SearchableViewMixin):
         TAB_LOCATOR = ParametrizedLocator(
             './/button[@data-ouia-component-id="cv-version-details-tabs-tab-rpmPackageGroups"]'
         )
-        searchbox = PF4Search()
         table = PatternflyTable(
             component_id='content-view-version-details-rpm-package-groups-table',
             column_widgets={
@@ -333,7 +327,6 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
         TAB_LOCATOR = ParametrizedLocator(
             './/button[@data-ouia-component-id="cv-version-details-tabs-tab-errata"]'
         )
-        searchbox = PF4Search()
         table = PatternflyTable(
             component_id='content-view-version-details-errata-table',
             column_widgets={
@@ -348,8 +341,8 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        title_loaded = self.browser.wait_for_element(self.version, exception=False)
+        breadcrumb_loaded = self.breadcrumb.is_displayed
+        title_loaded = self.version.is_displayed
         return (
             breadcrumb_loaded
             and title_loaded

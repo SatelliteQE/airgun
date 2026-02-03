@@ -3,11 +3,11 @@ from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import Button
 from widgetastic_patternfly5 import Button as PF5Button, Tab
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 from airgun.widgets import AutoCompleteTextInput, SatTable
 
 
-class WebhooksView(BaseLoggedInView, SearchableViewMixinPF4):
+class WebhooksView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Webhooks']")
     new = PF5Button('Create new')
     table = SatTable(
@@ -20,7 +20,7 @@ class WebhooksView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class WebhookCreateView(BaseLoggedInView):

@@ -1,11 +1,11 @@
 from widgetastic.widget import Checkbox, Text, TextInput
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixin
 from airgun.widgets import SatTable
 
 
-class BookmarksView(BaseLoggedInView, SearchableViewMixinPF4):
+class BookmarksView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[normalize-space(.)='Bookmarks']")
     table = SatTable(
         './/table',
@@ -17,7 +17,7 @@ class BookmarksView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class BookmarkEditView(BaseLoggedInView):
@@ -30,9 +30,8 @@ class BookmarkEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Bookmarks'
             and self.breadcrumb.read().startswith('Edit')
         )

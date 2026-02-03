@@ -2,7 +2,6 @@ from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.oscapreport import (
     RemediateModal,
     SCAPReportDetailsView,
@@ -42,8 +41,7 @@ class OSCAPReportEntity(BaseEntity):
         view = self.navigate_to(self, 'Details', search_string=search_string)
         view.table.row(resource=resource).actions.fill('Remediation')
         view = RemediateModal(self.browser)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+
         wait_for(lambda: view.title.is_displayed, timeout=10, delay=1)
         view.fill({'select_remediation_method.snippet': 'Ansible'})
         view.select_capsule.run.click()
@@ -55,7 +53,6 @@ class ShowAllSCAPReports(NavigateStep):
 
     VIEW = SCAPReportView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Compliance', 'Reports')
 

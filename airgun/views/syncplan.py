@@ -26,7 +26,7 @@ class SyncPlansView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class SyncPlanCreateView(BaseLoggedInView):
@@ -40,9 +40,8 @@ class SyncPlanCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Sync Plans'
             and self.breadcrumb.read() == 'New Sync Plan'
         )
@@ -55,9 +54,8 @@ class SyncPlanEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Sync Plans'
             and self.breadcrumb.read() != 'New Sync Plan'
         )

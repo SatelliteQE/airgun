@@ -1,7 +1,7 @@
 from widgetastic.widget import Checkbox, Select, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 
-from airgun.views.common import BaseLoggedInView, SatTable, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SatTable, SearchableViewMixin
 from airgun.widgets import (
     CustomParameter,
     FilteredDropdown,
@@ -10,7 +10,7 @@ from airgun.widgets import (
 )
 
 
-class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixinPF4):
+class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixin):
     """Main Ansible Variables view"""
 
     title = Text("//h1[contains(normalize-space(.),'Ansible Variables')]")

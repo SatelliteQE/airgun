@@ -1,5 +1,3 @@
-from time import sleep
-
 from navmazing import NavigateToSibling
 from wait_for import wait_for
 
@@ -8,7 +6,6 @@ from airgun.entities.base import BaseEntity
 from airgun.exceptions import DisabledWidgetError
 from airgun.helpers.host import HostHelper
 from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
 from airgun.views.all_hosts import AllHostsTableView
 from airgun.views.cloud_insights import CloudInsightsView
 from airgun.views.common import BaseLoggedInView
@@ -47,19 +44,17 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         wait_for(lambda: view.fill(values), timeout=60)
         self.browser.click(view.submit, ignore_ajax=True)
-        self.browser.plugin.ensure_page_safe(timeout='800s')
+
         host_view = NewHostDetailsView(self.browser)
-        host_view.wait_displayed()
+
         host_view.flash.assert_no_error()
         host_view.flash.dismiss()
 
     def get_register_command(self, values=None, full_read=None):
         """Get curl command generated on Register Host page"""
         view = self.navigate_to(self, 'Register')
-        self.browser.plugin.ensure_page_safe()
         if values is not None:
             if ('advanced.repository_gpg_key_url' in values) or ('advanced.repository' in values):
-                view.wait_displayed()
                 view.advanced.repository_add.click()
                 view = RepositoryListView(self.browser)
                 if 'advanced.repository' in values:
@@ -68,12 +63,10 @@ class HostEntity(BaseEntity):
                     view.repository_gpg_key_url.fill(values['advanced.repository_gpg_key_url'])
                 view.repository_list_confirm.click()
             view = self.navigate_to(self, 'Register')
-            self.browser.plugin.ensure_page_safe()
-            view.wait_displayed()
             view.fill(values)
         if view.general.activation_keys.read():
             self.browser.click(view.generate_command)
-            self.browser.plugin.ensure_page_safe()
+
             view.registration_command.wait_displayed()
         else:
             if view.general.activation_keys.items is None:
@@ -94,15 +87,13 @@ class HostEntity(BaseEntity):
     def read_filled_searchbox(self):
         """Read filled searchbox"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
         return view.searchbox.read()
 
     def new_ui_button(self):
         """Click New UI button and return the browser URL"""
         view = self.navigate_to(self, 'All')
         view.new_ui_button.click()
-        view.wait_displayed()
+
         return self.browser.url
 
     def reset_search(self):
@@ -246,8 +237,7 @@ class HostEntity(BaseEntity):
         self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
         view.bulk_actions_manage_content_menu.item_select('Content source')
         view = HostsChangeContentSourceView(self.browser)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+
         wait_for(lambda: view.content_source_select.is_displayed, timeout=10, delay=1)
         view.content_source_select.fill(content_source)
         wait_for(lambda: view.lce_env_title.is_displayed, timeout=10, delay=1)
@@ -256,22 +246,16 @@ class HostEntity(BaseEntity):
             f'//input[@type="radio" and following-sibling::label[normalize-space(.)="{lce}"]]'
         )
         view = HostsChangeContentSourceView(self.browser)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+
         view.content_view_select.click()
         wait_for(lambda: view.content_view_select.is_displayed, timeout=10, delay=1)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
 
         self.browser.click(f'.//*[contains(text(), "{content_view}")][1]')
         if run_job_invocation:
             view.run_job_invocation.click()
-            view.wait_displayed()
-            self.browser.plugin.ensure_page_safe(timeout='5s')
+
         elif update_hosts_manually:
             view.update_hosts_manualy.click()
-            view.wait_displayed()
-            self.browser.plugin.ensure_page_safe(timeout='5s')
 
     def change_content_source_get_script(self, entities_list, content_source, lce, content_view):
         """
@@ -298,7 +282,6 @@ class HostEntity(BaseEntity):
 
     def host_statuses(self):
         view = self.navigate_to(self, 'Host Statuses')
-        view.wait_displayed()
         statuses = []
         view.status_green_total.wait_displayed()
         statuses.append({'name': 'green_total', 'count': view.status_green_total.read()})
@@ -321,14 +304,11 @@ class HostEntity(BaseEntity):
         """
         view = self._select_action('Schedule Remote Job', entities_list)
         view.fill(values)
-        sleep(2)
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
         status_view = HostsJobInvocationStatusView(self.browser)
-        sleep(2)
-        self.browser.plugin.ensure_page_safe()
-        status_view.wait_displayed()
+
         if wait_for_results:
             status_view.wait_for_result(timeout=timeout)
         return status_view.read()
@@ -355,7 +335,6 @@ class HostEntity(BaseEntity):
         using the checkbox from table header
         """
         view = self._select_action('Delete Hosts', entities_list)
-        sleep(1)
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
@@ -407,7 +386,7 @@ class HostEntity(BaseEntity):
 
         # switch to the last opened tab,
         self.browser.switch_to_window(self.browser.window_handles[-1])
-        self.browser.plugin.ensure_page_safe()
+
         self.browser.wait_for_element(locator='//div[@id="content"]/iframe', exception=True)
         # the remote host content is loaded in an iframe, let's switch to it
         self.browser.switch_to_frame(locator='//div[@id="content"]/iframe')
@@ -432,9 +411,6 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'ManageColumns')
         view.fill(values)
         view.submit()
-        self.browser.plugin.ensure_page_safe()
-        hosts_view = HostsView(self.browser)
-        hosts_view.wait_displayed()
 
     def get_displayed_table_headers(self):
         """
@@ -443,7 +419,6 @@ class HostEntity(BaseEntity):
         :return list: header names of the hosts table
         """
         view = self.navigate_to(self, 'All')
-        view.wait_displayed()
         return view.displayed_table_header_names
 
     def permission_denied(self):
@@ -464,7 +439,6 @@ class ShowAllHosts(NavigateStep):
 
     prerequisite = NavigateToSibling('NewUIAll')
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.actions.item_select('Legacy UI')
 
@@ -489,7 +463,6 @@ class RegisterHost(NavigateStep):
 
     prerequisite = NavigateToSibling('All')
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'Register Host')
 
@@ -513,7 +486,7 @@ class ShowHostDetails(NavigateStep):
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
         host_view = NewHostDetailsView(self.parent.browser)
-        host_view.wait_displayed()
+
         host_view.dropdown.wait_displayed()
         host_view.dropdown.item_select('Legacy UI')
 
@@ -615,9 +588,6 @@ class HostsManageColumns(NavigateStep):
 
     def step(self, *args, **kwargs):
         """Open the Manage columns dialog"""
-        self.parent.browser.plugin.ensure_page_safe()
-        self.parent.wait_displayed()
-        self.parent.manage_columns.wait_displayed()
         self.parent.manage_columns.click()
 
 

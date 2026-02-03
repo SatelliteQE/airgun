@@ -4,7 +4,7 @@ from widgetastic_patternfly import BreadCrumb
 from airgun.views.common import (
     BaseLoggedInView,
     SatTab,
-    SearchableViewMixinPF4,
+    SearchableViewMixin,
     TemplateEditor,
     TemplateInputItem,
 )
@@ -17,7 +17,7 @@ from airgun.widgets import (
 )
 
 
-class JobTemplatesView(BaseLoggedInView, SearchableViewMixinPF4):
+class JobTemplatesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[contains(., 'Job Templates')]")
     import_template = Text("//a[normalize-space(.)='Import']")
     new = Text("//a[contains(@href, '/job_templates/new')]")
@@ -31,7 +31,7 @@ class JobTemplatesView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class JobTemplateForeignInputSetItem(GenericRemovableWidgetItem):
@@ -50,9 +50,8 @@ class JobTemplateCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Job Templates'
             and self.breadcrumb.read() == 'New Job Template'
         )
@@ -105,9 +104,8 @@ class JobTemplateCreateView(BaseLoggedInView):
 class JobTemplateEditView(JobTemplateCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Job Templates'
             and self.breadcrumb.read().startswith('Edit ')
         )

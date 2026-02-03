@@ -64,7 +64,7 @@ class PlanEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'Details', entity_name=entity_name).plan(entity_name)
         view.ansible_actions.fill('Download Playbook')
-        self.browser.plugin.ensure_page_safe()
+
         return self.browser.save_downloaded_file()
 
     def export_csv(self, entity_name):
@@ -74,7 +74,7 @@ class PlanEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'Details', entity_name=entity_name).plan(entity_name)
         view.export_csv.click()
-        self.browser.plugin.ensure_page_safe()
+
         return self.browser.save_downloaded_file()
 
 

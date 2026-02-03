@@ -143,7 +143,7 @@ class VirtwhoConfiguresView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class VirtwhoConfigureCreateView(BaseLoggedInView):
@@ -207,9 +207,8 @@ class VirtwhoConfigureCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Satellite Virt Who Configure Configs'
             and self.breadcrumb.read() == 'New Virt-who Config'
         )
@@ -218,9 +217,8 @@ class VirtwhoConfigureCreateView(BaseLoggedInView):
 class VirtwhoConfigureEditView(VirtwhoConfigureCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Virt-who Configurations'
             and self.breadcrumb.read().startswith('Edit ')
         )
@@ -233,9 +231,8 @@ class VirtwhoConfigureDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Virt-who Configurations'
             and self.breadcrumb.read() != 'Create Config'
         )
