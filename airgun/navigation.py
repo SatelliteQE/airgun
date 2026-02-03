@@ -84,7 +84,7 @@ class NavigateStep(navmazing.NavigateStep):
             otherwise
         """
         super().go(*args, _tries=_tries, **kwargs)
-        self.browser.plugin.ensure_page_safe()
+        self.navigate_obj.browser.plugin.ensure_page_safe()
         view = self.view if self.VIEW is not None else None
         return view
 
