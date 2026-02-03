@@ -6,13 +6,14 @@ from widgetastic.widget import Text, TextInput
 # )
 from widgetastic_patternfly5 import (
     Button as PF5Button,
+    Dropdown as PF5OUIADropdown,
     ExpandableTable as PF5OUIAExpandableTable,
+    FormSelect as PF5FormSelect,
+    Modal as PF5OUIAModal,
     Pagination as PF5Pagination,
     PatternflyTable as PF5OUIAPatternflyTable,
-    Modal as PF5OUIAModal,
-    FormSelect as PF5FormSelect,
-    Dropdown as PF5OUIADropdown,
 )
+
 from airgun.views.common import BaseLoggedInView, TableRowKebabMenu
 from airgun.widgets import SearchInput
 
@@ -67,7 +68,9 @@ class CVEDetailsView(BaseLoggedInView):
     title = Text('.//h1[@data-ouia-component-type="RHI/Header"]')
     description = Text('.//div[@class="pf-v5-c-content"]')
     search_bar = SearchInput(locator='.//input[contains(@aria-label, "search-field")]')
-    actions = PF5OUIADropdown(locator='.//div[./button[contains(@class, "pf-v5-c-menu-toggle") and contains(., "Actions")]]')
+    actions = PF5OUIADropdown(
+        locator='.//div[./button[contains(@class, "pf-v5-c-menu-toggle") and contains(., "Actions")]]'
+    )
     affected_hosts_table = PF5OUIAPatternflyTable(
         # component_id='OUIA-Generated-Table-1',
         locator='.//table[contains(@class, "pf-v5-c-table")]',
@@ -82,9 +85,13 @@ class CVEDetailsView(BaseLoggedInView):
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
+
 class EditVulnerabilitiesModal(PF5OUIAModal):
     """View representing edit CVE Modal"""
-    justification_note = TextInput(locator=".//textarea[contains(@aria-label, 'justification note')]")
+
+    justification_note = TextInput(
+        locator=".//textarea[contains(@aria-label, 'justification note')]"
+    )
     status = PF5FormSelect(locator=".//select[contains(@aria-label, 'Select Input')]")
     save = PF5Button('Save')
     cancel = PF5Button('Cancel')

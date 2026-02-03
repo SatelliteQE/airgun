@@ -3,7 +3,11 @@ from wait_for import wait_for
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.cloud_vulnerabilities import CloudVulnerabilityView, CVEDetailsView, EditVulnerabilitiesModal
+from airgun.views.cloud_vulnerabilities import (
+    CloudVulnerabilityView,
+    CVEDetailsView,
+    EditVulnerabilitiesModal,
+)
 from airgun.views.host_new import NewHostDetailsView
 
 
@@ -87,6 +91,7 @@ class CloudVulnerabilityEntity(BaseEntity):
         wait_for(lambda: view.title.is_displayed, timeout=30)
         wait_for(lambda: view.no_authorized_header.is_displayed, timeout=30)
         return view.no_authorized_header.read()
+
 
 @navigator.register(CloudVulnerabilityEntity, 'All')
 class ShowVulnerabilityListView(NavigateStep):
