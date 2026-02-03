@@ -19,6 +19,7 @@ from airgun.views.host_new import (
     InstallPackagesView,
     ManageHostCollectionModal,
     ManageHostStatusesView,
+    ManageMultiCVEnvModal,
     ModuleStreamDialog,
     NewHostDetailsView,
     ParameterDeleteDialog,
@@ -1145,6 +1146,18 @@ class NewHostEntity(HostEntity):
         legacy_view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         return legacy_view
+
+    def add_content_view_env(self, entity_name, cv_name, lce_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        view.overview.content_view_details.dropdown.item_select('Assign content view environments')
+        view = ManageMultiCVEnvModal(self.browser)
+        self.browser.plugin.ensure_page_safe()
+        view.assign_cv_btn.click()
+        view.new_assignment_section.lce_selector.fill({lce_name: True})
+        view.new_assignment_section.content_source_select.item_select(cv_name)
+        view.save_btn.click()
 
 
 @navigator.register(HostEntity, 'NewUIAll')
