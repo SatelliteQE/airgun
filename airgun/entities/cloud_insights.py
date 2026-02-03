@@ -143,6 +143,12 @@ class RecommendationsTabEntity(BaseEntity):
         view.wait_displayed()
         return view.read(widget_names=widget_names)
 
+    def read_no_authorized_message(self):
+        view = self.navigate_to(self, 'All Recommendations')
+        wait_for(lambda: view.title.is_displayed, timeout=30)
+        wait_for(lambda: view.no_authorized_header.is_displayed, timeout=30)
+        return view.no_authorized_header.read()
+
 
 @navigator.register(RecommendationsTabEntity, 'Affected Systems')
 class NavigateToAffectedSystems(NavigateStep):
