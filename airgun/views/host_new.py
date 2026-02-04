@@ -1132,7 +1132,9 @@ class ManageColumnsView(BaseLoggedInView):
 
 
 class NewCVEnvAssignmentSection(PF5LCESelectorGroup):
-    ROOT = './/span[@class="assignment-name"][normalize-space(.)="Select a content view"]/ancestor::div[@class="assignment-section"][1]'
+    # Generic ROOT that works for both new and existing assignments
+    # Don't check for "Select a content view" text - just find the assignment-section div
+    ROOT = './/div[@class="assignment-section"]'
 
     PARAMETERS = ('lce_name',)
 
@@ -1152,10 +1154,10 @@ class ManageMultiCVEnvModal(PF5Modal):
 
     ROOT = './/div[@data-ouia-component-id="assign-cv-modal"]'
 
-    title = Text('//span[normalize-space(.)="Assign content view environments]')
+    title = Text('//span[normalize-space(.)="Assign content view environments"]')
     assign_cv_btn = PF5OUIAButton('assign-another-cv-button')
-    save_btn = Button(locator='//button[normalize-space(.)="Save"]')
-    cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
+    save_btn = PF5OUIAButton('assign-cv-modal-save-button')
+    cancel_btn = PF5OUIAButton('assign-cv-modal-cancel-button')
     new_assignment_section = ParametrizedView.nested(NewCVEnvAssignmentSection)
 
     @property

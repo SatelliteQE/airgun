@@ -8,7 +8,8 @@ from airgun.views.activationkey import (
     ActivationKeyEditView,
     ActivationKeysView,
 )
-
+from airgun.views.host_new import ManageMultiCVEnvModal
+import time
 
 class ActivationKeyEntity(BaseEntity):
     endpoint_path = '/activation_keys'
@@ -17,6 +18,7 @@ class ActivationKeyEntity(BaseEntity):
         """Create new activation key entity"""
         view = self.navigate_to(self, 'New')
         view.wait_displayed()
+        # The custom fill method in ActivationKeyCreateView handles the modal workflow
         view.fill(values)
         view.submit.click()
 
@@ -36,6 +38,7 @@ class ActivationKeyEntity(BaseEntity):
     def read(self, entity_name, widget_names=None):
         """Read all values for created activation key entity"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.wait_displayed(timeout='10s')
         return view.read(widget_names=widget_names)
 
     def get_repos(self, entity_name, repo_type='All'):
@@ -45,12 +48,100 @@ class ActivationKeyEntity(BaseEntity):
         return view.repository_sets.table.read()
 
     def update(self, entity_name, values):
-        """Update necessary values for activation key"""
+        """Update necessary values for activation key
+
+        Handles both formats:
+        - Nested: {'details': {'lce': {env: True}, 'content_view': cv}}
+        - Dot-notation: {'details.lce': {env: True}, 'details.content_view': cv}
+        """
+        # Check for dot-notation format and convert to nested if needed
+        lce_update = None
+        cv_update = None
+
+        # Handle dot-notation format (e.g., 'details.lce')
+        if 'details.lce' in values:
+            lce_update = values.pop('details.lce')
+        if 'details.content_view' in values:
+            cv_update = values.pop('details.content_view')
+
+        # Handle nested format (e.g., {'details': {'lce': ...}})
+        if 'details' in values and isinstance(values['details'], dict):
+            if 'lce' in values['details']:
+                lce_update = values['details'].pop('lce')
+            if 'content_view' in values['details']:
+                cv_update = values['details'].pop('content_view')
+
+        # Update other fields first if any remain
+        if values:
+            view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+            view.fill(values)
+            view.flash.assert_no_error()
+            view.flash.dismiss()
+
+        # Update LCE/CV via modal if provided
+        if lce_update or cv_update:
+            self._update_cv_lce_via_modal(entity_name, lce_update, cv_update)
+            return True
+
+        # If no LCE/CV update, just return the fill result
+        if not (lce_update or cv_update) and values:
+            return True
+
+        return False
+
+    def _update_cv_lce_via_modal(self, entity_name, lce_dict, cv_name):
+        """Helper to update CV/LCE using the modal pattern
+
+        Args:
+            entity_name: Name of the activation key
+            lce_dict: Dictionary like {env_name: True} for LCE selection
+            cv_name: String with content view name
+        """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        filled_values = view.fill(values)
-        view.flash.assert_no_error()
-        view.flash.dismiss()
-        return filled_values
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+
+        # If only LCE provided (no CV), read the current CV to maintain it
+        if lce_dict and not cv_name:
+            current_cv = view.details.content_view
+            if current_cv:
+                cv_name = current_cv
+
+        # Click kebab menu and select "Assign content view environments"
+        view.details.dropdown.item_select('Assign content view environments')
+        self.browser.plugin.ensure_page_safe()
+
+        # Open modal
+        modal = ManageMultiCVEnvModal(self.browser)
+        self.browser.plugin.ensure_page_safe()
+
+        # Get LCE name from dict if provided (format: {env_name: True})
+        lce_name = None
+        if lce_dict:
+            lce_name = next((k for k, v in lce_dict.items() if v), None)
+
+        # For UPDATE: The modal shows the existing assignment
+        # We directly access the assignment section and select the new LCE/CV
+        # No need to click assign_cv_btn - that's only for adding ANOTHER assignment
+        if lce_name and cv_name:
+            # Access the existing assignment section using the target LCE name
+            assignment_section = modal.new_assignment_section(lce_name=lce_name)
+
+            # Click the LCE radio button to select the new environment
+            assignment_section.lce_selector.click()
+            # Wait longer for the page to update and CV dropdown to reload with CVs from new environment
+            self.browser.plugin.ensure_page_safe()
+
+            # Select the CV (either new one or the current one we read earlier)
+            assignment_section.content_source_select.item_select(cv_name)
+            self.browser.plugin.ensure_page_safe()
+
+        # Wait for modal to be ready and save
+        self.browser.plugin.ensure_page_safe()
+        modal.save_btn.click()
+        # Wait for modal to close and changes to be saved
+        time.sleep(5)
+        self.browser.plugin.ensure_page_safe(timeout='10s')
 
     def update_ak_host_limit(self, entity_name, host_limit):
         """
