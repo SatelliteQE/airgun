@@ -69,10 +69,10 @@ class RecommendationsTabEntity(BaseEntity):
         :param value: text to filter (default: no filter)
         """
         view = self.navigate_to(self, 'All Recommendations')
-        time.sleep(5)
+        view.wait_displayed(timeout='60s')
         view.clear_button.click()
         view.search_field.fill(value)
-        time.sleep(5)
+        wait_for(lambda: view.table.is_displayed, handle_exception=True, timeout=20)
         return view.table.read()
 
     def remediate_affected_system(self, recommendation_name, hostname):
