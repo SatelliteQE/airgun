@@ -96,6 +96,9 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     bulk_actions_menu = PF5Menu(
         locator='.//div[@data-ouia-component-id="hosts-index-actions-kebab"]'
     )
+    bulk_actions_manage_vulnerability_analysis_menu = PF5Menu(
+        locator='//li[contains(@class, "pf-v5-c-menu__list-item")]//button[span/span[text()="Manage vulnerability analysis"]]/following-sibling::div[contains(@class, "pf-v5-c-menu")]'
+    )
     bulk_actions_manage_content_menu = PF5Menu(
         locator='//li[contains(@class, "pf-v5-c-menu__list-item")]//button[span/span[text()="Manage content"]]/following-sibling::div[contains(@class, "pf-v5-c-menu")]'
     )
