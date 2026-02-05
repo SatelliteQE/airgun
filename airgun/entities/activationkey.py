@@ -83,7 +83,7 @@ class ActivationKeyEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.wait_displayed()
         if lce_update and not cv_update:
-            current_cv = view.details.content_view
+            current_cv = view.details.content_view.read()
             if current_cv:
                 cv_update = current_cv
         # Update other fields first if any remain
@@ -117,14 +117,26 @@ class ActivationKeyEntity(BaseEntity):
         if lce_name and cv_name:
             # Access the existing assignment section using the target LCE name
             assignment_section = modal.new_assignment_section(lce_name=lce_name)
-            assignment_section.lce_selector.fill({lce_name: True})
+
+            # Click the LCE radio button to select the new environment
+            assignment_section.lce_selector.click()
+            # Wait longer for the page to update and CV dropdown to reload with CVs from new environment
+            time.sleep(5)
+            self.browser.plugin.ensure_page_safe()
+            time.sleep(2)
+
             # Select the CV (either new one or the current one we read earlier)
             assignment_section.content_source_select.item_select(cv_name)
+            time.sleep(2)
+            self.browser.plugin.ensure_page_safe()
+
         # Wait for modal to be ready and save
+        time.sleep(2)
         self.browser.plugin.ensure_page_safe()
         modal.save_btn.click()
         # Wait for modal to close and changes to be saved
-        time.sleep(5)
+        time.sleep(2)
+        self.browser.plugin.ensure_page_safe()
 
     def update_ak_host_limit(self, entity_name, host_limit):
         """

@@ -27,6 +27,39 @@ from airgun.widgets import (
 )
 
 
+class LCEListWidget(Widget):
+    """Widget to read LCE names from PF5 content-view-details-card as a list"""
+
+    ROOT = './/div[@data-ouia-component-id="content-view-details-card"]'
+
+    def read(self):
+        """Read all LCE labels from the card"""
+        lce_labels = self.browser.elements(
+            './/span[@class="pf-v5-c-label__text"]',
+            parent=self
+        )
+        return [label.text for label in lce_labels] if lce_labels else []
+
+
+class ContentViewWidget(Widget):
+    """Widget to read Content View name from PF5 content-view-details-card"""
+
+    ROOT = './/div[@data-ouia-component-id="content-view-details-card"]'
+
+    def read(self):
+        """Read CV name from the card"""
+        cv_links = self.browser.elements(
+            './/a[contains(@href, "/content_views/") and not(contains(@href, "/versions/"))]',
+            parent=self
+        )
+        # Return the first link's text (the CV name, not the version)
+        for link in cv_links:
+            text = link.text.strip()
+            if text and 'Version' not in text:
+                return text
+        return None
+
+
 class ActivationKeysView(BaseLoggedInView, SearchableViewMixin):
     """View for the ActivationKeys page"""
 
@@ -102,29 +135,9 @@ class ActivationKeyEditView(BaseLoggedInView):
         # PF5 kebab dropdown for CV/LCE management
         dropdown = PF5Dropdown(locator='.//div[button[@aria-label="change_content_view_kebab"]]')
 
-        @property
-        def lce(self):
-            """Read selected LCE names from PF5 card as a simple list"""
-            # Read all LCE labels from the card (only selected ones are shown)
-            lce_labels = self.browser.elements(
-                './/div[@data-ouia-component-id="content-view-details-card"]//span[@class="pf-v5-c-label__text"]'
-            )
-            # Return list of selected LCE names
-            return [label.text for label in lce_labels] if lce_labels else []
-
-        @property
-        def content_view(self):
-            """Read CV name from PF5 card"""
-            # Read CV link text from the card
-            cv_links = self.browser.elements(
-                './/div[@data-ouia-component-id="content-view-details-card"]//a[contains(@href, "/content_views/")]'
-            )
-            # Return the first link's text (the CV name, not the version)
-            for link in cv_links:
-                text = link.text.strip()
-                if text and 'Version' not in text:
-                    return text
-            return None
+        # Custom widgets to read LCE and CV from PF5 card
+        lce = LCEListWidget()
+        content_view = ContentViewWidget()
 
         @property
         def is_displayed(self):
@@ -134,17 +147,6 @@ class ActivationKeyEditView(BaseLoggedInView):
         def select(self):
             """Override to prevent tab selection - Details is always visible"""
             pass
-
-        def read(self):
-            """Override read to include lce and content_view properties"""
-            # First read all normal widgets
-            values = SatTab.read(self)
-
-            # Then add the custom properties
-            values['lce'] = self.lce
-            values['content_view'] = self.content_view
-
-            return values
 
     @View.nested
     class subscriptions(SatTab):
