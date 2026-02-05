@@ -5,6 +5,7 @@ from widgetastic.widget import (
     Text,
     TextInput,
     View,
+    Widget,
 )
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly5 import Dropdown as PF5Dropdown
