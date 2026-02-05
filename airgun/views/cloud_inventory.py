@@ -1,8 +1,7 @@
-from selenium.common.exceptions import NoSuchElementException
 from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Text, View
-from widgetastic_patternfly import Button, Tab
+from widgetastic_patternfly import Tab
 from widgetastic_patternfly4.switch import Switch
 from widgetastic_patternfly5 import Button as PF5Button, Menu
 from widgetastic_patternfly5.ouia import Text as PF5OUIAText
@@ -44,73 +43,54 @@ class InventoryItemsView(Accordion):
     DESCRIPTION_LOCATOR = (
         './/span[contains(@class, "pf-v5-c-label pf-m-blue pf-m-outline account-icon")]'
     )
-    STATUS_ELEMENTS = './/div[contains(@class, "status")]/div[contains(@class, "item")]'
 
-    @View.nested
-    class generating(InventoryTab):
-        process = Text('.//div[contains(@class, "tab-header")]/div[1]')
-        generate = Button('contains', 'Generate')
-        download_report = Button('Download Report')
-        terminal = Text(
-            './/div[contains(@class, "report-generate")]//div[contains(@class, "terminal")]'
+    # Task action buttons
+    generate_and_upload = PF5Button('Generate and upload report')
+    generate_report = PF5Button('Generate report')
+    download_report = PF5Button('Download report')
+
+    task_status = Text(locator='.//div[contains(@class, "pf-v5-c-progress__description")]')
+    report_saved_to = Text(
+        locator=(
+            './/dt[.//span[contains(text(), "Report saved to")]]/following-sibling::dd[1]'
+            '//div[contains(@class, "pf-v5-c-description-list__text")]'
         )
-        scheduled_run = Text('.//div[contains(@class, "scheduled_run")]')
-
-    @View.nested
-    class uploading(InventoryTab):
-        process = Text('.//div[contains(@class, "tab-header")]/div[1]')
-        terminal = Text(
-            './/div[contains(@class, "report-upload")]//div[contains(@class, "terminal")]'
-        )
-
-    @property
-    def is_generating(self):
-        try:
-            self.parent_browser.element(f'{self.STATUS_ELEMENTS}[1]')
-            return True
-        except NoSuchElementException:
-            return False
-
-    @property
-    def is_uploading(self):
-        try:
-            self.parent_browser.element(f'{self.STATUS_ELEMENTS}[2]')
-            return True
-        except NoSuchElementException:
-            return False
-
-    @property
-    def status(self):
-        if self.is_generating:
-            return 'generating'
-        if self.is_uploading:
-            return 'uploading'
-        return 'idle'
+    )
 
     @property
     def is_active(self):
+        """Check if this accordion item is expanded."""
         classes = self.browser.classes(self)
         return any('expand-active' in class_ for class_ in classes)
 
     def child_widget_accessed(self, widget):
+        """Automatically expand the accordion when accessing child widgets."""
         if not self.is_active:
             self.click()
 
     def read(self, widget_names=None):
-        final_dict = {
-            'generating': self.generating.read(),
-            'status': self.status,
+        """Read the current state of the view including all settings."""
+        result = {
+            'generate_and_upload_displayed': self.generate_and_upload.is_displayed,
+            'generate_report_displayed': self.generate_report.is_displayed,
+            'download_report_displayed': self.download_report.is_displayed,
             'obfuscate_hostnames': self.parent.obfuscate_hostnames.read(),
             'obfuscate_ips': self.parent.obfuscate_ips.read(),
             'exclude_packages': self.parent.exclude_packages.read(),
         }
-        if self.uploading.is_displayed:
-            final_dict['uploading'] = self.uploading.read()
+
+        # Include auto_update if it's displayed
         if self.parent.auto_update.is_displayed:
-            final_dict['auto_update'] = self.parent.auto_update.read()
-        return final_dict
+            result['auto_update'] = self.parent.auto_update.read()
+
+        if self.report_saved_to.is_displayed:
+            result['report_saved_to'] = self.report_saved_to.read()
+            result['task_status'] = self.task_status.read()
+
+        return result
 
     def fill(self, values):
+        """This view is read-only."""
         raise ReadOnlyWidgetError('View is read only, fill is prohibited')
 
 
