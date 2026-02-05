@@ -3,7 +3,6 @@ import time
 from selenium.webdriver.common.by import By
 from widgetastic.widget import (
     Checkbox,
-    ParametrizedLocator,
     ParametrizedView,
     Text,
     TextInput,

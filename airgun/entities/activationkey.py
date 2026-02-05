@@ -1,3 +1,5 @@
+import time
+
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
@@ -9,7 +11,7 @@ from airgun.views.activationkey import (
     ActivationKeysView,
 )
 from airgun.views.host_new import ManageMultiCVEnvModal
-import time
+
 
 class ActivationKeyEntity(BaseEntity):
     endpoint_path = '/activation_keys'

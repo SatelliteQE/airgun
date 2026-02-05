@@ -1,7 +1,5 @@
-import time
 from widgetastic.widget import (
     Checkbox,
-    ParametrizedView,
     Select,
     Table,
     Text,
@@ -15,12 +13,10 @@ from airgun.views.common import (
     AddRemoveResourcesView,
     AddRemoveSubscriptionsView,
     BaseLoggedInView,
-    PF5LCESelectorGroup,
     SatTab,
     SatTabWithDropdown,
     SearchableViewMixin,
 )
-from airgun.views.host_new import ManageMultiCVEnvModal, NewCVEnvAssignmentSection
 from airgun.widgets import (
     ActionsDropdown,
     ConfirmationDialog,
@@ -29,7 +25,6 @@ from airgun.widgets import (
     EditableLimitEntry,
     LimitInput,
 )
-from widgetastic.widget import Widget
 
 
 class ActivationKeysView(BaseLoggedInView, SearchableViewMixin):
@@ -105,9 +100,7 @@ class ActivationKeyEditView(BaseLoggedInView):
         service_level = EditableEntrySelect(name='Service Level')
 
         # PF5 kebab dropdown for CV/LCE management
-        dropdown = PF5Dropdown(
-            locator='.//div[button[@aria-label="change_content_view_kebab"]]'
-        )
+        dropdown = PF5Dropdown(locator='.//div[button[@aria-label="change_content_view_kebab"]]')
 
         @property
         def lce(self):
