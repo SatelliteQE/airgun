@@ -1,5 +1,5 @@
 import time
-
+from widgetastic.utils import ParametrizedLocator
 from selenium.webdriver.common.by import By
 from widgetastic.widget import (
     Checkbox,
