@@ -35,10 +35,7 @@ class LCEListWidget(Widget):
 
     def read(self):
         """Read all LCE labels from the card"""
-        lce_labels = self.browser.elements(
-            './/span[@class="pf-v5-c-label__text"]',
-            parent=self
-        )
+        lce_labels = self.browser.elements('.//span[@class="pf-v5-c-label__text"]', parent=self)
         return [label.text for label in lce_labels] if lce_labels else []
 
 
@@ -51,7 +48,7 @@ class ContentViewWidget(Widget):
         """Read CV name from the card"""
         cv_links = self.browser.elements(
             './/a[contains(@href, "/content_views/") and not(contains(@href, "/versions/"))]',
-            parent=self
+            parent=self,
         )
         # Return the first link's text (the CV name, not the version)
         for link in cv_links:
