@@ -1160,6 +1160,12 @@ class NewHostEntity(HostEntity):
         assignment_section.content_source_select.item_select(cv_name)
         view.save_btn.click()
 
+    def get_content_view_envs(self, entity_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+        return view.overview.content_view_details.read()
+
 
 @navigator.register(HostEntity, 'NewUIAll')
 class ShowAllHosts(NavigateStep):

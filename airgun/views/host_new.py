@@ -3,7 +3,6 @@ import time
 from selenium.webdriver.common.by import By
 from widgetastic.widget import (
     Checkbox,
-    ParametrizedLocator,
     ParametrizedView,
     Text,
     TextInput,
@@ -45,7 +44,6 @@ from widgetastic_patternfly5.ouia import (
     Text as PF5OUIAText,
 )
 
-# from airgun.views.all_hosts import ManageCVEModal as ManageCVEnvModal
 from airgun.views.cloud_insights import BulkSelectMenuToggle
 from airgun.views.common import BaseLoggedInView, PF5LCESelectorGroup, SearchableViewMixinPF4
 from airgun.widgets import (
@@ -242,12 +240,33 @@ class NewHostDetailsView(BaseLoggedInView):
         @View.nested
         class content_view_details(Card):
             ROOT = './/div[@data-ouia-component-id="content-view-details-card"]'
-            # dropdown = PF5Dropdown(locator='.//div[@data-ouia-component-id="change-content-view-environments-kebab"]/button')
+            ITEMS = './/div[@class="pf-v5-l-flex pf-m-row pf-m-row-on-sm pf-m-wrap"]'
+            LCE_NAME = './/span[@class="pf-v5-c-label__text"]'
+            CV_NAME = './/a[contains(@href, "content_views") and not(contains(@href, "versions"))]'
+            CV_VERSION = './/a[contains(@href, "versions")]//span'
+
             dropdown = PF5Dropdown(
                 locator='.//div[button[@aria-label="change_content_view_kebab"]]'
             )
 
             org_view = Text('.//a[contains(@href, "content_views")]')
+
+            def read(self):
+                """Return a list of dictionaries containing LCE name, CV name, and CV version"""
+                items = []
+                for item in self.browser.elements(self.ITEMS):
+                    lce_element = self.browser.element(self.LCE_NAME, parent=item)
+                    cv_element = self.browser.element(self.CV_NAME, parent=item)
+                    cv_version_element = self.browser.element(self.CV_VERSION, parent=item)
+
+                    items.append(
+                        {
+                            'lce': self.browser.text(lce_element),
+                            'content_view': self.browser.text(cv_element),
+                            'version': self.browser.text(cv_version_element),
+                        }
+                    )
+                return items
 
         @View.nested
         class installable_errata(Card):
