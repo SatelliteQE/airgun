@@ -1,5 +1,6 @@
 import time
 
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import (
@@ -124,6 +125,9 @@ class CVESelect(Select):
         './/input[@type="text" and contains(@class, "pf-v5-c-select__toggle-typeahead")]'
     )
 
+    # Maximum length before CV names are truncated in the UI
+    CV_NAME_TRUNCATE_LENGTH = 45
+
     def item_select(self, item, **kwargs):
         """Override item_select to handle CV names with 'Version X.Y' suffix and truncation.
 
@@ -139,7 +143,11 @@ class CVESelect(Select):
 
         # For long CV names, search by truncated prefix (first 45 chars)
         # For short CV names, the full name will be contained in "NAME Version 1.0"
-        search_text = item[:45] if len(item) > 45 else item
+        search_text = (
+            item[: self.CV_NAME_TRUNCATE_LENGTH]
+            if len(item) > self.CV_NAME_TRUNCATE_LENGTH
+            else item
+        )
 
         # Find button with contains() matching on the search text
         locator = f'//button[contains(@class, "pf-v5-c-select__menu-item") and contains(normalize-space(.), {quote(search_text)})]'
@@ -148,7 +156,7 @@ class CVESelect(Select):
             elem = self.browser.element(locator)
             self.browser.click(elem)
             time.sleep(0.5)
-        except Exception:
+        except NoSuchElementException:
             # If prefix match fails, try parent's method
             self.close()
             return super().item_select(item, **kwargs)
