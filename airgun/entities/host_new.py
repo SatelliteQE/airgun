@@ -1155,8 +1155,9 @@ class NewHostEntity(HostEntity):
         view = ManageMultiCVEnvModal(self.browser)
         self.browser.plugin.ensure_page_safe()
         view.assign_cv_btn.click()
-        view.new_assignment_section.lce_selector.fill({lce_name: True})
-        view.new_assignment_section.content_source_select.item_select(cv_name)
+        assignment_section = view.new_assignment_section(lce_name=lce_name)
+        assignment_section.lce_selector.fill({lce_name: True})
+        assignment_section.content_source_select.item_select(cv_name)
         view.save_btn.click()
 
 

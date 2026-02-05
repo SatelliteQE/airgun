@@ -1,3 +1,4 @@
+import time
 from widgetastic.widget import (
     Checkbox,
     ParametrizedView,
@@ -64,55 +65,6 @@ class ActivationKeyCreateView(BaseLoggedInView):
             and self.breadcrumb.locations[0] == 'Activation Keys'
             and self.breadcrumb.read() == 'New Activation Key'
         )
-
-    def fill(self, values):
-        """Custom fill method to handle CV/LCE assignment via modal"""
-        was_change = False
-
-        # Fill basic fields first
-        basic_fields = {k: v for k, v in values.items() if k not in ['lce', 'content_view']}
-        if basic_fields:
-            was_change |= BaseLoggedInView.fill(self, basic_fields)
-
-        # Handle CV/LCE assignment via modal if provided
-        if 'lce' in values or 'content_view' in values:
-            lce_dict = values.get('lce', {})
-            cv_name = values.get('content_view')
-
-            # Get the LCE name from the dict (e.g., {env_name: True})
-            lce_name = next((k for k, v in lce_dict.items() if v), None) if lce_dict else None
-
-            if lce_name and cv_name:
-                # Click button to open modal
-                self.assign_cv_env_btn.click()
-
-                # Fill modal
-                modal = ManageMultiCVEnvModal(self.browser)
-                self.browser.plugin.ensure_page_safe()
-
-                # On CREATE page, the assignment section might be already visible
-                # Only click assign_cv_btn if it exists (for adding additional assignments)
-                try:
-                    if self.browser.wait_for_element(modal.assign_cv_btn, timeout=2, exception=False):
-                        modal.assign_cv_btn.click()
-                except Exception:
-                    # Button not found, assignment section already visible
-                    pass
-
-                # Access parametrized view and click LCE selector
-                import time
-                assignment_section = modal.new_assignment_section(lce_name=lce_name)
-                # Just click the lce_selector (radio button) - no need to pass dict since it's already parametrized
-                assignment_section.lce_selector.click()
-                time.sleep(3)  # Wait for CVs to load after LCE selection
-                self.browser.plugin.ensure_page_safe()
-
-                # Select content view using item_select
-                assignment_section.content_source_select.item_select(cv_name)
-                modal.save_btn.click()
-                was_change = True
-
-        return was_change
 
 
 class ActivationKeyEditView(BaseLoggedInView):

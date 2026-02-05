@@ -1138,11 +1138,7 @@ class NewCVEnvAssignmentSection(PF5LCESelectorGroup):
 
     PARAMETERS = ('lce_name',)
 
-    lce_selector = PF5LCESelector(
-        locator=ParametrizedLocator(
-            './/input[@type="radio" and @class="pf-v5-c-radio__input" and following-sibling::label//span[@class="pf-v5-c-label__text" and normalize-space(.)="{lce_name}"]]'
-        )
-    )
+    lce_selector = PF5LCESelector()
     content_source_select = CVESelect()
 
 

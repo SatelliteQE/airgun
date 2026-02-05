@@ -18,8 +18,16 @@ class ActivationKeyEntity(BaseEntity):
         """Create new activation key entity"""
         view = self.navigate_to(self, 'New')
         view.wait_displayed()
-        # The custom fill method in ActivationKeyCreateView handles the modal workflow
-        view.fill(values)
+        # Fill basic fields first
+        basic_fields = {k: v for k, v in values.items() if k not in ['lce', 'content_view']}
+        if basic_fields:
+            view.fill(basic_fields)
+        if 'lce' in values or 'content_view' in values:
+            lce_dict = values.get('lce', {})
+            cv_name = values.get('content_view')
+            view.assign_cv_env_btn.click()
+            time.sleep(5)
+            self._update_cv_lce_via_modal(lce_dict, cv_name)
         view.submit.click()
 
     def delete(self, entity_name):
@@ -70,54 +78,35 @@ class ActivationKeyEntity(BaseEntity):
                 lce_update = values['details'].pop('lce')
             if 'content_view' in values['details']:
                 cv_update = values['details'].pop('content_view')
-
+        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.wait_displayed()
+        if lce_update and not cv_update:
+            current_cv = view.details.content_view
+            if current_cv:
+                cv_update = current_cv
         # Update other fields first if any remain
         if values:
-            view = self.navigate_to(self, 'Edit', entity_name=entity_name)
             view.fill(values)
             view.flash.assert_no_error()
             view.flash.dismiss()
 
         # Update LCE/CV via modal if provided
         if lce_update or cv_update:
-            self._update_cv_lce_via_modal(entity_name, lce_update, cv_update)
-            return True
+            view.details.dropdown.item_select('Assign content view environments')
+            self._update_cv_lce_via_modal(lce_update, cv_update)
 
-        # If no LCE/CV update, just return the fill result
-        if not (lce_update or cv_update) and values:
-            return True
-
-        return False
-
-    def _update_cv_lce_via_modal(self, entity_name, lce_dict, cv_name):
+    def _update_cv_lce_via_modal(self, lce_dict, cv_name):
         """Helper to update CV/LCE using the modal pattern
 
         Args:
-            entity_name: Name of the activation key
             lce_dict: Dictionary like {env_name: True} for LCE selection
             cv_name: String with content view name
         """
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
-
-        # If only LCE provided (no CV), read the current CV to maintain it
-        if lce_dict and not cv_name:
-            current_cv = view.details.content_view
-            if current_cv:
-                cv_name = current_cv
-
-        # Click kebab menu and select "Assign content view environments"
-        view.details.dropdown.item_select('Assign content view environments')
-        self.browser.plugin.ensure_page_safe()
-
-        # Open modal
         modal = ManageMultiCVEnvModal(self.browser)
-        self.browser.plugin.ensure_page_safe()
-
+        modal.wait_displayed()
         # Get LCE name from dict if provided (format: {env_name: True})
-        lce_name = None
-        if lce_dict:
+        lce_name = lce_dict
+        if isinstance(lce_dict, dict):
             lce_name = next((k for k, v in lce_dict.items() if v), None)
 
         # For UPDATE: The modal shows the existing assignment
@@ -126,22 +115,14 @@ class ActivationKeyEntity(BaseEntity):
         if lce_name and cv_name:
             # Access the existing assignment section using the target LCE name
             assignment_section = modal.new_assignment_section(lce_name=lce_name)
-
-            # Click the LCE radio button to select the new environment
-            assignment_section.lce_selector.click()
-            # Wait longer for the page to update and CV dropdown to reload with CVs from new environment
-            self.browser.plugin.ensure_page_safe()
-
+            assignment_section.lce_selector.fill({lce_name: True})
             # Select the CV (either new one or the current one we read earlier)
             assignment_section.content_source_select.item_select(cv_name)
-            self.browser.plugin.ensure_page_safe()
-
         # Wait for modal to be ready and save
         self.browser.plugin.ensure_page_safe()
         modal.save_btn.click()
         # Wait for modal to close and changes to be saved
         time.sleep(5)
-        self.browser.plugin.ensure_page_safe(timeout='10s')
 
     def update_ak_host_limit(self, entity_name, host_limit):
         """
