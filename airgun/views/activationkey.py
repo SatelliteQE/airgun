@@ -8,16 +8,18 @@ from widgetastic.widget import (
     View,
 )
 from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly5 import Dropdown as PF5Dropdown
 
 from airgun.views.common import (
     AddRemoveResourcesView,
     AddRemoveSubscriptionsView,
     BaseLoggedInView,
-    LCESelectorGroup,
+    PF5LCESelectorGroup,
     SatTab,
     SatTabWithDropdown,
     SearchableViewMixin,
 )
+from airgun.views.host_new import ManageMultiCVEnvModal, NewCVEnvAssignmentSection
 from airgun.widgets import (
     ActionsDropdown,
     ConfirmationDialog,
@@ -26,6 +28,7 @@ from airgun.widgets import (
     EditableLimitEntry,
     LimitInput,
 )
+from widgetastic.widget import Widget
 
 
 class ActivationKeysView(BaseLoggedInView, SearchableViewMixin):
@@ -47,8 +50,10 @@ class ActivationKeyCreateView(BaseLoggedInView):
     name = TextInput(id='name')
     hosts_limit = LimitInput()
     description = TextInput(id='description')
-    lce = ParametrizedView.nested(LCESelectorGroup)
-    content_view = Select(id='content_view_id')
+
+    # Button/link to open CV/LCE assignment modal
+    assign_cv_env_btn = Text("//button[contains(., 'Assign') or contains(@ng-click, 'assign')]")
+
     submit = Text("//button[contains(@ng-click, 'handleSave')]")
 
     @property
@@ -59,6 +64,55 @@ class ActivationKeyCreateView(BaseLoggedInView):
             and self.breadcrumb.locations[0] == 'Activation Keys'
             and self.breadcrumb.read() == 'New Activation Key'
         )
+
+    def fill(self, values):
+        """Custom fill method to handle CV/LCE assignment via modal"""
+        was_change = False
+
+        # Fill basic fields first
+        basic_fields = {k: v for k, v in values.items() if k not in ['lce', 'content_view']}
+        if basic_fields:
+            was_change |= BaseLoggedInView.fill(self, basic_fields)
+
+        # Handle CV/LCE assignment via modal if provided
+        if 'lce' in values or 'content_view' in values:
+            lce_dict = values.get('lce', {})
+            cv_name = values.get('content_view')
+
+            # Get the LCE name from the dict (e.g., {env_name: True})
+            lce_name = next((k for k, v in lce_dict.items() if v), None) if lce_dict else None
+
+            if lce_name and cv_name:
+                # Click button to open modal
+                self.assign_cv_env_btn.click()
+
+                # Fill modal
+                modal = ManageMultiCVEnvModal(self.browser)
+                self.browser.plugin.ensure_page_safe()
+
+                # On CREATE page, the assignment section might be already visible
+                # Only click assign_cv_btn if it exists (for adding additional assignments)
+                try:
+                    if self.browser.wait_for_element(modal.assign_cv_btn, timeout=2, exception=False):
+                        modal.assign_cv_btn.click()
+                except Exception:
+                    # Button not found, assignment section already visible
+                    pass
+
+                # Access parametrized view and click LCE selector
+                import time
+                assignment_section = modal.new_assignment_section(lce_name=lce_name)
+                # Just click the lce_selector (radio button) - no need to pass dict since it's already parametrized
+                assignment_section.lce_selector.click()
+                time.sleep(3)  # Wait for CVs to load after LCE selection
+                self.browser.plugin.ensure_page_safe()
+
+                # Select content view using item_select
+                assignment_section.content_source_select.item_select(cv_name)
+                modal.save_btn.click()
+                was_change = True
+
+        return was_change
 
 
 class ActivationKeyEditView(BaseLoggedInView):
@@ -97,8 +151,55 @@ class ActivationKeyEditView(BaseLoggedInView):
         )
 
         service_level = EditableEntrySelect(name='Service Level')
-        lce = ParametrizedView.nested(LCESelectorGroup)
-        content_view = EditableEntrySelect(name='Content View')
+
+        # PF5 kebab dropdown for CV/LCE management
+        dropdown = PF5Dropdown(
+            locator='.//div[button[@aria-label="change_content_view_kebab"]]'
+        )
+
+        @property
+        def lce(self):
+            """Read selected LCE names from PF5 card as a simple list"""
+            # Read all LCE labels from the card (only selected ones are shown)
+            lce_labels = self.browser.elements(
+                './/div[@data-ouia-component-id="content-view-details-card"]//span[@class="pf-v5-c-label__text"]'
+            )
+            # Return list of selected LCE names
+            return [label.text for label in lce_labels] if lce_labels else []
+
+        @property
+        def content_view(self):
+            """Read CV name from PF5 card"""
+            # Read CV link text from the card
+            cv_links = self.browser.elements(
+                './/div[@data-ouia-component-id="content-view-details-card"]//a[contains(@href, "/content_views/")]'
+            )
+            # Return the first link's text (the CV name, not the version)
+            for link in cv_links:
+                text = link.text.strip()
+                if text and 'Version' not in text:
+                    return text
+            return None
+
+        @property
+        def is_displayed(self):
+            """Override to avoid tab detection issues"""
+            return True
+
+        def select(self):
+            """Override to prevent tab selection - Details is always visible"""
+            pass
+
+        def read(self):
+            """Override read to include lce and content_view properties"""
+            # First read all normal widgets
+            values = SatTab.read(self)
+
+            # Then add the custom properties
+            values['lce'] = self.lce
+            values['content_view'] = self.content_view
+
+            return values
 
     @View.nested
     class subscriptions(SatTab):
