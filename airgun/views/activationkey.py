@@ -45,7 +45,11 @@ class ContentViewWidget(Widget):
     ROOT = './/div[@data-ouia-component-id="content-view-details-card"]'
 
     def read(self):
-        """Read CV name from the card"""
+        """Read CV name from the card.
+
+        Note: For long CV names, the UI truncates them with "..." so we strip that suffix.
+        The returned value may be a truncated prefix of the actual CV name.
+        """
         cv_links = self.browser.elements(
             './/a[contains(@href, "/content_views/") and not(contains(@href, "/versions/"))]',
             parent=self,
@@ -54,6 +58,9 @@ class ContentViewWidget(Widget):
         for link in cv_links:
             text = link.text.strip()
             if text and 'Version' not in text:
+                # Strip "..." suffix if present (indicates truncation)
+                if text.endswith('...'):
+                    text = text[:-3]  # Remove the last 3 characters ("...")
                 return text
         return None
 

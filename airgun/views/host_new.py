@@ -2,6 +2,7 @@ import time
 
 from selenium.webdriver.common.by import By
 from widgetastic.utils import ParametrizedLocator
+from widgetastic.xpath import quote
 from widgetastic.widget import (
     Checkbox,
     ParametrizedView,
@@ -112,11 +113,43 @@ class DropdownWithDescription(PF5Dropdown):
 
 class CVESelect(Select):
     BUTTON_LOCATOR = './/button[@aria-label="Options menu"]'
-    ITEMS_LOCATOR = './/ul[contains(@class, "pf-v5-c-select__menu")]/li'
-    ITEM_LOCATOR = '//*[contains(@class, "pf-v5-c-select__menu-item") and .//*[contains(normalize-space(.), {})]]'
+    # The dropdown menu is rendered with position:absolute outside the select widget
+    # so we need to search from document root (//...) not relative (.//...)
+    ITEMS_LOCATOR = '//ul[contains(@class, "pf-v5-c-select__menu")]/li'
+    ITEM_LOCATOR = '//button[contains(@class, "pf-v5-c-select__menu-item") and contains(normalize-space(.), {})]'
     SELECTED_ITEM_LOCATOR = './/span[contains(@class, "ins-c-conditional-filter")]'
     TEXT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and child::button]'
     DEFAULT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and @data-ouia-component-id="select-content-view"]'
+    SEARCH_INPUT_LOCATOR = './/input[@type="text" and contains(@class, "pf-v5-c-select__toggle-typeahead")]'
+
+    def item_select(self, item, **kwargs):
+        """Override item_select to handle CV names with 'Version X.Y' suffix and truncation.
+
+        The dropdown shows:
+        - Short names: 'CV_NAME Version 1.0'  -> we search for 'CV_NAME' which is contained
+        - Long names: 'CV_NAMETRUNC... Version 1.0' -> we search for first 45 chars which is contained
+
+        For long names, the full CV name (e.g. 150 chars) is NOT contained in the truncated
+        display (e.g. 47 chars + "..."), so we search by prefix instead.
+        """
+        self.open()
+        time.sleep(1)  # Wait for dropdown to fully render
+
+        # For long CV names, search by truncated prefix (first 45 chars)
+        # For short CV names, the full name will be contained in "NAME Version 1.0"
+        search_text = item[:45] if len(item) > 45 else item
+
+        # Find button with contains() matching on the search text
+        locator = f'//button[contains(@class, "pf-v5-c-select__menu-item") and contains(normalize-space(.), {quote(search_text)})]'
+
+        try:
+            elem = self.browser.element(locator)
+            self.browser.click(elem)
+            time.sleep(0.5)
+        except Exception:
+            # If prefix match fails, try parent's method
+            self.close()
+            return super().item_select(item, **kwargs)
 
 
 class HostDetailsCard(Widget):
