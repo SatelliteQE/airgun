@@ -2,7 +2,6 @@ import time
 
 from selenium.webdriver.common.by import By
 from widgetastic.utils import ParametrizedLocator
-from widgetastic.xpath import quote
 from widgetastic.widget import (
     Checkbox,
     ParametrizedView,
@@ -12,6 +11,7 @@ from widgetastic.widget import (
     Widget,
 )
 from widgetastic.widget.table import Table
+from widgetastic.xpath import quote
 from widgetastic_patternfly4 import (
     Button,
     Dropdown,
@@ -120,7 +120,9 @@ class CVESelect(Select):
     SELECTED_ITEM_LOCATOR = './/span[contains(@class, "ins-c-conditional-filter")]'
     TEXT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and child::button]'
     DEFAULT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and @data-ouia-component-id="select-content-view"]'
-    SEARCH_INPUT_LOCATOR = './/input[@type="text" and contains(@class, "pf-v5-c-select__toggle-typeahead")]'
+    SEARCH_INPUT_LOCATOR = (
+        './/input[@type="text" and contains(@class, "pf-v5-c-select__toggle-typeahead")]'
+    )
 
     def item_select(self, item, **kwargs):
         """Override item_select to handle CV names with 'Version X.Y' suffix and truncation.
