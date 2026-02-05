@@ -43,7 +43,7 @@ class WebhookEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         return view.search(entity_name)
 
-    def read(self, entity_name, widget_names=None):
+    def read(self, entity_name):
         """Reads content of corresponding Webhook
 
         :param str entity_name: name of the corresponding Webhook
@@ -52,7 +52,7 @@ class WebhookEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.wait_for_popup()
-        result = view.read(widget_names=widget_names)
+        result = view.read()
         view.cancel_button.click()
         return result
 
@@ -128,4 +128,5 @@ class DeleteWebhook(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Actions'].widget.click()
+        row = self.parent.table.row(name=entity_name)
+        self.parent.browser.element('.//button[contains(text(), "Delete")]', parent=row).click()
