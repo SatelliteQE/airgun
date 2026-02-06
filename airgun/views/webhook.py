@@ -20,7 +20,7 @@ class WebhooksView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class WebhookCreateView(BaseLoggedInView):
@@ -67,9 +67,7 @@ class WebhookCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            locator=self.cancel_button, visible=True, exception=True
-        ) is not None and 'in' in self.browser.classes(self)
+        return self.cancel_button.is_displayed and 'in' in self.browser.classes(self)
 
     def wait_for_popup(self):
         is_popup_visible = self.browser.wait_for_element(
@@ -84,9 +82,7 @@ class WebhookCreateView(BaseLoggedInView):
 class WebhookEditView(WebhookCreateView):
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.cancel_button, visible=True, exception=False
-        ) is not None and 'in' in self.browser.classes(self)
+        return self.cancel_button.is_displayed and 'in' in self.browser.classes(self)
 
 
 class DeleteWebhookConfirmationView(BaseLoggedInView):
@@ -99,9 +95,7 @@ class DeleteWebhookConfirmationView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(
-            self.delete_button, visible=True, exception=False
-        ) is not None and 'in' in self.browser.classes(self)
+        return self.delete_button.is_displayed and 'in' in self.browser.classes(self)
 
     def wait_animation_end(self):
         wait_for(

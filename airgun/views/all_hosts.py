@@ -126,8 +126,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     @property
     def is_displayed(self):
         return (
-            self.browser.wait_for_element(self.table_loading, exception=False) is None
-            and self.browser.wait_for_element(self.table, exception=False) is not None
+            self.table_loading.is_displayed and self.table.is_displayed
         )
 
 
@@ -143,7 +142,7 @@ class HostDeleteDialog(View):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class BuildManagementDialog(View):
@@ -164,7 +163,7 @@ class BuildManagementDialog(View):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class BulkHostDeleteDialog(View):
@@ -180,7 +179,7 @@ class BulkHostDeleteDialog(View):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class HostgroupDialog(View):
@@ -198,7 +197,7 @@ class HostgroupDialog(View):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class AllHostsCheckboxTreeView(PF5CheckboxTreeView):
@@ -242,7 +241,7 @@ class ManageCVEModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ManagePackagesModal(PF5Modal):
@@ -389,7 +388,7 @@ class ManagePackagesModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ManageErrataModal(PF5Modal):
@@ -488,7 +487,7 @@ class ManageErrataModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class RepositorySetsMenu(PF5Dropdown):
@@ -601,7 +600,7 @@ class ManageRepositorySetsModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class DisassociateHostsModal(PF5Modal):
@@ -620,7 +619,7 @@ class DisassociateHostsModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class MenuToggleSelect(PF5Select):
@@ -656,7 +655,7 @@ class ChangePowerStateModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ChangeHostsOwnerModal(PF5Modal):
@@ -676,7 +675,7 @@ class ChangeHostsOwnerModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class BaseChangeOrgLocModal(PF5Modal):
@@ -697,7 +696,7 @@ class BaseChangeOrgLocModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ChangeOrganizationModal(BaseChangeOrgLocModal):
@@ -769,7 +768,7 @@ class ChangeHostCollectionsModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ManageTracesModal(PF5Modal):
@@ -811,7 +810,7 @@ class ManageTracesModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ManageSystemPurposeModal(PF5Modal):
@@ -836,4 +835,4 @@ class ManageSystemPurposeModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed

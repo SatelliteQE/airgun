@@ -46,7 +46,7 @@ class PackagesView(BaseLoggedInView):
     @property
     def is_displayed(self):
         """The view is displayed when it's title exists"""
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class PackageDetailsView(BaseLoggedInView):
@@ -55,9 +55,7 @@ class PackageDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-
-        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Packages'
+        return self.breadcrumb.is_displayed and self.breadcrumb.locations[0] == 'Packages'
 
     @View.nested
     class details(SatTab):

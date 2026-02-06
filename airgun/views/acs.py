@@ -369,9 +369,4 @@ class AlternateContentSourcesView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        blank_page = self.browser.wait_for_element(self.blank_page, exception=False) is not None
-        table = (
-            self.browser.wait_for_element(self.acs_drawer.content_table, exception=False)
-            is not None
-        )
-        return blank_page or table
+        return self.blank_page.is_displayed or self.acs_drawer.content_table.is_displayed

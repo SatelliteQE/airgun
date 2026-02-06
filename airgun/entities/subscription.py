@@ -297,7 +297,7 @@ class AddSubscription(NavigateStep):
 
 
 @navigator.register(SubscriptionEntity, 'Details')
-class SubscriptionDetails(NavigationStep):
+class SubscriptionDetails(NavigateStep):
     """Navigate to Subscriptions' Details page
 
     Args:

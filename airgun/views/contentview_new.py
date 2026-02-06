@@ -130,8 +130,7 @@ class ContentViewEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Content views'
+        return self.breadcrumb.is_displayed and self.breadcrumb.locations[0] == 'Content views'
 
     @View.nested
     class details(Tab):
@@ -348,11 +347,9 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        title_loaded = self.browser.wait_for_element(self.version, exception=False)
         return (
-            breadcrumb_loaded
-            and title_loaded
+            self.breadcrumb.is_displayed
+            and self.version.is_displayed
             and len(self.breadcrumb.locations) > LOCATION_NUM
             and self.breadcrumb.locations[0] == 'Content views'
             and self.breadcrumb.locations[2] == 'Versions'

@@ -29,7 +29,7 @@ class HostCollectionsView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class HostCollectionCreateView(BaseLoggedInView):
@@ -42,9 +42,8 @@ class HostCollectionCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Host Collections'
             and self.breadcrumb.read() == 'New Host Collection'
         )
@@ -57,9 +56,8 @@ class HostCollectionEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Host Collections'
             and self.breadcrumb.read() != 'New Host Collection'
         )
@@ -169,8 +167,7 @@ class HostCollectionManagePackagesView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        """The view is displayed when it's title exists"""
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
     @View.nested
     class dialog(ConfirmationDialog):
@@ -216,8 +213,7 @@ class HostCollectionInstallErrataView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        """The view is displayed when it's title exists"""
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class HostCollectionManageModuleStreamsView(BaseLoggedInView, SearchableViewMixin):
@@ -232,8 +228,7 @@ class HostCollectionManageModuleStreamsView(BaseLoggedInView, SearchableViewMixi
 
     @property
     def is_displayed(self):
-        """The view is displayed when it's title exists"""
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class HostCollectionChangeAssignedContentView(BaseLoggedInView):
@@ -253,8 +248,7 @@ class HostCollectionChangeAssignedContentView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        """The view is displayed when it's title exists"""
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class HostCollectionActionTaskDetailsView(TaskDetailsView):
@@ -263,16 +257,14 @@ class HostCollectionActionTaskDetailsView(TaskDetailsView):
 
     @property
     def is_displayed(self):
-        """The view is displayed when it's title exists"""
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class HostCollectionActionRemoteExecutionJobCreate(JobInvocationCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Remote Executions'
             and self.breadcrumb.read() == 'Job invocation'
         )

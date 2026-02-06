@@ -19,7 +19,7 @@ class HTTPProxyView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class HTTPProxyCreateView(BaseLoggedInView):
@@ -30,9 +30,8 @@ class HTTPProxyCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'HTTP proxies'
             and self.breadcrumb.read() == 'New HTTP proxy'
         )
@@ -61,9 +60,8 @@ class HTTPProxyCreateView(BaseLoggedInView):
 class HTTPProxyEditView(HTTPProxyCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Http proxies'
             and self.breadcrumb.read().startswith('Edit ')
         )
