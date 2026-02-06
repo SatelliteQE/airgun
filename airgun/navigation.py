@@ -3,6 +3,8 @@
 from cached_property import cached_property
 import navmazing
 from selenium.common.exceptions import NoSuchElementException
+from wait_for import wait_for
+from widgetastic_patternfly4.navigation import NavSelectionNotFound
 
 
 class NavigateStep(navmazing.NavigateStep):
@@ -76,17 +78,57 @@ class NavigateStep(navmazing.NavigateStep):
         except (AttributeError, NoSuchElementException):
             return False
 
-    def go(self, _tries=0, *args, **kwargs):
-        """Wrapper around :meth:`navmazing.NavigateStep.go` which returns
-        instance of view after successful navigation flow.
+    def pre_navigate(self, *args, **kwargs):
+        return
+
+    def post_navigate(self, *args, **kwargs):
+        return
+
+    def go(self, *args, **kwargs):
+        """Override of :meth:`navmazing.NavigateStep.go`, which returns
+        instance of view after successful navigation.
 
         :return: view instance if class attribute ``VIEW`` is set or ``None``
             otherwise
         """
-        super().go(*args, _tries=_tries, **kwargs)
-        self.navigate_obj.browser.plugin.ensure_page_safe()
-        view = self.view if self.VIEW is not None else None
-        return view
+        NAV_EXCEPTIONS = NavSelectionNotFound
+
+        for _ in range(self._default_tries):
+            try:
+                self.pre_navigate(*args, **kwargs)
+
+                self.logger.info(f'NAVIGATE: Checking if already at {self._name}.')
+                here = False
+                try:
+                    here = self.am_i_here(*args, **kwargs)
+                except NAV_EXCEPTIONS as e:
+                    self.logger.error(
+                        f'NAVIGATE: Exception raised [{e}] while checking if already at {self._name}. Continuing with navigation.'
+                    )
+                if here:
+                    self.logger.info(f'NAVIGATE: Already at {self._name}.')
+                else:
+                    self.logger.info(f"NAVIGATE: I'm not at {self._name}.")
+                    self.parent = self.prerequisite(*args, **kwargs)
+                    self.logger.info(f'NAVIGATE: Heading to destination {self._name}.')
+                    self.step(*args, **kwargs)
+
+                    wait_for(
+                        self.am_i_here,
+                        func_args=args,
+                        func_kwargs=kwargs,
+                        message=f'NAVIGATE: Waiting for am_i_here of {type(self).__name__}',
+                        handle_exception=True,
+                        raise_original=True,
+                    )
+
+                self.resetter(*args, **kwargs)
+                self.post_navigate(*args, **kwargs)
+                view = self.view if self.VIEW is not None else None
+                return view
+            except NAV_EXCEPTIONS as e:
+                self.logger.error(f'NAVIGATE: Exception raised [{e}] during navigation.')
+        raise navmazing.NavigationTriesExceeded(self._name)
 
 
 class Navigate(navmazing.Navigate):
@@ -106,6 +148,13 @@ class Navigate(navmazing.Navigate):
         """
         super().__init__()
         self.browser = browser
+
+    def navigate(self, cls_or_obj, name, *args, **kwargs):
+        """Perform the navigation"""
+        __tracebackhide__ = True
+
+        nav = self.get_class(cls_or_obj, name)
+        return nav(cls_or_obj, self, self.logger).go(*args, **kwargs)
 
 
 # Navigator instance to be used in other modules. Please note that you should
