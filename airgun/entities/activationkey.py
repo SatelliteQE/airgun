@@ -1,5 +1,5 @@
 import time
-
+from wait_for import wait_for
 from navmazing import NavigateToSibling
 
 from airgun.entities.base import BaseEntity
@@ -20,7 +20,6 @@ class ActivationKeyEntity(BaseEntity):
         """Create new activation key entity"""
         view = self.navigate_to(self, 'New')
         view.wait_displayed()
-        # Fill basic fields first
         basic_fields = {k: v for k, v in values.items() if k not in ['lce', 'content_view']}
         if basic_fields:
             view.fill(basic_fields)
@@ -28,7 +27,7 @@ class ActivationKeyEntity(BaseEntity):
             lce_dict = values.get('lce', {})
             cv_name = values.get('content_view')
             view.assign_cv_env_btn.click()
-            time.sleep(5)
+            time.sleep(3)
             self._update_cv_lce_via_modal(lce_dict, cv_name)
         view.submit.click()
 
@@ -68,13 +67,11 @@ class ActivationKeyEntity(BaseEntity):
         lce_update = None
         cv_update = None
 
-        # Handle dot-notation format (e.g., 'details.lce')
         if 'details.lce' in values:
             lce_update = values.pop('details.lce')
         if 'details.content_view' in values:
             cv_update = values.pop('details.content_view')
 
-        # Handle nested format (e.g., {'details': {'lce': ...}})
         if 'details' in values and isinstance(values['details'], dict):
             if 'lce' in values['details']:
                 lce_update = values['details'].pop('lce')
@@ -83,9 +80,11 @@ class ActivationKeyEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.wait_displayed()
         if lce_update and not cv_update:
-            current_cv = view.details.content_view.read()
-            if current_cv:
-                cv_update = current_cv
+            cv_details = view.details.content_view_details.read()
+            if cv_details and len(cv_details) > 0:
+                current_cv = cv_details[0]['content_view']
+                if current_cv:
+                    cv_update = current_cv
         # Update other fields first if any remain
         if values:
             view.fill(values)
@@ -94,7 +93,7 @@ class ActivationKeyEntity(BaseEntity):
 
         # Update LCE/CV via modal if provided
         if lce_update or cv_update:
-            view.details.dropdown.item_select('Assign content view environments')
+            view.details.content_view_details.dropdown.item_select('Assign content view environments')
             self._update_cv_lce_via_modal(lce_update, cv_update)
 
     def _update_cv_lce_via_modal(self, lce_dict, cv_name):
@@ -106,37 +105,22 @@ class ActivationKeyEntity(BaseEntity):
         """
         modal = ManageMultiCVEnvModal(self.browser)
         modal.wait_displayed()
-        # Get LCE name from dict if provided (format: {env_name: True})
         lce_name = lce_dict
         if isinstance(lce_dict, dict):
             lce_name = next((k for k, v in lce_dict.items() if v), None)
 
-        # For UPDATE: The modal shows the existing assignment
-        # We directly access the assignment section and select the new LCE/CV
-        # No need to click assign_cv_btn - that's only for adding ANOTHER assignment
         if lce_name and cv_name:
-            # Access the existing assignment section using the target LCE name
             assignment_section = modal.new_assignment_section(lce_name=lce_name)
-
-            # Click the LCE radio button to select the new environment
             assignment_section.lce_selector.click()
-            # Wait longer for the page to update and CV dropdown to reload with CVs from new environment
-            time.sleep(5)
-            self.browser.plugin.ensure_page_safe()
-            time.sleep(2)
-
-            # Select the CV (either new one or the current one we read earlier)
             assignment_section.content_source_select.item_select(cv_name)
-            time.sleep(2)
-            self.browser.plugin.ensure_page_safe()
 
-        # Wait for modal to be ready and save
-        time.sleep(2)
-        self.browser.plugin.ensure_page_safe()
         modal.save_btn.click()
-        # Wait for modal to close and changes to be saved
-        time.sleep(2)
-        self.browser.plugin.ensure_page_safe()
+        wait_for(
+            lambda: not modal.is_displayed,
+            timeout=10,
+            delay=1,
+            handle_exception=True,
+        )
 
     def update_ak_host_limit(self, entity_name, host_limit):
         """

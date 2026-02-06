@@ -106,6 +106,55 @@ class Card(View):
     title = Text('.//div[@class="pf-v5-c-card__title"]')
 
 
+class ContentViewDetailsCard(Card):
+    """Reusable content view details card with LCE and CV information"""
+
+    ROOT = './/div[@data-ouia-component-id="content-view-details-card"]'
+    ITEMS = './/div[@class="pf-v5-l-flex pf-m-row pf-m-row-on-sm pf-m-wrap"]'
+    LCE_NAME = './/span[@class="pf-v5-c-label__text"]'
+    # CV can be either a link (custom CV) or plain text span (Default Organization View)
+    CV_NAME = './/a[contains(@href, "content_views") and not(contains(@href, "versions"))] | .//div[@aria-label="content_view_icon"]/following-sibling::span[1]'
+    CV_VERSION = './/a[contains(@href, "versions")]//span'
+
+    dropdown = PF5Dropdown(locator='.//div[button[@aria-label="change_content_view_kebab"]]')
+
+    org_view = Text('.//a[contains(@href, "content_views")]')
+
+    def read(self):
+        """Return a list of dictionaries containing LCE name, CV name, and CV version.
+
+        Note: For long CV names, the UI truncates them with "..." so we strip that suffix.
+        """
+        from selenium.common.exceptions import NoSuchElementException
+
+        items = []
+        for item in self.browser.elements(self.ITEMS):
+            lce_element = self.browser.element(self.LCE_NAME, parent=item)
+            cv_element = self.browser.element(self.CV_NAME, parent=item)
+
+            cv_text = self.browser.text(cv_element)
+            # Strip "..." suffix if present (indicates truncation)
+            if cv_text.endswith('...'):
+                cv_text = cv_text[:-3]
+
+            # Version is only present for custom content views, not for Default Organization View
+            version_text = None
+            try:
+                cv_version_element = self.browser.element(self.CV_VERSION, parent=item)
+                version_text = self.browser.text(cv_version_element)
+            except NoSuchElementException:
+                pass
+
+            items.append(
+                {
+                    'lce': self.browser.text(lce_element),
+                    'content_view': cv_text,
+                    'version': version_text,
+                }
+            )
+        return items
+
+
 class DropdownWithDescription(PF5Dropdown):
     """Dropdown with description below items"""
 
@@ -282,15 +331,8 @@ class NewHostDetailsView(BaseLoggedInView):
 
             enable_repository_sets = Text('.//a[normalize-space(.)="Enable repository sets"]')
 
-        @View.nested
-        class content_view_details(Card):
-            ROOT = './/div[@data-ouia-component-id="content-view-details-card"]'
-            # dropdown = PF5Dropdown(locator='.//div[@data-ouia-component-id="change-content-view-environments-kebab"]/button')
-            dropdown = PF5Dropdown(
-                locator='.//div[button[@aria-label="change_content_view_kebab"]]'
-            )
-
-            org_view = Text('.//a[contains(@href, "content_views")]')
+        # Reuse the standalone ContentViewDetailsCard class
+        content_view_details = ContentViewDetailsCard
 
         @View.nested
         class installable_errata(Card):

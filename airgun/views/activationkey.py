@@ -18,6 +18,7 @@ from airgun.views.common import (
     SatTabWithDropdown,
     SearchableViewMixin,
 )
+from airgun.views.host_new import ContentViewDetailsCard
 from airgun.widgets import (
     ActionsDropdown,
     ConfirmationDialog,
@@ -26,43 +27,6 @@ from airgun.widgets import (
     EditableLimitEntry,
     LimitInput,
 )
-
-
-class LCEListWidget(Widget):
-    """Widget to read LCE names from PF5 content-view-details-card as a list"""
-
-    ROOT = './/div[@data-ouia-component-id="content-view-details-card"]'
-
-    def read(self):
-        """Read all LCE labels from the card"""
-        lce_labels = self.browser.elements('.//span[@class="pf-v5-c-label__text"]', parent=self)
-        return [label.text for label in lce_labels] if lce_labels else []
-
-
-class ContentViewWidget(Widget):
-    """Widget to read Content View name from PF5 content-view-details-card"""
-
-    ROOT = './/div[@data-ouia-component-id="content-view-details-card"]'
-
-    def read(self):
-        """Read CV name from the card.
-
-        Note: For long CV names, the UI truncates them with "..." so we strip that suffix.
-        The returned value may be a truncated prefix of the actual CV name.
-        """
-        cv_links = self.browser.elements(
-            './/a[contains(@href, "/content_views/") and not(contains(@href, "/versions/"))]',
-            parent=self,
-        )
-        # Return the first link's text (the CV name, not the version)
-        for link in cv_links:
-            text = link.text.strip()
-            if text and 'Version' not in text:
-                # Strip "..." suffix if present (indicates truncation)
-                if text.endswith('...'):
-                    text = text[:-3]  # Remove the last 3 characters ("...")
-                return text
-        return None
 
 
 class ActivationKeysView(BaseLoggedInView, SearchableViewMixin):
@@ -137,12 +101,8 @@ class ActivationKeyEditView(BaseLoggedInView):
 
         service_level = EditableEntrySelect(name='Service Level')
 
-        # PF5 kebab dropdown for CV/LCE management
-        dropdown = PF5Dropdown(locator='.//div[button[@aria-label="change_content_view_kebab"]]')
-
-        # Custom widgets to read LCE and CV from PF5 card
-        lce = LCEListWidget()
-        content_view = ContentViewWidget()
+        # Reuse the standalone ContentViewDetailsCard class from host_new.py
+        content_view_details = ContentViewDetailsCard
 
         @property
         def is_displayed(self):
