@@ -78,7 +78,7 @@ class DashboardView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
     def search(self, query):
         """Return whole dashboard view as a result of a search

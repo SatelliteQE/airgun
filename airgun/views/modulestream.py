@@ -18,8 +18,7 @@ class ModuleStreamView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        """The view is displayed when it's title exists"""
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ModuleStreamsDetailsView(BaseLoggedInView):
@@ -31,8 +30,7 @@ class ModuleStreamsDetailsView(BaseLoggedInView):
     @property
     def is_displayed(self):
         """Assume the view is displayed when its breadcrumb is visible"""
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Module Streams'
+        return self.breadcrumb.is_displayed and self.breadcrumb.locations[0] == 'Module Streams'
 
     @View.nested
     class details(SatTab):

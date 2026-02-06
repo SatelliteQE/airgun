@@ -18,7 +18,7 @@ class MediumView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class MediaCreateView(BaseLoggedInView):
@@ -27,9 +27,8 @@ class MediaCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Installation Media'
             and self.breadcrumb.read() == 'Create Medium'
         )
@@ -52,9 +51,8 @@ class MediaCreateView(BaseLoggedInView):
 class MediaEditView(MediaCreateView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Installation Media'
             and self.breadcrumb.read().startswith('Edit ')
         )
