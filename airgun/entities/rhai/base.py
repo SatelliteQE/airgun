@@ -10,7 +10,7 @@ class InsightsOrganizationPageError(Exception):
 
 
 class InsightsNavigateStep(NavigateStep):
-    def post_navigate(self, _tries, *args, **kwargs):
+    def post_navigate(self, *args, **kwargs):
         """Raise Error if Destination view is not displayed or Organization Error page
         is displayed.
         """

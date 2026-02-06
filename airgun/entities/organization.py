@@ -119,7 +119,7 @@ class SelectOrganizationContext(NavigateStep):
             raise ValueError('Specify proper value for org_name parameter')
         self.view.taxonomies.select_org(org_name)
 
-    def post_navigate(self, _tries, *args, **kwargs):
+    def post_navigate(self, *args, **kwargs):
         """Handle alert screen if it's present"""
         wrong_context_view = WrongContextAlert(self.view.browser)
         if wrong_context_view.is_displayed:
@@ -127,4 +127,3 @@ class SelectOrganizationContext(NavigateStep):
             self.view.browser.wait_for_element(
                 self.view.menu, exception=False, ensure_page_safe=True
             )
-        super().post_navigate(_tries, *args, **kwargs)

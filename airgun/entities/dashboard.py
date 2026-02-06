@@ -45,7 +45,7 @@ class OpenDashboard(NavigateStep):
     def step(self, *args, **kwargs):
         self.view.menu.select('Monitor', 'Dashboard')
 
-    def post_navigate(self, _tries=0, *args, **kwargs):
+    def post_navigate(self, *args, **kwargs):
         """Disable auto-refresh feature for dashboard entity each time
         navigation to the page is finished
         """

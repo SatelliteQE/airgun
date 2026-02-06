@@ -108,7 +108,7 @@ class NavigateStep(navmazing.NavigateStep):
                 if here:
                     self.logger.info(f'NAVIGATE: Already at {self._name}.')
                 else:
-                    self.logger.info(f"NAVIGATE: I'm not at {self._name}.")
+                    self.logger.info(f"NAVIGATE: Not at {self._name}. Heading to prerequisite.")
                     self.parent = self.prerequisite(*args, **kwargs)
                     self.logger.info(f'NAVIGATE: Heading to destination {self._name}.')
                     self.step(*args, **kwargs)
