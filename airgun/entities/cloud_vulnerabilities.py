@@ -262,6 +262,25 @@ class CloudVulnerabilityEntity(BaseEntity):
         modal.save.click()
         wait_for(lambda: not modal.is_displayed, timeout=10)
 
+    def _select_cve_checkboxes(self, view, cve_ids):
+        """Helper method to select checkboxes for multiple CVEs
+
+        Args:
+            view: The CloudVulnerabilityView instance
+            cve_ids (list): List of CVE IDs to select
+        """
+        for cve_id in cve_ids:
+            view.search_bar.fill(cve_id)
+            # Find the row
+            row = view.vulnerabilities_table.row(**{'CVE ID': cve_id})
+            # Click the label (which will check the checkbox)
+            # Get the <tr> element and find the checkbox label within it
+            row_element = row.__element__()
+            label_locator = './/td[contains(@class, "pf-v5-c-table__check")]//label'
+            label = view.browser.element(label_locator, parent=row_element)
+            label.click()
+            view.search_bar.fill('')  # Clear search to show all CVEs again
+
     def bulk_edit_business_risk(self, cve_ids, risk_level, justification=None):
         """
         Edit business risk for multiple CVEs using bulk actions
@@ -278,17 +297,7 @@ class CloudVulnerabilityEntity(BaseEntity):
         wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
 
         # Select checkboxes for each CVE
-        for cve_id in cve_ids:
-            view.search_bar.fill(cve_id)
-            # Find the row
-            row = view.vulnerabilities_table.row(**{'CVE ID': cve_id})
-            # Click the label (which will check the checkbox)
-            # Get the <tr> element and find the checkbox label within it
-            row_element = row.__element__()
-            label_locator = './/td[contains(@class, "pf-v5-c-table__check")]//label'
-            label = view.browser.element(label_locator, parent=row_element)
-            label.click()
-            view.search_bar.fill('')  # Clear search to show all CVEs again
+        self._select_cve_checkboxes(view, cve_ids)
 
         # Use bulk actions menu instead of row kebab
         view.bulk_actions.item_select('Edit business risk')
@@ -340,17 +349,7 @@ class CloudVulnerabilityEntity(BaseEntity):
         wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
 
         # Select checkboxes for each CVE
-        for cve_id in cve_ids:
-            view.search_bar.fill(cve_id)
-            # Find the row
-            row = view.vulnerabilities_table.row(**{'CVE ID': cve_id})
-            # Click the label (which will check the checkbox)
-            # Get the <tr> element and find the checkbox label within it
-            row_element = row.__element__()
-            label_locator = './/td[contains(@class, "pf-v5-c-table__check")]//label'
-            label = view.browser.element(label_locator, parent=row_element)
-            label.click()
-            view.search_bar.clear()
+        self._select_cve_checkboxes(view, cve_ids)
 
         # Use bulk actions menu
         view.bulk_actions.item_select('Edit status')
