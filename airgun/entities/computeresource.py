@@ -212,7 +212,7 @@ class EditExistingComputeResource(NavigateStep):
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Actions'].widget.fill('Edit')
 
-    def post_navigate(self, _tries, *args, **kwargs):
+    def post_navigate(self, *args, **kwargs):
         """Select Compute resource tab for initialization"""
         self.view.compute_resource.click()
 

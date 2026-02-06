@@ -119,7 +119,7 @@ class ReadTemplate(EditTemplate):
        editor_view_option: The edit view option to set.
     """
 
-    def post_navigate(self, _tries, *args, **kwargs):
+    def post_navigate(self, *args, **kwargs):
         editor_view_option = kwargs.get('editor_view_option')
         if editor_view_option is not None:
             self.view.template.template_editor.rendering_options.fill(editor_view_option)
