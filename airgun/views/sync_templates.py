@@ -8,15 +8,16 @@ from widgetastic.widget import (
     View,
 )
 from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly5 import PatternflyTable as PF5Table
 
 from airgun.views.common import BaseLoggedInView
-from airgun.widgets import RadioGroup
+from airgun.widgets import PF5RadioGroup
 
 
 class SyncTemplatesView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
-    title = Text("//h2[contains(., 'Import or Export Templates')]")
-    sync_type = RadioGroup("//div[label[contains(., 'Action type')]]")
+    title = Text("//h1[contains(., 'Import or Export Templates')]")
+    sync_type = PF5RadioGroup("//div[@id='sync-type_formGroup']")
     submit = Text(".//button[contains(.,'Submit')]")
 
     template = ConditionalSwitchableView(reference='sync_type')
@@ -35,17 +36,17 @@ class SyncTemplatesView(BaseLoggedInView):
 
     @template.register('Import')
     class ImportTemplates(View):
-        associate = Select(name='import.associate')
-        branch = TextInput(name='import.branch')
-        dirname = TextInput(name='import.dirname')
-        filter = TextInput(name='import.filter')
-        force_import = Checkbox(name='import.force')
-        lock = Select(name='import.lock')
-        negate = Checkbox(name='import.negate')
-        prefix = TextInput(name='import.prefix')
-        repo = TextInput(name='import.repo')
-        http_proxy_policy = Select(name='import.http_proxy_policy')
-        http_proxy_id = Select(name='import.http_proxy_id')
+        associate = Select(name='associate')
+        branch = TextInput(name='branch')
+        dirname = TextInput(name='dirname')
+        filter = TextInput(name='filter')
+        force_import = Checkbox(name='force')
+        lock = Select(name='lock')
+        negate = Checkbox(name='negate')
+        prefix = TextInput(name='prefix')
+        repo = TextInput(name='repo')
+        http_proxy_policy = Select(name='http_proxy_policy')
+        http_proxy_id = Select(name='http_proxy_id')
 
         def fill(self, items):
             if 'http_proxy_id' in items:
@@ -54,25 +55,25 @@ class SyncTemplatesView(BaseLoggedInView):
 
     @template.register('Export')
     class ExportTemplates(View):
-        branch = TextInput(name='export.branch')
-        dirname = TextInput(name='export.dirname')
-        filter = TextInput(name='export.filter')
-        metadata_export_mode = Select(name='export.metadata_export_mode')
-        negate = Checkbox(name='export.negate')
-        repo = TextInput(name='export.repo')
-        http_proxy_policy = Select(name='export.http_proxy_policy')
-        http_proxy_id = Select(name='export.http_proxy_id')
+        branch = TextInput(name='branch')
+        dirname = TextInput(name='dirname')
+        filter = TextInput(name='filter')
+        metadata_export_mode = Select(name='metadata_export_mode')
+        negate = Checkbox(name='negate')
+        repo = TextInput(name='repo')
+        http_proxy_policy = Select(name='http_proxy_policy')
+        http_proxy_id = Select(name='http_proxy_id')
 
 
 class TemplatesReportView(BaseLoggedInView):
     title = Text('//h1')
-    REPORTS = "//div[contains(@class, 'list-group-item')]"
+    REPORTS = PF5Table(locator='.//table[contains(@data-ouia-component-id, "foreman-templates")]')
 
     @property
     def is_displayed(self):
         return all(
             [
                 self.browser.wait_for_element(self.title, exception=False),
-                self.browser.elements(self.REPORTS),
+                self.browser.wait_for_element(self.REPORTS, exception=False),
             ]
         )

@@ -195,6 +195,71 @@ class ToggleRadioGroup(RadioGroup):
         return False
 
 
+class PF5RadioGroup(GenericLocatorWidget):
+    """PF5 radio buttons group widget
+
+    Example html representation::
+
+     <div id="radio-group" class="pf-v5-c-form__group">
+        <div class="pf-v5-c-form__group-control pf-m-inline">
+            <div class="pf-v5-c-radio">
+                <input type="radio" checked="checked" id="name1">
+                <label class="pf-v5-c-radio__label" for="name1">Name</label>
+            </div>
+            <div class="pf-v5-c-radio">
+                <input type="radio" id="name2">
+                <label class="pf-v5-c-radio__label" for="name2">Name2</label>
+            <div class="col-md-4">
+
+    Locator example::
+
+        //div[@id='radio-group']
+
+    """
+
+    LABELS = './/label[@class="pf-v5-c-radio__label"]'
+
+    @property
+    def button_names(self):
+        """Return all radio group labels"""
+        return [self.browser.text(btn) for btn in self.browser.elements(self.LABELS)]
+
+    def _get_label(self, name):
+        """Get radio group label for specific button"""
+        try:
+            return next(
+                btn for btn in self.browser.elements(self.LABELS) if self.browser.text(btn) == name
+            )
+        except StopIteration as err:
+            raise NoSuchElementException(f'RadioButton {name} is absent on page') from err
+
+    @property
+    def selected(self):
+        """Return name of a button that is currently selected in the group"""
+        for name in self.button_names:
+            btn = self.browser.element(f'.//input[@id="{name.lower()}"]')
+            if btn.get_attribute('checked') is not None:
+                return name
+        raise ValueError(
+            'Radio button is not selected or proper attribute should be added to framework'
+        )
+
+    def select(self, name):
+        """Select specific radio button in the group"""
+        if self.selected != name:
+            self.browser.element(f'.//input[@id="{name.lower()}"]').click()
+            return True
+        return False
+
+    def read(self):
+        """Wrap method according to architecture"""
+        return self.selected
+
+    def fill(self, name):
+        """Wrap method according to architecture"""
+        return self.select(name)
+
+
 class DateTime(Widget):
     """Collection of date picker and two inputs for hours and minutes
 
