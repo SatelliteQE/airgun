@@ -1,6 +1,7 @@
 import time
-from wait_for import wait_for
+
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -93,7 +94,9 @@ class ActivationKeyEntity(BaseEntity):
 
         # Update LCE/CV via modal if provided
         if lce_update or cv_update:
-            view.details.content_view_details.dropdown.item_select('Assign content view environments')
+            view.details.content_view_details.dropdown.item_select(
+                'Assign content view environments'
+            )
             self._update_cv_lce_via_modal(lce_update, cv_update)
 
     def _update_cv_lce_via_modal(self, lce_dict, cv_name):
