@@ -29,9 +29,8 @@ class FiltersView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Roles'
             and self.breadcrumb.read().endswith(' filters')
         )
@@ -56,9 +55,8 @@ class FilterDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Roles'
             and self.breadcrumb.read().startswith('Edit filter for ')
         )
@@ -67,9 +65,8 @@ class FilterDetailsView(BaseLoggedInView):
 class FilterCreateView(FilterDetailsView):
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Roles'
             and self.breadcrumb.read() == 'Create Filter'
         )
