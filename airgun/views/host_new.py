@@ -125,8 +125,6 @@ class ContentViewDetailsCard(Card):
 
         Note: For long CV names, the UI truncates them with "..." so we strip that suffix.
         """
-        from selenium.common.exceptions import NoSuchElementException
-
         items = []
         for item in self.browser.elements(self.ITEMS):
             lce_element = self.browser.element(self.LCE_NAME, parent=item)

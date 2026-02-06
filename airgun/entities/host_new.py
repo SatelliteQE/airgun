@@ -1172,6 +1172,7 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
         return view.overview.content_view_details.read()
 
+
 @navigator.register(HostEntity, 'NewUIAll')
 class ShowAllHosts(NavigateStep):
     """Navigate to new UI All Hosts page"""
