@@ -169,7 +169,7 @@ class CVESelect(Select):
     ITEM_LOCATOR = '//button[contains(@class, "pf-v5-c-select__menu-item") and contains(normalize-space(.), {})]'
     SELECTED_ITEM_LOCATOR = './/span[contains(@class, "ins-c-conditional-filter")]'
     TEXT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and child::button]'
-    DEFAULT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and @data-ouia-component-id="select-content-view"]'
+    DEFAULT_LOCATOR = './/div[contains(@class,"pf-v5-c-expandable-section") and contains(@class,"pf-m-expanded")]//div[contains(@class, "pf-v5-c-select") and @data-ouia-component-id="select-content-view"]'
     SEARCH_INPUT_LOCATOR = (
         './/input[@type="text" and contains(@class, "pf-v5-c-select__toggle-typeahead")]'
     )
@@ -1219,13 +1219,13 @@ class ManageColumnsView(BaseLoggedInView):
 class NewCVEnvAssignmentSection(PF5LCESelectorGroup):
     # Generic ROOT that works for both new and existing assignments
     # Don't check for "Select a content view" text - just find the assignment-section div
-    ROOT = './/div[@class="assignment-section"]'
+    ROOT = './/div[@class="attached-content-views"]'
 
     PARAMETERS = ('lce_name',)
 
     lce_selector = PF5LCESelector(
         locator=ParametrizedLocator(
-            './/input[@type="radio" and @class="pf-v5-c-radio__input" and following-sibling::label//span[@class="pf-v5-c-label__text" and normalize-space(.)="{lce_name}"]]'
+            './/div[contains(@class,"pf-v5-c-expandable-section") and contains(@class,"pf-m-expanded")]//input[@type="radio"][following-sibling::label//span[normalize-space(.)="{lce_name}"]]'
         )
     )
     content_source_select = CVESelect()
