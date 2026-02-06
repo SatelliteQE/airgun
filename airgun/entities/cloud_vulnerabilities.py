@@ -11,6 +11,12 @@ class CloudVulnerabilityEntity(BaseEntity):
     endpoint_path = '/foreman_rh_cloud/insights_vulnerability'
 
     def read(self, entity_name=None, widget_names=None):
+        """
+        Read vulnerabilities table data including Business risk and Status columns
+
+        Returns:
+            list: List of dictionaries with CVE data including new columns
+        """
         view = self.navigate_to(self, 'All')
         wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
         return view.vulnerabilities_table.read()
@@ -69,6 +75,345 @@ class CloudVulnerabilityEntity(BaseEntity):
             return vulnerabilities.read()
         else:
             return []
+
+    def edit_business_risk(self, cve_id, risk_level, justification=None):
+        """
+        Edit business risk for a single CVE from the main vulnerabilities page
+
+        Args:
+            cve_id (str): CVE ID to edit (e.g., "CVE-2025-8058")
+            risk_level (str): One of: "Critical", "High", "Medium", "Low", "Not defined"
+            justification (str, optional): Justification note text
+
+        Example:
+            entity.edit_business_risk("CVE-2025-8058", "High", "Critical system component")
+        """
+        view = self.navigate_to(self, 'All')
+        wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
+
+        # Search for the CVE
+        view.search_bar.fill(cve_id)
+
+        # Find the row and open row kebab menu
+        row = view.vulnerabilities_table.row(**{'CVE ID': cve_id})
+        row['Column with row actions'].widget.item_select('Edit business risk')
+
+        # Fill the modal
+        modal = view.edit_business_risk_modal
+        wait_for(lambda: modal.is_displayed, timeout=10)
+
+        # Select the risk level radio button
+        risk_map = {
+            'Critical': modal.critical,
+            'High': modal.high,
+            'Medium': modal.medium,
+            'Low': modal.low,
+            'Not defined': modal.not_defined,
+        }
+        risk_map[risk_level].fill(True)
+
+        if justification:
+            modal.justification_note.fill(justification)
+
+        modal.save.click()
+        wait_for(lambda: not modal.is_displayed, timeout=10)
+
+    def filter_by_os(self, os_versions):
+        """
+        Filter vulnerabilities by OS version(s) using the "Applies to OS" filter
+        Supports both parent versions (e.g., "RHEL 9") and child versions (e.g., "RHEL 9.7")
+        Automatically expands parent nodes when selecting child versions
+
+        Args:
+            os_versions (list): List of OS versions to filter by
+
+        Examples:
+            entity.filter_by_os(["RHEL 9"])  # Filters all RHEL 9 versions
+            entity.filter_by_os(["RHEL 9.7"])  # Expands RHEL 9, selects only 9.7
+            entity.filter_by_os(["RHEL 8", "RHEL 9.7"])  # Multiple versions
+        """
+        view = self.navigate_to(self, 'All')
+        wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
+
+        # Step 1: Select "Applies to OS" from the filter type menu
+        view.filter_type_menu.item_select('Applies to OS')
+
+        # Step 2: Click the OS filter button to open the tree dropdown
+        view.os_filter_button.click()
+        wait_for(lambda: view.os_filter_tree.is_displayed, timeout=10)
+
+        # Step 3: For each OS version, expand parent if needed, then select
+        for os_version in os_versions:
+            # Check if this is a child version (contains a dot, like "RHEL 9.7")
+            if '.' in os_version:
+                # Extract parent name (e.g., "RHEL 9" from "RHEL 9.7")
+                parts = os_version.split()  # ["RHEL", "9.7"]
+                if len(parts) >= 2:  # noqa: PLR2004
+                    version_parts = parts[1].split('.')  # ["9", "7"]
+                    parent_version = f'{parts[0]} {version_parts[0]}'  # "RHEL 9"
+
+                    # Check if parent is collapsed (aria-expanded="false")
+                    parent_node_locator = f'.//li[@id="{parent_version}"][@aria-expanded="false"]'
+                    if view.browser.element(parent_node_locator, exception=False):
+                        # Parent is collapsed, need to expand it
+                        expand_button_locator = (
+                            f'.//li[@id="{parent_version}"]'
+                            f'//button[contains(@class, "pf-v5-c-tree-view__node-toggle")]'
+                        )
+                        view.browser.click(expand_button_locator)
+                        # Wait a moment for the tree to expand
+                        view.browser.plugin.ensure_page_safe()
+
+            # Now check the checkbox for this OS version
+            # Use direct browser click since cached_property might not include newly visible items
+            checkbox_locator = f'.//li[@id="{os_version}"]//input[@type="checkbox"]'
+            checkbox = view.browser.element(checkbox_locator, exception=False)
+            if checkbox and not checkbox.is_selected():
+                view.browser.click(checkbox_locator)
+
+        # Close the dropdown by clicking the button again (or clicking outside)
+        view.os_filter_button.click()
+
+    def edit_business_risk_from_details(self, cve_id, risk_level, justification=None):
+        """
+        Edit business risk from the CVE details page using the Actions dropdown
+
+        Args:
+            cve_id (str): CVE ID to navigate to and edit
+            risk_level (str): One of: "Critical", "High", "Medium", "Low", "Not defined"
+            justification (str, optional): Justification note text
+
+        Example:
+            entity.edit_business_risk_from_details("CVE-2025-8058", "Low")
+        """
+        # Navigate to CVE details page
+        self._navigate_to_cve_details(cve_id)
+        view = CVEDetailsView(self.browser)
+        view.wait_displayed()
+
+        # Open Actions dropdown and select Edit business risk
+        view.actions_dropdown.item_select('Edit business risk')
+
+        # Fill the modal (same modal as main page)
+        modal = view.edit_business_risk_modal
+        wait_for(lambda: modal.is_displayed, timeout=10)
+
+        # Select the risk level
+        risk_map = {
+            'Critical': modal.critical,
+            'High': modal.high,
+            'Medium': modal.medium,
+            'Low': modal.low,
+            'Not defined': modal.not_defined,
+        }
+        risk_map[risk_level].fill(True)
+
+        if justification:
+            modal.justification_note.fill(justification)
+
+        modal.save.click()
+        wait_for(lambda: not modal.is_displayed, timeout=10)
+
+    # TODO(human): Implement the following entity methods
+    # Look at the examples above and follow similar patterns
+
+    def edit_status(self, cve_id, status, justification=None, no_overwrite=False):
+        """
+        Edit status for a single CVE from the main vulnerabilities page
+
+        Args:
+            cve_id (str): CVE ID to edit
+            status (str): One of: "Not reviewed", "In review", "On-hold",
+                         "Scheduled for patch", "Resolved", "No action - risk accepted",
+                         "Resolved via mitigation"
+            justification (str, optional): Justification note text
+            no_overwrite (bool): Whether to check "Do not overwrite individual system status"
+
+        Example:
+            entity.edit_status("CVE-2025-8058", "In review", "Investigating impact")
+        """
+        # TODO(human): Implement this method
+        # Hint: Very similar to edit_business_risk(), but:
+        # 1. Opens "Edit status" from row kebab instead of "Edit business risk"
+        # 2. Uses view.edit_status_modal instead of view.edit_business_risk_modal
+        # 3. Uses modal.status_select.fill(status) instead of radio buttons
+        # 4. Optionally fills modal.no_overwrite checkbox
+        view = self.navigate_to(self, 'All')
+        wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
+
+        # Search for the CVE
+        view.search_bar.fill(cve_id)
+
+        # Find the row and open row kebab menu
+        row = view.vulnerabilities_table.row(**{'CVE ID': cve_id})
+        row['Column with row actions'].widget.item_select('Edit status')
+
+        # Fill the modal
+        modal = view.edit_status_modal
+        wait_for(lambda: modal.is_displayed, timeout=10)
+        modal.status_select.fill(status)
+
+        if justification:
+            modal.justification_note.fill(justification)
+
+        # Always fill checkbox to ensure correct state (not toggle)
+        modal.no_overwrite.fill(no_overwrite)
+
+        modal.save.click()
+        wait_for(lambda: not modal.is_displayed, timeout=10)
+
+    def bulk_edit_business_risk(self, cve_ids, risk_level, justification=None):
+        """
+        Edit business risk for multiple CVEs using bulk actions
+
+        Args:
+            cve_ids (list): List of CVE IDs to edit (e.g., ["CVE-2025-8058", "CVE-2025-1234"])
+            risk_level (str): One of: "Critical", "High", "Medium", "Low", "Not defined"
+            justification (str, optional): Justification note text
+
+        Example:
+            entity.bulk_edit_business_risk(["CVE-2025-8058", "CVE-2025-1234"], "High")
+        """
+        view = self.navigate_to(self, 'All')
+        wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
+
+        # Select checkboxes for each CVE
+        for cve_id in cve_ids:
+            view.search_bar.fill(cve_id)
+            # Find the row
+            row = view.vulnerabilities_table.row(**{'CVE ID': cve_id})
+            # Click the label (which will check the checkbox)
+            # Get the <tr> element and find the checkbox label within it
+            row_element = row.__element__()
+            label_locator = './/td[contains(@class, "pf-v5-c-table__check")]//label'
+            label = view.browser.element(label_locator, parent=row_element)
+            label.click()
+            view.search_bar.fill('')  # Clear search to show all CVEs again
+
+        # Use bulk actions menu instead of row kebab
+        view.bulk_actions.item_select('Edit business risk')
+
+        # Fill the modal (same as individual edit)
+        modal = view.edit_business_risk_modal
+        wait_for(lambda: modal.is_displayed, timeout=10)
+
+        risk_map = {
+            'Critical': modal.critical,
+            'High': modal.high,
+            'Medium': modal.medium,
+            'Low': modal.low,
+            'Not defined': modal.not_defined,
+        }
+        risk_map[risk_level].fill(True)
+
+        if justification:
+            modal.justification_note.fill(justification)
+
+        modal.save.click()
+        wait_for(lambda: not modal.is_displayed, timeout=10)
+
+        # Close the bulk actions dropdown by clicking elsewhere (e.g., title)
+        view.title.click()
+        # Wait for the dropdown menu to actually close (elements() returns empty list when not found)
+        wait_for(
+            lambda: len(view.browser.elements('//div[contains(@class, "pf-v5-c-menu")]')) == 0,
+            timeout=10,
+        )
+
+        # Clear the search bar to show all CVEs again
+        view.search_bar.fill('')
+
+    def bulk_edit_status(self, cve_ids, status, justification=None, no_overwrite=False):
+        """
+        Edit status for multiple CVEs using bulk actions
+
+        Args:
+            cve_ids (list): List of CVE IDs to edit
+            status (str): Status value to set
+            justification (str, optional): Justification note text
+            no_overwrite (bool): Whether to check "Do not overwrite individual system status"
+
+        Example:
+            entity.bulk_edit_status(["CVE-2025-8058", "CVE-2025-1234"], "Resolved")
+        """
+        view = self.navigate_to(self, 'All')
+        wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
+
+        # Select checkboxes for each CVE
+        for cve_id in cve_ids:
+            view.search_bar.fill(cve_id)
+            # Find the row
+            row = view.vulnerabilities_table.row(**{'CVE ID': cve_id})
+            # Click the label (which will check the checkbox)
+            # Get the <tr> element and find the checkbox label within it
+            row_element = row.__element__()
+            label_locator = './/td[contains(@class, "pf-v5-c-table__check")]//label'
+            label = view.browser.element(label_locator, parent=row_element)
+            label.click()
+            view.search_bar.clear()
+
+        # Use bulk actions menu
+        view.bulk_actions.item_select('Edit status')
+
+        # Fill the modal
+        modal = view.edit_status_modal
+        wait_for(lambda: modal.is_displayed, timeout=10)
+
+        modal.status_select.fill(status)
+
+        if justification:
+            modal.justification_note.fill(justification)
+
+        modal.no_overwrite.fill(no_overwrite)
+
+        modal.save.click()
+        wait_for(lambda: not modal.is_displayed, timeout=10)
+
+        # Close the bulk actions dropdown by clicking elsewhere (e.g., title)
+        view.title.click()
+        # Wait for the dropdown menu to actually close (elements() returns empty list when not found)
+        wait_for(
+            lambda: len(view.browser.elements('//div[contains(@class, "pf-v5-c-menu")]')) == 0,
+            timeout=10,
+        )
+
+        # Clear the search bar to show all CVEs again
+        view.search_bar.fill('')
+
+    def edit_status_from_details(self, cve_id, status, justification=None, no_overwrite=False):
+        """
+        Edit status from the CVE details page using the Actions dropdown
+
+        Args:
+            cve_id (str): CVE ID to navigate to and edit
+            status (str): Status value to set
+            justification (str, optional): Justification note text
+            no_overwrite (bool): Whether to check "Do not overwrite individual system status"
+
+        Example:
+            entity.edit_status_from_details("CVE-2025-8058", "Resolved via mitigation")
+        """
+        # Navigate to CVE details page
+        self._navigate_to_cve_details(cve_id)
+        view = CVEDetailsView(self.browser)
+        view.wait_displayed()
+
+        # Open Actions dropdown and select Edit status
+        view.actions_dropdown.item_select('Edit status')
+
+        # Fill the modal
+        modal = view.edit_status_modal
+        wait_for(lambda: modal.is_displayed, timeout=10)
+
+        modal.status_select.fill(status)
+
+        if justification:
+            modal.justification_note.fill(justification)
+
+        modal.no_overwrite.fill(no_overwrite)
+
+        modal.save.click()
+        wait_for(lambda: not modal.is_displayed, timeout=10)
 
 
 @navigator.register(CloudVulnerabilityEntity, 'All')
