@@ -1166,6 +1166,7 @@ class NewHostEntity(HostEntity):
             handle_exception=True,
         )
 
+
     def get_content_view_envs(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()

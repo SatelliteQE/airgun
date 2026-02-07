@@ -332,6 +332,23 @@ class NewHostDetailsView(BaseLoggedInView):
         # Reuse the standalone ContentViewDetailsCard class
         content_view_details = ContentViewDetailsCard
 
+            def read(self):
+                """Return a list of dictionaries containing LCE name, CV name, and CV version"""
+                items = []
+                for item in self.browser.elements(self.ITEMS):
+                    lce_element = self.browser.element(self.LCE_NAME, parent=item)
+                    cv_element = self.browser.element(self.CV_NAME, parent=item)
+                    cv_version_element = self.browser.element(self.CV_VERSION, parent=item)
+
+                    items.append(
+                        {
+                            'lce': self.browser.text(lce_element),
+                            'content_view': self.browser.text(cv_element),
+                            'version': self.browser.text(cv_version_element),
+                        }
+                    )
+                return items
+
         @View.nested
         class installable_errata(Card):
             ROOT = './/div[@data-ouia-component-id="errata-card"]'
