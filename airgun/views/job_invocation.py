@@ -64,7 +64,7 @@ class JobInvocationsView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class JobInvocationCreateView(BaseLoggedInView):
@@ -174,9 +174,8 @@ class JobInvocationCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Jobs'
             and self.breadcrumb.read() == 'Job invocation'
         )
@@ -192,18 +191,10 @@ class JobInvocationStatusView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.breadcrumb.wait_displayed()
-        title_loaded = self.title.wait_displayed() and self.title.read() != ''
-        data_loaded, _ = wait_for(
-            func=lambda: self.status.is_displayed,
-            timeout=60,
-            delay=15,
-            fail_func=self.browser.refresh,
-        )
         return (
-            breadcrumb_loaded
-            and title_loaded
-            and data_loaded
+            self.breadcrumb.is_displayed
+            and self.title.is_displayed
+            and self.status.is_displayed
             and self.breadcrumb.locations[0] == 'Jobs'
             and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
         )

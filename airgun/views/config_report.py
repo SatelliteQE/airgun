@@ -17,7 +17,7 @@ class ConfigReportsView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ConfigReportDetailsView(BaseLoggedInView):
@@ -25,8 +25,7 @@ class ConfigReportDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Config Reports'
+        return self.breadcrumb.is_displayed and self.breadcrumb.locations[0] == 'Config Reports'
 
     delete = Button('Delete')
     host_details = Button('Host details')

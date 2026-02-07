@@ -41,9 +41,8 @@ class RepositoriesView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Products'
             and self.breadcrumb.read() == 'Repositories'
         )
@@ -188,9 +187,8 @@ class RepositoryCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Products'
             and self.breadcrumb.locations[2] == 'Repositories'
             and self.breadcrumb.read() == 'New Repository'
@@ -305,9 +303,8 @@ class RepositoryEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Products'
             # repositories do not have tabs, so if we are deep inside some
             # specific repository (e.g. in repository packages) - there's no
@@ -334,9 +331,8 @@ class RepositoryPackagesView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Products'
             and self.breadcrumb.locations[2] == 'Repositories'
             and self.breadcrumb.read() == 'Packages'

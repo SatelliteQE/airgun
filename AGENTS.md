@@ -220,7 +220,7 @@ class MyListView(BaseLoggedInView):
     
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False)
+        return self.title.is_displayed
 ```
 
 ### Pattern 3: Tab page views
@@ -237,29 +237,6 @@ class MyTabsListView(View):
     class content_tab(PF5Tab):
         TAB_NAME = 'content'
         table = SatTable(locator='//table')
-```
-
-### Pattern 4: Wait for UI Stability
-
-```python
-from wait_for import wait_for
-
-def my_action(self):
-    view = self.navigate_to(self, 'All')
-    
-    # Wait for element
-    wait_for(lambda: view.table.is_displayed, timeout=30)
-    
-    # Wait for specific condition
-    wait_for(
-        lambda: len(view.table.read()) > 0,
-        timeout=60,
-        delay=2,
-        handle_exception=True
-    )
-    
-    # Use browser plugin for page safety
-    self.browser.plugin.ensure_page_safe(timeout='10s')
 ```
 
 ---

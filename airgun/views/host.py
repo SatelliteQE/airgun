@@ -204,7 +204,7 @@ class HostInterface(View):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, visible=True, exception=False) is not None
+        return self.title.is_displayed
 
 
 class HostStatusesView(BaseLoggedInView):
@@ -218,7 +218,7 @@ class HostStatusesView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -248,7 +248,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
     @property
     def displayed_table_header_names(self) -> list:
@@ -268,9 +268,8 @@ class HostCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'All Hosts'
             and self.breadcrumb.read() == 'Create Host'
         )
@@ -580,7 +579,7 @@ class HostRegisterView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False)
+        return self.title.is_displayed
 
     def before_fill(self, values):
         """Fill some of the parameters in the widgets with values.
@@ -687,9 +686,8 @@ class HostDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'All Hosts'
             and self.breadcrumb.read() != 'Create Host'
         )
@@ -729,9 +727,8 @@ class HostEditView(HostCreateView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'All Hosts'
             and self.breadcrumb.read().startswith('Edit ')
         )
@@ -747,7 +744,7 @@ class HostsActionCommonDialog(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class HostsChangeGroup(HostsActionCommonDialog):

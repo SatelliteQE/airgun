@@ -27,7 +27,7 @@ class SCAPReportView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class SCAPReportDetailsView(BaseLoggedInView):
@@ -45,9 +45,7 @@ class SCAPReportDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return (
-            self.browser.wait_for_element(self.show_log_messages_label, exception=False) is not None
-        )
+        return self.show_log_messages_label.is_displayed
 
 
 class RemediateModal(View):
