@@ -1150,15 +1150,21 @@ class NewHostEntity(HostEntity):
     def add_content_view_env(self, entity_name, cv_name, lce_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.overview.content_view_details.dropdown.item_select('Assign content view environments')
-        view = ManageMultiCVEnvModal(self.browser)
-        self.browser.plugin.ensure_page_safe()
-        view.assign_cv_btn.click()
-        assignment_section = view.new_assignment_section(lce_name=lce_name)
-        assignment_section.lce_selector.fill({lce_name: True})
+        modal = ManageMultiCVEnvModal(self.browser)
+        modal.assign_cv_btn.wait_displayed(timeout=5)
+        modal.assign_cv_btn.click()
+        assignment_section = modal.new_assignment_section(lce_name=lce_name)
+        assignment_section.lce_selector.wait_displayed(timeout=5)
+        assignment_section.lce_selector.click()
         assignment_section.content_source_select.item_select(cv_name)
-        view.save_btn.click()
+        modal.save_btn.click()
+        wait_for(
+            lambda: not modal.is_displayed,
+            timeout=10,
+            delay=1,
+            handle_exception=True,
+        )
 
     def get_content_view_envs(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)

@@ -1,6 +1,5 @@
 from widgetastic.widget import (
     Checkbox,
-    ParametrizedView,
     Select,
     Table,
     Text,
@@ -13,11 +12,11 @@ from airgun.views.common import (
     AddRemoveResourcesView,
     AddRemoveSubscriptionsView,
     BaseLoggedInView,
-    LCESelectorGroup,
     SatTab,
     SatTabWithDropdown,
     SearchableViewMixin,
 )
+from airgun.views.host_new import ContentViewDetailsCard
 from airgun.widgets import (
     ActionsDropdown,
     ConfirmationDialog,
@@ -47,8 +46,10 @@ class ActivationKeyCreateView(BaseLoggedInView):
     name = TextInput(id='name')
     hosts_limit = LimitInput()
     description = TextInput(id='description')
-    lce = ParametrizedView.nested(LCESelectorGroup)
-    content_view = Select(id='content_view_id')
+
+    # Button/link to open CV/LCE assignment modal
+    assign_cv_env_btn = Text("//button[contains(., 'Assign') or contains(@ng-click, 'assign')]")
+
     submit = Text("//button[contains(@ng-click, 'handleSave')]")
 
     @property
@@ -97,8 +98,18 @@ class ActivationKeyEditView(BaseLoggedInView):
         )
 
         service_level = EditableEntrySelect(name='Service Level')
-        lce = ParametrizedView.nested(LCESelectorGroup)
-        content_view = EditableEntrySelect(name='Content View')
+
+        # Reuse the standalone ContentViewDetailsCard class from host_new.py
+        content_view_details = ContentViewDetailsCard
+
+        @property
+        def is_displayed(self):
+            """Override to avoid tab detection issues"""
+            return True
+
+        def select(self):
+            """Override to prevent tab selection - Details is always visible"""
+            pass
 
     @View.nested
     class subscriptions(SatTab):
