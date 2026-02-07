@@ -376,12 +376,11 @@ class ResourceProviderProfileView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_text = self.breadcrumb.read()
         return (
             self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Compute Resources'
             and self.breadcrumb.locations[2] == 'Compute Profiles'
-            and breadcrumb.read().startswith(('Edit ', 'New '))
+            and self.breadcrumb.read().startswith(('Edit ', 'New '))
         )
 
 

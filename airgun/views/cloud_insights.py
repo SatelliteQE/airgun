@@ -209,7 +209,4 @@ class RecommendationsTabView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return (
-            self.table.is_displayed
-            and self.clear_button.is_displayed
-        )
+        return self.table.is_displayed and self.clear_button.is_displayed
