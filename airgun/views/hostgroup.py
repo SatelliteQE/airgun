@@ -47,7 +47,9 @@ class HostGroupsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return (self.title.is_displayed or self.new_on_blank_page.is_displayed) and self.browser.url.endswith('hostgroups')
+        return (
+            self.title.is_displayed or self.new_on_blank_page.is_displayed
+        ) and self.browser.url.endswith('hostgroups')
 
 
 class HostGroupCreateView(BaseLoggedInView):

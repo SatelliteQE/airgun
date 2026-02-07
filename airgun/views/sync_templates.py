@@ -24,10 +24,7 @@ class SyncTemplatesView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return (
-            self.breadcrumb.is_displayed
-            and self.title.is_displayed
-        )
+        return self.breadcrumb.is_displayed and self.title.is_displayed
 
     def before_fill(self, values):
         """Wait for Sync Type Radio Button to be displayed"""

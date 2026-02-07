@@ -128,9 +128,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return (
-            self.table_loading.is_displayed and self.table.is_displayed
-        )
+        return self.table_loading.is_displayed and self.table.is_displayed
 
 
 class HostDeleteDialog(View):
