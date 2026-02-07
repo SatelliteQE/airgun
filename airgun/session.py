@@ -74,12 +74,6 @@ from airgun.entities.puppet_environment import PuppetEnvironmentEntity
 from airgun.entities.redhat_repository import RedHatRepositoryEntity
 from airgun.entities.report_template import ReportTemplateEntity
 from airgun.entities.repository import RepositoryEntity
-from airgun.entities.rhai.action import ActionEntity
-from airgun.entities.rhai.inventory import InventoryHostEntity
-from airgun.entities.rhai.manage import ManageEntity
-from airgun.entities.rhai.overview import OverviewEntity
-from airgun.entities.rhai.plan import PlanEntity
-from airgun.entities.rhai.rule import RuleEntity
 from airgun.entities.rhsso_login import RHSSOLoginEntity
 from airgun.entities.role import RoleEntity
 from airgun.entities.settings import SettingsEntity
@@ -540,39 +534,9 @@ class Session:
         return self._open(HTTPProxyEntity)
 
     @cached_property
-    def insightsaction(self):
-        """Instance of RHAI Action entity."""
-        return self._open(ActionEntity)
-
-    @cached_property
-    def insightsinventory(self):
-        """Instance of RHAI Inventory entity."""
-        return self._open(InventoryHostEntity)
-
-    @cached_property
-    def insightsoverview(self):
-        """Instance of RHAI Overview entity."""
-        return self._open(OverviewEntity)
-
-    @cached_property
-    def insightsplan(self):
-        """Instance of RHAI Plan entity."""
-        return self._open(PlanEntity)
-
-    @cached_property
-    def insightsrule(self):
-        """Instance of RHAI Rule entity."""
-        return self._open(RuleEntity)
-
-    @cached_property
     def jobinvocation(self):
         """Instance of Job Invocation entity."""
         return self._open(JobInvocationEntity)
-
-    @cached_property
-    def insightsmanage(self):
-        """Instance of RHAI Manage entity."""
-        return self._open(ManageEntity)
 
     @cached_property
     def jobtemplate(self):
