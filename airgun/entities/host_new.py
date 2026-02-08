@@ -71,6 +71,8 @@ class NewHostEntity(HostEntity):
     def delete(self, entity_name, cancel=False):
         """Delete host from the system"""
         view = self.navigate_to(self, 'NewUIAll')
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
         view.search(entity_name)
         view.table.row(name=entity_name)[6].widget.item_select('Delete')
         self.browser.handle_alert()
