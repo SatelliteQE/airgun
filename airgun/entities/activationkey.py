@@ -57,7 +57,7 @@ class ActivationKeyEntity(BaseEntity):
         view.repository_sets.repo_type.select_by_visible_text(repo_type)
         return view.repository_sets.table.read()
 
-    def update(self, entity_name, values):
+    def update(self, entity_name, values, update_existing=True):
         """Update necessary values for activation key
 
         Handles both formats:
@@ -97,9 +97,10 @@ class ActivationKeyEntity(BaseEntity):
             view.details.content_view_details.dropdown.item_select(
                 'Assign content view environments'
             )
-            self._update_cv_lce_via_modal(lce_update, cv_update)
+            self._update_cv_lce_via_modal(lce_update, cv_update, update_existing)
 
-    def _update_cv_lce_via_modal(self, lce_dict, cv_name):
+
+    def _update_cv_lce_via_modal(self, lce_dict, cv_name, update_existing=True):
         """Helper to update CV/LCE using the modal pattern
 
         Args:
@@ -111,7 +112,9 @@ class ActivationKeyEntity(BaseEntity):
         lce_name = lce_dict
         if isinstance(lce_dict, dict):
             lce_name = next((k for k, v in lce_dict.items() if v), None)
-
+        if not update_existing:
+            modal.assign_cv_btn.wait_displayed(timeout=5)
+            modal.assign_cv_btn.click()
         if lce_name and cv_name:
             assignment_section = modal.new_assignment_section(lce_name=lce_name)
             assignment_section.lce_selector.click()
