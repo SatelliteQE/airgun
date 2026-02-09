@@ -99,7 +99,6 @@ class ActivationKeyEntity(BaseEntity):
             )
             self._update_cv_lce_via_modal(lce_update, cv_update, update_existing)
 
-
     def _update_cv_lce_via_modal(self, lce_dict, cv_name, update_existing=True):
         """Helper to update CV/LCE using the modal pattern
 
