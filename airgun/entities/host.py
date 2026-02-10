@@ -70,6 +70,7 @@ class HostEntity(BaseEntity):
             view = self.navigate_to(self, 'Register')
             self.browser.plugin.ensure_page_safe()
             view.wait_displayed()
+            wait_for(lambda: view.general.insecure.is_enabled, timeout=30, delay=1)
             view.fill(values)
         if view.general.activation_keys.read():
             self.browser.click(view.generate_command)
