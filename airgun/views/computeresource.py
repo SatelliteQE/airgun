@@ -163,10 +163,13 @@ class ResourceProviderDetailView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
+        if not self.breadcrumb.is_displayed:
+            return False
+
+        breadcrumbs = self.breadcrumb.locations
         return (
-            self.breadcrumb.is_displayed
-            and self.breadcrumb.locations[0] == 'Compute Resources'
-            and self.breadcrumb.read() != 'Create Compute Resource'
+            breadcrumbs[0] == 'Compute Resources'
+            and breadcrumbs[1] != 'Create Compute Resource'
         )
 
     @View.nested
@@ -376,11 +379,14 @@ class ResourceProviderProfileView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
+        if not self.breadcrumb.is_displayed:
+            return False
+        breadcrumbs = self.breadcrumb.locations
         return (
-            self.breadcrumb.is_displayed
-            and self.breadcrumb.locations[0] == 'Compute Resources'
-            and self.breadcrumb.locations[2] == 'Compute Profiles'
-            and self.breadcrumb.read().startswith(('Edit ', 'New '))
+            len(breadcrumbs) == 4
+            and breadcrumbs[0] == 'Compute Resources'
+            and breadcrumbs[2] == 'Compute Profiles'
+            and breadcrumbs[3].startswith(('Edit ', 'New '))
         )
 
 

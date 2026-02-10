@@ -92,14 +92,7 @@ class WebhookFormView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-<<<<<<< HEAD
-        return (
-            self.browser.wait_for_element(self.cancel_button, visible=True, exception=False)
-            is not None
-        )
-=======
-        return self.cancel_button.is_displayed and 'in' in self.browser.classes(self)
->>>>>>> 7ad3914 (Move wait calls out of is_displayed methods)
+        return self.cancel_button.is_displayed
 
     def wait_for_popup(self):
         return (
@@ -110,19 +103,12 @@ class WebhookFormView(BaseLoggedInView):
         )
 
 
-<<<<<<< HEAD
 class WebhookCreateView(WebhookFormView):
     ROOT = '//div[@id="webhookCreateModal"]'
 
 
 class WebhookEditView(WebhookFormView):
     ROOT = '//div[@id="webhookEditModal"]'
-=======
-class WebhookEditView(WebhookCreateView):
-    @property
-    def is_displayed(self):
-        return self.cancel_button.is_displayed and 'in' in self.browser.classes(self)
->>>>>>> 7ad3914 (Move wait calls out of is_displayed methods)
 
 
 class DeleteWebhookConfirmationView(BaseLoggedInView):
@@ -132,14 +118,7 @@ class DeleteWebhookConfirmationView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-<<<<<<< HEAD
-        return (
-            self.browser.wait_for_element(self.delete_button, visible=True, exception=False)
-            is not None
-        )
-=======
-        return self.delete_button.is_displayed and 'in' in self.browser.classes(self)
->>>>>>> 7ad3914 (Move wait calls out of is_displayed methods)
+        return self.delete_button.is_displayed
 
     def wait_animation_end(self):
         self.browser.wait_for_element(self.delete_button, visible=True, timeout=10)
