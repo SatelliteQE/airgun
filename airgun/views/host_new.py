@@ -1217,7 +1217,9 @@ class ManageColumnsView(BaseLoggedInView):
 class NewCVEnvAssignmentSection(PF5LCESelectorGroup):
     # Generic ROOT that works for both new and existing assignments
     # Don't check for "Select a content view" text - just find the assignment-section div
-    ROOT = './/div[contains(@class,"pf-v5-c-expandable-section") and contains(@class,"pf-m-expanded")]'
+    ROOT = (
+        './/div[contains(@class,"pf-v5-c-expandable-section") and contains(@class,"pf-m-expanded")]'
+    )
 
     PARAMETERS = ('lce_name',)
 

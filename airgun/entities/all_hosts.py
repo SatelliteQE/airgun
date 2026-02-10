@@ -21,15 +21,15 @@ from airgun.views.all_hosts import (
     DisassociateHostsModal,
     HostDeleteDialog,
     HostgroupDialog,
-    ManageCVEModal,
     ManageErrataModal,
     ManagePackagesModal,
     ManageRepositorySetsModal,
     ManageSystemPurposeModal,
     ManageTracesModal,
 )
-from airgun.views.job_invocation import JobInvocationCreateView
 from airgun.views.host_new import ManageMultiCVEnvModal
+from airgun.views.job_invocation import JobInvocationCreateView
+
 
 class AllHostsEntity(BaseEntity):
     endpoint_path = '/new/hosts'
