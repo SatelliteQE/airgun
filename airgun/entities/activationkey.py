@@ -58,7 +58,12 @@ class ActivationKeyEntity(BaseEntity):
         return view.repository_sets.table.read()
 
     def update(self, entity_name, values, update_existing=True):
-        """Update necessary values for activation key
+        """Update activation key values
+
+        :param entity_name: Name of the activation key to update
+        :param values: Dictionary of values to update
+        :param update_existing: If False, adds new CV/LCE assignment (for multi-CV support).
+                                If True (default), updates existing assignment.
 
         Handles both formats:
         - Nested: {'details': {'lce': {env: True}, 'content_view': cv}}
@@ -102,9 +107,8 @@ class ActivationKeyEntity(BaseEntity):
     def _update_cv_lce_via_modal(self, lce_dict, cv_name, update_existing=True):
         """Helper to update CV/LCE using the modal pattern
 
-        Args:
-            lce_dict: Dictionary like {env_name: True} for LCE selection
-            cv_name: String with content view name
+        :param lce_dict: Dictionary like {env_name: True} for LCE selection
+        :param cv_name: String with content view name
         """
         modal = ManageMultiCVEnvModal(self.browser)
         modal.wait_displayed()
