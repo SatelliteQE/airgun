@@ -167,7 +167,7 @@ class CVESelect(Select):
     ITEM_LOCATOR = '//button[contains(@class, "pf-v5-c-select__menu-item") and contains(normalize-space(.), {})]'
     SELECTED_ITEM_LOCATOR = './/span[contains(@class, "ins-c-conditional-filter")]'
     TEXT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and child::button]'
-    DEFAULT_LOCATOR = './/div[contains(@class,"pf-v5-c-expandable-section") and contains(@class,"pf-m-expanded")]//div[contains(@class, "pf-v5-c-select") and @data-ouia-component-id="select-content-view"]'
+    DEFAULT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and @data-ouia-component-id="select-content-view"]'
     SEARCH_INPUT_LOCATOR = (
         './/input[@type="text" and contains(@class, "pf-v5-c-select__toggle-typeahead")]'
     )
@@ -1217,13 +1217,13 @@ class ManageColumnsView(BaseLoggedInView):
 class NewCVEnvAssignmentSection(PF5LCESelectorGroup):
     # Generic ROOT that works for both new and existing assignments
     # Don't check for "Select a content view" text - just find the assignment-section div
-    ROOT = './/div[@class="attached-content-views"]'
+    ROOT = './/div[contains(@class,"pf-v5-c-expandable-section") and contains(@class,"pf-m-expanded")]'
 
     PARAMETERS = ('lce_name',)
 
     lce_selector = PF5LCESelector(
         locator=ParametrizedLocator(
-            './/div[contains(@class,"pf-v5-c-expandable-section") and contains(@class,"pf-m-expanded")]//input[@type="radio"][following-sibling::label//span[normalize-space(.)="{lce_name}"]]'
+            './/input[@type="radio"][following-sibling::label//span[normalize-space(.)="{lce_name}"]]'
         )
     )
     content_source_select = CVESelect()
@@ -1235,12 +1235,16 @@ class ManageMultiCVEnvModal(PF5Modal):
     when the 'Allow multiple content views' setting is enabled.
     """
 
-    ROOT = './/div[@data-ouia-component-id="assign-cv-modal"]'
+    ROOT = './/div[@data-ouia-component-id="assign-cv-modal" or @data-ouia-component-id="bulk-assign-cves-modal"]'
 
     title = Text('//span[normalize-space(.)="Assign content view environments"]')
     assign_cv_btn = PF5OUIAButton('assign-another-cv-button')
-    save_btn = PF5OUIAButton('assign-cv-modal-save-button')
-    cancel_btn = PF5OUIAButton('assign-cv-modal-cancel-button')
+    save_btn = PF5Button(
+        locator='.//button[@data-ouia-component-id="assign-cv-modal-save-button" or @data-ouia-component-id="bulk-assign-cves-modal-save-button"]'
+    )
+    cancel_btn = PF5Button(
+        locator='.//button[@data-ouia-component-id="assign-cv-modal-cancel-button" or @data-ouia-component-id="bulk-assign-cves-modal-cancel-button"]'
+    )
     new_assignment_section = ParametrizedView.nested(NewCVEnvAssignmentSection)
 
     @property
