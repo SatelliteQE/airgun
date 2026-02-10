@@ -110,8 +110,8 @@ class AllHostsEntity(BaseEntity):
     def manage_cve(self, lce_name=None, cv_name=None):
         """Bulk reassign Content View Environments through the All Hosts page
         args:
-            lce (str): Lifecycle Environment to swap the hosts to.
-            cv (str): CV within that LCE to assign the hosts to.
+            lce_name (str): Lifecycle Environment to swap the hosts to.
+            cv_name (str): CV within that LCE to assign the hosts to.
         """
         view = self.navigate_to(self, 'All')
         self.browser.plugin.ensure_page_safe(timeout='5s')
