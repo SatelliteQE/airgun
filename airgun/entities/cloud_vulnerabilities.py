@@ -214,9 +214,6 @@ class CloudVulnerabilityEntity(BaseEntity):
         modal.save.click()
         wait_for(lambda: not modal.is_displayed, timeout=10)
 
-    # TODO(human): Implement the following entity methods
-    # Look at the examples above and follow similar patterns
-
     def edit_status(self, cve_id, status, justification=None, no_overwrite=False):
         """
         Edit status for a single CVE from the main vulnerabilities page
@@ -232,12 +229,6 @@ class CloudVulnerabilityEntity(BaseEntity):
         Example:
             entity.edit_status("CVE-2025-8058", "In review", "Investigating impact")
         """
-        # TODO(human): Implement this method
-        # Hint: Very similar to edit_business_risk(), but:
-        # 1. Opens "Edit status" from row kebab instead of "Edit business risk"
-        # 2. Uses view.edit_status_modal instead of view.edit_business_risk_modal
-        # 3. Uses modal.status_select.fill(status) instead of radio buttons
-        # 4. Optionally fills modal.no_overwrite checkbox
         view = self.navigate_to(self, 'All')
         wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
 
