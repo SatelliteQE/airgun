@@ -21,13 +21,13 @@ from airgun.views.all_hosts import (
     DisassociateHostsModal,
     HostDeleteDialog,
     HostgroupDialog,
-    ManageCVEModal,
     ManageErrataModal,
     ManagePackagesModal,
     ManageRepositorySetsModal,
     ManageSystemPurposeModal,
     ManageTracesModal,
 )
+from airgun.views.host_new import ManageMultiCVEnvModal
 from airgun.views.job_invocation import JobInvocationCreateView
 
 
@@ -107,11 +107,11 @@ class AllHostsEntity(BaseEntity):
         view.hostgroup_dropdown.item_select(name)
         view.save_button.click()
 
-    def manage_cve(self, lce=None, cv=None):
+    def manage_cve(self, lce_name=None, cv_name=None):
         """Bulk reassign Content View Environments through the All Hosts page
         args:
-            lce (str): Lifecycle Environment to swap the hosts to.
-            cv (str): CV within that LCE to assign the hosts to.
+            lce_name (str): Lifecycle Environment to swap the hosts to.
+            cv_name (str): CV within that LCE to assign the hosts to.
         """
         view = self.navigate_to(self, 'All')
         self.browser.plugin.ensure_page_safe(timeout='5s')
@@ -120,10 +120,13 @@ class AllHostsEntity(BaseEntity):
         view.bulk_actions_kebab.click()
         self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
         view.bulk_actions_manage_content_menu.item_select('Content view environments')
-        view = ManageCVEModal(self.browser)
-        view.lce_selector.fill({lce: True})
-        view.content_source_select.item_select(cv)
-        view.save_btn.click()
+        modal = ManageMultiCVEnvModal(self.browser)
+        assignment_section = modal.new_assignment_section(lce_name=lce_name)
+        assignment_section.lce_selector.wait_displayed(timeout=5)
+        assignment_section.lce_selector.click()
+        assignment_section.content_source_select.item_select(cv_name)
+        modal.save_btn.click()
+        wait_for(lambda: not modal.is_displayed, timeout=10)
 
     def manage_table_columns(self, values: dict):
         """
