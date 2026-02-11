@@ -248,7 +248,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.title.is_displayed
+        return self.title.is_displayed and self.table.displayed
 
     @property
     def displayed_table_header_names(self) -> list:
