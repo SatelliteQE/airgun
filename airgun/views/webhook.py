@@ -1,9 +1,10 @@
-from widgetastic.widget import Checkbox, Text, TextInput
-from widgetastic_patternfly5 import Button as PF5Button
-from widgetastic_patternfly5.ouia import Button as PF5OUIAButton
+from wait_for import wait_for
+from widgetastic.widget import Checkbox, Text, TextInput, View
+from widgetastic_patternfly import Button
+from widgetastic_patternfly5 import Button as PF5Button, Tab
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
-from airgun.widgets import PF5TypeaheadSelect, SatTable
+from airgun.widgets import AutoCompleteTextInput, SatTable
 
 
 class WebhooksView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -12,8 +13,8 @@ class WebhooksView(BaseLoggedInView, SearchableViewMixinPF4):
     table = SatTable(
         './/table',
         column_widgets={
-            'Name': PF5OUIAButton('name-edit-active-button'),
-            'Actions': PF5Button(locator='.//button[contains(@id, "delete")]'),
+            'Name': Text('//span[@type="button"]'),
+            'Actions': Button('Delete'),
         },
     )
 
@@ -22,109 +23,90 @@ class WebhooksView(BaseLoggedInView, SearchableViewMixinPF4):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
-class WebhookFormView(BaseLoggedInView):
-    """Base view for webhook create/edit forms."""
+class WebhookCreateView(BaseLoggedInView):
+    ROOT = '//div[@role="dialog" and @tabindex][div//h4]'
+    cancel_button = Button('Cancel')
+    submit_button = Button('contains', 'Submit')
 
-    cancel_button = PF5Button('Cancel')
-    submit_button = PF5Button('Submit')
+    @View.nested
+    class general(Tab):
+        subscribe_to = AutoCompleteTextInput(
+            locator=(
+                "//div[@class='webhook-form-tab-content']"
+                "/div[label[normalize-space(.)='Subscribe to*']]/div/div/div/input"
+            )
+        )
+        name = TextInput(name='name')
+        target_url = TextInput(name='target_url')
+        template = AutoCompleteTextInput(
+            locator=(
+                "//div[@class='webhook-form-tab-content']"
+                "/div[label[normalize-space(.)='Template*']]/div/div/div/input"
+            )
+        )
+        http_method = AutoCompleteTextInput(
+            locator=(
+                "//div[@class='webhook-form-tab-content']"
+                "/div[label[normalize-space(.)='HTTP Method*']]/div/div/div/input"
+            )
+        )
+        enabled = Checkbox(name='enabled')
 
-    # Tab buttons
-    general_tab = PF5OUIAButton('webhook-form-tab-general')
-    credentials_tab = PF5OUIAButton('webhook-form-tab-creds')
-    additional_tab = PF5OUIAButton('webhook-form-tab-add')
+    @View.nested
+    class credentials(Tab):
+        user = TextInput(name='user')
+        password = TextInput(name='password')
+        verify_ssl = Checkbox(name='verify_ssl')
+        capsule_auth = Checkbox(name='proxy_authorization')
+        certs = TextInput(name='ssl_ca_certs')
 
-    # General tab fields
-    subscribe_to = PF5TypeaheadSelect(locator='//input[@id="id-event"]')
-    name = TextInput(locator='//input[@id="id-name"]')
-    target_url = TextInput(locator='//input[@id="id-target_url"]')
-    template = PF5TypeaheadSelect(locator='//input[@id="id-webhook_template_id"]')
-    http_method = PF5TypeaheadSelect(locator='//input[@id="id-http_method"]')
-    enabled = Checkbox(id='id-enabled')
-
-    # Credentials tab fields
-    user = TextInput(locator='//input[@id="id-user"]')
-    password = TextInput(locator='//input[@id="id-password"]')
-    verify_ssl = Checkbox(id='id-verify_ssl')
-    capsule_auth = Checkbox(id='id-proxy_authorization')
-    certs = TextInput(locator='//textarea[@id="id-ssl_ca_certs"]')
-
-    # Additional tab fields
-    content_type = TextInput(locator='//input[@id="id-http_content_type"]')
-    headers = TextInput(locator='//textarea[@id="id-http_headers"]')
-
-    def _switch_to_tab(self, tab_name):
-        """Click tab button to switch tabs."""
-        tab_buttons = {
-            'general': self.general_tab,
-            'credentials': self.credentials_tab,
-            'additional': self.additional_tab,
-        }
-        tab_buttons[tab_name].click()
-        self.browser.plugin.ensure_page_safe()
-
-    def fill(self, values):
-        """Fill form values. Expects {'tab.field': value} format."""
-        tabs_to_fill = {'general': {}, 'credentials': {}, 'additional': {}}
-        for key, value in values.items():
-            tab_name, field_name = key.split('.', 1)
-            tabs_to_fill[tab_name][field_name] = value
-
-        for tab_name in ['general', 'credentials', 'additional']:
-            if tabs_to_fill[tab_name]:
-                self._switch_to_tab(tab_name)
-                for field_name, value in tabs_to_fill[tab_name].items():
-                    getattr(self, field_name).fill(value)
-
-    def read(self):
-        """Read form values from all tabs."""
-        result = {'general': {}, 'credentials': {}, 'additional': {}}
-        fields = {
-            'general': ['subscribe_to', 'name', 'target_url', 'template', 'http_method', 'enabled'],
-            'credentials': ['user', 'password', 'verify_ssl', 'capsule_auth', 'certs'],
-            'additional': ['content_type', 'headers'],
-        }
-        for tab_name, field_list in fields.items():
-            self._switch_to_tab(tab_name)
-            for field_name in field_list:
-                widget = getattr(self, field_name)
-                result[tab_name][field_name] = widget.read() if widget.is_displayed else None
-        return result
+    @View.nested
+    class additional(Tab):
+        content_type = TextInput(name='http_content_type')
+        headers = TextInput(name='http_headers')
 
     @property
     def is_displayed(self):
-        return (
-            self.browser.wait_for_element(self.cancel_button, visible=True, exception=False)
-            is not None
-        )
+        return self.browser.wait_for_element(
+            locator=self.cancel_button, visible=True, exception=True
+        ) is not None and 'in' in self.browser.classes(self)
 
     def wait_for_popup(self):
-        return (
-            self.browser.wait_for_element(
-                self.cancel_button, visible=True, timeout=30, exception=False
-            )
-            is not None
+        is_popup_visible = self.browser.wait_for_element(
+            self.cancel_button, visible=True, exception=False
+        ) is not None and 'in' in self.browser.classes(self)
+        are_fields_visible = self.browser.wait_for_element(
+            self.general.subscribe_to, visible=True, exception=False
         )
+        return is_popup_visible and are_fields_visible
 
 
-class WebhookCreateView(WebhookFormView):
-    ROOT = '//div[@id="webhookCreateModal"]'
-
-
-class WebhookEditView(WebhookFormView):
-    ROOT = '//div[@id="webhookEditModal"]'
+class WebhookEditView(WebhookCreateView):
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(
+            self.cancel_button, visible=True, exception=False
+        ) is not None and 'in' in self.browser.classes(self)
 
 
 class DeleteWebhookConfirmationView(BaseLoggedInView):
-    ROOT = '//div[@id="webhookDeleteModal"]'
-    delete_button = PF5Button('Delete')
-    cancel_button = PF5Button('Cancel')
+    ROOT = (
+        '//div[@role="dialog" and @tabindex]'
+        '[div//h4[normalize-space(.)="Confirm Webhook Deletion"]]'
+    )
+    delete_button = Button('contains', 'Delete')
+    cancel_button = Button('Cancel')
 
     @property
     def is_displayed(self):
-        return (
-            self.browser.wait_for_element(self.delete_button, visible=True, exception=False)
-            is not None
-        )
+        return self.browser.wait_for_element(
+            self.delete_button, visible=True, exception=False
+        ) is not None and 'in' in self.browser.classes(self)
 
     def wait_animation_end(self):
-        self.browser.wait_for_element(self.delete_button, visible=True, timeout=10)
+        wait_for(
+            lambda: 'in' in self.browser.classes(self),
+            handle_exception=True,
+            logger=self.logger,
+            timeout=10,
+        )

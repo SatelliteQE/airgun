@@ -1,18 +1,8 @@
 import time
 
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import (
-    Checkbox,
-    ParametrizedView,
-    Text,
-    TextInput,
-    View,
-    Widget,
-)
+from widgetastic.widget import Checkbox, Text, TextInput, View, Widget
 from widgetastic.widget.table import Table
-from widgetastic.xpath import quote
 from widgetastic_patternfly4 import (
     Button,
     Dropdown,
@@ -32,7 +22,6 @@ from widgetastic_patternfly5 import (
     Dropdown as PF5Dropdown,
     ExpandableTable as PF5ExpandableTable,
     Menu as PF5Menu,
-    Modal as PF5Modal,
     Tab as PF5Tab,
 )
 from widgetastic_patternfly5.ouia import (
@@ -47,9 +36,8 @@ from widgetastic_patternfly5.ouia import (
     Text as PF5OUIAText,
 )
 
-# from airgun.views.all_hosts import ManageCVEModal as ManageCVEnvModal
 from airgun.views.cloud_insights import BulkSelectMenuToggle
-from airgun.views.common import BaseLoggedInView, PF5LCESelectorGroup, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 from airgun.widgets import (
     Accordion,
     ActionsDropdown,
@@ -57,7 +45,6 @@ from airgun.widgets import (
     ItemsList,
     Pf4ActionsDropdown,
     Pf5ConfirmationDialog,
-    PF5LCESelector,
     SatTableWithoutHeaders,
     SearchInput,
 )
@@ -106,107 +93,10 @@ class Card(View):
     title = Text('.//div[@class="pf-v5-c-card__title"]')
 
 
-class ContentViewDetailsCard(Card):
-    """Reusable content view details card with LCE and CV information"""
-
-    ROOT = './/div[@data-ouia-component-id="content-view-details-card"]'
-    ITEMS = './/div[@class="pf-v5-l-flex pf-m-row pf-m-row-on-sm pf-m-wrap"]'
-    LCE_NAME = './/span[@class="pf-v5-c-label__text"]'
-    # CV can be either a link (custom CV) or plain text span (Default Organization View)
-    CV_NAME = './/a[contains(@href, "content_views") and not(contains(@href, "versions"))] | .//div[@aria-label="content_view_icon"]/following-sibling::span[1]'
-    CV_VERSION = './/a[contains(@href, "versions")]//span'
-
-    dropdown = PF5Dropdown(locator='.//div[button[@aria-label="change_content_view_kebab"]]')
-
-    org_view = Text('.//a[contains(@href, "content_views")]')
-
-    def read(self):
-        """Return a list of dictionaries containing LCE name, CV name, and CV version.
-
-        Note: For long CV names, the UI truncates them with "..." so we strip that suffix.
-        """
-        items = []
-        for item in self.browser.elements(self.ITEMS):
-            lce_element = self.browser.element(self.LCE_NAME, parent=item)
-            cv_element = self.browser.element(self.CV_NAME, parent=item)
-
-            cv_text = self.browser.text(cv_element)
-            # Strip "..." suffix if present (indicates truncation)
-            if cv_text.endswith('...'):
-                cv_text = cv_text[:-3]
-
-            # Version is only present for custom content views, not for Default Organization View
-            version_text = None
-            try:
-                cv_version_element = self.browser.element(self.CV_VERSION, parent=item)
-                version_text = self.browser.text(cv_version_element)
-            except NoSuchElementException:
-                pass
-
-            items.append(
-                {
-                    'lce': self.browser.text(lce_element),
-                    'content_view': cv_text,
-                    'version': version_text,
-                }
-            )
-        return items
-
-
 class DropdownWithDescription(PF5Dropdown):
     """Dropdown with description below items"""
 
     ITEM_LOCATOR = ".//*[contains(@class, 'pf-v5-c-dropdown__menu-item') and contains(text(), {})]"
-
-
-class CVESelect(Select):
-    BUTTON_LOCATOR = './/button[@aria-label="Options menu"]'
-    # The dropdown menu is rendered with position:absolute outside the select widget
-    # so we need to search from document root (//...) not relative (.//...)
-    ITEMS_LOCATOR = '//ul[contains(@class, "pf-v5-c-select__menu")]/li'
-    ITEM_LOCATOR = '//button[contains(@class, "pf-v5-c-select__menu-item") and contains(normalize-space(.), {})]'
-    SELECTED_ITEM_LOCATOR = './/span[contains(@class, "ins-c-conditional-filter")]'
-    TEXT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and child::button]'
-    DEFAULT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and @data-ouia-component-id="select-content-view"]'
-    SEARCH_INPUT_LOCATOR = (
-        './/input[@type="text" and contains(@class, "pf-v5-c-select__toggle-typeahead")]'
-    )
-
-    # Maximum length before CV names are truncated in the UI
-    CV_NAME_TRUNCATE_LENGTH = 45
-
-    def item_select(self, item, **kwargs):
-        """Override item_select to handle CV names with 'Version X.Y' suffix and truncation.
-
-        The dropdown shows:
-        - Short names: 'CV_NAME Version 1.0'  -> we search for 'CV_NAME' which is contained
-        - Long names: 'CV_NAMETRUNC... Version 1.0' -> we search for first 45 chars which is contained
-
-        For long names, the full CV name (e.g. 150 chars) is NOT contained in the truncated
-        display (e.g. 47 chars + "..."), so we search by prefix instead.
-        """
-        self.open()
-        time.sleep(1)  # Wait for dropdown to fully render
-
-        # For long CV names, search by truncated prefix (first 45 chars)
-        # For short CV names, the full name will be contained in "NAME Version 1.0"
-        search_text = (
-            item[: self.CV_NAME_TRUNCATE_LENGTH]
-            if len(item) > self.CV_NAME_TRUNCATE_LENGTH
-            else item
-        )
-
-        # Find button with contains() matching on the search text
-        locator = f'//button[contains(@class, "pf-v5-c-select__menu-item") and contains(normalize-space(.), {quote(search_text)})]'
-
-        try:
-            elem = self.browser.element(locator)
-            self.browser.click(elem)
-            time.sleep(0.5)
-        except NoSuchElementException:
-            # If prefix match fails, try parent's method
-            self.close()
-            return super().item_select(item, **kwargs)
 
 
 class HostDetailsCard(Widget):
@@ -329,8 +219,12 @@ class NewHostDetailsView(BaseLoggedInView):
 
             enable_repository_sets = Text('.//a[normalize-space(.)="Enable repository sets"]')
 
-        # Reuse the standalone ContentViewDetailsCard class
-        content_view_details = ContentViewDetailsCard
+        @View.nested
+        class content_view_details(Card):
+            ROOT = './/div[@data-ouia-component-id="content-view-details-card"]'
+            actions = Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]')
+
+            org_view = Text('.//a[contains(@href, "content_views")]')
 
         @View.nested
         class installable_errata(Card):
@@ -1212,43 +1106,3 @@ class ManageColumnsView(BaseLoggedInView):
         # so ensure_page_safe() does not catches it
         time.sleep(2)
         self.browser.plugin.ensure_page_safe()
-
-
-class NewCVEnvAssignmentSection(PF5LCESelectorGroup):
-    # Generic ROOT that works for both new and existing assignments
-    # Don't check for "Select a content view" text - just find the assignment-section div
-    ROOT = (
-        './/div[contains(@class,"pf-v5-c-expandable-section") and contains(@class,"pf-m-expanded")]'
-    )
-
-    PARAMETERS = ('lce_name',)
-
-    lce_selector = PF5LCESelector(
-        locator=ParametrizedLocator(
-            './/input[@type="radio"][following-sibling::label//span[normalize-space(.)="{lce_name}"]]'
-        )
-    )
-    content_source_select = CVESelect()
-
-
-class ManageMultiCVEnvModal(PF5Modal):
-    """
-    This class represents the 'Assign content view environments' modal on the host overview page
-    when the 'Allow multiple content views' setting is enabled.
-    """
-
-    ROOT = './/div[@data-ouia-component-id="assign-cv-modal" or @data-ouia-component-id="bulk-assign-cves-modal"]'
-
-    title = Text('//span[normalize-space(.)="Assign content view environments"]')
-    assign_cv_btn = PF5OUIAButton('assign-another-cv-button')
-    save_btn = PF5Button(
-        locator='.//button[@data-ouia-component-id="assign-cv-modal-save-button" or @data-ouia-component-id="bulk-assign-cves-modal-save-button"]'
-    )
-    cancel_btn = PF5Button(
-        locator='.//button[@data-ouia-component-id="assign-cv-modal-cancel-button" or @data-ouia-component-id="bulk-assign-cves-modal-cancel-button"]'
-    )
-    new_assignment_section = ParametrizedView.nested(NewCVEnvAssignmentSection)
-
-    @property
-    def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None

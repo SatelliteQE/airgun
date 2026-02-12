@@ -17,17 +17,16 @@ from airgun.views.all_hosts import (
     ChangeHostsOwnerModal,
     ChangeLocationModal,
     ChangeOrganizationModal,
-    ChangePowerStateModal,
     DisassociateHostsModal,
     HostDeleteDialog,
     HostgroupDialog,
+    ManageCVEModal,
     ManageErrataModal,
     ManagePackagesModal,
     ManageRepositorySetsModal,
     ManageSystemPurposeModal,
     ManageTracesModal,
 )
-from airgun.views.host_new import ManageMultiCVEnvModal
 from airgun.views.job_invocation import JobInvocationCreateView
 
 
@@ -107,11 +106,11 @@ class AllHostsEntity(BaseEntity):
         view.hostgroup_dropdown.item_select(name)
         view.save_button.click()
 
-    def manage_cve(self, lce_name=None, cv_name=None):
+    def manage_cve(self, lce=None, cv=None):
         """Bulk reassign Content View Environments through the All Hosts page
         args:
-            lce_name (str): Lifecycle Environment to swap the hosts to.
-            cv_name (str): CV within that LCE to assign the hosts to.
+            lce (str): Lifecycle Environment to swap the hosts to.
+            cv (str): CV within that LCE to assign the hosts to.
         """
         view = self.navigate_to(self, 'All')
         self.browser.plugin.ensure_page_safe(timeout='5s')
@@ -120,13 +119,10 @@ class AllHostsEntity(BaseEntity):
         view.bulk_actions_kebab.click()
         self.browser.move_to_element(view.bulk_actions_menu.item_element('Manage content'))
         view.bulk_actions_manage_content_menu.item_select('Content view environments')
-        modal = ManageMultiCVEnvModal(self.browser)
-        assignment_section = modal.new_assignment_section(lce_name=lce_name)
-        assignment_section.lce_selector.wait_displayed(timeout=5)
-        assignment_section.lce_selector.click()
-        assignment_section.content_source_select.item_select(cv_name)
-        modal.save_btn.click()
-        wait_for(lambda: not modal.is_displayed, timeout=10)
+        view = ManageCVEModal(self.browser)
+        view.lce_selector.fill({lce: True})
+        view.content_source_select.item_select(cv)
+        view.save_btn.click()
 
     def manage_table_columns(self, values: dict):
         """
@@ -499,7 +495,7 @@ class AllHostsEntity(BaseEntity):
         manage_errata_text = view.review_hosts.content_text.read()
         return [manage_package_text, manage_errata_text]
 
-    def disassociate_hosts(self, host_names=None, select_all_hosts=False):
+    def disassociate_hosts(self, host_names, select_all_hosts=False):
         """
         Navigate to the Disassociate hosts modal for selected hosts and disassociate them.
 
@@ -514,28 +510,6 @@ class AllHostsEntity(BaseEntity):
 
         view = DisassociateHostsModal(self.browser)
         view.confirm_btn.click()
-
-    def change_power_state(self, state, host_names=None, select_all_hosts=False):
-        """
-        Change power state for selected hosts.
-
-        Opens the Change power state modal and applies the requested power
-        state to the selected hosts.
-
-        :param state: Desired power state (for example, "Start", "Stop", "Power Off", "Reboot").
-        :param host_names: List of host names whose power state should be changed. If None, uses the current selection.
-        :param select_all_hosts: If True, select all hosts before changing their power state.
-        """
-
-        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
-        view.wait_displayed()
-        view.bulk_actions_kebab.click()
-        view.bulk_actions_menu.item_select('Change power state')
-
-        view = ChangePowerStateModal(self.browser)
-        view.wait_displayed()
-        view.select_state.item_select(state)
-        view.apply_btn.click()
 
     def all_hosts_navigate_and_select_hosts_helper(self, host_names=None, select_all_hosts=False):
         """
@@ -565,7 +539,6 @@ class AllHostsEntity(BaseEntity):
             view.searchbar_dropdown.item_select('Select none (0)')
 
         if select_all_hosts:
-            view.searchbox.clear()
             view.select_all.fill(True)
         else:
             if not isinstance(host_names, list):
@@ -778,33 +751,6 @@ class AllHostsEntity(BaseEntity):
         view.popover_close_button.click()
 
         return {'status': icon_status, 'status_details': status_details}
-
-    def read_power_state_icon(self, host_name):
-        """
-        Read the power state icon details of a specific host.
-
-        :param host_name: str with the name of the host to read the power state icon for
-
-        :return: Power state of host(On, Off)
-        """
-
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='20s')
-        view.wait_displayed()
-        # Use searchbox directly to avoid calling table.read()
-        view.searchbox.search(f'name={host_name}')
-        self.browser.plugin.ensure_page_safe(timeout='20s')
-        view.table.wait_displayed()
-
-        # Find the status icon directly from the Name column cell
-        name_cell_element = view.table[0]['Power'].__element__()
-        status_button_element = self.browser.element(
-            '//td[@data-label="Power"]//span[@title]', parent=name_cell_element
-        )
-
-        # Get the status of the icon from the style attribute
-        icon_state = status_button_element.get_attribute('title')
-        return {'state': icon_state}
 
     def manage_traces(
         self,

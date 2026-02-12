@@ -19,7 +19,6 @@ from airgun.views.host_new import (
     InstallPackagesView,
     ManageHostCollectionModal,
     ManageHostStatusesView,
-    ManageMultiCVEnvModal,
     ModuleStreamDialog,
     NewHostDetailsView,
     ParameterDeleteDialog,
@@ -71,8 +70,6 @@ class NewHostEntity(HostEntity):
     def delete(self, entity_name, cancel=False):
         """Delete host from the system"""
         view = self.navigate_to(self, 'NewUIAll')
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         view.search(entity_name)
         view.table.row(name=entity_name)[6].widget.item_select('Delete')
         self.browser.handle_alert()
@@ -1148,31 +1145,6 @@ class NewHostEntity(HostEntity):
         legacy_view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         return legacy_view
-
-    def add_content_view_env(self, entity_name, cv_name, lce_name):
-        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        view.overview.content_view_details.dropdown.item_select('Assign content view environments')
-        modal = ManageMultiCVEnvModal(self.browser)
-        modal.assign_cv_btn.wait_displayed(timeout=5)
-        modal.assign_cv_btn.click()
-        assignment_section = modal.new_assignment_section(lce_name=lce_name)
-        assignment_section.lce_selector.wait_displayed(timeout=5)
-        assignment_section.lce_selector.click()
-        assignment_section.content_source_select.item_select(cv_name)
-        modal.save_btn.click()
-        wait_for(
-            lambda: not modal.is_displayed,
-            timeout=10,
-            delay=1,
-            handle_exception=True,
-        )
-
-    def get_content_view_envs(self, entity_name):
-        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
-        return view.overview.content_view_details.read()
 
 
 @navigator.register(HostEntity, 'NewUIAll')

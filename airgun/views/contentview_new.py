@@ -72,6 +72,7 @@ class AddContentViewModal(BaseLoggedInView):
 class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
     title = PF5Text(component_id='cvPageHeaderText')
     create_content_view = PF5Button(component_id='create-content-view')
+    search = PF4Search()
     table = ExpandableTable(
         component_id='content-views-table',
         column_widgets={

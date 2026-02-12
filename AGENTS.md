@@ -353,14 +353,6 @@ if self.navigate_to(self, 'All', _is_displayed_check=True):
 - **Don't duplicate widgets** - create reusable components in `widgets.py`
 - **Don't generate new entities unless asked for specifically**
 - **Don't generate navigators automatically** - only create when asked
-- **Don't use OUIA-Generated IDs** - they're unstable and change between renders. Use stable attributes instead:
-  - ✅ Class names: `pf-v5-c-table`, `pf-v5-c-menu`
-  - ✅ ARIA labels: `aria-label="Kebab toggle"`
-  - ✅ Data attributes: `data-label="CVE ID"`
-  - ✅ Element types: `//select`, `//button`
-  - ❌ `data-ouia-component-id="OUIA-Generated-FormSelect-default-3"`
-- **Don't use negative indexing for table columns** - Widgetastic doesn't support `row[-1]`. Use column header text as keys instead: `row['Column with row actions']`
-- **Don't override ROOT in table column widgets** unless necessary - the table infrastructure handles finding the `<td>` element
 
 ---
 

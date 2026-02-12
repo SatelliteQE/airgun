@@ -66,10 +66,8 @@ class FlatpakRemotesEntity(BaseEntity):
         view.table.row(name=name)['Name'].widget.click()
         view = FlatpakRemoteDetailsView(self.browser)
         view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         if repo_search:
             view.search(repo_search)
-            self.browser.plugin.ensure_page_safe()
         return view.read()
 
     def create(self, values):

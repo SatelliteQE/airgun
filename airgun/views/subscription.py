@@ -42,7 +42,7 @@ class SatSubscriptionsViewTable(SatTable):
     @property
     def is_displayed(self):
         """Check if the table element exists on the page."""
-        return self.browser.wait_for_element(self.locator, exception=False) is not None
+        return self.browser.is_element_present(self.locator)
 
     def wait_displayed(self, timeout=10):
         """Explicitly wait for the table to be displayed."""
