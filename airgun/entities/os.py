@@ -89,3 +89,12 @@ class EditOperatingSystem(NavigateStep):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
         self.parent.table.row(title__endswith=entity_name)['Title'].widget.click()
+
+    def am_i_here(self, *args, **kwargs):
+        if not self.view.is_displayed:
+            return False
+
+        # FIXME: entity_name == "Description" (optional). "Name" field is required but not passed in as entity_name.
+        # entity_name = kwargs.get('entity_name')
+        # return self.view.breadcrumb.locations[1].startswith(f'Edit {entity_name}')
+        return True

@@ -6,7 +6,7 @@ from airgun.widgets import FilteredDropdown, MultiSelect
 
 
 class MediumView(BaseLoggedInView, SearchableViewMixinPF4):
-    title = Text("//h1[normalize-space(.)='Installation Media']")
+    title = Text("//h1[normalize-space(.)='Installation Media' or normalize-space(.)='Installation medium configuration']")
     new = Text("//a[contains(@href, '/media/new')]")
     table = Table(
         './/table',
