@@ -165,9 +165,6 @@ class CloudVulnerabilityView(BaseLoggedInView):
             'Applies to OS': Text('.//td[@data-label="Applies to OS"]'),
             'Business risk': Text('.//td[@data-label="Business risk"]'),
             'Status': Text('.//td[@data-label="Status"]'),
-            9: TableRowKebabMenu(),
-            'Business risk': Text('.//td[@data-label="Business risk"]'),
-            'Status': Text('.//td[@data-label="Status"]'),
             'Column with row actions': RowActionsMenu(),
         },
     )
