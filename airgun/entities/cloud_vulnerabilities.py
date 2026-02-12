@@ -93,6 +93,7 @@ class CloudVulnerabilityEntity(BaseEntity):
         wait_for(lambda: view.title.is_displayed, timeout=30)
         wait_for(lambda: view.no_authorized_header.is_displayed, timeout=30)
         return view.no_authorized_header.read()
+
     def edit_business_risk(self, cve_id, risk_level, justification=None):
         """
         Edit business risk for a single CVE from the main vulnerabilities page
