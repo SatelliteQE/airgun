@@ -3,7 +3,11 @@ from wait_for import wait_for
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.cloud_vulnerabilities import CloudVulnerabilityView, CVEDetailsView, EditVulnerabilitiesModal
+from airgun.views.cloud_vulnerabilities import (
+    CloudVulnerabilityView,
+    CVEDetailsView,
+    EditVulnerabilitiesModal,
+)
 from airgun.views.host_new import NewHostDetailsView
 
 

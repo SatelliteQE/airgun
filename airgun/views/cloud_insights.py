@@ -141,6 +141,7 @@ class RemediateSummary(PF5OUIAModal):
     title = PF5Title('Remediation summary')
     remediate = PF5Button('Remediate')
 
+
 class DisableRecommendationModal(PF5OUIAModal):
     """"""
 
@@ -148,6 +149,7 @@ class DisableRecommendationModal(PF5OUIAModal):
     justification_note = TextInput(locator=".//input[contains(@id, 'disable-rule-justification')]")
     save = PF5Button('Save')
     cancel = PF5Button('Cancel')
+
 
 class RecommendationsDetailsView(BaseLoggedInView):
     """Models everything in the recommendations details views execpt the affected system link"""
