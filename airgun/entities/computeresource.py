@@ -267,10 +267,7 @@ class ComputeResourceProfileDetail(NavigateStep):
         entity_name = kwargs.get('entity_name')
         breadcrumbs = self.view.breadcrumb.locations
 
-        return (
-            breadcrumbs[1].startswith(entity_name)
-            and breadcrumbs[3].endswith(compute_profile)
-        )
+        return breadcrumbs[1].startswith(entity_name) and breadcrumbs[3].endswith(compute_profile)
 
 
 @navigator.register(ComputeResourceEntity, 'VMImport')

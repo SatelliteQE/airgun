@@ -6,12 +6,17 @@ from selenium.common.exceptions import NoSuchElementException
 from wait_for import wait_for
 from widgetastic_patternfly4.navigation import NavSelectionNotFound
 
+NAV_EXCEPTIONS = NavSelectionNotFound
+
 
 class NavigateStep(navmazing.NavigateStep):
     """AirGun's version of :class:`navmazing.NavigateStep` with custom
     implementations of `navmazing.NavigateStep.am_i_here` and `navmazing.NavigateStep.go`
     and ability to work with views.
     """
+
+    _default_tries = 3
+    _am_i_here_wait = 20
 
     VIEW = None
 
@@ -91,43 +96,49 @@ class NavigateStep(navmazing.NavigateStep):
         :return: view instance if class attribute ``VIEW`` is set or ``None``
             otherwise
         """
-        NAV_EXCEPTIONS = NavSelectionNotFound
 
         for _ in range(self._default_tries):
+            self.pre_navigate(*args, **kwargs)
+
+            self.logger.info(
+                f'NAVIGATE: Checking if already at {self._name} for {type(self).__name__}.'
+            )
+            here = False
             try:
-                self.pre_navigate(*args, **kwargs)
+                here = self.am_i_here(*args, **kwargs)
+            except NAV_EXCEPTIONS as e:
+                self.logger.error(
+                    f'NAVIGATE: Exception while checking if already at {self._name}: ${e}. Continuing with navigation.'
+                )
+            if here:
+                self.logger.info(f'NAVIGATE: Already at {self._name}.')
+            else:
+                # Perform the navigation steps and wait for the final destination to be ready
+                self.logger.info(f'NAVIGATE: Not at {self._name}. Heading to prerequisite.')
+                self.parent = self.prerequisite(*args, **kwargs)
 
-                self.logger.info(f'NAVIGATE: Checking if already at {self._name}.')
-                here = False
-                try:
-                    here = self.am_i_here(*args, **kwargs)
-                except NAV_EXCEPTIONS as e:
-                    self.logger.error(
-                        f'NAVIGATE: Exception raised [{e}] while checking if already at {self._name}. Continuing with navigation.'
-                    )
-                if here:
-                    self.logger.info(f'NAVIGATE: Already at {self._name}.')
-                else:
-                    self.logger.info(f'NAVIGATE: Not at {self._name}. Heading to prerequisite.')
-                    self.parent = self.prerequisite(*args, **kwargs)
-                    self.logger.info(f'NAVIGATE: Heading to destination {self._name}.')
-                    self.step(*args, **kwargs)
+                self.logger.info(f'NAVIGATE: Prerequisite complete. Heading to destination {self._name}.')
+                self.step(*args, **kwargs)
 
-                    wait_for(
-                        self.am_i_here,
-                        func_args=args,
-                        func_kwargs=kwargs,
-                        message=f'NAVIGATE: Waiting for am_i_here of {type(self).__name__}',
-                        handle_exception=True,
-                        raise_original=True,
-                    )
+                here, _ = wait_for(
+                    self.am_i_here,
+                    func_args=args,
+                    func_kwargs=kwargs,
+                    timeout=self._am_i_here_wait,
+                    message=f'NAVIGATE: Waiting for am_i_here of {type(self).__name__}',
+                    handle_exception=True,
+                    silent_failure=True,
+                )
+                if not here:
+                    self.logger.error('NAVIGATE: Timed out waiting for am_i_here.')
 
+            # Return view if successful, otherwise go on to the next try
+            if here:
                 self.resetter(*args, **kwargs)
                 self.post_navigate(*args, **kwargs)
                 view = self.view if self.VIEW is not None else None
                 return view
-            except NAV_EXCEPTIONS as e:
-                self.logger.error(f'NAVIGATE: Exception raised [{e}] during navigation.')
+        # Ran out of tries: raise an exception.
         raise navmazing.NavigationTriesExceeded(self._name)
 
 

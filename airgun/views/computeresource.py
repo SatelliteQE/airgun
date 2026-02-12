@@ -167,10 +167,7 @@ class ResourceProviderDetailView(BaseLoggedInView):
             return False
 
         breadcrumbs = self.breadcrumb.locations
-        return (
-            breadcrumbs[0] == 'Compute Resources'
-            and breadcrumbs[1] != 'Create Compute Resource'
-        )
+        return breadcrumbs[0] == 'Compute Resources' and breadcrumbs[1] != 'Create Compute Resource'
 
     @View.nested
     class compute_resource(SatTab):
