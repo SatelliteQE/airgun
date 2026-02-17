@@ -128,6 +128,18 @@ class AllHostsEntity(BaseEntity):
         modal.save_btn.click()
         wait_for(lambda: not modal.is_displayed, timeout=10)
 
+    def manage_vulnerability_analysis(self, action):
+        """Bulk"""
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+        view.wait_displayed()
+        view.select_all.fill(True)
+        view.bulk_actions_kebab.click()
+        self.browser.move_to_element(
+            view.bulk_actions_menu.item_element('Manage vulnerability analysis')
+        )
+        view.bulk_actions_manage_vulnerability_analysis_menu.item_select(action)
+
     def manage_table_columns(self, values: dict):
         """
         Select which columns should be displayed in the hosts table.
