@@ -56,6 +56,12 @@ class CloudInventoryEntity(BaseEntity):
             ),
             'sync_status': view.sync_status.is_displayed,
             'sync_status_text': view.sync_status.read() if view.sync_status.is_displayed else None,
+            'generate_and_upload': view.inventory_list.generate_and_upload.is_displayed,
+            'generate_and_upload_enabled': (
+                view.inventory_list.generate_and_upload.disabled is False
+            ),
+            'generate_report': view.inventory_list.generate_report.is_displayed,
+            'generate_report_enabled': view.inventory_list.generate_report.disabled is False,
         }
         return result
 
@@ -67,17 +73,6 @@ class CloudInventoryEntity(BaseEntity):
         result = {
             'auto_upload_desc': view.auto_upload_desc.is_displayed,
             'manual_upload_desc': view.manual_upload_desc.is_displayed,
-        }
-        return result
-
-    def get_displayed_inventory_tabs(self):
-        """Get displayed inventory tabs on Red Hat Inventory page"""
-        view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
-        view.wait_displayed()
-        result = {
-            'generating': view.inventory_list.generating.is_displayed,
-            'uploading': view.inventory_list.uploading.is_displayed,
         }
         return result
 
@@ -97,15 +92,31 @@ class CloudInventoryEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.sync_status.click()
 
-    def generate_report(self, entity_name):
+    def generate_and_upload_report(self, entity_name):
+        """
+        Generate and upload inventory report for a specific organization.
+        """
         view = self.navigate_to(self, 'All')
         view.inventory_list.toggle(entity_name)
-        view.browser.click(view.inventory_list.generating.generate, ignore_ajax=True)
+        view.inventory_list.generate_and_upload.click()
+        # self.browser.plugin.ensure_page_safe(timeout='10s')
 
-    def download_report(self, entity_name):
+    def generate_report_only(self, entity_name):
+        """
+        Generate inventory report (without upload) for a specific organization.
+        """
         view = self.navigate_to(self, 'All')
         view.inventory_list.toggle(entity_name)
-        view.browser.click(view.inventory_list.generating.download_report, ignore_ajax=True)
+        view.inventory_list.generate_report.click()
+        # self.browser.plugin.ensure_page_safe(timeout='10s')
+
+    def download_report_only(self, org_name):
+        """
+        Download inventory report for a specific organization.
+        """
+        view = self.navigate_to(self, 'All')
+        view.inventory_list.toggle(org_name)
+        view.inventory_list.download_report.click()
         time.sleep(3)
         return self.browser.save_downloaded_file()
 
