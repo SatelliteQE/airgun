@@ -72,7 +72,7 @@ class ProductsTableView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ProductCreateView(BaseLoggedInView):
@@ -90,9 +90,8 @@ class ProductCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Products'
             and self.breadcrumb.read() == 'New Product'
         )
@@ -106,12 +105,12 @@ class ProductEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Products'
             and self.breadcrumb.read() not in ('New Product', 'Discover Repositories')
             and len(self.breadcrumb.locations) <= self.BREADCRUMB_LENGTH
+            and self.actions.is_displayed
         )
 
     @View.nested
@@ -150,9 +149,8 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Products'
             and self.breadcrumb.read() == 'Discover Repositories'
         )
@@ -227,9 +225,8 @@ class ProductTaskDetailsView(TaskDetailsView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Products'
             and self.breadcrumb.locations[2] == 'Tasks'
             and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
@@ -242,7 +239,7 @@ class ProductSyncPlanView(SyncPlanCreateView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ProductManageHttpProxy(BaseLoggedInView):
@@ -259,7 +256,7 @@ class ProductManageHttpProxy(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ProductAdvancedSync(BaseLoggedInView):
@@ -273,7 +270,7 @@ class ProductAdvancedSync(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ProductVerifyContentChecksum(BaseLoggedInView):
@@ -283,4 +280,4 @@ class ProductVerifyContentChecksum(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.task_alert, exception=False) is not None
+        return self.task_alert.is_displayed

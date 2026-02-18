@@ -229,21 +229,8 @@ class SubscriptionEntity(BaseEntity):
         return view.table.read()
 
 
-class SubscriptionNavigationStep(NavigateStep):
-    """To ensure that we reached the destination, some targets need extra post navigation tasks"""
-
-    def post_navigate(self, _tries, *args, **kwargs):
-        wait_for(
-            lambda: self.am_i_here(*args, **kwargs),
-            timeout=30,
-            delay=1,
-            handle_exception=True,
-            logger=self.view.logger,
-        )
-
-
 @navigator.register(SubscriptionEntity, 'All')
-class SubscriptionList(SubscriptionNavigationStep):
+class SubscriptionList(NavigateStep):
     """Navigate to Subscriptions main page"""
 
     VIEW = SubscriptionListView
@@ -310,7 +297,7 @@ class AddSubscription(NavigateStep):
 
 
 @navigator.register(SubscriptionEntity, 'Details')
-class SubscriptionDetails(SubscriptionNavigationStep):
+class SubscriptionDetails(NavigateStep):
     """Navigate to Subscriptions' Details page
 
     Args:

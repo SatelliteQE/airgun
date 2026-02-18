@@ -1,5 +1,3 @@
-from wait_for import wait_for
-
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
@@ -62,15 +60,6 @@ class ShowModuleStreamsDetails(NavigateStep):
         stream_version = kwargs.get('stream_version')
         self.parent.search(f'name = {entity_name} and stream = {stream_version}')
         self.parent.table.row(name=entity_name, stream=stream_version)['Name'].widget.click()
-
-    def post_navigate(self, _tries, *args, **kwargs):
-        wait_for(
-            lambda: self.am_i_here(*args, **kwargs),
-            timeout=30,
-            delay=1,
-            handle_exception=True,
-            logger=self.view.logger,
-        )
 
     def am_i_here(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')

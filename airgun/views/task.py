@@ -38,7 +38,7 @@ class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
     @View.nested
     class RunningChart(View):
@@ -76,9 +76,8 @@ class TaskDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Tasks'
             and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
         )

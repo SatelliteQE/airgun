@@ -1197,7 +1197,7 @@ class ShowNewHostDetails(NavigateStep):
     VIEW = NewHostDetailsView
 
     def prerequisite(self, *args, **kwargs):
-        return self.navigate_to(self.obj, 'All')
+        return self.navigate_to(self.obj, 'NewUIAll')
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')

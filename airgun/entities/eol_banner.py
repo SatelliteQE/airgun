@@ -31,10 +31,11 @@ class EOLBannerEntity(BaseEntity):
 
 @navigator.register(EOLBannerEntity)
 class NavigateToEOLBanner(NavigateStep):
+
+    _default_tries = 1
+    _am_i_here_wait = 5
+
     VIEW = EOLBannerView
 
     def step(self, *args, **kwargs):
-        self.view.wait_displayed()
-
-    def am_i_here(self, *args, **kwargs):
-        return self.view.is_displayed
+        return

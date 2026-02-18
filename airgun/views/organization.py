@@ -23,7 +23,7 @@ class OrganizationsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class OrganizationCreateView(BaseLoggedInView):
@@ -35,9 +35,8 @@ class OrganizationCreateView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Organizations'
             and self.breadcrumb.read() == 'New Organization'
         )
@@ -51,9 +50,8 @@ class OrganizationCreateSelectHostsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Organizations'
             and self.breadcrumb.read() == 'Assign Hosts to'
         )
@@ -66,9 +64,8 @@ class OrganizationEditView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Organizations'
             and self.breadcrumb.read().startswith('Edit ')
         )

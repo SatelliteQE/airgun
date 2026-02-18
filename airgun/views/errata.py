@@ -47,7 +47,7 @@ class ErratumView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class ErrataDetailsView(BaseLoggedInView):
@@ -143,9 +143,8 @@ class ErrataDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Errata'
             and len(self.breadcrumb.locations) > 1
         )
@@ -179,9 +178,8 @@ class ApplyErrataView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Errata'
             and self.breadcrumb.read() == 'Select Content Host(s)'
         )
@@ -197,9 +195,8 @@ class ErrataTaskDetailsView(TaskDetailsView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Errata'
             and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
         )

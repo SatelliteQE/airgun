@@ -29,7 +29,4 @@ class NavigateToLogin(NavigateStep):
 
     def step(self, *args, **kwargs):
         # logout() if logged_in?
-        pass
-
-    def am_i_here(self, *args, **kwargs):
-        return self.view.is_displayed
+        return

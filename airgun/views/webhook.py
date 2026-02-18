@@ -19,7 +19,7 @@ class WebhooksView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class WebhookFormView(BaseLoggedInView):
@@ -92,10 +92,7 @@ class WebhookFormView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return (
-            self.browser.wait_for_element(self.cancel_button, visible=True, exception=False)
-            is not None
-        )
+        return self.cancel_button.is_displayed
 
     def wait_for_popup(self):
         return (
@@ -121,10 +118,7 @@ class DeleteWebhookConfirmationView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return (
-            self.browser.wait_for_element(self.delete_button, visible=True, exception=False)
-            is not None
-        )
+        return self.delete_button.is_displayed
 
     def wait_animation_end(self):
         self.browser.wait_for_element(self.delete_button, visible=True, timeout=10)

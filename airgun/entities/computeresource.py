@@ -212,7 +212,7 @@ class EditExistingComputeResource(NavigateStep):
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Actions'].widget.fill('Edit')
 
-    def post_navigate(self, _tries, *args, **kwargs):
+    def post_navigate(self, *args, **kwargs):
         """Select Compute resource tab for initialization"""
         self.view.compute_resource.click()
 
@@ -258,6 +258,16 @@ class ComputeResourceProfileDetail(NavigateStep):
         self.parent.compute_profiles.table.row(compute_profile=compute_profile)[
             'Compute profile'
         ].widget.click()
+
+    def am_i_here(self, *args, **kwargs):
+        if not self.view.is_displayed:
+            return False
+
+        compute_profile = kwargs.get('compute_profile')
+        entity_name = kwargs.get('entity_name')
+        breadcrumbs = self.view.breadcrumb.locations
+
+        return breadcrumbs[1].startswith(entity_name) and breadcrumbs[3].endswith(compute_profile)
 
 
 @navigator.register(ComputeResourceEntity, 'VMImport')

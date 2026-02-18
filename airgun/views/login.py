@@ -10,4 +10,4 @@ class LoginView(View, ClickableMixin):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.username, exception=False) is not None
+        return self.username.is_displayed

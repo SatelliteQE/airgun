@@ -138,9 +138,8 @@ class ContentViewFiltersView(BaseLoggedInView, SearchableViewMixin):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.read() == 'Yum Filters'
         )
@@ -159,9 +158,8 @@ class CreateYumFilterView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and self.breadcrumb.locations[0] == 'Content Views'
             and self.breadcrumb.read() == 'Create Yum Filter'
         )
@@ -175,9 +173,8 @@ class EditYumFilterView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
         return (
-            breadcrumb_loaded
+            self.breadcrumb.is_displayed
             and len(self.breadcrumb.locations) > self.BREADCRUMB_LENGTH
             and self.breadcrumb.locations[2] == 'Yum Filters'
             and self.breadcrumb.read() != 'Create Yum Filter'
