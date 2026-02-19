@@ -181,7 +181,7 @@ class RecommendationsTabEntity(BaseEntity):
 
     def enable_recommendation(self, recommendation_name):
         """
-        Re-enable a previously disabled recommendation.
+        Enable a previously disabled recommendation.
 
         :param recommendation_name: Name of the recommendation
 
