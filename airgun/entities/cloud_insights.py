@@ -117,7 +117,7 @@ class RecommendationsTabEntity(BaseEntity):
         view.wait_for_result()
         return view.read()
 
-    def apply_filter(self, filter_type, filter_value):
+    def apply_filter(self, filter_type, filter_value, is_search=False):
         """
         Apply a filter to the recommendations table.
 
@@ -131,9 +131,13 @@ class RecommendationsTabEntity(BaseEntity):
         wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
         view.clear_button.click()
         view.menu_toggle.fill(filter_type)
-        view.menu_filter.fill(filter_value)
+        if is_search:
+            view.conditional_filter_dropdown.fill(filter_value)
+        else:
+            view.menu_filter.fill(filter_value)
         self.browser.plugin.ensure_page_safe(timeout='10s')
         wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
+        time.sleep(5)
         return view.table.read()
 
     def read(self, widget_names=None):
