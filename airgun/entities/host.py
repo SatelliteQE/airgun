@@ -53,6 +53,13 @@ class HostEntity(BaseEntity):
         host_view.flash.assert_no_error()
         host_view.flash.dismiss()
 
+    def get_create_form(self):
+        """Return HostCreateView"""
+        view = self.navigate_to(self, 'New')
+        self.browser.plugin.ensure_page_safe()
+        view.wait_displayed()
+        return view
+
     def get_register_command(self, values=None, full_read=None):
         """Get curl command generated on Register Host page"""
         view = self.navigate_to(self, 'Register')
