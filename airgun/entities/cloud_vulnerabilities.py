@@ -3,7 +3,11 @@ from wait_for import wait_for
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.cloud_vulnerabilities import CloudVulnerabilityView, CVEDetailsView
+from airgun.views.cloud_vulnerabilities import (
+    CloudVulnerabilityView,
+    CVEDetailsView,
+    EditVulnerabilitiesModal,
+)
 from airgun.views.host_new import NewHostDetailsView
 
 
@@ -24,7 +28,7 @@ class CloudVulnerabilityEntity(BaseEntity):
     def _navigate_to_cve_details(self, cve_id):
         """Helper method to navigate to CVE details page"""
         view = self.navigate_to(self, 'All')
-        view.wait_displayed()
+        view.wait_displayed(timeout='30s')
         wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
         view.search_bar.fill(cve_id)
         view.browser.element(f'.//a[contains(@href, "{cve_id}")]').click()
@@ -75,6 +79,24 @@ class CloudVulnerabilityEntity(BaseEntity):
             return vulnerabilities.read()
         else:
             return []
+
+    def edit_vulnerabilities(self, cve_id, status='In review'):
+        """Helper method to navigate to CVE details page"""
+        self._navigate_to_cve_details(cve_id)
+        view = CVEDetailsView(self.browser)
+        wait_for(lambda: view.affected_hosts_table.is_displayed, timeout=30)
+        view.actions.item_select('Edit status')
+        modal = EditVulnerabilitiesModal(self.browser)
+        wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=10)
+        modal.status.fill(status)
+        modal.justification_note.fill('test')
+        modal.save.click()
+
+    def read_no_authorized_message(self):
+        view = self.navigate_to(self, 'All')
+        wait_for(lambda: view.title.is_displayed, timeout=30)
+        wait_for(lambda: view.no_authorized_header.is_displayed, timeout=30)
+        return view.no_authorized_header.read()
 
     def edit_business_risk(self, cve_id, risk_level, justification=None):
         """

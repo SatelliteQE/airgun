@@ -1,7 +1,9 @@
 from widgetastic.widget import Checkbox, Select, Text, TextInput, Widget
 from widgetastic_patternfly5 import (
     Button as PF5Button,
+    Dropdown as PF5OUIADropdown,
     ExpandableTable as PF5OUIAExpandableTable,
+    FormSelect as PF5FormSelect,
     Modal as PF5Modal,
     Pagination as PF5Pagination,
     PatternflyTable as PF5OUIAPatternflyTable,
@@ -130,6 +132,7 @@ class CloudVulnerabilityView(BaseLoggedInView):
     search_bar = SearchInput(locator='.//input[contains(@aria-label, "search-field")]')
     cve_menu_toggle = PF5Button('.//button[contains(@class, "pf-v5-c-menu-toggle")]')
     no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
+    no_authorized_header = Text('.//div[@data-ouia-component-id="NotAuthorized-header"]')
 
     # OS Filter widgets
     # Multi-step conditional filter:
@@ -158,6 +161,7 @@ class CloudVulnerabilityView(BaseLoggedInView):
             'Severity': Text('.//td[@data-label="Severity"]'),
             'CVSS base score': Text('.//td[@data-label="CVSS base score"]'),
             'Affected hosts': Text('.//td[@data-label="Affected hosts"]'),
+            'Applies to OS': Text('.//td[@data-label="Applies to OS"]'),
             'Business risk': Text('.//td[@data-label="Business risk"]'),
             'Status': Text('.//td[@data-label="Status"]'),
             'Column with row actions': RowActionsMenu(),
@@ -200,6 +204,9 @@ class CVEDetailsView(BaseLoggedInView):
     edit_business_risk_modal = EditBusinessRiskModal()
     edit_status_modal = EditStatusModal()
 
+    actions = PF5OUIADropdown(
+        locator='.//div[./button[contains(@class, "pf-v5-c-menu-toggle") and contains(., "Actions")]]'
+    )
     affected_hosts_table = PF5OUIAPatternflyTable(
         # component_id='OUIA-Generated-Table-1',
         locator='.//table[contains(@class, "pf-v5-c-table")]',
@@ -213,3 +220,14 @@ class CVEDetailsView(BaseLoggedInView):
     @property
     def is_displayed(self):
         return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
+class EditVulnerabilitiesModal(PF5Modal):
+    """View representing edit CVE Modal"""
+
+    justification_note = TextInput(
+        locator=".//textarea[contains(@aria-label, 'justification note')]"
+    )
+    status = PF5FormSelect(locator=".//select[contains(@aria-label, 'Select Input')]")
+    save = PF5Button('Save')
+    cancel = PF5Button('Cancel')
