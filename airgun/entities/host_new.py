@@ -1168,6 +1168,20 @@ class NewHostEntity(HostEntity):
             handle_exception=True,
         )
 
+    def switch_associated_cv(self, entity_name, cv_name):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+        view.overview.content_view_details.dropdown.item_select('Assign content view environments')
+        modal = ManageMultiCVEnvModal(self.browser)
+        modal.associated_content_view.item_select(cv_name)
+        modal.save_btn.click()
+        wait_for(
+            lambda: not modal.is_displayed,
+            timeout=10,
+            delay=1,
+            handle_exception=True,
+        )
+
     def get_content_view_envs(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()

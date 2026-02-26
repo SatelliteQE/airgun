@@ -47,7 +47,6 @@ from widgetastic_patternfly5.ouia import (
     Text as PF5OUIAText,
 )
 
-# from airgun.views.all_hosts import ManageCVEModal as ManageCVEnvModal
 from airgun.views.cloud_insights import BulkSelectMenuToggle
 from airgun.views.common import BaseLoggedInView, PF5LCESelectorGroup, SearchableViewMixinPF4
 from airgun.widgets import (
@@ -1248,6 +1247,7 @@ class ManageMultiCVEnvModal(PF5Modal):
         locator='.//button[@data-ouia-component-id="assign-cv-modal-cancel-button" or @data-ouia-component-id="bulk-assign-cves-modal-cancel-button"]'
     )
     new_assignment_section = ParametrizedView.nested(NewCVEnvAssignmentSection)
+    associated_content_view = CVESelect()
 
     @property
     def is_displayed(self):
