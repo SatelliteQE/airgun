@@ -8,6 +8,7 @@ from airgun.utils import retry_navigation
 from airgun.views.cloud_insights import (
     CloudInsightsView,
     CloudTokenView,
+    DisableRecommendationModal,
     RecommendationsDetailsView,
     RecommendationsTabView,
     RemediateSummary,
@@ -78,7 +79,7 @@ class RecommendationsTabEntity(BaseEntity):
     def remediate_affected_system(self, recommendation_name, hostname):
         """Open Affected systems, filter by hostname, select it, and click Remediate.
 
-        Returns the details view contents after remediation click.
+        :return: the details view contents after remediation click.
         """
         # Use navigator to open the Affected Systems details view
         view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
@@ -100,7 +101,7 @@ class RecommendationsTabEntity(BaseEntity):
     def bulk_remediate_affected_systems(self, recommendation_name):
         """Open Affected systems, bulk select affected systems, and click Remediate.
 
-        Returns the details view contents after remediation click.
+        :return: the details view contents after remediation click.
         """
         # Use navigator to open the Affected Systems details view
         view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
@@ -116,24 +117,27 @@ class RecommendationsTabEntity(BaseEntity):
         view.wait_for_result()
         return view.read()
 
-    def apply_filter(self, filter_type, filter_value):
+    def apply_filter(self, filter_type, filter_value, is_search=False):
         """
         Apply a filter to the recommendations table.
 
-        Returns:
-            Table data after filtering is applied.
+        :return: Table data after filtering is applied
 
-        Example:
-            session.recommendationstab.apply_filter("Status", "Disabled")
+        :example: session.recommendationstab.apply_filter("Status", "Disabled")
         """
         view = self.navigate_to(self, 'All Recommendations')
 
         self.browser.plugin.ensure_page_safe(timeout='10s')
         wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
+        view.clear_button.click()
         view.menu_toggle.fill(filter_type)
-        view.menu_filter.fill(filter_value)
+        if is_search:
+            view.conditional_filter_dropdown.fill(filter_value)
+        else:
+            view.menu_filter.fill(filter_value)
         self.browser.plugin.ensure_page_safe(timeout='10s')
         wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
+        time.sleep(5)
         return view.table.read()
 
     def read(self, widget_names=None):
@@ -142,6 +146,60 @@ class RecommendationsTabEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe(timeout='10s')
         view.wait_displayed()
         return view.read(widget_names=widget_names)
+
+    def disable_recommendation(self, recommendation_name, system=False, hostname=None):
+        """
+        Disable a recommendation either for a specific system or entirely.
+
+        :param recommendation_name: Name of the recommendation
+        :param system: If True, disable for a specific system (requires hostname)
+                    If False, disable the entire recommendation
+        :param hostname: Required if system=True, hostname to disable for
+
+        :return: View after recommendation is disabled
+        """
+        # Navigate to the Affected Systems details view
+        view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
+        view.search_field.wait_displayed()
+        if system:
+            # Disable for a specific system
+            if not hostname:
+                raise ValueError('Hostname is required when system=True')
+            view.search_field.fill(hostname)
+            wait_for(lambda: view.table.row(name=hostname), handle_exception=True, timeout=20)
+            time.sleep(15)
+            kebab = view.table[0][5].widget
+            kebab.item_select('Disable recommendation for system')
+        else:
+            view.actions.item_select('Disable recommendation')
+        modal = DisableRecommendationModal(self.browser)
+        wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=10)
+        modal.justification_note.fill('test')
+        modal.save.click()
+        wait_for(lambda: not modal.is_displayed, handle_exception=True, timeout=10)
+        return view.read()
+
+    def enable_recommendation(self, recommendation_name):
+        """
+        Enable a previously disabled recommendation.
+
+        :param recommendation_name: Name of the recommendation
+
+        :return: View after recommendation is enabled
+        """
+        # Navigate to All Recommendations page
+        view = self.navigate_to(self, 'All Recommendations')
+
+        self.browser.plugin.ensure_page_safe(timeout='10s')
+        wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
+        view.clear_button.click()
+        view.menu_toggle.fill('Status')
+        view.menu_filter.fill('Disabled')
+        self.browser.plugin.ensure_page_safe(timeout='10s')
+        wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
+        view.table[0][7].widget.item_select('Enable recommendation')
+        self.browser.plugin.ensure_page_safe(timeout='10s')
+        return view.read()
 
 
 @navigator.register(RecommendationsTabEntity, 'Affected Systems')
