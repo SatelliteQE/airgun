@@ -19,7 +19,7 @@ class AnsibleRolesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[contains(normalize-space(.),'Ansible Roles')]")
     import_button = Text("//a[contains(@href, '/ansible_roles/import')]")
     submit = PF5button('Submit')
-    total_imported_roles = Text("//span[@class='pf-c-options-menu__toggle-text']//b[2]")
+    total_imported_roles = Text("//span[@class='pf-v5-c-menu-toggle__text']//b[2]")
     table = Table(
         './/table',
         column_widgets={
