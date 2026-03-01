@@ -193,6 +193,8 @@ class HostInterface(View):
     # Compute resource attributes
     network_type = FilteredDropdown(id='_compute_attributes_type')
     network = FilteredDropdown(id='_compute_attributes_bridge')
+    ocpv_network = FilteredDropdown(id='_compute_attributes_network')
+    cni_provider = FilteredDropdown(id='_compute_attributes_cni_provider')
     nic_type = FilteredDropdown(id='_compute_attributes_model')
 
     def after_fill(self, was_change):
@@ -390,6 +392,32 @@ class HostCreateView(BaseLoggedInView):
             operating_system = FilteredDropdown(id='host_operatingsystem_id')
             image = FilteredDropdown(id='azure_rm_image_id')
             root_password = TextInput(id='host_root_pass')
+
+    @provider_content.register('OpenShift Virtualization')
+    class OCPVResourceForm(View):
+        @View.nested
+        class virtual_machine(SatTab):
+            TAB_NAME = 'Virtual Machine'
+            cpus = TextInput(id='host_compute_attributes_cpu_cores')
+            memory = TextInput(id='host_compute_attributes_memory')
+            startup = Checkbox(id='host_compute_attributes_start')
+
+        @View.nested
+        class storage(SatTab):
+            TAB_NAME = 'Virtual Machine'
+            storage_volumes = (
+                ".//fieldset[@id='storage_volumes']/div/div[contains(@class,'removable-item')]"
+            )
+            storage_class = FilteredDropdown(locator=storage_volumes)
+            size = TextInput(locator=f"{storage_volumes}//input[contains(@id, 'capacity')]")
+            bootable = Checkbox(
+                locator=f"{storage_volumes}//div[3]//input[contains(@onclick, 'bootableRadio(this)')]"
+            )
+
+        @View.nested
+        class operating_system(SatTab):
+            TAB_NAME = 'Operating System'
+            provision_method = Checkbox(id='host_provision_method_image')
 
     @View.nested
     class operating_system(SatTab):
