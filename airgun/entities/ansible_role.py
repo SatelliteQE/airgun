@@ -39,7 +39,7 @@ class AnsibleRolesEntity(BaseEntity):
         # present on the page
         # Applying wait_displayed for the page to get rendered
         view.wait_displayed()
-        return int(view.total_imported_roles.read())
+        return view.pagination.total_items
 
     def import_all_roles(self):
         """Import all available roles and return the number of roles
