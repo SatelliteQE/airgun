@@ -1,8 +1,7 @@
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
+from airgun.navigation import NavigateStepWithWait as NavigateStep, navigator
 from airgun.views.cloud_vulnerabilities import (
     CloudVulnerabilityView,
     CVEDetailsView,
@@ -433,6 +432,5 @@ class ShowVulnerabilityListView(NavigateStep):
 
     VIEW = CloudVulnerabilityView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Red Hat Lightspeed', 'Vulnerability')
