@@ -263,7 +263,7 @@ class JobInvocationStatusView(BaseLoggedInView):
 
     @View.nested
     class overview(DescriptionList):
-        ROOT = ".//div[contains(@class, 'job-overview')]"
+        ROOT = ".//dl[contains(@class, 'job-overview-description-list')]"
 
         def read(self):
             """Return `dict` without trailing ':' in the key names."""
