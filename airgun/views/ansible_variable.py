@@ -15,7 +15,7 @@ class AnsibleVariablesView(BaseLoggedInView, SearchableViewMixinPF4):
 
     title = Text("//h1[contains(normalize-space(.),'Ansible Variables')]")
     new_variable = Text("//a[contains(@href, '/ansible/ansible_variables/new')]")
-    total_variables = Text("//span[@class='pf-c-options-menu__toggle-text']//b[2]")
+    total_variables = Text("//span[@class='pf-v5-c-menu-toggle__text']//b[2]")
     table = SatTable(
         './/table',
         column_widgets={
