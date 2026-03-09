@@ -104,7 +104,7 @@ class ShowAllContentCredentials(NavigateStep):
     VIEW = ContentCredentialsTableView
 
     def step(self, *args, **kwargs):
-        # TODO: Update menu path to 'Content', 'Content Credentials' once the page is moved out of /labs
+        # TODO: Update to 'Content', 'Content Credentials' once the page is moved out of /labs
         self.view.menu.select('Lab Features', 'Content Credentials')
 
 
