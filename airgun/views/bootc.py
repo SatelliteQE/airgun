@@ -1,5 +1,5 @@
 from widgetastic.widget import Table, Text, View
-from widgetastic_patternfly4.ouia import ExpandableTable
+from widgetastic_patternfly5.ouia import ExpandableTable
 
 from airgun.views.common import (
     BaseLoggedInView,
@@ -9,11 +9,12 @@ from airgun.views.common import (
 
 class BootedContainerImagesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text('.//h1[@data-ouia-component-id="header-text"]')
+    booted_tab = Text('.//span[contains(@class, "pf-v5-c-tabs__item-text") and normalize-space(.)="Booted"]/parent::button')
 
     # This represents the contents of the expanded table rows
     class NestedBootCTable(View):
         table = Table(
-            locator='.//div[@class="pf-c-table__expandable-row-content"]/table',
+            locator='.//div[@class="pf-v5-c-table__expandable-row-content"]/table',
             column_widgets={'Image Digest': Text('./a'), 'Hosts': Text('./a')},
         )
 
