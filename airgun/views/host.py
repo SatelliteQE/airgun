@@ -243,7 +243,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     )
     displayed_table_headers = './/table/thead/tr/th[not(@hidden)]'
     host_status = "//span[contains(@class, 'host-status')]"
-    actions = ActionsDropdown("//div[@id='submit_multiple']")
+    actions = PF5OUIADropdown(component_id='legacy-ui-kebab')
     dialog = Pf4ConfirmationDialog()
 
     @property
