@@ -8,7 +8,7 @@ from widgetastic_patternfly5 import (
 )
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin
-from airgun.widgets import ActionsDropdown
+from airgun.widgets import ActionsDropdown, Pf5ConfirmationDialog
 
 
 class AnsibleRolesView(BaseLoggedInView, SearchableViewMixin):
@@ -19,7 +19,6 @@ class AnsibleRolesView(BaseLoggedInView, SearchableViewMixin):
     title = Text("//h1[contains(normalize-space(.),'Ansible Roles')]")
     import_button = Text("//a[contains(@href, '/ansible_roles/import')]")
     submit = PF5button('Submit')
-    total_imported_roles = Text("//span[@class='pf-c-options-menu__toggle-text']//b[2]")
     table = Table(
         './/table',
         column_widgets={
@@ -27,6 +26,7 @@ class AnsibleRolesView(BaseLoggedInView, SearchableViewMixin):
         },
     )
     pagination = PF5Pagination()
+    dialog = Pf5ConfirmationDialog()
 
     @property
     def is_displayed(self):
