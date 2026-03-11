@@ -9,7 +9,9 @@ from airgun.views.common import (
 
 class BootedContainerImagesView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text('.//h1[@data-ouia-component-id="header-text"]')
-    booted_tab = Text('.//span[contains(@class, "pf-v5-c-tabs__item-text") and normalize-space(.)="Booted"]/parent::button')
+    booted_tab = Text(
+        './/span[contains(@class, "pf-v5-c-tabs__item-text") and normalize-space(.)="Booted"]/parent::button'
+    )
 
     # This represents the contents of the expanded table rows
     class NestedBootCTable(View):
