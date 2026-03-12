@@ -70,7 +70,8 @@ class RecommendationsTabEntity(BaseEntity):
         :param value: text to filter (default: no filter)
         """
         view = self.navigate_to(self, 'All Recommendations')
-        time.sleep(5)
+        view.wait_displayed(timeout=10)
+        wait_for(lambda: view.clear_button.is_displayed, handle_exception=True, timeout=20)
         view.clear_button.click()
         view.search_field.fill(value)
         time.sleep(5)
@@ -79,7 +80,7 @@ class RecommendationsTabEntity(BaseEntity):
     def remediate_affected_system(self, recommendation_name, hostname):
         """Open Affected systems, filter by hostname, select it, and click Remediate.
 
-        :return: the details view contents after remediation click.
+        Returns the details view contents after remediation click.
         """
         # Use navigator to open the Affected Systems details view
         view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
@@ -117,7 +118,7 @@ class RecommendationsTabEntity(BaseEntity):
         view.wait_for_result()
         return view.read()
 
-    def apply_filter(self, filter_type, filter_value, is_search=False):
+    def apply_filter(self, filter_type, filter_value):
         """
         Apply a filter to the recommendations table.
 
@@ -131,10 +132,7 @@ class RecommendationsTabEntity(BaseEntity):
         wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
         view.clear_button.click()
         view.menu_toggle.fill(filter_type)
-        if is_search:
-            view.conditional_filter_dropdown.fill(filter_value)
-        else:
-            view.menu_filter.fill(filter_value)
+        view.menu_filter.fill(filter_value)
         self.browser.plugin.ensure_page_safe(timeout='10s')
         wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
         time.sleep(5)
@@ -160,7 +158,7 @@ class RecommendationsTabEntity(BaseEntity):
         """
         # Navigate to the Affected Systems details view
         view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
-        view.search_field.wait_displayed()
+        view.search_field.wait_displayed(timeout=10)
         if system:
             # Disable for a specific system
             if not hostname:
@@ -181,7 +179,7 @@ class RecommendationsTabEntity(BaseEntity):
 
     def enable_recommendation(self, recommendation_name):
         """
-        Enable a previously disabled recommendation.
+        Re-enable a previously disabled recommendation.
 
         :param recommendation_name: Name of the recommendation
 
@@ -200,6 +198,12 @@ class RecommendationsTabEntity(BaseEntity):
         view.table[0][7].widget.item_select('Enable recommendation')
         self.browser.plugin.ensure_page_safe(timeout='10s')
         return view.read()
+
+    def read_no_authorized_message(self):
+        view = self.navigate_to(self, 'All Recommendations')
+        wait_for(lambda: view.title.is_displayed, timeout=30)
+        wait_for(lambda: view.no_authorized_header.is_displayed, timeout=30)
+        return view.no_authorized_header.read()
 
 
 @navigator.register(RecommendationsTabEntity, 'Affected Systems')
