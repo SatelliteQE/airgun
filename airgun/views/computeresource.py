@@ -95,6 +95,14 @@ class ResourceProviderCreateView(BaseLoggedInView):
         display_type = Select(id='compute_resource_display_type')
         console_passwords = Checkbox(id='compute_resource_set_console_password')
 
+    @provider_content.register('OpenShift Virtualization')
+    class OCPVProviderForm(View):
+        hostname = TextInput(id='compute_resource_hostname')
+        api_port = TextInput(id='compute_resource_api_port')
+        namespace = TextInput(id='compute_resource_namespace')
+        token = TextInput(id='compute_resource_password')
+        ca_cert = TextInput(id='compute_resource_ca_cert')
+
     @provider_content.register('RHEL OpenStack Platform')
     class OpenStackProviderForm(View):
         url = TextInput(id='compute_resource_url')
