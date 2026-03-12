@@ -1,6 +1,6 @@
 import time
 
-from wait_for import wait_for
+from wait_for import TimedOutError, wait_for
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -19,7 +19,17 @@ from airgun.views.acs import (
 
 class AcsEntity(BaseEntity):
     def wait_for_content_table(self, view):
-        wait_for(lambda: view.acs_drawer.content_table.is_displayed, timeout=10, delay=1)
+        try:
+            wait_for(
+                lambda: view.acs_drawer.content_table.is_displayed,
+                timeout=50,
+                delay=1,
+            )
+        except TimedOutError as e:
+            raise ValueError(
+                'ACS table did not become visible after add; '
+                'UI may have changed or backend was slow.'
+            ) from e
 
     def get_row_drawer_content(self, row_id=None, acs_name=None):
         """
@@ -47,6 +57,9 @@ class AcsEntity(BaseEntity):
         if row_id is not None:
             view.acs_drawer.content_table[row_id][1].widget.click()
         elif acs_name is not None:
+            # Refresh so the list is up to date (e.g. after rename) before searching
+            self.browser.plugin.do_refresh()
+            self.wait_for_content_table(view)
             view.acs_drawer.search_bar.fill(f'name = {acs_name}')
             time.sleep(3)
             if not view.acs_drawer.content_table.is_displayed:
@@ -71,7 +84,7 @@ class AcsEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe()
         if view.acs_drawer.clear_search_btn.is_displayed:
             view.acs_drawer.clear_search_btn.click()
-        wait_for(lambda: view.acs_drawer.content_table.is_displayed, timeout=10, delay=1)
+        self.wait_for_content_table(view)
         acs_table = view.acs_drawer.content_table.read()
         for i, row in enumerate(acs_table):
             row['details'] = self.get_row_drawer_content(row_id=i)
@@ -111,7 +124,7 @@ class AcsEntity(BaseEntity):
             view.acs_drawer.content_table[0][0].widget.click()
 
         # Wait for ACS table to be refreshed
-        wait_for(lambda: view.acs_drawer.content_table.is_displayed, timeout=10, delay=1)
+        self.wait_for_content_table(view)
 
         view.acs_drawer.kebab_menu.item_select(action)
         if view.error_message.is_displayed:
@@ -120,7 +133,7 @@ class AcsEntity(BaseEntity):
             view.acs_drawer.clear_search_btn.click()
 
         self.browser.plugin.do_refresh()
-        wait_for(lambda: view.acs_drawer.content_table.is_displayed, timeout=10, delay=1)
+        self.wait_for_content_table(view)
 
     def refresh_acs(self, acs_name):
         """Function that refreshes ACS item(s)"""
@@ -183,17 +196,22 @@ class AcsEntity(BaseEntity):
         view = self.navigate_to(self, 'ACS')
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
+        if not view.acs_drawer.content_table.is_displayed:
+            raise ValueError('No ACS found!')
 
+        # Refresh so the list is up to date before searching
+        self.browser.plugin.do_refresh()
+        self.wait_for_content_table(view)
         # Check if acs we want to edit exists
         view.acs_drawer.search_bar.fill(f'name = {acs_name_to_edit}')
-        view.wait_displayed()
+        time.sleep(3)
         if not view.acs_drawer.content_table.is_displayed:
             raise ValueError(f'ACS {acs_name_to_edit} not found!')
         # Click on ACS name in ACS table
         view.acs_drawer.content_table[0][1].widget.click()
         # Load side panel view
         view = RowDrawer(self.browser)
-        wait_for(lambda: view.details.title.is_displayed, timeout=10, delay=1)
+        wait_for(lambda: view.details.title.is_displayed, timeout=50, delay=1)
         return view
 
     def close_details_side_panel(self):
@@ -236,8 +254,10 @@ class AcsEntity(BaseEntity):
         # Load EditDetailsModal view
         view = EditDetailsModal(self.browser)
         if new_acs_name is not None:
+            view.clear_name()
             view.name.fill(new_acs_name)
         if new_description is not None:
+            view.clear_description()
             view.description.fill(new_description)
         view.edit_button.click()
         # Wait for the possible error to pop up
@@ -404,10 +424,12 @@ class AcsEntity(BaseEntity):
         # join them to one string separated by comma as required by the satellite
         new_subpaths = ','.join(new_subpaths) if len(new_subpaths) > 1 else new_subpaths[0]
         if new_url is not None:
+            view.clear_base_url()
             view.base_url.fill(new_url)
             if view.url_err.is_displayed:
                 raise ValueError(f'Error while editing url: {view.url_err.read()}')
         if new_subpaths is not None:
+            view.clear_subpaths()
             view.subpaths.fill(new_subpaths)
             if view.paths_err.is_displayed:
                 raise ValueError(f'Error while editing subpaths: {view.paths_err.read()}')
@@ -460,7 +482,7 @@ class AcsEntity(BaseEntity):
         if (
             check_parameters
             and acs_name_to_edit is None
-            and (sum([manual_auth, content_credentials_auth, none_auth] != 1))
+            and (sum([manual_auth, content_credentials_auth, none_auth]) != 1)
         ):
             raise ValueError(
                 'At least acs_name_to_edit and one of '
@@ -471,7 +493,7 @@ class AcsEntity(BaseEntity):
         view.credentials.edit_credentials.click()
         # Load EditCredentialsModal view
         view = EditCredentialsModal(self.browser)
-        wait_for(lambda: view.verify_ssl_toggle.is_displayed, timeout=10, delay=1)
+        wait_for(lambda: view.verify_ssl_toggle.is_displayed, timeout=50, delay=1)
 
         # Toggle verify_ssl
         if verify_ssl is False and view.verify_ssl_toggle.selected:
@@ -493,8 +515,10 @@ class AcsEntity(BaseEntity):
 
             view.manual_auth_radio_btn.fill(True)
             if username is not None:
+                view.clear_username()
                 view.username.fill(username)
             if password is not None:
+                view.clear_password()
                 view.password.fill(password)
 
         # Select content credentials authentication method
@@ -565,7 +589,7 @@ class AcsEntity(BaseEntity):
         view = self.edit_helper(acs_name_to_edit)
         view.products.edit_products.click()
         view = EditProductsModal(self.browser)
-        wait_for(lambda: view.available_options_search.is_displayed, timeout=10, delay=1)
+        wait_for(lambda: view.available_options_search.is_displayed, timeout=50, delay=1)
         # Call helper function that handles adding/removing options
         # from dual list selector and saves changes
         self.dual_list_selector_edit_helper(
@@ -809,14 +833,14 @@ class AcsEntity(BaseEntity):
         # Confirm addition
         view.review_details.add_button.click()
         # Wait for modal to close
-        wait_for(lambda: view.title.is_displayed is False, timeout=10, delay=1)
+        wait_for(lambda: view.title.is_displayed is False, timeout=50, delay=1)
         # Check that there is no error message after adding new ACS
         view = AlternateContentSourcesView(self.browser)
         if view.error_message.is_displayed:
             raise ValueError(f'Error while adding ACS: {view.error_message.read()}')
         # Wait for ACS to be added to the table
-        time.sleep(4)
-        wait_for(lambda: view.acs_drawer.content_table.is_displayed, timeout=10, delay=1)
+        self.wait_for_content_table(view)
+        time.sleep(5)
         # Close the side panel
         view = AlternateContentSourcesView(self.browser)
         view.acs_drawer.content_table[-1][1].widget.click()

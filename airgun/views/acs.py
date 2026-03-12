@@ -32,6 +32,22 @@ class EditDetailsModal(EditModal):
     edit_button = OUIAButton('edit-acs-details-submit')
     cancel_button = OUIAButton('edit-acs-details-cancel')
 
+    def clear_name(self):
+        """Clear the name field."""
+        el = self.browser.element(self.name)
+        self.browser.execute_script(
+            "arguments[0].value = ''; arguments[0].dispatchEvent(new Event('input', { bubbles: true }));",
+            el,
+        )
+
+    def clear_description(self):
+        """Clear the description field."""
+        el = self.browser.element(self.description)
+        self.browser.execute_script(
+            "arguments[0].value = ''; arguments[0].dispatchEvent(new Event('input', { bubbles: true }));",
+            el,
+        )
+
 
 class EditCapsulesModal(DualListSelector):
     """Class representing the Edit Capsule modal."""
@@ -57,6 +73,22 @@ class EditUrlAndSubpathsModal(EditModal):
     edit_button = OUIAButton('edit-acs-url-submit')
     cancel_button = OUIAButton('edit-acs-url-cancel')
 
+    def clear_base_url(self):
+        """Clear the base URL field."""
+        el = self.browser.element(self.base_url)
+        self.browser.execute_script(
+            "arguments[0].value = ''; arguments[0].dispatchEvent(new Event('input', { bubbles: true }));",
+            el,
+        )
+
+    def clear_subpaths(self):
+        """Clear the subpaths field."""
+        el = self.browser.element(self.subpaths)
+        self.browser.execute_script(
+            "arguments[0].value = ''; arguments[0].dispatchEvent(new Event('input', { bubbles: true }));",
+            el,
+        )
+
 
 class EditCredentialsModal(EditModal):
     """Class representing the Edit Credentials modal."""
@@ -78,6 +110,22 @@ class EditCredentialsModal(EditModal):
 
     edit_button = OUIAButton('edit-acs-credentials-submit')
     cancel_button = OUIAButton('edit-acs-credentials-cancel')
+
+    def clear_username(self):
+        """Clear the username field."""
+        el = self.browser.element(self.username)
+        self.browser.execute_script(
+            "arguments[0].value = ''; arguments[0].dispatchEvent(new Event('input', { bubbles: true }));",
+            el,
+        )
+
+    def clear_password(self):
+        """Clear the password field."""
+        el = self.browser.element(self.password)
+        self.browser.execute_script(
+            "arguments[0].value = ''; arguments[0].dispatchEvent(new Event('input', { bubbles: true }));",
+            el,
+        )
 
 
 class EditProductsModal(DualListSelector):
