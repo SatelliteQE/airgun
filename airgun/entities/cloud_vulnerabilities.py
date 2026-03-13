@@ -80,8 +80,8 @@ class CloudVulnerabilityEntity(BaseEntity):
         else:
             return []
 
-    def edit_vulnerabilities(self, cve_id, status='In review'):
-        """Helper method to navigate to CVE details page"""
+    def edit_vulnerabilities(self, cve_id, status='In review', justification='test'):
+        """Helper method to navigate to CVE details page and edit vulnerability status"""
         self._navigate_to_cve_details(cve_id)
         view = CVEDetailsView(self.browser)
         wait_for(lambda: view.affected_hosts_table.is_displayed, timeout=30)
@@ -89,8 +89,11 @@ class CloudVulnerabilityEntity(BaseEntity):
         modal = EditVulnerabilitiesModal(self.browser)
         wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=10)
         modal.status.fill(status)
-        modal.justification_note.fill('test')
+        if justification is not None:
+            modal.justification_note.fill(justification)
         modal.save.click()
+        # Wait for the modal to close to avoid race conditions in subsequent steps
+        wait_for(lambda: not modal.is_displayed, handle_exception=True, timeout=30)
 
     def read_no_authorized_message(self):
         view = self.navigate_to(self, 'All')
