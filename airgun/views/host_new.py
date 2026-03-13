@@ -903,8 +903,8 @@ class NewHostDetailsView(BaseLoggedInView):
         download_playbook = PF5Button('Download playbook')
         bulk_select = BulkSelectMenuToggle()
 
-        recommendations_table = PF5ExpandableTable(
-            locator='.//table[contains(@data-ouia-component-id, "system-advisor-table")]',
+        recommendations_table = PF5OUIATable(
+            component_id='system-advisor-table',
             column_widgets={
                 0: PF5Button('.//button[@aria-label="Details"]'),
                 1: Checkbox(locator='.//input[@type="checkbox"]'),
