@@ -207,9 +207,7 @@ class RecommendationsTabView(BaseLoggedInView):
         locator='.//button[@data-ouia-component-id="ConditionalFilterToggle"]'
     )
     menu_filter = MenuToggleSelectParamLocator(locator='.//button[@aria-label="Options menu"]')
-    no_authorized_header = Text(
-                './/h5[contains(@class, "pf-v5-c-empty-state__title-text")]'
-            )
+    no_authorized_header = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
     table = PF5ExpandableTable(
         locator='.//table[contains(@data-ouia-component-id, "rules-table")]',
         content_view=RecommendationsTableExpandedRowView,
