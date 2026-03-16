@@ -161,7 +161,7 @@ class RecommendationsTabEntity(BaseEntity):
         """
         # Navigate to the Affected Systems details view
         view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
-        view.search_field.wait_displayed(timeout=10)
+        view.search_field.wait_displayed(timeout=20)
         if system:
             # Disable for a specific system
             if not hostname:
@@ -204,7 +204,6 @@ class RecommendationsTabEntity(BaseEntity):
 
     def read_no_authorized_message(self):
         view = self.navigate_to(self, 'All Recommendations')
-        wait_for(lambda: view.title.is_displayed, timeout=30)
         wait_for(lambda: view.no_authorized_header.is_displayed, timeout=30)
         return view.no_authorized_header.read()
 
