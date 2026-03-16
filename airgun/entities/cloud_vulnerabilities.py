@@ -97,7 +97,6 @@ class CloudVulnerabilityEntity(BaseEntity):
 
     def read_no_authorized_message(self):
         view = self.navigate_to(self, 'All')
-        wait_for(lambda: view.title.is_displayed, timeout=30)
         wait_for(lambda: view.no_authorized_header.is_displayed, timeout=30)
         return view.no_authorized_header.read()
 
