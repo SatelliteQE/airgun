@@ -29,4 +29,5 @@ class BootedImagesScreen(NavigateStep):
 
     @retry_navigation
     def step(self, *args, **kwargs):
-        self.view.menu.select('Content', 'Booted Container Images')
+        self.view.menu.select('Content', 'Container Images')
+        self.view.booted_tab.click()
