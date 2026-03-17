@@ -31,7 +31,7 @@ jobs:
           if: ${{ always() && steps.prt.outputs.result == 'not_found' }}
           uses: actions/github-script@v8
           with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
+            github-token: ${{ secrets.CHERRYPICK_PAT }}
             script: |
               const prNumber = '${{ github.event.number }}';
               const issue = await github.rest.issues.get({
