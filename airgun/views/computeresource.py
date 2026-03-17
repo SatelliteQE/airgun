@@ -345,7 +345,9 @@ class ResourceProviderProfileView(BaseLoggedInView):
         image = FilteredDropdown(id='compute_attribute_vm_attrs_image_id')
         network = FilteredDropdown(id='compute_attribute_vm_attrs_network')
         external_ip = Checkbox(id='compute_attribute_vm_attrs_associate_external_ip')
-        default_disk_size = TextInput(id='compute_attribute_vm_attrs_volumes_attributes_0_size_gb')
+        default_disk_size = TextInput(
+            id='compute_attribute_vm_attrs_volumes_attributes_0_disk_size_gb'
+        )
 
     @provider_content.register('VMware')
     class VMwareResourceForm(View):
