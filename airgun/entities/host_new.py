@@ -960,17 +960,8 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
         return view.reports.read()
 
-    def get_insights(self, entity_name):
-        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
-        wait_for(lambda: view.insights.recommendations_table.is_displayed, timeout=10)
-        return view.insights.read()
-
     def get_vulnerabilities(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         wait_for(lambda: view.vulnerabilities.vulnerabilities_table.is_displayed, timeout=30)
         vulnerabilities = getattr(view.vulnerabilities, 'vulnerabilities_table', None)
         if vulnerabilities is not None:
@@ -980,16 +971,13 @@ class NewHostEntity(HostEntity):
 
     def get_recommendations(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         wait_for(lambda: view.iop_recommendations.recommendations_table.is_displayed, timeout=30)
         return view.iop_recommendations.recommendations_table.read()
 
     def remediate_host_recommendation(self, entity_name, recommendation):
         """Function that can remediate an iop recommendation from the host page"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+
         wait_for(lambda: view.iop_recommendations.is_displayed, timeout=30)
         view.iop_recommendations.search_field.fill(recommendation)
         wait_for(lambda: view.iop_recommendations.recommendations_table.is_displayed, timeout=30)
@@ -998,14 +986,16 @@ class NewHostEntity(HostEntity):
             handle_exception=True,
             timeout=30,
         )
+
         row = view.iop_recommendations.recommendations_table.row(description=recommendation)
         row[1].widget.fill(True)
         view.iop_recommendations.remediate.wait_displayed()
         view.iop_recommendations.remediate.click()
-        self.browser.plugin.ensure_page_safe(timeout='30s')
+
         modal = RemediateSummary(self.browser)
         wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
         modal.remediate.click()
+
         view = JobInvocationStatusView(view.browser)
         view.wait_for_result()
         return view.read()
@@ -1013,16 +1003,16 @@ class NewHostEntity(HostEntity):
     def bulk_remediate_host_recommendation(self, entity_name):
         """Function that can bulk remediate an iop recommendation from the host page"""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
         wait_for(lambda: view.iop_recommendations.is_displayed, timeout=30)
         view.iop_recommendations.bulk_select.select_all()
+
         view.iop_recommendations.remediate.wait_displayed()
         view.iop_recommendations.remediate.click()
-        self.browser.plugin.ensure_page_safe(timeout='30s')
+
         modal = RemediateSummary(self.browser)
         wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
         modal.remediate.click()
+
         view = JobInvocationStatusView(view.browser)
         view.wait_for_result()
         return view.read()
@@ -1045,16 +1035,15 @@ class NewHostEntity(HostEntity):
 
         """
 
-        if ((recommendation_to_remediate is not None) and remediate_all) or (
-            (recommendation_to_remediate is None) and (remediate_all is False)
+        if (recommendation_to_remediate and remediate_all) or (
+            not recommendation_to_remediate and not remediate_all
         ):
             raise ValueError(
                 'Either recommendation_to_remediate or remediate_all must be provided!'
             )
 
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+
         if remediate_all:
             view.insights.select_all_one_page.click()
             view.insights.select_all_pages.click()
@@ -1071,8 +1060,6 @@ class NewHostEntity(HostEntity):
                     _rec = f'title = "{_rec}"'
                     view.insights.search_bar.fill(_rec, enter_timeout=3)
                     view.wait_displayed()
-                    self.browser.plugin.ensure_page_safe()
-                    time.sleep(3)
                     try:
                         # Click the checkbox of the first recommendation
                         view.insights.recommendations_table[0][0].widget.click()
@@ -1087,8 +1074,6 @@ class NewHostEntity(HostEntity):
                 recommendation_to_remediate = f'title = "{recommendation_to_remediate}"'
                 view.insights.search_bar.fill(recommendation_to_remediate, enter_timeout=3)
                 view.wait_displayed()
-                self.browser.plugin.ensure_page_safe()
-                time.sleep(3)
                 try:
                     # Click the checkbox of the first recommendation
                     view.insights.recommendations_table[0][0].widget.click()
