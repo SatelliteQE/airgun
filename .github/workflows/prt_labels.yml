@@ -1,11 +1,15 @@
 name: Remove the PRT label, for the new commit
 
 on:
-  pull_request:
+  pull_request_target:
     types: ["synchronize"]
 
 jobs:
     prt_labels_remover:
+      permissions:
+        checks: read
+        issues: write
+        statuses: read
       name: remove the PRT label when amendments or new commits added to PR
       runs-on: ubuntu-latest
       if: "(contains(github.event.pull_request.labels.*.name, 'PRT-Passed') || contains(github.event.pull_request.labels.*.name, 'PRT-Failed'))"
@@ -24,7 +28,7 @@ jobs:
             count: 5
 
         - name: remove the PRT Passed/Failed label, for new commit
-          if: always() && ${{steps.prt.outputs.result}} == 'not_found'
+          if: ${{ always() && steps.prt.outputs.result == 'not_found' }}
           uses: actions/github-script@v8
           with:
             github-token: ${{ secrets.CHERRYPICK_PAT }}
