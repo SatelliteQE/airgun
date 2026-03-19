@@ -1,8 +1,7 @@
 import time
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
+from airgun.navigation import NavigateStepWithWait as NavigateStep, navigator
 from airgun.views.cloud_inventory import CloudInventoryListView
 
 
@@ -132,6 +131,5 @@ class ShowCloudInventoryListView(NavigateStep):
 
     VIEW = CloudInventoryListView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Red Hat Lightspeed', 'Inventory Upload')

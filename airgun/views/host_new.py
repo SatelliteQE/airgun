@@ -919,10 +919,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @property
         def is_displayed(self):
-            return (
-                self.browser.wait_for_element(self.recommendations_table, exception=False)
-                is not None
-            )
+            return self.recommendations_table.is_displayed
 
     @View.nested
     class vulnerabilities(PF5Tab):
@@ -947,12 +944,9 @@ class NewHostDetailsView(BaseLoggedInView):
 
         @property
         def is_displayed(self):
-            table_displayed = self.vulnerabilities_table.wait_displayed(exception=False)
-            no_cves_message_displayed = (
-                self.browser.wait_for_element(self.no_cves_found_message, exception=False)
-                is not None
+            return (
+                self.vulnerabilities_table.is_displayed or self.no_cves_found_message.is_displayed
             )
-            return table_displayed or no_cves_message_displayed
 
 
 class InstallPackagesView(View):
