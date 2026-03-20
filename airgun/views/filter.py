@@ -1,16 +1,15 @@
 from widgetastic.widget import (
-    Table,
     Text,
     TextInput,
 )
 from widgetastic_patternfly import BreadCrumb
-from widgetastic_patternfly4 import Pagination as PF4Pagination
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import (
     ActionsDropdown,
     PF4FilteredDropdown,
     PF4MultiSelect,
+    SatTable,
     Search,
 )
 
@@ -19,13 +18,12 @@ class FiltersView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     searchbox = Search()
     new = Text("//a[contains(@href, '/filters/new')]")
-    table = Table(
+    table = SatTable(
         './/table',
         column_widgets={
             'Actions': ActionsDropdown("./div[contains(@class, 'btn-group')]"),
         },
     )
-    pagination = PF4Pagination()
 
     @property
     def is_displayed(self):

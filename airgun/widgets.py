@@ -411,6 +411,13 @@ class ItemsList(GenericLocatorWidget):
         self.browser.click(self.browser.element(self.ITEM.format(value), parent=self))
 
 
+class PF4SelectItemsList(ItemsList):
+    """List items for PF4/PF5 deprecated Select menus."""
+
+    ITEM = ".//*[@role='option'][contains(normalize-space(.), '{}')]"
+    ITEMS = ".//*[@role='option']"
+
+
 class AddRemoveItemsList(GenericLocatorWidget):
     """Similar to ItemsList widget except list elements can be selected only using 'Add'
     and 'Remove' buttons near each of it
@@ -1278,8 +1285,14 @@ class FilteredDropdown(GenericLocatorWidget):
 class PF4FilteredDropdown(GenericLocatorWidget):
     """Drop-down element with filtering functionality - PatternFly 4 version"""
 
+    toggle_button = Text(
+        ".//button[contains(@class, 'pf-v5-c-select__toggle-button') or contains(@class, 'toggle-button')]"
+    )
     filter_criteria = TextInput(locator=".//input[@aria-label='Select a resource type']")
-    filter_content = ItemsList('.//ul')
+    filter_content = PF4SelectItemsList(".//*[@role='listbox'][.//*[@role='option']]")
+    miscellaneous_option = Text(
+        ".//*[@role='option'][contains(normalize-space(.), 'Miscellaneous')][1]"
+    )
 
     def clear(self):
         """Clear currently selected value for drop-down"""
@@ -1291,12 +1304,25 @@ class PF4FilteredDropdown(GenericLocatorWidget):
         :param value: string with item value
         """
         self.clear()
+        if value == '(Miscellaneous)':
+            self._fill_miscellaneous()
+            return
         self.filter_criteria.fill(value)
         self.filter_content.fill(value)
 
+    def _fill_miscellaneous(self):
+        toggle = self.browser.element(self.toggle_button, parent=self)
+        if toggle.get_attribute('aria-expanded') != 'true':
+            self.toggle_button.click()
+            self.browser.plugin.ensure_page_safe()
+        option = self.browser.element(
+            self.miscellaneous_option, parent=self, check_visibility=True
+        )
+        self.browser.click(option)
+
     def read(self):
         """Return drop-down selected item value"""
-        return self.browser.text(self.filter_criteria)
+        return self.filter_criteria.read()
 
 
 class CustomParameter(Table):
