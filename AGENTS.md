@@ -327,7 +327,6 @@ if self.navigate_to(self, 'All', _is_displayed_check=True):
 ### DO ✅
 
 - **Use `BaseLoggedInView`** for all Satellite pages
-- **Wait for elements** before interacting
 - **Use descriptive variable names**
 - **Add docstrings** to public methods
 - **Keep views and entities separate**
@@ -346,7 +345,6 @@ if self.navigate_to(self, 'All', _is_displayed_check=True):
 
 ### DON'T ❌
 
-- **Don't use hard-coded sleeps** (`time.sleep()`) - use `wait_for` instead
 - **Don't create circular imports** between view files
 - **Don't put business logic in views** - keep it in entities
 - **Don't use absolute XPaths** - use relative or attributes
@@ -361,6 +359,126 @@ if self.navigate_to(self, 'All', _is_displayed_check=True):
   - ❌ `data-ouia-component-id="OUIA-Generated-FormSelect-default-3"`
 - **Don't use negative indexing for table columns** - Widgetastic doesn't support `row[-1]`. Use column header text as keys instead: `row['Column with row actions']`
 - **Don't override ROOT in table column widgets** unless necessary - the table infrastructure handles finding the `<td>` element
+
+## Using Post-Navigation Verification
+
+Post-navigation verification ensures navigation succeeded before proceeding with test actions, eliminating timing workarounds.
+
+How it works:
+- After performing the navigation, `navigate_to()` now waits for the destination's `am_i_here` (which calls the view's `is_displayed` method) to return True
+- Uses `wait_for` (default timeout: 20 seconds)
+- Returns the view to the caller after the check has passed
+- Raises `NavigationTriesExceeded` if verification fails after all retry attempts
+
+Before (legacy behavior):
+```
+view = self.navigate_to(self, 'Edit', entity_name='foo')
+# No guarantee view is ready - need manual waits
+view.wait_displayed()
+self.browser.plugin.ensure_page_safe()
+view.table.read()
+```
+
+After (new behavior):
+```
+view = self.navigate_to(self, 'Edit', entity_name='foo')
+# View is guaranteed to be displayed and ready
+return view.table.read()
+```
+
+### Step 1: Update Navigation Steps (Entity File)
+
+Change import and remove @retry_navigation decorators:
+
+```
+# Before
+from airgun.navigation import NavigateStep, navigator
+from airgun.utils import retry_navigation
+
+@navigator.register(MyEntity, 'All')
+class NavigateToAll(NavigateStep):
+    VIEW = MyListView
+
+    @retry_navigation
+    def step(self, *args, **kwargs):
+        self.view.menu.select('My Menu', 'Submenu')
+
+# After
+from airgun.navigation import NavigateStepWithWait as NavigateStep, navigator
+
+@navigator.register(MyEntity, 'All')
+class NavigateToAll(NavigateStep):
+    VIEW = MyListView
+
+    def step(self, *args, **kwargs):
+        self.view.menu.select('My Menu', 'Submenu')
+```
+
+### Step 2: Update View is_displayed Methods (View File)
+
+Replace wait methods with property checks:
+```
+# Before
+@property
+def is_displayed(self):
+    return self.browser.wait_for_element(self.title, exception=False) is not None
+
+# After
+@property
+def is_displayed(self):
+    return self.title.is_displayed
+```
+
+For multiple component checks:
+```
+# Before
+@property
+def is_displayed(self):
+    return self.table.wait_displayed() and self.clear_button.wait_displayed()
+
+# After
+@property
+def is_displayed(self):
+    return self.table.is_displayed and self.clear_button.is_displayed
+```
+
+### Step 3: Remove Post-Navigation Waits (Entity Methods)
+
+```
+# Before
+def read(self, entity_name):
+    view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+    view.wait_displayed()
+    self.browser.plugin.ensure_page_safe()
+    return view.read()
+
+# After
+def read(self, entity_name):
+    view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+    return view.read()
+```
+
+Keep waits for dynamic modal page load:
+```
+# KEEP - waiting for modal to appear after button click
+view.remediate_button.click()
+modal = RemediationModal(self.browser)
+modal.wait_displayed(timeout=10)
+modal.confirm.click()
+```
+
+### Advanced: Custom Retry Behavior
+
+To override the default wait timeout or number of tries for specific navigation steps:
+```
+class NavigateToMyTrickyView(NavigateStep):
+    VIEW = MyTrickyView
+    DEFAULT_TRIES = 3   # Retry up to 3 times
+    WAIT_TIMEOUT = 30   # Wait 30 seconds for am_i_here
+
+    def step(self, *args, **kwargs):
+        self.view.menu.select('Tricky', 'View')
+```
 
 ---
 
