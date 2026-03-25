@@ -969,6 +969,12 @@ class NewHostEntity(HostEntity):
         else:
             return []
 
+    def get_insights(self, entity_name):
+        # TODO consolidate with get_recommendations
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        wait_for(lambda: view.insights.recommendations_table.is_displayed, timeout=10)
+        return view.insights.read()
+
     def get_recommendations(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         wait_for(lambda: view.iop_recommendations.recommendations_table.is_displayed, timeout=30)
