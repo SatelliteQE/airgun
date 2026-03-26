@@ -1240,9 +1240,7 @@ class FilteredDropdown(GenericLocatorWidget):
     selected_value = Text("./ancestor::div[1]//span/span[contains(@class, 'rendered')]")
     open_filter = Text("./ancestor::div[1]//span/span[contains(@class, 'arrow')]")
     clear_filter = Text('./a/abbr')
-    filter_criteria = TextInput(
-        locator="//span[@class='select2-search select2-search--dropdown']//input"
-    )
+    filter_criteria = TextInput(locator="//span[@class='select2-selection__arrow']")
     filter_content = ItemsList(
         "//span[not(contains(@style, 'display: none')) and @class='select2-results']/ul"
     )
