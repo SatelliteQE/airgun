@@ -405,14 +405,21 @@ class HostCreateView(BaseLoggedInView):
         @View.nested
         class storage(SatTab):
             TAB_NAME = 'Virtual Machine'
-            storage_volumes = (
-                ".//fieldset[@id='storage_volumes']/div/div[contains(@class,'removable-item')]"
+            storage_volumes = Text(
+                "//fieldset[@id='storage_volumes']//a[contains(normalize-space(.), 'Add Volume')]"
             )
-            storage_class = FilteredDropdown(locator=storage_volumes)
-            size = TextInput(locator=f"{storage_volumes}//input[contains(@id, 'capacity')]")
+            storage_class = FilteredDropdown(
+                locator="//span[contains(@id, 'storage_class-container')]"
+            )
+            size = TextInput(
+                locator="(//fieldset[@id='storage_volumes']//input[contains(@id, 'capacity')])[last()]"
+            )
             bootable = Checkbox(
-                locator=f"{storage_volumes}//div[3]//input[contains(@onclick, 'bootableRadio(this)')]"
+                locator="(//fieldset[@id='storage_volumes']//input[contains(@id, 'host_compute_attributes')])[last()]"
             )
+
+            def before_fill(self, values=None):
+                self.storage_volumes.click()
 
         @View.nested
         class operating_system(SatTab):
