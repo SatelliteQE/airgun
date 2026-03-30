@@ -817,6 +817,22 @@ class ManageTracesModal(PF5Modal):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
+class ManageNotificationsModal(PF5Modal):
+    """Modal for enabling/disabling email notification alerts for selected hosts."""
+
+    OUIA_ID = 'bulk-manage-notifications-modal'
+
+    title = './/h1[contains(@class, "pf-v5-c-modal-box__title")]'
+    enable_btn = Button(locator='.//button[normalize-space(.)="Enable"]')
+    disable_btn = Button(locator='.//button[normalize-space(.)="Disable"]')
+    confirm_btn = PF5OUIAButton('bulk-manage-notifications-confirm')
+    cancel_btn = PF5OUIAButton('bulk-manage-notifications-cancel')
+
+    @property
+    def is_displayed(self):
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+
 class ManageSystemPurposeModal(PF5Modal):
     """
     This class represents the Manage System Purpose modal that is used to change

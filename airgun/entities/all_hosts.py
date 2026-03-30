@@ -22,6 +22,7 @@ from airgun.views.all_hosts import (
     HostDeleteDialog,
     HostgroupDialog,
     ManageErrataModal,
+    ManageNotificationsModal,
     ManagePackagesModal,
     ManageRepositorySetsModal,
     ManageSystemPurposeModal,
@@ -942,6 +943,37 @@ class AllHostsEntity(BaseEntity):
         all_hosts_view = AllHostsTableView(self.browser)
 
         # Wait for and read the toast alert message
+        self.browser.wait_for_element(all_hosts_view.alert_message, exception=False, timeout=5)
+        if all_hosts_view.alert_message.is_displayed:
+            alert_message_content = all_hosts_view.alert_message.read()
+            all_hosts_view.flash.dismiss()
+            return alert_message_content
+        return None
+
+    def manage_notifications(self, host_names=None, select_all_hosts=False, enable=True):
+        """Enable or disable email notification alerts for selected hosts.
+
+        :param host_names: str with one host or list of hosts to select
+        :param select_all_hosts: bool, if True, all hosts will be selected
+        :param enable: bool, True to enable notifications, False to disable
+        :return: str, alert message content or None
+        """
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names, select_all_hosts)
+
+        view.bulk_actions_kebab.click()
+        view.bulk_actions_menu.item_select('Manage notifications')
+
+        modal = ManageNotificationsModal(self.browser)
+        modal.wait_displayed(timeout=10)
+
+        if enable:
+            modal.enable_btn.click()
+        else:
+            modal.disable_btn.click()
+
+        modal.confirm_btn.click()
+
+        all_hosts_view = AllHostsTableView(self.browser)
         self.browser.wait_for_element(all_hosts_view.alert_message, exception=False, timeout=5)
         if all_hosts_view.alert_message.is_displayed:
             alert_message_content = all_hosts_view.alert_message.read()
