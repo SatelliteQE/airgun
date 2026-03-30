@@ -1,275 +1,287 @@
-from cached_property import cached_property
+from wait_for import wait_for
 from widgetastic.exceptions import NoSuchElementException
-from widgetastic.widget import Checkbox, Text
+from widgetastic.widget import Text, Widget
+from widgetastic_patternfly5 import Button as PF5Button
+from widgetastic_patternfly5.components.table import PatternflyTable, PatternflyTableRow
+from widgetastic_patternfly5.ouia import Switch as PF5OUIASwitch
 
 from airgun.views.common import BaseLoggedInView
-from airgun.widgets import SatTable
-
-
-class ParentNodeNotFoundError(Exception):
-    """Raise when not able to find a parent for a node item"""
-
-
-class ReservedToSectionOnlyError(Exception):
-    """Mainly raised when adding a child to a non section node"""
 
 
 class NodeNotFoundError(Exception):
     """Raise when a node was not found"""
 
 
-class SyncStatusTableNode:
-    """Table row interface to implement a sync status table row tree node"""
+class SyncStatusTreeRow(PatternflyTableRow):
+    """A row in the PF5 tree table that supports aria-based tree attributes.
 
-    CHECKBOX = "./td/input[@type='checkbox']"
-    RESULT_LINK = ".//a[not(contains(@class, 'hidden'))][not(contains(@class, 'progress'))]"
-    RESULT_PROGRESS = ".//a[contains(@class, 'progress')]"
-    SECTION_EXPANDER = "./td/span[contains(@class, 'expander')]"
+    In the Sync Status tree table all ``<tr>`` rows live inside a single
+    ``<tbody>``.  Child rows that are collapsed carry the ``hidden``
+    attribute.  The first cell of each row is a ``<th>`` (not ``<td>``),
+    containing the tree toggle, checkbox and name.
+    """
 
-    def __init__(self, parent=None, row=None):
-        self.parent = parent
-        self.row = row
-        self.children = {}
-
-    def __getitem__(self, name):
-        """Return the child name"""
-        return self.children[name]
-
-    def __contains__(self, name):
-        """Check child with name is exist in this node"""
-        return name in self.children
+    ROW_TOGGLE = ".//span[contains(@class, 'pf-v5-c-table__toggle')]//button"
+    NAME_SPAN = ".//div[contains(@class, 'pf-v5-c-table__tree-view-text')]//span[@role='button']"
+    CHECKBOX = ".//input[@type='checkbox']"
+    PROGRESS_BAR = ".//div[contains(@class, 'pf-v5-c-progress')]"
 
     @property
-    def browser(self):
-        """Return the browser"""
-        return self.row.browser
-
-    @cached_property
-    def id(self):
-        """Return the id of this node"""
-        return self.browser.get_attribute('id', self.row)
-
-    @cached_property
-    def is_root(self):
-        """Return whether this node is root node"""
-        return 'child-of' not in self.browser.get_attribute('class', self.row)
-
-    def is_child_of(self, node):
-        """Return whether this node is a child of node"""
-        return f'child-of-{node.id}' in self.browser.get_attribute('class', self.row)
+    def is_hidden(self):
+        """Return True if this row has the hidden attribute (collapsed child)."""
+        return self.browser.get_attribute('hidden', self) is not None
 
     @property
-    def is_displayed(self):
-        """Returns whether this node is displayed"""
-        return 'display: none' not in self.browser.get_attribute('style', self.row)
+    def aria_level(self):
+        """Return the tree nesting level of this row (1 = root product)."""
+        level = self.browser.get_attribute('aria-level', self)
+        return int(level) if level else None
 
-    @cached_property
+    @property
+    def is_expandable(self):
+        """Return whether this row can be expanded (has child nodes).
+
+        Leaf nodes have ``aria-setsize="0"``.
+        """
+        setsize = self.browser.get_attribute('aria-setsize', self)
+        return setsize is not None and int(setsize) > 0
+
+    @property
+    def is_expanded(self):
+        """Return whether this row is currently expanded."""
+        expanded = self.browser.get_attribute('aria-expanded', self)
+        return expanded == 'true'
+
+    @property
     def name(self):
-        """Return the name of this node, the node name is the text content of
-        the first column."""
-        return self.row[0].read()
+        """Return the name text from the clickable span inside the tree cell."""
+        try:
+            name_el = self.browser.element(self.NAME_SPAN, parent=self)
+            return self.browser.text(name_el).strip()
+        except NoSuchElementException:
+            return None
 
-    @property
-    def result(self):
-        """Return the result column content"""
-        return self.row['RESULT'].read()
+    def expand(self):
+        """Expand this row if it is expandable and not already expanded."""
+        if self.is_expandable and not self.is_expanded:
+            toggle = self.browser.element(self.ROW_TOGGLE, parent=self)
+            self.browser.click(toggle)
+
+    def collapse(self):
+        """Collapse this row if it is expandable and currently expanded."""
+        if self.is_expandable and self.is_expanded:
+            toggle = self.browser.element(self.ROW_TOGGLE, parent=self)
+            self.browser.click(toggle)
 
     @property
     def checkbox(self):
-        """return the checkbox element of this row if exist"""
+        """Return the checkbox element for this row, or None if not present."""
         try:
-            checkbox = self.browser.element(self.CHECKBOX, parent=self.row)
+            return self.browser.element(self.CHECKBOX, parent=self)
         except NoSuchElementException:
-            checkbox = None
-        return checkbox
+            return None
+
+    def select(self, value=True):
+        """Select or deselect this row's checkbox."""
+        cb = self.checkbox
+        if cb is None:
+            return
+        checked = self.browser.get_attribute('checked', cb) is not None
+        if bool(value) != checked:
+            self.browser.click(cb)
 
     @property
-    def result_link(self):
-        """Return the result link element of this row"""
-        return self.browser.element(self.RESULT_LINK, parent=self.row)
-
-    @property
-    def progress(self):
-        """Return the progress element of this row if exist"""
+    def has_progress(self):
+        """Return True if this row shows a sync progress bar."""
         try:
-            progress = self.browser.element(self.RESULT_PROGRESS, parent=self.row)
-        except NoSuchElementException:
-            progress = None
-        return progress
-
-    @property
-    def expander(self):
-        """Return the expander element of this row if exist"""
-        try:
-            expander = self.browser.element(self.SECTION_EXPANDER, parent=self.row)
-        except NoSuchElementException:
-            expander = None
-        return expander
-
-    @property
-    def expanded(self):
-        """Return True in case this row is expanded"""
-        if 'expanded' in self.browser.get_attribute('class', self.row):
+            self.browser.element(self.PROGRESS_BAR, parent=self)
             return True
-        return False
+        except NoSuchElementException:
+            return False
 
-    def expand(self):
-        """Expand this node"""
-        if self.is_section and not self.expanded:
-            self.browser.click(self.expander)
-
-    @cached_property
-    def is_section(self):
-        """Return whether this row is a section, a row is a section if has
-        expander.
-        """
-        return bool(self.expander)
-
-    def add_child(self, node):
-        """Add a child node to this node"""
-        if not self.is_section:
-            # we cannot add a node to a non section node
-            raise ReservedToSectionOnlyError('Adding node to a non section one is prohibited')
-        if node.parent is not None:
-            raise ValueError('Child Node already has parent')
-
-        node.parent = self
-        self.children[node.name] = node
-
-    def read(self):
-        """Read this node and sub nodes if exist and displayed"""
-        if self.is_displayed:
-            if self.is_section:
-                data = {}
-                # ensure expanded before read
-                self.expand()
-                for child_name, child_node in self.children.items():
-                    data[child_name] = child_node.read()
-            else:
-                data = self.row.read()
-            return data
-
-    def select(self, value):
-        """Select or un-select if checkbox is in the row, the checkbox exist
-        only for repository row.
-        """
-        checkbox = self.checkbox
-        if checkbox:
-            checked = self.browser.get_attribute('checked', checkbox)
-            if (value and not checked) or (not value and checked):
-                self.browser.click(checkbox)
-
-    def fill(self, values):
-        """Fill the node and sub nodes with values"""
-        if self.is_section:
-            self.expand()
-            if values:
-                for key, value in values.items():
-                    child_node = self.children[key]
-                    child_node.fill(value)
-        else:
-            self.select(values)
+    @property
+    def result(self):
+        """Return the text content of the Progress / Result column."""
+        return self['Progress / Result'].read()
 
 
-class SyncStatusTable(SatTable):
-    """This is a representation of a tree view with columns realized as a
-    table. The first column is the tree expander where root item is the
-    product. Each item and sub items located in their own table row.
+class SyncStatusTreeTable(PatternflyTable):
+    """PF5 tree table for Sync Status page.
 
-    Tree representation of the first column example:
+    The table has ``role="treegrid"`` with a single ``<tbody>`` containing
+    all ``<tr>`` rows.  Collapsed children carry a ``hidden`` attribute.
+    Each row has ``aria-level``, ``aria-setsize``, ``aria-posinset``, and
+    ``aria-expanded`` attributes describing the tree structure.
 
-        - Red Hat Enterprise Linux Server
-            - 7Server
-                - x86_64
-                    - [ ] Red Hat Enterprise Linux 7 Server RPMs x86_64
-                        7Server
-            - Red Hat Satellite Tools 6.2 for RHEL 7 Server RPMs x86_64
-        - zoo custom product
-            - [ ] zoo custom repo
-        - an other custom repo
-            - [ ] an other custom repo
+    ``read()`` returns a nested dict::
+
+        {
+            product_name: {
+                repo_name: 'Syncing complete'
+            }
+        }
+
+    or for deeper hierarchies (RH products)::
+
+        {
+            product_name: {
+                version: {
+                    arch: {
+                        repo_name: 'Syncing complete'
+                    }
+                }
+            }
+        }
     """
 
-    @cached_property
-    def nodes(self):
-        """Return the tree nodes representation of this table"""
-        nodes = {}
-        last_section_node = None
-        for row_index, row in enumerate(self):
-            node = SyncStatusTableNode(row=row)
-            if node.is_displayed:
-                if node.is_root:
-                    # Root nodes are essentially product names.
-                    node.expand()
-                    nodes[node.name] = node
-                    last_section_node = node
-                else:
-                    # go throw last node parents to find the parent, if that parent
-                    # is found set it as last section parent.
-                    parent_node = last_section_node
-                    while parent_node:
-                        if node.is_child_of(parent_node):
-                            parent_node.add_child(node)
-                            if node.is_section:
-                                node.expand()
-                                last_section_node = node
-                            else:
-                                last_section_node = parent_node
-                            break
-                        parent_node = parent_node.parent
-                    else:
-                        # We have not found a parent for this node,
-                        # this has not to happen, but in any case raise exception
-                        raise ParentNodeNotFoundError(
-                            f'Parent node for row index = {row_index} not found'
-                        )
-        return nodes
+    ROWS = './tbody/tr'
+    HEADERS = './thead/tr/th|./thead/tr/td'
+    EXPAND_ALL_BUTTON = './thead//th[contains(@class, "pf-v5-c-table__toggle")]//button'
+    Row = SyncStatusTreeRow
+
+    def _visible_rows(self):
+        """Yield only rows that are not hidden (i.e. not collapsed children)."""
+        for row in self:
+            if not row.is_hidden:
+                yield row
+
+    def _expand_all(self):
+        """Expand all tree nodes using the header expand/collapse toggle.
+
+        Only clicks the toggle when hidden rows exist (tree is partially or
+        fully collapsed).  After clicking, waits for all hidden rows to
+        become visible.
+        """
+        hidden_locator = './tbody/tr[@hidden]'
+        if not self.browser.elements(hidden_locator, parent=self):
+            return
+        try:
+            toggle = self.browser.element(self.EXPAND_ALL_BUTTON, parent=self)
+        except NoSuchElementException:
+            return
+        self.browser.click(toggle)
+        wait_for(
+            lambda: not self.browser.elements(hidden_locator, parent=self),
+            timeout=10,
+            delay=0.5,
+        )
 
     def read(self):
-        """Return a dict with nodes properties"""
-        data = {}
-        for name, node in self.nodes.items():
-            data[name] = node.read()
-        return data
+        """Return a nested dict built from the tree hierarchy.
 
-    def fill(self, values):
-        """Fill the node and sub nodes, mainly select or un-select the
-        repositories.
+        Expands all nodes first, then walks visible rows using
+        ``aria-level`` to reconstruct the tree.  Leaf rows (``aria-setsize="0"``)
+        store their Progress / Result text as the value.
         """
-        if not values:
-            return
-        nodes = self.nodes
-        for key, value in values.items():
-            nodes[key].fill(value)
+        self._expand_all()
+        result = {}
+        # Stack tracks (level, dict_ref) for the current nesting path
+        stack = [(0, result)]
+        for row in self._visible_rows():
+            name = row.name
+            if name is None:
+                continue
+            level = row.aria_level or 1
+            # Pop stack back to the parent of this level
+            while stack and stack[-1][0] >= level:
+                stack.pop()
+            parent_dict = stack[-1][1] if stack else result
+            if row.is_expandable:
+                row.expand()
+                child_dict = {}
+                parent_dict[name] = child_dict
+                stack.append((level, child_dict))
+            else:
+                parent_dict[name] = row.result
+        return result
+
+    def get_row_by_name(self, name):
+        """Find and return the first visible row matching the given name.
+
+        :param name: the text to match in the Name column
+        :return: SyncStatusTreeRow
+        :raises NodeNotFoundError: if no row matches
+        """
+        for row in self._visible_rows():
+            if row.name == name:
+                return row
+        raise NodeNotFoundError(f'Row with name "{name}" not found')
 
     def get_node_from_path(self, node_path):
-        """Return a node from it's path representation
+        """Navigate the tree to find a node by its path.
 
-        :param node_path: a list or tuple representing the path to a node, for
-            example: ('product1', 'repo1')
-        :return: SyncStatusTableNode
+        Expands parent nodes as needed to reveal child rows.
+
+        :param node_path: a list or tuple representing the path to a node,
+            e.g. ('product1', 'repo1')
+        :return: SyncStatusTreeRow
+        :raises NodeNotFoundError: if the target node is not found
         """
-        parent_node = self.nodes
-        node = None
-        for name in node_path:
-            if name and name in parent_node:
-                node = parent_node[name]
-                parent_node = node
-        if node and node.name != node_path[-1]:
-            raise NodeNotFoundError(f'Target node "{node_path}" not found')
-        return node
+        non_none_path = [name for name in node_path if name is not None]
+        current_row = None
+        for i, name in enumerate(non_none_path):
+            is_last = i == len(non_none_path) - 1
+            if current_row is not None:
+                current_row.expand()
+            found = False
+            for row in self._visible_rows():
+                if row.name == name:
+                    current_row = row
+                    found = True
+                    break
+            if not found:
+                if is_last:
+                    raise NodeNotFoundError(f'Node "{name}" not found in path {node_path}')
+                # Intermediate level not present in tree, skip it
+        return current_row
 
 
-class SyncStatusView(BaseLoggedInView):
-    title = Text("//h2[contains(., 'Sync Status')]")
-    collapse_all = Text(".//a[@id='collapse_all']")
-    expand_all = Text(".//a[@id='expand_all']")
-    select_none = Text(".//a[@id='select_none']")
-    select_all = Text(".//a[@id='select_all']")
-    active_only = Checkbox(id='sync_toggle')
-    table = SyncStatusTable(".//table[@id='products_table']")
-    synchronize_now = Text(".//form/input[@type='submit']")
+class SelectAllDropdown(Widget):
+    """Split-button checkbox dropdown for Select All / Select None."""
+
+    ROOT = './/div[@data-ouia-component-id="tree-selection-checkbox"]'
+    CHECKBOX = './/input[@aria-label="Select all"]'
+    TOGGLE_BUTTON = './/button[contains(@class, "pf-v5-c-dropdown__toggle-button")]'
+    SELECT_NONE = './/button[@data-ouia-component-id="select-none"]'
+    SELECT_ALL = './/button[@data-ouia-component-id="select-all"]'
+
+    def _open_dropdown(self):
+        """Open the dropdown menu."""
+        toggle = self.browser.element(self.TOGGLE_BUTTON, parent=self)
+        self.browser.click(toggle)
+
+    def select_all(self):
+        """Select all repositories."""
+        self._open_dropdown()
+        btn = self.browser.element(self.SELECT_ALL, parent=self)
+        self.browser.click(btn)
+
+    def select_none(self):
+        """Deselect all repositories."""
+        self._open_dropdown()
+        btn = self.browser.element(self.SELECT_NONE, parent=self)
+        self.browser.click(btn)
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        try:
+            self.browser.element(self.CHECKBOX, parent=self)
+            return True
+        except NoSuchElementException:
+            return False
+
+
+class SyncStatusView(BaseLoggedInView):
+    title = Text('//h1[@data-ouia-component-id="sync-status-title"]')
+
+    # Toolbar
+    selection_dropdown = SelectAllDropdown()
+    show_syncing_only = PF5OUIASwitch('show-syncing-only-switch')
+    synchronize = PF5Button(locator='//button[@data-ouia-component-id="sync-button"]')
+
+    # Tree table
+    table = SyncStatusTreeTable(locator='.//table[@data-ouia-component-id="sync-status-table"]')
+
+    @property
+    def is_displayed(self):
+        return self.title.is_displayed
