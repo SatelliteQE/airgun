@@ -977,7 +977,8 @@ class NewHostEntity(HostEntity):
 
     def get_recommendations(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        wait_for(lambda: view.iop_recommendations.recommendations_table.is_displayed, timeout=30)
+        view.wait_displayed(timeout=30)
+        wait_for(lambda: view.iop_recommendations.recommendations_table.is_displayed, timeout=60)
         return view.iop_recommendations.recommendations_table.read()
 
     def remediate_host_recommendation(self, entity_name, recommendation):
