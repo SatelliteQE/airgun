@@ -90,9 +90,7 @@ class BaseLoggedInView(View):
         return normalize_dict_values(values)
 
     def documentation_links(self):
-        """Return Documentation links present on the given page if any.
-        Note: This is not a full-proof helper. For example, it can't get links hidden behind a dropdown button.
-        """
+        """Return Documentation links present on the given page if any."""
         doc_link_elements = (
             '//a[contains(text(), "documentation") or contains(text(), "Documentation") or '
             'contains(@class, "btn-docs") or contains(@href, "console.redhat.com") or '
@@ -114,9 +112,11 @@ class BaseLoggedInView(View):
                     self.browser.switch_to_window(self.browser.window_handles[0])
                     self.browser.close_window(self.browser.window_handles[1])
             except ElementNotInteractableException:
-                # Adding this because some links are hidden behind dropdown button.
-                # To Do: Handle doc buttons hidden behind drop down buttons.
-                doc_links.extend([item.get_attribute('href')])
+                # Some links are hidden so we can't click them directly. Instead we open the hyperlink and save target url
+                new_handle = self.browser.new_window(item.get_attribute('href'), focus=True)
+                doc_links.extend([self.browser.url])
+                self.browser.switch_to_window(self.browser.window_handles[0])
+                self.browser.close_window(new_handle)
                 continue
         return doc_links
 
