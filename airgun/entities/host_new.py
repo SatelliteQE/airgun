@@ -4,8 +4,7 @@ from navmazing import NavigateToSibling
 from wait_for import wait_for
 
 from airgun.entities.host import HostEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
+from airgun.navigation import NavigateStepWithWait as NavigateStep, navigator
 from airgun.views.cloud_insights import RemediateSummary
 from airgun.views.fact import HostFactView
 from airgun.views.host import HostsView as LegacyHostsView
@@ -977,7 +976,7 @@ class NewHostEntity(HostEntity):
 
     def get_recommendations(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
-        view.wait_displayed(timeout=30)
+        view.iop_recommendations.select()
         wait_for(lambda: view.iop_recommendations.recommendations_table.is_displayed, timeout=60)
         return view.iop_recommendations.recommendations_table.read()
 
@@ -1187,7 +1186,6 @@ class ShowAllHosts(NavigateStep):
 
     VIEW = HostsView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'All Hosts')
 

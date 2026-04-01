@@ -96,7 +96,7 @@ class RemediationView(View):
 
     @property
     def is_displayed(self):
-        return self.title.wait_displayed()
+        return self.remediate.is_displayed
 
 
 class Card(View):
@@ -268,7 +268,7 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class NewHostDetailsView(BaseLoggedInView):
@@ -276,8 +276,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Hosts'
+        return self.breadcrumb.is_displayed and self.breadcrumb.locations[0] == 'Hosts'
 
     edit = PF5OUIAButton('host-edit-button')
     dropdown = PF5Dropdown(locator='//button[@id="hostdetails-kebab"]/..')
@@ -1168,8 +1167,7 @@ class ManageColumnsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        title = self.browser.wait_for_element(self.title, exception=False)
-        return title is not None and title.is_displayed()
+        return self.title.is_displayed
 
     def expand_all(self):
         """Expand all tree sections that are collapsed"""
@@ -1245,4 +1243,4 @@ class ManageMultiCVEnvModal(PF5Modal):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
