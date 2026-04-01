@@ -19,7 +19,6 @@ from widgetastic_patternfly4 import (
     DualListSelector,
     Pagination as PF4Pagination,
     Select,
-    Tab,
 )
 from widgetastic_patternfly4.ouia import (
     Button as OUIAButton,
@@ -363,13 +362,13 @@ class NewHostDetailsView(BaseLoggedInView):
             ROOT = './/div[@data-ouia-component-id="card-template-Recent jobs"]'
             actions = Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]')
 
-            class finished(Tab):
+            class finished(PF5Tab):
                 table = SatTableWithoutHeaders(locator='.//table[@aria-label="recent-jobs-table"]')
 
-            class running(Tab):
+            class running(PF5Tab):
                 table = SatTableWithoutHeaders(locator='.//table[@aria-label="recent-jobs-table"]')
 
-            class scheduled(Tab):
+            class scheduled(PF5Tab):
                 table = SatTableWithoutHeaders(locator='.//table[@aria-label="recent-jobs-table"]')
 
         @View.nested
