@@ -1,5 +1,8 @@
 import time
 
+from wait_for import wait_for
+from widgetastic.exceptions import NoSuchElementException
+
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStepWithWait as NavigateStep, navigator
 from airgun.views.cloud_inventory import CloudInventoryListView
@@ -90,6 +93,30 @@ class CloudInventoryEntity(BaseEntity):
         """Sync Inventory status"""
         view = self.navigate_to(self, 'All')
         view.sync_status.click()
+
+    def read_sync_status_toast(self, expected_text='Registered hosts in organization', timeout=60):
+        """Poll for the inventory-sync flash notification and return its text.
+
+        Navigates to the Inventory Upload page, waits until a flash message
+        containing ``expected_text`` appears, dismisses it, and returns the
+        full message string.
+        """
+        view = self.navigate_to(self, 'All')
+
+        def _get_toast():
+            try:
+                if not view.flash.is_displayed:
+                    return None
+                for msg in view.flash.read():
+                    if expected_text in msg:
+                        return msg
+            except NoSuchElementException:
+                pass
+            return None
+
+        toast_text, _ = wait_for(_get_toast, timeout=timeout, delay=5, fail_condition=None)
+        view.flash.dismiss()
+        return toast_text
 
     def generate_and_upload_report(self, entity_name):
         """
