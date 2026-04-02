@@ -31,6 +31,7 @@ from airgun.entities.configgroup import ConfigGroupEntity
 from airgun.entities.containerimages import ContainerImagesEntity
 from airgun.entities.containerimagetag import ContainerImageTagEntity
 from airgun.entities.contentcredential import ContentCredentialEntity
+from airgun.entities.contentcredential_new import NewContentCredentialEntity
 from airgun.entities.contentview import ContentViewEntity
 from airgun.entities.contentview_new import NewContentViewEntity
 from airgun.entities.contentviewfilter import ContentViewFilterEntity
@@ -444,6 +445,11 @@ class Session:
     def computeresource(self):
         """Instance of ComputeResource entity."""
         return self._open(ComputeResourceEntity)
+
+    @cached_property
+    def contentcredential_new(self):
+        """Instance of the new React-based Content Credential entity."""
+        return self._open(NewContentCredentialEntity)
 
     @cached_property
     def contentview(self):
