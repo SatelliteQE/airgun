@@ -173,7 +173,7 @@ class CloudVulnerabilityView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.title.is_displayed or  self.no_authorized_header.is_displayed
+        return self.title.is_displayed or self.no_authorized_header.is_displayed
 
 
 class ActionsDropdownMenu(Widget):
