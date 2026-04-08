@@ -1,6 +1,5 @@
-from widgetastic.exceptions import NoSuchElementException
 from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import Text, TextInput, View, Widget
+from widgetastic.widget import Text, TextInput, View
 from widgetastic_patternfly import Tab
 from widgetastic_patternfly5 import (
     Button as PF5Button,
@@ -11,10 +10,11 @@ from widgetastic_patternfly5.ouia import (
     PatternflyTable as PF5OUIATable,
 )
 
-from airgun.views.common import BaseLoggedInView, SearchableViewMixin
+from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
+from airgun.widgets import PF5SpacedListItem
 
 
-class ContentCredentialsTableView(BaseLoggedInView, SearchableViewMixin):
+class ContentCredentialsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     """PF5 list page for Content Credentials at /labs/content_credentials."""
 
     title = Text('//h1[normalize-space(.)="Content Credentials"]')
@@ -33,36 +33,6 @@ class ContentCredentialsTableView(BaseLoggedInView, SearchableViewMixin):
 class ContentCredentialCreateView(BaseLoggedInView):
     # Not yet implemented in React UI
     pass
-
-
-class DetailField(Widget):
-    """A field in a PF5 description list (dt/dd pair).
-
-    Locates a ``<dt>``/``<dd>`` pair by the label text in the ``<dt>`` element.
-    """
-
-    def __init__(self, parent, label, **kwargs):
-        super().__init__(parent, **kwargs)
-        self.label = label
-
-    def _dd_locator(self):
-        return f'.//dt[normalize-space(.)="{self.label}"]/following-sibling::dd[1]'
-
-    @property
-    def is_displayed(self):
-        try:
-            self.browser.element(self._dd_locator())
-            return True
-        except NoSuchElementException:
-            return False
-
-    def read(self):
-        """Return the text content of the ``<dd>`` element."""
-        dd = self.browser.element(self._dd_locator())
-        return self.browser.text(dd).strip()
-
-    def __locator__(self):
-        return self._dd_locator()
 
 
 class DeleteContentCredentialModal(PF5Modal):
@@ -97,13 +67,13 @@ class ContentCredentialEditView(BaseLoggedInView):
     class details(Tab):
         TAB_LOCATOR = ParametrizedLocator('//*[@data-ouia-component-id="routed-tabs-tab-details"]')
 
-        name = DetailField(label='Name')
-        content_type = DetailField(label='Type')
-        content = DetailField(label='Content')
+        name = PF5SpacedListItem(label='Name')
+        content_type = PF5SpacedListItem(label='Type')
+        content = PF5SpacedListItem(label='Content')
         upload_file = PF5Button(locator='.//button[@data-ouia-component-id="upload-file-button"]')
-        products = DetailField(label='Products')
-        repositories = DetailField(label='Repositories')
-        alternate_content_sources = DetailField(label='Alternate content sources')
+        products = PF5SpacedListItem(label='Products')
+        repositories = PF5SpacedListItem(label='Repositories')
+        alternate_content_sources = PF5SpacedListItem(label='Alternate content sources')
 
     @View.nested
     class products(Tab):
