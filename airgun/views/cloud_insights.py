@@ -195,7 +195,8 @@ class RecommendationsTableExpandedRowView(RecommendationsDetailsView):
 
 class RecommendationsTabView(BaseLoggedInView):
     """View representing the Recommendations Tab."""
-
+    DEFAULT_TRIES = 6
+    WAIT_TIMEOUT = 30
     title = PF5Title('Recommendations')
     search_field = TextInput(locator=('.//input[@aria-label="text input"]'))
     clear_button = PF5Button('Reset filters')
@@ -224,4 +225,4 @@ class RecommendationsTabView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.table.is_displayed and self.clear_button.is_displayed
+        return (self.table.is_displayed and self.clear_button.is_displayed) or self.no_authorized_header.is_displayed

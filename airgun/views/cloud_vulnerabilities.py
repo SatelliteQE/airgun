@@ -116,6 +116,8 @@ class FilterTypeMenu(Widget):
 class CloudVulnerabilityView(BaseLoggedInView):
     """Main Insights Vulnerabilities view."""
 
+    DEFAULT_TRIES = 6
+    WAIT_TIMEOUT = 30
     title = Text('//h1[normalize-space(.)="Vulnerabilities"]')
     cves_with_known_exploits_card = PF5Button(
         '//div[@data-ouia-component-type="PF5/Card"][.//b[text()="CVEs with known exploits"]]'
@@ -171,7 +173,7 @@ class CloudVulnerabilityView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.title.is_displayed
+        return self.title.is_displayed or  self.no_authorized_header.is_displayed
 
 
 class ActionsDropdownMenu(Widget):
@@ -225,6 +227,9 @@ class CVEDetailsView(BaseLoggedInView):
 class EditVulnerabilitiesModal(PF5Modal):
     """View representing edit CVE Modal"""
 
+    DEFAULT_TRIES = 6
+    WAIT_TIMEOUT = 30
+    title = Text('.//h1[contains(@class, "pf-v5-c-modal-box__title")]')
     justification_note = TextInput(
         locator=".//textarea[contains(@aria-label, 'justification note')]"
     )
