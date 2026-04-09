@@ -1,13 +1,12 @@
 from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import Text, TextInput, View
+from widgetastic.widget import Text, View
 from widgetastic_patternfly import Tab
-from widgetastic_patternfly5 import (
-    Button as PF5Button,
-    Modal as PF5Modal,
-)
 from widgetastic_patternfly5.ouia import (
+    Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
+    Modal as PF5OUIAModal,
     PatternflyTable as PF5OUIATable,
+    TextInput as PF5OUIATextInput,
 )
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
@@ -35,13 +34,13 @@ class ContentCredentialCreateView(BaseLoggedInView):
     pass
 
 
-class DeleteContentCredentialModal(PF5Modal):
+class DeleteContentCredentialModal(PF5OUIAModal):
     """PF5 confirmation modal for deleting a Content Credential."""
 
-    ROOT = './/div[@data-ouia-component-id="delete-content-credential-modal"]'
+    OUIA_ID = 'delete-content-credential-modal'
 
-    confirm_delete = PF5Button(locator='.//button[@data-ouia-component-id="delete-confirm-button"]')
-    cancel = PF5Button(locator='.//button[@data-ouia-component-id="delete-cancel-button"]')
+    confirm_delete = PF5OUIAButton('delete-confirm-button')
+    cancel = PF5OUIAButton('delete-cancel-button')
 
     @property
     def is_displayed(self):
@@ -54,9 +53,7 @@ class ContentCredentialEditView(BaseLoggedInView):
     title = Text('.//h1[@data-ouia-component-id="credential-details-header-name"]')
 
     # Action buttons
-    view_tasks = PF5Button(
-        locator='.//a[@data-ouia-component-id="credential-details-view-tasks-button"]'
-    )
+    view_tasks = PF5OUIAButton('credential-details-view-tasks-button')
     actions = PF5OUIADropdown(component_id='credential-details-actions')
 
     @property
@@ -70,7 +67,7 @@ class ContentCredentialEditView(BaseLoggedInView):
         name = PF5SpacedListItem(label='Name')
         content_type = PF5SpacedListItem(label='Type')
         content = PF5SpacedListItem(label='Content')
-        upload_file = PF5Button(locator='.//button[@data-ouia-component-id="upload-file-button"]')
+        upload_file = PF5OUIAButton('upload-file-button')
         products = PF5SpacedListItem(label='Products')
         repositories = PF5SpacedListItem(label='Repositories')
         alternate_content_sources = PF5SpacedListItem(label='Alternate content sources')
@@ -83,9 +80,7 @@ class ContentCredentialEditView(BaseLoggedInView):
             './/div[@data-ouia-component-id="products-empty-state-card"]'
             '//*[contains(@class, "pf-v5-c-empty-state__body")]'
         )
-        filter_input = TextInput(
-            locator='.//input[@data-ouia-component-id="products-filter-input"]'
-        )
+        filter_input = PF5OUIATextInput('products-filter-input')
         table = PF5OUIATable(
             component_id='content-credential-products-table',
             column_widgets={'Name': Text('./a')},
@@ -101,9 +96,7 @@ class ContentCredentialEditView(BaseLoggedInView):
             './/div[@data-ouia-component-id="repositories-empty-state-card"]'
             '//*[contains(@class, "pf-v5-c-empty-state__body")]'
         )
-        filter_input = TextInput(
-            locator='.//input[@data-ouia-component-id="repositories-filter-input"]'
-        )
+        filter_input = PF5OUIATextInput('repositories-filter-input')
         table = PF5OUIATable(component_id='content-credential-repositories-table')
 
     @View.nested
@@ -116,5 +109,5 @@ class ContentCredentialEditView(BaseLoggedInView):
             './/div[@data-ouia-component-id="acs-empty-state-card"]'
             '//*[contains(@class, "pf-v5-c-empty-state__body")]'
         )
-        filter_input = TextInput(locator='.//input[@data-ouia-component-id="acs-filter-input"]')
+        filter_input = PF5OUIATextInput('acs-filter-input')
         table = PF5OUIATable(component_id='content-credential-acs-table')
