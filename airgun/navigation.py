@@ -15,10 +15,6 @@ class NavigateStep(navmazing.NavigateStep):
     and ability to work with views.
     """
 
-    DEFAULT_TRIES = 1
-    WAIT_TIMEOUT = 20
-    WAIT_FOR_AM_I_HERE = False
-
     VIEW = None
 
     def __init__(self, obj, navigate_obj, logger=None):
@@ -84,12 +80,6 @@ class NavigateStep(navmazing.NavigateStep):
         except (AttributeError, NoSuchElementException):
             return False
 
-    def pre_navigate(self, *args, **kwargs):
-        return
-
-    def post_navigate(self, *args, **kwargs):
-        return
-
     def go(self, _tries=0, *args, **kwargs):
         """Override of :meth:`navmazing.NavigateStep.go`, which returns
         instance of view after successful navigation.
@@ -97,14 +87,28 @@ class NavigateStep(navmazing.NavigateStep):
         :return: view instance if class attribute ``VIEW`` is set or ``None``
             otherwise
         """
-        # Legacy method, with no post-navigation check and weird recursive retry behavior
-        if not self.WAIT_FOR_AM_I_HERE:
-            super().go(*args, _tries=_tries, **kwargs)
-            self.navigate_obj.browser.plugin.ensure_page_safe()
-            view = self.view if self.VIEW is not None else None
-            return view
+        super().go(*args, _tries=_tries, **kwargs)
+        self.navigate_obj.browser.plugin.ensure_page_safe()
+        view = self.view if self.VIEW is not None else None
+        return view
 
-        # New method, with post-navigation check and explicit retry loop
+
+class NavigateStepWithWait(NavigateStep):
+    """NavigateStep with post-navigation check and explicit retry loop"""
+
+    DEFAULT_TRIES = 1
+    WAIT_TIMEOUT = 20
+
+    def pre_navigate(self, *args, **kwargs):
+        """Override navmazing's retry behavior"""
+        return
+
+    def post_navigate(self, *args, **kwargs):
+        """Override navmazing method"""
+        return
+
+    def go(self, _tries=0, *args, **kwargs):
+        """Override weird recursive retry behavior and run post-navigation am_i_here check"""
         for _ in range(self.DEFAULT_TRIES):
             self.pre_navigate(*args, **kwargs)
 
@@ -152,10 +156,6 @@ class NavigateStep(navmazing.NavigateStep):
         raise navmazing.NavigationTriesExceeded(self._name)
 
 
-class NavigateStepWithWait(NavigateStep):
-    WAIT_FOR_AM_I_HERE = True
-
-
 class Navigate(navmazing.Navigate):
     """Wrapper around :class:`navmazing.Navigate` which adds airgun browser as
     class attribute.
@@ -179,7 +179,7 @@ class Navigate(navmazing.Navigate):
         __tracebackhide__ = True
 
         nav = self.get_class(cls_or_obj, name)
-        return nav(cls_or_obj, self, self.logger).go(*args, **kwargs)
+        return nav(cls_or_obj, self, self.logger).go(0, *args, **kwargs)
 
 
 # Navigator instance to be used in other modules. Please note that you should
