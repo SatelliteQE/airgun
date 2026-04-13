@@ -3225,3 +3225,36 @@ class PF5TypeaheadSelect(Widget):
     def read(self):
         """Read current value from the input field."""
         return self.browser.get_attribute('value', self.browser.element(self.locator)) or ''
+
+
+class PF5SpacedListItem(Widget):
+    """A read-only field in a PF5 description list (``<dl>``).
+
+    Locates a ``<dt>``/``<dd>`` pair by the label text in the ``<dt>`` element
+    and reads the text content of the associated ``<dd>`` element.
+
+    Example html representation::
+
+        <dl>
+            <dt>Name</dt>
+            <dd class="foreman-spaced-list">
+                <div>some value</div>
+            </dd>
+        </dl>
+
+    Usage::
+
+        name = PF5SpacedListItem(label='Name')
+        content_type = PF5SpacedListItem(label='Type')
+    """
+
+    def __init__(self, parent, label, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.label = label
+
+    def __locator__(self):
+        return f'.//dt[normalize-space(.)="{self.label}"]/following-sibling::dd[1]'
+
+    def read(self):
+        """Return the text content of the ``<dd>`` element."""
+        return self.browser.text(self).strip()
