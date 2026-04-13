@@ -2,6 +2,7 @@ from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Text, View
 from widgetastic_patternfly import Tab
 from widgetastic_patternfly5.ouia import (
+    BreadCrumb as PF5OUIABreadCrumb,
     Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
     Modal as PF5OUIAModal,
@@ -51,6 +52,7 @@ class ContentCredentialEditView(BaseLoggedInView):
     """PF5 details page for a Content Credential at /labs/content_credentials/:id."""
 
     title = Text('.//h1[@data-ouia-component-id="credential-details-header-name"]')
+    page_breadcrumb = PF5OUIABreadCrumb('content-credential-breadcrumb')
 
     # Action buttons
     view_tasks = PF5OUIAButton('credential-details-view-tasks-button')
