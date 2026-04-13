@@ -467,19 +467,6 @@ modal.wait_displayed(timeout=10)
 modal.confirm.click()
 ```
 
-### Advanced: Custom Retry Behavior
-
-To override the default wait timeout or number of tries for specific navigation steps:
-```
-class NavigateToMyTrickyView(NavigateStep):
-    VIEW = MyTrickyView
-    DEFAULT_TRIES = 3   # Retry up to 3 times
-    WAIT_TIMEOUT = 30   # Wait 30 seconds for am_i_here
-
-    def step(self, *args, **kwargs):
-        self.view.menu.select('Tricky', 'View')
-```
-
 ---
 
 ## Additional Resources
