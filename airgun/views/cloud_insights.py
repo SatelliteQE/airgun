@@ -196,8 +196,6 @@ class RecommendationsTableExpandedRowView(RecommendationsDetailsView):
 class RecommendationsTabView(BaseLoggedInView):
     """View representing the Recommendations Tab."""
 
-    DEFAULT_TRIES = 6
-    WAIT_TIMEOUT = 30
     title = PF5Title('Recommendations')
     search_field = TextInput(locator=('.//input[@aria-label="text input"]'))
     clear_button = PF5Button('Reset filters')
