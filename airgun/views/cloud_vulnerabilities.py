@@ -171,7 +171,7 @@ class CloudVulnerabilityView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.title.is_displayed
+        return self.title.is_displayed or self.no_authorized_header.is_displayed
 
 
 class ActionsDropdownMenu(Widget):
@@ -225,6 +225,7 @@ class CVEDetailsView(BaseLoggedInView):
 class EditVulnerabilitiesModal(PF5Modal):
     """View representing edit CVE Modal"""
 
+    title = Text('.//h1[contains(@class, "pf-v5-c-modal-box__title")]')
     justification_note = TextInput(
         locator=".//textarea[contains(@aria-label, 'justification note')]"
     )
