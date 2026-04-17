@@ -229,12 +229,12 @@ class HostEntity(BaseEntity):
         view.flash.dismiss()
 
     def change_content_source(
-            self,
-            entities_list,
-            content_source,
-            cv_env_assignments,
-            run_job_invocation=False,
-            update_hosts_manually=False,
+        self,
+        entities_list,
+        content_source,
+        cv_env_assignments,
+        run_job_invocation=False,
+        update_hosts_manually=False,
     ):
         """
         Apply Change Content Source action with multiple CVEnv assignments (Katello PR #11704)
@@ -300,8 +300,7 @@ class HostEntity(BaseEntity):
             entities_list=entities_list,
             content_source=content_source,
             cv_env_assignments=[
-                {'content_view': content_view,
-                 'lce': lce},
+                {'content_view': content_view, 'lce': lce},
             ],
             update_hosts_manually=True,
         )
