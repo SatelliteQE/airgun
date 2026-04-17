@@ -1,3 +1,4 @@
+import time
 from time import sleep
 
 from navmazing import NavigateToSibling
@@ -228,26 +229,26 @@ class HostEntity(BaseEntity):
         view.flash.dismiss()
 
     def change_content_source(
-        self,
-        entities_list,
-        content_source,
-        lce,
-        content_view,
-        run_job_invocation=False,
-        update_hosts_manually=False,
+            self,
+            entities_list,
+            content_source,
+            cv_env_assignments,
+            run_job_invocation=False,
+            update_hosts_manually=False,
     ):
         """
-        Apply Change Content Source action to one or more hosts
+        Apply Change Content Source action with multiple CVEnv assignments (Katello PR #11704)
 
         Args:
             entities_list (list): names of the hosts for which we would like to change the content source
             content_source (str): name of the content source to be selected
-            lce (str): name of the LCE to be selected
-            content_view (str): name of the content view to be selected
-            run_job_invocation (bool): whether to run job invocation in order to change the host's content source
-            update_hosts_manually (bool): whether to update hosts manually in order to change the host's content source
+            cv_env_assignments (list): list of dicts with 'content_view' and 'lce' keys
+                                      Example: [{'content_view': 'CV1', 'lce': 'LCE1'},
+                                              {'content_view': 'CV2', 'lce': 'LCE2'}]
+            run_job_invocation (bool): whether to run job invocation
+            update_hosts_manually (bool): whether to update hosts manually
         """
-
+        # Navigate and select hosts
         AllHostsEntity.all_hosts_navigate_and_select_hosts_helper(self, host_names=entities_list)
         view = AllHostsTableView(self.browser)
         view.bulk_actions_kebab.click()
@@ -255,29 +256,38 @@ class HostEntity(BaseEntity):
         view.bulk_actions_manage_content_menu.item_select('Content source')
         view = HostsChangeContentSourceView(self.browser)
         view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
+        # Select content source
         wait_for(lambda: view.content_source_select.is_displayed, timeout=10, delay=1)
+        time.sleep(2)
         view.content_source_select.fill(content_source)
-        wait_for(lambda: view.lce_env_title.is_displayed, timeout=10, delay=1)
-        # click on the specific LCE radio button
-        self.browser.click(
-            f'//input[@type="radio" and following-sibling::label[normalize-space(.)="{lce}"]]'
-        )
-        view = HostsChangeContentSourceView(self.browser)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
-        view.content_view_select.click()
-        wait_for(lambda: view.content_view_select.is_displayed, timeout=10, delay=1)
-        view.wait_displayed()
-        self.browser.plugin.ensure_page_safe()
 
-        self.browser.click(f'.//*[contains(text(), "{content_view}")][1]')
+        # Assign multiple CVEnvs
+        for i, assignment in enumerate(cv_env_assignments):
+            if i > 0:
+                # Click "Add content view environment" button for additional assignments
+                view.add_cvenv_btn.click()
+                self.browser.plugin.ensure_page_safe()
+
+            lce_name = assignment.get('lce')
+            cv_name = assignment.get('content_view')
+
+            # Get the assignment section for this LCE
+            assignment_section = view.new_assignment_section(lce_name=lce_name)
+            assignment_section.lce_selector.wait_displayed(timeout=5)
+            assignment_section.lce_selector.click()
+            self.browser.plugin.ensure_page_safe()
+
+            # Select content view
+            assignment_section.content_source_select.item_select(cv_name)
+            self.browser.plugin.ensure_page_safe()
+
+        # Complete the action
         if run_job_invocation:
             view.run_job_invocation.click()
             view.wait_displayed()
             self.browser.plugin.ensure_page_safe(timeout='5s')
         elif update_hosts_manually:
-            view.update_hosts_manualy.click()
+            view.update_hosts_manually.click()
             view.wait_displayed()
             self.browser.plugin.ensure_page_safe(timeout='5s')
 
@@ -287,7 +297,13 @@ class HostEntity(BaseEntity):
         """
 
         self.change_content_source(
-            entities_list, content_source, lce, content_view, update_hosts_manually=True
+            entities_list=entities_list,
+            content_source=content_source,
+            cv_env_assignments=[
+                {'content_view': content_view,
+                 'lce': lce},
+            ],
+            update_hosts_manually=True,
         )
         view = HostsChangeContentSourceView(self.browser)
         wait_for(lambda: view.show_more_change_content_source.is_displayed, timeout=10, delay=1)

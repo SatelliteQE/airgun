@@ -8,6 +8,7 @@ from widgetastic.widget import (
     ConditionalSwitchableView,
     GenericLocatorWidget,
     NoSuchElementException,
+    ParametrizedView,
     Select,
     Table,
     Text,
@@ -30,8 +31,9 @@ from widgetastic_patternfly5.ouia import (
     TextInput as PF5OUIATextInput,
 )
 
+from airgun.views.all_hosts import CVESelect
 from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
-from airgun.views.host_new import MenuToggleButtonMenu
+from airgun.views.host_new import MenuToggleButtonMenu, NewCVEnvAssignmentSection
 from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 from airgun.views.task import TaskDetailsView
 from airgun.widgets import (
@@ -45,6 +47,7 @@ from airgun.widgets import (
     Link,
     MultiSelect,
     Pf4ConfirmationDialog,
+    PF5LCESelector,
     PuppetClassesMultiSelect,
     RadioGroup,
     RemovableWidgetsItemsListView,
@@ -801,14 +804,17 @@ class HostsChangeContentSourceView(View):
     content_source_select = PF5OUIASelect('content-source-select')
     disabled_environment_status = Text('//div[@aria-label="Info Alert"]')
 
-    lce_env_title = Text('//div[normalize-space(.)="Lifecycle environment"]')
-    lce_env_path_list = Text('//div[@class="env-path"]/div/div')
+    # Multi-CVEnv support widgets (Katello PR #11704)
+    add_cvenv_btn = PF5Button('add-cvenv-button')
+    cvenv_count_badge = Text('//span[@class="pf-v5-c-badge pf-m-read"]')
+    new_assignment_section = ParametrizedView.nested(NewCVEnvAssignmentSection)
 
-    content_view_select = PF5OUIASelect('SelectContentView')
-    content_view_select_btn = Text(locator='//button[@aria-label="Options menu" and @tabindex]')
+    # Widgets for selecting LCE and CV within an assignment section
+    lce_selector = PF5LCESelector(locator='.//div[@class="env-path"]')
+    cv_select = CVESelect()
 
-    run_job_invocation = Text(locator='//*[normalize-space(.)="Run job invocation"]')
-    update_hosts_manualy = Text(locator='//*[normalize-space(.)="Update hosts manually"]')
+    run_job_invocation = PF5Button('run-job-invocation-button')
+    update_hosts_manually = PF5Button('update-source-button')
 
     show_more_change_content_source = Text('//button[normalize-space(.)="Show more"]')
     show_less_change_content_source = Text('//button[normalize-space(.)="Show less"]')
