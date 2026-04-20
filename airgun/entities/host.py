@@ -236,14 +236,12 @@ class HostEntity(BaseEntity):
         update_hosts_manually=False,
     ):
         """
-        Apply Change Content Source action with multiple CVEnv assignments (Katello PR #11704)
+        Apply Change Content Source action with multiple CVEnv assignments
 
         Args:
             entities_list (list): names of the hosts for which we would like to change the content source
             content_source (str): name of the content source to be selected
             cv_env_assignments (list): list of dicts with 'content_view' and 'lce' keys
-                                      Example: [{'content_view': 'CV1', 'lce': 'LCE1'},
-                                              {'content_view': 'CV2', 'lce': 'LCE2'}]
             run_job_invocation (bool): whether to run job invocation
             update_hosts_manually (bool): whether to update hosts manually
         """
