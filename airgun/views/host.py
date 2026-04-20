@@ -23,9 +23,9 @@ from widgetastic_patternfly4.ouia import (
 )
 from widgetastic_patternfly5.components.tabs import Tab
 from widgetastic_patternfly5.ouia import (
-    Button as PF5Button,
+    Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
-    FormSelect as PF5FormSelect,
+    FormSelect as PF5OUIAFormSelect,
     PatternflyTable as PF5OUIATable,
     Select as PF5OUIASelect,
     TextInput as PF5OUIATextInput,
@@ -228,7 +228,7 @@ class HostStatusesView(BaseLoggedInView):
 
 class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Hosts']")
-    manage_columns = PF5Button('manage-columns-button')
+    manage_columns = PF5OUIAButton('manage-columns-button')
     searchbar_dropdown = PF5OUIADropdown('selection-checkbox')
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
     new = Text(".//div[@id='foreman-page']//a[@data-ouia-component-id='create-host-button']")
@@ -568,8 +568,8 @@ class HostCreateView(BaseLoggedInView):
 
 class HostRegisterView(BaseLoggedInView):
     title = Text("//h1[normalize-space(.)='Register Host']")
-    generate_command = PF5Button('registration_generate_btn')
-    cancel = PF5Button('registration-cancel-button')
+    generate_command = PF5OUIAButton('registration_generate_btn')
+    cancel = PF5OUIAButton('registration-cancel-button')
     registration_command = TextInput(locator="//input[@aria-label='Copyable input']")
 
     @View.nested
@@ -581,12 +581,12 @@ class HostRegisterView(BaseLoggedInView):
         )
         ROOT = '//section[@id="generalSection"]'
 
-        organization = PF5FormSelect('reg_organization')
-        location = PF5FormSelect('reg_location')
-        host_group = PF5FormSelect('reg_host_group')
-        operating_system = PF5FormSelect('os-select')
+        organization = PF5OUIAFormSelect('reg_organization')
+        location = PF5OUIAFormSelect('reg_location')
+        host_group = PF5OUIAFormSelect('reg_host_group')
+        operating_system = PF5OUIAFormSelect('os-select')
         linux_host_init_link = Link('//a[normalize-space(.)="Linux host_init_config default"]')
-        capsule = PF5FormSelect('reg_smart_proxy')
+        capsule = PF5OUIAFormSelect('reg_smart_proxy')
         insecure = Checkbox(id='reg_insecure')
         activation_keys = BaseMultiSelect('activation-keys-field')
         activation_key_helper = Text(
@@ -602,19 +602,19 @@ class HostRegisterView(BaseLoggedInView):
             '/li[button[normalize-space(.)={@tab_name|quote}]]'
         )
         ROOT = '//section[@id="advancedSection"]'
-        setup_rex = PF5FormSelect('registration_setup_remote_execution')
-        setup_insights = PF5FormSelect('registration_setup_insights')
+        setup_rex = PF5OUIAFormSelect('registration_setup_remote_execution')
+        setup_insights = PF5OUIAFormSelect('registration_setup_insights')
         install_packages = TextInput(id='reg_packages')
         update_packages = Checkbox(id='reg_update_packages')
         token_life_time = TextInput(id='reg_token_life_time_input')
         rex_interface = TextInput(id='reg_rex_interface_input')
-        rex_pull_mode = PF5FormSelect('registration_setup_remote_execution_pull')
+        rex_pull_mode = PF5OUIAFormSelect('registration_setup_remote_execution_pull')
         ignore_error = Checkbox(id='reg_katello_ignore')
         force = Checkbox(id='reg_katello_force')
         install_packages_helper = Text(
             locator='//input[@id="reg_packages"]/../..//div[contains(@class, "-c-helper-text")]'
         )
-        repository_add = PF5Button('host_reg_add_more_repositories')
+        repository_add = PF5OUIAButton('host_reg_add_more_repositories')
 
     @property
     def is_displayed(self):
@@ -649,11 +649,11 @@ class RepositoryListView(View):
     ROOT = '//div[@id="pf-modal-part-0" or @data-ouia-component-type="PF5/ModalContent"]'
     repository = PF5OUIATextInput('host_reg_repo')
     repository_gpg_key_url = PF5OUIATextInput('host_reg_gpg_key')
-    repository_list_confirm = PF5Button('reg_modal_confirm')
-    repository_list_reset = PF5Button('reg_modal_reset')
-    repository_list_add_new = PF5Button('host_reg_modal_add_new_repo')
-    repository_list_remove = PF5Button('0')
-    repository_list_popup_close = PF5Button('host_reg_repo_modal-ModalBoxCloseButton')
+    repository_list_confirm = PF5OUIAButton('reg_modal_confirm')
+    repository_list_reset = PF5OUIAButton('reg_modal_reset')
+    repository_list_add_new = PF5OUIAButton('host_reg_modal_add_new_repo')
+    repository_list_remove = PF5OUIAButton('0')
+    repository_list_popup_close = PF5OUIAButton('host_reg_repo_modal-ModalBoxCloseButton')
 
 
 class RecommendationWidget(GenericLocatorWidget):
@@ -805,7 +805,7 @@ class HostsChangeContentSourceView(View):
     disabled_environment_status = Text('//div[@aria-label="Info Alert"]')
 
     # Multi-CVEnv support widgets (Katello PR #11704)
-    add_cvenv_btn = PF5Button('add-cvenv-button')
+    add_cvenv_btn = PF5OUIAButton('add-cvenv-button')
     cvenv_count_badge = Text('//span[@class="pf-v5-c-badge pf-m-read"]')
     new_assignment_section = ParametrizedView.nested(NewCVEnvAssignmentSection)
 
@@ -813,8 +813,8 @@ class HostsChangeContentSourceView(View):
     lce_selector = PF5LCESelector(locator='.//div[@class="env-path"]')
     cv_select = CVESelect()
 
-    run_job_invocation = PF5Button('run-job-invocation-button')
-    update_hosts_manually = PF5Button('update-source-button')
+    run_job_invocation = PF5OUIAButton('run-job-invocation-button')
+    update_hosts_manually = PF5OUIAButton('update-source-button')
 
     show_more_change_content_source = Text('//button[normalize-space(.)="Show more"]')
     show_less_change_content_source = Text('//button[normalize-space(.)="Show less"]')

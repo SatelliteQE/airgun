@@ -1,4 +1,3 @@
-import time
 from time import sleep
 
 from navmazing import NavigateToSibling
@@ -258,7 +257,7 @@ class HostEntity(BaseEntity):
         view.wait_displayed()
         # Select content source
         wait_for(lambda: view.content_source_select.is_displayed, timeout=10, delay=1)
-        time.sleep(2)
+        sleep(2)
         view.content_source_select.fill(content_source)
 
         # Assign multiple CVEnvs
