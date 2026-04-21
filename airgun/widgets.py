@@ -989,7 +989,7 @@ class PF5NavSearch(PF4Search):
         """
         return (
             wait_for(
-                lambda: results_widget.read(),
+                results_widget.read,
                 timeout=self.results_timeout,
                 delay=0.5,
                 handle_exception=NoSuchElementException,
@@ -1007,7 +1007,7 @@ class PF5NavSearch(PF4Search):
     def _ensure_search_is_cleared(self):
         """Wait for `search_clear_timeout` seconds that the search input has been really cleared."""
         wait_for(
-            lambda: self._safe_search_clear(),
+            self._safe_search_clear,
             timeout=self.search_clear_timeout,
             delay=0.5,
         )

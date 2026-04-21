@@ -212,10 +212,12 @@ class ProductRepoDiscoveryView(BaseLoggedInView, SearchableViewMixin):
 
         def wait_repo_created(self):
             wait_for(
-                lambda: self.create_repos_table.row(
-                    create_status__contains='Repository created'
-                ).is_displayed
-                is True,
+                lambda: (
+                    self.create_repos_table.row(
+                        create_status__contains='Repository created'
+                    ).is_displayed
+                    is True
+                ),
                 timeout=300,
                 delay=1,
                 logger=self.logger,

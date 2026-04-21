@@ -650,7 +650,7 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         view.ansible.roles.edit.click()
-        wait_for(lambda: view.ansible.roles.edit.click(), timeout=5)
+        wait_for(view.ansible.roles.edit.click, timeout=5)
         edit_view = EditAnsibleRolesView(self.browser)
         edit_view.wait_displayed()
         actions = [edit_view.hostAssignedAnsibleRoles, edit_view.unselectRoles, edit_view.confirm]
