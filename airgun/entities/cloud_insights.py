@@ -105,7 +105,7 @@ class RecommendationsTabEntity(BaseEntity):
         """
         # Use navigator to open the Affected Systems details view
         view = self.navigate_to(self, 'Affected Systems', recommendation_name=recommendation_name)
-        wait_for(lambda: view.table.row(), handle_exception=True, timeout=20)
+        wait_for(view.table.row, handle_exception=True, timeout=20)
         time.sleep(5)
         view.bulk_select.select_all()
         view.remediate.click()
