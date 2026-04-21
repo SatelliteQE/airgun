@@ -32,7 +32,7 @@ class DiscoveredHostsEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'All')
         wait_for(
-            lambda: view.is_searchable(),
+            view.is_searchable,
             fail_condition=False,
             timeout=300,
             delay=10,

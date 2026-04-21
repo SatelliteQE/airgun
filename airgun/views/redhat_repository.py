@@ -10,8 +10,10 @@ from airgun.widgets import (
 def _wait_for_spinner(widget):
     """Wait for any spinner to disappear from widget"""
     wait_for(
-        lambda: widget.is_displayed
-        and not widget.browser.elements(".//div[contains(@class, 'spinner')]", parent=widget),
+        lambda: (
+            widget.is_displayed
+            and not widget.browser.elements(".//div[contains(@class, 'spinner')]", parent=widget)
+        ),
         timeout=60,
         delay=1,
         logger=widget.logger,

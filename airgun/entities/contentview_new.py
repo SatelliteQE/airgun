@@ -186,7 +186,7 @@ class NewContentViewEntity(BaseEntity):
         time.sleep(5)
         self.browser.plugin.ensure_page_safe(timeout='5s')
         # This allows dynamic access to the proper table
-        wait_for(lambda: getattr(view, tab_name).table.wait_displayed(), timeout=10)
+        wait_for(getattr(view, tab_name).table.wait_displayed, timeout=10)
         if search_param:
             getattr(view, tab_name).searchbox.search(search_param)
         return getattr(view, tab_name).table.read()
