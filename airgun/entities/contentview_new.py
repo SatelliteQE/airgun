@@ -109,7 +109,7 @@ class NewContentViewEntity(BaseEntity):
         )
         time.sleep(5)  # 'Loading' widget on page
         self.browser.plugin.ensure_page_safe(timeout='10s')
-        wait_for(lambda: view.table.is_displayed, timeout=20)
+        wait_for(lambda: view.repositories.table.is_displayed, timeout=20)
         result = view.version_dropdown.item_select('Delete')
         view.wait_displayed()
         # Remove from environment(s) wizard, if it appears
@@ -369,7 +369,7 @@ class EditContentView(NavigateStep):
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
-        self.parent.search.search(entity_name)
+        self.parent.search(entity_name)
         self.parent.table.wait_displayed()
         self.parent.table.row(name=entity_name)['Name'].widget.click()
 
@@ -388,7 +388,6 @@ class ShowContentViewVersionDetails(NavigateStep):
         self.parent.versions.wait_displayed()
         self.parent.versions.search(version)
         self.parent.versions.table.wait_displayed()
-        self.parent.versions.search(version).click()
         self.parent.versions.table.row(version=version)['Version'].widget.click()
 
 
