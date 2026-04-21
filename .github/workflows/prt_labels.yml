@@ -29,7 +29,7 @@ jobs:
 
         - name: remove the PRT Passed/Failed label, for new commit
           if: ${{ always() && steps.prt.outputs.result == 'not_found' }}
-          uses: actions/github-script@v8
+          uses: actions/github-script@v9
           with:
             github-token: ${{ secrets.CHERRYPICK_PAT }}
             script: |
