@@ -28,7 +28,7 @@ class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
     title = Text("//h1[normalize-space(.)='Tasks']")
     focus = ActionsDropdown("//div[./button[@id='tasks-dashboard-time-period-dropdown']]")
     table = SatTable(
-        ".//div[@class='tasks-table']//table",
+        ".//section[contains(@class, 'table-section')]//table",
         column_widgets={
             'Action': Text('./a'),
         },
