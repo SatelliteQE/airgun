@@ -73,7 +73,7 @@ class HostGroupCreateView(BaseLoggedInView):
         parent_name = FilteredDropdown(id='hostgroup_parent_id')
         name = TextInput(id='hostgroup_name')
         description = TextInput(id='hostgroup_description')
-        content_view_environment = FilteredDropdown(id='content_view_environment')
+        content_view_environment = FilteredDropdown(id='hostgroup_lifecycle_environment_id')
         content_source = FilteredDropdown(id='content_source_id')
         puppet_environment = FilteredDropdown(id='hostgroup_puppet_attributes_environment')
         deploy = FilteredDropdown(id='hostgroup_compute_resource')
