@@ -26,7 +26,7 @@ setup(
         'widgetastic.core>=1.1,<2.0',
         'widgetastic.patternfly<2.0',
         'widgetastic.patternfly4<2.0',
-        'widgetastic.patternfly5<26.0',
+        'widgetastic.patternfly5<27.0',
     ],
     packages=find_packages(exclude=['tests*']),
     package_data={'': ['LICENSE']},
