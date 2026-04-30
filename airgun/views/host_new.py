@@ -1,6 +1,7 @@
 import time
 
 from selenium.common.exceptions import NoSuchElementException
+from wait_for import wait_for
 from selenium.webdriver.common.by import By
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import (
@@ -270,8 +271,53 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
         return self.title.is_displayed
 
 
+class BreadcrumbSwitcher(Widget):
+    """Breadcrumb switcher widget for switching between hosts."""
+    ROOT = './/div[contains(@class, "pf4-breadcrumb-switcher")]'
+
+    # Toggle button to open/close the menu
+    toggle_button = PF5OUIAButton(component_id='breadcrumb-button')
+
+    # Search input inside the menu
+    search_input = TextInput(locator='.//input[@aria-label="Filter breadcrumb items"]')
+
+    # Menu container
+    menu = PF5Menu(locator='.//div[@data-ouia-component-id="breadcrumb-menu"]')
+
+    # Locator template for menu items
+    MENU_ITEM_LOCATOR = './/a[contains(@href, "/new/hosts/{hostname}")]'
+
+    def select_host(self, hostname):
+        """Select a host from the breadcrumb switcher.
+
+        Args:
+            hostname: The hostname to select
+        """
+        # Open the menu by clicking the toggle button
+        self.toggle_button.click()
+
+        # Wait for menu to be displayed
+        wait_for(lambda: self.search_input.is_displayed, timeout=5)
+
+        # Use search to filter the host list
+        self.search_input.fill(hostname)
+
+        # Wait for search to filter the results
+        time.sleep(1)
+
+        # Click on the menu item for the desired host
+        menu_item_locator = self.MENU_ITEM_LOCATOR.format(hostname=hostname)
+        menu_item = self.browser.element(menu_item_locator)
+        self.browser.click(menu_item)
+
+        # Wait for page to update after navigation
+        time.sleep(3)
+
+
 class NewHostDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb('breadcrumbs-list')
+    # Breadcrumb switcher for switching between hosts
+    breadcrumb_switcher = BreadcrumbSwitcher()
 
     @property
     def is_displayed(self):
