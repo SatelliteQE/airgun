@@ -974,6 +974,50 @@ class NewHostEntity(HostEntity):
         wait_for(lambda: view.insights.recommendations_table.is_displayed, timeout=10)
         return view.insights.read()
 
+    def select_host_from_breadcrumb(self, hostname):
+        """Select a different host using the breadcrumb switcher.
+
+        This method uses the breadcrumb switcher to change hosts without full page navigation.
+        Useful for testing that tabs update correctly when switching hosts via breadcrumb.
+
+        Args:
+            hostname: Name of the host to switch to
+        """
+        view = NewHostDetailsView(self.browser)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+
+        # Use the breadcrumb switcher to select the host
+        view.breadcrumb_switcher.select_host(hostname)
+
+        # Wait for the page to update after switching hosts
+        self.browser.plugin.ensure_page_safe()
+        wait_for(lambda: view.is_displayed, timeout=10)
+
+    def read_current_insights_tab(self):
+        """Read the Insights tab content without navigating to a different page.
+
+        This method reads the currently displayed Insights tab data.
+        It does NOT navigate to a host's details page, but instead reads whatever
+        is currently shown on the page. This is useful for verifying that the
+        tab content updated correctly after using breadcrumb switcher.
+
+        Returns:
+            dict: The insights tab data currently displayed on the page
+        """
+        view = NewHostDetailsView(self.browser)
+        view.wait_displayed()
+        self.browser.plugin.ensure_page_safe()
+
+        # Make sure we're on the Insights tab
+        if hasattr(view, 'insights') and not view.insights.is_displayed:
+            view.insights.select()
+            wait_for(lambda: view.insights.is_displayed, timeout=10)
+
+        # Read the insights data that's currently displayed
+        wait_for(lambda: view.insights.recommendations_table.is_displayed, timeout=10)
+        return view.insights.read()
+
     def get_recommendations(self, entity_name):
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.iop_recommendations.select()
