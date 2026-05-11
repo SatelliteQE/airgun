@@ -113,6 +113,22 @@ class FilterTypeMenu(Widget):
         self.browser.click(item_locator)
 
 
+class ExportMenu(Widget):
+    """Export dropdown menu for downloading vulnerabilities data."""
+
+    ROOT = './/button[contains(@class, "pf-v5-c-menu-toggle") and @aria-label="Export"]'
+
+    def item_select(self, item):
+        """Open the export menu and click an item."""
+        self.browser.click(self)
+        item_locator = (
+            f'//div[@data-ouia-component-id="Export"]'
+            f'//span[contains(@class, "pf-v5-c-menu__item-text")'
+            f' and contains(text(), "{item}")]'
+        )
+        self.browser.click(item_locator)
+
+
 class CloudVulnerabilityView(BaseLoggedInView):
     """Main Insights Vulnerabilities view."""
 
@@ -133,6 +149,7 @@ class CloudVulnerabilityView(BaseLoggedInView):
     cve_menu_toggle = PF5Button('.//button[contains(@class, "pf-v5-c-menu-toggle")]')
     no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
     no_authorized_header = Text('.//div[@data-ouia-component-id="NotAuthorized-header"]')
+    export_menu = ExportMenu()
 
     # OS Filter widgets
     # Multi-step conditional filter:
