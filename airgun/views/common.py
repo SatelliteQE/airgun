@@ -28,8 +28,8 @@ from airgun.widgets import (
     GenericRemovableWidgetItem,
     ItemsList,
     LCESelector,
-    Pf4ConfirmationDialog,
     PF4Search,
+    Pf5ConfirmationDialog as ConfirmationDialog,
     PF5LCECheckSelector,
     PF5LCESelector,
     PF5NavSearch,
@@ -51,7 +51,7 @@ class BaseLoggedInView(View):
     taxonomies = ContextSelector()
     flash = SatFlashMessages()
     validations = ValidationErrors()
-    dialog = Pf4ConfirmationDialog()
+    dialog = ConfirmationDialog()
     logout = Text("//a[@href='/users/logout']")
     current_user = PF5OUIADropdown('user-info-dropdown')
     account_menu = PF5OUIADropdown('user-info-dropdown')
