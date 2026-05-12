@@ -1,3 +1,5 @@
+import time
+
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
@@ -424,6 +426,27 @@ class CloudVulnerabilityEntity(BaseEntity):
 
         modal.save.click()
         wait_for(lambda: not modal.is_displayed, timeout=10)
+
+    def export(self, export_format='csv'):
+        """
+        Export vulnerabilities data as CSV or JSON.
+
+        Args:
+            export_format (str): 'csv' or 'json'
+
+        Returns:
+            str: Path to the downloaded file
+        """
+        view = self.navigate_to(self, 'All')
+        wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
+        format_map = {
+            'csv': 'Export to CSV',
+            'json': 'Export to JSON',
+        }
+        view.export_menu.item_select(format_map[export_format])
+
+        time.sleep(5)
+        return self.browser.save_downloaded_file()
 
 
 @navigator.register(CloudVulnerabilityEntity, 'All')
