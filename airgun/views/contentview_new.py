@@ -134,7 +134,9 @@ class ContentViewEditView(BaseLoggedInView):
 
     @View.nested
     class details(Tab):
-        TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/details")]')
+        TAB_LOCATOR = ParametrizedLocator(
+            '//button[@data-ouia-component-id="routed-tabs-tab-details"]'
+        )
         name = EditableEntry(name='Name')
         label = ReadOnlyEntry(name='Label')
         type = ReadOnlyEntry(name='Composite?')
@@ -146,7 +148,7 @@ class ContentViewEditView(BaseLoggedInView):
     @View.nested
     class versions(Tab):
         TAB_LOCATOR = ParametrizedLocator(
-            '//a[contains(@href, "#/versions") and @data-ouia-component-id="routed-tabs-tab-versions"]'
+            '//button[@data-ouia-component-id="routed-tabs-tab-versions"]'
         )
         searchbox = PF4Search()
         table = PatternflyTable(
@@ -178,18 +180,24 @@ class ContentViewEditView(BaseLoggedInView):
 
     @View.nested
     class content_views(Tab):
-        TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/contentviews")]')
+        TAB_LOCATOR = ParametrizedLocator(
+            '//button[@data-ouia-component-id="routed-tabs-tab-contentviews"]'
+        )
 
         resources = View.nested(ContentViewAddResourcesView)
 
     @View.nested
     class repositories(Tab):
-        TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/repositories")]')
+        TAB_LOCATOR = ParametrizedLocator(
+            '//button[@data-ouia-component-id="routed-tabs-tab-repositories"]'
+        )
         resources = View.nested(NewAddRemoveResourcesView)
 
     @View.nested
     class filters(Tab):
-        TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/filters")]')
+        TAB_LOCATOR = ParametrizedLocator(
+            '//button[@data-ouia-component-id="routed-tabs-tab-filters"]'
+        )
         new_filter = PF5Button(component_id='create-filter-button')
         searchbox = PF4Search()
         table = PatternflyTable(
@@ -290,10 +298,9 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
             component_id='content-view-version-details-repositories-table',
             column_widgets={
                 'Name': Text('.//a'),
-                'Version': Text('.//a'),
-                'Release': Text('.//a'),
-                'Arch': Text('.//a'),
-                'Epoch': Text('.//a'),
+                'Type': Text('.//a'),
+                'Product': Text('.//a'),
+                'Content': Text('.//a'),
             },
         )
 
@@ -307,9 +314,10 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
             component_id='content-view-version-details-rpm-packages-table',
             column_widgets={
                 'Name': Text('.//a'),
-                'Type': Text('.//a'),
-                'Product': Text('.//a'),
-                'Content': Text('.//a'),
+                'Version': Text('.//a'),
+                'Release': Text('.//a'),
+                'Arch': Text('.//a'),
+                'Epoch': Text('.//a'),
             },
         )
 
