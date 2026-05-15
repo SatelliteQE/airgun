@@ -505,6 +505,9 @@ class NewAddRemoveResourcesView(View):
 
     def add(self, value):
         """Associate specific resource"""
+        self.browser.wait_for_element(
+            self.table, exception=False, ensure_page_safe=True, timeout=10
+        )
         self.select_status('Not added')
         self.search(value)
         value = self.table.rows()
@@ -534,6 +537,9 @@ class NewAddRemoveResourcesView(View):
         self.browser.plugin.ensure_page_safe(timeout='60s')
         self.table.wait_displayed()
         self.select_status('All')
+        self.browser.wait_for_element(
+            self.table, exception=False, ensure_page_safe=True, timeout=10
+        )
         return self.table.read()
 
 
@@ -671,7 +677,8 @@ class SearchableViewMixinPF4(SearchableViewMixin):
         self.browser.plugin.ensure_page_safe(timeout='60s')
         if hasattr(self, 'title'):
             self.title.click()
-        self.table.wait_displayed()
+        if not self.browser.wait_for_element(self.table, exception=False, timeout=10):
+            return []
         return self.table.read()
 
 
