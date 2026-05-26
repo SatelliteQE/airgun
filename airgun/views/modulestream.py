@@ -55,8 +55,17 @@ class ModuleStreamsDetailsView(BaseLoggedInView):
     artifacts_tab = Text(".//button[normalize-space(.)='Artifacts']")
 
     repositories_table = Table(
-        locator=".//table[@data-ouia-component-id='content-table']",
+        locator=(
+            ".//div[@role='tabpanel' and @aria-label='Repositories']"
+            "//table[@data-ouia-component-id='content-table']"
+        ),
         column_widgets={'Name': Text('./a')},
     )
-    profiles_table = SatTable(".//table[@data-ouia-component-id='content-table']")
-    artifacts_table = SatTable(".//table[@data-ouia-component-id='content-table']")
+    profiles_table = SatTable(
+        ".//div[@role='tabpanel' and @aria-label='Profiles']"
+        "//table[@data-ouia-component-id='content-table']"
+    )
+    artifacts_table = SatTable(
+        ".//div[@role='tabpanel' and @aria-label='Artifacts']"
+        "//table[@data-ouia-component-id='content-table']"
+    )
