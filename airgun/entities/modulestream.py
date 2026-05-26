@@ -7,7 +7,7 @@ from airgun.views.modulestream import ModuleStreamsDetailsView, ModuleStreamView
 
 
 class ModuleStreamEntity(BaseEntity):
-    endpoint_path = '/module_streams'
+    endpoint_path = '/content/module_streams'
 
     def search(self, query):
         """Search for module stream
@@ -61,7 +61,7 @@ class ShowModuleStreamsDetails(NavigateStep):
         entity_name = kwargs.get('entity_name')
         stream_version = kwargs.get('stream_version')
         self.parent.search(f'name = {entity_name} and stream = {stream_version}')
-        self.parent.table.row(name=entity_name, stream=stream_version)['Name'].widget.click()
+        self.parent.table.row()['Name'].widget.click()
 
     def post_navigate(self, _tries, *args, **kwargs):
         wait_for(
@@ -73,5 +73,4 @@ class ShowModuleStreamsDetails(NavigateStep):
         )
 
     def am_i_here(self, *args, **kwargs):
-        entity_name = kwargs.get('entity_name')
-        return self.view.is_displayed and self.view.breadcrumb.locations[1].startswith(entity_name)
+        return self.view.is_displayed

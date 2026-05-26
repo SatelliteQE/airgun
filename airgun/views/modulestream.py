@@ -1,20 +1,37 @@
-from widgetastic.widget import Table, Text, View
-from widgetastic_patternfly import BreadCrumb
+from widgetastic.widget import Table, Text, Widget
 
 from airgun.views.common import (
     BaseLoggedInView,
-    SatTab,
     SatTable,
     SearchableViewMixinPF4,
 )
-from airgun.widgets import SatTableWithUnevenStructure
+
+
+class DescriptionList(Widget):
+    """Widget to read a PF5 description list (dl/dt/dd) as a dictionary."""
+
+    ROOT = './/dl'
+
+    def read(self):
+        """Read all dt/dd pairs and return as dictionary."""
+        result = {}
+        dt_elements = self.browser.elements('.//dt', parent=self)
+        for dt in dt_elements:
+            key = self.browser.text(dt).strip()
+            dd = self.browser.element('./following-sibling::dd[1]', parent=dt)
+            value = self.browser.text(dd).strip()
+            result[key] = value
+        return result
 
 
 class ModuleStreamView(BaseLoggedInView, SearchableViewMixinPF4):
     """Main Module_Streams view"""
 
     title = Text('//h1[contains(., "Module Streams")]')
-    table = SatTable('.//table', column_widgets={'Name': Text('./a')})
+    table = SatTable(
+        ".//table[@data-ouia-component-id='content-table']",
+        column_widgets={'Name': Text('./a')},
+    )
 
     @property
     def is_displayed(self):
@@ -23,26 +40,23 @@ class ModuleStreamView(BaseLoggedInView, SearchableViewMixinPF4):
 
 
 class ModuleStreamsDetailsView(BaseLoggedInView):
-    breadcrumb = BreadCrumb()
-
-    # TODO Add `title` after SAT-41764 is resolved
-    details_tab = Text("//a[@id='module-stream-tabs-container-tab-1']")
+    title = Text("//h2[contains(@class, 'pf-v5-c-title')]")
+    details_tab = Text("//button[normalize-space(.)='Details']")
 
     @property
     def is_displayed(self):
-        """Assume the view is displayed when its breadcrumb is visible"""
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Module Streams'
+        """Check if details page is displayed by looking for the Details tab"""
+        return self.browser.wait_for_element(self.details_tab, exception=False) is not None
 
-    @View.nested
-    class details(SatTab):
-        details_table = SatTableWithUnevenStructure(locator='.//table', column_locator='./*')
+    details_table = DescriptionList()
 
-    @View.nested
-    class repositories(SatTab):
-        table = Table(
-            locator='.//table',
-            column_widgets={
-                'Name': Text('./a'),
-            },
-        )
+    repositories_tab = Text(".//button[normalize-space(.)='Repositories']")
+    profiles_tab = Text(".//button[normalize-space(.)='Profiles']")
+    artifacts_tab = Text(".//button[normalize-space(.)='Artifacts']")
+
+    repositories_table = Table(
+        locator=".//table[@data-ouia-component-id='content-table']",
+        column_widgets={'Name': Text('./a')},
+    )
+    profiles_table = SatTable(".//table[@data-ouia-component-id='content-table']")
+    artifacts_table = SatTable(".//table[@data-ouia-component-id='content-table']")
