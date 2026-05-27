@@ -12,6 +12,12 @@ from airgun.widgets import (
     SatTable,
 )
 
+CARD_TITLE = ".//div[contains(@class, 'pf-v5-c-card__title')]"
+TASKS_PAGINATION_LOCATOR = (
+    "//div[contains(@class, 'pf-v5-c-pagination') and contains(@class, 'pf-m-bottom')"
+    " and contains(@class, 'tfm-pagination')]"
+)
+
 
 class TaskReadOnlyEntry(ReadOnlyEntry):
     BASE_LOCATOR = (
@@ -34,7 +40,7 @@ class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
         },
     )
 
-    pagination = PF5Pagination()
+    pagination = PF5Pagination(TASKS_PAGINATION_LOCATOR)
 
     @property
     def is_displayed(self):
@@ -43,30 +49,30 @@ class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
     @View.nested
     class RunningChart(View):
         ROOT = ".//div[@id='running-tasks-card']"
-        name = Text('./h2')
-        total = PieChart("./div[@class='card-pf-body']")
+        name = Text(CARD_TITLE)
+        total = PieChart("./div[contains(@class, 'card-pf-body')]")
 
     @View.nested
     class PausedChart(View):
         ROOT = ".//div[@id='paused-tasks-card']"
-        name = Text('./h2')
-        total = PieChart("./div[@class='card-pf-body']")
+        name = Text(CARD_TITLE)
+        total = PieChart("./div[contains(@class, 'card-pf-body')]")
 
     @View.nested
     class StoppedChart(View):
         ROOT = ".//div[@id='stopped-tasks-card']"
-        name = Text('./h2')
+        name = Text(CARD_TITLE)
         table = Table(
-            locator='.//table',
+            locator='.//table[contains(@class, "stopped-table")]',
             column_widgets={
-                'Total': Text('./button'),
+                'Total': Button('.//button'),
             },
         )
 
     @View.nested
     class ScheduledChart(View):
         ROOT = ".//div[@id='scheduled-tasks-card']"
-        name = Text('./h2')
+        name = Text(CARD_TITLE)
         total = Text(".//div[@class='scheduled-data']")
 
 
