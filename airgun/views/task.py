@@ -1,9 +1,9 @@
 from wait_for import wait_for
 from widgetastic.widget import Table, Text, View
 from widgetastic_patternfly import BreadCrumb, Button
-from widgetastic_patternfly5 import Pagination as PF5Pagination
+from widgetastic_patternfly5 import Pagination as PF5Pagination, Tab as PF5Tab
 
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 from airgun.widgets import (
     ActionsDropdown,
     PieChart,
@@ -36,7 +36,7 @@ class TasksView(BaseLoggedInView, SearchableViewMixinPF4):
     table = SatTable(
         ".//table[@data-ouia-component-id='table']",
         column_widgets={
-            'Action': Text('./a'),
+            'Action': Text('./preceding-sibling::td[@data-label="Action"]/a'),
         },
     )
 
@@ -90,7 +90,7 @@ class TaskDetailsView(BaseLoggedInView):
         )
 
     @View.nested
-    class task(SatTab):
+    class task(PF5Tab):
         name = TaskReadOnlyEntry(name='Name')
         result = TaskReadOnlyEntry(name='Result')
         triggered_by = TaskReadOnlyEntry(name='Triggered by')
