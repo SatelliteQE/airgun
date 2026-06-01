@@ -67,7 +67,7 @@ class RepositoryEntity(BaseEntity):
         # Wait for all EditableEntry auto-saves to complete and flash messages to stabilize
         # EditableEntry widgets auto-save individually, so we need to wait for UI to settle
         # before checking flash messages to avoid reading non-existent toast messages
-        self.browser.plugin.ensure_page_safe(timeout='30s')
+        self.browser.plugin.ensure_page_safe(timeout=30)
         # Try to check for errors, but handle gracefully if flash message reading fails
         # This can happen when the widget tries to read more messages than exist
         try:

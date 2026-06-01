@@ -38,21 +38,21 @@ class AllHostsEntity(BaseEntity):
     def search(self, host_name):
         """Search for specific Host"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         return view.search(host_name)
 
     def read_filled_searchbox(self):
         """Read filled searchbox"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         return view.searchbox.read()
 
     def read_table(self):
         """Read All Hosts table"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         return view.table.read()
 
@@ -66,7 +66,7 @@ class AllHostsEntity(BaseEntity):
         else:
             raise NoSuchElementException('Delete Modal was not displayed.')
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.search(host_name)
         return view.no_results
@@ -81,7 +81,7 @@ class AllHostsEntity(BaseEntity):
             delete_modal.confirm_checkbox.fill(True)
             delete_modal.confirm_delete.click()
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         return view.no_results
 
@@ -115,7 +115,7 @@ class AllHostsEntity(BaseEntity):
             cv_name (str): CV within that LCE to assign the hosts to.
         """
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.select_all.fill(True)
         view.bulk_actions_kebab.click()
@@ -132,7 +132,7 @@ class AllHostsEntity(BaseEntity):
     def manage_vulnerability_analysis(self, action):
         """Bulk"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.select_all.fill(True)
         view.bulk_actions_kebab.click()
@@ -169,7 +169,7 @@ class AllHostsEntity(BaseEntity):
         kebab_button.click()
         # Now find and click the menu item
         view.browser.click('.//button[contains(., "Disable vulnerability analysis")]')
-        self.browser.plugin.ensure_page_safe(timeout='10s')
+        self.browser.plugin.ensure_page_safe(timeout=10)
 
     def get_displayed_table_headers(self):
         """
@@ -178,7 +178,7 @@ class AllHostsEntity(BaseEntity):
         :return list: header names of the hosts table
         """
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         return view.table.headers
 
@@ -401,7 +401,7 @@ class AllHostsEntity(BaseEntity):
             view.review.manage_via_dropdown.item_select('via customized remote execution')
             view.review.finish_errata_management_btn.click()
             view = JobInvocationCreateView(self.browser)
-            self.browser.plugin.ensure_page_safe(timeout='5s')
+            self.browser.plugin.ensure_page_safe(timeout=5)
             wait_for(lambda: view.submit.is_displayed, timeout=10)
             view.submit.click()
 
@@ -480,7 +480,7 @@ class AllHostsEntity(BaseEntity):
                 clear_search_cross_button.click()
             view.select_repository_sets.search_input.fill(search_query.format(repo))
 
-            self.browser.plugin.ensure_page_safe(timeout='5s')
+            self.browser.plugin.ensure_page_safe(timeout=5)
             view.wait_displayed()
             # For some reason it is needed to read the widget first, it fails, but enables filling in the next step
             try:
@@ -501,7 +501,7 @@ class AllHostsEntity(BaseEntity):
         """Return the text from both the manage packages and manage errata modals review hosts step"""
         # Navigate to All Hosts
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.select_all.fill(True)
 
@@ -517,7 +517,7 @@ class AllHostsEntity(BaseEntity):
 
         # Get text from Manage Errata -> Review Hosts
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.select_all.fill(True)
 
@@ -588,7 +588,7 @@ class AllHostsEntity(BaseEntity):
             raise ValueError('Must specify either host_names or select_all_hosts.')
 
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
 
         # This step ensures deterministic state of the table
@@ -775,7 +775,7 @@ class AllHostsEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.search(f'name={host_name}')
 
@@ -821,11 +821,11 @@ class AllHostsEntity(BaseEntity):
         """
 
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='20s')
+        self.browser.plugin.ensure_page_safe(timeout=20)
         view.wait_displayed()
         # Use searchbox directly to avoid calling table.read()
         view.searchbox.search(f'name={host_name}')
-        self.browser.plugin.ensure_page_safe(timeout='20s')
+        self.browser.plugin.ensure_page_safe(timeout=20)
         view.table.wait_displayed()
 
         # Find the status icon directly from the Name column cell

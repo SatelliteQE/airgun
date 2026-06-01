@@ -37,7 +37,7 @@ class HostsExpandableTable(PF5OUIAExpandableTable):
         Then `super().read()` should return empty list.
         """
         wait_for(func=lambda: self.is_displayed, timeout=15, delay=1)
-        self.browser.plugin.ensure_page_safe(timeout='15s')
+        self.browser.plugin.ensure_page_safe(timeout=15)
         script = f"""
         rows = document.getElementsByTagName('{self.ROW_TAG}');
         last_row = rows[rows.length-1];
