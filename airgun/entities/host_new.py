@@ -54,7 +54,7 @@ class NewHostEntity(HostEntity):
         view = self.navigate_to(self, 'New')
         view.fill(values)
         self.browser.click(view.submit, ignore_ajax=True)
-        self.browser.plugin.ensure_page_safe(timeout='600s')
+        self.browser.plugin.ensure_page_safe(timeout=600)
         host_view = NewHostDetailsView(self.browser)
         host_view.wait_displayed()
         host_view.flash.assert_no_error()

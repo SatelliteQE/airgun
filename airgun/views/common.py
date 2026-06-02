@@ -534,7 +534,7 @@ class NewAddRemoveResourcesView(View):
         self.browser.wait_for_element(
             self.table, exception=False, ensure_page_safe=True, timeout=10
         )
-        self.browser.plugin.ensure_page_safe(timeout='60s')
+        self.browser.plugin.ensure_page_safe(timeout=60)
         self.table.wait_displayed()
         self.select_status('All')
         self.browser.wait_for_element(
@@ -674,7 +674,7 @@ class SearchableViewMixinPF4(SearchableViewMixin):
         if not self.is_searchable():
             return None
         self.searchbox.search(query)
-        self.browser.plugin.ensure_page_safe(timeout='60s')
+        self.browser.plugin.ensure_page_safe(timeout=60)
         if hasattr(self, 'title'):
             self.title.click()
         if not self.browser.wait_for_element(self.table, exception=False, timeout=10):
