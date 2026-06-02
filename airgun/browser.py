@@ -248,7 +248,7 @@ class AirgunBrowserPlugin(DefaultPlugin):
     def ignore_ensure_page_safe_timeout(self, value):
         self._ignore_ensure_page_safe_timeout = value
 
-    def ensure_page_safe(self, timeout='30s'):
+    def ensure_page_safe(self, timeout=30):
         """Ensures page is fully loaded.
         Default timeout was 10s, this changes it to 30s.
         If self.ignore_ensure_page_safe_timeout is True, the function doesn't raise an exception
@@ -259,7 +259,7 @@ class AirgunBrowserPlugin(DefaultPlugin):
             if self.ignore_ensure_page_safe_timeout:
                 # set lower timeout, otherwise the page will be stuck in a lot of waiting because
                 # once broken, ensure_page_safe will always timeout until loading a new page
-                timeout = '2s'  # experiments show 5s let the page load properly w/o much waiting
+                timeout = 2
             super().ensure_page_safe(timeout)
         except TimedOutError:
             if not self.ignore_ensure_page_safe_timeout:

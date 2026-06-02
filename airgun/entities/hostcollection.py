@@ -107,7 +107,7 @@ class HostCollectionEntity(BaseEntity):
             # After this step the user is redirected to remote execution job
             # create view.
             job_create_view = HostCollectionActionRemoteExecutionJobCreate(view.browser)
-            self.browser.plugin.ensure_page_safe(timeout='5s')
+            self.browser.plugin.ensure_page_safe(timeout=5)
             job_create_view.fill(job_values)
             job_create_view.submit.click()
 
