@@ -100,7 +100,7 @@ class TaskDetailsView(BaseLoggedInView):
         ended_at = TaskReadOnlyEntry(name='Ended at')
         start_before = TaskReadOnlyEntry(name='Start before')
         state = Text("//div[contains(@class, 'progress-description')]")
-        progressbar = ProgressBar(locator='//div[contains(@class,"progress-bar")]')
+        progressbar = ProgressBar(locator='//div[contains(@class,"progress__bar")]')
         output = TaskReadOnlyEntry(name='Output')
         errors = TaskReadOnlyEntryError(name='Errors')
         dynflow_console = Button('Dynflow console')
