@@ -5,6 +5,7 @@ from widgetastic_patternfly5.ouia import FormSelect as PF5FormSelect
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, WizardStepView
 from airgun.widgets import (
     ActionsDropdown,
+    BarChart,
     SatTable,
 )
 
@@ -32,6 +33,9 @@ class SCAPReportView(BaseLoggedInView, SearchableViewMixin):
 
 class SCAPReportDetailsView(BaseLoggedInView):
     show_log_messages_label = Text('//span[normalize-space(.)="Show log messages:"]')
+    report_status_chart = BarChart(
+        ".//div[contains(@class, 'arf-report-rule-chart-col')]//div[contains(@class, 'stats-well')]"
+    )
     table = SatTable(
         './/table',
         column_widgets={

@@ -1,3 +1,4 @@
+import json
 import time
 
 from cached_property import cached_property
@@ -2526,6 +2527,35 @@ class PieChart(GenericLocatorWidget):
         value as its value
         """
         return {self.chart_title_text.read(): self.chart_title_value.read()}
+
+
+class BarChart(GenericLocatorWidget):
+    """PF5 BarChart widget (PatternFly 5 / Victory charts).
+
+    Reads chart data from the data-props JSON attribute on the backing
+    foreman-react-component element. Waits for the SVG to render before
+    reading, which handles AJAX-loaded dashboard widgets.
+
+    Returns a dict mapping bar labels to their numeric values, e.g.
+    {'passed': 45, 'failed': 3, 'othered': 2}.
+    """
+
+    CHART_SVG = ".//*[name()='svg'][@role='img']"
+    REACT_COMPONENT = ".//foreman-react-component[@name='BarChart']"
+
+    @property
+    def is_displayed(self):
+        self.browser.plugin.ensure_page_safe()
+        return (
+            self.browser.wait_for_element(self.CHART_SVG, parent=self, exception=False) is not None
+        )
+
+    def read(self):
+        self.browser.plugin.ensure_page_safe()
+        self.browser.wait_for_element(self.CHART_SVG, parent=self, timeout=30)
+        component = self.browser.element(self.REACT_COMPONENT, parent=self)
+        props = json.loads(component.get_attribute('data-props'))
+        return {str(item[0]): item[1] for item in props.get('data', [])}
 
 
 class RemovableWidgetsItemsListView(View):
