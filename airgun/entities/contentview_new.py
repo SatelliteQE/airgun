@@ -28,7 +28,7 @@ class NewContentViewEntity(BaseEntity):
     def create(self, values, composite=False, rolling=False):
         """Create a new content view"""
         view = self.navigate_to(self, 'New')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         if composite:
             view.composite_tile.click()
@@ -40,7 +40,7 @@ class NewContentViewEntity(BaseEntity):
     def search(self, value):
         """Search for content view"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         if not view.table.is_displayed:
             # no table present, no CVs in this Org
@@ -50,7 +50,7 @@ class NewContentViewEntity(BaseEntity):
     def publish(self, entity_name, values=None, promote=False, lce=None):
         """Publishes new version of CV, optionally allowing for instant promotion"""
         view = self.navigate_to(self, 'Publish', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         if values:
             view.fill(values)
@@ -62,19 +62,19 @@ class NewContentViewEntity(BaseEntity):
         view.finish_button.click()
         view.progressbar.wait_for_result()
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         return view.versions.table.read()
 
     def read_flatpak_dependencies_alert(self, entity_name, values=None):
         """Read Flatpak dependencies alert text from publish review step."""
         view = self.navigate_to(self, 'Publish', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         if values:
             view.fill(values)
         view.next_button.click()
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         try:
             alert_text = view.flatpak_dependencies_alert.title
         except NoSuchElementException:
@@ -85,7 +85,7 @@ class NewContentViewEntity(BaseEntity):
     def check_publish_banner(self, cv_name):
         """Check if the needs_publish banner is displayed on the content view index page"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         if not view.table.is_displayed:
             # no table present, no CVs in this Org
@@ -100,7 +100,7 @@ class NewContentViewEntity(BaseEntity):
     def delete(self, entity_name):
         """Deletes the content view by name"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.cv_actions.item_select('Delete')
         view.wait_displayed()
@@ -124,7 +124,7 @@ class NewContentViewEntity(BaseEntity):
             timeout=60,
         )
         time.sleep(5)  # 'Loading' widget on page
-        self.browser.plugin.ensure_page_safe(timeout='10s')
+        self.browser.plugin.ensure_page_safe(timeout=10)
         wait_for(lambda: view.repositories.table.is_displayed, timeout=20)
         result = view.version_dropdown.item_select('Delete')
         view.wait_displayed()
@@ -137,7 +137,7 @@ class NewContentViewEntity(BaseEntity):
     def add_content(self, entity_name, content_name):
         """Add specified content to the given Content View"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         wait_for(lambda: view.repositories.resources.is_displayed, timeout=10)
         view.repositories.resources.add(content_name)
@@ -146,7 +146,7 @@ class NewContentViewEntity(BaseEntity):
     def add_cv(self, ccv_name, cv_name, always_update=False, version=None):
         """Adds selected CV to selected CCV, optionally with support for always_update and specified version"""
         view = self.navigate_to(self, 'Edit', entity_name=ccv_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.content_views.resources.add(cv_name)
         view = AddContentViewModal(self.browser)
@@ -156,7 +156,7 @@ class NewContentViewEntity(BaseEntity):
             view.version_select.item_select(version)
         view.submit_button.click()
         view = self.navigate_to(self, 'Edit', entity_name=ccv_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         wait_for(lambda: view.content_views.resources.is_displayed, timeout=10)
         return view.content_views.resources.read()
@@ -164,7 +164,7 @@ class NewContentViewEntity(BaseEntity):
     def read_cv(self, entity_name, version_name):
         """Reads the table for a specified Content View's specified Version"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.versions.search(version_name)
         return view.versions.table.row(version=version_name).read()
@@ -184,7 +184,7 @@ class NewContentViewEntity(BaseEntity):
             timeout=60,
         )
         time.sleep(5)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         # This allows dynamic access to the proper table
         wait_for(lambda: getattr(view, tab_name).table.wait_displayed(), timeout=10)
         if search_param:
@@ -194,7 +194,7 @@ class NewContentViewEntity(BaseEntity):
     def rolling_cv_read(self, entity_name):
         """Verify that rolling CVs display only the fields they should"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         rolling_cv_acceptable_fields = True
         # Versions tab
@@ -289,21 +289,21 @@ class NewContentViewEntity(BaseEntity):
     def read_french_lang_cv(self):
         """Navigates to main CV page, when system is set to French, and reads table"""
         view = self.navigate_to(self, 'French')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         return view.table.read()
 
     def click_version_dropdown(self, entity_name, version, dropdown_option):
         """Clicks a specific dropdown option for a CV Version"""
         view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         return view.version_dropdown.item_select(dropdown_option)
 
     def republish_metadata_error(self, entity_name, version):
         """Clicks a specific dropdown option for a CV Version, that will throw an error"""
         view = self.navigate_to(self, 'Version', entity_name=entity_name, version=version)
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         try:
             view.version_dropdown.item_select('Republish repository metadata')

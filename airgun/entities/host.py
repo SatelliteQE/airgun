@@ -47,7 +47,7 @@ class HostEntity(BaseEntity):
         view = self.navigate_to(self, 'New')
         wait_for(lambda: view.fill(values), timeout=60)
         self.browser.click(view.submit, ignore_ajax=True)
-        self.browser.plugin.ensure_page_safe(timeout='800s')
+        self.browser.plugin.ensure_page_safe(timeout=800)
         host_view = NewHostDetailsView(self.browser)
         host_view.wait_displayed()
         host_view.flash.assert_no_error()
@@ -102,7 +102,7 @@ class HostEntity(BaseEntity):
     def read_filled_searchbox(self):
         """Read filled searchbox"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         return view.searchbox.read()
 
@@ -275,11 +275,11 @@ class HostEntity(BaseEntity):
         if run_job_invocation:
             view.run_job_invocation.click()
             view.wait_displayed()
-            self.browser.plugin.ensure_page_safe(timeout='5s')
+            self.browser.plugin.ensure_page_safe(timeout=5)
         elif update_hosts_manually:
             view.update_hosts_manualy.click()
             view.wait_displayed()
-            self.browser.plugin.ensure_page_safe(timeout='5s')
+            self.browser.plugin.ensure_page_safe(timeout=5)
 
     def change_content_source_get_script(self, entities_list, content_source, lce, content_view):
         """
