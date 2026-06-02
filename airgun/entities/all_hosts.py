@@ -25,28 +25,28 @@ class AllHostsEntity(BaseEntity):
     def search(self, host_name):
         """Search for specific Host"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         return view.search(host_name)
 
     def read_filled_searchbox(self):
         """Read filled searchbox"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         return view.searchbox.read()
 
     def read_table(self):
         """Read All Hosts table"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         return view.table.read()
 
     def delete(self, host_name):
         """Delete host through table dropdown"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.search(host_name)
         view.table[0][2].widget.item_select('Delete')
@@ -56,7 +56,7 @@ class AllHostsEntity(BaseEntity):
         else:
             raise NoSuchElementException('Delete Modal was not displayed.')
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.search(host_name)
         return view.no_results
@@ -64,7 +64,7 @@ class AllHostsEntity(BaseEntity):
     def bulk_delete_all(self):
         """Delete multiple hosts through bulk action dropdown"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.select_all.fill(True)
         view.bulk_actions.item_select('Delete')
@@ -73,14 +73,14 @@ class AllHostsEntity(BaseEntity):
             delete_modal.confirm_checkbox.fill(True)
             delete_modal.confirm_delete.click()
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         return view.no_results
 
     def build_management(self, reboot=False, rebuild=False):
         """Build or rebuild hosts through build management popup"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.select_all.fill(True)
         view.bulk_actions.item_select('Build management')
@@ -97,7 +97,7 @@ class AllHostsEntity(BaseEntity):
     def change_hostgroup(self, name):
         """Change hostgroup of all hosts to chosen hostgroup"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.select_all.fill(True)
         view.bulk_actions.item_select('Change host group')
@@ -112,7 +112,7 @@ class AllHostsEntity(BaseEntity):
             cv (str): CV within that LCE to assign the hosts to.
         """
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.select_all.fill(True)
         view.bulk_actions_kebab.click()
@@ -141,7 +141,7 @@ class AllHostsEntity(BaseEntity):
         :return list: header names of the hosts table
         """
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         return view.table.headers
 
@@ -219,7 +219,7 @@ class AllHostsEntity(BaseEntity):
 
         # Navigate to All Hosts
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
 
         # Select all hosts from the table
@@ -355,7 +355,7 @@ class AllHostsEntity(BaseEntity):
 
         # Navigate to All Hosts
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
 
         # Select all hosts from the table

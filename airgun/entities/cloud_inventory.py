@@ -35,14 +35,14 @@ class CloudInventoryEntity(BaseEntity):
 
     def generate_report(self, entity_name):
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.inventory_list.toggle(entity_name)
         view.browser.click(view.inventory_list.generating.restart, ignore_ajax=True)
 
     def download_report(self, entity_name):
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         view.inventory_list.toggle(entity_name)
         view.browser.click(view.inventory_list.uploading.download_report, ignore_ajax=True)
