@@ -772,3 +772,18 @@ class WizardStepView(View):
         """Expand the selected wizard step"""
         View.__init__(self, parent, logger=logger)
         self.expander.click()
+
+
+class PF5WizardStepView(View):
+    """PF5 Wizard step - doesn't use expanders, uses wizard navigation instead.
+
+    The PF5 wizard pattern navigates between steps using Next/Back buttons
+    in the footer, not by clicking expander buttons. Steps are already visible
+    when you're on that step.
+    """
+
+    def __init__(self, parent, logger=None):
+        """Initialize PF5 wizard step without clicking expander."""
+        View.__init__(self, parent, logger=logger)
+        # PF5 wizards don't have expanders - steps are navigated via Next/Back buttons
+        # The step is already visible when active

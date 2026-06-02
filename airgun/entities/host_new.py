@@ -3,18 +3,19 @@ import time
 from navmazing import NavigateToSibling
 from wait_for import wait_for
 
+from airgun.entities.all_hosts import AllHostsEntity
 from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStepWithWait as NavigateStep, navigator
+from airgun.views.all_hosts import AllHostsTableView
 from airgun.views.cloud_insights import RemediateSummary
 from airgun.views.fact import HostFactView
-from airgun.views.host import HostsView as LegacyHostsView
+from airgun.views.host import HostsJobInvocationStatusView, HostsView as LegacyHostsView
 from airgun.views.host_new import (
     AllAssignedRolesView,
     ContainerfileInstallCommandView,
     EditAnsibleRolesView,
     EditSystemPurposeView,
     EnableTracerView,
-    HostsView,
     InstallPackagesView,
     ManageHostCollectionModal,
     ManageHostStatusesView,
@@ -348,6 +349,57 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
         view.fill(values)
         view.submit.click()
+
+    def schedule_remote_job(self, entities_list, values, timeout=60, wait_for_results=True):
+        """Apply Schedule Remote Job action to the hosts names in entities_list using PF5 UI.
+
+        For multiple hosts, uses AllHostsEntity helper to select checkboxes, then clicks
+        "Schedule a job" button which opens the wizard with hosts pre-selected.
+
+        :param entities_list: The host names to apply the remote job.
+        :param values: the values to fill The Job invocation view.
+        :param timeout: The time to wait for the job to finish.
+        :param wait_for_results: Whether to wait for the job to finish execution.
+
+        :returns: The job invocation status view values
+        """
+        if len(entities_list) == 1:
+            entity_name = entities_list[0]
+            details_view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+            self.browser.plugin.ensure_page_safe()
+            details_view.wait_displayed()
+            self.browser.wait_for_element(details_view.schedule_job, exception=False)
+            details_view.schedule_job.fill('Schedule a job')
+            view = JobInvocationCreateView(self.browser)
+            self.browser.plugin.ensure_page_safe()
+        else:
+            hosts_view = AllHostsEntity.all_hosts_navigate_and_select_hosts_helper(
+                self, host_names=entities_list
+            )
+            schedule_button_locator = ".//button[contains(., 'Schedule a job') or @data-ouia-component-id='schedule-a-job-dropdown']"
+            wait_for(
+                lambda: hosts_view.browser.element(schedule_button_locator, check_visibility=True),
+                timeout=10,
+                delay=0.5,
+                handle_exception=True,
+            )
+            schedule_button = hosts_view.browser.element(schedule_button_locator)
+            hosts_view.browser.click(schedule_button)
+            view = JobInvocationCreateView(self.browser)
+            self.browser.plugin.ensure_page_safe()
+            view.wait_displayed()
+
+        view.fill(values)
+        self.browser.plugin.ensure_page_safe()
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+        status_view = HostsJobInvocationStatusView(self.browser)
+        self.browser.plugin.ensure_page_safe()
+        status_view.wait_displayed()
+        if wait_for_results:
+            status_view.wait_for_result(timeout=timeout)
+        return status_view.read()
 
     def run_job(self, entity_name):
         """Run a job on selected host"""
@@ -1231,7 +1283,7 @@ class NewHostEntity(HostEntity):
 class ShowAllHosts(NavigateStep):
     """Navigate to new UI All Hosts page"""
 
-    VIEW = HostsView
+    VIEW = AllHostsTableView
 
     def step(self, *args, **kwargs):
         self.view.menu.select('Hosts', 'All Hosts')
@@ -1252,6 +1304,7 @@ class ShowNewHostDetails(NavigateStep):
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
+
         self.parent.search(entity_name)
         self.parent.table.row(name=entity_name)['Name'].widget.click()
 
