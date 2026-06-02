@@ -1,7 +1,7 @@
 from widgetastic.widget import Table, Text, View, Widget
 
 from airgun.views.common import BaseLoggedInView, SatTable, SearchableViewMixinPF4
-from airgun.widgets import ActionsDropdown, PieChart
+from airgun.widgets import ActionsDropdown, BarChart, PieChart
 
 
 class ItemValueList(Widget):
@@ -126,6 +126,38 @@ class DashboardView(BaseLoggedInView, SearchableViewMixinPF4):
     class HostConfigurationChart(View):
         ROOT = ".//li[@data-name='Host Configuration Chart for All']"
         chart = PieChart(".//div[@class='host-configuration-chart']")
+
+    @View.nested
+    class RunDistributionChart(View):
+        """Run Distribution Chart dashboard widgets.
+
+        There is one chart per registered report origin (e.g. Ansible, Puppet).
+        read() returns all of them keyed by origin name, e.g.
+        {'Ansible': {'30': 0, ..., '3': 1}, 'Puppet': {'30': 0, ..., '3': 0}}
+        """
+
+        ROOT = ".//li[contains(@data-name, 'Run Distribution Chart')]"
+        # Used by widgetastic for is_displayed checks
+        chart = BarChart(".//div[contains(@class, 'run-distribution-chart')]")
+
+        # Absolute XPath to find all origin-specific charts from page root
+        # (ROOT resolves to one <li> and can't contain sibling <li> elements)
+        ALL_CHARTS = "//li[contains(@data-name, 'Run Distribution Chart')]"
+
+        def read(self):
+            self.browser.plugin.ensure_page_safe()
+            results = {}
+            for widget_el in self.browser.elements(self.ALL_CHARTS):
+                origin = widget_el.get_attribute('data-name').replace(
+                    'Run Distribution Chart for ', ''
+                )
+                origin_chart = BarChart(
+                    self,
+                    f"//li[@data-name='Run Distribution Chart for {origin}']"
+                    "//div[contains(@class, 'run-distribution-chart')]",
+                )
+                results[origin] = origin_chart.read()
+            return results
 
     @View.nested
     class ContentViews(View):
