@@ -22,9 +22,7 @@ class JobInvocationEntity(BaseEntity):
         """Run specific job"""
         view = self.navigate_to(self, 'Run')
         view.fill(values)
-        view.submit.expander.click()
-        self.browser.wait_for_element(view.submit.submit, exception=False)
-        view.submit.click()
+        view.submit.click()  # PF5 wizard: submit.click() handles everything
 
     def search(self, value):
         """Search for specific job invocation"""
@@ -40,6 +38,7 @@ class JobInvocationEntity(BaseEntity):
         """Check job invocation state from table view"""
         view = self.navigate_to(self, 'All')
         view.search(f'host = {host_name}')
+
         wait_for(
             lambda: view.table.row(description=entity_name)['Status'].read() == expected_state,
             timeout=300,

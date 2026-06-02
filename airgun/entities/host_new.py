@@ -1,13 +1,16 @@
+from contextlib import suppress
 import time
+from time import sleep
 
 from navmazing import NavigateToSibling
+from selenium.common.exceptions import NoSuchElementException
 from wait_for import wait_for
 
 from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStepWithWait as NavigateStep, navigator
 from airgun.views.cloud_insights import RemediateSummary
 from airgun.views.fact import HostFactView
-from airgun.views.host import HostsView as LegacyHostsView
+from airgun.views.host import HostsJobInvocationStatusView, HostsView as LegacyHostsView
 from airgun.views.host_new import (
     AllAssignedRolesView,
     ContainerfileInstallCommandView,
@@ -48,6 +51,68 @@ def navigate_to_edit_view(func):
 
 class NewHostEntity(HostEntity):
     endpoint_path = '/new/hosts'
+
+    def search(self, value):
+        """Search for existing host entity with retry logic for robustness.
+
+        The search waits for results to be populated to avoid race conditions
+        where the table exists but hasn't been populated with search results yet.
+
+        Returns:
+            list: List of dicts with host data, each dict having at least 'Name' key
+        """
+        view = self.navigate_to(self, 'NewUIAll')
+
+        def _search_and_validate():
+            """Perform search and validate results have expected structure."""
+            # Clear any previous search first - ignore errors if it fails
+            if hasattr(view, 'clear_search'):
+                with suppress(AttributeError, NoSuchElementException):
+                    view.clear_search()
+
+            # Perform the search
+            results = view.search(value)
+
+            # Validate results structure
+            if results:
+                # Check if first result has 'Name' key (validates table structure)
+                if isinstance(results, list) and len(results) > 0:
+                    if isinstance(results[0], dict) and 'Name' in results[0]:
+                        return results
+                    else:
+                        # Results have wrong structure, need to retry
+                        return None
+                else:
+                    # Empty or malformed results
+                    return None
+            else:
+                # No results yet
+                return None
+
+        def _final_attempt():
+            """Final attempt on timeout - try one more time and return empty list if still failing."""
+            self.browser.plugin.ensure_page_safe(timeout='10s')
+            results = view.search(value)
+
+            # If still invalid, return empty list
+            if not results or not isinstance(results, list):
+                return []
+            if results and (not isinstance(results[0], dict) or 'Name' not in results[0]):
+                return []
+            return results
+
+        # Try search with retry logic
+        results = wait_for(
+            _search_and_validate,
+            timeout=20,
+            delay=1,
+            fail_condition=lambda r: r is None,
+            message=f"Waiting for valid search results for '{value}'",
+            handle_exception=True,
+            fail_func=_final_attempt,
+        )[0]
+
+        return results if results else []
 
     def create(self, values):
         """Create new host entity"""
@@ -350,6 +415,99 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
         view.fill(values)
         view.submit.click()
+
+    def reset_search(self):
+        """This function loads a HostsView and clears the searchbox."""
+        view = HostsView(self.browser)
+        view.clear_search()
+
+    def schedule_remote_job(self, entities_list, values, timeout=60, wait_for_results=True):
+        """Apply Schedule Remote Job action to the hosts names in entities_list using PF5 UI.
+
+        For multiple hosts, selects checkboxes on All Hosts page, then clicks "Schedule a job"
+        button which opens the wizard with hosts pre-selected.
+
+        :param entities_list: The host names to apply the remote job.
+        :param values: the values to fill The Job invocation view.
+        :param timeout: The time to wait for the job to finish.
+        :param wait_for_results: Whether to wait for the job to finish execution.
+
+        :returns: The job invocation status view values
+        """
+        if len(entities_list) == 1:
+            # Single host - use the host details page approach
+            entity_name = entities_list[0]
+            details_view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+            self.browser.plugin.ensure_page_safe()
+            details_view.wait_displayed()
+            # Click the Schedule a job dropdown
+            self.browser.wait_for_element(details_view.schedule_job, exception=False)
+            details_view.schedule_job.fill('Schedule a job')
+            # The job invocation form appears in the same browser context
+            view = JobInvocationCreateView(self.browser)
+            self.browser.plugin.ensure_page_safe()
+        else:
+            # Multiple hosts - select checkboxes on All Hosts page
+            hosts_view = self.navigate_to(self, 'NewUIAll')
+            self.browser.plugin.ensure_page_safe()
+            hosts_view.wait_displayed()
+
+            # Build search query with OR operator to get all hosts in results
+            search_query = ' or '.join(entities_list)
+            hosts_view.search(search_query)
+            self.browser.plugin.ensure_page_safe()
+            sleep(1)  # Wait for search results to load
+
+            # Select checkbox for each host found in results
+            for entity_name in entities_list:
+                # Find the row for this host and check its checkbox
+                row_checkbox_locator = (
+                    f".//table[@data-ouia-component-id='hosts-index-table']"
+                    f"//tbody/tr[.//a[contains(text(), '{entity_name}')]]//input[@type='checkbox']"
+                )
+                wait_for(
+                    lambda loc=row_checkbox_locator: self.browser.element(
+                        loc, check_visibility=True
+                    ),
+                    timeout=5,
+                    delay=0.5,
+                )
+                checkbox = self.browser.element(row_checkbox_locator)
+                if not self.browser.is_selected(checkbox):
+                    self.browser.click(checkbox)
+
+            self.browser.plugin.ensure_page_safe()
+            sleep(1)  # Wait for selection to register
+
+            # After selecting hosts, click the "Schedule a job" button
+            # This button appears after hosts are selected
+            schedule_button_locator = ".//button[contains(., 'Schedule a job') or @data-ouia-component-id='schedule-a-job-dropdown']"
+            wait_for(
+                lambda: self.browser.element(schedule_button_locator, check_visibility=True),
+                timeout=10,
+                delay=0.5,
+            )
+            schedule_button = self.browser.element(schedule_button_locator)
+            self.browser.click(schedule_button)
+            sleep(1)
+
+            # The job invocation form should now open with hosts pre-selected
+            view = JobInvocationCreateView(self.browser)
+            self.browser.plugin.ensure_page_safe()
+
+        # Fill the form with provided values
+        view.fill(values)
+        sleep(2)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+        status_view = HostsJobInvocationStatusView(self.browser)
+        sleep(2)
+        self.browser.plugin.ensure_page_safe()
+        status_view.wait_displayed()
+        if wait_for_results:
+            status_view.wait_for_result(timeout=timeout)
+        return status_view.read()
 
     def run_job(self, entity_name):
         """Run a job on selected host"""
@@ -1249,8 +1407,36 @@ class ShowNewHostDetails(NavigateStep):
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
-        self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+        # Search for the host - this returns a list with the host data
+        search_results = self.parent.search(entity_name)
+
+        # Verify we got results
+        if not search_results:
+            raise ValueError(f"Host '{entity_name}' not found in search results")
+
+        # After search, click the Name link directly from the DOM
+        # The search should have filtered to show only this host
+        name_link_locator = (
+            ".//table[@data-ouia-component-id='hosts-index-table']"
+            "//td[@data-label='Name']//a[contains(@href, '/new/hosts/')]"
+        )
+
+        # Wait for the link to be available and click it
+        def _click_host_link():
+            try:
+                name_link = self.parent.browser.element(name_link_locator)
+                self.parent.browser.click(name_link)
+                return True
+            except NoSuchElementException:
+                return False
+
+        wait_for(
+            _click_host_link,
+            timeout=10,
+            delay=0.5,
+            message=f"Waiting for host '{entity_name}' link to be clickable",
+        )
 
 
 @navigator.register(NewHostEntity, 'AnsibleTab')
