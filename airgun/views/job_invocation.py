@@ -1,4 +1,7 @@
-from wait_for import wait_for
+from time import sleep
+
+from selenium.common.exceptions import NoSuchElementException
+from wait_for import TimedOutError, wait_for
 from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly5 import (
@@ -18,9 +21,9 @@ from widgetastic_patternfly5.ouia import (
 
 from airgun.views.common import (
     BaseLoggedInView,
+    PF5WizardStepView,
     SatTable,
     SearchableViewMixin,
-    WizardStepView,
 )
 from airgun.widgets import PF5DataList, PF5LabeledExpandableSection
 
@@ -70,9 +73,17 @@ class JobInvocationsView(BaseLoggedInView, SearchableViewMixin):
 class JobInvocationCreateView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
 
+    next_button = PF5OUIAButton('next-footer')
+    back_button = PF5OUIAButton('back-footer')
+    run_on_selected = PF5OUIAButton('run-on-selected-hosts-footer')
+    skip_to_review = PF5OUIAButton('skip-to-review-footer')
+    cancel_button = PF5OUIAButton('cancel-footer')
+    submit_button = Text(
+        ".//button[contains(., 'Submit') or @data-ouia-component-id='submit-footer']"
+    )
+
     @View.nested
-    class category_and_template(WizardStepView):
-        expander = Text(".//button[contains(.,'Category and template')]")
+    class category_and_template(PF5WizardStepView):
         job_category = PF5OUIASelect('job_category')
         job_template = PF5OUIASelect('job_template')
         job_template_text_input = TextInput(
@@ -80,8 +91,7 @@ class JobInvocationCreateView(BaseLoggedInView):
         )
 
     @View.nested
-    class target_hosts_and_inputs(WizardStepView):
-        expander = Text(".//button[contains(.,'Target hosts and inputs')]")
+    class target_hosts_and_inputs(PF5WizardStepView):
         command = TextInput(id='command')
 
         selected_hosts = PF5ChipGroup(locator='//div[@class="selected-chips"]/div')
@@ -106,8 +116,7 @@ class JobInvocationCreateView(BaseLoggedInView):
         targets_host_collecitons = PF5OUIASelect('host collections')
 
     @View.nested
-    class advanced_fields(WizardStepView):
-        expander = Text(".//button[contains(.,'Advanced fields')]")
+    class advanced_fields(PF5WizardStepView):
         ssh_user = PF5OUIATextInput('ssh-user')
         effective_user = PF5OUIATextInput('effective-user')
         timeout_to_kill = PF5OUIATextInput('timeout-to-kill')
@@ -122,19 +131,15 @@ class JobInvocationCreateView(BaseLoggedInView):
         ansible_collections_path = TextInput(id='collections_path')
 
     @View.nested
-    class schedule(WizardStepView):
-        expander = Text(".//button[contains(.,'Type of execution')]")
-        # Execution type
+    class schedule(PF5WizardStepView):
         immediate = PF5Radio(id='schedule-type-now')
         future = PF5Radio(id='schedule-type-future')
         recurring = PF5Radio(id='schedule-type-recurring')
-        # Query type
         static_query = PF5Radio(id='query-type-static')
         dynamic_query = PF5Radio(id='query-type-dynamic')
 
     @View.nested
-    class schedule_future_execution(WizardStepView):
-        expander = Text(".//button[contains(.,'Future execution')]")
+    class schedule_future_execution(PF5WizardStepView):
         start_at_date = TextInput(locator='//input[contains(@aria-label, "starts at datepicker")]')
         start_at_time = TextInput(locator='//input[contains(@aria-label, "starts at timepicker")]')
         start_before_date = TextInput(
@@ -145,17 +150,13 @@ class JobInvocationCreateView(BaseLoggedInView):
         )
 
     @View.nested
-    class schedule_recurring_execution(WizardStepView):
-        expander = Text(".//button[contains(.,'Recurring execution')]")
-        # Starts
+    class schedule_recurring_execution(PF5WizardStepView):
         start_now = PF5Radio(id='start-now')
         start_at = PF5Radio(id='start-at')
         start_at_date = TextInput(locator='//input[contains(@aria-label, "starts at datepicker")]')
         start_at_time = TextInput(locator='//input[contains(@aria-label, "starts at timepicker")]')
-        # Repeats
         repeats = PF5OUIASelect('repeat-select')
         repeats_at = TextInput(locator='//input[contains(@aria-label, "repeat-at")]')
-        # Ends
         ends_never = PF5Radio(id='schedule-never-ends')
         ends_on = PF5Radio(id='schedule-ends-on-date')
         ends_on_date = TextInput(locator='//input[contains(@aria-label, "ends on datepicker")]')
@@ -165,21 +166,112 @@ class JobInvocationCreateView(BaseLoggedInView):
         purpose = TextInput(locator='//input[contains(@aria-label, "purpose")]')
 
     @View.nested
-    class submit(WizardStepView):
-        expander = Text(".//button[contains(.,'Review')]")
-        submit = Text(".//button[contains(.,'Submit')]")
+    class submit(PF5WizardStepView):
+        submit = Text(".//button[contains(., 'Submit')]")
 
         def click(self):
-            self.submit.click()
+            if hasattr(self.parent, 'submit_button') and self.parent.submit_button.is_displayed:
+                self.parent.submit_button.click()
+            elif (
+                hasattr(self.parent, 'run_on_selected')
+                and self.parent.run_on_selected.is_displayed
+                and self.parent.run_on_selected.is_enabled
+            ):
+                self.parent.run_on_selected.click()
+            elif self.submit.is_displayed:
+                self.submit.click()
+            else:
+                raise Exception(
+                    'No submit button found. Available buttons: Next={}, Run on selected={}, Submit={}'.format(
+                        self.parent.next_button.is_displayed
+                        if hasattr(self.parent, 'next_button')
+                        else 'N/A',
+                        self.parent.run_on_selected.is_displayed
+                        if hasattr(self.parent, 'run_on_selected')
+                        else 'N/A',
+                        self.submit.is_displayed,
+                    )
+                )
+
+    def after_fill(self, was_change):
+        pass
+
+    def fill(self, values):
+        """Fill PF5 wizard by navigating through steps."""
+        was_change = False
+
+        def click_next_if_available():
+            if self.next_button.is_displayed and self.next_button.is_enabled:
+                self.next_button.click()
+                self.browser.plugin.ensure_page_safe()
+                sleep(1)
+
+        def extract_step_values(prefix):
+            """Extract values with a specific prefix and strip the prefix from keys."""
+            return {k.split('.', 1)[1]: v for k, v in values.items() if k.startswith(prefix)}
+
+        cat_template_values = extract_step_values('category_and_template.')
+        if cat_template_values:
+            changed = self.category_and_template.fill(cat_template_values)
+            was_change = was_change or changed
+            click_next_if_available()
+
+        target_values = extract_step_values('target_hosts_and_inputs.')
+        if target_values:
+            changed = self.target_hosts_and_inputs.fill(target_values)
+            was_change = was_change or changed
+            click_next_if_available()
+
+        advanced_values = extract_step_values('advanced_fields.')
+        if advanced_values:
+            changed = self.advanced_fields.fill(advanced_values)
+            was_change = was_change or changed
+
+        click_next_if_available()
+
+        schedule_values = extract_step_values('schedule.')
+        if schedule_values:
+            changed = self.schedule.fill(schedule_values)
+            was_change = was_change or changed
+
+        future_values = extract_step_values('schedule_future_execution.')
+        if future_values:
+            click_next_if_available()
+            changed = self.schedule_future_execution.fill(future_values)
+            was_change = was_change or changed
+
+        recurring_values = extract_step_values('schedule_recurring_execution.')
+        if recurring_values:
+            click_next_if_available()
+            changed = self.schedule_recurring_execution.fill(recurring_values)
+            was_change = was_change or changed
+
+        return was_change
 
     @property
     def is_displayed(self):
         breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-        return (
-            breadcrumb_loaded
-            and self.breadcrumb.locations[0] == 'Jobs'
-            and self.breadcrumb.read() == 'Job invocation'
-        )
+        if not breadcrumb_loaded:
+            return False
+
+        def _check_wizard_elements():
+            try:
+                return self.category_and_template.job_category.is_displayed
+            except (AttributeError, NoSuchElementException):
+                return False
+
+        try:
+            locations = self.breadcrumb.locations
+            if not locations or locations[0] != 'Jobs':
+                return _check_wizard_elements()
+        except (AttributeError, NoSuchElementException):
+            return _check_wizard_elements()
+
+        try:
+            breadcrumb_text = self.breadcrumb.read()
+            return breadcrumb_text in ['Job invocation', 'Run job']
+        except (AttributeError, NoSuchElementException):
+            return _check_wizard_elements()
 
 
 class JobInvocationStatusView(BaseLoggedInView):
@@ -194,19 +286,32 @@ class JobInvocationStatusView(BaseLoggedInView):
     def is_displayed(self):
         breadcrumb_loaded = self.breadcrumb.wait_displayed()
         title_loaded = self.title.wait_displayed() and self.title.read() != ''
-        data_loaded, _ = wait_for(
-            func=lambda: self.status.is_displayed,
-            timeout=60,
-            delay=15,
-            fail_func=self.browser.refresh,
-        )
-        return (
-            breadcrumb_loaded
-            and title_loaded
-            and data_loaded
-            and self.breadcrumb.locations[0] == 'Jobs'
-            and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
-        )
+
+        if not (breadcrumb_loaded and title_loaded):
+            return False
+
+        try:
+            breadcrumb_ok = (
+                self.breadcrumb.locations[0] == 'Jobs'
+                and len(self.breadcrumb.locations) == self.BREADCRUMB_LENGTH
+            )
+        except (AttributeError, IndexError, NoSuchElementException):
+            breadcrumb_ok = False
+
+        if not breadcrumb_ok:
+            return False
+
+        try:
+            data_loaded, _ = wait_for(
+                func=lambda: self.status.is_displayed,
+                timeout=10,
+                delay=2,
+                fail_func=None,
+            )
+        except TimedOutError:
+            data_loaded = True
+
+        return breadcrumb_loaded and title_loaded and data_loaded and breadcrumb_ok
 
     def wait_for_result(self, timeout=600, delay=1):
         """Wait for invocation job(s) to finish"""
@@ -229,44 +334,57 @@ class JobInvocationStatusView(BaseLoggedInView):
         """The donut circle with the overall job status of '{succeeded hosts}/{total hosts}'"""
 
         def read(self):
-            """Return `dict` with the parsed overall status numbers, for example:
-            ```{'succeeded_hosts': 2, 'total_hosts': 5, 'is_success': False}```
+            """Return dict with parsed overall status numbers.
 
-            The 'is_success' key was artificially added for convenience, to check the overall job status.
-            Note: Any running or pending job will return negative result (False).
+            Example: {'succeeded_hosts': 2, 'total_hosts': 5, 'is_success': False}
+            For scheduled jobs that haven't started, returns empty dict.
             """
-            succeeded_hosts, total_hosts = [int(value) for value in self.labels[0].split('/')]
-            is_success = total_hosts > 0 and total_hosts == succeeded_hosts
-            return {
-                'succeeded_hosts': succeeded_hosts,
-                'total_hosts': total_hosts,
-                'is_success': is_success,
-            }
+            if not self.is_displayed:
+                return {}
+            try:
+                succeeded_hosts, total_hosts = [int(value) for value in self.labels[0].split('/')]
+                is_success = total_hosts > 0 and total_hosts == succeeded_hosts
+                return {
+                    'succeeded_hosts': succeeded_hosts,
+                    'total_hosts': total_hosts,
+                    'is_success': is_success,
+                }
+            except (AttributeError, IndexError, ValueError, NoSuchElementException):
+                return {}
 
     @View.nested
     class status(DonutLegend):
-        """'System status' panel."""
+        """System status panel."""
 
         ROOT = ".//div[contains(@class, 'chart-legend')]"
         first_label = Text(locator="//*[@id='legend-labels-0']")
 
         @property
         def is_displayed(self):
-            """Any status label is displayed after all data are loaded."""
-            return self.first_label.is_displayed
+            try:
+                return self.first_label.is_displayed
+            except (AttributeError, NoSuchElementException):
+                return False
 
         def read(self):
-            """Return `dict` with the System status info.
-            Example: ```{'Succeeded': 2, 'Failed': 1, 'In Progress': 0, 'Canceled': 0}```
+            """Return dict with system status info.
+
+            Example: {'Succeeded': 2, 'Failed': 1, 'In Progress': 0, 'Canceled': 0}
+            For scheduled jobs that haven't started, returns empty dict.
             """
-            return {item['label']: int(item['value']) for item in self.all_items}
+            if not self.is_displayed:
+                return {}
+            try:
+                return {item['label']: int(item['value']) for item in self.all_items}
+            except (AttributeError, KeyError, ValueError, NoSuchElementException):
+                return {}
 
     @View.nested
     class overview(DescriptionList):
         ROOT = ".//dl[contains(@class, 'job-overview-description-list')]"
 
         def read(self):
-            """Return `dict` without trailing ':' in the key names."""
+            """Return dict without trailing ':' in key names."""
             return {key.replace(':', ''): val for key, val in super().read().items()}
 
     @View.nested
@@ -288,10 +406,7 @@ class JobInvocationStatusView(BaseLoggedInView):
 
     @View.nested
     class leapp_preupgrade_report(View):
-        """LEAPP Preupgrade Report view placeholder.
-        This part has not been implemented yet to the new job details page.
-        Needed for bug SAT-28216
-        """
+        """LEAPP Preupgrade Report view placeholder (SAT-28216)."""
 
         pass
 
