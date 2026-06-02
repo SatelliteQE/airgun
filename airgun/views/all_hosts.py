@@ -106,6 +106,9 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
         locator='//li[contains(@class, "pf-v5-c-menu__list-item")]//button[span/span[text()="Change associations"]]/following-sibling::div[contains(@class, "pf-v5-c-menu")]'
     )
 
+    # Additional action buttons
+    schedule_a_job = PF5OUIADropdown('schedule-a-job-dropdown')
+
     table_loading = Text('//h5[normalize-space(.)="Loading"]')
     no_results = Text('//h5[normalize-space(.)="No Results"]')
     manage_columns = PF5Button('Manage columns')
