@@ -1,13 +1,15 @@
 import time
+from time import sleep
 
 from navmazing import NavigateToSibling
-from wait_for import wait_for
+from selenium.common.exceptions import NoSuchElementException
+from wait_for import TimedOutError, wait_for
 
 from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStepWithWait as NavigateStep, navigator
 from airgun.views.cloud_insights import RemediateSummary
 from airgun.views.fact import HostFactView
-from airgun.views.host import HostsView as LegacyHostsView
+from airgun.views.host import HostsJobInvocationStatusView, HostsView as LegacyHostsView
 from airgun.views.host_new import (
     AllAssignedRolesView,
     ContainerfileInstallCommandView,
@@ -48,6 +50,68 @@ def navigate_to_edit_view(func):
 
 class NewHostEntity(HostEntity):
     endpoint_path = '/new/hosts'
+
+    def search(self, value):
+        """Search for existing host entity with retry logic for robustness.
+
+        The search waits for results to be populated to avoid race conditions
+        where the table exists but hasn't been populated with search results yet.
+
+        Returns:
+            list: List of dicts with host data, each dict having at least 'Name' key
+        """
+        view = self.navigate_to(self, 'NewUIAll')
+
+        def _search_and_validate():
+            """Perform search and validate results have expected structure."""
+            # Clear any previous search first - ignore errors if it fails
+            if hasattr(view, 'clear_search'):
+                try:
+                    view.clear_search()
+                except (AttributeError, NoSuchElementException):
+                    # Clearing failed, continue anyway
+                    pass
+
+            # Perform the search
+            results = view.search(value)
+
+            # Validate results structure
+            if results:
+                # Check if first result has 'Name' key (validates table structure)
+                if isinstance(results, list) and len(results) > 0:
+                    if isinstance(results[0], dict) and 'Name' in results[0]:
+                        return results
+                    else:
+                        # Results have wrong structure, need to retry
+                        return None
+                else:
+                    # Empty or malformed results
+                    return None
+            else:
+                # No results yet
+                return None
+
+        # Try search with retry logic
+        try:
+            results = wait_for(
+                _search_and_validate,
+                timeout=20,
+                delay=1,
+                fail_condition=lambda r: r is None,
+                message=f"Waiting for valid search results for '{value}'",
+            )[0]
+        except TimedOutError:
+            # If timeout, try one final time directly
+            self.browser.plugin.ensure_page_safe(timeout='10s')
+            results = view.search(value)
+
+            # If still invalid, return empty list
+            if not results or not isinstance(results, list):
+                return []
+            if results and (not isinstance(results[0], dict) or 'Name' not in results[0]):
+                return []
+
+        return results if results else []
 
     def create(self, values):
         """Create new host entity"""
@@ -350,6 +414,42 @@ class NewHostEntity(HostEntity):
         self.browser.plugin.ensure_page_safe()
         view.fill(values)
         view.submit.click()
+
+    def reset_search(self):
+        """This function loads a HostsView and clears the searchbox."""
+        view = HostsView(self.browser)
+        view.clear_search()
+
+    def schedule_remote_job(self, entities_list, values, timeout=60, wait_for_results=True):
+        """Apply Schedule Remote Job action to the hosts names in entities_list using PF5 UI.
+
+        :param entities_list: The host names to apply the remote job.
+        :param values: the values to fill The Job invocation view.
+        :param timeout: The time to wait for the job to finish.
+        :param wait_for_results: Whether to wait for the job to finish execution.
+
+        :returns: The job invocation status view values
+        """
+        # For single host, use the host details page approach
+        if len(entities_list) == 1:
+            entity_name = entities_list[0]
+            view = self.navigate_to(self, 'Schedule Job New UI', entity_name=entity_name)
+        else:
+            # For multiple hosts, use the multi-select action from hosts list
+            view = self._select_action('Schedule Remote Job', entities_list)
+
+        view.fill(values)
+        sleep(2)
+        view.submit.click()
+        view.flash.assert_no_error()
+        view.flash.dismiss()
+        status_view = HostsJobInvocationStatusView(self.browser)
+        sleep(2)
+        self.browser.plugin.ensure_page_safe()
+        status_view.wait_displayed()
+        if wait_for_results:
+            status_view.wait_for_result(timeout=timeout)
+        return status_view.read()
 
     def run_job(self, entity_name):
         """Run a job on selected host"""
@@ -1249,8 +1349,36 @@ class ShowNewHostDetails(NavigateStep):
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
-        self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+        # Search for the host - this returns a list with the host data
+        search_results = self.parent.search(entity_name)
+
+        # Verify we got results
+        if not search_results:
+            raise ValueError(f"Host '{entity_name}' not found in search results")
+
+        # After search, click the Name link directly from the DOM
+        # The search should have filtered to show only this host
+        name_link_locator = (
+            ".//table[@data-ouia-component-id='hosts-index-table']"
+            "//td[@data-label='Name']//a[contains(@href, '/new/hosts/')]"
+        )
+
+        # Wait for the link to be available and click it
+        def _click_host_link():
+            try:
+                name_link = self.parent.browser.element(name_link_locator)
+                self.parent.browser.click(name_link)
+                return True
+            except NoSuchElementException:
+                return False
+
+        wait_for(
+            _click_host_link,
+            timeout=10,
+            delay=0.5,
+            message=f"Waiting for host '{entity_name}' link to be clickable",
+        )
 
 
 @navigator.register(NewHostEntity, 'AnsibleTab')

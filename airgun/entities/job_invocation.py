@@ -2,6 +2,7 @@ import time
 
 from navmazing import NavigateToSibling
 from wait_for import wait_for
+from widgetastic.exceptions import RowNotFound
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -22,9 +23,7 @@ class JobInvocationEntity(BaseEntity):
         """Run specific job"""
         view = self.navigate_to(self, 'Run')
         view.fill(values)
-        view.submit.expander.click()
-        self.browser.wait_for_element(view.submit.submit, exception=False)
-        view.submit.click()
+        view.submit.click()  # PF5 wizard: submit.click() handles everything
 
     def search(self, value):
         """Search for specific job invocation"""
@@ -40,8 +39,16 @@ class JobInvocationEntity(BaseEntity):
         """Check job invocation state from table view"""
         view = self.navigate_to(self, 'All')
         view.search(f'host = {host_name}')
+
+        def check_job_state():
+            try:
+                return view.table.row(description=entity_name)['Status'].read() == expected_state
+            except RowNotFound:
+                # Job not in table yet, wait and retry
+                return False
+
         wait_for(
-            lambda: view.table.row(description=entity_name)['Status'].read() == expected_state,
+            check_job_state,
             timeout=300,
             delay=10,
             fail_func=view.browser.refresh,
