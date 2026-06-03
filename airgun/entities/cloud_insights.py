@@ -29,7 +29,7 @@ class CloudInsightsEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.insights_dropdown.wait_displayed()
         view.insights_dropdown.item_select('Sync recommendations')
-        self.browser.plugin.ensure_page_safe(timeout='60s')
+        self.browser.plugin.ensure_page_safe(timeout=60)
 
     def read(self, widget_names=None):
         """Read all values."""
@@ -41,7 +41,7 @@ class CloudInsightsEntity(BaseEntity):
         view = self.navigate_to(self, 'Token')
         view.rhcloud_token.fill(value)
         view.save_token.click()
-        self.browser.plugin.ensure_page_safe(timeout='60s')
+        self.browser.plugin.ensure_page_safe(timeout=60)
 
     def update(self, values):
         """Update Insights view."""
