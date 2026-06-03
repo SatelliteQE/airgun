@@ -241,6 +241,8 @@ class MyTabsListView(View):
 
 ### Pattern 4: Wait for UI Stability
 
+The timeout parameter is in seconds as an integer, not a string.
+
 ```python
 from wait_for import wait_for
 
@@ -259,7 +261,7 @@ def my_action(self):
     )
     
     # Use browser plugin for page safety
-    self.browser.plugin.ensure_page_safe(timeout='10s')
+    self.browser.plugin.ensure_page_safe(timeout=10)
 ```
 
 ---

@@ -13,7 +13,7 @@ class BootcEntity(BaseEntity):
         with the unexpanded content, and the expanded content
         """
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.search(f'bootc_booted_image = {booted_image_name}')
         view.table.row(image_name=booted_image_name).expand()
         row = view.table.row(image_name=booted_image_name).read()
