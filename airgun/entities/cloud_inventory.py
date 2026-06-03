@@ -27,7 +27,7 @@ class CloudInventoryEntity(BaseEntity):
     def get_displayed_settings_options(self):
         """Get displayed settings options on Red Hat Inventory page"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         result = {
             'auto_update': view.auto_update.is_displayed,
@@ -41,7 +41,7 @@ class CloudInventoryEntity(BaseEntity):
     def get_displayed_buttons(self):
         """Get displayed buttons on Red Hat Inventory page"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         result = {
             'cloud_connector': view.cloud_connector.is_displayed,
@@ -62,7 +62,7 @@ class CloudInventoryEntity(BaseEntity):
     def get_displayed_descriptions(self):
         """Get displayed descriptions on Red Hat Inventory page"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         result = {
             'auto_upload_desc': view.auto_upload_desc.is_displayed,
@@ -73,7 +73,7 @@ class CloudInventoryEntity(BaseEntity):
     def get_displayed_inventory_tabs(self):
         """Get displayed inventory tabs on Red Hat Inventory page"""
         view = self.navigate_to(self, 'All')
-        self.browser.plugin.ensure_page_safe(timeout='5s')
+        self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         result = {
             'generating': view.inventory_list.generating.is_displayed,

@@ -40,7 +40,7 @@ class CloudInsightsEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.insights_dropdown.wait_displayed()
         view.insights_dropdown.item_select('Sync recommendations')
-        self.browser.plugin.ensure_page_safe(timeout='60s')
+        self.browser.plugin.ensure_page_safe(timeout=60)
 
     def read(self, widget_names=None):
         """Read all values."""
@@ -52,7 +52,7 @@ class CloudInsightsEntity(BaseEntity):
         view = self.navigate_to(self, 'Token')
         view.rhcloud_token.fill(value)
         view.save_token.click()
-        self.browser.plugin.ensure_page_safe(timeout='60s')
+        self.browser.plugin.ensure_page_safe(timeout=60)
 
     def update(self, values):
         """Update Insights view."""
@@ -89,7 +89,7 @@ class RecommendationsTabEntity(BaseEntity):
         time.sleep(15)
         view.table[0][0].widget.click()
         view.remediate.click()
-        self.browser.plugin.ensure_page_safe(timeout='30s')
+        self.browser.plugin.ensure_page_safe(timeout=30)
         modal = RemediateSummary(self.browser)
         wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
         modal.remediate.click()
@@ -108,7 +108,7 @@ class RecommendationsTabEntity(BaseEntity):
         time.sleep(5)
         view.bulk_select.select_all()
         view.remediate.click()
-        self.browser.plugin.ensure_page_safe(timeout='30s')
+        self.browser.plugin.ensure_page_safe(timeout=30)
         modal = RemediateSummary(self.browser)
         wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
         modal.remediate.click()
@@ -128,18 +128,18 @@ class RecommendationsTabEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'All Recommendations')
 
-        self.browser.plugin.ensure_page_safe(timeout='10s')
+        self.browser.plugin.ensure_page_safe(timeout=10)
         wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
         view.menu_toggle.fill(filter_type)
         view.menu_filter.fill(filter_value)
-        self.browser.plugin.ensure_page_safe(timeout='10s')
+        self.browser.plugin.ensure_page_safe(timeout=10)
         wait_for(lambda: view.table.is_displayed, timeout=20, handle_exception=True)
         return view.table.read()
 
     def read(self, widget_names=None):
         """Read all values."""
         view = self.navigate_to(self, 'All Recommendations')
-        self.browser.plugin.ensure_page_safe(timeout='10s')
+        self.browser.plugin.ensure_page_safe(timeout=10)
         view.wait_displayed()
         return view.read(widget_names=widget_names)
 
