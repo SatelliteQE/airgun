@@ -1,5 +1,5 @@
-from widgetastic.widget import Checkbox, Table, Text, TextInput, View
-from widgetastic_patternfly import BreadCrumb
+from widgetastic.widget import Checkbox, Select, Table, Text, TextInput, View
+from widgetastic_patternfly import BreadCrumb, Button
 
 from airgun.views.common import BaseLoggedInView, SatVerticalTab, SearchableViewMixinPF4
 from airgun.widgets import (
@@ -146,3 +146,45 @@ class OrganizationEditView(BaseLoggedInView):
     @View.nested
     class parameters(SatVerticalTab):
         resources = CustomParameter(id='global_parameters_table')
+
+
+class SelectOrganizationContextView(View):
+    """
+    This view appears when navigating to organization-specific pages from
+    'Any Organization' context. It provides UI selectors for the organization
+    selection page.
+    """
+
+    # Root container - Card with id='select-org'
+    ROOT = "//div[@id='select-org']"
+
+    # Using OUIA component IDs for reliable selection (PF5 pattern)
+    card = Text("//div[@data-ouia-component-id='select-org-card' or @id='select-org']")
+    title = Text(
+        "//h1[@data-ouia-component-id='select-org-title'] | "
+        "//h1[contains(text(), 'Select an organization')]"
+    )
+
+    # Organization dropdown - PF5 FormSelect component
+    organization_select = Select(
+        locator=(
+            "//select[@data-ouia-component-id='select-org-select'] | //select[@id='organization']"
+        )
+    )
+
+    # Submit button - PF5 Button with primary variant
+    submit_button = Button(
+        locator=(
+            "//button[@data-ouia-component-id='select-org-button'] | "
+            "//button[contains(., 'Select')]"
+        )
+    )
+
+    @property
+    def is_displayed(self):
+        """Check if the 'Select an Organization' page is currently displayed.
+
+        Returns:
+            bool: True if the page is displayed, False otherwise
+        """
+        return self.browser.wait_for_element(self.ROOT, exception=False, timeout=3) is not None
