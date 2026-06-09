@@ -46,16 +46,6 @@ class CloudInventoryEntity(BaseEntity):
         self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
         result = {
-            'cloud_connector': view.cloud_connector.is_displayed,
-            'cloud_connector_text': (
-                view.cloud_connector.read() if view.cloud_connector.is_displayed else None
-            ),
-            'reconfigure_cloud_connector': view.reconfigure_cloud_connector.is_displayed,
-            'reconfigure_cloud_connector_text': (
-                view.reconfigure_cloud_connector.read()
-                if view.reconfigure_cloud_connector.is_displayed
-                else None
-            ),
             'sync_status': view.sync_status.is_displayed,
             'sync_status_text': view.sync_status.read() if view.sync_status.is_displayed else None,
             'generate_and_upload': view.inventory_list.generate_and_upload.is_displayed,
@@ -77,17 +67,6 @@ class CloudInventoryEntity(BaseEntity):
             'manual_upload_desc': view.manual_upload_desc.is_displayed,
         }
         return result
-
-    def configure_cloud_connector(self):
-        """Configure Cloud Connector"""
-        view = self.navigate_to(self, 'All')
-        view.cloud_connector.click()
-        view.dialog.confirm_dialog.click()
-
-    def is_cloud_connector_configured(self):
-        """Check if Cloud Connector is configured"""
-        view = self.navigate_to(self, 'All')
-        return view.reconfigure_cloud_connector.is_displayed
 
     def sync_inventory_status(self):
         """Sync Inventory status"""
