@@ -1,5 +1,4 @@
 from navmazing import NavigateToSibling
-from wait_for import wait_for
 from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
@@ -72,15 +71,13 @@ class HostGroupEntity(BaseEntity):
         """Count of assigned role to the host group"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.ansible_roles.click()
-        role_list = self.browser.elements(view.ansible_roles.assigned_ansible_role, parent=self)
-        wait_for(lambda: int(role_list[-1].text.split('. ')[0]), timeout=30)
-        return int(role_list[-1].text.split('. ')[0])
+        return view.ansible_roles.resources.read_assigned_count()
 
     def assign_role_to_hostgroup(self, entity_name, values):
         """Assign Ansible role(s) to the host group based on user input
         Args:
-            entity_name: Name of the host
-            values: Name of the ansible role
+            entity_name: Name of the host group
+            values: Ansible role name(s) or dict with ``ansible_roles`` key
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.fill(values)
@@ -91,16 +88,23 @@ class HostGroupEntity(BaseEntity):
     def remove_hostgroup_role(self, entity_name, values):
         """Remove Ansible role from the host group based on user input
         Args:
-            entity_name: Name of the host
-            values: Name of the ansible role
+            entity_name: Name of the host group
+            values: Name of the ansible role(s) to remove
         """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.ansible_roles.resources.unassigned_values(values)
+        view.ansible_roles.click()
+        view.ansible_roles.resources.unassign(values)
         view.submit.click()
 
-    def read_role(self, entity_name, values):
-        """Return name of the assigned Ansible role(s) of the host group."""
+    def read_role(self, entity_name, values=None):
+        """Return assigned Ansible role name(s) of the host group.
+
+        Args:
+            entity_name: Name of the host group
+            values: Optional role name(s) to filter the result against
+        """
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
+        view.ansible_roles.click()
         return view.ansible_roles.resources.read_assigned_values(values)
 
 
