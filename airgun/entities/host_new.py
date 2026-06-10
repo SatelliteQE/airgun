@@ -38,8 +38,9 @@ def navigate_to_edit_view(func):
         view.overview.details.edit.click()
         self.browser.switch_to_window(self.browser.window_handles[1])
         host_group_view = HostGroupEditView(self.browser)
+        host_group_view.wait_displayed()
         func(self, entity_name, role_name)
-        host_group_view.ansible_roles.submit.click()
+        host_group_view.submit.click()
         self.browser.switch_to_window(self.browser.window_handles[0])
         self.browser.close_window(self.browser.window_handles[1])
 
@@ -103,12 +104,10 @@ class NewHostEntity(HostEntity):
             role_name: Name of the ansible role
         """
         host_group_view = HostGroupEditView(self.browser)
-        host_group_view.ansible_roles.more_item.click()
-        host_group_view.ansible_roles.select_pages.click()
-        role_list = self.browser.elements(host_group_view.ansible_roles.available_role, parent=self)
-        for single_role in role_list[1:]:
-            if single_role.text.split('. ')[1] == role_name:
-                single_role.click()
+        host_group_view.ansible_roles.click()
+        roles_view = host_group_view.ansible_roles.resources
+        wait_for(lambda: roles_view.addAnsibleRole.is_displayed, timeout=30)
+        roles_view.fill([role_name])
 
     @navigate_to_edit_view
     def remove_hostgroup_role(self, entity_name, role_name):
@@ -119,29 +118,28 @@ class NewHostEntity(HostEntity):
             role_name: Name of the ansible role
         """
         host_group_view = HostGroupEditView(self.browser)
-        role_list = self.browser.elements(host_group_view.ansible_roles.assigned_role, parent=self)
-        for single_role in role_list[1:]:
-            if single_role.text.split('. ')[1] == role_name:
-                single_role.click()
+        host_group_view.ansible_roles.click()
+        roles_view = host_group_view.ansible_roles.resources
+        wait_for(lambda: roles_view.addAnsibleRole.is_displayed, timeout=30)
+        roles_view.unassign([role_name])
 
     @navigate_to_edit_view
     def assign_all_role_to_hostgroup(self, entity_name, role_name=None):
         """Assign all Ansible roles from the host group"""
         host_group_view = HostGroupEditView(self.browser)
-        host_group_view.ansible_roles.more_item.click()
-        host_group_view.ansible_roles.select_pages.click()
-        role_list = self.browser.elements(host_group_view.ansible_roles.available_role, parent=self)
-        for single_role in role_list:
-            single_role.click()
+        host_group_view.ansible_roles.click()
+        roles_view = host_group_view.ansible_roles.resources
+        wait_for(lambda: roles_view.addAnsibleRole.is_displayed, timeout=30)
+        roles_view.addAnsibleRole.move_all_items_right()
 
     @navigate_to_edit_view
     def remove_all_role_from_hostgroup(self, entity_name, role_name=None):
         """Remove all Ansible roles from the host group"""
         host_group_view = HostGroupEditView(self.browser)
         host_group_view.ansible_roles.click()
-        role_list = self.browser.elements(host_group_view.ansible_roles.assigned_role, parent=self)
-        for single_role in role_list:
-            single_role.click()
+        roles_view = host_group_view.ansible_roles.resources
+        wait_for(lambda: roles_view.addAnsibleRole.is_displayed, timeout=30)
+        roles_view.addAnsibleRole.move_all_items_left()
 
     def get_host_statuses(self, entity_name):
         """Read host statuses from Host Details page
@@ -625,7 +623,7 @@ class NewHostEntity(HostEntity):
         view.ansible.roles.edit.click()
         wait_for(lambda: EditAnsibleRolesView(self.browser).addAnsibleRole.is_displayed, timeout=10)
         edit_view = EditAnsibleRolesView(self.browser)
-        edit_view.addAnsibleRole.select_and_move([role])
+        edit_view.fill([role])
         edit_view.confirm.click()
 
     def get_ansible_roles(self, entity_name):

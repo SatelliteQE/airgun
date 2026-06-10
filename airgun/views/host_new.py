@@ -1130,6 +1130,100 @@ class EditAnsibleRolesView(View):
     )
     selectRoles = PF5Button(locator='.//button[@aria-label="Add selected"]')
     unselectRoles = PF5Button(locator='.//button[@aria-label="Remove selected"]')
+    CHOSEN_ITEMS = (
+        ".//div[contains(@class, 'pf-m-chosen')]"
+        "//button[contains(@class, 'dual-list-selector__item')]"
+    )
+    AVAILABLE_ITEMS = (
+        ".//div[contains(@class, 'pf-m-available')]"
+        "//button[contains(@class, 'dual-list-selector__item')]"
+    )
+    ROLE_NAME = './/span[1]//span[2]'
+
+    @property
+    def is_displayed(self):
+        return self.addAnsibleRole.is_displayed
+
+    def role_name_from_item(self, item):
+        try:
+            return self.browser.text(self.browser.element(self.ROLE_NAME, parent=item))
+        except NoSuchElementException:
+            return self.browser.text(item).strip()
+
+    def items_by_role_name(self, chosen=False):
+        items_locator = self.CHOSEN_ITEMS if chosen else self.AVAILABLE_ITEMS
+        items_by_name = {}
+        for item in self.browser.elements(items_locator, parent=self.addAnsibleRole):
+            role_name = self.role_name_from_item(item)
+            if role_name:
+                items_by_name[role_name] = item
+        return items_by_name
+
+    def select_roles(self, roles, chosen=False):
+        items_by_name = self.items_by_role_name(chosen=chosen)
+        pane = 'chosen' if chosen else 'available'
+        for role in roles:
+            item = items_by_name.get(role)
+            if not item:
+                raise ValueError(f'Role {role!r} not found in {pane} list')
+            self.browser.click(item)
+
+    def select_and_move_roles(self, roles, from_chosen=False):
+        self.select_roles(roles, chosen=from_chosen)
+        if from_chosen:
+            self.addAnsibleRole.move_selected_items_left()
+        else:
+            self.addAnsibleRole.move_selected_items_right()
+
+    def assigned_role_names(self):
+        return list(self.items_by_role_name(chosen=True).keys())
+
+    def roles_from_values(self, values):
+        if isinstance(values, dict):
+            roles = values.get('assigned') or values.get('resources')
+            if roles is None:
+                roles = list(values.values())
+        elif isinstance(values, (list, tuple)):
+            roles = values
+        elif values:
+            roles = [values]
+        else:
+            roles = ()
+        return [role for role in roles if role]
+
+    def fill(self, values):
+        """Assign ansible roles by moving them from available to chosen list."""
+        wait_for(lambda: self.addAnsibleRole.is_displayed, timeout=30, handle_exception=True)
+        roles = self.roles_from_values(values)
+        if roles:
+            self.select_and_move_roles(roles, from_chosen=False)
+        return True
+
+    def unassign(self, values):
+        """Remove ansible roles from the chosen list."""
+        wait_for(lambda: self.addAnsibleRole.is_displayed, timeout=30, handle_exception=True)
+        roles = self.roles_from_values(values)
+        if roles:
+            self.select_and_move_roles(roles, from_chosen=True)
+        return True
+
+    def read_assigned_values(self, values=None):
+        """Return assigned ansible role names, optionally filtered by values."""
+        wait_for(lambda: self.addAnsibleRole.is_displayed, timeout=30, handle_exception=True)
+        assigned = self.assigned_role_names()
+        if values is None:
+            return assigned
+        if isinstance(values, dict):
+            filter_values = values.values()
+        elif isinstance(values, str):
+            filter_values = [values]
+        else:
+            filter_values = values
+        return [role for role in assigned if role in filter_values]
+
+    def read_assigned_count(self):
+        wait_for(lambda: self.addAnsibleRole.is_displayed, timeout=30, handle_exception=True)
+        return len(self.assigned_role_names())
 
 
 class ModuleStreamDialog(Pf5ConfirmationDialog):
