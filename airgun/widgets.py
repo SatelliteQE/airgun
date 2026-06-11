@@ -34,6 +34,7 @@ from widgetastic_patternfly4.ouia import (
 from widgetastic_patternfly4.table import BaseExpandableTable, BasePatternflyTable
 from widgetastic_patternfly5 import (
     Button as PF5Button,
+    Dropdown as PF5Dropdown,
     ExpandableSection as PF5ExpandableSection,
     FormSelect,
     Progress as PF5Progress,
@@ -864,6 +865,43 @@ class Pf4ActionsDropdown(ActionsDropdown):
     def select(self, item):
         self.open()
         self.browser.element(self.ITEM_LOCATOR.format(item), parent=self).click()
+
+
+class Pf5ActionsDropdown(PF5Dropdown):
+    """PF5 version of actions dropdown for kebab menus and action dropdowns.
+
+    Wraps widgetastic_patternfly5 Dropdown and implements fill() method
+    for compatibility with navigation code that expects fill().
+
+    Example html representation::
+
+        <div class="pf-v5-c-dropdown" data-ouia-component-id="legacy-ui-kebab">
+          <button class="pf-v5-c-menu-toggle">
+            <span class="pf-v5-c-menu-toggle__icon">...</span>
+          </button>
+          <ul class="pf-v5-c-menu__list">
+            <li role="menuitem"><a>Schedule Remote Job</a></li>
+            <li role="menuitem"><a>Change Environment</a></li>
+          </ul>
+        </div>
+
+    """
+
+    def fill(self, item):
+        """Selects an item from the dropdown.
+
+        Args:
+            item: The text of the menu item to select
+
+        Returns:
+            bool: True if the item was selected, False if it was already selected
+        """
+        if not self.is_displayed:
+            raise ValueError('Dropdown is not displayed')
+
+        # For actions dropdown, we always need to select the item
+        self.item_select(item)
+        return True
 
 
 class ActionDropdownWithCheckbox(ActionsDropdown):
