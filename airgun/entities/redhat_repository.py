@@ -1,25 +1,19 @@
-from wait_for import wait_for
-
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
+from airgun.navigation import NavigateStepWithWait as NavigateStep, navigator
 from airgun.views.redhat_repository import RedHatRepositoriesView
 
 
 class RedHatRepositoryEntity(BaseEntity):
     endpoint_path = '/redhat_repositories'
 
-    def search(self, value, category='Available', types=None):
+    def search(self, value, category='Available'):
         """Search RH repositories.
 
         :param str value: The value to search by.
         :param str category: The repository category to search, options: Available, Enabled, Both
-        :param list[str] types: (optional) The repository content types to refine the search.
-            eg: RPM, OSTree ...
         """
         view = self.navigate_to(self, 'All')
-        wait_for(lambda: view.search_box.is_displayed, timeout=10, delay=1)
-        return view.search(value, category=category, types=types)
+        return view.search(value, category=category)
 
     def read(self, entity_name=None, category='Available', recommended_repo=None, filter_type=None):
         """Read RH Repositories values.
@@ -30,18 +24,12 @@ class RedHatRepositoryEntity(BaseEntity):
         :param filter_type: repository type such as RPM, Kickstart
         """
         view = self.navigate_to(self, 'All')
-        view.wait_displayed()
 
-        view.search_by_filter_type.select('')
         if filter_type:
-            view.search_by_filter_type.select(filter_type)
+            view.filter_by_type.select(filter_type)
 
         if recommended_repo:
-            current_value = self.browser.get_attribute(
-                'class', locator=view.recommended_repos.locator
-            )
-            if recommended_repo not in current_value:
-                view.recommended_repos.click()
+            view.recommended_repos.fill(recommended_repo == 'on')
             return view.available.read()
 
         entity_data = view.search(f'name = "{entity_name}"', category=category)[0]
@@ -59,7 +47,6 @@ class RedHatRepositoryEntity(BaseEntity):
                     If custom_query is used, set entity_name to None when calling this function!!!
         """
         view = self.navigate_to(self, 'All')
-        wait_for(lambda: view.search_box.is_displayed, timeout=10, delay=1)
         custom_query = f'name = "{entity_name}"' if custom_query is None else custom_query
         view.search(custom_query, category='Available')
         arch_version = f'{arch} {version}' if version else arch
@@ -74,7 +61,6 @@ class RedHatRepositoryEntity(BaseEntity):
         :param bool orphaned: Whether the repository is Orphaned
         """
         view = self.navigate_to(self, 'All')
-        view.wait_displayed()
         view.search(f'name = "{entity_name}"', category='Enabled')
         entity_text = f'{entity_name} (Orphaned)' if orphaned else entity_name
         view.enabled.items(name=entity_text)[0].disable()
@@ -88,6 +74,5 @@ class ShowAllRepositories(NavigateStep):
 
     VIEW = RedHatRepositoriesView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Red Hat Repositories')

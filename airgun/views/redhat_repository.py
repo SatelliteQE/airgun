@@ -1,18 +1,18 @@
 from wait_for import wait_for
 from widgetastic.widget import GenericLocatorWidget, Text, TextInput, View
+from widgetastic_patternfly5.ouia import Switch as PF5OUIASwitch
 
 from airgun.views.common import BaseLoggedInView
-from airgun.widgets import (
-    ActionsDropdown,
-)
 
 
 def _wait_for_spinner(widget):
-    """Wait for any spinner to disappear from widget"""
+    """Wait for any PF5 spinner to disappear from widget"""
     wait_for(
         lambda: (
             widget.is_displayed
-            and not widget.browser.elements(".//div[contains(@class, 'spinner')]", parent=widget)
+            and not widget.browser.elements(
+                ".//span[contains(@class, 'pf-v5-c-spinner')]", parent=widget
+            )
         ),
         timeout=60,
         delay=1,
@@ -21,20 +21,21 @@ def _wait_for_spinner(widget):
 
 
 class AvailableRepositoryItem(GenericLocatorWidget):
-    """The widget representation of Available repository item of an Available repository set."""
+    """The widget representation of Available repository item of an Available repository set.
 
-    ENABLE_BUTTON = './/button'
-    TEXT = './/span'
+    PF5 structure: each item is a <li class="pf-v5-c-data-list__item list-item-with-divider">
+    """
+
+    ENABLE_BUTTON = './/button[@aria-label="Enable"]'
+    TEXT = './/div[contains(@class, "repository-text-md")]/span'
 
     @property
     def text(self):
-        """Return the text representation of this repository eg: architecture + OS version if
-        available.
-        """
-        return self.browser.text(self.TEXT, parent=self)
+        """Return the text representation of this repository (architecture + OS version)."""
+        return self.browser.text(self.TEXT, parent=self).strip()
 
     def read(self):
-        """Read this widget by return it's text representation."""
+        """Read this widget by returning its text representation."""
         return self.text
 
     def enable(self):
@@ -44,29 +45,44 @@ class AvailableRepositoryItem(GenericLocatorWidget):
 
 
 class AvailableRepositorySetWidget(GenericLocatorWidget):
-    """The widget representation of Available repository set item."""
+    """The widget representation of Available repository set item.
+
+    PF5 structure: each set is a <li class="pf-v5-c-data-list__item"> with a DataListToggle
+    that expands to reveal individual repository items.
+    """
 
     ITEM = AvailableRepositoryItem
-    EXPAND_BUTTON = ".//div[contains(@class, 'expand')]"
-    NAME = ".//div[contains(@class, 'item-heading')]"
-    LABEL = ".//div[contains(@class, 'item-text')]"
-    ITEMS = ".//div[contains(@class, 'list-item-with-divider')]"
-
-    @property
-    def expand_button(self):
-        """Return the expand button element."""
-        return self.browser.element(self.EXPAND_BUTTON, parent=self)
+    EXPAND_BUTTON = ".//div[contains(@class, 'pf-v5-c-data-list__toggle')]/button"
+    NAME = ".//div[contains(@class, 'repository-name')]"
+    LABEL = ".//div[contains(@class, 'repository-label')]"
+    ITEMS = ".//li[contains(@class, 'list-item-with-divider')]"
 
     @property
     def expanded(self):
         """Check whether this repository set is expanded or not."""
-        return 'active' in self.browser.get_attribute('class', self.expand_button)
+        return (
+            self.browser.get_attribute(
+                'aria-expanded', self.browser.element(self.EXPAND_BUTTON, parent=self)
+            )
+            == 'true'
+        )
 
     def expand(self):
-        """Expand the repository set item section."""
+        """Expand the repository set and wait until item texts are populated."""
         if not self.expanded:
             self.browser.click(self.EXPAND_BUTTON, parent=self)
-            _wait_for_spinner(self.parent)
+        wait_for(
+            lambda: bool(
+                self.browser.elements(
+                    ".//li[contains(@class, 'list-item-with-divider')]"
+                    "//div[contains(@class, 'repository-text-md')]/span[normalize-space()]",
+                    parent=self,
+                )
+            ),
+            timeout=60,
+            delay=1,
+            logger=self.logger,
+        )
 
     @property
     def name(self):
@@ -102,7 +118,6 @@ class AvailableRepositorySetWidget(GenericLocatorWidget):
 
         :param str item: The arch and version (if available) of the repository.
         """
-        self.expand()
         for arch_version_item in self.items:
             if item == arch_version_item.text:
                 arch_version_item.enable()
@@ -115,63 +130,145 @@ class EnabledRepositoryWidget(AvailableRepositorySetWidget):
     """The widget representation of Enabled repository item."""
 
     ITEM = None
-    DISABLE_BUTTON = './/button'
+    DISABLE_BUTTON = './/button[@aria-label="Disable"]'
+
+    def expand(self):
+        """Expand the repository item and wait until the disable button is present."""
+        if not self.expanded:
+            self.browser.click(self.EXPAND_BUTTON, parent=self)
+        wait_for(
+            lambda: bool(self.browser.elements(self.DISABLE_BUTTON, parent=self)),
+            timeout=60,
+            delay=1,
+            logger=self.logger,
+        )
 
     def disable(self):
         """Disable this repository."""
         self.browser.click(self.DISABLE_BUTTON, parent=self)
+        # Wait for React to start the loading state: the disable button is replaced by a spinner.
+        wait_for(
+            lambda: not self.browser.elements(self.DISABLE_BUTTON, parent=self),
+            timeout=10,
+            delay=0.5,
+            logger=self.parent.logger,
+        )
         _wait_for_spinner(self.parent)
 
 
-class RepositorySearchCategory(ActionsDropdown):
-    """The category search selector, eg: Available, Enabled or Both."""
+class SearchCategorySelector(GenericLocatorWidget):
+    """PF5 MenuToggle-based selector for the search category (Available/Enabled/Both).
 
-    button = Text('./button')
+    The toggle button is rendered inside .search-list-select-container; the menu is
+    appended to document.body via Popper and located by its OUIA component id.
+    """
+
+    TOGGLE = ".//button[@data-ouia-component-id='search-list-select']"
+    MENU_LOCATOR = "//div[@data-ouia-component-id='search-list-menu']"
+    MENU_ITEM_LOCATOR = ".//button[contains(@class, 'pf-v5-c-menu__item')]"
+
+    @property
+    def current_selection(self):
+        """Return the text of the currently selected category."""
+        return self.browser.text(
+            ".//span[contains(@class, 'pf-v5-c-menu-toggle__text')]",
+            parent=self,
+        )
+
+    @property
+    def is_open(self):
+        """Check whether the dropdown menu is open."""
+        return (
+            self.browser.get_attribute(
+                'aria-expanded', self.browser.element(self.TOGGLE, parent=self)
+            )
+            == 'true'
+        )
+
+    def open(self):
+        if not self.is_open:
+            self.browser.click(self.TOGGLE, parent=self)
+
+    def close(self):
+        if self.is_open:
+            self.browser.click(self.TOGGLE, parent=self)
+
+    def select(self, item):
+        """Select a category from the body-appended Popper menu.
+
+        :param str item: 'Available', 'Enabled', or 'Both'.
+        """
+        self.open()
+        menu = self.browser.element(self.MENU_LOCATOR)
+        for el in self.browser.elements(self.MENU_ITEM_LOCATOR, parent=menu):
+            if self.browser.text(el).strip() == item:
+                el.click()
+                return
+        raise ValueError(f'Category "{item}" not found in search category menu')
 
     def fill(self, item):
-        """Selects Search Repository Category."""
-        if item and self.button.is_displayed and self.button.text != item:
+        """Select the given category if it differs from the current selection."""
+        if item and self.current_selection != item:
             self.select(item)
 
 
-class RepositorySearchTypes(ActionsDropdown):
-    """Repository content types dropdown for repository search."""
+class FilterTypeSelector(GenericLocatorWidget):
+    """PF5 checkbox MenuToggle for filter dropdowns (e.g. filter-by-type, filter-by-product).
 
-    button = Text('./button')
+    Pass the OUIA component_id of the toggle button. The container root and the
+    Popper-appended menu are derived from it by convention::
 
-    def close(self):
-        """Closes the dropdown list."""
-        if self.is_open:
-            self.dropdown.click()
+      root:  //div[button[@data-ouia-component-id='{component_id}']]
+      menu:  //div[@data-ouia-component-id='{component_id}-menu']
+
+    Sets the filter to exclusively the requested type, deselecting all others.
+    Menu items are <label> elements; selection state is on the nested <input>.
+    """
+
+    MENU_ITEM_LOCATOR = ".//label[contains(@class, 'pf-v5-c-menu__item')]"
+    ITEM_TEXT_LOCATOR = ".//span[contains(@class, 'pf-v5-c-menu__item-text')]"
+    ITEM_CHECKBOX_LOCATOR = ".//input[contains(@class, 'pf-v5-c-check__input')]"
+
+    def __init__(self, parent, component_id, **kwargs):
+        locator = f"//div[button[@data-ouia-component-id='{component_id}']]"
+        super().__init__(parent, locator, **kwargs)
+        self._toggle = f".//button[@data-ouia-component-id='{component_id}']"
+        self._menu_locator = f"//div[@data-ouia-component-id='{component_id}-menu']"
 
     @property
-    def selected_items(self):
-        """Returns a list of all dropdown selected items as strings."""
-        return [
-            self.browser.text(el)
-            for el in self.browser.elements(self.ITEMS_LOCATOR, parent=self)
-            if el.get_attribute('aria-selected') == 'true'
-        ]
+    def is_open(self):
+        return (
+            self.browser.get_attribute(
+                'aria-expanded', self.browser.element(self._toggle, parent=self)
+            )
+            == 'true'
+        )
 
-    def select(self, items):
-        """Selects Search Repository content types.
+    def open(self):
+        if not self.is_open:
+            self.browser.click(self._toggle, parent=self)
 
-        :param items: The Repository content types required
+    def close(self):
+        if self.is_open:
+            self.browser.click(self._toggle, parent=self)
+
+    def select(self, item):
+        """Set the filter to only the given type, deselecting all others.
+
+        :param str item: Label of the type to select (e.g. 'Kickstart', 'RPM').
         """
-        selected_items = self.selected_items
-        available_items = self.items
         self.open()
-        for item in available_items:
-            if (item in items and item not in selected_items) or (
-                item not in items and item in selected_items
-            ):
-                self.browser.element(self.ITEM_LOCATOR.format(item), parent=self).click()
+        menu = self.browser.element(self._menu_locator)
+        for el in self.browser.elements(self.MENU_ITEM_LOCATOR, parent=menu):
+            text = self.browser.text(
+                self.browser.element(self.ITEM_TEXT_LOCATOR, parent=el)
+            ).strip()
+            checkbox = self.browser.element(self.ITEM_CHECKBOX_LOCATOR, parent=el)
+            is_selected = checkbox.get_attribute('checked') is not None
+            should_select = text.lower() == item.lower()
+            if is_selected != should_select:
+                el.click()
         self.close()
-
-    def fill(self, items):
-        """Selects Search Repository content types"""
-        if self.button.is_displayed and set(self.selected_items) != set(items):
-            self.select(items)
 
 
 class RepositoryCategoryView(View):
@@ -179,17 +276,16 @@ class RepositoryCategoryView(View):
 
     Example html representation::
 
-        <div class="enabled-repositories-container">
-            <h2>Enabled Repositories</h2>
-            <div class="list-group list-view-pf list-view-pf-view">
-                <div class="sticky-pagination sticky-pagination-grey">
-                <div class="list-group-item list-view-pf-stacked">
+        <div class="available-repositories-container">
+            <ul class="pf-v5-c-data-list">
+                <li class="pf-v5-c-data-list__item">
                     ...
-                </div>
-            </div>
+                </li>
+            </ul>
+        </div>
     """
 
-    ITEMS = "./div/div[contains(@class, 'list-group-item')]"
+    ITEMS = ".//ul[contains(@class, 'pf-v5-c-data-list')]/li"
     ITEM_WIDGET = None
 
     def items(self, name=None, label=None):
@@ -211,17 +307,19 @@ class RedHatRepositoriesView(BaseLoggedInView):
     """The main Red Hat repositories view."""
 
     title = Text("//h1[contains(., 'Red Hat Repositories')]")
-    search_category = RepositorySearchCategory(".//div[button[@id='search-list-select']]")
+    search_category = SearchCategorySelector(
+        "//div[button[@data-ouia-component-id='search-list-select']]"
+    )
     search_box = TextInput(
         locator='//*[@id="redhatRepositoriesPage"]//following::input[@aria-label="Search input"]'
     )
     search_button = Text(
         '//*[@id="redhatRepositoriesPage"]//following::button[@aria-label="Search"]'
     )
-    search_types = RepositorySearchTypes(".//div[button[@data-id='formControlsSelectMultiple']]")
-    search_by_filter_type = RepositorySearchTypes(".//div[button[@aria-owns='bs-select-2']]")
+    filter_by_product = FilterTypeSelector('filter-by-product')
+    filter_by_type = FilterTypeSelector('filter-by-type')
     search_clear = Text(".//button[@aria-label='Reset search']")
-    recommended_repos = Text(".//div[contains(@class, 'bootstrap-switch wrapper')]")
+    recommended_repos = PF5OUIASwitch('recommended-repos-switch')
 
     @View.nested
     class available(RepositoryCategoryView):
@@ -233,16 +331,13 @@ class RedHatRepositoriesView(BaseLoggedInView):
         ROOT = "//div[contains(@class, 'enabled-repositories-container')]"
         ITEM_WIDGET = EnabledRepositoryWidget
 
-    def search(self, value, category='Available', types=None):
+    def search(self, value, category='Available'):
         """Search repositories.
 
         :param str value: The string to search by.
         :param str category: The repository category to search, options: Available, Enabled, Both
-        :param list[str] types: (optional) The repository content types to refine the search
         :return:
         """
-        if types is None:
-            types = []
         supported_categories = ['Available', 'Enabled', 'Both']
         if category not in supported_categories:
             raise ValueError(
@@ -251,7 +346,6 @@ class RedHatRepositoriesView(BaseLoggedInView):
         if self.search_clear.is_displayed:
             self.search_clear.click()
         self.search_category.fill(category)
-        self.search_types.fill(types)
         self.search_box.fill(value)
         self.search_button.click()
         if category == 'Available':
