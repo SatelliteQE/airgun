@@ -294,8 +294,7 @@ class HostCreateView(BaseLoggedInView):
             locator=".//div[label[@for='compute_profile_id']]//button"
         )
         compute_profile = FilteredDropdown(id='host_compute_profile_id')
-        lce = FilteredDropdown(id='host_lifecycle_environment')
-        content_view = FilteredDropdown(id='host_content_view')
+        content_view_environment = FilteredDropdown(id='host_content_view_environment_id')
         content_source = FilteredDropdown(id='content_source_id')
         reset_puppet_environment = Link(".//a[@id='reset_puppet_environment']")
         inherit_puppet_environment = ToggleButton(
