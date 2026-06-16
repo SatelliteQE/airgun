@@ -3,7 +3,7 @@ import time
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
-from airgun.views.cloud_inventory import CloudInventoryListView
+from airgun.views.cloud_inventory import CloudInventoryListView, IopCloudInventoryListView
 
 
 class CloudInventoryEntity(BaseEntity):
@@ -124,3 +124,23 @@ class ShowCloudInventoryListView(NavigateStep):
     @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Red Hat Lightspeed', 'Inventory Upload')
+
+
+class IopCloudInventoryEntity(CloudInventoryEntity):
+    def read(self, entity_name=None):
+        """Read Inventory Upload page but skip elements not present in IoP scenario"""
+        view = self.navigate_to(self, 'All')
+        result = view.read()
+        view.inventory_list.toggle(entity_name)
+        result.update(view.inventory_list.read())
+        return result
+
+
+@navigator.register(IopCloudInventoryEntity, 'All')
+class ShowIopCloudInventoryListView(ShowCloudInventoryListView):
+    """Navigate to Inventory Upload page when IoP is enabled on Satellite"""
+
+    VIEW = IopCloudInventoryListView
+
+    def step(self, *args, **kwargs):
+        self.view.menu.select('Administer', 'Inventory Upload')
