@@ -3288,3 +3288,54 @@ class PF5SpacedListItem(Widget):
     def read(self):
         """Return the text content of the ``<dd>`` element."""
         return self.browser.text(self).strip()
+
+
+class PF5EditableSpacedListItem(PF5SpacedListItem):
+    """An editable field in a PF5 description list with inline editing.
+
+    Extends PF5SpacedListItem to support editing via an edit button, text input, and submit button.
+
+    Usage::
+
+        name = PF5EditableSpacedListItem(label='Name')
+    """
+
+    def fill(self, value):
+        """Edit the field value.
+
+        Args:
+            value: The new value to set
+
+        Returns:
+            bool: True if the value was changed, False otherwise
+        """
+        current_value = self.read()
+        if current_value == value:
+            return False
+
+        # Click the edit button for this field
+        # The edit button has OUIA component-id like 'edit-button-name' where 'name' is the lowercase label
+        edit_button_id = f'edit-button-{self.label.lower()}'
+        edit_button = PF5OUIAButton(self, component_id=edit_button_id)
+        edit_button.click()
+
+        # Wait for the text input to appear and fill it
+        # The input field has an OUIA component-id, but it's auto-generated
+        # We'll locate it by being within the same dd element
+        text_input_locator = './/input[@type="text"]'
+        text_input = TextInput(self, locator=text_input_locator)
+        text_input.fill(value)
+
+        # Click the submit button
+        submit_button_id = f'submit-button-{self.label.lower()}'
+        submit_button = PF5OUIAButton(self, component_id=submit_button_id)
+        submit_button.click()
+
+        # Wait for edit mode to close (edit button reappears)
+        wait_for(
+            lambda: edit_button.is_displayed,
+            timeout=10,
+            delay=0.5,
+        )
+
+        return True

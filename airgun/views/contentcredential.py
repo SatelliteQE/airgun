@@ -1,6 +1,7 @@
 from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import Text, View
+from widgetastic.widget import Text, TextInput, View
 from widgetastic_patternfly import Tab
+from widgetastic_patternfly5.components.forms.form_select import FormSelect
 from widgetastic_patternfly5.ouia import (
     BreadCrumb as PF5OUIABreadCrumb,
     Button as PF5OUIAButton,
@@ -11,13 +12,14 @@ from widgetastic_patternfly5.ouia import (
 )
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
-from airgun.widgets import PF5SpacedListItem
+from airgun.widgets import PF5EditableSpacedListItem, PF5SpacedListItem
 
 
 class ContentCredentialsTableView(BaseLoggedInView, SearchableViewMixinPF4):
     """PF5 list page for Content Credentials at /labs/content_credentials."""
 
     title = Text('//h1[normalize-space(.)="Content Credentials"]')
+    create_button = PF5OUIAButton('action-buttons-create')
     table = PF5OUIATable(
         component_id='content-credentials-table',
         column_widgets={
@@ -27,12 +29,25 @@ class ContentCredentialsTableView(BaseLoggedInView, SearchableViewMixinPF4):
 
     @property
     def is_displayed(self):
-        return self.title.is_displayed and self.table.is_displayed
+        return (
+            self.title.is_displayed and self.table.is_displayed and self.create_button.is_displayed
+        )
 
 
-class ContentCredentialCreateView(BaseLoggedInView):
-    # Not yet implemented in React UI
-    pass
+class CreateContentCredentialModal(PF5OUIAModal):
+    """PF5 confirmation modal for creating a Content Credential."""
+
+    OUIA_ID = 'create-content-credential-modal'
+
+    name_input = PF5OUIATextInput('create-content-credential-name-input')
+    content_type = FormSelect(locator='.//select[@id="content_type"]')
+    content_text_box = TextInput(locator='.//textarea[@aria-label="content"]')
+    create_button = PF5OUIAButton('create-content-credential-create-button')
+    cancel_button = PF5OUIAButton('create-content-credential-cancel-button')
+
+    @property
+    def is_displayed(self):
+        return self.name_input.is_displayed
 
 
 class DeleteContentCredentialModal(PF5OUIAModal):
@@ -40,8 +55,8 @@ class DeleteContentCredentialModal(PF5OUIAModal):
 
     OUIA_ID = 'delete-content-credential-modal'
 
-    confirm_delete = PF5OUIAButton('delete-confirm-button')
-    cancel = PF5OUIAButton('delete-cancel-button')
+    confirm_delete = PF5OUIAButton('delete-content-credential-delete-button')
+    cancel = PF5OUIAButton('delete-content-credential-cancel-button')
 
     @property
     def is_displayed(self):
@@ -66,7 +81,7 @@ class ContentCredentialEditView(BaseLoggedInView):
     class details(Tab):
         TAB_LOCATOR = ParametrizedLocator('//*[@data-ouia-component-id="routed-tabs-tab-details"]')
 
-        name = PF5SpacedListItem(label='Name')
+        name = PF5EditableSpacedListItem(label='Name')
         content_type = PF5SpacedListItem(label='Type')
         content = PF5SpacedListItem(label='Content')
         upload_file = PF5OUIAButton('upload-file-button')
