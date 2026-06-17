@@ -133,3 +133,26 @@ class CloudInventoryListView(BaseLoggedInView):
             final_dict['auto_update'] = self.auto_update.read()
 
         return final_dict
+
+
+class IopInventoryItemsView(InventoryItemsView):
+    """Item related to one organization on Red Hat Lightspeed Inventory Upload page
+    with IoP enabled on Satellite."""
+
+    def read(self):
+        """Read current state of view, skipping elements not present with IoP enabled."""
+        result = {
+            'report_saved_to': self.report_saved_to.read(),
+            'task_status': self.task_status.read(),
+        }
+        return result
+
+
+class IopCloudInventoryListView(CloudInventoryListView):
+    """Main Red Hat Lightspeed Inventory Upload view with IoP enabled on Satellite."""
+
+    inventory_list = View.nested(IopInventoryItemsView)
+
+    def read(self):
+        """Read current state of view, skipping elements not present with IoP enabled."""
+        return {'title': self.title.text}
