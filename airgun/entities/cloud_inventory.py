@@ -135,6 +135,14 @@ class IopCloudInventoryEntity(CloudInventoryEntity):
         result.update(view.inventory_list.read())
         return result
 
+    def generate_report_only(self, entity_name):
+        """
+        Generate inventory report (without upload) for a specific organization.
+        """
+        view = self.navigate_to(self, 'All')
+        view.inventory_list.toggle(entity_name)
+        view.inventory_list.generate_report.click()
+
 
 @navigator.register(IopCloudInventoryEntity, 'All')
 class ShowIopCloudInventoryListView(ShowCloudInventoryListView):

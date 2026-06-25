@@ -159,12 +159,19 @@ class IopInventoryItemsView(InventoryItemsView):
     """Item related to one organization on Red Hat Lightspeed Inventory Upload page
     with IoP enabled on Satellite."""
 
+    # Task action buttons
+    generate_and_upload = PF5Button('Generate and upload report')
+    generate_report = Button('contains', 'Generate')
+    download_report = Button('Download report')
+
+    task_status = Text(locator='.//div[contains(@class, "pf-v5-c-progress__description")]')
+    report_saved_to = Text(locator=('.//p[contains(text(), "Report saved to")]'))
+
     def read(self):
         """Read current state of view, skipping elements not present with IoP enabled."""
-        result = {
-            'report_saved_to': self.report_saved_to.read(),
-            'task_status': self.task_status.read(),
-        }
+
+        # Match the format expected by a dependent method on the 6.18.z branch
+        result = {'generating': {'terminal': self.report_saved_to.read()}}
         return result
 
 
