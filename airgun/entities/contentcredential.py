@@ -1,11 +1,13 @@
 from wait_for import wait_for
 
 from airgun.entities.base import BaseEntity
+from airgun.exceptions import DisabledWidgetError
 from airgun.navigation import NavigateStepWithWait as NavigateStep, navigator
+from airgun.views.common import TableRowKebabMenu
 from airgun.views.contentcredential import (
-    ContentCredentialCreateView,
     ContentCredentialEditView,
     ContentCredentialsTableView,
+    CreateContentCredentialModal,
     DeleteContentCredentialModal,
 )
 from airgun.views.product import ProductEditView
@@ -16,15 +18,60 @@ class ContentCredentialEntity(BaseEntity):
     endpoint_path = '/labs/content_credentials'
 
     def create(self, values):
-        """Create new content credentials entity."""
-        raise NotImplementedError(
-            'Content Credential create is not yet implemented in the React UI'
+        """Create new content credentials entity via modal.
+
+        Args:
+            values (dict): Should contain:
+                - name (str): Name of the credential
+                - content_type (str): Type - 'GPG Key' or 'Certificate'
+                - content (str): The GPG key or certificate content
+
+        Raises:
+            DisabledWidgetError: If the create button is disabled due to missing required fields
+        """
+        view = self.navigate_to(self, 'All')
+        view.create_button.click()
+        modal = CreateContentCredentialModal(self.browser)
+        modal.wait_displayed()
+        modal.fill(
+            {
+                'name_input': values.get('name', ''),
+                'content_type': values.get('content_type', ''),
+                'content_text_box': values.get('content', ''),
+            }
+        )
+        if modal.create_button.disabled:
+            raise DisabledWidgetError(
+                'Create button is disabled. Required fields (name and content) must be filled.'
+            )
+        modal.create_button.click()
+        wait_for(
+            lambda: not modal.is_displayed,
+            timeout=30,
+            delay=0.5,
+            handle_exception=True,
+            message='Waiting for create modal to close',
+        )
+        wait_for(
+            lambda: view.table.row(name=values['name']),
+            timeout=30,
+            delay=0.5,
+            handle_exception=True,
+            message=f'Waiting for credential "{values["name"]}" to appear in table',
         )
 
     def delete(self, entity_name):
-        """Delete existing content credentials entity via kebab menu."""
-        view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.actions.item_select('Delete')
+        """Delete existing content credentials entity via table row kebab menu."""
+        view = self.navigate_to(self, 'All')
+        view.search(entity_name)
+        wait_for(
+            lambda: view.table.row(name=entity_name),
+            timeout=30,
+            delay=0.5,
+            handle_exception=True,
+            message=f'Waiting for credential "{entity_name}" row to appear',
+        )
+        TableRowKebabMenu(parent=view.table.row(name=entity_name)).item_select('Delete')
         modal = DeleteContentCredentialModal(self.browser)
         modal.wait_displayed()
         modal.confirm_delete.click()
@@ -106,18 +153,6 @@ class ShowAllContentCredentials(NavigateStep):
     def step(self, *args, **kwargs):
         # TODO: Update menu path to 'Content', 'Content Credentials' once the page is moved out of /labs
         self.view.menu.select('Lab Features', 'Content Credentials')
-
-
-@navigator.register(ContentCredentialEntity, 'New')
-class AddNewContentCredential(NavigateStep):
-    """Navigate to Create Content Credential page (stub)."""
-
-    VIEW = ContentCredentialCreateView
-
-    def step(self, *args, **kwargs):
-        raise NotImplementedError(
-            'Content Credential create is not yet implemented in the React UI'
-        )
 
 
 @navigator.register(ContentCredentialEntity, 'Edit')
