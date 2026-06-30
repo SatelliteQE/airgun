@@ -10,6 +10,7 @@ from widgetastic.widget import (
     View,
 )
 from widgetastic_patternfly import BreadCrumb
+from widgetastic_patternfly5 import Menu as PF5Menu
 
 from airgun.views.common import (
     BaseLoggedInView,
@@ -284,10 +285,11 @@ class ComputeResourceVMwareProfileControllerVolumeList(RemovableWidgetsItemsList
 class ComputeResourceVMwareProfileStorageItem(GenericRemovableWidgetItem):
     """VMware  Compute Resource Profile Storage Controller item widget"""
 
-    controller = FilteredDropdown(
-        locator=".//div[@class='controller-header']//select[contains(@class, 'form-control')]"
+    controller = PF5Menu(locator='.//button[@data-ouia-component-id="OUIA-Generated-MenuToggle-1"]')
+
+    remove_button = Text(
+        ".//button[contains(concat(' ', @data-ouia-component-id, ' '), ' btn-remove-controller ')]"
     )
-    remove_button = Text(".//button[contains(concat(' ', @class, ' '), ' btn-remove-controller ')]")
     disks = ComputeResourceVMwareProfileControllerVolumeList()
 
 
