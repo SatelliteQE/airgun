@@ -8,6 +8,7 @@ from widgetastic.widget import (
     View,
 )
 from widgetastic_patternfly import BreadCrumb, Button
+from widgetastic_patternfly5.ouia import Button as PF5OUIAButton
 
 from airgun.exceptions import ReadOnlyWidgetError
 from airgun.views.common import (
@@ -20,7 +21,6 @@ from airgun.views.host_new import ManageColumnsView
 from airgun.widgets import (
     ConfirmationDialog,
     ItemsListReadOnly,
-    PF5OUIAButton,
     ProgressBar,
     SatTable,
 )
@@ -102,17 +102,18 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
         },
     )
 
-    add_button = PF5OUIAButton('add-subscriptions-button-tooltip')
+    add_subscription_button = PF5OUIAButton('add-subscriptions-button-tooltip')
     actions_kebab_toggle = GenericLocatorWidget(
         './/button[@aria-label="Actions" and contains(@class,"pf-v5-c-menu-toggle")]'
     )
     manage_manifest_item = GenericLocatorWidget(
         '//li[@data-ouia-component-id="manage-manifest-dropdown-item"]//button'
     )
-    import_manifest_button = Button('Import a Manifest')
-    add_subscriptions_button = Button('Add subscriptions')
-    export_csv_button = Button('Export CSV')
-    delete_button = Button('Delete')
+    delete_item = GenericLocatorWidget(
+        '//li[@data-ouia-component-id="delete-dropdown-item"]//button[not(@disabled)]'
+    )
+    import_manifest_button = PF5OUIAButton('empty-state-action-button')
+
     manage_columns_button = PF5OUIAButton('manage-columns-button')
     progressbar = ProgressBar('//div[contains(@class,"progress-bar-striped")]')
     confirm_deletion = DeleteSubscriptionConfirmationDialog()
@@ -147,7 +148,6 @@ class ManageManifestView(BaseLoggedInView, PF5ModalViewMixin):
         expire_date = Text(
             '//div[@id="manifest-history-tabs-pane-1"]/div/hr//following-sibling::div[2]/div[2]'
         )
-        red_hat_cdn_url = TextInput(id='cdnUrl')
         manifest_file = FileInput(id='usmaFile')
         refresh_button = PF5OUIAButton('refresh-manifest-button-tooltip')
         delete_button = PF5OUIAButton('delete-manifest-button-tooltip')
@@ -177,8 +177,8 @@ class AddSubscriptionView(BaseLoggedInView):
             'Quantity to Allocate': TextInput(locator='.//input'),
         },
     )
-    submit_button = Button('Submit')
-    cancel_button = Button('Cancel')
+    submit_button = PF5OUIAButton('upstream-subscriptions-submit-button')
+    cancel_button = PF5OUIAButton('upstream-subscriptions-cancel-button')
 
     @property
     def is_displayed(self):
