@@ -20,6 +20,7 @@ from airgun.views.common import (
 from airgun.views.host import HostCreateView
 from airgun.widgets import (
     ActionsDropdown,
+    ControllerTypeSelect,
     FilteredDropdown,
     GenericRemovableWidgetItem,
     MultiSelect,
@@ -259,17 +260,19 @@ class ComputeResourceVMwareProfileControllerVolumeItem(GenericRemovableWidgetIte
     storage_pod = FilteredDropdown(
         locator=".//div[label[contains(., 'Storage Pod')]]//select[contains(@class, 'form-control')]"
     )
-    data_store = FilteredDropdown(
-        locator=".//div[label[contains(., 'Data store')]]//select[contains(@class, 'form-control')]"
+    data_store = ControllerTypeSelect(
+        locator=".//button[contains(@data-ouia-component-id, 'select-datastore')]/ancestor::div[contains(@class, 'group-control')]"
     )
     disk_mode = FilteredDropdown(
         locator=".//div[label[contains(., 'Disk Mode')]]//select[contains(@class, 'form-control')]"
     )
-    size = TextInput(locator=".//div[label[contains(., 'Size')]]//input")
-    thin_provision = Checkbox(locator=".//div[label[contains(., 'Thin provision')]]/div/input")
+    size = TextInput(
+        locator=".//input[contains(@data-ouia-component-id, 'OUIA-Generated-TextInputBase')]"
+    )
+    thin_provision = Checkbox(id='checkbox-thin-provision')
     eager_zero = Checkbox(locator=".//div[label[contains(., 'Eager zero')]]/div/input")
 
-    remove_button = Text(".//button[contains(@class, 'close')]")
+    remove_button = Text(".//button[contains(@data-ouia-component-id, 'delete')]")
 
 
 class ComputeResourceVMwareProfileControllerVolumeList(RemovableWidgetsItemsListView):
@@ -284,10 +287,12 @@ class ComputeResourceVMwareProfileControllerVolumeList(RemovableWidgetsItemsList
 class ComputeResourceVMwareProfileStorageItem(GenericRemovableWidgetItem):
     """VMware  Compute Resource Profile Storage Controller item widget"""
 
-    controller = FilteredDropdown(
-        locator=".//div[@class='controller-header']//select[contains(@class, 'form-control')]"
+    controller = ControllerTypeSelect(
+        ".//button[contains(@class, 'pf-v5-c-menu-toggle')]/ancestor::div[1]"
     )
-    remove_button = Text(".//button[contains(concat(' ', @class, ' '), ' btn-remove-controller ')]")
+    remove_button = Text(
+        ".//button[contains(concat(' ', @data-ouia-component-id, ' '), ' btn-remove-controller ')]"
+    )
     disks = ComputeResourceVMwareProfileControllerVolumeList()
 
 
