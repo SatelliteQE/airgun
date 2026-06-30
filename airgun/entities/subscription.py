@@ -10,6 +10,7 @@ from airgun.views.subscription import (
     ManageManifestView,
     SubscriptionDetailsView,
     SubscriptionListView,
+    SubscriptionManageColumnsView,
 )
 
 
@@ -176,7 +177,10 @@ class SubscriptionEntity(BaseEntity):
         """
         view = self.navigate_to(self, 'All')
         if columns is not None:
-            view.columns_filter_checkboxes.fill(columns)
+            view.manage_columns_button.click()
+            manage_columns_view = SubscriptionManageColumnsView(self.browser)
+            manage_columns_view.fill(columns)
+            manage_columns_view.submit()
             wait_for(
                 lambda: view.table.headers is not None,
                 timeout=10,
@@ -263,15 +267,13 @@ class ManageManifest(NavigateStep):
 
     def step(self, *args, **kwargs):
         wait_for(
-            lambda: (
-                self.parent.manage_manifest_button.is_displayed
-                and not self.parent.manage_manifest_button.disabled
-            ),
+            lambda: self.parent.add_button.is_displayed,
             handle_exception=True,
             timeout=30,
             delay=1,
         )
-        self.parent.manage_manifest_button.click()
+        self.parent.actions_kebab_toggle.click()
+        self.parent.manage_manifest_item.click()
 
 
 @navigator.register(SubscriptionEntity, 'Delete Manifest Confirmation')

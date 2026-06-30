@@ -16,9 +16,11 @@ from airgun.views.common import (
     SatTab,
     SearchableViewMixinPF4,
 )
+from airgun.views.host_new import ManageColumnsView
 from airgun.widgets import (
     ConfirmationDialog,
     ItemsListReadOnly,
+    PF5OUIAButton,
     ProgressBar,
     SatTable,
 )
@@ -81,45 +83,12 @@ class ProductContentItemsList(GenericLocatorWidget):
         raise ReadOnlyWidgetError('Widget is read only, fill is prohibited')
 
 
-class SubscriptionColumnsFilter(GenericLocatorWidget):
-    """This is the list of interaction items for when opening up the selectable customizable
-    checkboxes"""
+class SubscriptionManageColumnsView(ManageColumnsView, PF5ModalViewMixin):
+    """Manage columns modal for the Subscriptions page."""
 
-    ITEMS_LOCATOR = "//div[@id='subscriptionTableTooltip']//li/span"
-    CHECKBOX_LOCATOR = "//div[@id='subscriptionTableTooltip']//li/span[.='{}']/preceding::input[1]"
-
-    @property
-    def is_open(self):
-        return 'tooltip-open' in self.browser.classes(self)
-
-    def open(self):
-        if not self.is_open:
-            self.click()
-
-    def close(self):
-        if self.is_open:
-            self.click()
-
-    def checkboxes(self):
-        labels = [line.text for line in self.browser.elements(self.ITEMS_LOCATOR)]
-        return {
-            label: Checkbox(self, locator=self.CHECKBOX_LOCATOR.format(label)) for label in labels
-        }
-
-    def read(self):
-        """Read values of checkboxes"""
-        self.open()
-        values = {name: checkbox.read() for name, checkbox in self.checkboxes.items()}
-        self.close()
-        return values
-
-    def fill(self, values):
-        """Check or uncheck one of the checkboxes"""
-        self.open()
-        checkboxes = self.checkboxes()
-        for name, value in values.items():
-            checkboxes[name].fill(value)
-        self.close()
+    ROOT = './/div[@data-ouia-component-id="manage-columns-modal"]'
+    confirm_dialog = PF5OUIAButton('save-columns-button')
+    cancel_dialog = PF5OUIAButton('cancel-columns-button')
 
 
 class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
@@ -133,17 +102,20 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
         },
     )
 
-    add_button = Button(href='subscriptions/add')
-    manage_manifest_button = Button('Manage Manifest')
+    add_button = PF5OUIAButton('add-subscriptions-button-tooltip')
+    actions_kebab_toggle = GenericLocatorWidget(
+        './/button[@aria-label="Actions" and contains(@class,"pf-v5-c-menu-toggle")]'
+    )
+    manage_manifest_item = GenericLocatorWidget(
+        '//li[@data-ouia-component-id="manage-manifest-dropdown-item"]//button'
+    )
     import_manifest_button = Button('Import a Manifest')
     add_subscriptions_button = Button('Add subscriptions')
     export_csv_button = Button('Export CSV')
     delete_button = Button('Delete')
+    manage_columns_button = PF5OUIAButton('manage-columns-button')
     progressbar = ProgressBar('//div[contains(@class,"progress-bar-striped")]')
     confirm_deletion = DeleteSubscriptionConfirmationDialog()
-    columns_filter_checkboxes = SubscriptionColumnsFilter(
-        ".//form[div[contains(@class, 'filter')]]/div/i"
-    )
 
     @property
     def is_displayed(self):
@@ -163,7 +135,7 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
 
 class ManageManifestView(BaseLoggedInView, PF5ModalViewMixin):
     ROOT = '//div[@id="manageManifestModal"]'
-    close_button = Button('Close')
+    close_button = PF5OUIAButton('manage-manifest-close-button')
 
     @View.nested
     class manifest(SatTab):
@@ -177,8 +149,8 @@ class ManageManifestView(BaseLoggedInView, PF5ModalViewMixin):
         )
         red_hat_cdn_url = TextInput(id='cdnUrl')
         manifest_file = FileInput(id='usmaFile')
-        refresh_button = Button('Refresh')
-        delete_button = Button('Delete')
+        refresh_button = PF5OUIAButton('refresh-manifest-button-tooltip')
+        delete_button = PF5OUIAButton('delete-manifest-button-tooltip')
 
     @View.nested
     class manifest_history(SatTab):
@@ -192,8 +164,8 @@ class ManageManifestView(BaseLoggedInView, PF5ModalViewMixin):
 class DeleteManifestConfirmationView(BaseLoggedInView, PF5ModalViewMixin):
     ROOT = '//div[@id="deleteManifestModal"]'
     message = Text('.//div[contains(@class, "pf-v5-c-modal-box__body")]')
-    delete_button = Button('Delete')
-    cancel_button = Button('Cancel')
+    delete_button = PF5OUIAButton('delete-manifest-confirm-button')
+    cancel_button = PF5OUIAButton('delete-manifest-cancel-button')
 
 
 class AddSubscriptionView(BaseLoggedInView):
