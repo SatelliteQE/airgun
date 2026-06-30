@@ -1,4 +1,4 @@
-from widgetastic.widget import Text
+from widgetastic.widget import Text, Widget
 
 # from widgetastic_patternfly5.ouia import (
 #     ExpandableTable as PF5OUIAExpandableTable,
@@ -13,6 +13,22 @@ from widgetastic_patternfly5 import (
 
 from airgun.views.common import BaseLoggedInView
 from airgun.widgets import SearchInput
+
+
+class ExportMenu(Widget):
+    """Export dropdown menu for downloading vulnerabilities data."""
+
+    ROOT = './/button[contains(@class, "pf-v5-c-menu-toggle") and @aria-label="Export"]'
+
+    def item_select(self, item):
+        """Open the export menu and click an item."""
+        self.browser.click(self)
+        item_locator = (
+            f'//div[@data-ouia-component-id="Export"]'
+            f'//span[contains(@class, "pf-v5-c-menu__item-text")'
+            f' and contains(text(), "{item}")]'
+        )
+        self.browser.click(item_locator)
 
 
 class CloudVulnerabilityView(BaseLoggedInView):
@@ -34,6 +50,7 @@ class CloudVulnerabilityView(BaseLoggedInView):
     search_bar = SearchInput(locator='.//input[contains(@aria-label, "search-field")]')
     cve_menu_toggle = PF5Button('.//button[contains(@class, "pf-v5-c-menu-toggle")]')
     no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
+    export_menu = ExportMenu()
 
     vulnerabilities_table = PF5OUIAExpandableTable(
         # component_id='OUIA-Generated-Table-1',

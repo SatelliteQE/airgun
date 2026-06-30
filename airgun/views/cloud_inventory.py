@@ -153,3 +153,33 @@ class CloudInventoryListView(BaseLoggedInView):
             final_dict['auto_update'] = self.auto_update.read()
 
         return final_dict
+
+
+class IopInventoryItemsView(InventoryItemsView):
+    """Item related to one organization on Red Hat Lightspeed Inventory Upload page
+    with IoP enabled on Satellite."""
+
+    # Task action buttons
+    generate_and_upload = PF5Button('Generate and upload report')
+    generate_report = Button('contains', 'Generate')
+    download_report = Button('Download report')
+
+    task_status = Text(locator='.//div[contains(@class, "pf-v5-c-progress__description")]')
+    report_saved_to = Text(locator=('.//p[contains(text(), "Report saved to")]'))
+
+    def read(self):
+        """Read current state of view, skipping elements not present with IoP enabled."""
+
+        # Match the format expected by a dependent method on the 6.18.z branch
+        result = {'generating': {'terminal': self.report_saved_to.read()}}
+        return result
+
+
+class IopCloudInventoryListView(CloudInventoryListView):
+    """Main Red Hat Lightspeed Inventory Upload view with IoP enabled on Satellite."""
+
+    inventory_list = View.nested(IopInventoryItemsView)
+
+    def read(self):
+        """Read current state of view, skipping elements not present with IoP enabled."""
+        return {'title': self.title.text}

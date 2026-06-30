@@ -22,7 +22,7 @@ from airgun.entities.bookmark import BookmarkEntity
 from airgun.entities.bootc import BootcEntity
 from airgun.entities.capsule import CapsuleEntity
 from airgun.entities.cloud_insights import CloudInsightsEntity, RecommendationsTabEntity
-from airgun.entities.cloud_inventory import CloudInventoryEntity
+from airgun.entities.cloud_inventory import CloudInventoryEntity, IopCloudInventoryEntity
 from airgun.entities.cloud_vulnerabilities import CloudVulnerabilityEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
 from airgun.entities.computeresource import ComputeResourceEntity
@@ -394,6 +394,11 @@ class Session:
     def cloudinventory(self):
         """Instance of Insights Inventory Upload entity."""
         return self._open(CloudInventoryEntity)
+
+    @cached_property
+    def iopcloudinventory(self):
+        """Instance of Insights Inventory Upload entity in IoP scenario."""
+        return self._open(IopCloudInventoryEntity)
 
     @cached_property
     def recommendationstab(self):
