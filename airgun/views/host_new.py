@@ -2,7 +2,7 @@ import time
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-from wait_for import wait_for
+from wait_for import TimedOutError, wait_for
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import (
     Checkbox,
@@ -247,28 +247,146 @@ class HostColectionsList(Widget):
 
 
 class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
-    """New All Hosts view.
-    Note: This is a minimal implementation of the new Hosts page, and currently it serves only to transition
-    to the now-legacy UI page.
-    """
+    """PF5 All Hosts view - the new hosts page for Satellite."""
 
     title = Text('//h1[normalize-space(.)="Hosts"]')
-    actions = PF5OUIADropdown(component_id='legacy-ui-kebab')
+    manage_columns = PF5OUIAButton('manage-columns-button')
+    searchbar_dropdown = PF5OUIADropdown('selection-checkbox')
+    export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
+    new = Text(".//div[@id='foreman-page']//a[@data-ouia-component-id='create-host-button']")
+    register = PF5OUIAButton('OUIA-Generated-Button-secondary-2')
+    new_ui_button = Text(".//a[contains(@class, 'btn')][contains(@href, 'new/hosts')]")
+    select_all = Checkbox(locator="//input[@id='check_all']")
+
+    # PF5 searchbox widgets
+    searchbox = TextInput(locator=".//input[@aria-label='Search input']")
+    search_button = PF5Button(locator=".//button[@aria-label='Search']")
+    reset_search_button = PF5Button(locator=".//button[@aria-label='Reset search']")
+
     table = PF5OUIATable(
         component_id='hosts-index-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
             'Name': Text(
-                './/a[contains(@href, "/new/hosts/") and not(contains(@href, "Red Hat Lightspeed"))]'
+                ".//a[contains(@href, '/new/hosts/') and not(contains(@href, 'Red Hat Lightspeed'))]"
             ),
-            'Recommendations': Text('./a'),
             6: MenuToggleButtonMenu(),
         },
     )
+    displayed_table_headers = './/table/thead/tr/th[not(@hidden)]'
+    host_status = "//span[contains(@class, 'host-status')]"
+    actions = PF5OUIADropdown(component_id='legacy-ui-kebab')
+    schedule_a_job = PF5OUIADropdown('schedule-a-job-dropdown')
+    dialog = Pf5ConfirmationDialog()
+
+    def clear_search(self):
+        """Clear the search box by clicking the reset button."""
+        # More specific locator for reset button within the foreman-search-bar
+        reset_button_locator = (
+            ".//div[@class='foreman-search-bar']//button[@aria-label='Reset search']"
+        )
+        try:
+            reset_button = self.browser.element(reset_button_locator)
+            self.browser.click(reset_button)
+            # Wait for table to refresh
+            self.browser.plugin.ensure_page_safe(timeout='5s')
+        except NoSuchElementException:
+            # If reset button not available, clear the input directly
+            search_input_locator = (
+                ".//div[@class='foreman-search-bar']"
+                "//input[@class='pf-v5-c-text-input-group__text-input'][@aria-label='Search input']"
+            )
+            search_input = self.browser.element(search_input_locator)
+            self.browser.clear(search_input)
+
+    def search(self, query):
+        """Perform search using PF5 searchbox.
+
+        :param str query: search query to type into search field
+        :return: list of dicts representing table rows with 'Name' key
+        :rtype: list
+        """
+        # More specific locator for the PF5 search input within the toolbar
+        search_input_locator = (
+            ".//div[@class='foreman-search-bar']"
+            "//input[@class='pf-v5-c-text-input-group__text-input'][@aria-label='Search input']"
+        )
+
+        # Wait for search input to be available
+        search_input = self.browser.wait_for_element(search_input_locator, timeout=10)
+
+        # Ensure element is visible and ready
+        self.browser.plugin.ensure_page_safe(timeout='5s')
+
+        # Clear existing value
+        self.browser.clear(search_input)
+
+        # Type the search query
+        self.browser.send_keys(query, search_input)
+
+        # Click the search button - more specific locator within the input group
+        search_button_locator = (
+            ".//div[@class='foreman-search-bar']//button[@aria-label='Search'][@type='submit']"
+        )
+        search_button = self.browser.element(search_button_locator)
+        self.browser.click(search_button)
+
+        # Wait for table to update and AJAX to complete
+        self.browser.plugin.ensure_page_safe(timeout='10s')
+
+        # Wait for table rows to appear with actual data
+        table_rows_locator = ".//table[@data-ouia-component-id='hosts-index-table']//tbody/tr"
+
+        def _get_table_rows():
+            """Get table rows with Name data."""
+            rows = []
+            row_elements = self.browser.elements(table_rows_locator)
+
+            for row_elem in row_elements:
+                row_data = {}
+                # Get the Name from the link
+                try:
+                    name_link = self.browser.element(
+                        ".//td[@data-label='Name']//a[contains(@href, '/new/hosts/')]",
+                        parent=row_elem,
+                    )
+                    row_data['Name'] = self.browser.text(name_link)
+                    rows.append(row_data)
+                except NoSuchElementException:
+                    # If no name link found, skip this row
+                    continue
+
+            return rows if rows else None
+
+        # Wait for rows with data to appear (up to 10 seconds)
+        try:
+            rows = wait_for(
+                _get_table_rows,
+                timeout=10,
+                delay=0.5,
+                fail_condition=lambda r: r is None,
+                message=f"Waiting for search results for '{query}'",
+            )[0]
+        except TimedOutError:
+            # If timeout, return empty list (no results found)
+            rows = []
+
+        return rows
 
     @property
     def is_displayed(self):
-        return self.title.is_displayed
+        return self.browser.wait_for_element(self.title, exception=False) is not None
+
+    @property
+    def displayed_table_header_names(self) -> list:
+        """
+        Return names of the displayed headers in the hosts table.
+
+        Note: Cannot use 'self.table.headers' for this because it returns also hidden headers.
+        """
+        return [
+            header.text.strip() for header in self.browser.elements(self.displayed_table_headers)
+        ]
 
 
 class BreadcrumbSwitcher(Widget):
