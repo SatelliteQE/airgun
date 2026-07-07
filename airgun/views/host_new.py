@@ -17,7 +17,6 @@ from widgetastic.xpath import quote
 from widgetastic_patternfly4 import (
     Button,
     Dropdown,
-    DualListSelector,
     Pagination as PF4Pagination,
     Select,
 )
@@ -30,6 +29,7 @@ from widgetastic_patternfly5 import (
     Button as PF5Button,
     CompactPagination as PF5Pagination,
     Dropdown as PF5Dropdown,
+    DualListSelector as PF5DualListSelector,
     ExpandableTable as PF5ExpandableTable,
     Menu as PF5Menu,
     Modal as PF5Modal,
@@ -1123,22 +1123,20 @@ class ManageHostStatusesView(View):
 class EditAnsibleRolesView(View):
     """Edit Ansible Roles Modal"""
 
-    addAnsibleRole = DualListSelector('//div[@class = "pf-v5-c-dual-list-selector"]')
+    addAnsibleRole = PF5DualListSelector('//div[@class = "pf-v5-c-dual-list-selector"]')
     confirm = PF5Button(locator='.//button[@aria-label="submit ansible roles"]')
-    hostAssignedAnsibleRoles = Text(
-        './/button[@class="pf-v5-c-dual-list-selector__item"]/span[1]//span[2]'
-    )
+    hostAssignedAnsibleRoles = Text('.//span[contains(@class, "dual-list-selector__item-text")]')
     selectRoles = PF5Button(locator='.//button[@aria-label="Add selected"]')
     unselectRoles = PF5Button(locator='.//button[@aria-label="Remove selected"]')
     CHOSEN_ITEMS = (
         ".//div[contains(@class, 'pf-m-chosen')]"
-        "//button[contains(@class, 'dual-list-selector__item')]"
+        "//div[contains(@class, 'dual-list-selector__list-item-row')]"
     )
     AVAILABLE_ITEMS = (
         ".//div[contains(@class, 'pf-m-available')]"
-        "//button[contains(@class, 'dual-list-selector__item')]"
+        "//div[contains(@class, 'dual-list-selector__list-item-row')]"
     )
-    ROLE_NAME = './/span[1]//span[2]'
+    ROLE_NAME = './/span[contains(@class, "dual-list-selector__item-text")]'
 
     @property
     def is_displayed(self):
