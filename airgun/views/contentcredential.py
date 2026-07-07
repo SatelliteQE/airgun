@@ -39,11 +39,11 @@ class CreateContentCredentialModal(PF5OUIAModal):
 
     OUIA_ID = 'create-content-credential-modal'
 
-    name_input = PF5OUIATextInput('create-content-credential-name-input')
+    name_input = PF5OUIATextInput('name-input')
     content_type = FormSelect(locator='.//select[@id="content_type"]')
     content_text_box = TextInput(locator='.//textarea[@aria-label="content"]')
-    create_button = PF5OUIAButton('create-content-credential-create-button')
-    cancel_button = PF5OUIAButton('create-content-credential-cancel-button')
+    create_button = PF5OUIAButton('create-button')
+    cancel_button = PF5OUIAButton('cancel-button')
 
     @property
     def is_displayed(self):
@@ -53,10 +53,10 @@ class CreateContentCredentialModal(PF5OUIAModal):
 class DeleteContentCredentialModal(PF5OUIAModal):
     """PF5 confirmation modal for deleting a Content Credential."""
 
-    OUIA_ID = 'delete-content-credential-modal'
+    OUIA_ID = 'content-credential-delete-modal'
 
-    confirm_delete = PF5OUIAButton('delete-content-credential-delete-button')
-    cancel = PF5OUIAButton('delete-content-credential-cancel-button')
+    confirm_delete = PF5OUIAButton('delete-button')
+    cancel = PF5OUIAButton('cancel-button')
 
     @property
     def is_displayed(self):
