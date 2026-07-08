@@ -15,7 +15,9 @@ class DataCollectionMenu(Menu):
     """ """
 
     IS_ALWAYS_OPEN = False
-    BUTTON_LOCATOR = ".//button[contains(@class, '-c-menu-toggle')]"
+    BUTTON_LOCATOR = (
+        ".//button[contains(@class, '-c-menu-toggle') and contains(@class, 'pf-m-full-width')]"
+    )
     ROOT = f'{BUTTON_LOCATOR}/..'
 
 

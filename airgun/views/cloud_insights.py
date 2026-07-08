@@ -52,13 +52,24 @@ class RemediationView(PF5OUIAModal):
         return self.title.is_displayed
 
 
+class InsightsActionDropdown(PF5Menu):
+    """The three-dot actions menu on the Recommendations page.
+
+    Uses a CSS class selector scoped to the 'title-dropdown' class set by ToolbarDropdown.js,
+    avoiding reliance on OUIA component type attributes that change across PatternFly versions."""
+
+    IS_ALWAYS_OPEN = False
+    BUTTON_LOCATOR = './/button[@aria-label="Recommendations actions"]'
+    ROOT = f'{BUTTON_LOCATOR}/..'
+
+
 class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
     """Main Red Hat Lightspeed view."""
 
     title = Text('//h1[normalize-space(.)="Red Hat Lightspeed"]')
     insights_sync_switcher = PF5OUIASwitch('foreman-rh-cloud-switcher')
     remediate = PF5Button('Remediate')
-    insights_dropdown = PF5OUIADropdown('title-dropdown')
+    insights_dropdown = InsightsActionDropdown()
     select_all = Checkbox(locator='.//input[@aria-label="Select all rows"]')
     table = PF5OUIAPatternflyTable(
         component_id='rh-cloud-recommendations-table',
