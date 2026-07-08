@@ -518,6 +518,9 @@ class NewHostEntity(HostEntity):
         param: search (string): search value to filter results.
         example: search="errata_id == {ERRATA_ID}"
         default: None; all available errata are returned and installed.
+
+        Raises:
+            ValueError: If a search was provided but returned no matching errata.
         """
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
         view.wait_displayed()
@@ -530,6 +533,8 @@ class NewHostEntity(HostEntity):
         # wait for filter to apply
         view.content.errata.wait_displayed()
         self.browser.plugin.ensure_page_safe()
+        if search is not None and not view.content.errata.table.is_displayed:
+            raise ValueError(f'No errata found matching search: {search}')
         view.content.errata.select_all.click()
         view.content.errata.apply.fill('Apply')
         view.flash.assert_no_error()
