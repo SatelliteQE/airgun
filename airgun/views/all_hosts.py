@@ -68,7 +68,9 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
         component_id='table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
-            'Name': Text('./a'),
+            'Name': Text(
+                './/a[contains(@href, "/new/hosts/") and not(contains(@href, "Red Hat Lightspeed"))]'
+            ),
             2: Dropdown(locator='.//div[contains(@class, "pf-c-dropdown")]'),
         },
     )
