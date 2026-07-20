@@ -3377,3 +3377,20 @@ class PF5EditableSpacedListItem(PF5SpacedListItem):
         )
 
         return True
+
+
+class ControllerTypeSelect(GenericLocatorWidget):
+    ITEM = './/ul//span/span[normalize-space(.)="{}"]'
+    ITEMS = './/span[contains(@class, "pf-v5-c-menu__item-main")]/span'
+
+    def fill(self, value):
+        """Fill sub widgets with the supplied values"""
+        self.click()
+        items = [self.browser.text(el) for el in self.browser.elements(self.ITEMS, parent=self)]
+        if value in items:
+            self.browser.element(self.ITEM.format(value), parent=self).click()
+
+    def read(self):
+        """Return drop-down selected item value"""
+        value = self.browser.text(self.browser.element(self))
+        return value
