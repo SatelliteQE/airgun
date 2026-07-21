@@ -123,6 +123,27 @@ class ErrataEntity(BaseEntity):
         view.content_hosts.wait_displayed()
         return view.content_hosts.search(value, environment=environment)
 
+    def search_repositories(self, entity_name, value, lce=None, cv=None):
+        """Search errata repositories with optional lifecycle environment and content view filters.
+
+        :param str entity_name: errata id or title
+        :param str value: search query to type into search field.
+        :param str optional lce: filter by lifecycle environment name
+        :param str optional cv: filter by content view name
+        :return: list of dicts representing table rows
+        :rtype: list
+        """
+        view = self.navigate_to(
+            self,
+            'Details',
+            entity_name=entity_name,
+            applicable=False,
+            installable=False,
+            repo=None,
+        )
+        view.repositories.wait_displayed()
+        return view.repositories.search(value, lce=lce, cv=cv)
+
 
 @navigator.register(ErrataEntity, 'All')
 class ShowAllErratum(NavigateStep):
