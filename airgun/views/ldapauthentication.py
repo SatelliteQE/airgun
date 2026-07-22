@@ -53,6 +53,7 @@ class LDAPAuthenticationCreateView(BaseLoggedInView):
         host = TextInput(id='auth_source_ldap_host')
         text_connection = Text('//a[@id="test_connection_button"]')
         ldaps = Checkbox(id='auth_source_ldap_tls')
+        cacert = TextInput(id='auth_source_ldap_cacert')
         port = TextInput(id='auth_source_ldap_port')
         server_type = FilteredDropdown(id='auth_source_ldap_server_type')
 
