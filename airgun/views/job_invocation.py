@@ -110,6 +110,17 @@ class JobInvocationCreateView(BaseLoggedInView):
         ansible_roles_list = TextInput(id='ansible_roles_list')
         power_action = PF5OUIASelect('action')
 
+        virt_who_hypervisor_type = TextInput(id='virt_who_hypervisor_type')
+        virt_who_hypervisor_server = TextInput(id='virt_who_hypervisor_server')
+        virt_who_hypervisor_username = TextInput(id='virt_who_hypervisor_username')
+        virt_who_hypervisor_password = TextInput(id='virt_who_hypervisor_password')
+        virt_who_organization_label = TextInput(id='virt_who_organization_label')
+        virt_who_service_user = TextInput(id='virt_who_service_user')
+        virt_who_service_user_password = TextInput(id='virt_who_service_user_password')
+        virt_who_hypervisor_id = TextInput(id='virt_who_hypervisor_id')
+        virt_who_debug = TextInput(id='virt_who_debug')
+        virt_who_filtering_mode = TextInput(id='virt_who_filtering_mode')
+
         targetting_type = PF5OUIASelect('host_methods')
         targets = PF5OUIASelect('hosts')
         targets_host_groups = PF5OUIASelect('host groups')
