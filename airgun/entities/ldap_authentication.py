@@ -57,7 +57,7 @@ class LDAPAuthenticationEntity(BaseEntity):
         """Testing FQDN for test connection"""
         view = self.navigate_to(self, 'New')
         view.fill(values)
-        view.ldap_server.text_connection.click()
+        view.ldap_server.test_connection.click()
         view.flash.assert_no_error()
 
     def read_auth_source_counts(self, auth_source_type):
