@@ -1118,7 +1118,7 @@ class SatFlashMessages(FlashMessages):
 
     Example html representation::
 
-        <ul class="pf-v5-c-alert-group pf-m-toast"><li>
+        <ul class="pf-v5-c-alert-group foreman-toast-group pf-m-toast"><li>
         <div class="pf-v5-c-alert pf-m-success foreman-toast" aria-label="Success Alert"
             data-ouia-component-type="PF4/Alert" data-ouia-safe="true"
             data-ouia-component-id="OUIA-Generated-Alert-success-1">
@@ -1126,11 +1126,11 @@ class SatFlashMessages(FlashMessages):
 
     Locator example::
 
-        //ul[@class=pf-v5-c-alert-group pf-m-toast"]/li/div[contains(@class, pf-v5-c-alert")]
+        //ul[contains(@class, "pf-v5-c-alert-group") and contains(@class, "pf-m-toast")]/li/div[contains(@class, "pf-v5-c-alert")]
 
     """
 
-    ROOT = '//ul[@class="pf-v5-c-alert-group pf-m-toast"]'
+    ROOT = '//ul[contains(@class, "pf-v5-c-alert-group") and contains(@class, "pf-m-toast")]'
     MSG_LOCATOR = f'{ROOT}//div[contains(@class, "foreman-toast")]'
     msg_class = SatFlashMessage
 
