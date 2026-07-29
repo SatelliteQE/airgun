@@ -1,7 +1,7 @@
 from wait_for import wait_for
 from widgetastic.widget import Table, Text, View
 from widgetastic_patternfly import BreadCrumb, Button
-from widgetastic_patternfly5 import Pagination as PF5Pagination, Tab as PF5Tab
+from widgetastic_patternfly5 import Button as PF5Button, Pagination as PF5Pagination
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixinPF4
 from airgun.widgets import (
@@ -21,9 +21,11 @@ TASKS_PAGINATION_LOCATOR = (
 
 class TaskReadOnlyEntry(ReadOnlyEntry):
     BASE_LOCATOR = (
-        "//span[contains(., '{}') and contains(@class, 'list-group-item-heading')]//parent::div"
-        '/following-sibling::div/span'
+        "//small[normalize-space(.)='{}']/parent::div/following-sibling::div"
     )
+
+    def read(self):
+        return super().read().lower()
 
 
 class TaskReadOnlyEntryError(ReadOnlyEntry):
@@ -90,27 +92,31 @@ class TaskDetailsView(BaseLoggedInView):
         )
 
     @View.nested
-    class task(PF5Tab):
-        name = TaskReadOnlyEntry(name='Name')
+    class task(View):
+        ROOT = '//section[contains(@class, "task-details-overview-section")]'
         result = TaskReadOnlyEntry(name='Result')
         triggered_by = TaskReadOnlyEntry(name='Triggered by')
         execution_type = TaskReadOnlyEntry(name='Execution type')
         start_at = TaskReadOnlyEntry(name='Start at')
         started_at = TaskReadOnlyEntry(name='Started at')
         ended_at = TaskReadOnlyEntry(name='Ended at')
-        start_before = TaskReadOnlyEntry(name='Start before')
-        state = Text("//div[contains(@class, 'progress-description')]")
-        progressbar = ProgressBar(locator='//div[contains(@class,"progress__bar")]')
-        output = TaskReadOnlyEntry(name='Output')
+        state = Text(
+            "//p[@data-ouia-component-id='task-info-running-state-summary']"
+        )
+        progressbar = ProgressBar(
+            locator='//div[contains(@class,"pf-v5-c-progress__bar")]'
+        )
+        output = ReadOnlyEntry(
+            locator="//strong[normalize-space(.)='Output']/parent::div/following-sibling::div"
+        )
         errors = TaskReadOnlyEntryError(name='Errors')
-        dynflow_console = Button('Dynflow console')
+        dynflow_console = PF5Button('Dynflow console')
 
     def wait_for_result(self, timeout=60, delay=1):
         """Wait for invocation job to finish"""
         wait_for(
             lambda: (
                 self.is_displayed
-                and self.task.progressbar.is_displayed
                 and self.task.result.read() == 'success'
             ),
             timeout=timeout,
