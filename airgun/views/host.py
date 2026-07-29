@@ -228,7 +228,13 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
     manage_columns = PF5Button('manage-columns-button')
     searchbar_dropdown = PF5OUIADropdown('selection-checkbox')
     export = Text(".//a[contains(@class, 'btn')][contains(@href, 'hosts.csv')]")
-    new = Text(".//div[@id='foreman-page']//a[@data-ouia-component-id='create-host-button']")
+    new = Text(
+        ".//div[@id='foreman-page']//a["
+        "@data-ouia-component-id='create-host-button' or "
+        "(@data-ouia-component-id='empty-state-secondary-action-button' "
+        "and normalize-space(.)='Create Host')"
+        "]"
+    )
     register = PF4Button('OUIA-Generated-Button-secondary-2')
     new_ui_button = Text(".//a[contains(@class, 'btn')][contains(@href, 'new/hosts')]")
     select_all = Checkbox(locator="//input[@id='check_all']")
