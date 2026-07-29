@@ -14,8 +14,7 @@ from airgun.views.product import ProductEditView
 
 
 class ContentCredentialEntity(BaseEntity):
-    # TODO: Update to '/content_credentials' once the React page is moved out of /labs
-    endpoint_path = '/labs/content_credentials'
+    endpoint_path = '/content_credentials'
 
     def create(self, values):
         """Create new content credentials entity via modal.
