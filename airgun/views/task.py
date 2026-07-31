@@ -20,9 +20,7 @@ TASKS_PAGINATION_LOCATOR = (
 
 
 class TaskReadOnlyEntry(ReadOnlyEntry):
-    BASE_LOCATOR = (
-        "//small[normalize-space(.)='{}']/parent::div/following-sibling::div"
-    )
+    BASE_LOCATOR = "//small[normalize-space(.)='{}']/parent::div/following-sibling::div"
 
     def read(self):
         return super().read().lower()
@@ -100,12 +98,8 @@ class TaskDetailsView(BaseLoggedInView):
         start_at = TaskReadOnlyEntry(name='Start at')
         started_at = TaskReadOnlyEntry(name='Started at')
         ended_at = TaskReadOnlyEntry(name='Ended at')
-        state = Text(
-            "//p[@data-ouia-component-id='task-info-running-state-summary']"
-        )
-        progressbar = ProgressBar(
-            locator='//div[contains(@class,"pf-v5-c-progress__bar")]'
-        )
+        state = Text("//p[@data-ouia-component-id='task-info-running-state-summary']")
+        progressbar = ProgressBar(locator='//div[contains(@class,"pf-v5-c-progress__bar")]')
         output = ReadOnlyEntry(
             locator="//strong[normalize-space(.)='Output']/parent::div/following-sibling::div"
         )
@@ -115,10 +109,7 @@ class TaskDetailsView(BaseLoggedInView):
     def wait_for_result(self, timeout=60, delay=1):
         """Wait for invocation job to finish"""
         wait_for(
-            lambda: (
-                self.is_displayed
-                and self.task.result.read() == 'success'
-            ),
+            lambda: self.is_displayed and self.task.result.read() == 'success',
             timeout=timeout,
             delay=delay,
             logger=self.logger,
