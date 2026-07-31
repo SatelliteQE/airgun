@@ -35,7 +35,7 @@ from airgun.views.common import (
     WizardStepView,
 )
 from airgun.views.host_new import ManageColumnsView, PF5CheckboxTreeView
-from airgun.widgets import ItemsList, SearchInput
+from airgun.widgets import ItemsList, PF5NavSearchMenu, SearchInput
 
 
 class MenuToggleDropdownInTable(PF5Dropdown):
@@ -122,6 +122,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
             2: MenuToggleDropdownInTable(),
         },
     )
+    autocomplete_menu = PF5NavSearchMenu(component_id='search-autocomplete-menu')
     alert_message = Text('.//div[contains(@class, "pf-v5-c-alert")]')
 
     # Host status icon and popover widgets

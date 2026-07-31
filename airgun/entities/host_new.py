@@ -61,6 +61,23 @@ class NewHostEntity(HostEntity):
         host_view.flash.assert_no_error()
         host_view.flash.dismiss()
 
+    def search_autocomplete(self, value):
+        """Search the All Hosts page and return autocomplete suggestions or error messages."""
+        view = self.navigate_to(self, 'NewUIAll')
+        view.searchbox.clear()
+        view.searchbox.fill(value)
+        results = (
+            wait_for(
+                view.autocomplete_menu.read,
+                timeout=5,
+                delay=0.5,
+                handle_exception=True,
+                silent_failure=True,
+            )[0]
+            or []
+        )
+        return results
+
     def get_details(self, entity_name, widget_names=None):
         """Read host values from Host Details page, optionally only the widgets in widget_names will be read."""
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
