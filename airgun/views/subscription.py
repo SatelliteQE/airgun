@@ -41,6 +41,8 @@ class SatSubscriptionsViewTable(SatTable):
     component instead of a table, so we need to check if the table exists first.
     """
 
+    NO_RESULTS_MESSAGE = 'No subscriptions match your search criteria.'
+
     @property
     def is_displayed(self):
         """Check if the table element exists on the page."""
@@ -52,10 +54,17 @@ class SatSubscriptionsViewTable(SatTable):
 
     @property
     def has_rows(self):
-        return (
-            self.is_displayed
-            and self.tbody_row.read() != 'No subscriptions match your search criteria.'
-        )
+        """True when the table has real subscription rows (not the no-match message)."""
+        if not self.is_displayed or not self.tbody_row.is_displayed:
+            return False
+        return self.tbody_row.read() != self.NO_RESULTS_MESSAGE
+
+    @property
+    def search_settled(self):
+        """True when AJAX search finished: real rows or the explicit no-match message."""
+        if not self.is_displayed or not self.tbody_row.is_displayed:
+            return False
+        return bool(self.tbody_row.read())
 
 
 class ProductContentItemsList(GenericLocatorWidget):
@@ -114,24 +123,52 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
     )
     import_manifest_button = PF5OUIAButton('empty-state-action-button')
 
-    manage_columns_button = PF5OUIAButton('manage-columns-button')
+    manage_columns_button = GenericLocatorWidget('.//button[@id="btn-select-columns"]')
     progressbar = ProgressBar('//div[contains(@class,"progress-bar-striped")]')
     confirm_deletion = DeleteSubscriptionConfirmationDialog()
+    blank_page = Text("//div[contains(@class, 'pf-v5-c-empty-state')]")
+    displayed_table_headers = '//div[@id="subscriptions-table"]//table/thead/tr/th'
 
     @property
     def is_displayed(self):
-        return (
-            self.browser.wait_for_element('div#subscriptions-table', timeout=10, exception=False)
-            is not None
-        )
+        return self.table.is_displayed or self.blank_page.is_displayed
 
     def is_searchable(self):
         """Customized is_searchable"""
-        # The search box is always displayed, but in case of no manifest subscription the
-        # welcome message is always displayed and there is no table element.
-        if self.welcome_message.is_displayed:
+        if self.blank_page.is_displayed:
             return False
         return super().is_searchable()
+
+    def search(self, query):
+        """Search for subscriptions and wait for AJAX results before reading.
+
+        The subscriptions table stays in the DOM while search runs, so the
+        generic mixin wait (table presence) returns too early and can read an
+        empty table.
+        """
+        if not self.is_searchable():
+            return None
+        self.searchbox.search(query)
+        self.browser.plugin.ensure_page_safe(timeout=60)
+        wait_for(
+            lambda: self.table.search_settled,
+            timeout=30,
+            delay=1,
+            handle_exception=True,
+            logger=self.logger,
+        )
+        if not self.table.has_rows:
+            return []
+        return self.table.read()
+
+    @property
+    def displayed_table_header_names(self):
+        """Return names of visible headers, bypassing Table's cached headers."""
+        return [
+            header.text.strip()
+            for header in self.browser.elements(self.displayed_table_headers)
+            if header.is_displayed() and header.text.strip()
+        ]
 
 
 class ManageManifestView(BaseLoggedInView, PF5ModalViewMixin):
@@ -182,7 +219,7 @@ class AddSubscriptionView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.table, visible=True, exception=False) is not None
+        return self.table.is_displayed
 
 
 class SubscriptionDetailsView(BaseLoggedInView):
@@ -209,7 +246,4 @@ class SubscriptionDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return (
-            self.browser.wait_for_element(self.breadcrumb, visible=True, exception=False)
-            is not None
-        )
+        return self.breadcrumb.is_displayed
