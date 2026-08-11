@@ -34,7 +34,7 @@ from airgun.views.common import (
     SearchableViewMixinPF4,
     WizardStepView,
 )
-from airgun.views.host_new import ManageColumnsView, PF5CheckboxTreeView
+from airgun.views.host_new import ManageColumnsView, MenuToggleButtonMenu, PF5CheckboxTreeView
 from airgun.widgets import ItemsList, PF5NavSearchMenu, SearchInput
 
 
@@ -120,6 +120,7 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
                 './/a[contains(@href, "/new/hosts/") and not(contains(@href, "Red Hat Lightspeed"))]'
             ),
             2: MenuToggleDropdownInTable(),
+            6: MenuToggleButtonMenu(),
         },
     )
     autocomplete_menu = PF5NavSearchMenu(component_id='search-autocomplete-menu')
