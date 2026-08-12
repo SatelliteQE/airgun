@@ -16,7 +16,7 @@ from airgun.widgets import PF5EditableSpacedListItem, PF5SpacedListItem
 
 
 class ContentCredentialsTableView(BaseLoggedInView, SearchableViewMixinPF4):
-    """PF5 list page for Content Credentials at /labs/content_credentials."""
+    """PF5 list page for Content Credentials at /content_credentials."""
 
     title = Text('//h1[normalize-space(.)="Content Credentials"]')
     create_button = PF5OUIAButton('action-buttons-create')
@@ -64,7 +64,7 @@ class DeleteContentCredentialModal(PF5OUIAModal):
 
 
 class ContentCredentialEditView(BaseLoggedInView):
-    """PF5 details page for a Content Credential at /labs/content_credentials/:id."""
+    """PF5 details page for a Content Credential at /content_credentials/:id."""
 
     title = Text('.//h1[@data-ouia-component-id="credential-details-header-name"]')
     page_breadcrumb = PF5OUIABreadCrumb('content-credential-breadcrumb')
