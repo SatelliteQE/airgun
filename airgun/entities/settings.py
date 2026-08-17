@@ -34,7 +34,7 @@ class SettingsEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.search(property_name)
         view.Email.test_email_button.click()
-        result, _ = wait_for(lambda: view.flash.read(), timeout=60, delay=2)  # noqa: PLW0108
+        result, _ = wait_for(lambda: view.flash.read(), timeout=60, delay=2)
         return result
 
     def permission_denied(self):
