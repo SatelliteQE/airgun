@@ -1,3 +1,5 @@
+from wait_for import wait_for
+
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
 from airgun.utils import retry_navigation
@@ -32,7 +34,8 @@ class SettingsEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.search(property_name)
         view.Email.test_email_button.click()
-        return view.flash.read()
+        result, _ = wait_for(lambda: view.flash.read(), timeout=60, delay=2)
+        return result
 
     def permission_denied(self):
         """Return permission denied error text"""
