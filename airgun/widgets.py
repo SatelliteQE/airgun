@@ -1,6 +1,7 @@
 import time
 
 from cached_property import cached_property
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.keys import Keys
 from wait_for import wait_for
 from widgetastic.exceptions import NoSuchElementException, WidgetOperationFailed
@@ -1068,7 +1069,7 @@ class ValidationErrors(Widget):
         not.
         """
         time.sleep(
-            1
+            0.5
         )  # ensure_page_safe doesn't help here and there's nothing to wait_for because the error won't always be there
         return self.browser.elements(self.ERROR_ELEMENTS) != []
 
@@ -2722,6 +2723,37 @@ class FieldWithEditButton(Widget):
                 widget.fill(item)
                 break
         self.confirm_button.click()
+        self._wait_for_validation()
+
+    def _wait_for_validation(self):
+        """Wait until the value submitted with the confirm button is validated.
+
+        While validating, the confirm button stays disabled. It is removed from
+        the DOM on success (the edit button reappears) or re-enabled together
+        with an error message on failure. Waiting for that state to settle
+        ensures a following validation check sees the final state.
+        """
+
+        def _validation_finished():
+            elements = self.browser.elements(self.confirm_button.__locator__())
+            if not elements:
+                # Button removed from the DOM -> value accepted.
+                return True
+            # Button still present -> validation finished only once it is
+            # re-enabled (which happens together with the error message).
+            try:
+                classes = self.browser.classes(elements[0])
+                disabled = (
+                    'pf-m-disabled' in classes
+                    or 'pf-m-aria-disabled' in classes
+                    or self.browser.get_attribute('disabled', elements[0]) is not None
+                )
+            except (NoSuchElementException, StaleElementReferenceException):
+                # Button removed while being inspected -> value accepted.
+                return True
+            return not disabled
+
+        wait_for(_validation_finished, timeout=5, delay=0.5)
 
     def read(self):
         return self.text.read()
