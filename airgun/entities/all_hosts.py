@@ -59,7 +59,7 @@ class AllHostsEntity(BaseEntity):
     def delete(self, host_name):
         """Delete host through table dropdown"""
         view = self.all_hosts_navigate_and_select_hosts_helper(host_names=host_name)
-        view.table[0][2].widget.item_select('Delete')
+        view.get_row_kebab(0).item_select('Delete')
         delete_modal = HostDeleteDialog(self.browser)
         if delete_modal.is_displayed:
             delete_modal.confirm_delete.click()
