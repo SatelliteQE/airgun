@@ -975,8 +975,7 @@ class NewHostDetailsView(BaseLoggedInView):
         no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
 
         vulnerabilities_table = PF5ExpandableTable(
-            # component_id='OUIA-Generated-Table-2',
-            locator='.//table[contains(@class, "pf-v5-c-table")]',
+            component_id='cves-table',
             column_widgets={
                 0: PF5Button(locator='.//button[@aria-label="Details"]'),
                 'CVE ID': Text('.//td[contains(@data-label, "CVE ID")]'),

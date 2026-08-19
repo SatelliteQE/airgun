@@ -168,8 +168,7 @@ class CloudVulnerabilityView(BaseLoggedInView):
     edit_status_modal = EditStatusModal()
 
     vulnerabilities_table = PF5OUIAExpandableTable(
-        # component_id='OUIA-Generated-Table-1',
-        locator='.//table[contains(@class, "pf-v5-c-table")]',
+        component_id='cves-table',
         column_widgets={
             0: Checkbox(locator='.//label/input[@type="checkbox"]'),
             1: PF5Button(locator='.//button[@aria-label="Details"]'),
@@ -225,8 +224,7 @@ class CVEDetailsView(BaseLoggedInView):
         locator='.//div[./button[contains(@class, "pf-v5-c-menu-toggle") and contains(., "Actions")]]'
     )
     affected_hosts_table = PF5OUIAPatternflyTable(
-        # component_id='OUIA-Generated-Table-1',
-        locator='.//table[contains(@class, "pf-v5-c-table")]',
+        component_id='systems-table',
         column_widgets={
             'Name': Text('./a'),
             'OS': Text('.//td[contains(@data-label, "OS")]'),
