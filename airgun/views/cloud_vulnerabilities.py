@@ -2,11 +2,12 @@ from widgetastic.widget import Checkbox, Select, Text, TextInput, Widget
 from widgetastic_patternfly5 import (
     Button as PF5Button,
     Dropdown as PF5Dropdown,
-    ExpandableTable as PF5ExpandableTable,
     FormSelect as PF5FormSelect,
     Modal as PF5Modal,
     Pagination as PF5Pagination,
-    PatternflyTable as PF5PatternflyTable,
+)
+from widgetastic_patternfly5.ouia import (
+    ExpandableTable as PF5OUIAExpandableTable,
 )
 
 from airgun.views.common import BaseLoggedInView
@@ -167,8 +168,8 @@ class CloudVulnerabilityView(BaseLoggedInView):
     edit_business_risk_modal = EditBusinessRiskModal()
     edit_status_modal = EditStatusModal()
 
-    vulnerabilities_table = PF5ExpandableTable(
-        locator='.//table[contains(@data-ouia-component-id, "cves-table")]',
+    vulnerabilities_table = PF5OUIAExpandableTable(
+        component_id='cves-table',
         column_widgets={
             0: Checkbox(locator='.//label/input[@type="checkbox"]'),
             1: PF5Button(locator='.//button[@aria-label="Details"]'),
@@ -223,8 +224,8 @@ class CVEDetailsView(BaseLoggedInView):
     actions = PF5Dropdown(
         locator='.//div[./button[contains(@class, "pf-v5-c-menu-toggle") and contains(., "Actions")]]'
     )
-    affected_hosts_table = PF5PatternflyTable(
-        locator='.//table[contains(@data-ouia-component-id, "systems-table")]',
+    affected_hosts_table = PF5OUIAExpandableTable(
+        component_id='systems-table',
         column_widgets={
             'Name': Text('./a'),
             'OS': Text('.//td[contains(@data-label, "OS")]'),
