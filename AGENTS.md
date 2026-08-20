@@ -171,7 +171,7 @@ from datetime import datetime
 
 # Third-party
 from widgetastic.widget import Text, TextInput, View
-from widgetastic_patternfly5 import Button, Table
+from widgetastic_patternfly5 import PF5Button, PF5Table
 
 # Airgun
 from airgun.entities.base import BaseEntity
