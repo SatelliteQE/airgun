@@ -45,10 +45,10 @@ from widgetastic_patternfly5.components.table import (
     PatternflyTableRow,
 )
 from widgetastic_patternfly5.ouia import (
-    BaseSelect as PF5BaseSelect,
+    BaseSelect as PF5OUIABaseSelect,
     Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
-    Menu as PF5Menu,
+    Menu as PF5OUIAMenu,
     OUIAGenericWidget,
 )
 
@@ -997,7 +997,7 @@ class PF4Search(Search):
             self.search_button.click()
 
 
-class PF5NavSearchMenu(PF5Menu, OUIAGenericWidget):
+class PF5NavSearchMenu(PF5OUIAMenu, OUIAGenericWidget):
     """PF5 vertical navigation dropdown menu with search results."""
 
     @property
@@ -2918,7 +2918,7 @@ class Accordion(View, ClickableMixin):
         self.browser.click(self.ITEM.format(value))
 
 
-class BaseMultiSelect(PF5BaseSelect, PF5OUIADropdown):
+class BaseMultiSelect(PF5OUIABaseSelect, PF5OUIADropdown):
     """Represents the Patternfly Multi Select.
 
     https://www.patternfly.org/v4/documentation/react/components/select#multiple
