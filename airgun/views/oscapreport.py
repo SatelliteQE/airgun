@@ -1,6 +1,6 @@
 from widgetastic.widget import Text, View
 from widgetastic_patternfly4 import Button
-from widgetastic_patternfly5.ouia import FormSelect as PF5FormSelect
+from widgetastic_patternfly5.ouia import FormSelect as PF5OUIAFormSelect
 
 from airgun.views.common import BaseLoggedInView, SearchableViewMixin, WizardStepView
 from airgun.widgets import (
@@ -70,7 +70,7 @@ class RemediateModal(View):
         expander = Text(
             './/button[contains(@class,"pf-v5-c-wizard__nav-link") and contains(.,"Select snippet")]'
         )
-        snippet = PF5FormSelect('snippet-select')
+        snippet = PF5OUIAFormSelect('snippet-select')
 
     @View.nested
     class name_source(WizardStepView):
