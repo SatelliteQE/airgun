@@ -36,7 +36,7 @@ from widgetastic_patternfly5 import (
 )
 from widgetastic_patternfly5.ouia import (
     Alert as PF5OUIAAlert,
-    BreadCrumb,
+    BreadCrumb as PF5OUIABreadCrumb,
     Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
     ExpandableTable as PF5OUIAExpandableTable,
@@ -315,7 +315,7 @@ class BreadcrumbSwitcher(Widget):
 
 
 class NewHostDetailsView(BaseLoggedInView):
-    breadcrumb = BreadCrumb('breadcrumbs-list')
+    breadcrumb = PF5OUIABreadCrumb('breadcrumbs-list')
     # Breadcrumb switcher for switching between hosts
     breadcrumb_switcher = BreadcrumbSwitcher()
 

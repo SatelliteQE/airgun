@@ -19,7 +19,7 @@ from widgetastic_patternfly5 import (
     Pagination as PF5Pagination,
 )
 from widgetastic_patternfly5.ouia import (
-    ExpandableTable as PF5ExpandableTable,
+    ExpandableTable as PF5OUIAExpandableTable,
 )
 
 from airgun.views.common import (
@@ -179,7 +179,7 @@ class CapsuleDetailsView(BaseLoggedInView):
     class content(SatTab):
         TAB_NAME = 'Content'
 
-        top_content_table = PF5ExpandableTable(
+        top_content_table = PF5OUIAExpandableTable(
             component_id='capsule-content-table',
             column_widgets={
                 0: PF5Button(locator='./button[@aria-label="Details"]'),
@@ -189,7 +189,7 @@ class CapsuleDetailsView(BaseLoggedInView):
             },
         )
 
-        mid_content_table = PF5ExpandableTable(
+        mid_content_table = PF5OUIAExpandableTable(
             component_id='expandable-content-views',
             column_widgets={
                 0: Button(locator='./button[@aria-label="Details"]'),
