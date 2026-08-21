@@ -243,10 +243,28 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
                 ".//a[contains(@href, '/new/hosts/') and not(contains(@href, 'Red Hat Lightspeed'))]"
             ),
             'Recommendations': Text('./a'),
-            6: MenuToggleButtonMenu(),
         },
     )
     displayed_table_headers = './/table/thead/tr/th[not(@hidden)]'
+
+    def get_row_kebab(self, row_index):
+        """Get kebab menu widget for a specific row.
+
+        The kebab menu is always in the last column, but its position
+        varies based on which columns are visible via 'Manage columns'.
+
+        Args:
+            row_index: Index of the row in the table
+
+        Returns:
+            MenuToggleButtonMenu widget for the specified row
+        """
+        row = self.table[row_index]
+        return MenuToggleButtonMenu(
+            parent=row,
+            locator='.//td[last()]//button[contains(@class, "pf-v5-c-menu-toggle")]/..',
+        )
+
     host_status = "//span[contains(@class, 'host-status')]"
     actions = PF5OUIADropdown(component_id='legacy-ui-kebab')
     dialog = Pf4ConfirmationDialog()
