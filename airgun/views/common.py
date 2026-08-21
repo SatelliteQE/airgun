@@ -16,7 +16,7 @@ from widgetastic_patternfly4.navigation import Navigation
 from widgetastic_patternfly5 import Dropdown as PF5Dropdown
 from widgetastic_patternfly5.ouia import (
     Dropdown as PF5OUIADropdown,
-    PatternflyTable,
+    PatternflyTable as PF5OUIAPatternflyTable,
     Select as PF5OUIASelect,
 )
 
@@ -481,7 +481,7 @@ class NewAddRemoveResourcesView(View):
     status = PF5OUIASelect(component_id='select Status')
     remove_button = PF5OUIADropdown(component_id='repositoies-bulk-actions')
     add_button = Button(locator='.//button[@data-ouia-component-id="add-repositories"]')
-    table = PatternflyTable(
+    table = PF5OUIAPatternflyTable(
         component_id='content-view-repositories-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
