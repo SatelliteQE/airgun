@@ -70,6 +70,10 @@ class JobInvocationEntity(BaseEntity):
         time.sleep(3)
         view = JobInvocationCreateView(self.browser)
         time.sleep(3)
+        if view.next_button.is_displayed and view.next_button.is_enabled:
+            view.next_button.click()
+            self.browser.plugin.ensure_page_safe()
+            time.sleep(3)
         return view.target_hosts_and_inputs.read()
 
     def read_hostgroups(self):
