@@ -41,8 +41,8 @@ from widgetastic_patternfly5 import (
     RowNotExpandable as PF5RowNotExpandable,
 )
 from widgetastic_patternfly5.components.table import (
-    PatternflyTable,
-    PatternflyTableRow,
+    PatternflyTable as PF5PatternflyTable,
+    PatternflyTableRow as PF5PatternflyTableRow,
 )
 from widgetastic_patternfly5.ouia import (
     BaseSelect as PF5OUIABaseSelect,
@@ -3130,7 +3130,7 @@ class PF5DataList(Widget):
         return dict(zip(items, values))
 
 
-class CompoundExpandableTableRow(PatternflyTableRow):
+class CompoundExpandableTableRow(PF5PatternflyTableRow):
     """Extends PatternflyTableRow with some functionality from ExpandableTableRow"""
 
     EXPANDABLE_CONTENT = './tr[contains(@class, "child-manifest-row")'
@@ -3172,7 +3172,7 @@ class CompoundExpandableTableRow(PatternflyTableRow):
         return result
 
 
-class CompoundExpandableTable(PatternflyTable):
+class CompoundExpandableTable(PF5PatternflyTable):
     """PatternFly table with inline expandable child rows.
 
     This handles tables where each row group is in its own <tbody>,
