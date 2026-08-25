@@ -3,7 +3,7 @@ import contextlib
 
 import anytree
 from widgetastic.exceptions import NoSuchElementException
-from widgetastic_patternfly5 import DropdownItemDisabled
+from widgetastic_patternfly5 import DropdownItemDisabled as PF5DropdownItemDisabled
 
 from airgun.entities.base import BaseEntity
 from airgun.navigation import NavigateStep, navigator
@@ -593,7 +593,7 @@ class AllHostsEntity(BaseEntity):
 
         # This step ensures deterministic state of the table
         # If 'Select none (0)' is disabled, it means nothing is selected, so we can continue
-        with contextlib.suppress(DropdownItemDisabled):
+        with contextlib.suppress(PF5DropdownItemDisabled):
             view.searchbar_dropdown.item_select('Select none (0)')
 
         if select_all_hosts:

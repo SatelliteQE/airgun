@@ -6,7 +6,7 @@ from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly5 import (
     ChipGroup as PF5ChipGroup,
-    DescriptionList,
+    DescriptionList as PF5DescriptionList,
     Radio as PF5Radio,
 )
 from widgetastic_patternfly5.charts.donut_chart import DonutCircle, DonutLegend
@@ -391,7 +391,7 @@ class JobInvocationStatusView(BaseLoggedInView):
                 return {}
 
     @View.nested
-    class overview(DescriptionList):
+    class overview(PF5DescriptionList):
         ROOT = ".//dl[contains(@class, 'job-overview-description-list')]"
 
         def read(self):
