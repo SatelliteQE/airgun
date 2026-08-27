@@ -1,7 +1,7 @@
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Text, TextInput, View
 from widgetastic_patternfly import Tab
-from widgetastic_patternfly5.components.forms.form_select import FormSelect
+from widgetastic_patternfly5.components.forms.form_select import FormSelect as PF5FormSelect
 from widgetastic_patternfly5.ouia import (
     BreadCrumb as PF5OUIABreadCrumb,
     Button as PF5OUIAButton,
@@ -40,7 +40,7 @@ class CreateContentCredentialModal(PF5OUIAModal):
     OUIA_ID = 'create-content-credential-modal'
 
     name_input = PF5OUIATextInput('name-input')
-    content_type = FormSelect(locator='.//select[@id="content_type"]')
+    content_type = PF5FormSelect(locator='.//select[@id="content_type"]')
     content_text_box = TextInput(locator='.//textarea[@aria-label="content"]')
     create_button = PF5OUIAButton('create-button')
     cancel_button = PF5OUIAButton('cancel-button')

@@ -2,7 +2,10 @@ from wait_for import wait_for
 from widgetastic.exceptions import NoSuchElementException
 from widgetastic.widget import Text, Widget
 from widgetastic_patternfly5 import Button as PF5Button
-from widgetastic_patternfly5.components.table import PatternflyTable, PatternflyTableRow
+from widgetastic_patternfly5.components.table import (
+    PatternflyTable as PF5PatternflyTable,
+    PatternflyTableRow as PF5PatternflyTableRow,
+)
 from widgetastic_patternfly5.ouia import Switch as PF5OUIASwitch
 
 from airgun.views.common import BaseLoggedInView
@@ -12,7 +15,7 @@ class NodeNotFoundError(Exception):
     """Raise when a node was not found"""
 
 
-class SyncStatusTreeRow(PatternflyTableRow):
+class SyncStatusTreeRow(PF5PatternflyTableRow):
     """A row in the PF5 tree table that supports aria-based tree attributes.
 
     In the Sync Status tree table all ``<tr>`` rows live inside a single
@@ -105,7 +108,7 @@ class SyncStatusTreeRow(PatternflyTableRow):
         return self['Progress / Result'].read()
 
 
-class SyncStatusTreeTable(PatternflyTable):
+class SyncStatusTreeTable(PF5PatternflyTable):
     """PF5 tree table for Sync Status page.
 
     The table has ``role="treegrid"`` with a single ``<tbody>`` containing

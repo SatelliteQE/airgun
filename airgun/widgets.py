@@ -37,13 +37,13 @@ from widgetastic_patternfly5 import (
     Button as PF5Button,
     Dropdown as PF5Dropdown,
     ExpandableSection as PF5ExpandableSection,
-    FormSelect,
+    FormSelect as PF5FormSelect,
     Progress as PF5Progress,
-    RowNotExpandable,
+    RowNotExpandable as PF5RowNotExpandable,
 )
 from widgetastic_patternfly5.components.table import (
-    PatternflyTable,
-    PatternflyTableRow,
+    PatternflyTable as PF5PatternflyTable,
+    PatternflyTableRow as PF5PatternflyTableRow,
 )
 from widgetastic_patternfly5.ouia import (
     BaseSelect as PF5OUIABaseSelect,
@@ -2843,7 +2843,7 @@ class FieldWithEditButton(Widget):
     ROOT = '//td[2]'
     text_input = TextInput(locator=".//input[@data-ouia-component-type='PF5/TextInput']")
     text_area = TextInput(locator='.//textarea')
-    drop_down = FormSelect(locator=".//select[@data-ouia-component-type='PF5/FormSelect']")
+    drop_down = PF5FormSelect(locator=".//select[@data-ouia-component-type='PF5/FormSelect']")
     edit_button = PF5Button(locator=".//button[contains(@data-ouia-component-id, 'edit-row')]")
     confirm_button = PF5OUIAButton('submit-edit-btn')
     cancel_button = PF5OUIAButton('cancel-edit-btn')
@@ -3162,7 +3162,7 @@ class PF5DataList(Widget):
         return dict(zip(items, values))
 
 
-class CompoundExpandableTableRow(PatternflyTableRow):
+class CompoundExpandableTableRow(PF5PatternflyTableRow):
     """Extends PatternflyTableRow with some functionality from ExpandableTableRow"""
 
     EXPANDABLE_CONTENT = './tr[contains(@class, "child-manifest-row")'
@@ -3174,7 +3174,7 @@ class CompoundExpandableTableRow(PatternflyTableRow):
 
     def _check_expandable(self):
         if not self.is_expandable:
-            raise RowNotExpandable(self)
+            raise PF5RowNotExpandable(self)
 
     @property
     def is_expanded(self):
@@ -3204,7 +3204,7 @@ class CompoundExpandableTableRow(PatternflyTableRow):
         return result
 
 
-class CompoundExpandableTable(PatternflyTable):
+class CompoundExpandableTable(PF5PatternflyTable):
     """PatternFly table with inline expandable child rows.
 
     This handles tables where each row group is in its own <tbody>,
