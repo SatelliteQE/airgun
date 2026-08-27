@@ -2,7 +2,12 @@ from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Checkbox, ParametrizedView, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb, Tab
-from widgetastic_patternfly5 import Alert as PF5Alert, Button, Modal, Radio as PF5Radio
+from widgetastic_patternfly5 import (
+    Alert as PF5Alert,
+    Button as PF5Button,
+    Modal as PF5Modal,
+    Radio as PF5Radio,
+)
 from widgetastic_patternfly5.ouia import (
     Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
@@ -121,11 +126,11 @@ class ContentViewEditView(BaseLoggedInView):
     cv_actions = PF5OUIADropdown('cv-details-actions')
 
     # buttons for wizard: deleting a CV with Version promoted to environment(s)
-    next_button = Button('Next')
-    delete_finish = Button('Delete')
-    back_button = Button('Back')
-    cancel_button = Button('Cancel')
-    close_button = Button('Close')
+    next_button = PF5Button('Next')
+    delete_finish = PF5Button('Delete')
+    back_button = PF5Button('Back')
+    cancel_button = PF5Button('Cancel')
+    close_button = PF5Button('Close')
 
     @property
     def is_displayed(self):
@@ -231,14 +236,14 @@ class ContentViewVersionPublishView(BaseLoggedInView):
     description = TextInput(id='description')
     promote = PF5OUIASwitch('promote-switch')
 
-    next_button = Button('Next')
-    finish_button = Button('Finish')
-    back_button = Button('Back')
-    cancel_button = Button('Cancel')
-    close_button = Button('Close')
+    next_button = PF5Button('Next')
+    finish_button = PF5Button('Finish')
+    back_button = PF5Button('Back')
+    cancel_button = PF5Button('Cancel')
+    close_button = PF5Button('Close')
     progressbar = PF5ProgressBar()
     lce_selector = ParametrizedView.nested(PF5LCECheckSelectorGroup)
-    close = Button('Close')
+    close = PF5Button('Close')
 
     @property
     def is_displayed(self):
@@ -265,13 +270,13 @@ class ContentViewVersionPublishView(BaseLoggedInView):
         )
 
 
-class ContentViewVersionPromoteView(Modal):
+class ContentViewVersionPromoteView(PF5Modal):
     ROOT = './/div[@data-ouia-component-id="promote-version"]'
 
     description = Text('.//h2[@data-ouia-component-id="description-text-value"]')
     lce_selector = ParametrizedView.nested(PF5LCECheckSelectorGroup)
-    promote_btn = Button(locator='//button[normalize-space(.)="Promote"]')
-    cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
+    promote_btn = PF5Button(locator='//button[normalize-space(.)="Promote"]')
+    cancel_btn = PF5Button(locator='//button[normalize-space(.)="Cancel"]')
 
 
 class ContentViewVersionDetailsView(BaseLoggedInView):
@@ -281,11 +286,11 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
     promoteButton = PF5OUIAButton(component_id='cv-details-publish-button')
     editDescription = PF5OUIAButton(component_id='edit-button-description')
     # buttons for wizard: deleting a version promoted to environment(s)
-    next_button = Button('Next')
-    delete_finish = Button('Delete')
-    back_button = Button('Back')
-    cancel_button = Button('Cancel')
-    close_button = Button('Close')
+    next_button = PF5Button('Next')
+    delete_finish = PF5Button('Delete')
+    back_button = PF5Button('Back')
+    cancel_button = PF5Button('Cancel')
+    close_button = PF5Button('Close')
     progressbar = PF5ProgressBar()
 
     @View.nested

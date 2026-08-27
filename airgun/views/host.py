@@ -21,7 +21,7 @@ from widgetastic_patternfly4.ouia import (
     BreadCrumb as PF4BreadCrumb,
     Button as PF4Button,
 )
-from widgetastic_patternfly5.components.tabs import Tab
+from widgetastic_patternfly5.components.tabs import Tab as PF5Tab
 from widgetastic_patternfly5.ouia import (
     Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
@@ -590,7 +590,7 @@ class HostRegisterView(BaseLoggedInView):
     registration_command = TextInput(locator="//input[@aria-label='Copyable input']")
 
     @View.nested
-    class general(Tab):
+    class general(PF5Tab):
         TAB_NAME = 'General'
         TAB_LOCATOR = ParametrizedLocator(
             './/div[contains(@class, "pf-v5-c-tabs")]//ul'
@@ -612,7 +612,7 @@ class HostRegisterView(BaseLoggedInView):
         new_activation_key_link = Link('//a[normalize-space(.)="Create new activation key"]')
 
     @View.nested
-    class advanced(Tab):
+    class advanced(PF5Tab):
         TAB_NAME = 'Advanced'
         TAB_LOCATOR = ParametrizedLocator(
             './/div[contains(@class, "pf-v5-c-tabs")]//ul'
