@@ -256,7 +256,14 @@ class HostEntity(BaseEntity):
         # Select content source
         wait_for(lambda: view.content_source_select.is_displayed, timeout=10, delay=1)
         sleep(2)
-        view.content_source_select.fill(content_source)
+        # The rendered option may carry a Pulp content-proxy suffix (e.g. "<fqdn>-pulp").
+        # Match by prefix so callers can pass the plain Satellite/Capsule hostname.
+        available = view.content_source_select.items
+        match = next(
+            (i for i in available if i == content_source or i.startswith(f'{content_source}-')),
+            content_source,
+        )
+        view.content_source_select.fill(match)
 
         # Assign multiple CVEnvs
         for i, assignment in enumerate(cv_env_assignments):
