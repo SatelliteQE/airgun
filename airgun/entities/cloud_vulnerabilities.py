@@ -140,6 +140,41 @@ class CloudVulnerabilityEntity(BaseEntity):
         modal.save.click()
         wait_for(lambda: not modal.is_displayed, timeout=10)
 
+    def cancel_specific_filter(self, filter_name):
+        """
+        Based on the filter_name, cancel the specific filter using locator
+        Args:
+            filter_name (str): Name of the filter to cancel (i.e. Advisory, Severity, etc.)
+        """
+        view = self.navigate_to(self, 'All')
+        locator = f'//div[contains(@class, "pf-v5-c-chip-group") and .//span[contains(@class, "pf-v5-c-chip-group__label") and text()="{filter_name}"]]//div[contains(@class, "pf-v5-c-chip")]//button[@aria-label="close"]'
+        wait_for(lambda: view.browser.element(locator).is_displayed, timeout=30)
+        view.browser.element(locator).click()
+
+    def cancel_one_or_more_hosts_filter(self):
+        """
+        Cancel the "One or more hosts" filter
+        """
+        view = self.navigate_to(self, 'All')
+        wait_for(lambda: view.one_or_more_hosts_filter_cancel.is_displayed, timeout=30)
+        view.one_or_more_hosts_filter_cancel.click()
+
+    def filter_by_advisory(self, advisory_available):
+        """
+        Filter vulnerabilities by advisory using the "Advisory" filter
+
+        Args:
+            advisory_available (bool): Advisory to filter by, if True -> Available checkbox will be selected, if False -> Not available checkbox will be selected
+        """
+        view = self.navigate_to(self, 'All')
+        wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
+        view.filter_type_menu.item_select('Advisory')
+        view.specific_filter_button.click()
+        if advisory_available:
+            view.advisory_filter_select.item_select('Available')
+        else:
+            view.advisory_filter_select.item_select('Not available')
+
     def filter_by_os(self, os_versions):
         """
         Filter vulnerabilities by OS version(s) using the "Applies to OS" filter
