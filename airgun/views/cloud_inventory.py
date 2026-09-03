@@ -3,7 +3,7 @@ from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Text, View
 from widgetastic_patternfly import Tab
 from widgetastic_patternfly4.switch import Switch
-from widgetastic_patternfly5 import Button as PF5Button, Menu
+from widgetastic_patternfly5 import Button as PF5Button, Menu as PF5Menu
 from widgetastic_patternfly5.ouia import Text as PF5OUIAText
 
 from airgun.exceptions import ReadOnlyWidgetError
@@ -11,7 +11,7 @@ from airgun.views.common import BaseLoggedInView
 from airgun.widgets import Accordion
 
 
-class DataCollectionMenu(Menu):
+class DataCollectionMenu(PF5Menu):
     """ """
 
     IS_ALWAYS_OPEN = False

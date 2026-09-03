@@ -1,7 +1,7 @@
 from widgetastic.widget import Checkbox, Table, Text
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly5 import (
-    Button as PF5button,
+    Button as PF5Button,
     CompactPagination as PF5CompactPagination,
     Pagination as PF5Pagination,
     PatternflyTable as PF5PatternflyTable,
@@ -18,7 +18,7 @@ class AnsibleRolesView(BaseLoggedInView, SearchableViewMixin):
 
     title = Text("//h1[contains(normalize-space(.),'Ansible Roles')]")
     import_button = Text("//a[contains(@href, '/ansible_roles/import')]")
-    submit = PF5button('Submit')
+    submit = PF5Button('Submit')
     table = Table(
         './/table',
         column_widgets={
@@ -49,8 +49,8 @@ class AnsibleRolesImportView(BaseLoggedInView):
     dropdown = Text("//button[contains(@class, 'pf-v5-c-menu-toggle')]")
     max_per_pg = Text("//ul[contains(@class, 'pf-v5-c-menu__list')]/li[6]")
     pagination = PF5CompactPagination()
-    submit = PF5button('Submit')
-    cancel = PF5button('Cancel')
+    submit = PF5Button('Submit')
+    cancel = PF5Button('Cancel')
 
     @property
     def is_displayed(self):

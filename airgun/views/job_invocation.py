@@ -6,10 +6,13 @@ from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly5 import (
     ChipGroup as PF5ChipGroup,
-    DescriptionList,
+    DescriptionList as PF5DescriptionList,
     Radio as PF5Radio,
 )
-from widgetastic_patternfly5.charts.donut_chart import DonutCircle, DonutLegend
+from widgetastic_patternfly5.charts.donut_chart import (
+    DonutCircle as PF5DonutCircle,
+    DonutLegend as PF5DonutLegend,
+)
 from widgetastic_patternfly5.ouia import (
     Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
@@ -341,7 +344,7 @@ class JobInvocationStatusView(BaseLoggedInView):
         self.browser.refresh()
 
     @View.nested
-    class overall_status(DonutCircle):
+    class overall_status(PF5DonutCircle):
         """The donut circle with the overall job status of '{succeeded hosts}/{total hosts}'"""
 
         def read(self):
@@ -364,7 +367,7 @@ class JobInvocationStatusView(BaseLoggedInView):
                 return {}
 
     @View.nested
-    class status(DonutLegend):
+    class status(PF5DonutLegend):
         """System status panel."""
 
         ROOT = ".//div[contains(@class, 'chart-legend')]"
@@ -391,7 +394,7 @@ class JobInvocationStatusView(BaseLoggedInView):
                 return {}
 
     @View.nested
-    class overview(DescriptionList):
+    class overview(PF5DescriptionList):
         ROOT = ".//dl[contains(@class, 'job-overview-description-list')]"
 
         def read(self):
