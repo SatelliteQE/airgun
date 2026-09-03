@@ -21,6 +21,10 @@ from airgun.entities.audit import AuditEntity
 from airgun.entities.bookmark import BookmarkEntity
 from airgun.entities.bootc import BootcEntity
 from airgun.entities.capsule import CapsuleEntity
+from airgun.entities.cloud_compliance import (
+    CloudCompliancePoliciesEntity,
+    CloudComplianceReportsEntity,
+)
 from airgun.entities.cloud_insights import CloudInsightsEntity, RecommendationsTabEntity
 from airgun.entities.cloud_inventory import CloudInventoryEntity, IopCloudInventoryEntity
 from airgun.entities.cloud_vulnerabilities import CloudVulnerabilityEntity
@@ -414,6 +418,16 @@ class Session:
     def cloudvulnerability(self):
         """Instance of Insights entity."""
         return self._open(CloudVulnerabilityEntity)
+
+    @cached_property
+    def cloudcompliancereports(self):
+        """Instance of Insights Compliance Reports entity."""
+        return self._open(CloudComplianceReportsEntity)
+
+    @cached_property
+    def cloudcompliancepolicies(self):
+        """Instance of Insights Compliance SCAP Policies entity."""
+        return self._open(CloudCompliancePoliciesEntity)
 
     @cached_property
     def computeprofile(self):
