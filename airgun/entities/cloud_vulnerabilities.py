@@ -483,6 +483,21 @@ class CloudVulnerabilityEntity(BaseEntity):
         time.sleep(5)
         return self.browser.save_downloaded_file()
 
+    def sort_by_column(self, column_name):
+        """
+        Sort the vulnerabilities table by clicking on a column header
+
+        Args:
+            column_name (str): Name of the column to sort by (e.g., "Advisory", "Severity", "CVE ID")
+
+        Example:
+            entity.sort_by_column("Advisory")
+            entity.sort_by_column("Severity")
+        """
+        view = self.navigate_to(self, 'All')
+        wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
+        view.table_sort.sort_by(column_name)
+
 
 @navigator.register(CloudVulnerabilityEntity, 'All')
 class ShowVulnerabilityListView(NavigateStep):

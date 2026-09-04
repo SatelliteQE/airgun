@@ -149,6 +149,23 @@ class ExportMenu(Widget):
         self.browser.click(item_locator)
 
 
+class TableSortWidget(Widget):
+    """Widget for sorting table columns by clicking column headers."""
+
+    ROOT = './/table[@data-ouia-component-id="cves-table"]'
+
+    def sort_by(self, column_name):
+        """Click the sort button for a specific column."""
+        sort_button_locator = (
+            f'//th[contains(@class, "pf-v5-c-table__sort")]'
+            f'//button[contains(@class, "pf-v5-c-table__button")]'
+            f'//span[@class="pf-v5-c-table__text" and contains(., "{column_name}")]'
+            f'/ancestor::button'
+        )
+        self.browser.click(sort_button_locator)
+        self.browser.plugin.ensure_page_safe()
+
+
 class CloudVulnerabilityView(BaseLoggedInView):
     """Main Insights Vulnerabilities view."""
 
@@ -196,6 +213,7 @@ class CloudVulnerabilityView(BaseLoggedInView):
     one_or_more_hosts_filter_cancel = PF5Button(
         locator='//div[contains(@class, "pf-v5-c-chip-group") and .//span[contains(@class, "pf-v5-c-chip-group__label") and text()="Hosts"]]//div[contains(@class, "pf-v5-c-chip") and .//span[contains(@class, "pf-v5-c-chip__text") and text()="1 or more"]]//button[@aria-label="close"]'
     )
+    table_sort = TableSortWidget()
 
     vulnerabilities_table = PF5OUIAExpandableTable(
         component_id='cves-table',
