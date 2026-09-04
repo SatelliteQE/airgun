@@ -111,9 +111,10 @@ class JobInvocationEntity(BaseEntity):
         wait_for(lambda: view.leapp_preupgrade_report.fix_selected.is_displayed, timeout=10)
         view.leapp_preupgrade_report.fix_selected.click()
         wait_for(
-            lambda: view.overview.read()['job_status'] == expected_state,
+            lambda: view.overview.read().get('job_status') == expected_state,
             timeout=300,
             delay=10,
+            handle_exception=True,
             logger=view.logger,
         )
 

@@ -119,9 +119,10 @@ class HostCollectionEntity(BaseEntity):
         # After this step the user is redirected to job status view.
         job_status_view = JobInvocationStatusView(view.browser)
         wait_for(
-            lambda: job_status_view.status.read()['In Progress'] != 1,
+            lambda: job_status_view.status.read().get('In Progress', 1) != 1,
             timeout=300,
             delay=10,
+            handle_exception=True,
             logger=view.logger,
         )
         return job_status_view.read()
@@ -177,11 +178,12 @@ class HostCollectionEntity(BaseEntity):
 
         # After this step the user is redirected to job status view.
         job_status_view = JobInvocationStatusView(view.browser)
-        wait_for(lambda: job_status_view.is_displayed, timeout=30, delay=5)
+        wait_for(lambda: job_status_view.is_displayed, timeout=30, delay=5, handle_exception=True)
         wait_for(
-            lambda: job_status_view.status.read()['In Progress'] != 1,
+            lambda: job_status_view.status.read().get('In Progress', 1) != 1,
             timeout=300,
             delay=10,
+            handle_exception=True,
             logger=view.logger,
         )
         return job_status_view.read()
