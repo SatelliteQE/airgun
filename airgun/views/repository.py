@@ -164,6 +164,20 @@ class RepositoryCreateView(BaseLoggedInView):
         class SpecificHttpProxy(View):
             http_proxy = Select(id='http_proxy')
 
+    @repo_content.register('python')
+    class PythonRepository(View):
+        upstream_url = TextInput(id='url')
+        verify_ssl = Checkbox(id='verify_ssl_on_sync')
+        upstream_username = TextInput(id='upstream_username')
+        upstream_password = TextInput(id='upstream_password')
+        download_policy = Select(id='download_policy')
+        http_proxy_policy = Select(id='http_proxy_policy')
+        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+
+        @proxy_policy.register('Use specific HTTP proxy')
+        class SpecificHttpProxy(View):
+            http_proxy = Select(id='http_proxy')
+
     @repo_content.register('ansible collection')
     class AnsibleCollectionRepository(View):
         arch_restrict = Select(id='architecture_restricted')
@@ -259,6 +273,19 @@ class RepositoryEditView(BaseLoggedInView):
         mirroring_policy = EditableEntrySelect(name='Mirroring Policy')
         upload_content = FileInput(name='content[]')
         upload = Text("//button[contains(., 'Upload')]")
+        proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
+
+        @proxy_policy.register(True, default=True)
+        class NoSpecificHttpProxy(View):
+            pass
+
+    @repo_content.register('python')
+    class PythonRepository(View):
+        upstream_url = EditableEntry(name='Upstream URL')
+        verify_ssl = EditableEntryCheckbox(name='Verify SSL')
+        upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
+        download_policy = EditableEntrySelect(name='Download Policy')
+        http_proxy_policy = EditableEntrySelect(name='HTTP proxy')
         proxy_policy = ConditionalSwitchableView(reference='http_proxy_policy')
 
         @proxy_policy.register(True, default=True)
