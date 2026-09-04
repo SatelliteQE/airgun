@@ -333,12 +333,14 @@ class JobInvocationStatusView(BaseLoggedInView):
             lambda: self.is_displayed,
             timeout=timeout,
             delay=delay,
+            handle_exception=True,
             logger=self.logger,
         )
         wait_for(
-            lambda: self.status.read()['In Progress'] == 0,
+            lambda: self.status.read().get('In Progress', 1) == 0,
             timeout=timeout,
             delay=1,
+            handle_exception=True,
             logger=self.logger,
         )
         self.browser.refresh()
