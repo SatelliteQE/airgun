@@ -313,6 +313,7 @@ class HostCreateView(BaseLoggedInView):
         )
         compute_profile = FilteredDropdown(id='host_compute_profile_id')
         content_view_environment = FilteredDropdown(id='host_content_view_environment_id')
+        read_content_view_environment = TextInput(id='host_content_view_environment_id')
         content_source = FilteredDropdown(id='content_source_id')
         reset_puppet_environment = Link(".//a[@id='reset_puppet_environment']")
         inherit_puppet_environment = ToggleButton(
