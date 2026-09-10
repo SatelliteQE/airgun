@@ -167,6 +167,15 @@ class RepositoryCreateView(BaseLoggedInView):
     @repo_content.register('python')
     class PythonRepository(View):
         upstream_url = TextInput(id='url')
+        includes = TextInput(
+            locator=".//label[normalize-space(.)='Includes']/following-sibling::div//textarea"
+        )
+        excludes = TextInput(
+            locator=".//label[normalize-space(.)='Excludes']/following-sibling::div//textarea"
+        )
+        package_types = TextInput(
+            locator=".//label[normalize-space(.)='Package Types']/following-sibling::div//input"
+        )
         verify_ssl = Checkbox(id='verify_ssl_on_sync')
         upstream_username = TextInput(id='upstream_username')
         upstream_password = TextInput(id='upstream_password')
@@ -282,6 +291,9 @@ class RepositoryEditView(BaseLoggedInView):
     @repo_content.register('python')
     class PythonRepository(View):
         upstream_url = EditableEntry(name='Upstream URL')
+        includes = EditableEntry(name='Includes')
+        excludes = EditableEntry(name='Excludes')
+        package_types = EditableEntry(name='Package Types')
         verify_ssl = EditableEntryCheckbox(name='Verify SSL')
         upstream_authorization = AuthorizationEntry(name='Upstream Authorization')
         download_policy = EditableEntrySelect(name='Download Policy')
