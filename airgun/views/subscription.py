@@ -43,7 +43,9 @@ class SatSubscriptionsViewTable(SatTable):
 
     NO_RESULTS_MESSAGE = 'No Results No subscriptions match your search criteria.'
     # Override tbody_row to only match actual data rows, not empty state rows
-    tbody_row = Text('.//tbody/tr[starts-with(@data-ouia-component-id, "subscriptions-table-row-")]')
+    tbody_row = Text(
+        './/tbody/tr[starts-with(@data-ouia-component-id, "subscriptions-table-row-")]'
+    )
 
     @property
     def is_displayed(self):
