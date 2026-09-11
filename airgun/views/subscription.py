@@ -41,7 +41,11 @@ class SatSubscriptionsViewTable(SatTable):
     component instead of a table, so we need to check if the table exists first.
     """
 
-    NO_RESULTS_MESSAGE = 'No subscriptions match your search criteria.'
+    NO_RESULTS_MESSAGE = 'No Results No subscriptions match your search criteria.'
+    # Override tbody_row to only match actual data rows, not empty state rows
+    tbody_row = Text(
+        './/tbody/tr[starts-with(@data-ouia-component-id, "subscriptions-table-row-")]'
+    )
 
     @property
     def is_displayed(self):
@@ -61,7 +65,7 @@ class SatSubscriptionsViewTable(SatTable):
 
     @property
     def search_settled(self):
-        """True when AJAX search finished: real rows or the explicit no-match message."""
+        """True when AJAX search finished: real rows are present."""
         if not self.is_displayed or not self.tbody_row.is_displayed:
             return False
         return bool(self.tbody_row.read())
@@ -104,7 +108,7 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
     """List of all subscriptions."""
 
     table = SatSubscriptionsViewTable(
-        locator='//div[@id="subscriptions-table"]//table',
+        locator='//table[@data-ouia-component-id="subscriptions-table"]',
         column_widgets={
             'Select all rows': Checkbox(locator=".//input[@type='checkbox']"),
             'Name': Text('./a'),
@@ -127,7 +131,7 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
     progressbar = ProgressBar('//div[contains(@class,"progress-bar-striped")]')
     confirm_deletion = DeleteSubscriptionConfirmationDialog()
     blank_page = Text("//div[contains(@class, 'pf-v5-c-empty-state')]")
-    displayed_table_headers = '//div[@id="subscriptions-table"]//table/thead/tr/th'
+    displayed_table_headers = '//table[@data-ouia-component-id="subscriptions-table"]//thead/tr/th'
 
     @property
     def is_displayed(self):
@@ -150,10 +154,11 @@ class SubscriptionListView(BaseLoggedInView, SearchableViewMixinPF4):
             return None
         self.searchbox.search(query)
         self.browser.plugin.ensure_page_safe(timeout=60)
+        # Wait longer for search to complete
         wait_for(
             lambda: self.table.search_settled,
             timeout=30,
-            delay=1,
+            delay=2,
             handle_exception=True,
             logger=self.logger,
         )
