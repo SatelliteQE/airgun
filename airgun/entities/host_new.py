@@ -92,7 +92,7 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         view.search(entity_name)
-        view.table.row(name=entity_name)[6].widget.item_select('Delete')
+        view.get_row_kebab(0).item_select('Delete')
         self.browser.handle_alert()
         self.browser.refresh()
 
