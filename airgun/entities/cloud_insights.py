@@ -8,6 +8,8 @@ from airgun.views.cloud_insights import (
     CloudInsightsView,
     CloudTokenView,
     DisableRecommendationModal,
+    PathwayDetailsView,
+    PathwaysTabView,
     RecommendationsDetailsView,
     RecommendationsTabView,
     RemediateSummary,
@@ -208,6 +210,80 @@ class RecommendationsTabEntity(BaseEntity):
         return view.no_authorized_header.read()
 
 
+class PathwaysEntity(BaseEntity):
+    """Entity for IoP Pathways - recommendations grouped by a shared resolution."""
+
+    endpoint_path = '/foreman_rh_cloud/insights_cloud'
+
+    def group_recommendations_into_pathways(self):
+        """Trigger the creation of recommendations that get grouped into pathways.
+
+        The mechanism to seed/trigger pathway grouping is owned by dev and is
+        still being defined. Left intentionally empty until that is confirmed.
+        """
+
+    def search(self, value):
+        """Search the pathways table and return the matched rows.
+
+        :param value: text to filter the pathways table by.
+        """
+        view = self.navigate_to(self, 'All')
+        wait_for(lambda: view.table.is_displayed, timeout=30, handle_exception=True)
+        view.search_field.fill(value)
+        self.browser.plugin.ensure_page_safe(timeout=10)
+        wait_for(lambda: view.table.is_displayed, timeout=30, handle_exception=True)
+        return view.table.read()
+
+    def read(self, widget_names=None):
+        """Read the pathways table on the Pathways tab."""
+        view = self.navigate_to(self, 'All')
+        self.browser.plugin.ensure_page_safe(timeout=10)
+        return view.read(widget_names=widget_names)
+
+    def read_details(self, pathway_name, widget_names=None):
+        """Open a pathway's details page and read its contents."""
+        view = self.navigate_to(self, 'Details', pathway_name=pathway_name)
+        self.browser.plugin.ensure_page_safe(timeout=10)
+        return view.read(widget_names=widget_names)
+
+    def _open_systems_tab(self, pathway_name):
+        """Open a pathway's details page and switch to its Systems tab."""
+        view = self.navigate_to(self, 'Details', pathway_name=pathway_name)
+        wait_for(lambda: view.systems_tab.is_displayed, handle_exception=True, timeout=20)
+        view.systems_tab.click()
+        self.browser.plugin.ensure_page_safe(timeout=10)
+        return view
+
+    def read_systems(self, pathway_name):
+        """Open a pathway's Systems tab and return the affected systems table."""
+        view = self._open_systems_tab(pathway_name)
+        wait_for(lambda: view.table.is_displayed, timeout=30, handle_exception=True)
+        return view.table.read()
+
+    def remediate_system(self, pathway_name, hostname):
+        """Remediate an affected system from a pathway's Systems tab.
+
+        Navigates to the pathway details, opens the Systems tab, selects the
+        host, and confirms the remediation summary modal.
+
+        :param pathway_name: Name of the pathway to open.
+        :param hostname: Hostname of the affected system to remediate.
+        :return: the job invocation status view contents after remediation.
+        """
+        view = self._open_systems_tab(pathway_name)
+        wait_for(lambda: view.table.row(name=hostname), handle_exception=True, timeout=30)
+        view.table.row(name=hostname)[0].widget.fill(True)
+        wait_for(lambda: view.remediate.is_displayed, handle_exception=True, timeout=20)
+        view.remediate.click()
+        self.browser.plugin.ensure_page_safe(timeout=30)
+        modal = RemediateSummary(self.browser)
+        wait_for(lambda: modal.is_displayed, handle_exception=True, timeout=20)
+        modal.remediate.click()
+        view = JobInvocationStatusView(view.browser)
+        view.wait_for_result()
+        return view.read()
+
+
 @navigator.register(RecommendationsTabEntity, 'Affected Systems')
 class NavigateToAffectedSystems(NavigateStep):
     """Navigate from Recommendations tab to the Affected Systems details view."""
@@ -258,3 +334,34 @@ class ShowRecommendationsView(NavigateStep):
 
     def step(self, *args, **kwargs):
         self.view.menu.select('Red Hat Lightspeed', 'Recommendations')
+
+
+@navigator.register(PathwaysEntity, 'All')
+class ShowPathwaysView(NavigateStep):
+    """Navigate to the Pathways tab on the Recommendations page."""
+
+    VIEW = PathwaysTabView
+
+    def step(self, *args, **kwargs):
+        self.view.menu.select('Red Hat Lightspeed', 'Recommendations')
+        wait_for(lambda: self.view.pathways_tab.is_displayed, handle_exception=True, timeout=20)
+        self.view.pathways_tab.click()
+
+
+@navigator.register(PathwaysEntity, 'Details')
+class ShowPathwayDetails(NavigateStep):
+    """Navigate from the Pathways tab into a pathway's details page."""
+
+    VIEW = PathwayDetailsView
+
+    def prerequisite(self, *args, **kwargs):
+        return self.navigate_to(self.obj, 'All')
+
+    def step(self, *args, **kwargs):
+        pathway_name = kwargs.get('pathway_name')
+        wait_for(
+            lambda: self.parent.table.row(name=pathway_name),
+            handle_exception=True,
+            timeout=30,
+        )
+        self.parent.table.row(name=pathway_name)['Name'].widget.click()
