@@ -215,13 +215,6 @@ class PathwaysEntity(BaseEntity):
 
     endpoint_path = '/foreman_rh_cloud/insights_cloud'
 
-    def group_recommendations_into_pathways(self):
-        """Trigger the creation of recommendations that get grouped into pathways.
-
-        The mechanism to seed/trigger pathway grouping is owned by dev and is
-        still being defined. Left intentionally empty until that is confirmed.
-        """
-
     def search(self, value):
         """Search the pathways table and return the matched rows.
 
@@ -260,7 +253,7 @@ class PathwaysEntity(BaseEntity):
         wait_for(lambda: view.table.is_displayed, timeout=30, handle_exception=True)
         return view.table.read()
 
-    def remediate_system(self, pathway_name, hostname):
+    def remediate_system_via_pathways(self, pathway_name, hostname):
         """Remediate an affected system from a pathway's Systems tab.
 
         Navigates to the pathway details, opens the Systems tab, selects the
