@@ -8,6 +8,7 @@ from widgetastic.widget import (
     View,
 )
 from widgetastic_patternfly import BreadCrumb, Button
+from widgetastic_patternfly5 import Tab as PF5Tab
 from widgetastic_patternfly5.ouia import Button as PF5OUIAButton
 
 from airgun.exceptions import ReadOnlyWidgetError
@@ -181,24 +182,24 @@ class ManageManifestView(BaseLoggedInView, PF5ModalViewMixin):
     close_button = PF5OUIAButton('manage-manifest-close-button')
 
     @View.nested
-    class manifest(SatTab):
+    class manifest(PF5Tab):
+        ROOT = './/section[@id="manifest-history-tabs-pane-1"]'
         alert_message = Text('.//div[contains(@class, "pf-v5-c-alert")]')
-        expire_header = Text('//div[@id="manifest-history-tabs-pane-1"]/div/div/h4')
-        expire_message = Text(
-            '//div[@id="manifest-history-tabs-pane-1"]/div/div/h4//following-sibling::div'
+        expire_header = Text('.//h4[contains(@class, "pf-v5-c-alert__title")]')
+        expire_message = Text('.//div[contains(@class, "pf-v5-c-alert__description")]')
+        expire_date = Text('.//div[contains(@class, "pf-m-7-col") and contains(., "Expire")]')
+        manifest_file = FileInput(
+            locator='.//div[contains(@class, "pf-v5-c-file-upload")]//input[@type="file"]'
         )
-        expire_date = Text(
-            '//div[@id="manifest-history-tabs-pane-1"]/div/hr//following-sibling::div[2]/div[2]'
-        )
-        manifest_file = FileInput(id='usmaFile')
         refresh_button = PF5OUIAButton('refresh-manifest-button-tooltip')
         delete_button = PF5OUIAButton('delete-manifest-button-tooltip')
 
     @View.nested
-    class manifest_history(SatTab):
+    class manifest_history(PF5Tab):
+        ROOT = './/section[@id="manifest-history-tabs-pane-2"]'
         TAB_NAME = 'Manifest History'
         table = SatTable(
-            locator='//div[@id="manifest-history-tabs"]//table',
+            locator='.//table',
             column_widgets={'Status': Text(), 'Message': Text(), 'Timestamp': Text()},
         )
 
