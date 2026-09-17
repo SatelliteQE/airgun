@@ -1042,6 +1042,31 @@ class NewHostEntity(HostEntity):
         else:
             return []
 
+    def get_cve(self, entity_name, cve_id):
+        """Search for a specific CVE on the host's vulnerability tab without loading all pages.
+
+        This method filters vulnerabilities by CVE ID using the search bar, avoiding the
+        performance issues of loading all CVEs across multiple pages.
+
+        Args:
+            entity_name: Name of the host
+            cve_id: CVE ID to search for (e.g., 'CVE-2018-10896')
+
+        Returns:
+            list: List of matching vulnerability entries (usually one entry), or empty list if not found
+        """
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+
+        wait_for(lambda: view.vulnerabilities.vulnerabilities_table.is_displayed, timeout=30)
+        vulnerabilities = getattr(view.vulnerabilities, 'vulnerabilities_table', None)
+        if vulnerabilities is not None:
+            # Search for the specific CVE
+            view.vulnerabilities.search_bar.fill(cve_id)
+            return vulnerabilities.read()
+        else:
+            return []
+
     def get_insights(self, entity_name):
         # TODO consolidate with get_recommendations
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
