@@ -238,3 +238,62 @@ class RecommendationsTabView(BaseLoggedInView):
         return (
             self.table.is_displayed and self.clear_button.is_displayed
         ) or self.no_authorized_header.is_displayed
+
+
+class PathwaysTabView(BaseLoggedInView):
+    """The Pathways tab on the Red Hat Lightspeed Recommendations page.
+
+    Recommendations are grouped into pathways that share a common resolution.
+    Selecting a pathway name opens its details page.
+    """
+
+    title = PF5Title('Recommendations')
+    recommendations_tab = Text(
+        './/button[@role="tab"][.//span[normalize-space()="Recommendations"]]'
+    )
+    pathways_tab = Text('.//button[@role="tab"][.//span[normalize-space()="Pathways"]]')
+    search_field = TextInput(locator='.//input[@aria-label="text input"]')
+    clear_button = PF5Button('Reset filters')
+    table = PF5Table(
+        locator='.//table[@aria-label="pathways-table"]',
+        column_widgets={
+            'Name': Text('.//a'),
+            'Category': Text('.//span'),
+            'Systems': Text('.//a'),
+            'Reboot': Text('.//span'),
+            'Recommendation level': Text('.//span'),
+        },
+    )
+
+    @property
+    def is_displayed(self):
+        return self.pathways_tab.is_displayed and self.table.is_displayed
+
+
+class PathwayDetailsView(BaseLoggedInView):
+    """The details page for a single pathway.
+
+    Contains a Recommendations tab (rules grouped under the pathway) and a
+    Systems tab (affected hosts with a Remediate action).
+    """
+
+    title = Text('.//h1[contains(@class, "pf-v5-c-title")]')
+    recommendations_tab = Text(
+        './/button[@role="tab"][.//span[normalize-space()="Recommendations"]]'
+    )
+    systems_tab = Text('.//button[@role="tab"][.//span[normalize-space()="Systems"]]')
+    search_field = TextInput(locator='.//input[@aria-label="text input"]')
+    remediate = PF5Button('Remediate')
+    table = PF5Table(
+        locator='.//table[contains(@aria-label, "Host inventory")]',
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Name': Text('.//a'),
+            'OS': Text('.//span'),
+            'Last seen': Text('.//span'),
+        },
+    )
+
+    @property
+    def is_displayed(self):
+        return self.systems_tab.is_displayed and self.recommendations_tab.is_displayed

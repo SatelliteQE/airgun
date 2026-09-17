@@ -21,7 +21,11 @@ from airgun.entities.audit import AuditEntity
 from airgun.entities.bookmark import BookmarkEntity
 from airgun.entities.bootc import BootcEntity
 from airgun.entities.capsule import CapsuleEntity
-from airgun.entities.cloud_insights import CloudInsightsEntity, RecommendationsTabEntity
+from airgun.entities.cloud_insights import (
+    CloudInsightsEntity,
+    PathwaysEntity,
+    RecommendationsTabEntity,
+)
 from airgun.entities.cloud_inventory import CloudInventoryEntity, IopCloudInventoryEntity
 from airgun.entities.cloud_vulnerabilities import CloudVulnerabilityEntity
 from airgun.entities.computeprofile import ComputeProfileEntity
@@ -404,6 +408,11 @@ class Session:
     def recommendationstab(self):
         """Instance of Recommendations entity."""
         return self._open(RecommendationsTabEntity)
+
+    @cached_property
+    def pathways(self):
+        """Instance of IoP Pathways entity."""
+        return self._open(PathwaysEntity)
 
     @cached_property
     def cloudinsights(self):
