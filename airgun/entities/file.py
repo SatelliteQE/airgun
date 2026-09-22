@@ -1,6 +1,5 @@
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
+from airgun.navigation import NavigateStepWithWait as NavigateStep, navigator
 from airgun.views.file import FileDetailsView, FilesView
 
 
@@ -26,7 +25,6 @@ class ShowAllFiles(NavigateStep):
 
     VIEW = FilesView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Content Types', 'Files')
 
@@ -47,5 +45,4 @@ class ShowPackageDetails(NavigateStep):
 
     def am_i_here(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
-        self.view.file_name = entity_name
-        return self.view.is_displayed and self.view.breadcrumb.locations[1] == entity_name
+        return self.view.is_displayed and self.view.file_name.read() == entity_name
