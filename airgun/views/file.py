@@ -1,45 +1,40 @@
 from widgetastic.widget import Text, View
-from widgetastic_patternfly import BreadCrumb
 
 from airgun.views.common import (
     BaseLoggedInView,
     ReadOnlyEntry,
     SatTab,
     SatTable,
+    SearchableViewMixinPF4,
 )
-from airgun.widgets import Search
 
 
-class FilesView(BaseLoggedInView):
+class FilesView(BaseLoggedInView, SearchableViewMixinPF4):
     """Main Files view"""
 
-    title = Text("//h1[contains(., 'Files')]")
-    table = SatTable('.//table', column_widgets={'Name': Text('./a'), 'Path': Text('./a')})
-
-    search_box = Search()
-
-    def search(self, query):
-        self.search_box.search(query)
-        return self.table.read()
+    title = Text("//h1[normalize-space(.)='Files']")
+    table = SatTable(
+        ".//table[.//th[normalize-space(.)='Name'] and .//th[normalize-space(.)='Path'] "
+        "and .//th[normalize-space(.)='Checksum']]",
+        column_widgets={'Name': Text('./a')},
+    )
 
     @property
     def is_displayed(self):
-        return self.browser.wait_for_element(self.title, exception=False) is not None
+        return self.title.is_displayed
 
 
 class FileDetailsView(BaseLoggedInView):
-    breadcrumb = BreadCrumb()
+    file_name = Text('//h1')
 
     @property
     def is_displayed(self):
-        breadcrumb_loaded = self.browser.wait_for_element(self.breadcrumb, exception=False)
-
-        return breadcrumb_loaded and self.breadcrumb.locations[0] == 'Files'
+        return self.file_name.is_displayed
 
     @View.nested
     class details(SatTab):
-        path = ReadOnlyEntry(name='Checksum')
-        checksum = ReadOnlyEntry(name='Path')
+        path = ReadOnlyEntry(name='Path')
+        checksum = ReadOnlyEntry(name='Checksum')
 
     @View.nested
     class content_views(SatTab):
