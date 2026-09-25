@@ -1,5 +1,3 @@
-import time
-
 from navmazing import NavigateToSibling
 from wait_for import wait_for
 
@@ -114,16 +112,9 @@ class HostCollectionEntity(BaseEntity):
             job_create_view.fill(job_values)
             job_create_view.submit.click()
 
-        # wait for the job deatils to load
-        time.sleep(3)
         # After this step the user is redirected to job status view.
         job_status_view = JobInvocationStatusView(view.browser)
-        wait_for(
-            lambda: job_status_view.status.read()['In Progress'] != 1,
-            timeout=300,
-            delay=10,
-            logger=view.logger,
-        )
+        job_status_view.wait_for_completion(timeout=300, delay=10)
         return job_status_view.read()
 
     def search_applicable_hosts(self, entity_name, errata_id):
@@ -178,12 +169,7 @@ class HostCollectionEntity(BaseEntity):
         # After this step the user is redirected to job status view.
         job_status_view = JobInvocationStatusView(view.browser)
         wait_for(lambda: job_status_view.is_displayed, timeout=30, delay=5)
-        wait_for(
-            lambda: job_status_view.status.read()['In Progress'] != 1,
-            timeout=300,
-            delay=10,
-            logger=view.logger,
-        )
+        job_status_view.wait_for_completion(timeout=300, delay=10)
         return job_status_view.read()
 
     def manage_module_streams(
