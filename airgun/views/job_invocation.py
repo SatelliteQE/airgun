@@ -327,8 +327,16 @@ class JobInvocationStatusView(BaseLoggedInView):
 
         return breadcrumb_loaded and title_loaded and data_loaded and breadcrumb_ok
 
-    def wait_for_result(self, timeout=600, delay=1):
-        """Wait for invocation job(s) to finish"""
+    def _all_hosts_finished(self):
+        """Return whether every target host has a terminal job status."""
+        statuses = self.status.read()
+        total_hosts = self.overall_status.read().get('total_hosts')
+        if not statuses or total_hosts is None:
+            return False
+        return statuses.get('In Progress', 0) == 0 and sum(statuses.values()) == total_hosts
+
+    def wait_for_completion(self, timeout=600, delay=1):
+        """Wait until all target hosts have a terminal job status."""
         wait_for(
             lambda: self.is_displayed,
             timeout=timeout,
@@ -336,11 +344,15 @@ class JobInvocationStatusView(BaseLoggedInView):
             logger=self.logger,
         )
         wait_for(
-            lambda: self.status.read()['In Progress'] == 0,
+            self._all_hosts_finished,
             timeout=timeout,
             delay=1,
             logger=self.logger,
         )
+
+    def wait_for_result(self, timeout=600, delay=1):
+        """Wait for invocation job(s) to finish and refresh the status view."""
+        self.wait_for_completion(timeout=timeout, delay=delay)
         self.browser.refresh()
 
     @View.nested
