@@ -6,6 +6,7 @@ from widgetastic_patternfly5 import (
     Modal as PF5Modal,
     Pagination as PF5Pagination,
 )
+from widgetastic_patternfly5.components.menus.select import CheckboxSelect
 from widgetastic_patternfly5.ouia import (
     ExpandableTable as PF5OUIAExpandableTable,
 )
@@ -13,6 +14,24 @@ from widgetastic_patternfly5.ouia import (
 from airgun.views.common import BaseLoggedInView
 from airgun.views.host_new import PF5CheckboxTreeView
 from airgun.widgets import SearchInput
+
+
+class PreOpenedCheckboxSelect(CheckboxSelect):
+    """CheckboxSelect for popper menus opened by an external toggle button."""
+
+    @property
+    def is_open(self):
+        return True
+
+    @property
+    def is_enabled(self):
+        return True
+
+    def open(self):
+        pass
+
+    def close(self, ignore_nonpresent=False):
+        pass
 
 
 class EditBusinessRiskModal(PF5Modal):
@@ -130,6 +149,23 @@ class ExportMenu(Widget):
         self.browser.click(item_locator)
 
 
+class TableSortWidget(Widget):
+    """Widget for sorting table columns by clicking column headers."""
+
+    ROOT = './/table[@data-ouia-component-id="cves-table"]'
+
+    def sort_by(self, column_name):
+        """Click the sort button for a specific column."""
+        sort_button_locator = (
+            f'//th[contains(@class, "pf-v5-c-table__sort")]'
+            f'//button[contains(@class, "pf-v5-c-table__button")]'
+            f'//span[@class="pf-v5-c-table__text" and contains(., "{column_name}")]'
+            f'/ancestor::button'
+        )
+        self.browser.click(sort_button_locator)
+        self.browser.plugin.ensure_page_safe()
+
+
 class CloudVulnerabilityView(BaseLoggedInView):
     """Main Insights Vulnerabilities view."""
 
@@ -158,8 +194,14 @@ class CloudVulnerabilityView(BaseLoggedInView):
     # 2. Click the os_filter_button to open the dropdown
     # 3. Select OS versions from the os_filter_tree (TreeView with checkboxes)
     filter_type_menu = FilterTypeMenu()
+    specific_filter_button = PF5Button(locator='.//button[@aria-label="Options menu"]')
+    # Advisory Filter widgets
     os_filter_button = PF5Button(locator='.//button[@aria-label="Group filter"]')
     os_filter_tree = PF5CheckboxTreeView(locator='.//div[@class="pf-v5-c-tree-view"]')
+
+    advisory_filter_select = PreOpenedCheckboxSelect(
+        locator='//div[@data-ouia-component-id="Filter by advisory"]'
+    )
 
     # Bulk actions menu
     bulk_actions = BulkActionsMenu()
@@ -167,6 +209,11 @@ class CloudVulnerabilityView(BaseLoggedInView):
     # Modals
     edit_business_risk_modal = EditBusinessRiskModal()
     edit_status_modal = EditStatusModal()
+
+    one_or_more_hosts_filter_cancel = PF5Button(
+        locator='//div[contains(@class, "pf-v5-c-chip-group") and .//span[contains(@class, "pf-v5-c-chip-group__label") and text()="Hosts"]]//div[contains(@class, "pf-v5-c-chip") and .//span[contains(@class, "pf-v5-c-chip__text") and text()="1 or more"]]//button[@aria-label="close"]'
+    )
+    table_sort = TableSortWidget()
 
     vulnerabilities_table = PF5OUIAExpandableTable(
         component_id='cves-table',
@@ -181,6 +228,7 @@ class CloudVulnerabilityView(BaseLoggedInView):
             'Applies to OS': Text('.//td[@data-label="Applies to OS"]'),
             'Business risk': Text('.//td[@data-label="Business risk"]'),
             'Status': Text('.//td[@data-label="Status"]'),
+            'Advisory': Text('.//td[@data-label="Advisory"]'),
             'Column with row actions': RowActionsMenu(),
         },
     )
