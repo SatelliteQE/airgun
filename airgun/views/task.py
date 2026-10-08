@@ -1,3 +1,4 @@
+from selenium.common.exceptions import NoSuchElementException
 from wait_for import wait_for
 from widgetastic.widget import Table, Text, View
 from widgetastic_patternfly import BreadCrumb, Button
@@ -107,10 +108,12 @@ class TaskDetailsView(BaseLoggedInView):
         dynflow_console = PF5Button('Dynflow console')
 
     def wait_for_result(self, timeout=60, delay=1):
-        """Wait for invocation job to finish"""
+        """Wait for task details to load and the task result to become successful."""
         wait_for(
             lambda: self.is_displayed and self.task.result.read() == 'success',
             timeout=timeout,
             delay=delay,
+            # The breadcrumb can appear before the task result while details are loading.
+            handle_exception=NoSuchElementException,
             logger=self.logger,
         )
