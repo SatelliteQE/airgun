@@ -48,7 +48,6 @@ class ActivationKeyEntity(BaseEntity):
     def read(self, entity_name, widget_names=None):
         """Read all values for created activation key entity"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
-        view.wait_displayed(timeout='10s')
         return view.read(widget_names=widget_names)
 
     def get_repos(self, entity_name, repo_type='All'):
