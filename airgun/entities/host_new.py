@@ -1053,7 +1053,6 @@ class NewHostEntity(HostEntity):
         else:
             return []
 
-
     def get_insights(self, entity_name):
         # TODO consolidate with get_recommendations
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)

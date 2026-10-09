@@ -145,7 +145,6 @@ class CloudVulnerabilityEntity(BaseEntity):
         modal.save.click()
         wait_for(lambda: not modal.is_displayed, timeout=10)
 
-
     def filter_by_os(self, os_versions):
         """
         Filter vulnerabilities by OS version(s) using the "Applies to OS" filter
