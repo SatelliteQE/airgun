@@ -134,6 +134,15 @@ class CloudVulnerabilityView(BaseLoggedInView):
     """Main Insights Vulnerabilities view."""
 
     title = Text('//h1[normalize-space(.)="Vulnerabilities"]')
+
+    # Locator template for filter chip close button
+    close_filter_locator = (
+        '//div[contains(@class, "pf-v5-c-chip-group") and '
+        './/span[contains(@class, "pf-v5-c-chip-group__label") and text()="{filter_name}"]]'
+        '//div[contains(@class, "pf-v5-c-chip")]'
+        '//button[@aria-label="close"]'
+    )
+
     cves_with_known_exploits_card = PF5Button(
         '//div[@data-ouia-component-type="PF5/Card"][.//b[text()="CVEs with known exploits"]]'
     )

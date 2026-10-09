@@ -1040,6 +1040,20 @@ class NewHostEntity(HostEntity):
         else:
             return []
 
+    def get_cve(self, entity_name, cve_id):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+
+        wait_for(lambda: view.vulnerabilities.vulnerabilities_table.is_displayed, timeout=30)
+        vulnerabilities = getattr(view.vulnerabilities, 'vulnerabilities_table', None)
+        if vulnerabilities is not None:
+            # Search for the specific CVE
+            view.vulnerabilities.search_bar.fill(cve_id)
+            return vulnerabilities.read()
+        else:
+            return []
+
+
     def get_insights(self, entity_name):
         # TODO consolidate with get_recommendations
         view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
