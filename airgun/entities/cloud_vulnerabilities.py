@@ -30,6 +30,10 @@ class CloudVulnerabilityEntity(BaseEntity):
         """Helper method to navigate to CVE details page"""
         view = self.navigate_to(self, 'All')
         view.wait_displayed(timeout='30s')
+        # Below part related to close Advisory filter can be removed once we have fix SAT-52048
+        locator = view.close_filter_locator.format(filter_name='Advisory')
+        wait_for(lambda: view.browser.element(locator).is_displayed, timeout=30)
+        view.browser.element(locator).click()
         wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
         view.search_bar.fill(cve_id)
         view.browser.element(f'.//a[contains(@href, "{cve_id}")]').click()
@@ -77,6 +81,7 @@ class CloudVulnerabilityEntity(BaseEntity):
         )
         vulnerabilities = getattr(host_details_view.vulnerabilities, 'vulnerabilities_table', None)
         if vulnerabilities is not None:
+            host_details_view.vulnerabilities.search_bar.fill(cve_id)
             return vulnerabilities.read()
         else:
             return []
@@ -139,6 +144,7 @@ class CloudVulnerabilityEntity(BaseEntity):
 
         modal.save.click()
         wait_for(lambda: not modal.is_displayed, timeout=10)
+
 
     def filter_by_os(self, os_versions):
         """
