@@ -29,7 +29,7 @@ class CloudVulnerabilityEntity(BaseEntity):
     def _navigate_to_cve_details(self, cve_id):
         """Helper method to navigate to CVE details page"""
         view = self.navigate_to(self, 'All')
-        view.wait_displayed(timeout='30s')
+        view.wait_displayed(timeout=30)
         wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
         view.search_bar.fill(cve_id)
         view.browser.element(f'.//a[contains(@href, "{cve_id}")]').click()
