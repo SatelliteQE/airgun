@@ -79,7 +79,7 @@ class OrganizationEditView(BaseLoggedInView):
         label = TextInput(id='organization_label')
         default_system_sla = FilteredDropdown(id='organization_service_level')
         description = TextInput(id='organization_description')
-        debug_cert_algorithm = FilteredDropdown(id='key_algorithm_select-container')
+        debug_cert_algorithm = FilteredDropdown(id='key_algorithm_select')
         generate = Text(".//button[@id='download_debug_cert_key']")
 
     @View.nested
