@@ -15,9 +15,7 @@ class DataCollectionMenu(PF5Menu):
     """ """
 
     IS_ALWAYS_OPEN = False
-    BUTTON_LOCATOR = (
-        ".//button[contains(@class, '-c-menu-toggle') and contains(@class, 'pf-m-full-width')]"
-    )
+    BUTTON_LOCATOR = './/button[@data-ouia-component-id="inventory-dropdown-toggle"]'
     ROOT = f'{BUTTON_LOCATOR}/..'
 
 

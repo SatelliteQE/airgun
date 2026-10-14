@@ -4,7 +4,6 @@ from widgetastic_patternfly5 import (
     Button as PF5Button,
     ExpandableTable as PF5ExpandableTable,
     Menu as PF5Menu,
-    Pagination as PF5Pagination,
     PatternflyTable as PF5Table,
     Select as PF5Select,
     Title as PF5Title,
@@ -12,6 +11,7 @@ from widgetastic_patternfly5 import (
 from widgetastic_patternfly5.ouia import (
     Dropdown as PF5OUIADropdown,
     Modal as PF5OUIAModal,
+    Pagination as PF5OUIAPagination,
     PatternflyTable as PF5OUIAPatternflyTable,
     Switch as PF5OUIASwitch,
     TextInput as PF5OUIATextInput,
@@ -55,11 +55,11 @@ class RemediationView(PF5OUIAModal):
 class InsightsActionDropdown(PF5Menu):
     """The three-dot actions menu on the Recommendations page.
 
-    Uses a CSS class selector scoped to the 'title-dropdown' class set by ToolbarDropdown.js,
-    avoiding reliance on OUIA component type attributes that change across PatternFly versions."""
+    Matches the toggle by OUIA component id only, avoiding reliance on OUIA component
+    type attributes that change across PatternFly versions."""
 
     IS_ALWAYS_OPEN = False
-    BUTTON_LOCATOR = './/button[@aria-label="Recommendations actions"]'
+    BUTTON_LOCATOR = './/button[@data-ouia-component-id="recommendations-dropdown-toggle"]'
     ROOT = f'{BUTTON_LOCATOR}/..'
 
 
@@ -83,7 +83,7 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
     )
     select_all_hits = PF5Button('Select recommendations from all pages')
     clear_hits_selection = PF5Button('Clear Selection')
-    pagination = PF5Pagination()
+    pagination = PF5OUIAPagination('recommendations-pagination-bottom')
     remediation_window = View.nested(RemediationView)
 
     @property
