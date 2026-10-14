@@ -769,6 +769,9 @@ class ChangeHostCollectionsModal(PF5Modal):
 
     OUIA_ID = 'bulk-update-host-collections-modal'
 
+    no_host_collections = Text('.//*[normalize-space(.)="No host collections yet"]')
+    create_host_collection = PF5OUIAButton('create-host-collection-button')
+
     title = './/h1[@class="pf-v5-c-modal-box__title"]'
     close_btn = PF5OUIAButton('bulk-update-host-collections-modal-ModalBoxCloseButton')
     save_btn = PF5OUIAButton('bulk-change-host-collections-modal-save-button')

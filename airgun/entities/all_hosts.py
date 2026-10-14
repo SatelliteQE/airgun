@@ -29,6 +29,7 @@ from airgun.views.all_hosts import (
     ManageTracesModal,
 )
 from airgun.views.host_new import ManageMultiCVEnvModal
+from airgun.views.hostcollection import HostCollectionCreateView
 from airgun.views.job_invocation import JobInvocationCreateView
 
 
@@ -764,6 +765,26 @@ class AllHostsEntity(BaseEntity):
                 view.close_btn.click()
             return alert_message_content
         return None
+
+    def create_host_collection_from_empty_state(self, host_names):
+        """Open the Host Collection creation page from the empty bulk-assignment modal.
+
+        :param host_names: Host name or list of host names to select on All Hosts.
+        :return: Whether the New Host Collection page is displayed after the redirect.
+        """
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names=host_names)
+        view.bulk_actions_kebab.click()
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Change associations'))
+        view.bulk_actions_change_associations_menu.item_select('Host collections')
+
+        modal = ChangeHostCollectionsModal(self.browser)
+        modal.wait_displayed()
+        modal.no_host_collections.wait_displayed()
+        modal.create_host_collection.click()
+
+        view = HostCollectionCreateView(self.browser)
+        view.wait_displayed(timeout=30)
+        return view.is_displayed
 
     def read_host_status_icon(self, host_name):
         """
