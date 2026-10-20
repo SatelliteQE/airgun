@@ -667,7 +667,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class parameters(PF5Tab):
-        ROOT = './/div'
+        ROOT = './/main[@id="foreman-main-container"]'
 
         add_parameter = Button(locator='.//button[text()="Add parameter"]')
         searchbar = SearchInput(
@@ -727,7 +727,7 @@ class NewHostDetailsView(BaseLoggedInView):
     class ansible(PF5Tab):
         """View comprising the subtabs under the Ansible Tab"""
 
-        ROOT = './/div'
+        ROOT = './/main[@id="foreman-main-container"]'
 
         @View.nested
         class roles(PF5Tab):
@@ -847,7 +847,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class puppet(PF5Tab):
-        ROOT = './/div'
+        ROOT = './/main[@id="foreman-main-container"]'
 
         search_bar = SearchInput(locator='.//input[contains(@class, "search-input")]')
         puppet_reports_table = PatternflyTable(
@@ -886,7 +886,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class reports(PF5Tab):
-        ROOT = './/div'
+        ROOT = './/main[@id="foreman-main-container"]'
 
         search_bar = SearchInput(locator='.//input[contains(@class, "search-input")]')
         reports_table = PatternflyTable(
@@ -908,7 +908,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class insights(PF5Tab):
-        ROOT = './/div'
+        ROOT = './/main[@id="foreman-main-container"]'
 
         TAB_NAME = 'Recommendations'
 
@@ -935,7 +935,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class iop_recommendations(PF5Tab):
-        ROOT = './/div'
+        ROOT = './/main[@id="foreman-main-container"]'
 
         TAB_NAME = 'Recommendations'
 
@@ -967,7 +967,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class vulnerabilities(PF5Tab):
-        ROOT = './/div'
+        ROOT = './/main[@id="foreman-main-container"]'
 
         search_bar = SearchInput(locator='.//input[contains(@aria-label, "search-field")]')
         cve_menu_toggle = PF5Button(".//button[contains(@class, 'pf-v5-c-menu-toggle')]")
