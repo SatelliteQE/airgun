@@ -702,7 +702,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class traces(PF5Tab):
-        ROOT = './/div'
+        ROOT = './/div[contains(@class, "pf-c-empty-state") or @id="traces-tab"]'
 
         title = Text('//h2')
         enable_traces = PF5OUIAButton('enable-traces-button')
