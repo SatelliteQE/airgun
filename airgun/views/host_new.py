@@ -973,6 +973,14 @@ class NewHostDetailsView(BaseLoggedInView):
         cve_menu_toggle = PF5Button(".//button[contains(@class, 'pf-v5-c-menu-toggle')]")
         no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
 
+        # Locator template for filter chip close button
+        # Used to close Advisory filter before searching (workaround for SAT-52048)
+        close_filter_locator = (
+            '//div[contains(@class, "pf-v5-c-chip-group") and '
+            './/span[contains(@class, "pf-v5-c-chip-group__label") and text()="{filter_name}"]]'
+            '//button[@aria-label="close"]'
+        )
+
         vulnerabilities_table = PF5OUIAExpandableTable(
             component_id='cves-table',
             column_widgets={

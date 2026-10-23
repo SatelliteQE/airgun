@@ -139,7 +139,6 @@ class CloudVulnerabilityView(BaseLoggedInView):
     close_filter_locator = (
         '//div[contains(@class, "pf-v5-c-chip-group") and '
         './/span[contains(@class, "pf-v5-c-chip-group__label") and text()="{filter_name}"]]'
-        '//div[contains(@class, "pf-v5-c-chip")]'
         '//button[@aria-label="close"]'
     )
 
