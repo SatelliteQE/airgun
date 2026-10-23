@@ -82,13 +82,13 @@ class CloudVulnerabilityEntity(BaseEntity):
         vulnerabilities = getattr(host_details_view.vulnerabilities, 'vulnerabilities_table', None)
         if vulnerabilities is not None:
             # Close Advisory filter if present (workaround for SAT-52048)
-            locator = host_details_view.vulnerabilities.close_filter_locator.format(filter_name='Advisory')
+            locator = host_details_view.vulnerabilities.close_filter_locator.format(
+                filter_name='Advisory'
+            )
             if host_details_view.browser.wait_for_element(locator, timeout=5, exception=False):
                 host_details_view.browser.element(locator).click()
 
-            wait_for(
-                lambda: host_details_view.vulnerabilities.search_bar.is_displayed, timeout=30
-            )
+            wait_for(lambda: host_details_view.vulnerabilities.search_bar.is_displayed, timeout=30)
             host_details_view.vulnerabilities.search_bar.fill(cve_id)
             return vulnerabilities.read()
         else:
