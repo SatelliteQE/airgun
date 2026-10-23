@@ -1036,6 +1036,11 @@ class NewHostEntity(HostEntity):
         wait_for(lambda: view.vulnerabilities.vulnerabilities_table.is_displayed, timeout=30)
         vulnerabilities = getattr(view.vulnerabilities, 'vulnerabilities_table', None)
         if vulnerabilities is not None:
+            # Close Advisory filter first if present (workaround for SAT-52048)
+            locator = view.vulnerabilities.close_filter_locator.format(filter_name='Advisory')
+            if view.browser.wait_for_element(locator, timeout=5, exception=False):
+                view.browser.element(locator).click()
+                wait_for(lambda: view.vulnerabilities.vulnerabilities_table.is_displayed, timeout=30)
             return vulnerabilities.read()
         else:
             return []
