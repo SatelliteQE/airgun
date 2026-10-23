@@ -1040,7 +1040,9 @@ class NewHostEntity(HostEntity):
             locator = view.vulnerabilities.close_filter_locator.format(filter_name='Advisory')
             if view.browser.wait_for_element(locator, timeout=5, exception=False):
                 view.browser.element(locator).click()
-                wait_for(lambda: view.vulnerabilities.vulnerabilities_table.is_displayed, timeout=30)
+                wait_for(
+                    lambda: view.vulnerabilities.vulnerabilities_table.is_displayed, timeout=30
+                )
             return vulnerabilities.read()
         else:
             return []
