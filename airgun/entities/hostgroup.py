@@ -1,4 +1,5 @@
 from navmazing import NavigateToSibling
+from wait_for import wait_for
 from widgetastic.exceptions import NoSuchElementException
 
 from airgun.entities.base import BaseEntity
@@ -106,6 +107,18 @@ class HostGroupEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.ansible_roles.click()
         return view.ansible_roles.resources.read_assigned_values(values)
+
+    def read_ansible_roles(self, page='New', entity_name=None):
+        """Read available Ansible roles from ``New`` or ``Edit`` (requires entity_name)."""
+        if page not in ('New', 'Edit'):
+            raise ValueError('page must be New or Edit')
+        if page == 'Edit' and entity_name is None:
+            raise ValueError('entity_name is required for Edit')
+        view = self.navigate_to(self, page, entity_name=entity_name)
+        view.ansible_roles.click()
+        roles_view = view.ansible_roles.resources
+        wait_for(lambda: roles_view.is_displayed, timeout=30, handle_exception=True)
+        return roles_view.addAnsibleRole.read()['Available Ansible roles']
 
 
 @navigator.register(HostGroupEntity, 'All')
