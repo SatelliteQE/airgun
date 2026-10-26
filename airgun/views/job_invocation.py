@@ -20,6 +20,7 @@ from widgetastic_patternfly5.ouia import (
     Select as PF5OUIASelect,
     Text as PF5OUIAText,
     TextInput as PF5OUIATextInput,
+    TypeaheadSelect as PF5OUIATypeaheadSelect,
 )
 
 from airgun.views.common import (
@@ -88,7 +89,7 @@ class JobInvocationCreateView(BaseLoggedInView):
     @View.nested
     class category_and_template(PF5WizardStepView):
         job_category = PF5OUIASelect('job_category')
-        job_template = PF5OUIASelect('job_template')
+        job_template = PF5OUIATypeaheadSelect('job_template')
         job_template_text_input = TextInput(
             locator='//div[contains(@class, "pf-v5-c-form__group") and .//label[.//span[text()="Job template"]]]//input[@type="text"]'
         )
