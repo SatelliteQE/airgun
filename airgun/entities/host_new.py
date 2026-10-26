@@ -722,12 +722,10 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         view.ansible.roles.edit.click()
-        wait_for(view.ansible.roles.edit.click, timeout=5)
         edit_view = EditAnsibleRolesView(self.browser)
         edit_view.wait_displayed()
-        actions = [edit_view.hostAssignedAnsibleRoles, edit_view.unselectRoles, edit_view.confirm]
-        for action in actions:
-            action.click()
+        edit_view.unassign(edit_view.read_assigned_values()[:1])
+        edit_view.confirm.click()
         wait_for(lambda: view.ansible.roles.noRoleAssign.is_displayed, timeout=5)
 
     def enable_tracer(self, entity_name):
