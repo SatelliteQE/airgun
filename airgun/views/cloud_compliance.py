@@ -69,13 +69,17 @@ class ComplianceReportsView(BaseLoggedInView):
         },
     )
 
-    # TODO: untested
-    empty_state = Text('.//h5[contains(@class, "empty-state")]')
+    empty_state = Text('.//h2[contains(normalize-space(.), "No policies are reporting")]')
 
     @property
     def is_displayed(self):
         """Check that the view is displayed correctly."""
         return self.title.is_displayed
+
+    @property
+    def is_empty_state(self):
+        """Check that no reports exist."""
+        return self.empty_state.is_displayed
 
 
 class ComplianceReportDetailsView(BaseLoggedInView):

@@ -13,7 +13,7 @@ from airgun.views.common import BaseLoggedInView
 
 
 class CloudComplianceReportsEntity(BaseEntity):
-    """Airgun entity for the Insights Compliance Reports page."""
+    """Airgun entity for the Lightspeed Compliance Reports page."""
 
     endpoint_path = '/foreman_rh_cloud/insights_compliance/reports'
 
@@ -40,14 +40,14 @@ class CloudComplianceReportsEntity(BaseEntity):
 
 @navigator.register(CloudComplianceReportsEntity, 'All')
 class ShowComplianceReportsView(NavigateStep):
-    """Navigate to the Insights Compliance Reports listing page."""
+    """Navigate to the Lightspeed Compliance Reports listing page."""
 
     VIEW = ComplianceReportsView
     WAIT_TIMEOUT = 40
 
     def step(self, *args, **kwargs):
         main_view = self.create_view(BaseLoggedInView)
-        main_view.menu.select('Insights', 'Compliance Reports')
+        main_view.menu.select('Red Hat Lightspeed', 'Compliance Reports')
 
 
 @navigator.register(CloudComplianceReportsEntity, 'Details')
@@ -66,7 +66,7 @@ class ShowComplianceReportDetailsView(NavigateStep):
 
 
 class CloudCompliancePoliciesEntity(BaseEntity):
-    """Airgun entity for the Insights Compliance SCAP Policies page."""
+    """Airgun entity for the Lightspeed Compliance SCAP Policies page."""
 
     endpoint_path = '/foreman_rh_cloud/insights_compliance/scappolicies'
 
@@ -113,7 +113,7 @@ class ShowScapPoliciesView(NavigateStep):
 
     def step(self, *args, **kwargs):
         main_view = self.create_view(BaseLoggedInView)
-        main_view.menu.select('Insights', 'SCAP Policies')
+        main_view.menu.select('Red Hat Lightspeed', 'SCAP Policies')
 
 
 @navigator.register(CloudCompliancePoliciesEntity, 'New')
