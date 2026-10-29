@@ -4,7 +4,6 @@ from widgetastic_patternfly5 import (
     Button as PF5Button,
     ExpandableTable as PF5ExpandableTable,
     Menu as PF5Menu,
-    Pagination as PF5Pagination,
     PatternflyTable as PF5Table,
     Select as PF5Select,
     Title as PF5Title,
@@ -12,6 +11,7 @@ from widgetastic_patternfly5 import (
 from widgetastic_patternfly5.ouia import (
     Dropdown as PF5OUIADropdown,
     Modal as PF5OUIAModal,
+    Pagination as PF5OUIAPagination,
     PatternflyTable as PF5OUIAPatternflyTable,
     Switch as PF5OUIASwitch,
     TextInput as PF5OUIATextInput,
@@ -55,11 +55,11 @@ class RemediationView(PF5OUIAModal):
 class InsightsActionDropdown(PF5Menu):
     """The three-dot actions menu on the Recommendations page.
 
-    Uses a CSS class selector scoped to the 'title-dropdown' class set by ToolbarDropdown.js,
-    avoiding reliance on OUIA component type attributes that change across PatternFly versions."""
+    Matches the toggle by OUIA component id only, avoiding reliance on OUIA component
+    type attributes that change across PatternFly versions."""
 
     IS_ALWAYS_OPEN = False
-    BUTTON_LOCATOR = './/button[@aria-label="Recommendations actions"]'
+    BUTTON_LOCATOR = './/button[@data-ouia-component-id="recommendations-dropdown-toggle"]'
     ROOT = f'{BUTTON_LOCATOR}/..'
 
 
@@ -83,7 +83,7 @@ class CloudInsightsView(BaseLoggedInView, SearchableViewMixinPF4):
     )
     select_all_hits = PF5Button('Select recommendations from all pages')
     clear_hits_selection = PF5Button('Clear Selection')
-    pagination = PF5Pagination()
+    pagination = PF5OUIAPagination('recommendations-pagination-bottom')
     remediation_window = View.nested(RemediationView)
 
     @property
@@ -238,3 +238,62 @@ class RecommendationsTabView(BaseLoggedInView):
         return (
             self.table.is_displayed and self.clear_button.is_displayed
         ) or self.no_authorized_header.is_displayed
+
+
+class PathwaysTabView(BaseLoggedInView):
+    """The Pathways tab on the Red Hat Lightspeed Recommendations page.
+
+    Recommendations are grouped into pathways that share a common resolution.
+    Selecting a pathway name opens its details page.
+    """
+
+    title = PF5Title('Recommendations')
+    recommendations_tab = Text(
+        './/button[@role="tab"][.//span[normalize-space()="Recommendations"]]'
+    )
+    pathways_tab = Text('.//button[@role="tab"][.//span[normalize-space()="Pathways"]]')
+    search_field = TextInput(locator='.//input[@aria-label="text input"]')
+    clear_button = PF5Button('Reset filters')
+    table = PF5Table(
+        locator='.//table[@aria-label="pathways-table"]',
+        column_widgets={
+            'Name': Text('.//a'),
+            'Category': Text('.//span'),
+            'Systems': Text('.//a'),
+            'Reboot': Text('.//span'),
+            'Recommendation level': Text('.//span'),
+        },
+    )
+
+    @property
+    def is_displayed(self):
+        return self.pathways_tab.is_displayed and self.table.is_displayed
+
+
+class PathwayDetailsView(BaseLoggedInView):
+    """The details page for a single pathway.
+
+    Contains a Recommendations tab (rules grouped under the pathway) and a
+    Systems tab (affected hosts with a Remediate action).
+    """
+
+    title = Text('.//h1[contains(@class, "pf-v5-c-title")]')
+    recommendations_tab = Text(
+        './/button[@role="tab"][.//span[normalize-space()="Recommendations"]]'
+    )
+    systems_tab = Text('.//button[@role="tab"][.//span[normalize-space()="Systems"]]')
+    search_field = TextInput(locator='.//input[@aria-label="text input"]')
+    remediate = PF5Button('Remediate')
+    table = PF5Table(
+        locator='.//table[contains(@aria-label, "Host inventory")]',
+        column_widgets={
+            0: Checkbox(locator='.//input[@type="checkbox"]'),
+            'Name': Text('.//a'),
+            'OS': Text('.//span'),
+            'Last seen': Text('.//span'),
+        },
+    )
+
+    @property
+    def is_displayed(self):
+        return self.systems_tab.is_displayed and self.recommendations_tab.is_displayed

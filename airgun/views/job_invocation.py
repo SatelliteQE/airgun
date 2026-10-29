@@ -6,10 +6,13 @@ from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb
 from widgetastic_patternfly5 import (
     ChipGroup as PF5ChipGroup,
-    DescriptionList,
+    DescriptionList as PF5DescriptionList,
     Radio as PF5Radio,
 )
-from widgetastic_patternfly5.charts.donut_chart import DonutCircle, DonutLegend
+from widgetastic_patternfly5.charts.donut_chart import (
+    DonutCircle as PF5DonutCircle,
+    DonutLegend as PF5DonutLegend,
+)
 from widgetastic_patternfly5.ouia import (
     Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
@@ -17,6 +20,7 @@ from widgetastic_patternfly5.ouia import (
     Select as PF5OUIASelect,
     Text as PF5OUIAText,
     TextInput as PF5OUIATextInput,
+    TypeaheadSelect as PF5OUIATypeaheadSelect,
 )
 
 from airgun.views.common import (
@@ -85,7 +89,7 @@ class JobInvocationCreateView(BaseLoggedInView):
     @View.nested
     class category_and_template(PF5WizardStepView):
         job_category = PF5OUIASelect('job_category')
-        job_template = PF5OUIASelect('job_template')
+        job_template = PF5OUIATypeaheadSelect('job_template')
         job_template_text_input = TextInput(
             locator='//div[contains(@class, "pf-v5-c-form__group") and .//label[.//span[text()="Job template"]]]//input[@type="text"]'
         )
@@ -324,8 +328,16 @@ class JobInvocationStatusView(BaseLoggedInView):
 
         return breadcrumb_loaded and title_loaded and data_loaded and breadcrumb_ok
 
-    def wait_for_result(self, timeout=600, delay=1):
-        """Wait for invocation job(s) to finish"""
+    def _all_hosts_finished(self):
+        """Return whether every target host has a terminal job status."""
+        statuses = self.status.read()
+        total_hosts = self.overall_status.read().get('total_hosts')
+        if not statuses or total_hosts is None:
+            return False
+        return statuses.get('In Progress', 0) == 0 and sum(statuses.values()) == total_hosts
+
+    def wait_for_completion(self, timeout=600, delay=1):
+        """Wait until all target hosts have a terminal job status."""
         wait_for(
             lambda: self.is_displayed,
             timeout=timeout,
@@ -333,15 +345,19 @@ class JobInvocationStatusView(BaseLoggedInView):
             logger=self.logger,
         )
         wait_for(
-            lambda: self.status.read()['In Progress'] == 0,
+            self._all_hosts_finished,
             timeout=timeout,
             delay=1,
             logger=self.logger,
         )
+
+    def wait_for_result(self, timeout=600, delay=1):
+        """Wait for invocation job(s) to finish and refresh the status view."""
+        self.wait_for_completion(timeout=timeout, delay=delay)
         self.browser.refresh()
 
     @View.nested
-    class overall_status(DonutCircle):
+    class overall_status(PF5DonutCircle):
         """The donut circle with the overall job status of '{succeeded hosts}/{total hosts}'"""
 
         def read(self):
@@ -364,7 +380,7 @@ class JobInvocationStatusView(BaseLoggedInView):
                 return {}
 
     @View.nested
-    class status(DonutLegend):
+    class status(PF5DonutLegend):
         """System status panel."""
 
         ROOT = ".//div[contains(@class, 'chart-legend')]"
@@ -391,7 +407,7 @@ class JobInvocationStatusView(BaseLoggedInView):
                 return {}
 
     @View.nested
-    class overview(DescriptionList):
+    class overview(PF5DescriptionList):
         ROOT = ".//dl[contains(@class, 'job-overview-description-list')]"
 
         def read(self):

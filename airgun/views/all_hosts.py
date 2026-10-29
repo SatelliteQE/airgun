@@ -119,11 +119,29 @@ class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
             'Name': Text(
                 './/a[contains(@href, "/new/hosts/") and not(contains(@href, "Red Hat Lightspeed"))]'
             ),
-            2: MenuToggleDropdownInTable(),
         },
     )
     autocomplete_menu = PF5NavSearchMenu(component_id='search-autocomplete-menu')
     alert_message = Text('.//div[contains(@class, "pf-v5-c-alert")]')
+
+    def get_row_kebab(self, row_index):
+        """Get kebab menu widget for a specific row.
+
+        The kebab menu is always in the last column, but its position
+        varies based on which columns are visible via 'Manage columns'.
+
+        Args:
+            row_index: Index of the row in the table
+
+        Returns:
+            MenuToggleDropdownInTable widget for the specified row
+        """
+        row = self.table[row_index]
+        # Create a widget that finds the kebab in the last td of the row
+        # Using a custom locator that always targets the last column
+        return MenuToggleDropdownInTable(
+            parent=row, locator='.//td[last()]//button[contains(@class, "pf-v5-c-menu-toggle")]/..'
+        )
 
     # Host status icon and popover widgets
     status_icon = Text('.//svg[contains(@style, "fill:")]')
@@ -750,6 +768,9 @@ class ChangeHostCollectionsModal(PF5Modal):
     """
 
     OUIA_ID = 'bulk-update-host-collections-modal'
+
+    no_host_collections = Text('.//*[normalize-space(.)="No host collections yet"]')
+    create_host_collection = PF5OUIAButton('create-host-collection-button')
 
     title = './/h1[@class="pf-v5-c-modal-box__title"]'
     close_btn = PF5OUIAButton('bulk-update-host-collections-modal-ModalBoxCloseButton')

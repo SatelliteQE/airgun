@@ -17,7 +17,6 @@ from widgetastic.xpath import quote
 from widgetastic_patternfly4 import (
     Button,
     Dropdown,
-    DualListSelector,
     Pagination as PF4Pagination,
     Select,
 )
@@ -30,14 +29,14 @@ from widgetastic_patternfly5 import (
     Button as PF5Button,
     CompactPagination as PF5Pagination,
     Dropdown as PF5Dropdown,
-    ExpandableTable as PF5ExpandableTable,
+    DualListSelector as PF5DualListSelector,
     Menu as PF5Menu,
     Modal as PF5Modal,
     Tab as PF5Tab,
 )
 from widgetastic_patternfly5.ouia import (
     Alert as PF5OUIAAlert,
-    BreadCrumb,
+    BreadCrumb as PF5OUIABreadCrumb,
     Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
     ExpandableTable as PF5OUIAExpandableTable,
@@ -316,7 +315,7 @@ class BreadcrumbSwitcher(Widget):
 
 
 class NewHostDetailsView(BaseLoggedInView):
-    breadcrumb = BreadCrumb('breadcrumbs-list')
+    breadcrumb = PF5OUIABreadCrumb('breadcrumbs-list')
     # Breadcrumb switcher for switching between hosts
     breadcrumb_switcher = BreadcrumbSwitcher()
 
@@ -542,9 +541,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class content(PF5Tab):
-        # TODO Setting ROOT is just a workaround because of BZ 2119076,
-        # once this gets fixed we should use the parametrized locator from Tab class
-        ROOT = './/div'
+        ROOT = './/section[contains(@class, "host-content-tabs-section")]'
         transient_install_alert = PF5OUIAAlert('image-mode-alert-info')
 
         @View.nested
@@ -974,9 +971,16 @@ class NewHostDetailsView(BaseLoggedInView):
         cve_menu_toggle = PF5Button(".//button[contains(@class, 'pf-v5-c-menu-toggle')]")
         no_cves_found_message = Text('.//h5[contains(@class, "pf-v5-c-empty-state__title-text")]')
 
-        vulnerabilities_table = PF5ExpandableTable(
-            # component_id='OUIA-Generated-Table-2',
-            locator='.//table[contains(@class, "pf-v5-c-table")]',
+        # Locator template for filter chip close button
+        # Used to close Advisory filter before searching (workaround for SAT-52048)
+        close_filter_locator = (
+            '//div[contains(@class, "pf-v5-c-chip-group") and '
+            './/span[contains(@class, "pf-v5-c-chip-group__label") and text()="{filter_name}"]]'
+            '//button[@aria-label="close"]'
+        )
+
+        vulnerabilities_table = PF5OUIAExpandableTable(
+            component_id='cves-table',
             column_widgets={
                 0: PF5Button(locator='.//button[@aria-label="Details"]'),
                 'CVE ID': Text('.//td[contains(@data-label, "CVE ID")]'),
@@ -1123,22 +1127,20 @@ class ManageHostStatusesView(View):
 class EditAnsibleRolesView(View):
     """Edit Ansible Roles Modal"""
 
-    addAnsibleRole = DualListSelector('//div[@class = "pf-v5-c-dual-list-selector"]')
+    addAnsibleRole = PF5DualListSelector('//div[@class = "pf-v5-c-dual-list-selector"]')
     confirm = PF5Button(locator='.//button[@aria-label="submit ansible roles"]')
-    hostAssignedAnsibleRoles = Text(
-        './/button[@class="pf-v5-c-dual-list-selector__item"]/span[1]//span[2]'
-    )
+    hostAssignedAnsibleRoles = Text('.//span[contains(@class, "dual-list-selector__item-text")]')
     selectRoles = PF5Button(locator='.//button[@aria-label="Add selected"]')
     unselectRoles = PF5Button(locator='.//button[@aria-label="Remove selected"]')
     CHOSEN_ITEMS = (
         ".//div[contains(@class, 'pf-m-chosen')]"
-        "//button[contains(@class, 'dual-list-selector__item')]"
+        "//div[contains(@class, 'dual-list-selector__list-item-row')]"
     )
     AVAILABLE_ITEMS = (
         ".//div[contains(@class, 'pf-m-available')]"
-        "//button[contains(@class, 'dual-list-selector__item')]"
+        "//div[contains(@class, 'dual-list-selector__list-item-row')]"
     )
-    ROLE_NAME = './/span[1]//span[2]'
+    ROLE_NAME = './/span[contains(@class, "dual-list-selector__item-text")]'
 
     @property
     def is_displayed(self):

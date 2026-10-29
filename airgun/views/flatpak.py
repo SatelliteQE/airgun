@@ -5,7 +5,7 @@ from widgetastic_patternfly5 import (
     Button as PF5Button,
     Menu as PF5Menu,
     Modal as PF5Modal,
-    Pagination,
+    Pagination as PF5Pagination,
 )
 from widgetastic_patternfly5.ouia import (
     PatternflyTable as PF5OUIATable,
@@ -36,7 +36,7 @@ class FlatpakRemotesView(BaseLoggedInView, SearchableViewMixinPF4):
             2: PF5Menu(locator='.//div[contains(@class, "pf-v5-c-menu")]'),
         },
     )
-    pagination = Pagination()
+    pagination = PF5Pagination()
 
     @property
     def is_displayed(self):
@@ -66,7 +66,7 @@ class FlatpakRemoteDetailsView(BaseLoggedInView, SearchableViewMixinPF4):
             'Mirror': PF5Button('Mirror'),
         },
     )
-    pagination = Pagination("//div[@class = 'pf-v5-c-pagination pf-m-bottom tfm-pagination']")
+    pagination = PF5Pagination("//div[@class = 'pf-v5-c-pagination pf-m-bottom tfm-pagination']")
 
     @property
     def is_displayed(self):

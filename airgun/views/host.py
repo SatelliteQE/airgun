@@ -21,7 +21,7 @@ from widgetastic_patternfly4.ouia import (
     BreadCrumb as PF4BreadCrumb,
     Button as PF4Button,
 )
-from widgetastic_patternfly5.components.tabs import Tab
+from widgetastic_patternfly5.components.tabs import Tab as PF5Tab
 from widgetastic_patternfly5.ouia import (
     Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
@@ -243,10 +243,28 @@ class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
                 ".//a[contains(@href, '/new/hosts/') and not(contains(@href, 'Red Hat Lightspeed'))]"
             ),
             'Recommendations': Text('./a'),
-            6: MenuToggleButtonMenu(),
         },
     )
     displayed_table_headers = './/table/thead/tr/th[not(@hidden)]'
+
+    def get_row_kebab(self, row_index):
+        """Get kebab menu widget for a specific row.
+
+        The kebab menu is always in the last column, but its position
+        varies based on which columns are visible via 'Manage columns'.
+
+        Args:
+            row_index: Index of the row in the table
+
+        Returns:
+            MenuToggleButtonMenu widget for the specified row
+        """
+        row = self.table[row_index]
+        return MenuToggleButtonMenu(
+            parent=row,
+            locator='.//td[last()]//button[contains(@class, "pf-v5-c-menu-toggle")]/..',
+        )
+
     host_status = "//span[contains(@class, 'host-status')]"
     actions = PF5OUIADropdown(component_id='legacy-ui-kebab')
     dialog = Pf4ConfirmationDialog()
@@ -295,6 +313,7 @@ class HostCreateView(BaseLoggedInView):
         )
         compute_profile = FilteredDropdown(id='host_compute_profile_id')
         content_view_environment = FilteredDropdown(id='host_content_view_environment_id')
+        read_content_view_environment = TextInput(id='host_content_view_environment_id')
         content_source = FilteredDropdown(id='content_source_id')
         reset_puppet_environment = Link(".//a[@id='reset_puppet_environment']")
         inherit_puppet_environment = ToggleButton(
@@ -572,7 +591,7 @@ class HostRegisterView(BaseLoggedInView):
     registration_command = TextInput(locator="//input[@aria-label='Copyable input']")
 
     @View.nested
-    class general(Tab):
+    class general(PF5Tab):
         TAB_NAME = 'General'
         TAB_LOCATOR = ParametrizedLocator(
             './/div[contains(@class, "pf-v5-c-tabs")]//ul'
@@ -594,7 +613,7 @@ class HostRegisterView(BaseLoggedInView):
         new_activation_key_link = Link('//a[normalize-space(.)="Create new activation key"]')
 
     @View.nested
-    class advanced(Tab):
+    class advanced(PF5Tab):
         TAB_NAME = 'Advanced'
         TAB_LOCATOR = ParametrizedLocator(
             './/div[contains(@class, "pf-v5-c-tabs")]//ul'

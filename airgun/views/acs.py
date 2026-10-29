@@ -1,20 +1,20 @@
 from widgetastic.widget import Checkbox, Text, TextInput, View
 from widgetastic_patternfly5 import (
-    Button,
-    Drawer,
-    Dropdown,
-    FormSelect,
+    Button as PF5Button,
+    Drawer as PF5Drawer,
+    Dropdown as PF5Dropdown,
+    FormSelect as PF5FormSelect,
     Pagination as PF5Pagination,
-    Radio,
-    Switch,
+    Radio as PF5Radio,
+    Switch as PF5Switch,
 )
 from widgetastic_patternfly5.ouia import (
-    Button as OUIAButton,
-    FormSelect as OUIAFormSelect,
-    PatternflyTable,
-    Switch as OUIASwitch,
-    Text as OUIAText,
-    TextInput as OUIATextInput,
+    Button as PF5OUIAButton,
+    FormSelect as PF5OUIAFormSelect,
+    PatternflyTable as PF5OUIAPatternflyTable,
+    Switch as PF5OUIASwitch,
+    Text as PF5OUIAText,
+    TextInput as PF5OUIATextInput,
 )
 
 from airgun.views.common import BaseLoggedInView, WizardStepView
@@ -26,11 +26,11 @@ class EditDetailsModal(EditModal):
 
     ROOT = '//div[@data-ouia-component-id="acs-edit-details-modal"]'
 
-    name = OUIATextInput('acs-edit-name-field')
+    name = PF5OUIATextInput('acs-edit-name-field')
     description = TextInput(locator='.//textarea[@id="acs_description_field"]')
 
-    edit_button = OUIAButton('edit-acs-details-submit')
-    cancel_button = OUIAButton('edit-acs-details-cancel')
+    edit_button = PF5OUIAButton('edit-acs-details-submit')
+    cancel_button = PF5OUIAButton('edit-acs-details-cancel')
 
 
 class EditCapsulesModal(DualListSelector):
@@ -38,10 +38,10 @@ class EditCapsulesModal(DualListSelector):
 
     ROOT = '//div[@data-ouia-component-id="acs-edit-smart-proxies-modal"]'
 
-    use_http_proxies = Switch(locator='.//label[@for="use-http-proxies-switch"]')
+    use_http_proxies = PF5Switch(locator='.//label[@for="use-http-proxies-switch"]')
 
-    edit_button = OUIAButton('edit-acs-smart-proxies-submit')
-    cancel_button = OUIAButton('edit-acs-smart-proxies-cancel')
+    edit_button = PF5OUIAButton('edit-acs-smart-proxies-submit')
+    cancel_button = PF5OUIAButton('edit-acs-smart-proxies-cancel')
 
 
 class EditUrlAndSubpathsModal(EditModal):
@@ -49,13 +49,13 @@ class EditUrlAndSubpathsModal(EditModal):
 
     ROOT = '//div[@data-ouia-component-id="acs-edit-url-paths-modal"]'
 
-    base_url = OUIATextInput('acs-base-url-field')
+    base_url = PF5OUIATextInput('acs-base-url-field')
     url_err = Text('.//div[contains(@id, "acs_base_url-helper")]')
     subpaths = TextInput(locator='.//textarea[@id="acs_subpath_field"]')
     paths_err = Text('.//div[contains(@id, "acs_subpaths-helper")]')
 
-    edit_button = OUIAButton('edit-acs-url-submit')
-    cancel_button = OUIAButton('edit-acs-url-cancel')
+    edit_button = PF5OUIAButton('edit-acs-url-submit')
+    cancel_button = PF5OUIAButton('edit-acs-url-cancel')
 
 
 class EditCredentialsModal(EditModal):
@@ -63,21 +63,21 @@ class EditCredentialsModal(EditModal):
 
     ROOT = '//div[@data-ouia-component-id="acs-edit-credentials-modal"]'
 
-    verify_ssl_toggle = Switch(locator='.//label[@for="verify-ssl-switch"]')
-    select_ca_cert = OUIAFormSelect('sslCAcert-select')
+    verify_ssl_toggle = PF5Switch(locator='.//label[@for="verify-ssl-switch"]')
+    select_ca_cert = PF5OUIAFormSelect('sslCAcert-select')
 
-    manual_auth_radio_btn = Radio(id='manual_auth')
-    username = OUIATextInput('acs-username-field')
-    password = OUIATextInput('acs-password-field')
+    manual_auth_radio_btn = PF5Radio(id='manual_auth')
+    username = PF5OUIATextInput('acs-username-field')
+    password = PF5OUIATextInput('acs-password-field')
 
-    content_credentials_radio_btn = Radio(id='content_credentials')
-    ssl_client_cert = OUIAFormSelect('ssl-client-cert-select')
-    ssl_client_key = OUIAFormSelect('ssl_client_key_select')
+    content_credentials_radio_btn = PF5Radio(id='content_credentials')
+    ssl_client_cert = PF5OUIAFormSelect('ssl-client-cert-select')
+    ssl_client_key = PF5OUIAFormSelect('ssl_client_key_select')
 
-    none_auth_radio_btn = Radio(id='none')
+    none_auth_radio_btn = PF5Radio(id='none')
 
-    edit_button = OUIAButton('edit-acs-credentials-submit')
-    cancel_button = OUIAButton('edit-acs-credentials-cancel')
+    edit_button = PF5OUIAButton('edit-acs-credentials-submit')
+    cancel_button = PF5OUIAButton('edit-acs-credentials-cancel')
 
 
 class EditProductsModal(DualListSelector):
@@ -85,8 +85,8 @@ class EditProductsModal(DualListSelector):
 
     ROOT = '//div[@data-ouia-component-id="acs-edit-products-modal"]'
 
-    edit_button = OUIAButton('edit-acs-products-submit')
-    cancel_button = OUIAButton('edit-acs-products-cancel')
+    edit_button = PF5OUIAButton('edit-acs-products-submit')
+    cancel_button = PF5OUIAButton('edit-acs-products-cancel')
 
 
 class AddAlternateContentSourceModal(View):
@@ -112,8 +112,8 @@ class AddAlternateContentSourceModal(View):
 
     ROOT = '//div[contains(@data-ouia-component-id, "OUIA-Generated-Modal-large-")]'
 
-    title = OUIAText('wizard-header-text')
-    close_modal = Button(locator='.//button[@aria-label="Close"]')
+    title = PF5OUIAText('wizard-header-text')
+    close_modal = PF5Button(locator='.//button[@aria-label="Close"]')
 
     @View.nested
     class select_source_type(WizardStepView):
@@ -121,12 +121,12 @@ class AddAlternateContentSourceModal(View):
         custom_option = Text('//*[@id="custom"]')
         simplified_option = Text('//*[@id="simplified"]')
         rhui_option = Text('//*[@id="rhui"]')
-        content_type_select = OUIAFormSelect('content-type-select')
+        content_type_select = PF5OUIAFormSelect('content-type-select')
 
     @View.nested
     class name_source(WizardStepView):
         expander = Text('.//button[contains(.,"Name source")]')
-        name = OUIATextInput('acs_name_field')
+        name = PF5OUIATextInput('acs_name_field')
         description = TextInput(locator='.//textarea[@id="acs_description_field"]')
 
     @View.nested
@@ -134,12 +134,12 @@ class AddAlternateContentSourceModal(View):
         expander = Text(
             './/button[contains(.,"Select Smart proxy") or contains(.,"Select Capsule")]'
         )
-        use_http_proxies = OUIASwitch('use-http-proxies-switch')
+        use_http_proxies = PF5OUIASwitch('use-http-proxies-switch')
 
     @View.nested
     class url_and_paths(WizardStepView):
         expander = Text('.//button[contains(.,"URL and paths")]')
-        base_url = OUIATextInput('acs_base_url_field')
+        base_url = PF5OUIATextInput('acs_base_url_field')
         url_err = Text('.//div[contains(@id, "acs_base_url-helper")]')
         subpaths = TextInput(locator='.//textarea[@id="acs_subpath_field"]')
         paths_err = Text('.//div[contains(@id, "acs_subpaths-helper")]')
@@ -147,18 +147,20 @@ class AddAlternateContentSourceModal(View):
     @View.nested
     class credentials(WizardStepView):
         expander = Text('.//button[contains(.,"Credentials")]')
-        verify_ssl_toggle = OUIASwitch('verify-ssl-switch')
-        select_ca_cert = FormSelect(locator='.//select[option[text()="Select a CA certificate"]]')
+        verify_ssl_toggle = PF5OUIASwitch('verify-ssl-switch')
+        select_ca_cert = PF5FormSelect(
+            locator='.//select[option[text()="Select a CA certificate"]]'
+        )
 
-        manual_auth_radio_btn = Radio(id='manual_auth')
-        username = OUIATextInput('acs_username_field')
-        password = OUIATextInput('acs_password_field')
+        manual_auth_radio_btn = PF5Radio(id='manual_auth')
+        username = PF5OUIATextInput('acs_username_field')
+        password = PF5OUIATextInput('acs_password_field')
 
-        content_credentials_radio_btn = Radio(id='content_credentials')
-        ssl_client_cert = OUIAFormSelect('sslCert-select')
-        ssl_client_key = OUIAFormSelect('sslKey-select')
+        content_credentials_radio_btn = PF5Radio(id='content_credentials')
+        ssl_client_cert = PF5OUIAFormSelect('sslCert-select')
+        ssl_client_key = PF5OUIAFormSelect('sslKey-select')
 
-        none_auth_radio_btn = Radio(id='none')
+        none_auth_radio_btn = PF5Radio(id='none')
 
     @View.nested
     class select_products(WizardStepView, DualListSelector):
@@ -167,8 +169,8 @@ class AddAlternateContentSourceModal(View):
     @View.nested
     class review_details(WizardStepView):
         expander = Text('.//button[contains(.,"Review details")]')
-        add_button = Button(locator='.//button[normalize-space(.)="Add"]')
-        cancel_button = Button(locator='.//button[normalize-space(.)="Cancel"]')
+        add_button = PF5Button(locator='.//button[normalize-space(.)="Add"]')
+        cancel_button = PF5Button(locator='.//button[normalize-space(.)="Cancel"]')
 
 
 class AcsStackItem:
@@ -206,9 +208,9 @@ class RowDrawer(View):
 
     """
 
-    title = OUIAText('acs-name-text')
-    refresh_resource = OUIAButton('refresh-acs')
-    kebab_menu = Dropdown(locator='//button[contains(@aria-label, "details_actions")]')
+    title = PF5OUIAText('acs-name-text')
+    refresh_resource = PF5OUIAButton('refresh-acs')
+    kebab_menu = PF5Dropdown(locator='//button[contains(@aria-label, "details_actions")]')
     last_refresh = Text('//dd[contains(@aria-label, "last_refresh_text_value")]')
 
     @View.nested
@@ -219,8 +221,10 @@ class RowDrawer(View):
             '//div[normalize-space(.)="Details" and contains(@class, "pf-v5-c-expandable-section")]'
         )
 
-        title = OUIAText('expandable-details-text')
-        edit_details = Button(locator='//button[contains(@aria-label, "edit-details-pencil-edit")]')
+        title = PF5OUIAText('expandable-details-text')
+        edit_details = PF5Button(
+            locator='//button[contains(@aria-label, "edit-details-pencil-edit")]'
+        )
 
         @View.nested
         class details_stack_content(View):
@@ -241,8 +245,8 @@ class RowDrawer(View):
             '//div[(normalize-space(.)="Capsules")'
             ' and contains(@class, "pf-v5-c-expandable-section")]'
         )
-        title = OUIAText('expandable-smart-proxies-text')
-        edit_capsules = Button(
+        title = PF5OUIAText('expandable-smart-proxies-text')
+        edit_capsules = PF5Button(
             locator='//button[contains(@aria-label, "edit-smart-proxies-pencil-edit")]'
         )
 
@@ -267,8 +271,8 @@ class RowDrawer(View):
             'and contains(@class, "pf-v5-c-expandable-section")]'
         )
 
-        title = OUIAText('expandable-url-paths-text')
-        edit_url_and_subpaths = Button(
+        title = PF5OUIAText('expandable-url-paths-text')
+        edit_url_and_subpaths = PF5Button(
             locator='//button[contains(@aria-label, "edit-urls-pencil-edit")]'
         )
 
@@ -293,8 +297,8 @@ class RowDrawer(View):
             'and contains(@class, "pf-v5-c-expandable-section")]'
         )
 
-        title = OUIAText('expandable-credentials-text')
-        edit_credentials = Button(
+        title = PF5OUIAText('expandable-credentials-text')
+        edit_credentials = PF5Button(
             locator='//button[contains(@aria-label, "edit-credentials-pencil-edit")]'
         )
 
@@ -320,8 +324,8 @@ class RowDrawer(View):
 
         ROOT = '//div[normalize-space(.)="Products" and contains(@class, "pf-v5-c-expandable-section")]'
 
-        title = OUIAText('expandable-products-text')
-        edit_products = Button(
+        title = PF5OUIAText('expandable-products-text')
+        edit_products = PF5Button(
             locator='//button[contains(@aria-label, "edit-products-pencil-edit")]'
         )
 
@@ -342,29 +346,29 @@ class AlternateContentSourcesView(BaseLoggedInView):
     blank_page = Text("//div[contains(@class, 'pf-v5-c-empty-state')]")
 
     @View.nested
-    class acs_drawer(Drawer):
+    class acs_drawer(PF5Drawer):
         """Class that describes drawer of the Alternate Content Sources page"""
 
         select_all = Checkbox(locator='//input[contains(@aria-label, "Select all")]')
         search_bar = SearchInput(locator='.//div[contains(@class, "pf-v5-c-input-group")]//input')
-        clear_search_btn = Button(locator='//button[@aria-label="Reset search"]')
-        add_source = OUIAButton('create-acs')
-        kebab_menu = Dropdown(
+        clear_search_btn = PF5Button(locator='//button[@aria-label="Reset search"]')
+        add_source = PF5OUIAButton('create-acs')
+        kebab_menu = PF5Dropdown(
             locator='.//div[contains(@data-ouia-component-id, "acs-bulk-actions")]'
         )
 
-        content_table = PatternflyTable(
+        content_table = PF5OUIAPatternflyTable(
             component_id='alternate-content-sources-table',
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
                 'Name': Text('.//a[contains(@data-ouia-component-id, "acs-link-text-")]'),
                 'Type': Text('.//td[3]'),
                 'LastRefresh': Text('.//td[4]'),
-                4: Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]'),
+                4: PF5Dropdown(locator='.//div[contains(@class, "pf-v5-c-dropdown")]'),
             },
         )
 
-        clear_search = OUIAButton('empty-state-secondary-action-router-link')
+        clear_search = PF5OUIAButton('empty-state-secondary-action-router-link')
         pagination = PF5Pagination()
 
     @property

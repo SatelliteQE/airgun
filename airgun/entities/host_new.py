@@ -92,7 +92,7 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         view.search(entity_name)
-        view.table.row(name=entity_name)[6].widget.item_select('Delete')
+        view.get_row_kebab(0).item_select('Delete')
         self.browser.handle_alert()
         self.browser.refresh()
 
@@ -722,12 +722,10 @@ class NewHostEntity(HostEntity):
         view.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         view.ansible.roles.edit.click()
-        wait_for(view.ansible.roles.edit.click, timeout=5)
         edit_view = EditAnsibleRolesView(self.browser)
         edit_view.wait_displayed()
-        actions = [edit_view.hostAssignedAnsibleRoles, edit_view.unselectRoles, edit_view.confirm]
-        for action in actions:
-            action.click()
+        edit_view.unassign(edit_view.read_assigned_values()[:1])
+        edit_view.confirm.click()
         wait_for(lambda: view.ansible.roles.noRoleAssign.is_displayed, timeout=5)
 
     def enable_tracer(self, entity_name):
@@ -1036,6 +1034,32 @@ class NewHostEntity(HostEntity):
         wait_for(lambda: view.vulnerabilities.vulnerabilities_table.is_displayed, timeout=30)
         vulnerabilities = getattr(view.vulnerabilities, 'vulnerabilities_table', None)
         if vulnerabilities is not None:
+            # Close Advisory filter first if present (workaround for SAT-52048)
+            locator = view.vulnerabilities.close_filter_locator.format(filter_name='Advisory')
+            if view.browser.wait_for_element(locator, timeout=5, exception=False):
+                view.browser.element(locator).click()
+                wait_for(
+                    lambda: view.vulnerabilities.vulnerabilities_table.is_displayed, timeout=30
+                )
+            return vulnerabilities.read()
+        else:
+            return []
+
+    def get_cve(self, entity_name, cve_id):
+        view = self.navigate_to(self, 'NewDetails', entity_name=entity_name)
+        view.wait_displayed()
+
+        wait_for(lambda: view.vulnerabilities.vulnerabilities_table.is_displayed, timeout=30)
+        vulnerabilities = getattr(view.vulnerabilities, 'vulnerabilities_table', None)
+        if vulnerabilities is not None:
+            # Search for the specific CVE
+            # Close Advisory filter first if present (workaround for SAT-52048)
+            locator = view.vulnerabilities.close_filter_locator.format(filter_name='Advisory')
+            if view.browser.wait_for_element(locator, timeout=5, exception=False):
+                view.browser.element(locator).click()
+
+            wait_for(lambda: view.vulnerabilities.search_bar.is_displayed, timeout=30)
+            view.vulnerabilities.search_bar.fill(cve_id)
             return vulnerabilities.read()
         else:
             return []
@@ -1323,7 +1347,8 @@ class ShowNewHostDetails(NavigateStep):
         entity_name = kwargs.get('entity_name')
 
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+        # PF5OUIATable uses data-label attribute which is "Name" (capital N) in the HTML
+        self.parent.table.row(Name=entity_name)['Name'].widget.click()
 
 
 @navigator.register(NewHostEntity, 'AnsibleTab')

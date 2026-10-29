@@ -55,6 +55,18 @@ class OrganizationEntity(BaseEntity):
         """Select necessary organization from context menu on the top of the page"""
         self.navigate_to(self, 'Context', org_name=org_name)
 
+    def generate_debug_cert(self, org_name, algorithm_name):
+        """Select a debug algorithm and then download the debug certificate
+
+        :param org_name: Name of the organization
+        :param algorithm_name: Algorithm name to select (e.g., 'rsaEncryption')
+        :return: Path to the downloaded certificate file
+        """
+        view = self.navigate_to(self, 'Edit', entity_name=org_name)
+        view.primary.debug_cert_algorithm.fill(algorithm_name)
+        view.primary.generate.click()
+        return self.browser.save_downloaded_file()
+
 
 @navigator.register(OrganizationEntity, 'All')
 class ShowAllOrganizations(NavigateStep):

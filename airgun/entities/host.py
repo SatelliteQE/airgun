@@ -153,7 +153,7 @@ class HostEntity(BaseEntity):
         """Delete host from the system"""
         view = self.navigate_to(self, 'All')
         view.search(entity_name)
-        view.table.row(name=entity_name)[6].widget.item_select('Delete')
+        view.get_row_kebab(0).item_select('Delete')
         self.browser.handle_alert()
         self.browser.refresh()
         # Workaround for SAT-38950: Flash message may not appear properly
@@ -547,7 +547,7 @@ class EditHost(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)[6].widget.item_select('Edit')
+        self.parent.get_row_kebab(0).item_select('Edit')
         self.view.wait_displayed()
 
 

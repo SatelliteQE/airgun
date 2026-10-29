@@ -29,7 +29,11 @@ class CloudVulnerabilityEntity(BaseEntity):
     def _navigate_to_cve_details(self, cve_id):
         """Helper method to navigate to CVE details page"""
         view = self.navigate_to(self, 'All')
-        view.wait_displayed(timeout='30s')
+        view.wait_displayed(timeout=30)
+        # Close Advisory filter if present (workaround for SAT-52048)
+        locator = view.close_filter_locator.format(filter_name='Advisory')
+        if view.browser.wait_for_element(locator, timeout=5, exception=False):
+            view.browser.element(locator).click()
         wait_for(lambda: view.vulnerabilities_table.is_displayed, timeout=30)
         view.search_bar.fill(cve_id)
         view.browser.element(f'.//a[contains(@href, "{cve_id}")]').click()
@@ -77,6 +81,15 @@ class CloudVulnerabilityEntity(BaseEntity):
         )
         vulnerabilities = getattr(host_details_view.vulnerabilities, 'vulnerabilities_table', None)
         if vulnerabilities is not None:
+            # Close Advisory filter if present (workaround for SAT-52048)
+            locator = host_details_view.vulnerabilities.close_filter_locator.format(
+                filter_name='Advisory'
+            )
+            if host_details_view.browser.wait_for_element(locator, timeout=5, exception=False):
+                host_details_view.browser.element(locator).click()
+
+            wait_for(lambda: host_details_view.vulnerabilities.search_bar.is_displayed, timeout=30)
+            host_details_view.vulnerabilities.search_bar.fill(cve_id)
             return vulnerabilities.read()
         else:
             return []

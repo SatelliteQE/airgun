@@ -2,6 +2,7 @@ import json
 import time
 
 from cached_property import cached_property
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.keys import Keys
 from wait_for import wait_for
 from widgetastic.exceptions import NoSuchElementException, WidgetOperationFailed
@@ -36,19 +37,19 @@ from widgetastic_patternfly5 import (
     Button as PF5Button,
     Dropdown as PF5Dropdown,
     ExpandableSection as PF5ExpandableSection,
-    FormSelect,
+    FormSelect as PF5FormSelect,
     Progress as PF5Progress,
-    RowNotExpandable,
+    RowNotExpandable as PF5RowNotExpandable,
 )
 from widgetastic_patternfly5.components.table import (
-    PatternflyTable,
-    PatternflyTableRow,
+    PatternflyTable as PF5PatternflyTable,
+    PatternflyTableRow as PF5PatternflyTableRow,
 )
 from widgetastic_patternfly5.ouia import (
-    BaseSelect as PF5BaseSelect,
+    BaseSelect as PF5OUIABaseSelect,
     Button as PF5OUIAButton,
     Dropdown as PF5OUIADropdown,
-    Menu as PF5Menu,
+    Menu as PF5OUIAMenu,
     OUIAGenericWidget,
 )
 
@@ -997,7 +998,7 @@ class PF4Search(Search):
             self.search_button.click()
 
 
-class PF5NavSearchMenu(PF5Menu, OUIAGenericWidget):
+class PF5NavSearchMenu(PF5OUIAMenu, OUIAGenericWidget):
     """PF5 vertical navigation dropdown menu with search results."""
 
     @property
@@ -1177,7 +1178,7 @@ class ValidationErrors(Widget):
         not.
         """
         time.sleep(
-            1
+            0.5
         )  # ensure_page_safe doesn't help here and there's nothing to wait_for because the error won't always be there
         return self.browser.elements(self.ERROR_ELEMENTS) != []
 
@@ -2842,7 +2843,7 @@ class FieldWithEditButton(Widget):
     ROOT = '//td[2]'
     text_input = TextInput(locator=".//input[@data-ouia-component-type='PF5/TextInput']")
     text_area = TextInput(locator='.//textarea')
-    drop_down = FormSelect(locator=".//select[@data-ouia-component-type='PF5/FormSelect']")
+    drop_down = PF5FormSelect(locator=".//select[@data-ouia-component-type='PF5/FormSelect']")
     edit_button = PF5Button(locator=".//button[contains(@data-ouia-component-id, 'edit-row')]")
     confirm_button = PF5OUIAButton('submit-edit-btn')
     cancel_button = PF5OUIAButton('cancel-edit-btn')
@@ -2856,6 +2857,37 @@ class FieldWithEditButton(Widget):
                 widget.fill(item)
                 break
         self.confirm_button.click()
+        self._wait_for_validation()
+
+    def _wait_for_validation(self):
+        """Wait until the value submitted with the confirm button is validated.
+
+        While validating, the confirm button stays disabled. It is removed from
+        the DOM on success (the edit button reappears) or re-enabled together
+        with an error message on failure. Waiting for that state to settle
+        ensures a following validation check sees the final state.
+        """
+
+        def _validation_finished():
+            elements = self.browser.elements(self.confirm_button.__locator__())
+            if not elements:
+                # Button removed from the DOM -> value accepted.
+                return True
+            # Button still present -> validation finished only once it is
+            # re-enabled (which happens together with the error message).
+            try:
+                classes = self.browser.classes(elements[0])
+                disabled = (
+                    'pf-m-disabled' in classes
+                    or 'pf-m-aria-disabled' in classes
+                    or self.browser.get_attribute('disabled', elements[0]) is not None
+                )
+            except (NoSuchElementException, StaleElementReferenceException):
+                # Button removed while being inspected -> value accepted.
+                return True
+            return not disabled
+
+        wait_for(_validation_finished, timeout=5, delay=0.5)
 
     def read(self):
         return self.text.read()
@@ -2918,7 +2950,7 @@ class Accordion(View, ClickableMixin):
         self.browser.click(self.ITEM.format(value))
 
 
-class BaseMultiSelect(PF5BaseSelect, PF5OUIADropdown):
+class BaseMultiSelect(PF5OUIABaseSelect, PF5OUIADropdown):
     """Represents the Patternfly Multi Select.
 
     https://www.patternfly.org/v4/documentation/react/components/select#multiple
@@ -3130,7 +3162,7 @@ class PF5DataList(Widget):
         return dict(zip(items, values))
 
 
-class CompoundExpandableTableRow(PatternflyTableRow):
+class CompoundExpandableTableRow(PF5PatternflyTableRow):
     """Extends PatternflyTableRow with some functionality from ExpandableTableRow"""
 
     EXPANDABLE_CONTENT = './tr[contains(@class, "child-manifest-row")'
@@ -3142,7 +3174,7 @@ class CompoundExpandableTableRow(PatternflyTableRow):
 
     def _check_expandable(self):
         if not self.is_expandable:
-            raise RowNotExpandable(self)
+            raise PF5RowNotExpandable(self)
 
     @property
     def is_expanded(self):
@@ -3172,7 +3204,7 @@ class CompoundExpandableTableRow(PatternflyTableRow):
         return result
 
 
-class CompoundExpandableTable(PatternflyTable):
+class CompoundExpandableTable(PF5PatternflyTable):
     """PatternFly table with inline expandable child rows.
 
     This handles tables where each row group is in its own <tbody>,

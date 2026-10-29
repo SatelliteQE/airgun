@@ -1,9 +1,11 @@
+import os
+from time import sleep
+
 from navmazing import NavigateToSibling
 from wait_for import TimedOutError, wait_for
 
 from airgun.entities.base import BaseEntity
-from airgun.navigation import NavigateStep, navigator
-from airgun.utils import retry_navigation
+from airgun.navigation import NavigateStepWithWait as NavigateStep, navigator
 from airgun.views.subscription import (
     AddSubscriptionView,
     DeleteManifestConfirmationView,
@@ -68,6 +70,7 @@ class SubscriptionEntity(BaseEntity):
         :param manifest_file: Path to manifest file
         :param ignore_error_messages: List of error messages to ignore
         """
+        manifest_file = os.path.abspath(manifest_file)
         view = self.navigate_to(self, 'Manage Manifest')
         view.wait_animation_end()
         view.manifest.manifest_file.fill(manifest_file)
@@ -167,30 +170,31 @@ class SubscriptionEntity(BaseEntity):
         return view.search(value)
 
     def filter_columns(self, columns=None):
-        """Filters column headers
+        """Filters column headers using the Foreman ColumnSelector.
         :param columns: dict mapping column name to boolean value
-        :return: tuple of the name of the headers
+        :return: list of the name of the visible headers
         """
         view = self.navigate_to(self, 'All')
         if columns is not None:
             view.manage_columns_button.click()
             manage_columns_view = SubscriptionManageColumnsView(self.browser)
+            wait_for(
+                lambda: manage_columns_view.is_displayed,
+                timeout=10,
+                handle_exception=True,
+            )
             manage_columns_view.fill(columns)
             manage_columns_view.submit()
-            wait_for(
-                lambda: (
-                    view.browser.wait_for_element(
-                        '//div[@id="subscriptions-table"]//th[@aria-label="Select all rows"]',
-                        exception=False,
-                    )
-                    is not None
-                ),
-                timeout=30,
-                delay=3,
-                handle_exception=True,
-                logger=view.logger,
-            )
-        return view.table.headers
+            self.browser.selenium.refresh()
+            self.browser.plugin.ensure_page_safe()
+        sleep(5)
+        view = SubscriptionListView(self.browser, logger=self.browser.logger)
+        wait_for(
+            lambda: view.is_displayed,
+            timeout=30,
+            handle_exception=True,
+        )
+        return view.displayed_table_header_names
 
     def provided_products(self, entity_name, virt_who=False):
         """Read list of all products provided by subscription.
@@ -242,26 +246,12 @@ class SubscriptionEntity(BaseEntity):
         return view.table.read()
 
 
-class SubscriptionNavigationStep(NavigateStep):
-    """To ensure that we reached the destination, some targets need extra post navigation tasks"""
-
-    def post_navigate(self, _tries, *args, **kwargs):
-        wait_for(
-            lambda: self.am_i_here(*args, **kwargs),
-            timeout=30,
-            delay=1,
-            handle_exception=True,
-            logger=self.view.logger,
-        )
-
-
 @navigator.register(SubscriptionEntity, 'All')
-class SubscriptionList(SubscriptionNavigationStep):
+class SubscriptionList(NavigateStep):
     """Navigate to Subscriptions main page"""
 
     VIEW = SubscriptionListView
 
-    @retry_navigation
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Subscriptions')
 
@@ -323,7 +313,7 @@ class AddSubscription(NavigateStep):
 
 
 @navigator.register(SubscriptionEntity, 'Details')
-class SubscriptionDetails(SubscriptionNavigationStep):
+class SubscriptionDetails(NavigateStep):
     """Navigate to Subscriptions' Details page
 
     Args:

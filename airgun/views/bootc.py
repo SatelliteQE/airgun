@@ -1,5 +1,5 @@
 from widgetastic.widget import Table, Text, View
-from widgetastic_patternfly5.ouia import ExpandableTable
+from widgetastic_patternfly5.ouia import ExpandableTable as PF5OUIAExpandableTable
 
 from airgun.views.common import (
     BaseLoggedInView,
@@ -21,7 +21,7 @@ class BootedContainerImagesView(BaseLoggedInView, SearchableViewMixinPF4):
         )
 
     # Passing in the nested table as content_view, refer to ExpandableTable docs for info
-    table = ExpandableTable(
+    table = PF5OUIAExpandableTable(
         component_id='booted-containers-table',
         column_widgets={
             'Image Name': Text('./a'),

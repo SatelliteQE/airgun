@@ -2,17 +2,22 @@ from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Checkbox, ParametrizedView, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb, Tab
-from widgetastic_patternfly5 import Alert as PF5Alert, Button, Modal, Radio as PF5Radio
-from widgetastic_patternfly5.ouia import (
+from widgetastic_patternfly5 import (
+    Alert as PF5Alert,
     Button as PF5Button,
-    Dropdown as PF5Dropdown,
-    ExpandableTable,
     Modal as PF5Modal,
-    PatternflyTable,
-    Select as PF5Select,
-    Switch,
-    Text as PF5Text,
-    TextInput as PF5TextInput,
+    Radio as PF5Radio,
+)
+from widgetastic_patternfly5.ouia import (
+    Button as PF5OUIAButton,
+    Dropdown as PF5OUIADropdown,
+    ExpandableTable as PF5OUIAExpandableTable,
+    Modal as PF5OUIAModal,
+    PatternflyTable as PF5OUIAPatternflyTable,
+    Select as PF5OUIASelect,
+    Switch as PF5OUIASwitch,
+    Text as PF5OUIAText,
+    TextInput as PF5OUIATextInput,
 )
 
 from airgun.views.common import (
@@ -34,9 +39,9 @@ LOCATION_NUM = 3
 
 
 class ContentViewAddResourcesView(NewAddRemoveResourcesView):
-    remove_button = PF5Dropdown('cv-components-bulk-actions')
-    add_button = PF5Button(component_id='add-content-views')
-    table = PatternflyTable(
+    remove_button = PF5OUIADropdown('cv-components-bulk-actions')
+    add_button = PF5OUIAButton(component_id='add-content-views')
+    table = PF5OUIAPatternflyTable(
         component_id='content-view-components-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -58,10 +63,10 @@ class ContentViewAddResourcesView(NewAddRemoveResourcesView):
 
 class AddContentViewModal(BaseLoggedInView):
     title = Text('.//div[@data-ouia-component-id="add-content-views"]')
-    submit_button = PF5Button(component_id='add-components-modal-add')
-    cancel_button = PF5Button(component_id='add-components-modal-cancel')
+    submit_button = PF5OUIAButton(component_id='add-components-modal-add')
+    cancel_button = PF5OUIAButton(component_id='add-components-modal-cancel')
 
-    version_select = PF5Select(component_id='select-version')
+    version_select = PF5OUIASelect(component_id='select-version')
     always_update = Checkbox(locator='.//input[contains(@data-ouia-component-id, "latest-")]')
 
     @property
@@ -70,9 +75,9 @@ class AddContentViewModal(BaseLoggedInView):
 
 
 class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
-    title = PF5Text(component_id='cvPageHeaderText')
-    create_content_view = PF5Button(component_id='create-content-view')
-    table = ExpandableTable(
+    title = PF5OUIAText(component_id='cvPageHeaderText')
+    create_content_view = PF5OUIAButton(component_id='create-content-view')
+    table = PF5OUIAExpandableTable(
         component_id='content-views-table',
         column_widgets={
             'Type': Text('./a'),
@@ -90,12 +95,12 @@ class ContentViewTableView(BaseLoggedInView, SearchableViewMixinPF4):
 
 
 class ContentViewCreateView(BaseLoggedInView):
-    title = PF5Modal(component_id='create-content-view-modal')
-    name = PF5TextInput(component_id='input_name')
-    label = PF5TextInput(component_id='input_label')
+    title = PF5OUIAModal(component_id='create-content-view-modal')
+    name = PF5OUIATextInput(component_id='input_name')
+    label = PF5OUIATextInput(component_id='input_label')
     description = TextInput(id='description')
-    submit = PF5Button(component_id='create-content-view-form-submit')
-    cancel = PF5Button(component_id='create-content-view-form-cancel')
+    submit = PF5OUIAButton(component_id='create-content-view-form-submit')
+    cancel = PF5OUIAButton(component_id='create-content-view-form-cancel')
 
     component_tile = Text('//div[contains(@id, "component")]')
     solve_dependencies = Checkbox(id='dependencies')
@@ -117,15 +122,15 @@ class ContentViewEditView(BaseLoggedInView):
     breadcrumb = BreadCrumb('breadcrumbs-list')
     search = PF4Search()
     dialog = ConfirmationDialog()
-    publish = PF5Button(component_id='cv-details-publish-button')
-    cv_actions = PF5Dropdown('cv-details-actions')
+    publish = PF5OUIAButton(component_id='cv-details-publish-button')
+    cv_actions = PF5OUIADropdown('cv-details-actions')
 
     # buttons for wizard: deleting a CV with Version promoted to environment(s)
-    next_button = Button('Next')
-    delete_finish = Button('Delete')
-    back_button = Button('Back')
-    cancel_button = Button('Cancel')
-    close_button = Button('Close')
+    next_button = PF5Button('Next')
+    delete_finish = PF5Button('Delete')
+    back_button = PF5Button('Back')
+    cancel_button = PF5Button('Cancel')
+    close_button = PF5Button('Close')
 
     @property
     def is_displayed(self):
@@ -142,8 +147,8 @@ class ContentViewEditView(BaseLoggedInView):
         type = ReadOnlyEntry(name='Composite?')
         description = EditableEntry(name='Description')
         # depSolv is maybe a conditionalswitch
-        solve_dependencies = Switch(name='solve_dependencies switch')
-        import_only = Switch(name='import_only_switch')
+        solve_dependencies = PF5OUIASwitch(name='solve_dependencies switch')
+        import_only = PF5OUIASwitch(name='import_only_switch')
 
     @View.nested
     class versions(Tab):
@@ -151,7 +156,7 @@ class ContentViewEditView(BaseLoggedInView):
             '//button[@data-ouia-component-id="routed-tabs-tab-versions"]'
         )
         searchbox = PF4Search()
-        table = PatternflyTable(
+        table = PF5OUIAPatternflyTable(
             component_id='content-view-versions-table',
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -164,7 +169,7 @@ class ContentViewEditView(BaseLoggedInView):
                 7: TableRowKebabMenu(),
             },
         )
-        publishButton = PF5Button(component_id='cv-details-publish-button')
+        publishButton = PF5OUIAButton(component_id='cv-details-publish-button')
 
         def search(self, version_name):
             """Searches for content view version.
@@ -198,9 +203,9 @@ class ContentViewEditView(BaseLoggedInView):
         TAB_LOCATOR = ParametrizedLocator(
             '//button[@data-ouia-component-id="routed-tabs-tab-filters"]'
         )
-        new_filter = PF5Button(component_id='create-filter-button')
+        new_filter = PF5OUIAButton(component_id='create-filter-button')
         searchbox = PF4Search()
-        table = PatternflyTable(
+        table = PF5OUIAPatternflyTable(
             component_id='content-view-filters-table',
             column_widgets={
                 0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -229,16 +234,16 @@ class ContentViewVersionPublishView(BaseLoggedInView):
     )
     # publishing screen
     description = TextInput(id='description')
-    promote = Switch('promote-switch')
+    promote = PF5OUIASwitch('promote-switch')
 
-    next_button = Button('Next')
-    finish_button = Button('Finish')
-    back_button = Button('Back')
-    cancel_button = Button('Cancel')
-    close_button = Button('Close')
+    next_button = PF5Button('Next')
+    finish_button = PF5Button('Finish')
+    back_button = PF5Button('Back')
+    cancel_button = PF5Button('Cancel')
+    close_button = PF5Button('Close')
     progressbar = PF5ProgressBar()
     lce_selector = ParametrizedView.nested(PF5LCECheckSelectorGroup)
-    close = Button('Close')
+    close = PF5Button('Close')
 
     @property
     def is_displayed(self):
@@ -265,27 +270,27 @@ class ContentViewVersionPublishView(BaseLoggedInView):
         )
 
 
-class ContentViewVersionPromoteView(Modal):
+class ContentViewVersionPromoteView(PF5Modal):
     ROOT = './/div[@data-ouia-component-id="promote-version"]'
 
     description = Text('.//h2[@data-ouia-component-id="description-text-value"]')
     lce_selector = ParametrizedView.nested(PF5LCECheckSelectorGroup)
-    promote_btn = Button(locator='//button[normalize-space(.)="Promote"]')
-    cancel_btn = Button(locator='//button[normalize-space(.)="Cancel"]')
+    promote_btn = PF5Button(locator='//button[normalize-space(.)="Promote"]')
+    cancel_btn = PF5Button(locator='//button[normalize-space(.)="Cancel"]')
 
 
 class ContentViewVersionDetailsView(BaseLoggedInView):
     breadcrumb = BreadCrumb()
     version = Text(locator='.//h2[@data-ouia-component-id="cv-version"]')
-    version_dropdown = PF5Dropdown('cv-version-header-actions-dropdown')
-    promoteButton = PF5Button(component_id='cv-details-publish-button')
-    editDescription = PF5Button(component_id='edit-button-description')
+    version_dropdown = PF5OUIADropdown('cv-version-header-actions-dropdown')
+    promoteButton = PF5OUIAButton(component_id='cv-details-publish-button')
+    editDescription = PF5OUIAButton(component_id='edit-button-description')
     # buttons for wizard: deleting a version promoted to environment(s)
-    next_button = Button('Next')
-    delete_finish = Button('Delete')
-    back_button = Button('Back')
-    cancel_button = Button('Cancel')
-    close_button = Button('Close')
+    next_button = PF5Button('Next')
+    delete_finish = PF5Button('Delete')
+    back_button = PF5Button('Back')
+    cancel_button = PF5Button('Cancel')
+    close_button = PF5Button('Close')
     progressbar = PF5ProgressBar()
 
     @View.nested
@@ -294,7 +299,7 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
             './/button[@data-ouia-component-id="cv-version-details-tabs-tab-repositories"]'
         )
         searchbox = PF4Search()
-        table = PatternflyTable(
+        table = PF5OUIAPatternflyTable(
             component_id='content-view-version-details-repositories-table',
             column_widgets={
                 'Name': Text('.//a'),
@@ -310,7 +315,7 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
             './/button[@data-ouia-component-id="cv-version-details-tabs-tab-rpmPackages"]'
         )
         searchbox = PF4Search()
-        table = PatternflyTable(
+        table = PF5OUIAPatternflyTable(
             component_id='content-view-version-details-rpm-packages-table',
             column_widgets={
                 'Name': Text('.//a'),
@@ -327,7 +332,7 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
             './/button[@data-ouia-component-id="cv-version-details-tabs-tab-rpmPackageGroups"]'
         )
         searchbox = PF4Search()
-        table = PatternflyTable(
+        table = PF5OUIAPatternflyTable(
             component_id='content-view-version-details-rpm-package-groups-table',
             column_widgets={
                 'Name': Text('.//a'),
@@ -341,7 +346,7 @@ class ContentViewVersionDetailsView(BaseLoggedInView):
             './/button[@data-ouia-component-id="cv-version-details-tabs-tab-errata"]'
         )
         searchbox = PF4Search()
-        table = PatternflyTable(
+        table = PF5OUIAPatternflyTable(
             component_id='content-view-version-details-errata-table',
             column_widgets={
                 'Errata ID': Text('.//a'),
@@ -370,29 +375,29 @@ class CreateFilterView(View):
     ROOT = './/div[@data-ouia-component-id="create-filter-modal"]'
 
     name = TextInput(id='name')
-    filterType = PF5Select(component_id='content_type')
+    filterType = PF5OUIASelect(component_id='content_type')
     includeFilter = PF5Radio(label_text='Include filter')
     excludeFilter = PF5Radio(label_test='Exclude filter')
-    create = PF5Button(component_id='create-filter-form-submit-button')
-    cancel = PF5Button(component_id='create-filter-form-cancel-button')
+    create = PF5OUIAButton(component_id='create-filter-form-submit-button')
+    cancel = PF5OUIAButton(component_id='create-filter-form-cancel-button')
 
 
 class EditFilterView(View):
     name = Text('.//h2[@data-ouia-component-id="name-text-value"]')
-    editName = PF5Button(component_id='edit-button-name')
+    editName = PF5OUIAButton(component_id='edit-button-name')
     nameInput = TextInput('name text input')
-    submitName = PF5Button(component_id='submit-button-name')
-    clearName = PF5Button(component_id='clear-button-name')
+    submitName = PF5OUIAButton(component_id='submit-button-name')
+    clearName = PF5OUIAButton(component_id='clear-button-name')
     description = Text('.//h2[@data-ouia-component-id="description-text-value"]')
-    editDescription = PF5Button(component_id='edit-button-description')
+    editDescription = PF5OUIAButton(component_id='edit-button-description')
     descriptionInput = TextInput(locator='.//textarea[@aria-label="description text area"]')
 
     # Below this, the fields are generally not shared by each Filter Type
 
     # RPM Rule
     search = PF4Search()
-    addRpmRule = PF5Button(component_id='add-rpm-rule-button')
-    rpmRuleTable = PatternflyTable(
+    addRpmRule = PF5OUIAButton(component_id='add-rpm-rule-button')
+    rpmRuleTable = PF5OUIAPatternflyTable(
         component_id='content-view-rpm-filter-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -404,8 +409,8 @@ class EditFilterView(View):
     )
 
     # Container Image Tag Rule
-    addTagRule = PF5Button(component_id='add-content-view-container-image-filter-button')
-    tagRuleTable = PatternflyTable(
+    addTagRule = PF5OUIAButton(component_id='add-content-view-container-image-filter-button')
+    tagRuleTable = PF5OUIAPatternflyTable(
         component_id='content-view-container-image-filter',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -415,9 +420,9 @@ class EditFilterView(View):
     )
 
     # Package Group Rule
-    addPackageGroupRule = PF5Button(component_id='add-package-group-filter-rule-button')
-    removePackageGroupRule = PF5Dropdown('cv-package-group-filter-bulk-actions-dropdown')
-    packageGroupRuleTable = PatternflyTable(
+    addPackageGroupRule = PF5OUIAButton(component_id='add-package-group-filter-rule-button')
+    removePackageGroupRule = PF5OUIADropdown('cv-package-group-filter-bulk-actions-dropdown')
+    packageGroupRuleTable = PF5OUIAPatternflyTable(
         component_id='content-view-package-group-filter-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -431,9 +436,9 @@ class EditFilterView(View):
     )
 
     # Module Streams Rule
-    addModuleStreamRule = PF5Button(component_id='add-module-stream-rule-button')
-    removeModuleStreamRule = PF5Dropdown('bulk-actions-dropdown')
-    moduleStreamRuleTable = PatternflyTable(
+    addModuleStreamRule = PF5OUIAButton(component_id='add-module-stream-rule-button')
+    removeModuleStreamRule = PF5OUIADropdown('bulk-actions-dropdown')
+    moduleStreamRuleTable = PF5OUIAPatternflyTable(
         component_id='content-view-module-stream-filter-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -447,9 +452,9 @@ class EditFilterView(View):
     )
 
     # Errata Rule
-    addErrataRule = PF5Button(component_id='add-errata-id-button')
-    removeErratRule = PF5Dropdown('cv-errata-id-bulk-action-dropdown')
-    moduleErrataTable = PatternflyTable(
+    addErrataRule = PF5OUIAButton(component_id='add-errata-id-button')
+    removeErratRule = PF5OUIADropdown('cv-errata-id-bulk-action-dropdown')
+    moduleErrataTable = PF5OUIAPatternflyTable(
         component_id='content-view-errata-by-id-filter-table',
         column_widgets={
             0: Checkbox(locator='.//input[@type="checkbox"]'),
@@ -466,8 +471,8 @@ class EditFilterView(View):
 
     # Errata by Date Range
 
-    saveErrataByDate = PF5Button(component_id='save-filter-rule-button')
-    cancelErrataByDate = PF5Button(component_id='cancel-save-filter-rule-button')
+    saveErrataByDate = PF5OUIAButton(component_id='save-filter-rule-button')
+    cancelErrataByDate = PF5OUIAButton(component_id='cancel-save-filter-rule-button')
 
     @property
     def is_displayed(self):
@@ -484,9 +489,9 @@ class AddRPMRuleView(View):
         locator=".//div[contains(.//span, 'Architecture') and @class='pf-v5-c-form__group']/*//input"
     )
 
-    versions = PF5Select(component_id='version-comparator')
-    addEdit = PF5Button(component_id='add-edit-package-modal-submit')
-    cancel = PF5Button(component_id='add-edit-package-modal-cancel')
+    versions = PF5OUIASelect(component_id='version-comparator')
+    addEdit = PF5OUIAButton(component_id='add-edit-package-modal-submit')
+    cancel = PF5OUIAButton(component_id='add-edit-package-modal-cancel')
 
 
 class AddContainerTagRuleView(View):
@@ -496,5 +501,5 @@ class AddContainerTagRuleView(View):
         locator=".//div[contains(.//span, 'Tag name') and @class='pf-v5-c-form__group']/*//input"
     )
 
-    addEdit = PF5Button(component_id='add-edit-container-tag-filter-rule-submit')
-    cancel = PF5Button(component_id='add-edit-container-tag-filter-rule-cancel')
+    addEdit = PF5OUIAButton(component_id='add-edit-container-tag-filter-rule-submit')
+    cancel = PF5OUIAButton(component_id='add-edit-container-tag-filter-rule-cancel')

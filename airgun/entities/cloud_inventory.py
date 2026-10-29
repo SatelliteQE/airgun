@@ -71,6 +71,7 @@ class CloudInventoryEntity(BaseEntity):
     def sync_inventory_status(self):
         """Sync Inventory status"""
         view = self.navigate_to(self, 'All')
+        wait_for(lambda: view.sync_status.is_displayed, timeout=10)
         view.sync_status.click()
 
     def read_sync_status_toast(self, expected_text='Registered hosts in organization', timeout=60):
