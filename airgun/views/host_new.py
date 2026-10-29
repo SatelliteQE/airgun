@@ -665,7 +665,10 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class parameters(PF5Tab):
-        ROOT = './/div'
+        # Unlike other tabs, this tab's toolbar/table/pagination render as separate flat
+        # siblings rather than one wrapping element, so there's no tab-specific element to
+        # scope to tighter than the main container without restructuring these widgets.
+        ROOT = './/main[@id="foreman-main-container"]'
 
         add_parameter = Button(locator='.//button[text()="Add parameter"]')
         searchbar = SearchInput(
@@ -725,7 +728,8 @@ class NewHostDetailsView(BaseLoggedInView):
     class ansible(PF5Tab):
         """View comprising the subtabs under the Ansible Tab"""
 
-        ROOT = './/div'
+        # Matches the same content wrapper the nested subtabs below already scope to.
+        ROOT = './/div[@class="ansible-host-detail"]'
 
         @View.nested
         class roles(PF5Tab):
@@ -845,7 +849,9 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class puppet(PF5Tab):
-        ROOT = './/div'
+        # TODO: could not verify a tighter per-tab wrapper live (needs a Puppet-managed
+        # host); kept at main-container scope like before, just no longer './/div'.
+        ROOT = './/main[@id="foreman-main-container"]'
 
         search_bar = SearchInput(locator='.//input[contains(@class, "search-input")]')
         puppet_reports_table = PatternflyTable(
@@ -884,7 +890,12 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class reports(PF5Tab):
-        ROOT = './/div'
+        # See the `content` tab above for why this is scoped via host-details-tabs-section.
+        ROOT = (
+            './/main[@id="foreman-main-container"]'
+            '/section[contains(@class, "host-details-tabs-section")]'
+            '/following-sibling::*[1]'
+        )
 
         search_bar = SearchInput(locator='.//input[contains(@class, "search-input")]')
         reports_table = PatternflyTable(
@@ -906,7 +917,12 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class insights(PF5Tab):
-        ROOT = './/div'
+        # See the `content` tab above for why this is scoped via host-details-tabs-section.
+        ROOT = (
+            './/main[@id="foreman-main-container"]'
+            '/section[contains(@class, "host-details-tabs-section")]'
+            '/following-sibling::*[1]'
+        )
 
         TAB_NAME = 'Recommendations'
 
@@ -933,7 +949,9 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class iop_recommendations(PF5Tab):
-        ROOT = './/div'
+        # TODO: could not verify a tighter per-tab wrapper live (IoP-only feature, no live
+        # instance available); kept at main-container scope like before, just no longer './/div'.
+        ROOT = './/main[@id="foreman-main-container"]'
 
         TAB_NAME = 'Recommendations'
 
@@ -965,7 +983,9 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class vulnerabilities(PF5Tab):
-        ROOT = './/div'
+        # TODO: could not verify a tighter per-tab wrapper live (needs a live instance with
+        # vulnerability data); kept at main-container scope like before, just no longer './/div'.
+        ROOT = './/main[@id="foreman-main-container"]'
 
         search_bar = SearchInput(locator='.//input[contains(@aria-label, "search-field")]')
         cve_menu_toggle = PF5Button(".//button[contains(@class, 'pf-v5-c-menu-toggle')]")
