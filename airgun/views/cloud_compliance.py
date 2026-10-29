@@ -263,8 +263,47 @@ class ScapPolicyDetailsView(BaseLoggedInView):
         ROOT = './/div[@data-ouia-component-id="PolicyDetailsCard"]'
 
         compliance_threshold = Text('.//h5[contains(., "Compliance threshold")]/following::p[1]')
+        edit_compliance_threshold_button = PF5Button(
+            locator='.//h5[contains(., "Compliance threshold")]//button[contains(@data-ouia-component-id, "InlineEditPencil")]'
+        )
+        edit_compliance_threshold_text_field = TextInput(
+            locator=".//h5[contains(normalize-space(.), 'Compliance threshold')]/..//input"
+        )
+        edit_compliance_threshold_confirm = PF5Button(
+            locator=".//h5[contains(normalize-space(.), 'Compliance threshold')]/..//button[contains(@aria-label, 'Save edits')]"
+        )
+        edit_compliance_threshold_cancel = PF5Button(
+            locator=".//h5[contains(normalize-space(.), 'Compliance threshold')]/..//button[contains(@aria-label, 'Cancel edits')]"
+        )
+
         business_objective = Text('.//h5[contains(., "Business objective")]/following::p[1]')
+        edit_business_objective_button = PF5Button(
+            locator='.//h5[contains(., "Business objective")]//button[contains(@data-ouia-component-id, "InlineEditPencil")]'
+        )
+        edit_business_objective_text_field = TextInput(
+            locator=".//h5[contains(normalize-space(.), 'Business objective')]/..//input"
+        )
+        edit_business_objective_confirm = PF5Button(
+            locator=".//h5[contains(normalize-space(.), 'Business objective')]/..//button[contains(@aria-label, 'Save edits')]"
+        )
+        edit_business_objective_cancel = PF5Button(
+            locator=".//h5[contains(normalize-space(.), 'Business objective')]/..//button[contains(@aria-label, 'Cancel edits')]"
+        )
+
         policy_description = Text('.//h5[contains(., "Policy description")]/following::p[1]')
+        edit_policy_description_button = PF5Button(
+            locator='.//h5[contains(., "Policy description")]//button[contains(@data-ouia-component-id, "InlineEditPencil")]'
+        )
+        edit_policy_description_text_field = TextInput(
+            locator=".//h5[contains(normalize-space(.), 'Policy description')]/..//textarea"
+        )
+        edit_policy_description_confirm = PF5Button(
+            locator=".//h5[contains(normalize-space(.), 'Policy description')]/..//button[contains(@aria-label, 'Save edits')]"
+        )
+        edit_policy_description_cancel = PF5Button(
+            locator=".//h5[contains(normalize-space(.), 'Policy description')]/..//button[contains(@aria-label, 'Cancel edits')]"
+        )
+
         operating_system = Text('.//h5[contains(., "Operating system")]/following::p[1]')
         policy_type = Text('.//h5[contains(., "Policy type")]/following::p[1]')
         reference_id = Text('.//h5[contains(., "Reference ID")]/following::p[1]')
@@ -285,6 +324,25 @@ class ScapPolicyDetailsView(BaseLoggedInView):
                 and self.policy_type.is_displayed
                 and self.reference_id.is_displayed
             )
+
+        def change_description(self, new_description):
+            """Change the description of the policy."""
+            self.edit_policy_description_button.click()
+            self.edit_policy_description_text_field.fill(new_description)
+            self.edit_policy_description_confirm.click()
+            # pass
+
+        def change_threshold(self, new_threshold):
+            """Change the threshold of the policy."""
+            self.edit_compliance_threshold_button.click()
+            self.edit_compliance_threshold_text_field.fill(new_threshold)
+            self.edit_compliance_threshold_confirm.click()
+
+        def change_business_objective(self, new_threshold):
+            """Change the threshold of the policy."""
+            self.edit_business_objective_button.click()
+            self.edit_business_objective_text_field.fill(new_threshold)
+            self.edit_business_objective_confirm.click()
 
     @View.nested
     class rules(Tab):
@@ -369,6 +427,7 @@ class CreatePolicyWizardView(BaseLoggedInView):
     back_button = PF5Button('Back')
     cancel_button = PF5Button('Cancel')
     finish_button = PF5Button('Finish')
+    return_to_application_button = PF5Button('Return to application')
 
     @View.nested
     class create_scap_policy(PF5WizardStepView):
@@ -438,7 +497,16 @@ class CreatePolicyWizardView(BaseLoggedInView):
         business_objective = TextInput(locator='.//input[contains(@id, "businessObjective")]')
 
         def change_policy_name(self, new_name):
+            """Change the value of Policy name."""
             self.policy_name.fill(new_name)
+
+        def change_description(self, new_description):
+            """Change the value of Description."""
+            self.description.fill(new_description)
+
+        def change_threshold(self, new_threshold):
+            """Change the value of Compliance threshold."""
+            self.compliance_threshold.fill(new_threshold)
 
         @property
         def is_displayed(self):
@@ -457,7 +525,7 @@ class CreatePolicyWizardView(BaseLoggedInView):
 
         # TODO: not implemented yet
         systems_table = PF5PatternflyTable(
-            locator='.//table[contains(@class, "pf-v6-c-table")]',
+            locator='.//table[contains(@aria-label, "Host Inventory")]',
             column_widgets={
                 'Name': Text('.//a'),
             },
@@ -466,8 +534,7 @@ class CreatePolicyWizardView(BaseLoggedInView):
         @property
         def is_displayed(self):
             """Check if the step is displayed."""
-            # TODO: check systems_table once implemented
-            return True
+            return self.systems_table.is_displayed
 
     @View.nested
     class rules(PF5WizardStepView):
@@ -622,6 +689,10 @@ class CreatePolicyWizardView(BaseLoggedInView):
         # TODO: check if the step has actually changed
         if self.finish_button.is_enabled:
             self.finish_button.click()
+
+    def return_to_application(self):
+        """Return from a successful modal."""
+        self.return_to_application_button.click()
 
     @property
     def active_step(self):
