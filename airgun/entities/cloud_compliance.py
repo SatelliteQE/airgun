@@ -88,6 +88,19 @@ class CloudCompliancePoliciesEntity(BaseEntity):
         wait_for(lambda: view.is_displayed, timeout=30, handle_exception=True)
         return view
 
+    # TODO: this is pretty clunky at the moment.
+    #       find out what PF version this element needs
+    def delete_policy(self, policy_name):
+        """Delete a policy using the row kebab."""
+        view = self.navigate_to(self, 'All')
+        view.search(policy_name)
+        row = view.get_row(policy_name=policy_name)
+        row.delete()
+        view.browser.element(".//input[contains(@id, 'deleting-policy-check')]").click()
+        view.browser.element(
+            ".//*[contains(@data-ouia-component-id, 'DeletePolicyButton')]"
+        ).click()
+
 
 @navigator.register(CloudCompliancePoliciesEntity, 'Details')
 class ShowScapPolicyDetailsView(NavigateStep):

@@ -4,6 +4,7 @@ from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Checkbox, Text, TextInput, View, Widget
 from widgetastic_patternfly5 import (
     Button as PF5Button,
+    Dropdown,
     ExpandableTable as PF5ExpandableTable,
     PatternflyTable as PF5PatternflyTable,
     Switch as PF5Switch,
@@ -178,9 +179,20 @@ class ComplianceReportDetailsView(BaseLoggedInView):
 class SCAPPoliciesTableRow(PF5PatternflyTableRow):
     """SCAP Policies table row with custom interactions."""
 
+    # TODO: Dropdown doesn't work
+    actions = Dropdown(locator=".//button[contains(@aria-label, 'Kebab toggle')]")
+
     def open(self):
         """Click the link that opens the Policy details view."""
         self.name.widget.click()
+
+    # TODO: rewrite to use self.actions
+    def delete(self):
+        """Delete this policy using the row kebab."""
+        self.browser.element(".//*[contains(@aria-label, 'Kebab toggle')]").click()
+        self.browser.element(
+            "./ancestor::body//button[contains(normalize-space(.), 'Delete policy')]"
+        ).click()
 
 
 class SCAPPoliciesTable(PF5PatternflyTable):
@@ -208,6 +220,8 @@ class ScapPoliciesView(BaseLoggedInView):
     title = Text('//h1[normalize-space(.)="SCAP policies"]')
     search_input = TextInput(locator='.//input[@data-ouia-component-id="ConditionalFilter"]')
     create_policy = PF5Button(locator='.//button[@data-ouia-component-id="CreateNewPolicyButton"]')
+
+    # TODO: untested
     export_dropdown = PF5Dropdown(
         locator='.//div[contains(@class, "pf-v6-c-toolbar__item")][.//button[@aria-label="Export"]]'
     )
@@ -240,6 +254,12 @@ class ScapPoliciesView(BaseLoggedInView):
     def search(self, policy_name):
         """Filter policies by name."""
         self.search_input.fill(policy_name)
+
+    # TODO: check again if works
+    def get_row(self, policy_name):
+        """Return the row of this policy."""
+        self.search(policy_name)
+        return next([r for r in self.policies_table.rows() if policy_name in r.name.text])
 
     def open_policy_details(self, policy_name):
         """Open policy details page of a specific policy."""
