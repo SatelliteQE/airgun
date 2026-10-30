@@ -14,6 +14,11 @@ class SyncStatusEntity(BaseEntity):
         view.show_syncing_only.fill(show_syncing_only)
         return view.read(widget_names=widget_names)
 
+    def read_product_name(self, product_name):
+        """Read the full displayed name cell for a product on Sync Status."""
+        view = self.navigate_to(self, 'All')
+        return view.table.get_row_by_name(product_name).name_cell_text
+
     def synchronize(self, repository_paths, synchronous=True, timeout=3600):
         """Synchronize repositories
 
