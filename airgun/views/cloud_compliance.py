@@ -83,6 +83,23 @@ class ComplianceReportsView(BaseLoggedInView):
         return self.empty_state.is_displayed
 
 
+class TextLink(Text):
+    """A hypertext link."""
+
+    def read(self):
+        """Read the link text."""
+        return super().read(), self.browser.get_attribute('href', self, parent=self.parent)
+
+    @property
+    def text(self):
+        return self.browser.element(self).text
+
+    @property
+    def link(self):
+        """Return the link destination."""
+        return self.browser.get_attribute('href', self)
+
+
 class ComplianceReportDetailsView(BaseLoggedInView):
     """Insights Compliance Report details view for a single policy report."""
 
@@ -107,9 +124,9 @@ class ComplianceReportDetailsView(BaseLoggedInView):
 
         # TODO: not implemented yet
         systems_table = PF5PatternflyTable(
-            locator='.//table[contains(@class, "pf-v6-c-table")]',
+            locator='.//table[contains(@aria-label, "Host inventory")]',
             column_widgets={
-                'Name': Text('.//a'),
+                'Name': TextLink('.//a'),
                 'SSG version': Text('.//td[@data-label="SSG version"]'),
                 'Failed rules': Text('.//td[@data-label="Failed rules"]'),
                 'Compliance score': Text('.//td[@data-label="Compliance score"]'),
@@ -259,7 +276,7 @@ class ScapPoliciesView(BaseLoggedInView):
     def get_row(self, policy_name):
         """Return the row of this policy."""
         self.search(policy_name)
-        return next([r for r in self.policies_table.rows() if policy_name in r.name.text])
+        return next(r for r in self.policies_table.rows() if policy_name in r.name.text)
 
     def open_policy_details(self, policy_name):
         """Open policy details page of a specific policy."""

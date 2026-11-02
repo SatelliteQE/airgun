@@ -114,6 +114,7 @@ class ShowScapPolicyDetailsView(NavigateStep):
 
     def step(self, *args, **kwargs):
         policy_name = kwargs.get('policy_name')
+        self.parent.search(policy_name)
         self.parent.policies_table.open_policy_details(policy_name)
 
 
