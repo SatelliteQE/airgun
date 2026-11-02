@@ -15,7 +15,13 @@ class SyncStatusEntity(BaseEntity):
         return view.read(widget_names=widget_names)
 
     def read_product_name(self, product_name):
-        """Read the full displayed name cell for a product on Sync Status."""
+        """
+        Read the full displayed name cell for a product on Sync Status.
+
+        :raises NodeNotFoundError: if no row with the given name is visible
+        """
+
+
         view = self.navigate_to(self, 'All')
         return view.table.get_row_by_name(product_name).name_cell_text
 
