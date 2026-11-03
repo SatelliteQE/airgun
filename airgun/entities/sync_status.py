@@ -21,7 +21,6 @@ class SyncStatusEntity(BaseEntity):
         :raises NodeNotFoundError: if no row with the given name is visible
         """
 
-
         view = self.navigate_to(self, 'All')
         return view.table.get_row_by_name(product_name).name_cell_text
 
