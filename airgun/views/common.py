@@ -496,6 +496,7 @@ class NewAddRemoveResourcesView(View):
 
     def select_status(self, value):
         """Set status box to passed in value"""
+        self.status.wait_displayed(timeout=30)
         self.status.fill(value)
 
     def search(self, value):
@@ -532,8 +533,9 @@ class NewAddRemoveResourcesView(View):
             self.table, exception=False, ensure_page_safe=True, timeout=10
         )
         self.browser.plugin.ensure_page_safe(timeout=60)
-        self.table.wait_displayed()
         self.select_status('All')
+        # Changing the status filter can reload the table.
+        self.table.wait_displayed(timeout=30)
         return self.table.read()
 
 
@@ -671,7 +673,8 @@ class SearchableViewMixinPF4(SearchableViewMixin):
         self.browser.plugin.ensure_page_safe(timeout=60)
         if hasattr(self, 'title'):
             self.title.click()
-        self.table.wait_displayed()
+        if not self.browser.wait_for_element(self.table, exception=False, timeout=10):
+            return []
         return self.table.read()
 
 

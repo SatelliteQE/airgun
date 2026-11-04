@@ -148,6 +148,7 @@ class NewContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=ccv_name)
         self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
+        view.content_views.resources.table.wait_displayed(timeout=30)
         view.content_views.resources.add(cv_name)
         view = AddContentViewModal(self.browser)
         if always_update:
@@ -158,7 +159,7 @@ class NewContentViewEntity(BaseEntity):
         view = self.navigate_to(self, 'Edit', entity_name=ccv_name)
         self.browser.plugin.ensure_page_safe(timeout=5)
         view.wait_displayed()
-        wait_for(lambda: view.content_views.resources.is_displayed, timeout=10)
+        view.content_views.resources.table.wait_displayed(timeout=30)
         return view.content_views.resources.read()
 
     def read_cv(self, entity_name, version_name):
