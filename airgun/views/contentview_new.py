@@ -2,7 +2,13 @@ from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import Checkbox, ParametrizedView, Text, TextInput, View
 from widgetastic_patternfly import BreadCrumb, Tab
-from widgetastic_patternfly5 import Alert as PF5Alert, Button, Modal, Radio as PF5Radio
+from widgetastic_patternfly5 import (
+    Alert as PF5Alert,
+    Button,
+    Modal,
+    Radio as PF5Radio,
+    Tab as PF5Tab,
+)
 from widgetastic_patternfly5.ouia import (
     Button as PF5Button,
     Dropdown as PF5Dropdown,
@@ -177,14 +183,21 @@ class ContentViewEditView(BaseLoggedInView):
             return self.table.read()
 
     @View.nested
-    class content_views(Tab):
-        TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/contentviews")]')
+    class content_views(PF5Tab):
+        ROOT = './/body'
+        TAB_NAME = 'Content views'
+        TAB_LOCATOR = ParametrizedLocator(
+            './/li[./a[@data-ouia-component-id="routed-tabs-tab-contentviews"]]'
+        )
 
         resources = View.nested(ContentViewAddResourcesView)
 
     @View.nested
-    class repositories(Tab):
-        TAB_LOCATOR = ParametrizedLocator('//a[contains(@href, "#/repositories")]')
+    class repositories(PF5Tab):
+        ROOT = './/body'
+        TAB_LOCATOR = ParametrizedLocator(
+            './/li[./a[@data-ouia-component-id="routed-tabs-tab-repositories"]]'
+        )
         resources = View.nested(NewAddRemoveResourcesView)
 
     @View.nested
