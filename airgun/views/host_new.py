@@ -541,9 +541,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class content(PF5Tab):
-        # TODO Setting ROOT is just a workaround because of BZ 2119076,
-        # once this gets fixed we should use the parametrized locator from Tab class
-        ROOT = './/div'
+        ROOT = './/section[contains(@class, "host-content-tabs-section")]'
         transient_install_alert = PF5OUIAAlert('image-mode-alert-info')
 
         @View.nested
