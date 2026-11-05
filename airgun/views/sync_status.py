@@ -64,6 +64,12 @@ class SyncStatusTreeRow(PF5PatternflyTableRow):
         except NoSuchElementException:
             return None
 
+    @property
+    def name_cell_text(self):
+        """Return the full name cell text"""
+        cell = self.browser.element('./th[1]', parent=self)
+        return self.browser.text(cell).strip()
+
     def expand(self):
         """Expand this row if it is expandable and not already expanded."""
         if self.is_expandable and not self.is_expanded:
