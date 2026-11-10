@@ -1,7 +1,7 @@
 import time
 
 from navmazing import NavigateToSibling
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from wait_for import wait_for
 from widgetastic.exceptions import RowNotFound
 
@@ -1348,22 +1348,26 @@ class ShowNewHostDetails(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
 
-        self.parent.search(entity_name)
+        # Submit the search without reading the table while its results are loading.
+        self.parent.searchbox.search(entity_name)
+        self.parent.browser.plugin.ensure_page_safe(timeout=60)
+        self.parent.title.click()
         table = self.parent.table
 
-        def find_host_row():
-            # The search can read and cache headers while the table is still loading.
+        def open_host():
+            # The table can cache incomplete headers while it is loading.
             table.clear_cache()
-            return table.row(Name=entity_name)
+            if 'Name' not in table.headers:
+                return False
+            table.row(Name=entity_name)['Name'].widget.click()
+            return True
 
-        row, _ = wait_for(
-            find_host_row,
+        wait_for(
+            open_host,
             timeout=30,
             delay=1,
-            handle_exception=(NameError, RowNotFound, StaleElementReferenceException),
+            handle_exception=(NoSuchElementException, RowNotFound, StaleElementReferenceException),
         )
-        # PF5OUIATable uses data-label attribute which is "Name" (capital N) in the HTML
-        row['Name'].widget.click()
 
 
 @navigator.register(NewHostEntity, 'AnsibleTab')
