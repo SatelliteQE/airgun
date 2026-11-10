@@ -1,7 +1,9 @@
 import time
 
 from navmazing import NavigateToSibling
+from selenium.common.exceptions import StaleElementReferenceException
 from wait_for import wait_for
+from widgetastic.exceptions import RowNotFound
 
 from airgun.entities.all_hosts import AllHostsEntity
 from airgun.entities.host import HostEntity
@@ -1347,8 +1349,21 @@ class ShowNewHostDetails(NavigateStep):
         entity_name = kwargs.get('entity_name')
 
         self.parent.search(entity_name)
+        table = self.parent.table
+
+        def find_host_row():
+            # The search can read and cache headers while the table is still loading.
+            table.clear_cache()
+            return table.row(Name=entity_name)
+
+        row, _ = wait_for(
+            find_host_row,
+            timeout=30,
+            delay=1,
+            handle_exception=(NameError, RowNotFound, StaleElementReferenceException),
+        )
         # PF5OUIATable uses data-label attribute which is "Name" (capital N) in the HTML
-        self.parent.table.row(Name=entity_name)['Name'].widget.click()
+        row['Name'].widget.click()
 
 
 @navigator.register(NewHostEntity, 'AnsibleTab')
