@@ -112,6 +112,7 @@ Reusable UI components defined in `widgets.py`:
 ```python
 from airgun.widgets import SatTable, Search, LCESelector
 
+
 class MyView(BaseLoggedInView):
     searchbox = Search()
     table = SatTable(locator='//table[@id="my-table"]')
@@ -132,18 +133,20 @@ Navigation is **declarative** using navmazing:
 ```python
 from airgun.navigation import NavigateStep, navigator
 
+
 @navigator.register(ActivationKeyEntity, 'All')
 class ShowAllActivationKeys(NavigateStep):
     VIEW = ActivationKeysView
-    
+
     def step(self, *args, **kwargs):
         self.view.menu.select('Content', 'Activation Keys')
+
 
 @navigator.register(ActivationKeyEntity, 'New')
 class CreateNewActivationKey(NavigateStep):
     VIEW = ActivationKeyCreateView
     prerequisite = NavigateToSibling('All')
-    
+
     def step(self, *args, **kwargs):
         self.parent.new.click()
 ```
@@ -204,12 +207,11 @@ class MyEntity(BaseEntity):
         view = self.navigate_to(self, 'All')
         view.searchbox.search(query)
         return view.table.read()
-    
+
     def read(self, entity_name):
         """Read entity details"""
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         return view.read()
-    
 ```
 
 ### Pattern 2: Searchable View
@@ -230,7 +232,6 @@ class MyListView(BaseLoggedInView):
 
 ```python
 class MyTabsListView(View):
-
     @View.nested
     class details_tab(PF5Tab):
         TAB_NAME = 'details'
@@ -249,20 +250,16 @@ The timeout parameter is in seconds as an integer, not a string.
 ```python
 from wait_for import wait_for
 
+
 def my_action(self):
     view = self.navigate_to(self, 'All')
-    
+
     # Wait for element
     wait_for(lambda: view.table.is_displayed, timeout=30)
-    
+
     # Wait for specific condition
-    wait_for(
-        lambda: len(view.table.read()) > 0,
-        timeout=60,
-        delay=2,
-        handle_exception=True
-    )
-    
+    wait_for(lambda: len(view.table.read()) > 0, timeout=60, delay=2, handle_exception=True)
+
     # Use browser plugin for page safety
     self.browser.plugin.ensure_page_safe(timeout=10)
 ```
@@ -297,15 +294,16 @@ ParametrizedLocator('.//div[@data-id={@item_id}]')
 @navigator.register(MyEntity, 'All')
 class NavigateToAll(NavigateStep):
     VIEW = MyListView
-    
+
     def step(self):
         self.view.menu.select('My Menu', 'Submenu')
+
 
 @navigator.register(MyEntity, 'Edit')
 class NavigateToEdit(NavigateStep):
     VIEW = MyEditView
     prerequisite = NavigateToSibling('All')
-    
+
     def step(self, entity_name):
         # entity_name passed from navigate_to() call
         self.parent.searchbox.search(entity_name)
