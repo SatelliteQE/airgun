@@ -263,8 +263,10 @@ class ManageManifest(NavigateStep):
 
     def step(self, *args, **kwargs):
         wait_for(
-            lambda: self.parent.manage_manifest_button.is_displayed
-            and not self.parent.manage_manifest_button.disabled,
+            lambda: (
+                self.parent.manage_manifest_button.is_displayed
+                and not self.parent.manage_manifest_button.disabled
+            ),
             handle_exception=True,
             timeout=30,
             delay=1,
