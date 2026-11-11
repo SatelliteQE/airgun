@@ -94,6 +94,7 @@ ignore = [
     "PLR0912", # Too many branches ({branches} > {max_branches})
     "PLR0913", # Too many arguments to function call ({c_args} > {max_args})
     "PLR0915", # Too many statements ({statements} > {max_statements})
+    "PLR0917", # Too many positional arguments ({pos_args} > {max_pos_args})
     "PLW0603", # Using the global statement
     "RUF012", # Mutable class attributes should be annotated with typing.ClassVar
     "D107", # Missing docstring in __init__
