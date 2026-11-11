@@ -31,7 +31,7 @@ from widgetastic_patternfly5.ouia import (
 from airgun.views.common import (
     BaseLoggedInView,
     PF5LCESelectorGroup,
-    SearchableViewMixinPF4,
+    SearchableHostsViewMixin,
     WizardStepView,
 )
 from airgun.views.host_new import ManageColumnsView, PF5CheckboxTreeView
@@ -81,7 +81,7 @@ class CVESelect(Select):
     DEFAULT_LOCATOR = './/div[contains(@class, "pf-v5-c-select") and @data-ouia-component-id="select-content-view"]'
 
 
-class AllHostsTableView(BaseLoggedInView, SearchableViewMixinPF4):
+class AllHostsTableView(BaseLoggedInView, SearchableHostsViewMixin):
     title = Text('//h1[normalize-space(.)="Hosts"]')
 
     legacy_kebab = PF5Dropdown(locator='.//div[@id="legacy-ui-kebab"]')
