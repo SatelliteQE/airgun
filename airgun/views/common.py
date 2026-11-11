@@ -1,4 +1,12 @@
-from selenium.common.exceptions import ElementNotInteractableException
+from uuid import uuid4
+
+from selenium.common.exceptions import (
+    ElementNotInteractableException,
+    NoSuchElementException,
+    StaleElementReferenceException,
+)
+from wait_for import wait_for
+from widgetastic.exceptions import NoSuchElementException as WidgetasticNoSuchElementException
 from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
@@ -680,6 +688,125 @@ class SearchableViewMixinPF4(SearchableViewMixin):
         if not self.browser.wait_for_element(self.table, exception=False, timeout=10):
             return []
         return self.table.read()
+
+
+class SearchableHostsViewMixin(SearchableViewMixinPF4):
+    """Read the complete Hosts table for the submitted search response."""
+
+    _HOST_SEARCH_STATE = """
+        const [query, token, action] = arguments;
+        const active = window.__airgunHostsSearch;
+        if (action === 'release') {
+            if (active && active.token === token) {
+                delete window.__airgunHostsSearch;
+            }
+            return null;
+        }
+        if (action === 'acquire' && active) {
+            return false;
+        }
+        if (action === 'read' && (!active || active.token !== token)) {
+            return null;
+        }
+        let current;
+        const unsubscribe = window.tfm.store.observeStore('API', api => {
+            current = api.HOSTS;
+        });
+        unsubscribe();
+        if (action === 'acquire') {
+            if (current && current.status === 'PENDING') {
+                return false;
+            }
+            const previousQuery = current && current.response && current.response.search || '';
+            // An unchanged empty query is a UI no-op; read its settled table.
+            const baseline = query === '' && previousQuery === '' ? null : current;
+            window.__airgunHostsSearch = { token, baseline };
+            return { query: previousQuery };
+        }
+        if (!current || current === active.baseline ||
+            current.status !== 'RESOLVED' || !current.response ||
+            (current.response.search || '') !== query ||
+            !Array.isArray(current.response.results)) {
+            return null;
+        }
+        return current.response.results.map(host => host.display_name || host.name);
+    """
+
+    def search(self, query):
+        """Search Hosts and wait for table rows matching the completed response.
+
+        Searches in the same browser tab run sequentially so each call reads its
+        own response before another call replaces the table.
+
+        :param str query: search query to type into the search field.
+        :return: list of row dictionaries, an empty list for a completed search
+            with no matches, or None if the page is not searchable.
+        :rtype: list or None
+        """
+        if not self.is_searchable():
+            return None
+        token = str(uuid4())
+        # A tab has one Hosts table; keep it reserved until this call reads its rows.
+        previous = wait_for(
+            lambda: self.browser.execute_script(self._HOST_SEARCH_STATE, query, token, 'acquire'),
+            timeout=120,
+            delay=1,
+        ).out
+        try:
+            # Foreman ignores an unchanged query. Finish its reset before resubmitting.
+            if query and previous['query'] == query:
+                self.searchbox.clear()
+                wait_for(
+                    lambda: self.browser.execute_script(self._HOST_SEARCH_STATE, '', token, 'read'),
+                    timeout=30,
+                    delay=1,
+                    fail_condition=None,
+                )
+            # Replacing a different query must not launch a competing reset request.
+            self.searchbox.fill(query)
+            if self.searchbox.search_button.is_displayed:
+                self.searchbox.search_button.click()
+            self.browser.plugin.ensure_page_safe(timeout=60)
+            self.title.click()
+            return self._read_search_results(query, token)
+        finally:
+            self.browser.execute_script(self._HOST_SEARCH_STATE, query, token, 'release')
+
+    def _read_search_results(self, query, token):
+        def read_results():
+            expected_names = self.browser.execute_script(
+                self._HOST_SEARCH_STATE, query, token, 'read'
+            )
+            if expected_names is None:
+                return None
+            if not expected_names and self.browser.elements(
+                '//h5[normalize-space(.)="No Results"]'
+            ):
+                return []
+            # The response can resolve before React has replaced the previous rows.
+            self.table.clear_cache()
+            if 'Name' not in self.table.headers:
+                return None
+            if not expected_names:
+                empty_rows = self.browser.elements(
+                    './/tr[@data-ouia-component-id="table-empty"]', parent=self.table
+                )
+                return [] if empty_rows else None
+            rows = self.table.read()
+            return rows if [row['Name'] for row in rows] == expected_names else None
+
+        return wait_for(
+            read_results,
+            timeout=30,
+            delay=1,
+            fail_condition=None,
+            handle_exception=(
+                KeyError,
+                NoSuchElementException,
+                StaleElementReferenceException,
+                WidgetasticNoSuchElementException,
+            ),
+        ).out
 
 
 class TaskDetailsView(BaseLoggedInView):

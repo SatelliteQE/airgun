@@ -47,7 +47,7 @@ from widgetastic_patternfly5.ouia import (
 )
 
 from airgun.views.cloud_insights import BulkSelectMenuToggle
-from airgun.views.common import BaseLoggedInView, PF5LCESelectorGroup, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, PF5LCESelectorGroup, SearchableHostsViewMixin
 from airgun.widgets import (
     Accordion,
     ActionsDropdown,
@@ -245,7 +245,7 @@ class HostColectionsList(Widget):
         return [self.browser.text(item) for item in self.browser.elements(self.ITEMS)]
 
 
-class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
+class HostsView(BaseLoggedInView, SearchableHostsViewMixin):
     """New All Hosts view.
     Note: This is a minimal implementation of the new Hosts page, and currently it serves only to transition
     to the now-legacy UI page.
