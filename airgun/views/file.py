@@ -35,6 +35,11 @@ class FileContentTab(PF5Tab):
 
     ROOT = './/div[@data-ouia-component-id="routed-tabs"]/following-sibling::div[1]'
 
+    def read(self):
+        """Activate this route before reading its rendered content."""
+        self.select()
+        return super().read()
+
 
 class FileDetailsView(BaseLoggedInView):
     file_name = Text('.//h1[@data-ouia-component-id="content-details-text"]')
