@@ -319,9 +319,7 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @View.nested
     class content(Tab):
-        # TODO Setting ROOT is just a workaround because of BZ 2119076,
-        # once this gets fixed we should use the parametrized locator from Tab class
-        ROOT = './/div'
+        ROOT = './/section[contains(@class, "host-content-tabs-section")]'
 
         @View.nested
         class packages(Tab):
