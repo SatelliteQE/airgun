@@ -8,7 +8,10 @@ from widgetastic.widget import (
     View,
 )
 from widgetastic_patternfly import BreadCrumb, Button
-from widgetastic_patternfly5 import Tab as PF5Tab
+from widgetastic_patternfly5 import (
+    FormSelect as PF5FormSelect,
+    Tab as PF5Tab,
+)
 from widgetastic_patternfly5.ouia import Button as PF5OUIAButton
 
 from airgun.exceptions import ReadOnlyWidgetError
@@ -202,6 +205,13 @@ class ManageManifestView(BaseLoggedInView, PF5ModalViewMixin):
             locator='.//table',
             column_widgets={'Status': Text(), 'Message': Text(), 'Timestamp': Text()},
         )
+
+    @View.nested
+    class cdn_configuration(PF5Tab):
+        ROOT = './/section[@id="manifest-history-tabs-pane-3"]'
+        TAB_NAME = 'CDN Configuration'
+        url = PF5FormSelect(locator='.//select[@aria-label="redhat-cdn-url"]')
+        update_button = PF5OUIAButton('cdn-configuration-update-button')
 
 
 class DeleteManifestConfirmationView(BaseLoggedInView, PF5ModalViewMixin):

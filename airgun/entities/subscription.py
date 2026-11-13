@@ -78,6 +78,54 @@ class SubscriptionEntity(BaseEntity):
             has_manifest=True, ignore_error_messages=ignore_error_messages
         )
 
+    def _open_cdn_configuration(self):
+        """Open the CDN Configuration tab of the Manage Manifest modal.
+
+        The URL selector is only rendered while the organization is using the
+        Red Hat CDN type, so callers must ensure that beforehand.
+        """
+        view = self.navigate_to(self, 'Manage Manifest')
+        view.wait_animation_end()
+        view.cdn_configuration.select()
+        view.cdn_configuration.url.wait_displayed()
+        wait_for(
+            lambda: view.cdn_configuration.url.is_enabled,
+            timeout=30,
+            handle_exception=True,
+        )
+        return view
+
+    def read_cdn_configuration(self):
+        """Read the selected Red Hat CDN URL and available dropdown options."""
+        view = self._open_cdn_configuration()
+        result = {
+            'url': view.cdn_configuration.url.read(),
+            'cdn_urls': view.cdn_configuration.url.all_options,
+        }
+        view.close_button.click()
+        return result
+
+    def update_cdn_configuration(self, values):
+        """Update the Red Hat CDN configuration.
+
+        :param values: Dictionary containing the desired URL,
+            e.g. {'url': 'https://cdn-eu.redhat.com'}.
+        """
+        view = self._open_cdn_configuration()
+        view.cdn_configuration.fill(values)
+        view.cdn_configuration.update_button.click()
+        self.browser.plugin.ensure_page_safe()
+        # A successful save clears the form's pending changes, which disables the
+        # update button. Waiting on that confirms the request actually completed,
+        # rather than racing ahead before it was sent.
+        wait_for(
+            lambda: view.cdn_configuration.update_button.disabled,
+            timeout=30,
+            handle_exception=True,
+        )
+        view.flash.assert_no_error()
+        view.close_button.click()
+
     def refresh_manifest(self):
         """Refresh manifest"""
         view = self.navigate_to(self, 'Manage Manifest')
