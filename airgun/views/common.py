@@ -1,4 +1,9 @@
-from selenium.common.exceptions import ElementNotInteractableException
+from selenium.common.exceptions import (
+    ElementNotInteractableException,
+    NoSuchElementException,
+    StaleElementReferenceException,
+)
+from wait_for import wait_for
 from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
@@ -680,6 +685,67 @@ class SearchableViewMixinPF4(SearchableViewMixin):
         if not self.browser.wait_for_element(self.table, exception=False, timeout=10):
             return []
         return self.table.read()
+
+
+class SearchableHostsViewMixin(SearchableViewMixinPF4):
+    """Read the complete Hosts table for the submitted search response."""
+
+    _HOST_SEARCH_STATE = """
+        let current;
+        const unsubscribe = window.tfm.store.observeStore('API', api => {
+            current = api.HOSTS;
+        });
+        unsubscribe();
+        if (arguments[1]) {
+            window.__airgunHostsSearch = current;
+            return null;
+        }
+        if (!current || current === window.__airgunHostsSearch ||
+            current.status !== 'RESOLVED' || !current.response ||
+            (current.response.search || '') !== arguments[0] ||
+            !Array.isArray(current.response.results)) {
+            return null;
+        }
+        return current.response.results.map(host => host.display_name || host.name);
+    """
+
+    def search(self, query):
+        if not self.is_searchable():
+            return None
+        # Remember the previous response, including when the same query is repeated.
+        self.browser.execute_script(self._HOST_SEARCH_STATE, query, True)
+        try:
+            self.searchbox.search(query)
+            self.browser.plugin.ensure_page_safe(timeout=60)
+            self.title.click()
+            return self._read_search_results(query)
+        finally:
+            self.browser.execute_script('delete window.__airgunHostsSearch;')
+
+    def _read_search_results(self, query):
+        def read_results():
+            expected_names = self.browser.execute_script(self._HOST_SEARCH_STATE, query, False)
+            if expected_names is None:
+                return None
+            # The response can resolve before React has replaced the previous rows.
+            self.table.clear_cache()
+            if 'Name' not in self.table.headers:
+                return None
+            if not expected_names:
+                empty_rows = self.browser.elements(
+                    './/tr[@data-ouia-component-id="table-empty"]', parent=self.table
+                )
+                return [] if empty_rows else None
+            rows = self.table.read()
+            return rows if [row['Name'] for row in rows] == expected_names else None
+
+        return wait_for(
+            read_results,
+            timeout=30,
+            delay=1,
+            fail_condition=None,
+            handle_exception=(KeyError, NoSuchElementException, StaleElementReferenceException),
+        ).out
 
 
 class TaskDetailsView(BaseLoggedInView):
