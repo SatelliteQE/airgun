@@ -666,6 +666,15 @@ class MenuToggleSelect(PF5Select):
         "//*[contains(@class, 'pf-v5-c-menu__item') and .//*[contains(normalize-space(.), {})]]"
     )
 
+    @property
+    def item_labels(self):
+        """Return option labels, preferring aria-label and falling back to visible text."""
+        with self.opened():
+            return [
+                self.browser.get_attribute('aria-label', option) or self.browser.text(option)
+                for option in self.browser.elements('.//*[@role="option"]')
+            ]
+
 
 class ChangePowerStateModal(PF5Modal):
     """

@@ -1,7 +1,7 @@
-from asyncio import wait_for
 import contextlib
 
 import anytree
+from wait_for import wait_for
 from widgetastic.exceptions import NoSuchElementException
 from widgetastic_patternfly5 import DropdownItemDisabled as PF5DropdownItemDisabled
 
@@ -664,6 +664,24 @@ class AllHostsEntity(BaseEntity):
         elif option == 'Fail on mismatch':
             view.organization_fail_on_mismatch.fill(True)
             view.save_button.click()
+
+    def read_change_location_options(self, host_names):
+        """Read available bulk location choices for the selected hosts and cancel.
+
+        :param host_names: Host name or list of host names to select.
+        :return: List of full location paths from the option labels.
+        """
+        view = self.all_hosts_navigate_and_select_hosts_helper(host_names)
+        view.bulk_actions_kebab.click()
+        self.browser.move_to_element(view.bulk_actions_menu.item_element('Change associations'))
+        view.bulk_actions_change_associations_menu.item_select('Location')
+        view = ChangeLocationModal(self.browser)
+        view.wait_displayed()
+        try:
+            wait_for(lambda: bool(view.location_menu.item_labels), timeout=30)
+            return view.location_menu.item_labels
+        finally:
+            view.cancel_button.click()
 
     def change_associations_location(
         self, host_names=None, new_location=None, select_all_hosts=False, option='Fix on mismatch'
