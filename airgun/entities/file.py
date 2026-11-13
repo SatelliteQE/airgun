@@ -15,8 +15,16 @@ class FilesEntity(BaseEntity):
         return view.read(widget_names=widget_names)
 
     def read_cv_table(self, entity_name):
+        """Read published content view versions containing the file."""
         view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        view.content_views.select()
         return view.content_views.cvtable.read()
+
+    def read_repository_table(self, entity_name):
+        """Read Library repositories containing the file."""
+        view = self.navigate_to(self, 'Details', entity_name=entity_name)
+        view.library_repositories.select()
+        return view.library_repositories.table.read()
 
 
 @navigator.register(FilesEntity, 'All')
@@ -30,7 +38,7 @@ class ShowAllFiles(NavigateStep):
 
 
 @navigator.register(FilesEntity, 'Details')
-class ShowPackageDetails(NavigateStep):
+class ShowFileDetails(NavigateStep):
     """Navigate to File Details page by clicking on file name"""
 
     VIEW = FileDetailsView
