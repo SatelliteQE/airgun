@@ -1,7 +1,9 @@
 import time
 
 from navmazing import NavigateToSibling
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from wait_for import wait_for
+from widgetastic.exceptions import RowNotFound
 
 from airgun.entities.host import HostEntity
 from airgun.navigation import NavigateStep, navigator
@@ -1183,8 +1185,27 @@ class ShowNewHostDetails(NavigateStep):
 
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
-        self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+
+        # Submit the search without reading the table while its results are loading.
+        self.parent.searchbox.search(entity_name)
+        self.parent.browser.plugin.ensure_page_safe(timeout=60)
+        self.parent.title.click()
+        table = self.parent.table
+
+        def open_host():
+            # The table can cache incomplete headers while it is loading.
+            table.clear_cache()
+            if 'Name' not in table.headers:
+                return False
+            table.row(Name=entity_name)['Name'].widget.click()
+            return True
+
+        wait_for(
+            open_host,
+            timeout=30,
+            delay=1,
+            handle_exception=(NoSuchElementException, RowNotFound, StaleElementReferenceException),
+        )
 
 
 @navigator.register(NewHostEntity, 'AnsibleTab')
