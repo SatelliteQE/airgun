@@ -16,7 +16,6 @@ from airgun.widgets import (
     ConfirmationDialog,
     EditableEntry,
     EditableLimitEntry,
-    RadioGroup,
     ReadOnlyEntry,
     SatTable,
 )
@@ -91,65 +90,11 @@ class HostCollectionEditView(BaseLoggedInView):
         resources = View.nested(AddRemoveResourcesView)
 
 
-class HostCollectionPackageContentRadioGroup(RadioGroup):
-    """Handle an HTML non normalized Radio group according to the current
-    architecture.
-
-    Note: This is a temporary solution, a fix will be issued upstream,
-        when the fix will be available downstream we should replace the
-        implementation with RadioGroup.
-
-    Example html representation::
-
-        <div>
-            <input type="radio" id="package" ...>
-            <label>Package</label>
-            <input type="radio" id="package_group" ...>
-            <label>Package Group</label>
-    """
-
-    # a mapping between button name and the id, see the implementation in
-    # HostsAssignOrganization and HostsAssignLocation hereafter.
-    buttons_name_id_map = {
-        'Package': 'package',
-        'Package Group': 'package_group',
-    }
-
-    def get_input_by_name(self, name):
-        input_id = self.buttons_name_id_map.get(name)
-        if input_id:
-            return self.browser.wait_for_element(
-                f".//input[@id='{self.buttons_name_id_map[name]}']"
-            )
-        return None
-
-    @property
-    def selected(self):
-        """Return the name of the button that is currently selected."""
-        for name in self.buttons_name_id_map:
-            btn = self.get_input_by_name(name)
-            if btn and btn.get_attribute('checked') is not None:
-                return name
-        raise ValueError(
-            'Whether no radio button is selected or proper attribute should be added to framework'
-        )
-
-    def select(self, name):
-        """Select specific radio button in the group"""
-        if self.selected != name:
-            btn = self.get_input_by_name(name)
-            if btn:
-                btn.click()
-                return True
-        return False
-
-
 class HostCollectionManagePackagesView(BaseLoggedInView):
     title = Text("//h4[contains(., 'Update Packages')]")
     update_all = ActionsDropdown(
         "//span[contains(@class, 'input-group')][button[contains(@ng-click, 'update all')]]"
     )
-    content_type = HostCollectionPackageContentRadioGroup("//div[@name='systemContentForm']/div")
 
     packages = TextInput(
         locator=("//input[@type='text' and contains(@ng-model, 'content.content')]")

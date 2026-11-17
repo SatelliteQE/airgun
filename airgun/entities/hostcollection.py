@@ -79,8 +79,7 @@ class HostCollectionEntity(BaseEntity):
         """Manage host collection packages.
 
         :param str entity_name:  The host collection name.
-        :param str content_type: The content type to apply action on.
-            Available options: Package, Package Group.
+        :param str content_type: Compatibility argument; only Package or None is accepted.
         :param str packages: a list of packages separated by a space to apply
             the action on.
         :param str action: The action to apply. Available options: install,
@@ -92,13 +91,13 @@ class HostCollectionEntity(BaseEntity):
             the new remote execution job form is opened and we can set custom
             values.
         """
+        if content_type not in (None, 'Package'):
+            raise ValueError('Only package actions are supported')
         if job_values is None:
             job_values = {}
         view = self.navigate_to(self, 'Edit', entity_name=entity_name)
         view.details.manage_packages.click()
         view = HostCollectionManagePackagesView(view.browser)
-        if content_type is not None:
-            view.content_type.fill(content_type)
         if packages is not None:
             view.packages.fill(packages)
         view.apply_action(action, action_via=action_via)
