@@ -50,9 +50,9 @@ class InventoryItemsView(Accordion):
     download_report = PF5Button('Download report')
 
     task_status = Text(locator='.//div[contains(@class, "pf-v5-c-progress__description")]')
-    report_saved_to = Text(
+    report_status = Text(
         locator=(
-            './/dt[.//span[contains(text(), "Report saved to")]]/following-sibling::dd[1]'
+            './/dt[.//span[contains(text(), "Report")]]/following-sibling::dd[1]'
             '//div[contains(@class, "pf-v5-c-description-list__text")]'
         )
     )
@@ -83,8 +83,8 @@ class InventoryItemsView(Accordion):
         if self.parent.auto_update.is_displayed:
             result['auto_update'] = self.parent.auto_update.read()
 
-        if self.report_saved_to.is_displayed:
-            result['report_saved_to'] = self.report_saved_to.read()
+        if self.report_status.is_displayed:
+            result['report_status'] = self.report_status.read()
             result['task_status'] = self.task_status.read()
 
         return result
@@ -137,7 +137,7 @@ class IopInventoryItemsView(InventoryItemsView):
     def read(self):
         """Read current state of view, skipping elements not present with IoP enabled."""
         result = {
-            'report_saved_to': self.report_saved_to.read(),
+            'report_status': self.report_status.read(),
             'task_status': self.task_status.read(),
         }
         return result
