@@ -1,6 +1,6 @@
 import time
 
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
@@ -321,7 +321,10 @@ class NewHostDetailsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.breadcrumb.is_displayed and self.breadcrumb.locations[0] == 'Hosts'
+        try:
+            return self.breadcrumb.is_displayed and self.breadcrumb.locations[0] == 'Hosts'
+        except StaleElementReferenceException:
+            return False
 
     edit = PF5OUIAButton('host-edit-button')
     dropdown = PF5Dropdown(locator='//button[@id="hostdetails-kebab"]/..')
