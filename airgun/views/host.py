@@ -32,7 +32,7 @@ from widgetastic_patternfly5.ouia import (
 )
 
 from airgun.views.all_hosts import CVESelect
-from airgun.views.common import BaseLoggedInView, SatTab, SearchableViewMixinPF4
+from airgun.views.common import BaseLoggedInView, SatTab, SearchableHostsViewMixin
 from airgun.views.host_new import MenuToggleButtonMenu, NewCVEnvAssignmentSection
 from airgun.views.job_invocation import JobInvocationCreateView, JobInvocationStatusView
 from airgun.views.task import TaskDetailsView
@@ -226,7 +226,7 @@ class HostStatusesView(BaseLoggedInView):
         return self.browser.wait_for_element(self.title, exception=False) is not None
 
 
-class HostsView(BaseLoggedInView, SearchableViewMixinPF4):
+class HostsView(BaseLoggedInView, SearchableHostsViewMixin):
     title = Text("//h1[normalize-space(.)='Hosts']")
     manage_columns = PF5OUIAButton('manage-columns-button')
     searchbar_dropdown = PF5OUIADropdown('selection-checkbox')
