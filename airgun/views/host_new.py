@@ -32,6 +32,7 @@ from widgetastic_patternfly5 import (
     DualListSelector as PF5DualListSelector,
     Menu as PF5Menu,
     Modal as PF5Modal,
+    PatternflyTable as PF5PatternflyTable,
     Tab as PF5Tab,
 )
 from widgetastic_patternfly5.ouia import (
@@ -1386,3 +1387,39 @@ class ManageMultiCVEnvModal(PF5Modal):
     @property
     def is_displayed(self):
         return self.title.is_displayed
+
+
+# TODO: Originally intended to make this similar to `iop_vulnerability`, but
+#       FRAME seems to only work on top-level BaseLoggedInView classes, not
+#       on View.nested. Could use further investigation.
+class HostComplianceView(BaseLoggedInView):
+    """Compliance tab iframe content for a specific host."""
+
+    FRAME = '//iframe[contains(@class, "rh-cloud-iop-host-details-iframe")]'
+
+    # Filter/search
+    search_field = TextInput(locator='.//input[@aria-label="text input"]')
+
+    # Empty states
+    not_part_of_policies_empty = Text('.//h2[contains(., "not part of any SCAP policies")]')
+    no_results_reported_empty = Text('.//h2[contains(., "No results reported")]')
+
+    # Rules table
+    table = PF5PatternflyTable(
+        locator='.//table[contains(@aria-label, "Rules Table")]',
+        column_widgets={
+            'Name': Text('.//a'),
+            'Severity': Text('.//td[@data-label="Severity"]'),
+            'Rule state': Text('.//td[@data-label="Rule state"]'),
+            'Remediation type': Text('.//td[@data-label="Remediation type"]'),
+        },
+    )
+
+    @property
+    def is_displayed(self):
+        """Check whether the view is displayed."""
+        return (
+            self.table.is_displayed
+            or self.not_part_of_policies_empty.is_displayed
+            or self.no_results_reported_empty.is_displayed
+        )
