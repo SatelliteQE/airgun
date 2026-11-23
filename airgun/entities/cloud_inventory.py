@@ -103,6 +103,8 @@ class CloudInventoryEntity(BaseEntity):
         Generate and upload inventory report for a specific organization.
         """
         view = self.navigate_to(self, 'All')
+        view.wait_displayed()
+        wait_for(lambda: view.inventory_list.is_displayed, timeout=10)
         view.inventory_list.toggle(entity_name)
         view.inventory_list.generate_and_upload.click()
         # self.browser.plugin.ensure_page_safe(timeout='10s')
@@ -112,6 +114,8 @@ class CloudInventoryEntity(BaseEntity):
         Generate inventory report (without upload) for a specific organization.
         """
         view = self.navigate_to(self, 'All')
+        view.wait_displayed()
+        wait_for(lambda: view.inventory_list.is_displayed, timeout=10)
         view.inventory_list.toggle(entity_name)
         view.inventory_list.generate_report.click()
         # self.browser.plugin.ensure_page_safe(timeout='10s')
@@ -121,6 +125,8 @@ class CloudInventoryEntity(BaseEntity):
         Download inventory report for a specific organization.
         """
         view = self.navigate_to(self, 'All')
+        view.wait_displayed()
+        wait_for(lambda: view.inventory_list.is_displayed, timeout=10)
         view.inventory_list.toggle(org_name)
         view.inventory_list.download_report.click()
         time.sleep(3)
