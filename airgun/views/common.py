@@ -1,4 +1,14 @@
-from selenium.common.exceptions import ElementNotInteractableException
+import re
+from threading import Lock
+from urllib.parse import parse_qs, urlsplit
+
+from selenium.common.exceptions import (
+    ElementNotInteractableException,
+    NoSuchElementException,
+    StaleElementReferenceException,
+)
+from wait_for import wait_for
+from widgetastic.exceptions import NoSuchElementException as WidgetasticNoSuchElementException
 from widgetastic.widget import (
     Checkbox,
     ConditionalSwitchableView,
@@ -680,6 +690,97 @@ class SearchableViewMixinPF4(SearchableViewMixin):
         if not self.browser.wait_for_element(self.table, exception=False, timeout=10):
             return []
         return self.table.read()
+
+
+class SearchableHostsViewMixin(SearchableViewMixinPF4):
+    """Read the Hosts table after its visible loading state has finished."""
+
+    _SEARCH_LOADING = '//*[@id="toolbar-spinner"] | //tr[@data-ouia-component-id="table-loading"]'
+    _SEARCH_EMPTY = (
+        '//h5[normalize-space(.)="No Results"] | //tr[@data-ouia-component-id="table-empty"]'
+    )
+    _PAGE_RANGE = '//*[@id="options-menu-bottom-pagination"]//b[1]'
+    _SEARCH_EXCEPTIONS = (
+        KeyError,
+        NoSuchElementException,
+        StaleElementReferenceException,
+        WidgetasticNoSuchElementException,
+    )
+
+    def search(self, query):
+        """Search Hosts and wait for the displayed results to finish loading.
+
+        Searches sharing a browser run sequentially until each call has read
+        its rows. Loading indicators, table headers and the visible pagination
+        range determine when the table can be read.
+
+        :param str query: search query to type into the search field.
+        :return: list of row dictionaries, an empty list for a completed search
+            with no matches, or None if the page is not searchable.
+        :rtype: list or None
+        """
+        with self.browser.extra_objects.setdefault('_hosts_search_lock', Lock()):
+            if not self.is_searchable():
+                return None
+            self._wait_for_search_ready()
+            # An identical query is a UI no-op. Finish resetting it before submitting again.
+            if query and self._search_query() == query:
+                self.searchbox.clear()
+                self._wait_for_search_ready('')
+            # Filling directly avoids a competing reset request when replacing a filter.
+            self.searchbox.fill(query)
+            if self.searchbox.search_button.is_displayed:
+                self.searchbox.search_button.click()
+            self.title.click()
+            return self._read_search_results(query)
+
+    def _search_query(self):
+        return parse_qs(urlsplit(self.browser.url).query).get('search', [''])[0]
+
+    def _search_ready(self, query=None):
+        if query is not None and self._search_query() != query:
+            return False
+        if self.browser.elements(self._SEARCH_LOADING):
+            return False
+        return self.table.is_displayed or bool(self.browser.elements(self._SEARCH_EMPTY))
+
+    def _wait_for_search_ready(self, query=None):
+        wait_for(
+            lambda: self._search_ready(query),
+            timeout=120,
+            delay=0.2,
+            handle_exception=self._SEARCH_EXCEPTIONS,
+        )
+
+    def _read_search_results(self, query):
+        def read_results():
+            if not self._search_ready(query):
+                return None
+            if self.browser.elements(self._SEARCH_EMPTY):
+                return []
+            # React can replace the headers while the table widget still caches them.
+            self.table.clear_cache()
+            if 'Name' not in self.table.headers:
+                return None
+            rows = self.table.read()
+            page_range = re.fullmatch(
+                r'([\d,]+)\s*-\s*([\d,]+)', self.browser.text(self._PAGE_RANGE)
+            )
+            if not page_range:
+                return None
+            first, last = (int(value.replace(',', '')) for value in page_range.groups())
+            if len(rows) != last - first + 1 or any(not row.get('Name') for row in rows):
+                return None
+            # Loading may have restarted while WebDriver was reading individual cells.
+            return rows if self._search_ready(query) else None
+
+        return wait_for(
+            read_results,
+            timeout=30,
+            delay=1,
+            fail_condition=None,
+            handle_exception=self._SEARCH_EXCEPTIONS,
+        ).out
 
 
 class TaskDetailsView(BaseLoggedInView):
