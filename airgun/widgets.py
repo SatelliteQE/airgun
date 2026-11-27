@@ -1,4 +1,5 @@
 import json
+import re
 import time
 
 from cached_property import cached_property
@@ -1328,11 +1329,33 @@ class PF4FilteredDropdown(GenericLocatorWidget):
     def fill(self, value):
         """Select specific item from the drop-down
 
-        :param value: string with item value
+        The deprecated PatternFly typeahead select builds a regular expression from
+        the typed text and keeps only options matching it at offset 0. Escaping the
+        regex metacharacters (e.g. the parentheses in "(Miscellaneous)") makes the
+        pattern match the literal option text instead of being interpreted as regex
+        syntax and filtering the option out.
+
+        The typing is retried because ``clear()`` clicks the input (toggling the
+        drop-down open) before clearing it, and React may restore the previously
+        selected value into the input between the clearing and the typing, which
+        would leave the filter text wrong or the drop-down closed.
         """
-        self.clear()
-        self.filter_criteria.fill(value)
-        self.filter_content.fill(value)
+        item_locator = self.filter_content.ITEM.format(value)
+        last_error = None
+        for _ in range(3):
+            self.clear()
+            self.browser.send_keys(re.escape(value), self.filter_criteria)
+            try:
+                # wait for the option to render in the (still open) drop-down before
+                # clicking it, instead of looking it up immediately after typing
+                item = self.browser.wait_for_element(
+                    item_locator, parent=self.filter_content, timeout=10
+                )
+                self.browser.click(item)
+                return True
+            except NoSuchElementException as error:
+                last_error = error
+        raise last_error
 
     def read(self):
         """Return drop-down selected item value"""
