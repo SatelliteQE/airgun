@@ -626,10 +626,20 @@ class PF4MultiSelect(GenericLocatorWidget):
     """Typical two-pane multiselect widget. Allows to move items from
     list of ``unassigned`` entities to list of ``assigned`` ones and vice
     versa. PF4 version.
+
+    The lists are located via pane classes instead of the ``aria-labelledby``
+    attributes, as those are only rendered once the pane options are loaded,
+    which happens asynchronously after the resource type is selected.
     """
 
-    unassigned = ItemsList(".//ul[@aria-labelledby='permission-duel-select-available-pane-status']")
-    assigned = ItemsList(".//ul[@aria-labelledby='permission-duel-select-chosen-pane-status']")
+    unassigned = ItemsList(
+        ".//div[contains(@class, 'dual-list-selector__pane') and "
+        "contains(@class, 'pf-m-available')]/div/ul"
+    )
+    assigned = ItemsList(
+        ".//div[contains(@class, 'dual-list-selector__pane') and "
+        "contains(@class, 'pf-m-chosen')]/div/ul"
+    )
     move_to_assigned = Text(".//button[@aria-label='Add selected']")
     move_to_unassigned = Text(".//button[@aria-label='Remove selected']")
 
@@ -656,11 +666,18 @@ class PF4MultiSelect(GenericLocatorWidget):
             return False
         if to_add:
             for value in to_add:
-                self.unassigned.fill(value)
+                # the options are loaded asynchronously, wait for the item to appear
+                item = self.browser.wait_for_element(
+                    self.unassigned.ITEM.format(value), parent=self.unassigned, timeout=10
+                )
+                self.browser.click(item)
                 self.move_to_assigned.click()
         if to_remove:
             for value in to_remove:
-                self.assigned.fill(value)
+                item = self.browser.wait_for_element(
+                    self.assigned.ITEM.format(value), parent=self.assigned, timeout=10
+                )
+                self.browser.click(item)
                 self.move_to_unassigned.click()
         return True
 
