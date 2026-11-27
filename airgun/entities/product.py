@@ -181,7 +181,8 @@ class EditProduct(NavigateStep):
     def step(self, *args, **kwargs):
         entity_name = kwargs.get('entity_name')
         self.parent.search(entity_name)
-        self.parent.table.row(name=entity_name)['Name'].widget.click()
+        row = self.parent.table.row_by_cell_or_widget_value('Name', entity_name)
+        row['Name'].widget.click()
 
 
 @navigator.register(ProductEntity, 'Discovery')
@@ -225,8 +226,9 @@ class ProductsSelectAction(NavigateStep):
             )
         entities_list = kwargs.get('entities_list')
         for entity in entities_list:
-            self.parent.table.row(name=entity)[0].click()
-            if not self.parent.table.row(name=entity)[0].read():
+            row = self.parent.table.row_by_cell_or_widget_value('Name', entity)
+            row[0].click()
+            if not row[0].read():
                 script = "document.getElementsByTagName('input')[2].click();"
                 self.parent.browser.execute_script(script)
         self.parent.actions.fill(action_name)
