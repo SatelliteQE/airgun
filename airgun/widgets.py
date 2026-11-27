@@ -1,4 +1,5 @@
 import json
+import re
 import time
 
 from cached_property import cached_property
@@ -625,10 +626,20 @@ class PF4MultiSelect(GenericLocatorWidget):
     """Typical two-pane multiselect widget. Allows to move items from
     list of ``unassigned`` entities to list of ``assigned`` ones and vice
     versa. PF4 version.
+
+    The lists are located via pane classes instead of the ``aria-labelledby``
+    attributes, as those are only rendered once the pane options are loaded,
+    which happens asynchronously after the resource type is selected.
     """
 
-    unassigned = ItemsList(".//ul[@aria-labelledby='permission-duel-select-available-pane-status']")
-    assigned = ItemsList(".//ul[@aria-labelledby='permission-duel-select-chosen-pane-status']")
+    unassigned = ItemsList(
+        ".//div[contains(@class, 'dual-list-selector__pane') and "
+        "contains(@class, 'pf-m-available')]/div/ul"
+    )
+    assigned = ItemsList(
+        ".//div[contains(@class, 'dual-list-selector__pane') and "
+        "contains(@class, 'pf-m-chosen')]/div/ul"
+    )
     move_to_assigned = Text(".//button[@aria-label='Add selected']")
     move_to_unassigned = Text(".//button[@aria-label='Remove selected']")
 
@@ -655,11 +666,18 @@ class PF4MultiSelect(GenericLocatorWidget):
             return False
         if to_add:
             for value in to_add:
-                self.unassigned.fill(value)
+                # the options are loaded asynchronously, wait for the item to appear
+                item = self.browser.wait_for_element(
+                    self.unassigned.ITEM.format(value), parent=self.unassigned, timeout=10
+                )
+                self.browser.click(item)
                 self.move_to_assigned.click()
         if to_remove:
             for value in to_remove:
-                self.assigned.fill(value)
+                item = self.browser.wait_for_element(
+                    self.assigned.ITEM.format(value), parent=self.assigned, timeout=10
+                )
+                self.browser.click(item)
                 self.move_to_unassigned.click()
         return True
 
@@ -1328,11 +1346,33 @@ class PF4FilteredDropdown(GenericLocatorWidget):
     def fill(self, value):
         """Select specific item from the drop-down
 
-        :param value: string with item value
+        The deprecated PatternFly typeahead select builds a regular expression from
+        the typed text and keeps only options matching it at offset 0. Escaping the
+        regex metacharacters (e.g. the parentheses in "(Miscellaneous)") makes the
+        pattern match the literal option text instead of being interpreted as regex
+        syntax and filtering the option out.
+
+        The typing is retried because ``clear()`` clicks the input (toggling the
+        drop-down open) before clearing it, and React may restore the previously
+        selected value into the input between the clearing and the typing, which
+        would leave the filter text wrong or the drop-down closed.
         """
-        self.clear()
-        self.filter_criteria.fill(value)
-        self.filter_content.fill(value)
+        item_locator = self.filter_content.ITEM.format(value)
+        last_error = None
+        for _ in range(3):
+            self.clear()
+            self.browser.send_keys(re.escape(value), self.filter_criteria)
+            try:
+                # wait for the option to render in the (still open) drop-down before
+                # clicking it, instead of looking it up immediately after typing
+                item = self.browser.wait_for_element(
+                    item_locator, parent=self.filter_content, timeout=10
+                )
+                self.browser.click(item)
+                return True
+            except NoSuchElementException as error:
+                last_error = error
+        raise last_error
 
     def read(self):
         """Return drop-down selected item value"""

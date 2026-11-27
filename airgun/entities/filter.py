@@ -1,3 +1,5 @@
+from wait_for import wait_for
+
 from airgun.entities.base import BaseEntity
 from airgun.entities.role import RoleEntity
 from airgun.navigation import NavigateStep, navigator
@@ -5,6 +7,27 @@ from airgun.views.filter import FilterCreateView, FilterDetailsView, FiltersView
 
 
 class FilterEntity(BaseEntity):
+    @staticmethod
+    def _wait_for_redirect(view, url_before):
+        """Wait until the browser leaves the given view after submitting its form.
+
+        After submitting the form Foreman redirects to the role's filters list.
+        Without waiting for the redirect the next navigation can mistake the still
+        displayed form for its destination ("Already at New") and then crash on a
+        stale breadcrumb element once the redirect happens.
+
+        The URL is polled instead of the view itself because reading page widgets
+        during the redirect is slow and prone to stale element errors. The URL must
+        be captured before the form is submitted, as the redirect can complete
+        before this method is called.
+        """
+        browser = view.browser
+        wait_for(
+            lambda: browser.url != url_before,
+            timeout=60,
+            delay=1,
+        )
+
     def create(self, role_name, values):
         """Create new filter for specific role"""
         view = self.navigate_to(self, 'New', role_name=role_name)
@@ -13,9 +36,11 @@ class FilterEntity(BaseEntity):
         view.resource_type.wait_displayed()
         self.browser.plugin.ensure_page_safe()
         view.fill(values)
+        url_before = self.browser.url
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
+        self._wait_for_redirect(view, url_before)
 
     def search(self, role_name, value):
         """Search for filter assigned to the role"""
@@ -49,9 +74,11 @@ class FilterEntity(BaseEntity):
         """Update filter values"""
         view = self.navigate_to(self, 'Edit', role_name=role_name, entity_name=entity_name)
         view.fill(values)
+        url_before = self.browser.url
         view.submit.click()
         view.flash.assert_no_error()
         view.flash.dismiss()
+        self._wait_for_redirect(view, url_before)
 
     def delete(self, role_name, entity_name):
         """Delete specific filter from role"""
